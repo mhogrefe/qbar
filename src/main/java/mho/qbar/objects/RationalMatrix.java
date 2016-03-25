@@ -7,6 +7,7 @@ import mho.wheels.ordering.comparators.LexComparator;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigInteger;
 import java.util.*;
 
 import static mho.wheels.iterables.IterableUtils.*;
@@ -146,6 +147,40 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
     }
 
     /**
+     * Determines whether the elements of {@code this} are all integers.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} only has integral elements.
+     */
+    public boolean onlyHasIntegralElements() {
+        return all(RationalVector::onlyHasIntegralCoordinates, rows);
+    }
+
+    /**
+     * Converts {@code this} to a {@code Matrix}.
+     *
+     * <ul>
+     *  <li>{@code this} must only have integral elements.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @return a {@code Matrix} with the same value as {@code this}
+     */
+    public @NotNull Matrix toMatrix() {
+        if (rows.isEmpty()) {
+            return Matrix.zero(0, width);
+        } else {
+            return Matrix.fromRows(toList(map(RationalVector::toVector, rows)));
+        }
+    }
+
+    /**
      * Returns one of {@code this}'s elements. 0-indexed.
      *
      * <ul>
@@ -226,6 +261,21 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
                     columns.size()
             );
         }
+    }
+
+    /**
+     * Returns the maximum bit length of any element, or 0 if {@code this} has no elements.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>The result is non-negative.</li>
+     * </ul>
+     *
+     * @return the maximum coordinate bit length
+     */
+    public int maxElementBitLength() {
+        if (isZero()) return 0;
+        return maximum(map(RationalVector::maxCoordinateBitLength, rows));
     }
 
     /**
@@ -322,18 +372,41 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
     public boolean isIdentity() {
         if (!isSquare()) return false;
         for (int i = 0; i < width; i++) {
+            RationalVector row = row(i);
             for (int j = 0; j < width; j++) {
-                if (get(i, j) != (i == j ? Rational.ONE : Rational.ZERO)) return false;
+                if (row.get(j) != (i == j ? Rational.ONE : Rational.ZERO)) return false;
             }
         }
         return true;
     }
 
     /**
+     * Returns the trace of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} must be square.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return tr({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Rational trace() {
+        if (!isSquare()) {
+            throw new IllegalArgumentException("this must be square. Invalid this: " + this);
+        }
+        Rational sum = Rational.ZERO;
+        for (int i = 0; i < width; i++) {
+            sum = sum.add(get(i, i));
+        }
+        return sum;
+    }
+
+    /**
      * Creates an identity matrix. The dimension must be positive.
      *
      * <ul>
-     *  <li>{@code dimension} must be positive.</li>
+     *  <li>{@code dimension} cannot be negative.</li>
      *  <li>The result is a square {@code RationalMatrix}, with height and width at least 1, with ones on the diagonal
      *  and zeros everywhere else.</li>
      * </ul>
@@ -344,8 +417,8 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      * @return I<sub>{@code dimension}</sub>
      */
     public static @NotNull RationalMatrix identity(int dimension) {
-        if (dimension < 1) {
-            throw new IllegalArgumentException("dimension must be positive. Invalid dimension: " + dimension);
+        if (dimension < 0) {
+            throw new IllegalArgumentException("dimension cannot be negative. Invalid dimension: " + dimension);
         }
         return new RationalMatrix(
                 toList(map(i -> RationalVector.standard(dimension, i), range(0, dimension - 1))),
@@ -428,7 +501,11 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
                 elements[j][i] = row.get(j);
             }
         }
-        return fromRows(toList(map(i -> RationalVector.of(Arrays.asList(elements[i])), range(0, width - 1))));
+        //noinspection SuspiciousNameCombination
+        return new RationalMatrix(
+                toList(map(i -> RationalVector.of(Arrays.asList(elements[i])), range(0, width - 1))),
+                height
+        );
     }
 
     /**
@@ -495,7 +572,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * Size is height({@code this})×length({@code this})
+     * Size is height({@code this})×width({@code this})
      *
      * @param that the {@code RationalMatrix} added to {@code this}
      * @return {@code this}+{@code that}
@@ -518,7 +595,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *  <li>The result is non-null.</li>
      * </ul>
      *
-     * Size is height({@code this})×length({@code this})
+     * Size is height({@code this})×width({@code this})
      *
      * @return –{@code this}
      */
@@ -538,7 +615,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * Size is height({@code this})×length({@code this})
+     * Size is height({@code this})×width({@code this})
      *
      * @param that the {@code RationalMatrix} subtracted from {@code this}
      * @return {@code this}–{@code that}
@@ -551,6 +628,645 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
         }
         if (height == 0 || width == 0) return this;
         return new RationalMatrix(toList(zipWith(RationalVector::subtract, rows, that.rows)), width);
+    }
+
+    /**
+     * Returns the scalar product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalMatrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @param that the {@code Rational} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull RationalMatrix multiply(@NotNull Rational that) {
+        if (height() == 0 || width == 0 || that == Rational.ONE) return this;
+        return new RationalMatrix(toList(map(r -> r.multiply(that), rows)), width);
+    }
+
+    /**
+     * Returns the scalar product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalMatrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @param that the {@code BigInteger} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull RationalMatrix multiply(@NotNull BigInteger that) {
+        if (height() == 0 || width == 0 || that.equals(BigInteger.ONE)) return this;
+        return new RationalMatrix(toList(map(r -> r.multiply(that), rows)), width);
+    }
+
+    /**
+     * Returns the scalar product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalMatrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @param that the {@code int} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull RationalMatrix multiply(int that) {
+        if (height() == 0 || width == 0 || that == 1) return this;
+        return new RationalMatrix(toList(map(r -> r.multiply(that), rows)), width);
+    }
+
+    /**
+     * Returns the scalar product of {@code this} and the inverse of {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalMatrix}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @param that the {@code Rational} {@code this} is divided by
+     * @return {@code this}/{@code that}
+     */
+    public @NotNull RationalMatrix divide(@NotNull Rational that) {
+        return multiply(that.invert());
+    }
+
+    /**
+     * Returns the scalar product of {@code this} and the inverse of {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalMatrix}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @param that the {@code BigInteger} {@code this} is divided by
+     * @return {@code this}/{@code that}
+     */
+    public @NotNull RationalMatrix divide(@NotNull BigInteger that) {
+        return multiply(Rational.of(BigInteger.ONE, that));
+    }
+
+    /**
+     * Returns the scalar product of {@code this} and the inverse of {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalMatrix}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @param that the {@code int} {@code this} is divided by
+     * @return {@code this}/{@code that}
+     */
+    public @NotNull RationalMatrix divide(int that) {
+        return multiply(Rational.of(1, that));
+    }
+
+    /**
+     * Returns the product of {@code this} and {@code that}. The result is {@code that} after a linear transformation
+     * whose basis vectors are the columns of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalMatrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The width of {@code this} must equal the dimension of {@code that}.</li>
+     * </ul>
+     *
+     * Length is height({@code this})
+     *
+     * @param that the {@code RationalVector} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull RationalVector multiply(@NotNull RationalVector that) {
+        if (width != that.dimension()) {
+            throw new ArithmeticException("The width of this must equal the dimension of that. this: " +
+                    this + ", that: " + that);
+        }
+        return RationalVector.of(toList(map(r -> r.dot(that), rows)));
+    }
+
+    /**
+     * Returns the matrix product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalMatrix}</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The width of {@code this} must equal the height of {@code that}.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code that})
+     *
+     * @param that the {@code RationalMatrix} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull RationalMatrix multiply(@NotNull RationalMatrix that) {
+        int n = height();
+        int m = width;
+        if (m != that.height()) {
+            throw new ArithmeticException("the width of this must equal the height of that. this: " +
+                    this + ", that: " + that);
+        }
+        int l = that.width;
+        if (n == 0) {
+            return zero(0, l);
+        }
+        List<RationalVector> rows = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            RationalVector row = row(i);
+            List<Rational> productRow = new ArrayList<>();
+            for (int k = 0; k < l; k++) {
+                Rational sum = Rational.ZERO;
+                for (int j = 0; j < m; j++) {
+                    sum = sum.add(row.get(j).multiply(that.get(j, k)));
+                }
+                productRow.add(sum);
+            }
+            rows.add(RationalVector.of(productRow));
+        }
+        return fromRows(rows);
+    }
+
+    /**
+     * Returns the left shift of {@code this} by {@code bits}; {@code this}×2<sup>{@code bits}</sup>. Negative
+     * {@code bits} corresponds to a right shift.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalMatrix}.</li>
+     *  <li>{@code bits} may be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @param bits the number of bits to left-shift by
+     * @return {@code this}≪{@code bits}
+     */
+    public @NotNull RationalMatrix shiftLeft(int bits) {
+        if (isZero() || bits == 0) return this;
+        return new RationalMatrix(toList(map(r -> r.shiftLeft(bits), rows)), width);
+    }
+
+    /**
+     * Returns the right shift of {@code this} by {@code bits}; {@code this}×2<sup>–{@code bits}</sup>. Negative
+     * {@code bits} corresponds to a left shift.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalMatrix}.</li>
+     *  <li>{@code bits} may be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @param bits the number of bits to right-shift by
+     * @return {@code this}≫{@code bits}
+     */
+    public @NotNull RationalMatrix shiftRight(int bits) {
+        if (isZero() || bits == 0) return this;
+        return new RationalMatrix(toList(map(r -> r.shiftRight(bits), rows)), width);
+    }
+
+    /**
+     * Determines whether {@code this} is in row echelon form; whether all zero rows are at the bottom, the first
+     * nonzero element of every row is 1, and the first nonzero element of every row is strictly to the right of the
+     * first nonzero element of the row above it.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is in row echelon form
+     */
+    public boolean isInRowEchelonForm() {
+        boolean seenNonzero = false;
+        for (int i = height() - 1; i >= 0; i--) {
+            boolean zero = row(i).isZero();
+            if (zero) {
+                if (seenNonzero) return false;
+            } else {
+                seenNonzero = true;
+            }
+        }
+        int lastPivotIndex = -1;
+        for (RationalVector row : rows()) {
+            Optional<Integer> oi = findIndex(x -> x != Rational.ZERO, row);
+            if (!oi.isPresent()) break;
+            int pivotIndex = oi.get();
+            if (row.get(pivotIndex) != Rational.ONE || pivotIndex <= lastPivotIndex) return false;
+            lastPivotIndex = pivotIndex;
+        }
+        return true;
+    }
+
+    /**
+     * Returns a row echelon form of {@code this}. In other words, all zero rows are at the bottom, the first nonzero
+     * element of every row is 1, and the first nonzero element of every row is strictly to the right of the first
+     * nonzero element of the row above it.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>The result is in row echelon form.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @return a row echelon form of {@code this}
+     */
+    public @NotNull RationalMatrix rowEchelonForm() {
+        int height = height();
+        if (width == 0 || height == 0) return this;
+        boolean changed = false;
+        List<RationalVector> refRows = rows;
+        int i = 0;
+        outer:
+        for (int j = 0; i < height && j < width; j++) {
+            int nonzeroRowIndex = i;
+            Rational pivot = refRows.get(i).get(j);
+            while (pivot == Rational.ZERO) {
+                nonzeroRowIndex++;
+                if (nonzeroRowIndex == height) continue outer;
+                pivot = refRows.get(nonzeroRowIndex).get(j);
+            }
+            if (nonzeroRowIndex != i) {
+                if (!changed) {
+                    changed = true;
+                    refRows = toList(rows);
+                }
+                Collections.swap(refRows, i, nonzeroRowIndex);
+            }
+            RationalVector nonzeroRow = refRows.get(i);
+            if (pivot != Rational.ONE) {
+                if (!changed) {
+                    changed = true;
+                    refRows = toList(rows);
+                }
+                nonzeroRow = nonzeroRow.divide(pivot);
+                refRows.set(i, nonzeroRow);
+            }
+            for (int k = i + 1; k < height; k++) {
+                RationalVector row = refRows.get(k);
+                if (row.get(j) != Rational.ZERO) {
+                    if (!changed) {
+                        changed = true;
+                        refRows = toList(rows);
+                    }
+                    refRows.set(k, row.subtract(nonzeroRow.multiply(row.get(j))));
+                }
+            }
+            i++;
+        }
+        return changed ? new RationalMatrix(refRows, width) : this;
+    }
+
+    /**
+     * Returns the rank of {@code this}, or the dimension of the row space (which equals the dimension of the column
+     * space).
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>The result is not negative.</li>
+     * </ul>
+     *
+     * @return rank({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public int rank() {
+        RationalMatrix ref = rowEchelonForm();
+        for (int rank = height(); rank > 0; rank--) {
+            if (!ref.row(rank - 1).isZero()) {
+                return rank;
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Determines whether {@code this} is invertible.
+     *
+     * <ul>
+     *  <li>{@code this} must be square.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is invertible
+     */
+    public boolean isInvertible() {
+        if (!isSquare()) {
+            throw new IllegalArgumentException("this must be square. Invalid this: " + this);
+        }
+        return rank() == width;
+    }
+
+    /**
+     * Determines whether {@code this} is in reduced row echelon form; whether it is in row echelon form (see
+     * {@link RationalMatrix#isInRowEchelonForm()}) and every leading element is the only nonzero element in its
+     * column.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is in reduced row echelon form
+     */
+    public boolean isInReducedRowEchelonForm() {
+        if (!isInRowEchelonForm()) return false;
+        for (int i = 0; i < height(); i++) {
+            RationalVector row = row(i);
+            Optional<Integer> oi = findIndex(x -> x != Rational.ZERO, row);
+            if (!oi.isPresent()) break;
+            int pivotIndex = oi.get();
+            for (int j = 0; j < i; j++) {
+                if (get(j, pivotIndex) != Rational.ZERO) return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Returns the reduced row echelon form of {@code this}. In other words, the result is in row echelon form (see
+     * {@link RationalMatrix#isInRowEchelonForm()}) and every leading element is the only nonzero element in its
+     * column.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>The result is in reduced row echelon form.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @return the reduced row echelon form of {@code this}
+     */
+    public @NotNull RationalMatrix reducedRowEchelonForm() {
+        int height = height();
+        if (width == 0 || height == 0) return this;
+        RationalMatrix ref = rowEchelonForm();
+        if (width <= height && !ref.row(width - 1).isZero()) {
+            RationalMatrix identity = identity(width);
+            return width == height ? identity : identity.concat(zero(height - width, width));
+        }
+        boolean changed = false;
+        List<RationalVector> rrefRows = ref.rows;
+        for (int i = 0; i < height(); i++) {
+            RationalVector row = rrefRows.get(i);
+            Optional<Integer> pivotIndex = findIndex(x -> x != Rational.ZERO, row);
+            if (!pivotIndex.isPresent()) break;
+            int j = pivotIndex.get();
+            for (int k = i - 1; k >= 0; k--) {
+                RationalVector above = rrefRows.get(k);
+                if (above.get(j) != Rational.ZERO) {
+                    if (!changed) {
+                        changed = true;
+                        rrefRows = toList(ref.rows);
+                    }
+                    rrefRows.set(k, above.subtract(row.multiply(above.get(j))));
+                }
+            }
+        }
+        return changed ? new RationalMatrix(rrefRows, width) : ref;
+    }
+
+    /**
+     * Solves a linear system of equations. If this is a matrix with <i>n</i> rows and <i>m</i> columns, then the
+     * system contains <i>n</i> equations in <i>m</i> variables, and the entry (<i>i</i>, <i>j</i>) is the coefficient
+     * of the <i>j</i>th variable in the <i>i</i>th equation. The vector {@code rhs} represents the right-hand side of
+     * the equations, and its <i>i</i>th entry is the right-hand side of the <i>i</i>th equation. If the system is
+     * inconsistent or underdetermined, the result is empty; otherwise, it is non-empty. Note that if the system is
+     * overdetermined, it may still be consistent. If the result is non-empty, it represents the values of the <i>m</i>
+     * variables, and its <i>j</i>th element is the value of the <i>j</i>th variable.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>{@code rhs} may be any {@code RationalVector}.</li>
+     *  <li>The dimension of {@code rhs} must equal the height of {@code this}.</li>
+     *  <li>The result may be empty or any {@code RationalVector}.</li>
+     * </ul>
+     *
+     * Length is width({@code this})
+     *
+     * @param rhs the right-hand side of the system of equations
+     * @return The assignments to the variables in the equations
+     */
+    public @NotNull Optional<RationalVector> solveLinearSystem(@NotNull RationalVector rhs) {
+        if (height() != rhs.dimension()) {
+            throw new IllegalArgumentException("The dimension of rhs must equal the height of this. rhs: " +
+                    rhs + ", this: " + this);
+        }
+        if (width > height()) return Optional.empty();
+        RationalMatrix rref = augment(fromColumns(Collections.singletonList(rhs))).reducedRowEchelonForm();
+        RationalMatrix bottom = rref.submatrix(toList(range(width, height() - 1)), toList(range(0, width)));
+        if (!bottom.isZero()) return Optional.empty();
+        RationalMatrix left = rref.submatrix(toList(range(0, width - 1)), toList(range(0, width - 1)));
+        if (!left.isIdentity()) return Optional.empty();
+        return Optional.of(rref.submatrix(toList(range(0, width - 1)), Collections.singletonList(width)).column(0));
+    }
+
+    /**
+     * Returns the inverse of {@code this}, or an empty {@code Optional} if {@code this} is not invertible.
+     *
+     * <ul>
+     *  <li>{@code this} must be square.</li>
+     *  <li>The result is either empty or an invertible {@code RationalMatrix}.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @return {@code this}<sup>–1</sup>
+     */
+    public @NotNull Optional<RationalMatrix> invert() {
+        if (!isSquare()) {
+            throw new IllegalArgumentException("this must be square. Invalid this: " + this);
+        }
+        RationalMatrix rref = augment(identity(width)).reducedRowEchelonForm();
+        RationalMatrix left = rref.submatrix(toList(range(0, width - 1)), toList(range(0, width - 1)));
+        if (!left.isIdentity()) return Optional.empty();
+        return Optional.of(rref.submatrix(toList(range(0, width - 1)), toList(range(width, 2 * width - 1))));
+    }
+
+    /**
+     * Computes the determinant of {@code this} using the Dogdson-Jordan-Gauss algorithm (Basu, Pollack, and Roy 2006).
+     *
+     * <ul>
+     *  <li>{@code this} must be square.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return |{@code this}|
+     */
+    public @NotNull Rational determinant() {
+        if (width != height()) {
+            throw new IllegalArgumentException("this must be square. Invalid this: " + this);
+        }
+        int n = width;
+        if (n == 0) return Rational.ONE;
+        if (n == 1) return get(0, 0);
+        Rational[][] arrayA = new Rational[n][n];
+        for (int i = 0; i < n; i++) {
+            RationalVector row = row(i);
+            arrayA[i] = new Rational[n];
+            for (int j = 0; j < n; j++) {
+                arrayA[i][j] = row.get(j);
+            }
+        }
+        Rational[][] arrayB = new Rational[n - 1][n - 1];
+        arrayB[0][0] = Rational.ONE;
+        boolean swapSign = true;
+        for (int k = 0; k < n - 1; k++) {
+            int firstNonzeroColumnIndex = -1;
+            for (int j = 0; j < n - k; j++) {
+                if (arrayA[0][j] != Rational.ZERO) {
+                    firstNonzeroColumnIndex = j;
+                    break;
+                }
+            }
+            if (firstNonzeroColumnIndex == -1) {
+                return Rational.ZERO;
+            }
+            if (firstNonzeroColumnIndex != 0) {
+                for (Rational[] row : arrayA) {
+                    Rational temp = row[firstNonzeroColumnIndex];
+                    row[firstNonzeroColumnIndex] = row[0];
+                    row[0] = temp;
+                }
+                swapSign = !swapSign;
+            }
+            Rational denominator = arrayB[0][0];
+            for (int i = 1; i < n - k; i++) {
+                arrayB[i - 1][0] = Rational.ZERO;
+                for (int j = 1; j < n - k; j++) {
+                    Rational numerator = arrayA[0][0].multiply(arrayA[i][j])
+                            .subtract(arrayA[i][0].multiply(arrayA[0][j]));
+                    arrayB[i - 1][j - 1] = numerator.divide(denominator);
+                }
+            }
+            Rational[][] temp = arrayA;
+            arrayA = arrayB;
+            arrayB = temp;
+        }
+        Rational determinant = arrayA[0][0];
+        return swapSign ? determinant : determinant.negate();
+    }
+
+    /**
+     * Computes the characteristic polynomial of {@code this} using the Faddeev-Leverrier algorithm.
+     *
+     * <ul>{@code this} must be square.</ul>
+     * <ul>The result is monic.</ul>
+     *
+     * Length is height({@code this})+1
+     *
+     * @return det(Ix–{@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull RationalPolynomial characteristicPolynomial() {
+        if (width != height()) {
+            throw new IllegalArgumentException("this must be square. Invalid this: " + this);
+        }
+        int n = width;
+        if (n == 0) return RationalPolynomial.ONE;
+        int r = 1;
+        while (r * r <= n) r++;
+        List<RationalMatrix> powers = new ArrayList<>();
+        RationalMatrix previousPower = identity(n);
+        powers.add(previousPower);
+        List<Rational> powerSums = toList(replicate(r * r, Rational.ZERO));
+        powerSums.set(0, Rational.of(n));
+        for (int i = 1; i < r; i++) {
+            RationalMatrix nextPower = multiply(previousPower);
+            powers.add(nextPower);
+            powerSums.set(i, nextPower.trace());
+            previousPower = nextPower;
+        }
+        List<RationalMatrix> cs = new ArrayList<>();
+        RationalMatrix firstC = multiply(powers.get(r - 1));
+        cs.add(firstC);
+        RationalMatrix previousC = firstC;
+        powerSums.set(r, firstC.trace());
+        for (int j = 2; j < r; j++) {
+            RationalMatrix nextC = firstC.multiply(previousC);
+            powerSums.set(j * r, nextC.trace());
+            cs.add(nextC);
+            previousC = nextC;
+        }
+        for (int i = 1; i < r; i++) {
+            for (int j = 1; j < r; j++) {
+                int index = j * r + i;
+                if (index <= n) {
+                    powerSums.set(index, powers.get(i).multiply(cs.get(j - 1)).trace());
+                }
+            }
+        }
+        return RationalPolynomial.fromPowerSums(toList(take(n + 1, powerSums)));
+    }
+
+    /**
+     * Returns the Kronecker product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is the Kronecker product of two matrices.</li>
+     * </ul>
+     *
+     * Size is (height({@code this})height({@code that}))×(width({@code this})width({@code that}))
+     *
+     * @param that the {@code RationalMatrix} that {@code this} is multiplied by.
+     * @return {@code this}⊗{@code that}
+     */
+    public @NotNull RationalMatrix kroneckerMultiply(@NotNull RationalMatrix that) {
+        List<RationalVector> productRows = new ArrayList<>();
+        for (RationalVector thisRow : rows) {
+            //noinspection Convert2streamapi
+            for (RationalVector thatRow : that.rows) {
+                //noinspection Convert2MethodRef
+                productRows.add(RationalVector.of(toList(concatMap(x -> map(y -> x.multiply(y), thatRow), thisRow))));
+            }
+        }
+        return new RationalMatrix(productRows, width * that.width);
+    }
+
+    /**
+     * Returns the Kronecker sum of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} must be square.</li>
+     *  <li>{@code that} must be square.</li>
+     *  <li>The result is the Kronecker sum of two matrices.</li>
+     * </ul>
+     *
+     * Size is (height({@code this})height({@code that}))×(width({@code this})width({@code that}))
+     *
+     * @param that the {@code RationalMatrix} added to {@code this}
+     * @return {@code this}⊕{@code that}
+     */
+    public @NotNull RationalMatrix kroneckerAdd(@NotNull RationalMatrix that) {
+        if (!isSquare()) {
+            throw new IllegalArgumentException("this must be square. Invalid this: " + this);
+        }
+        if (!that.isSquare()) {
+            throw new IllegalArgumentException("that must be square. Invalid that: " + that);
+        }
+        return kroneckerMultiply(identity(that.width)).add(identity(width).kroneckerMultiply(that));
     }
 
     /**
@@ -675,7 +1391,8 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
     }
 
     /**
-     * Ensures that {@code this} is valid. Must return true for any {@code RationalMatrix} used outside this class.
+     * Ensures that {@code this} is valid. Must return without exceptions for any {@code RationalMatrix} used outside
+     * this class.
      */
     public void validate() {
         assertTrue(this, width >= 0);

@@ -107,21 +107,6 @@ public final class BigRational implements RingElem<BigRational>, RingFactory<Big
     }
 
     /**
-     * Get the string representation.
-     *
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        StringBuilder s = new StringBuilder();
-        s.append(num);
-        if (!den.equals(BigInteger.ONE)) {
-            s.append("/").append(den);
-        }
-        return s.toString();
-    }
-
-    /**
      * Get the zero element.
      *
      * @return 0 as BigRational.

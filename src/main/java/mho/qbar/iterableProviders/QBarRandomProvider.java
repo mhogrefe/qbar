@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static mho.wheels.iterables.IterableUtils.*;
@@ -22,7 +23,7 @@ import static org.junit.Assert.assertTrue;
  * {@link QBarRandomProvider#reset}.</p>
  *
  * <p>{@code QBarRandomProvider} uses the cryptographically-secure ISAAC pseudorandom number generator, implemented in
- * {@link mho.wheels.random.IsaacPRNG}. The source of its randomness is a {@code int[]} seed. It contains two scale
+ * {@link mho.wheels.random.IsaacPRNG}. The source of its randomness is a {@code int[]} seed. It contains three scale
  * parameters which some of the distributions depend on; the exact relationship between the parameters and the
  * distributions is specified in the distribution's documentation.</p>
  *
@@ -36,6 +37,12 @@ import static org.junit.Assert.assertTrue;
  */
 @SuppressWarnings("unused")
 public final strictfp class QBarRandomProvider extends QBarIterableProvider {
+    /**
+     * A list of all {@code MonomialOrder}s.
+     */
+    private static final @NotNull List<MonomialOrder> MONOMIAL_ORDERS =
+            toList(QBarExhaustiveProvider.INSTANCE.monomialOrders());
+
     /**
      * Creates a new {@code QBarRandomProvider} with a {@code RandomProvider}.
      *
@@ -86,29 +93,42 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     /**
-     * Returns {@code this}'s scale parameter.
+     * Returns {@code this}'s first scale parameter.
      *
      * <ul>
      *  <li>The result may be any {@code int}.</li>
      * </ul>
      *
-     * @return the scale parameter of {@code this}
+     * @return the first scale parameter of {@code this}
      */
     public int getScale() {
         return ((RandomProvider) wheelsProvider).getScale();
     }
 
     /**
-     * Returns {@code this}'s other scale parameter.
+     * Returns {@code this}'s second scale parameter.
      *
      * <ul>
      *  <li>The result may be any {@code int}.</li>
      * </ul>
      *
-     * @return the other scale parameter of {@code this}
+     * @return the second scale parameter of {@code this}
      */
     public int getSecondaryScale() {
         return ((RandomProvider) wheelsProvider).getSecondaryScale();
+    }
+
+    /**
+     * Returns {@code this}'s third scale parameter.
+     *
+     * <ul>
+     *  <li>The result may be any {@code int}.</li>
+     * </ul>
+     *
+     * @return the third scale parameter of {@code this}
+     */
+    public int getTertiaryScale() {
+        return ((RandomProvider) wheelsProvider).getTertiaryScale();
     }
 
     /**
@@ -190,6 +210,23 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     /**
+     * A {@code QBarRandomProvider} with the same fields as {@code this} except for a new tertiary scale.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code QBarRandomProvider}.</li>
+     *  <li>{@code tertiaryScale} mat be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param tertiaryScale the new tertiary scale
+     * @return A copy of {@code this} with a new tertiary scale
+     */
+    @Override
+    public @NotNull QBarIterableProvider withTertiaryScale(int tertiaryScale) {
+        return new QBarRandomProvider((RandomProvider) wheelsProvider.withTertiaryScale(tertiaryScale));
+    }
+
+    /**
      * Returns an id which has a good chance of being different in two instances with unequal {@code prng}s. It's used
      * in {@link QBarRandomProvider#toString()} to distinguish between different {@code QBarRandomProvider} instances.
      *
@@ -220,7 +257,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
 
     /**
      * An {@code Iterable} that generates all positive {@code Rational}s. Each {@code Rational}'s bit size (defined as
-     * the sum of the numerator 'sand denominator's bit sizes) is chosen from a geometric distribution with mean
+     * the sum of the numerator's and denominator's bit sizes) is chosen from a geometric distribution with mean
      * approximately {@code scale}. Does not support removal.
      *
      * <ul>
@@ -528,6 +565,55 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     /**
+     * An {@code Iterable} that generates all {@code Vector}s. Each {@code Vector}'s dimension is chosen from a
+     * geometric distribution with mean {@code scale}, and each coordinate's bit size is chosen from a geometric
+     * distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale} and a positive {@code secondaryScale}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Vector}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Vector> vectors() {
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 1) {
+            throw new IllegalStateException("this must have a positive secondaryScale. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
+        return map(Vector::of, withScale(secondaryScale).lists(bigIntegers()));
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code Vector}s with a minimum dimension. Each {@code Vector}'s dimension
+     * is chosen from a geometric distribution with mean {@code secondaryScale}, and each coordinate's bit size is
+     * chosen from a geometric distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} greater than
+     *  {@code minDimension}.</li>
+     *  <li>{@code minDimension} cannot be negative.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Vector}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDimension the minimum dimension of the generated {@code Vector}s
+     * @return {@code Vector}s with dimension at least {@code minDimension}
+     */
+    @Override
+    public @NotNull Iterable<Vector> vectorsAtLeast(int minDimension) {
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale <= minDimension) {
+            throw new IllegalStateException("this must have a secondaryScale greater than minDimension." +
+                    " secondaryScale: " + secondaryScale + ", minDimension: " + minDimension);
+        }
+        return map(Vector::of, withScale(secondaryScale).listsAtLeast(minDimension, bigIntegers()));
+    }
+
+    /**
      * An {@code Iterable} that generates all {@code RationalVector}s. Each {@code RationalVector}'s dimension is
      * chosen from a geometric distribution with mean {@code secondaryScale}, and each coordinate's bit size is chosen
      * from a geometric distribution with mean approximately {@code scale}. Does not support removal.
@@ -558,6 +644,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * <ul>
      *  <li>{@code this} must have a {@code scale} of at least 3 and a {@code secondaryScale} greater than
      *  {@code minDimension}.</li>
+     *  <li>{@code minDimension} cannot be negative.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code RationalVector}s.</li>
      * </ul>
      *
@@ -577,12 +664,125 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     /**
+     * An {@code Iterable} that generates all {@code PolynomialVector}s. Each {@code PolynomialVector}'s dimension is
+     * chosen from a geometric distribution with mean {@code tertiaryScale}, each coordinate's degree is chosen from a
+     * geometric distribution with mean {@code secondaryScale}, and each coordinate's coefficient's bit size is chosen
+     * from a geometric distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale}, a non-negative {@code secondaryScale}, and a positive
+     *  {@code tertiaryScale}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code PolynomialVector}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<PolynomialVector> polynomialVectors() {
+        int tertiaryScale = getTertiaryScale();
+        if (tertiaryScale < 1) {
+            throw new IllegalStateException("this must have a positive tertiaryScale. Invalid tertiaryScale: " +
+                    tertiaryScale);
+        }
+        return map(PolynomialVector::of, withScale(tertiaryScale).lists(polynomials()));
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code PolynomialVector}s with a minimum dimension. Each
+     * {@code PolynomialVector}'s dimension is chosen from a geometric distribution with mean {@code tertiaryScale},
+     * each coordinate's degree is chosen from a geometric distribution with mean {@code secondaryScale}, and each
+     * coordinate's coefficient's bit size is chosen from a geometric distribution with mean approximately
+     * {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale}, a non-negative {@code secondaryScale}, and a
+     *  {@code tertiaryScale} greater than {@code minDimension}.</li>
+     *  <li>{@code minDimension} cannot be negative.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code PolynomialVector}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDimension the minimum dimension of the generated {@code PolynomialVector}s
+     * @return {@code PolynomialVector}s with dimension at least {@code minDimension}
+     */
+    @Override
+    public @NotNull Iterable<PolynomialVector> polynomialVectorsAtLeast(int minDimension) {
+        int tertiaryScale = getTertiaryScale();
+        if (tertiaryScale <= minDimension) {
+            throw new IllegalStateException("this must have a tertiaryScale greater than minDimension." +
+                    " tertiaryScale: " + tertiaryScale + ", minDimension: " + minDimension);
+        }
+        return map(PolynomialVector::of, withScale(tertiaryScale).listsAtLeast(minDimension, polynomials()));
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code RationalPolynomialVector}s. Each
+     * {@code RationalPolynomialVector}'s dimension is chosen from a geometric distribution with mean
+     * {@code tertiaryScale}, each coordinate's degree is chosen from a geometric distribution with mean
+     * {@code secondaryScale}, and each coordinate's coefficient's bit size is chosen from a geometric distribution
+     * with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 3, a non-negative {@code secondaryScale}, and a positive
+     *  {@code tertiaryScale}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing
+     *  {@code RationalPolynomialVector}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<RationalPolynomialVector> rationalPolynomialVectors() {
+        int tertiaryScale = getTertiaryScale();
+        if (tertiaryScale < 1) {
+            throw new IllegalStateException("this must have a positive tertiaryScale. Invalid tertiaryScale: " +
+                    tertiaryScale);
+        }
+        return map(RationalPolynomialVector::of, withScale(tertiaryScale).lists(rationalPolynomials()));
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code RationalPolynomialVector}s with a minimum dimension. Each
+     * {@code RationalPolynomialVector}'s dimension is chosen from a geometric distribution with mean
+     * {@code tertiaryScale}, each coordinate's degree is chosen from a geometric distribution with mean
+     * {@code secondaryScale}, and each coordinate's coefficient's bit size is chosen from a geometric distribution
+     * with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 3, a non-negative {@code secondaryScale}, and a
+     *  {@code tertiaryScale} greater than {@code minDimension}.</li>
+     *  <li>{@code minDimension} cannot be negative.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing
+     *  {@code RationalPolynomialVector}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDimension the minimum dimension of the generated {@code RationalPolynomialVector}s
+     * @return {@code RationalPolynomialVector}s with dimension at least {@code minDimension}
+     */
+    @Override
+    public @NotNull Iterable<RationalPolynomialVector> rationalPolynomialVectorsAtLeast(int minDimension) {
+        int tertiaryScale = getTertiaryScale();
+        if (tertiaryScale <= minDimension) {
+            throw new IllegalStateException("this must have a tertiaryScale greater than minDimension." +
+                    " tertiaryScale: " + tertiaryScale + ", minDimension: " + minDimension);
+        }
+        return map(
+                RationalPolynomialVector::of,
+                withScale(tertiaryScale).listsAtLeast(minDimension, rationalPolynomials())
+        );
+    }
+
+    /**
      * An {@code Iterable} that generates all reduced {@code RationalVector}s (see {@link RationalVector#reduce()})
      * with a given dimension. A larger {@code scale} corresponds to a larger mean coordinate size. Does not support
      * removal.
      *
      * <ul>
      *  <li>{@code this} must have a positive {@code scale}.</li>
+     *  <li>{@code minDimension} cannot be negative.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing reduced {@code RationalVector}s.</li>
      * </ul>
      *
@@ -626,6 +826,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * <ul>
      *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} greater than
      *  {@code minDimension}.</li>
+     *  <li>{@code minDimension} cannot be negative.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing reduced {@code RationalVectors}.</li>
      * </ul>
      *
@@ -645,12 +846,120 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     /**
+     * An {@code Iterable} that generates all {@code Matrix}es with a given height and width. Each element's bit size
+     * is chosen from a geometric distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale}.</li>
+     *  <li>{@code height} cannot be negative.</li>
+     *  <li>{@code width} cannot be negative.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Matrix}es.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param height the height (number of rows) of the generated {@code Matrix}es
+     * @param width the width (number of columns) of the generated {@code Matrix}es
+     * @return {@code Matrix}es with height {@code height} and width {@code width}
+     */
+    @Override
+    public @NotNull Iterable<Matrix> matrices(int height, int width) {
+        if (height == 0 || width == 0) {
+            int scale = getScale();
+            if (scale < 1) {
+                throw new IllegalStateException("this must have a positive scale. Invalid scale: " + scale);
+            }
+            return repeat(Matrix.zero(height, width));
+        } else {
+            return map(Matrix::fromRows, lists(height, vectors(width)));
+        }
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code Matrix}es. Each {@code Matrix}'s element count is chosen from a
+     * geometric distribution with mean approximately {@code secondaryScale}, and each coordinate's bit size is chosen
+     * from a geometric distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} of at least 2.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Matrix}es.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Matrix> matrices() {
+        int scale = getScale();
+        if (scale < 1) {
+            throw new IllegalStateException("this must have a positive scale. Invalid scale: " + scale);
+        }
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 2) {
+            throw new IllegalStateException("this must have a secondaryScale of at least 2. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
+        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
+                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(secondaryScale)).intValueExact()
+        );
+        return chooseLogarithmicOrder(
+                map(
+                        p -> Matrix.fromRows(p.b),
+                        dependentPairsInfiniteSquareRootOrder(
+                                pairs(dimensionProvider.positiveIntegersGeometric()),
+                                p -> lists(p.a, vectors(p.b))
+                        )
+                ),
+                choose(
+                        map(i -> Matrix.zero(0, i), dimensionProvider.naturalIntegersGeometric()),
+                        map(i -> Matrix.zero(i, 0), dimensionProvider.positiveIntegersGeometric())
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all square {@code Matrix}es. Each {@code Matrix}'s element count is chosen
+     * from a geometric distribution with mean approximately {@code secondaryScale}, and each coordinate's bit size is
+     * chosen from a geometric distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 2 and a {@code secondaryScale} of at least 2.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing square {@code Matrix}es.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Matrix> squareMatrices() {
+        int scale = getScale();
+        if (scale < 2) {
+            throw new IllegalStateException("this must have a scale of at least 2. Invalid scale: " + scale);
+        }
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 2) {
+            throw new IllegalStateException("this must have a secondaryScale of at least 2. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
+        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
+                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(secondaryScale)).intValueExact()
+        );
+        return withElement(
+                Matrix.zero(0, 0),
+                map(p -> p.b, dependentPairsInfiniteLogarithmicOrder(
+                        dimensionProvider.positiveIntegersGeometric(),
+                        i -> matrices(i, i))
+                )
+        );
+    }
+
+    /**
      * An {@code Iterable} that generates all {@code RationalMatrix}es with a given height and width. Each coordinate's
      * bit size is chosen from a geometric distribution with mean approximately {@code scale}. Does not support
      * removal.
      *
      * <ul>
      *  <li>{@code this} must have a {@code scale} of at least 3.</li>
+     *  <li>{@code height} cannot be negative.</li>
+     *  <li>{@code width} cannot be negative.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code RationalMatrix}es.</li>
      * </ul>
      *
@@ -746,6 +1055,260 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                 map(p -> p.b, dependentPairsInfiniteLogarithmicOrder(
                         dimensionProvider.positiveIntegersGeometric(),
                         i -> rationalMatrices(i, i))
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code PolynomialMatrix}es with a given height and width. Each
+     * element's coefficient's bit size is chosen from a geometric distribution with mean approximately {@code scale},
+     * and each element's degree is chosen from a geometric distribution with mean approximately
+     * {@code secondaryScale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale} and a non-negative {@code secondaryScale}.</li>
+     *  <li>{@code height} cannot be negative.</li>
+     *  <li>{@code width} cannot be negative.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code PolynomialMatrix}es.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param height the height (number of rows) of the generated {@code PolynomialMatrix}es
+     * @param width the width (number of columns) of the generated {@code PolynomialMatrix}es
+     * @return {@code PolynomialMatrix}es with height {@code height} and width {@code width}
+     */
+    @Override
+    public @NotNull Iterable<PolynomialMatrix> polynomialMatrices(int height, int width) {
+        if (height == 0 || width == 0) {
+            int scale = getScale();
+            if (scale < 1) {
+                throw new IllegalStateException("this must have a positive scale. Invalid scale: " + scale);
+            }
+            int secondaryScale = getSecondaryScale();
+            if (secondaryScale < 0) {
+                throw new IllegalStateException("this cannot have a negative secondaryScale. Invalid" +
+                        " secondaryScale: " + secondaryScale);
+            }
+            return repeat(PolynomialMatrix.zero(height, width));
+        } else {
+            return map(PolynomialMatrix::fromRows, lists(height, polynomialVectors(width)));
+        }
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code PolynomialMatrix}es. Each {@code PolynomialMatrix}'s element's
+     * coefficient's bit size is chosen from a geometric distribution with mean approximately {@code scale}, each
+     * element's degree is chosen from a geometric distribution with mean approximately {@code secondaryScale}, and
+     * the {@code PolynomialMatrix}'s element count is chosen from a geometric distribution with mean approximately
+     * {@code tertiaryScale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale}, a non-negative {@code secondaryScale}, and a
+     *  {@code tertiaryScale} of at least 2.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code PolynomialMatrix}es.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<PolynomialMatrix> polynomialMatrices() {
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 0) {
+            throw new IllegalStateException("this cannot have a negative secondaryScale. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
+        int tertiaryScale = getTertiaryScale();
+        if (tertiaryScale < 2) {
+            throw new IllegalStateException("this must have a tertiaryScale of at least 2. Invalid tertiaryScale: " +
+                    tertiaryScale);
+        }
+        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
+                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(tertiaryScale)).intValueExact()
+        );
+        return chooseLogarithmicOrder(
+                map(
+                        p -> PolynomialMatrix.fromRows(p.b),
+                        dependentPairsInfiniteSquareRootOrder(
+                                pairs(dimensionProvider.positiveIntegersGeometric()),
+                                p -> lists(p.a, polynomialVectors(p.b))
+                        )
+                ),
+                choose(
+                        map(i -> PolynomialMatrix.zero(0, i), dimensionProvider.naturalIntegersGeometric()),
+                        map(i -> PolynomialMatrix.zero(i, 0), dimensionProvider.positiveIntegersGeometric())
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all square {@code PolynomialMatrix}es. Each element's coefficient's bit size
+     * is chosen from a geometric distribution with mean approximately {@code scale}, each element's degree is chosen
+     * from a geometric distribution with mean approximately {@code secondaryScale}, and each
+     * {@code PolynomialMatrix}'s element count is chosen from a geometric distribution with mean approximately
+     * {@code tertiaryScale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 2, a non-negative {@code secondaryScale}, and a
+     *  {@code tertiaryScale} of at least 2.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing square
+     *  {@code PolynomialMatrix}es.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<PolynomialMatrix> squarePolynomialMatrices() {
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 0) {
+            throw new IllegalStateException("this cannot have a negative secondaryScale. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
+        int tertiaryScale = getTertiaryScale();
+        if (tertiaryScale < 2) {
+            throw new IllegalStateException("this must have a tertiaryScale of at least 2. Invalid tertiaryScale: " +
+                    tertiaryScale);
+        }
+        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
+                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(tertiaryScale)).intValueExact()
+        );
+        return withElement(
+                PolynomialMatrix.zero(0, 0),
+                map(p -> p.b, dependentPairsInfiniteLogarithmicOrder(
+                        dimensionProvider.positiveIntegersGeometric(),
+                        i -> polynomialMatrices(i, i))
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code RationalPolynomialMatrix}es with a given height and width. Each
+     * element's coefficient's bit size is chosen from a geometric distribution with mean approximately {@code scale},
+     * and each element's degree is chosen from a geometric distribution with mean approximately
+     * {@code secondaryScale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 3 and a non-negative {@code secondaryScale}.</li>
+     *  <li>{@code height} cannot be negative.</li>
+     *  <li>{@code width} cannot be negative.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing
+     *  {@code RationalPolynomialMatrix}es.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param height the height (number of rows) of the generated {@code RationalPolynomialMatrix}es
+     * @param width the width (number of columns) of the generated {@code RationalPolynomialMatrix}es
+     * @return {@code RationalPolynomialMatrix}es with height {@code height} and width {@code width}
+     */
+    @Override
+    public @NotNull Iterable<RationalPolynomialMatrix> rationalPolynomialMatrices(int height, int width) {
+        if (height == 0 || width == 0) {
+            int scale = getScale();
+            if (scale < 3) {
+                throw new IllegalStateException("this must have a scale of at least 3. Invalid scale: " + scale);
+            }
+            int secondaryScale = getSecondaryScale();
+            if (secondaryScale < 0) {
+                throw new IllegalStateException("this cannot have a negative secondaryScale. Invalid" +
+                        " secondaryScale: " + secondaryScale);
+            }
+            return repeat(RationalPolynomialMatrix.zero(height, width));
+        } else {
+            return map(RationalPolynomialMatrix::fromRows, lists(height, rationalPolynomialVectors(width)));
+        }
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code RationalPolynomialMatrix}es. Each
+     * {@code RationalPolynomialMatrix}'s element's coefficient's bit size is chosen from a geometric distribution with
+     * mean approximately {@code scale}, each element's degree is chosen from a geometric distribution with mean
+     * approximately {@code secondaryScale}, and the {@code RationalPolynomialMatrix}'s element count is chosen from a
+     * geometric distribution with mean approximately {@code tertiaryScale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 3, a non-negative {@code secondaryScale}, and a
+     *  {@code tertiaryScale} of at least 2.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing
+     *  {@code RationalPolynomialMatrix}es.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<RationalPolynomialMatrix> rationalPolynomialMatrices() {
+        int scale = getScale();
+        if (scale < 3) {
+            throw new IllegalStateException("this must have a scale of at least 3. Invalid scale: " + scale);
+        }
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 0) {
+            throw new IllegalStateException("this cannot have a negative secondaryScale. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
+        int tertiaryScale = getTertiaryScale();
+        if (tertiaryScale < 2) {
+            throw new IllegalStateException("this must have a tertiaryScale of at least 2. Invalid tertiaryScale: " +
+                    tertiaryScale);
+        }
+        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
+                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(tertiaryScale)).intValueExact()
+        );
+        return chooseLogarithmicOrder(
+                map(
+                        p -> RationalPolynomialMatrix.fromRows(p.b),
+                        dependentPairsInfiniteSquareRootOrder(
+                                pairs(dimensionProvider.positiveIntegersGeometric()),
+                                p -> lists(p.a, rationalPolynomialVectors(p.b))
+                        )
+                ),
+                choose(
+                        map(i -> RationalPolynomialMatrix.zero(0, i), dimensionProvider.naturalIntegersGeometric()),
+                        map(i -> RationalPolynomialMatrix.zero(i, 0), dimensionProvider.positiveIntegersGeometric())
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all square {@code RationalPolynomialMatrix}es. Each element's coefficient's
+     * bit size is chosen from a geometric distribution with mean approximately {@code scale}, each element's degree is
+     * chosen from a geometric distribution with mean approximately {@code secondaryScale}, and each
+     * {@code RationalPolynomialMatrix}'s element count is chosen from a geometric distribution with mean approximately
+     * {@code tertiaryScale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 3, a non-negative {@code secondaryScale}, and a
+     *  {@code tertiaryScale} of at least 2.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing square
+     *  {@code PolynomialMatrix}es.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<RationalPolynomialMatrix> squareRationalPolynomialMatrices() {
+        int scale = getScale();
+        if (scale < 3) {
+            throw new IllegalStateException("this must have a scale of at least 3. Invalid scale: " + scale);
+        }
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 0) {
+            throw new IllegalStateException("this cannot have a negative secondaryScale. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
+        int tertiaryScale = getTertiaryScale();
+        if (tertiaryScale < 2) {
+            throw new IllegalStateException("this must have a tertiaryScale of at least 2. Invalid tertiaryScale: " +
+                    tertiaryScale);
+        }
+        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
+                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(tertiaryScale)).intValueExact()
+        );
+        return withElement(
+                RationalPolynomialMatrix.zero(0, 0),
+                map(p -> p.b, dependentPairsInfiniteLogarithmicOrder(
+                        dimensionProvider.positiveIntegersGeometric(),
+                        i -> rationalPolynomialMatrices(i, i))
                 )
         );
     }
@@ -877,7 +1440,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * <ul>
      *  <li>{@code this} must have a positive {@code scale}. It must also have a {@code secondaryScale} that is
      *  positive and greater than {@code minDegree}.</li>
-     *  <li>{@code degree} must be at least –1.</li>
+     *  <li>{@code minDegree} must be at least –1.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing primitive {@code Polynomial}s.</li>
      * </ul>
      *
@@ -970,7 +1533,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * <ul>
      *  <li>{@code this} must have a positive {@code scale}. It must also have a {@code secondaryScale} that is
      *  positive and greater than {@code minDegree}.</li>
-     *  <li>{@code degree} must be at least –1.</li>
+     *  <li>{@code minDegree} must be at least –1.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing primitive {@code Polynomial}s with
      *  positive leading coefficients.</li>
      * </ul>
@@ -995,6 +1558,97 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                     " secondaryScale: " + secondaryScale + ", minDegree: " + minDegree);
         }
         return filterInfinite(p -> p.signum() == 1, primitivePolynomialsAtLeast(minDegree));
+    }
+
+    /**
+     * An {@code Iterable} that generates all square-free {@code Polynomial}s. Each coefficient's bit size is chosen
+     * from a geometric distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale}.</li>
+     *  <li>{@code degree} cannot be negative.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing square-free {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param degree the minimum degree of the generated {@code Polynomial}s
+     * @return square-free {@code Polynomial}s with degree {@code minDegree}
+     */
+    @Override
+    public @NotNull Iterable<Polynomial> squareFreePolynomials(int degree) {
+        if (degree < 0) {
+            throw new IllegalArgumentException("degree cannot be negative. Invalid degree: " + degree);
+        }
+        return filter(Polynomial::isSquareFree, polynomials(degree));
+    }
+
+    /**
+     * An {@code Iterable} that generates all irreducible {@code Polynomial}s. Each {@code Polynomial}'s degree is
+     * chosen from a geometric distribution with mean {@code secondaryScale}, and each coefficient's bit size is chosen
+     * from a geometric distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 2 and a positive {@code secondaryScale} of at least
+     *  2.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing irreducible {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Polynomial> irreduciblePolynomials() {
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 2) {
+            throw new IllegalStateException("this must have a secondaryScale of at least 2. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
+        return withElement(
+                Polynomial.ONE, map(
+                        p -> p.b,
+                        dependentPairsInfiniteLogarithmicOrder(
+                                withScale(secondaryScale).positiveIntegersGeometric(),
+                                this::irreduciblePolynomials
+                        )
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all irreducible {@code Polynomial}s with a minimum degree. Each
+     * {@code Polynomial}'s degree is chosen from a geometric distribution with mean approximately
+     * {@code secondaryScale}, and each coefficient's bit size is chosen from a geometric distribution with mean
+     * approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 2. It must also have a {@code secondaryScale} that is at
+     *  least 2 and greater than {@code minDegree}.</li>
+     *  <li>{@code minDegree} must be at least –1.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing irreducible {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDegree the minimum degree of the generated {@code Polynomial}s
+     * @return irreducible {@code Polynomial}s with degree at least {@code minDegree}
+     */
+    @Override
+    public @NotNull Iterable<Polynomial> irreduciblePolynomialsAtLeast(int minDegree) {
+        if (minDegree < -1) {
+            throw new IllegalArgumentException("minDegree must be at least -1. Invalid minDegree: " + minDegree);
+        }
+        int scale = getScale();
+        if (scale < 2) {
+            throw new IllegalStateException("this must have a scale of at least 2. Invalid scale: " + scale);
+        }
+        if (minDegree < 1) return irreduciblePolynomials();
+        return map(
+                p -> p.b,
+                dependentPairsInfiniteLogarithmicOrder(
+                        withScale(getSecondaryScale()).rangeUpGeometric(minDegree),
+                        this::irreduciblePolynomials
+                )
+        );
     }
 
     /**
@@ -1058,6 +1712,263 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                 filterInfinite(
                         is -> is.isEmpty() || last(is) != Rational.ZERO,
                         withScale(secondaryScale + 1).listsAtLeast(minDegree + 1, rationals())
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterator} that generates all {@code MonomialOrder}s from a uniform distribution. Does not support
+     * removal.
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<MonomialOrder> monomialOrders() {
+        return uniformSample(MONOMIAL_ORDERS);
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code ExponentVector}s. A larger {@code scale} corresponds to an
+     * {@code ExponentVector} with more variables and higher exponents on average. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code ExponentVector}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<ExponentVector> exponentVectors() {
+        int scale = getScale();
+        if (scale < 1) {
+            throw new IllegalStateException("this must have a positive scale. Invalid scale: " + scale);
+        }
+        QBarRandomProvider variableCountProvider = (QBarRandomProvider) withScale(
+                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(scale)).intValueExact()
+        );
+        return map(
+                js -> ExponentVector.of(toList(js)),
+                filterInfinite(
+                        is -> is.isEmpty() || last(is) != 0,
+                        variableCountProvider.lists(naturalIntegersGeometric())
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code MultivariatePolynomial}s. A larger {@code scale} corresponds to a
+     * {@code MultivariatePolynomial} with larger coefficients on average, a larger {@code secondaryScale} corresponds
+     * to more variables and higher exponents, and a larger {@code tertiaryScale} corresponds to more terms. Does not
+     * support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 2.</li>
+     *  <li>{@code this} must have a positive {@code secondaryScale}.</li>
+     *  <li>{@code this} must have a {@code tertiaryScale} of at least 2.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code MultivariatePolynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<MultivariatePolynomial> multivariatePolynomials() {
+        return withElement(
+                MultivariatePolynomial.ZERO,
+                map(
+                        p -> MultivariatePolynomial.of(toList(zip(p.a, p.b))),
+                        dependentPairsInfinite(
+                                withScale(getTertiaryScale())
+                                        .subsetsAtLeast(1, withScale(getSecondaryScale()).exponentVectors()),
+                                evs -> lists(evs.size(), nonzeroBigIntegers())
+                        )
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code MultivariatePolynomial}s containing only (a subset of) the given
+     * variables. A larger {@code scale} corresponds to a {@code MultivariatePolynomial} with larger coefficients on
+     * average, a larger {@code secondaryScale} corresponds to more variables and higher exponents, and a larger
+     * {@code tertiaryScale} corresponds to more terms. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 2.</li>
+     *  <li>{@code this} must have a positive {@code secondaryScale}.</li>
+     *  <li>{@code this} must have a {@code tertiaryScale} of at least 2.</li>
+     *  <li>{@code variables} must be in increasing order and must contain no repetitions.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code MultivariatePolynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<MultivariatePolynomial> multivariatePolynomials(@NotNull List<Variable> variables) {
+        int scale = getScale();
+        if (scale < 2) {
+            throw new IllegalStateException("this must have a scale of at least 2. Invalid scale: " + scale);
+        }
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 1) {
+            throw new IllegalStateException("this must have a positive secondaryScale. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
+        int tertiaryScale = getTertiaryScale();
+        if (tertiaryScale < 2) {
+            throw new IllegalStateException("this must have a tertiaryScale of at least 2. Invalid tertiaryScale: " +
+                    tertiaryScale);
+        }
+        if (variables.isEmpty()) {
+            return map(MultivariatePolynomial::of, bigIntegers());
+        }
+        return withElement(
+                MultivariatePolynomial.ZERO,
+                map(
+                        p -> MultivariatePolynomial.of(toList(zip(p.a, p.b))),
+                        dependentPairsInfinite(
+                                withScale(tertiaryScale)
+                                        .subsetsAtLeast(1, withScale(secondaryScale).exponentVectors(variables)),
+                                evs -> lists(evs.size(), nonzeroBigIntegers())
+                        )
+                )
+        );
+    }
+
+    @Override
+    public @NotNull Iterable<Real> reals() {
+        int base = 1 << 30;
+        return map(
+                rp -> Real.fromDigits(
+                        BigInteger.valueOf(base),
+                        Collections.emptyList(),
+                        map(i -> BigInteger.valueOf(i & (base - 1)), rp.integers())
+                ),
+                randomProvidersDefault()
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all positive {@code Algebraic}s. A larger {@code scale} corresponds to an
+     * {@code Algebraic} whose minimal polynomial has larger coefficients, and the {@code secondaryScale} is the mean
+     * of the {@code Algebraic}s' degrees. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} of at least 2.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing positive {@code Algebraic}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Algebraic> positiveAlgebraics() {
+        int scale = getScale();
+        if (scale < 1) {
+            throw new IllegalStateException("this must have a positive scale. Invalid scale: " + scale);
+        }
+        return map(
+                p -> p.b,
+                dependentPairsInfiniteLogarithmicOrder(
+                        withScale(getSecondaryScale()).positiveIntegersGeometric(),
+                        this::positiveAlgebraics
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all negative {@code Algebraic}s. A larger {@code scale} corresponds to an
+     * {@code Algebraic} whose minimal polynomial has larger coefficients, and the {@code secondaryScale} is the mean
+     * of the {@code Algebraic}s' degrees. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a negative {@code scale} and a {@code secondaryScale} of at least 2.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing negative {@code Algebraic}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Algebraic> negativeAlgebraics() {
+        int scale = getScale();
+        if (scale < 1) {
+            throw new IllegalStateException("this must have a positive scale. Invalid scale: " + scale);
+        }
+        return map(
+                p -> p.b,
+                dependentPairsInfiniteLogarithmicOrder(
+                        withScale(getSecondaryScale()).positiveIntegersGeometric(),
+                        this::negativeAlgebraics
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all nonzero {@code Algebraic}s. A larger {@code scale} corresponds to an
+     * {@code Algebraic} whose minimal polynomial has larger coefficients, and the {@code secondaryScale} is the mean
+     * of the {@code Algebraic}s' degrees. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} of at least 2.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing nonzero {@code Algebraic}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Algebraic> nonzeroAlgebraics() {
+        return filterInfinite(x -> x != Algebraic.ZERO, algebraics());
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code Algebraic}s. A larger {@code scale} corresponds to an
+     * {@code Algebraic} whose minimal polynomial has larger coefficients, and the {@code secondaryScale} is the mean
+     * of the {@code Algebraic}s' degrees. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} of at least 2.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Algebraic}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Algebraic> algebraics() {
+        int scale = getScale();
+        if (scale < 1) {
+            throw new IllegalStateException("this must have a positive scale. Invalid scale: " + scale);
+        }
+        return map(
+                p -> p.b,
+                dependentPairsInfiniteLogarithmicOrder(
+                        withScale(getSecondaryScale()).positiveIntegersGeometric(),
+                        this::algebraics
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code Algebraic}s in the interval [0, 1). A larger {@code scale}
+     * corresponds to an {@code Algebraic} whose minimal polynomial has larger coefficients, and the
+     * {@code secondaryScale} is the mean of the {@code Algebraic}s' degrees. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} of at least 2.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Algebraic}s in the interval
+     *  [0, 1).</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Algebraic> nonNegativeAlgebraicsLessThanOne() {
+        int scale = getScale();
+        if (scale < 1) {
+            throw new IllegalStateException("this must have a positive scale. Invalid scale: " + scale);
+        }
+        return map(
+                p -> p.b,
+                dependentPairsInfiniteLogarithmicOrder(
+                        withScale(getSecondaryScale()).positiveIntegersGeometric(),
+                        this::nonNegativeAlgebraicsLessThanOne
                 )
         );
     }

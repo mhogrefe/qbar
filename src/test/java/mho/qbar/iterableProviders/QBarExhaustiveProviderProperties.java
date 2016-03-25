@@ -6,6 +6,7 @@ import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.function.Predicate;
 
 import static mho.qbar.testing.QBarTesting.QEP;
@@ -27,15 +28,38 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesNonNegativeRationalsLessThanOne();
         propertiesFinitelyBoundedIntervals();
         propertiesIntervals();
+        propertiesVectors();
         propertiesRationalVectors();
         propertiesReducedRationalVectors();
+        propertiesPolynomialVectors();
+        propertiesRationalPolynomialVectors();
+        propertiesMatrices();
+        propertiesSquareMatrices();
+        propertiesInvertibleMatrices();
         propertiesRationalMatrices();
         propertiesSquareRationalMatrices();
+        propertiesPolynomialMatrices();
+        propertiesSquarePolynomialMatrices();
+        propertiesInvertibleRationalMatrices();
+        propertiesRationalPolynomialMatrices();
+        propertiesSquareRationalPolynomialMatrices();
         propertiesPolynomials();
         propertiesPrimitivePolynomials();
         propertiesPositivePrimitivePolynomials();
+        propertiesSquareFreePolynomials();
+        propertiesPositivePrimitiveSquareFreePolynomials();
+        propertiesIrreduciblePolynomials();
         propertiesRationalPolynomials();
         propertiesMonicRationalPolynomials();
+        propertiesVariables();
+        propertiesMonomialOrders();
+        propertiesExponentVectors();
+        propertiesMultivariatePolynomials();
+        propertiesPositiveAlgebraics();
+        propertiesNegativeAlgebraics();
+        propertiesNonzeroAlgebraics();
+        propertiesAlgebraics();
+        propertiesNonNegativeAlgebraicsLessThanOne();
     }
 
     @Override
@@ -45,21 +69,43 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesRange_Rational_Rational();
         propertiesRationalsIn();
         propertiesRationalsNotIn();
+        propertiesVectors_int();
+        propertiesVectorsAtLeast();
         propertiesRationalVectors_int();
         propertiesRationalVectorsAtLeast();
         propertiesReducedRationalVectors_int();
         propertiesReducedRationalVectorsAtLeast();
+        propertiesPolynomialVectors_int();
+        propertiesPolynomialVectorsAtLeast();
+        propertiesRationalPolynomialVectors_int();
+        propertiesRationalPolynomialVectorsAtLeast();
+        propertiesMatrices_int_int();
         propertiesRationalMatrices_int_int();
+        propertiesPolynomialMatrices_int_int();
+        propertiesRationalPolynomialMatrices_int_int();
         propertiesPolynomials_int();
         propertiesPolynomialsAtLeast();
         propertiesPrimitivePolynomials_int();
         propertiesPrimitivePolynomialsAtLeast();
         propertiesPositivePrimitivePolynomials_int();
         propertiesPositivePrimitivePolynomialsAtLeast();
+        propertiesSquareFreePolynomials_int();
+        propertiesSquareFreePolynomialsAtLeast();
+        propertiesPositivePrimitiveSquareFreePolynomials_int();
+        propertiesPositivePrimitiveSquareFreePolynomialsAtLeast();
+        propertiesIrreduciblePolynomials_int();
+        propertiesIrreduciblePolynomialsAtLeast();
         propertiesRationalPolynomials_int();
         propertiesRationalPolynomialsAtLeast();
         propertiesMonicRationalPolynomials_int();
         propertiesMonicRationalPolynomialsAtLeast();
+        propertiesExponentVectors_List_Variable();
+        propertiesMultivariatePolynomials_List_Variable();
+        propertiesPositiveAlgebraics_int();
+        propertiesNegativeAlgebraics_int();
+        propertiesNonzeroAlgebraics_int();
+        propertiesAlgebraics_int();
+        propertiesNonNegativeAlgebraicsLessThanOne_int();
     }
 
     private static <T> void test_helper(
@@ -191,6 +237,44 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         }
     }
 
+    private void propertiesVectors_int() {
+        initialize("vectors(int)");
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            Iterable<Vector> vs = QEP.vectors(i);
+            simpleTest(i, vs, v -> v.dimension() == i);
+            take(TINY_LIMIT, vs).forEach(Vector::validate);
+        }
+
+        for (int i : take(LIMIT, P.negativeIntegers())) {
+            try {
+                QEP.vectors(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesVectors() {
+        initializeConstant("vectors()");
+        biggerTest(QEP, QEP.vectors(), v -> true);
+        take(TINY_LIMIT, QEP.vectors()).forEach(Vector::validate);
+    }
+
+    private void propertiesVectorsAtLeast() {
+        initialize("vectorsAtLeast(int)");
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            Iterable<Vector> vs = QEP.vectorsAtLeast(i);
+            simpleTest(i, vs, v -> v.dimension() >= i);
+            take(TINY_LIMIT, vs).forEach(Vector::validate);
+        }
+
+        for (int i : take(LIMIT, P.negativeIntegers())) {
+            try {
+                QEP.vectorsAtLeast(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
     private void propertiesRationalVectors_int() {
         initialize("rationalVectors(int)");
         for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
@@ -267,6 +351,123 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         }
     }
 
+    private void propertiesPolynomialVectors_int() {
+        initialize("polynomialVectors(int)");
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            Iterable<PolynomialVector> vs = QEP.polynomialVectors(i);
+            simpleTest(i, vs, v -> v.dimension() == i);
+            take(TINY_LIMIT, vs).forEach(PolynomialVector::validate);
+        }
+
+        for (int i : take(LIMIT, P.negativeIntegers())) {
+            try {
+                QEP.polynomialVectors(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesPolynomialVectors() {
+        initializeConstant("polynomialVectors()");
+        biggerTest(QEP, QEP.polynomialVectors(), v -> true);
+        take(TINY_LIMIT, QEP.polynomialVectors()).forEach(PolynomialVector::validate);
+    }
+
+    private void propertiesPolynomialVectorsAtLeast() {
+        initialize("polynomialVectorsAtLeast(int)");
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            Iterable<PolynomialVector> vs = QEP.polynomialVectorsAtLeast(i);
+            simpleTest(i, vs, v -> v.dimension() >= i);
+            take(TINY_LIMIT, vs).forEach(PolynomialVector::validate);
+        }
+
+        for (int i : take(LIMIT, P.negativeIntegers())) {
+            try {
+                QEP.polynomialVectorsAtLeast(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesRationalPolynomialVectors_int() {
+        initialize("rationalPolynomialVectors(int)");
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            Iterable<RationalPolynomialVector> vs = QEP.rationalPolynomialVectors(i);
+            simpleTest(i, vs, v -> v.dimension() == i);
+            take(TINY_LIMIT, vs).forEach(RationalPolynomialVector::validate);
+        }
+
+        for (int i : take(LIMIT, P.negativeIntegers())) {
+            try {
+                QEP.rationalPolynomialVectors(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesRationalPolynomialVectors() {
+        initializeConstant("rationalPolynomialVectors()");
+        biggerTest(QEP, QEP.rationalPolynomialVectors(), v -> true);
+        take(TINY_LIMIT, QEP.rationalPolynomialVectors()).forEach(RationalPolynomialVector::validate);
+    }
+
+    private void propertiesRationalPolynomialVectorsAtLeast() {
+        initialize("rationalPolynomialVectorsAtLeast(int)");
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            Iterable<RationalPolynomialVector> vs = QEP.rationalPolynomialVectorsAtLeast(i);
+            simpleTest(i, vs, v -> v.dimension() >= i);
+            take(TINY_LIMIT, vs).forEach(RationalPolynomialVector::validate);
+        }
+
+        for (int i : take(LIMIT, P.negativeIntegers())) {
+            try {
+                QEP.rationalPolynomialVectorsAtLeast(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesMatrices_int_int() {
+        initialize("matrices(int, int)");
+        for (Pair<Integer, Integer> p : take(SMALL_LIMIT, P.pairs(P.naturalIntegersGeometric()))) {
+            Iterable<Matrix> ms = QEP.matrices(p.a, p.b);
+            simpleTest(p, ms, n -> n.height() == p.a && n.width() == p.b);
+            take(TINY_LIMIT, ms).forEach(Matrix::validate);
+        }
+
+        for (Pair<Integer, Integer> p : take(LIMIT, P.pairs(P.negativeIntegers(), P.positiveIntegers()))) {
+            try {
+                QEP.matrices(p.a, p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        for (Pair<Integer, Integer> p : take(LIMIT, P.pairs(P.positiveIntegers(), P.negativeIntegers()))) {
+            try {
+                QEP.matrices(p.a, p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesMatrices() {
+        initializeConstant("matrices()");
+        biggerTest(QEP, QEP.matrices(), m -> true);
+        take(TINY_LIMIT, QEP.matrices()).forEach(Matrix::validate);
+    }
+
+    private void propertiesSquareMatrices() {
+        initializeConstant("squareMatrices()");
+        biggerTest(QEP, QEP.squareMatrices(), Matrix::isSquare);
+        take(TINY_LIMIT, QEP.squareMatrices()).forEach(Matrix::validate);
+    }
+
+    private void propertiesInvertibleMatrices() {
+        initializeConstant("invertibleMatrices()");
+        biggerTest(QEP, QEP.invertibleMatrices(), Matrix::isInvertible);
+        take(TINY_LIMIT, QEP.invertibleMatrices()).forEach(Matrix::validate);
+    }
+
     private void propertiesRationalMatrices_int_int() {
         initialize("rationalMatrices(int, int)");
         for (Pair<Integer, Integer> p : take(SMALL_LIMIT, P.pairs(P.naturalIntegersGeometric()))) {
@@ -300,6 +501,82 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         initializeConstant("squareRationalMatrices()");
         biggerTest(QEP, QEP.squareRationalMatrices(), RationalMatrix::isSquare);
         take(TINY_LIMIT, QEP.squareRationalMatrices()).forEach(RationalMatrix::validate);
+    }
+
+    private void propertiesInvertibleRationalMatrices() {
+        initializeConstant("invertibleRationalMatrices()");
+        biggerTest(QEP, QEP.invertibleRationalMatrices(), RationalMatrix::isInvertible);
+        take(TINY_LIMIT, QEP.invertibleRationalMatrices()).forEach(RationalMatrix::validate);
+    }
+
+    private void propertiesPolynomialMatrices_int_int() {
+        initialize("polynomialMatrices(int, int)");
+        for (Pair<Integer, Integer> p : take(SMALL_LIMIT, P.pairs(P.naturalIntegersGeometric()))) {
+            Iterable<PolynomialMatrix> ms = QEP.polynomialMatrices(p.a, p.b);
+            simpleTest(p, ms, n -> n.height() == p.a && n.width() == p.b);
+            take(TINY_LIMIT, ms).forEach(PolynomialMatrix::validate);
+        }
+
+        for (Pair<Integer, Integer> p : take(LIMIT, P.pairs(P.negativeIntegers(), P.positiveIntegers()))) {
+            try {
+                QEP.polynomialMatrices(p.a, p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        for (Pair<Integer, Integer> p : take(LIMIT, P.pairs(P.positiveIntegers(), P.negativeIntegers()))) {
+            try {
+                QEP.polynomialMatrices(p.a, p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesPolynomialMatrices() {
+        initializeConstant("polynomialMatrices()");
+        biggerTest(QEP, QEP.polynomialMatrices(), m -> true);
+        take(TINY_LIMIT, QEP.polynomialMatrices()).forEach(PolynomialMatrix::validate);
+    }
+
+    private void propertiesSquarePolynomialMatrices() {
+        initializeConstant("squarePolynomialMatrices()");
+        biggerTest(QEP, QEP.squarePolynomialMatrices(), PolynomialMatrix::isSquare);
+        take(TINY_LIMIT, QEP.squarePolynomialMatrices()).forEach(PolynomialMatrix::validate);
+    }
+
+    private void propertiesRationalPolynomialMatrices_int_int() {
+        initialize("rationalPolynomialMatrices(int, int)");
+        for (Pair<Integer, Integer> p : take(SMALL_LIMIT, P.pairs(P.naturalIntegersGeometric()))) {
+            Iterable<RationalPolynomialMatrix> ms = QEP.rationalPolynomialMatrices(p.a, p.b);
+            simpleTest(p, ms, n -> n.height() == p.a && n.width() == p.b);
+            take(TINY_LIMIT, ms).forEach(RationalPolynomialMatrix::validate);
+        }
+
+        for (Pair<Integer, Integer> p : take(LIMIT, P.pairs(P.negativeIntegers(), P.positiveIntegers()))) {
+            try {
+                QEP.rationalPolynomialMatrices(p.a, p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        for (Pair<Integer, Integer> p : take(LIMIT, P.pairs(P.positiveIntegers(), P.negativeIntegers()))) {
+            try {
+                QEP.rationalPolynomialMatrices(p.a, p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesRationalPolynomialMatrices() {
+        initializeConstant("rationalPolynomialMatrices()");
+        biggerTest(QEP, QEP.rationalPolynomialMatrices(), m -> true);
+        take(TINY_LIMIT, QEP.rationalPolynomialMatrices()).forEach(RationalPolynomialMatrix::validate);
+    }
+
+    private void propertiesSquareRationalPolynomialMatrices() {
+        initializeConstant("squareRationalPolynomialMatrices()");
+        biggerTest(QEP, QEP.squareRationalPolynomialMatrices(), RationalPolynomialMatrix::isSquare);
+        take(TINY_LIMIT, QEP.squareRationalPolynomialMatrices()).forEach(RationalPolynomialMatrix::validate);
     }
 
     private void propertiesPolynomials_int() {
@@ -416,6 +693,124 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         }
     }
 
+    private void propertiesSquareFreePolynomials_int() {
+        initialize("squareFreePolynomials(int)");
+        for (int i : take(TINY_LIMIT, P.withScale(4).rangeUpGeometric(-1))) {
+            Iterable<Polynomial> ps = QEP.squareFreePolynomials(i);
+            simpleTest(i, ps, p -> p.degree() == i && p.isSquareFree());
+            take(TINY_LIMIT, ps).forEach(Polynomial::validate);
+        }
+
+        for (int i : take(LIMIT, P.rangeDown(-2))) {
+            try {
+                QEP.squareFreePolynomials(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesSquareFreePolynomials() {
+        initializeConstant("squareFreePolynomials()");
+        biggerTest(QEP, QEP.withScale(4).squareFreePolynomials(), Polynomial::isSquareFree);
+        take(TINY_LIMIT, QEP.squareFreePolynomials()).forEach(Polynomial::validate);
+    }
+
+    private void propertiesSquareFreePolynomialsAtLeast() {
+        initialize("squareFreePolynomialsAtLeast(int)");
+        for (int i : take(TINY_LIMIT, P.withScale(4).rangeUpGeometric(-1))) {
+            Iterable<Polynomial> ps = QEP.squareFreePolynomialsAtLeast(i);
+            simpleTest(i, ps, p -> p.degree() >= i && p.isSquareFree());
+            take(TINY_LIMIT, ps).forEach(Polynomial::validate);
+        }
+
+        for (int i : take(LIMIT, P.rangeDown(-2))) {
+            try {
+                QEP.squareFreePolynomialsAtLeast(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesPositivePrimitiveSquareFreePolynomials_int() {
+        initialize("positivePrimitiveSquareFreePolynomials(int)");
+        for (int i : take(TINY_LIMIT, P.withScale(4).rangeUpGeometric(-1))) {
+            Iterable<Polynomial> ps = QEP.positivePrimitiveSquareFreePolynomials(i);
+            simpleTest(i, ps, p -> p.degree() == i && p.signum() == 1 && p.isPrimitive() && p.isSquareFree());
+            take(TINY_LIMIT, ps).forEach(Polynomial::validate);
+        }
+
+        for (int i : take(LIMIT, P.rangeDown(-2))) {
+            try {
+                QEP.positivePrimitiveSquareFreePolynomials(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesPositivePrimitiveSquareFreePolynomials() {
+        initializeConstant("positivePrimitiveSquareFreePolynomials()");
+        biggerTest(
+                QEP,
+                QEP.withScale(4).positivePrimitiveSquareFreePolynomials(),
+                p -> p.signum() == 1 && p.isPrimitive() && p.isSquareFree()
+        );
+        take(TINY_LIMIT, QEP.positivePrimitiveSquareFreePolynomials()).forEach(Polynomial::validate);
+    }
+
+    private void propertiesPositivePrimitiveSquareFreePolynomialsAtLeast() {
+        initialize("positivePrimitiveSquareFreePolynomialsAtLeast(int)");
+        for (int i : take(TINY_LIMIT, P.withScale(4).rangeUpGeometric(-1))) {
+            Iterable<Polynomial> ps = QEP.positivePrimitiveSquareFreePolynomialsAtLeast(i);
+            simpleTest(i, ps, p -> p.degree() >= i && p.signum() == 1 && p.isPrimitive() && p.isSquareFree());
+            take(TINY_LIMIT, ps).forEach(Polynomial::validate);
+        }
+
+        for (int i : take(LIMIT, P.rangeDown(-2))) {
+            try {
+                QEP.positivePrimitiveSquareFreePolynomialsAtLeast(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesIrreduciblePolynomials_int() {
+        initialize("irreduciblePolynomials(int)");
+        for (int i : take(TINY_LIMIT, P.withScale(4).rangeUpGeometric(-1))) {
+            Iterable<Polynomial> ps = QEP.irreduciblePolynomials(i);
+            simpleTest(i, ps, p -> p.degree() == i && p.isIrreducible());
+            take(TINY_LIMIT, ps).forEach(Polynomial::validate);
+        }
+
+        for (int i : take(LIMIT, P.rangeDown(-2))) {
+            try {
+                QEP.irreduciblePolynomials(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesIrreduciblePolynomials() {
+        initializeConstant("irreduciblePolynomials()");
+        biggerTest(QEP, QEP.withScale(4).irreduciblePolynomials(), Polynomial::isIrreducible);
+        take(TINY_LIMIT, QEP.irreduciblePolynomials()).forEach(Polynomial::validate);
+    }
+
+    private void propertiesIrreduciblePolynomialsAtLeast() {
+        initialize("irreduciblePolynomialsAtLeast(int)");
+        for (int i : take(TINY_LIMIT, P.withScale(1).rangeUpGeometric(-1))) {
+            Iterable<Polynomial> ps = QEP.irreduciblePolynomialsAtLeast(i);
+            simpleTest(i, ps, p -> p.degree() >= i && p.isIrreducible());
+            take(TINY_LIMIT, ps).forEach(Polynomial::validate);
+        }
+
+        for (int i : take(LIMIT, P.rangeDown(-2))) {
+            try {
+                QEP.irreduciblePolynomialsAtLeast(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
     private void propertiesRationalPolynomials_int() {
         initialize("rationalPolynomials(int)");
         for (int i : take(SMALL_LIMIT, P.rangeUpGeometric(-1))) {
@@ -490,5 +885,192 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
                 fail(i);
             } catch (IllegalArgumentException ignored) {}
         }
+    }
+
+    private void propertiesVariables() {
+        initializeConstant("variables()");
+        biggerTest(QEP, QEP.variables(), v -> true);
+        take(TINY_LIMIT, QEP.variables()).forEach(Variable::validate);
+    }
+
+    private void propertiesMonomialOrders() {
+        initializeConstant("monomialOrders()");
+        biggerTest(QEP, QEP.monomialOrders(), o -> true);
+    }
+
+    private void propertiesExponentVectors() {
+        initializeConstant("exponentVectors()");
+        biggerTest(QEP, QEP.exponentVectors(), ev -> true);
+        take(TINY_LIMIT, QEP.exponentVectors()).forEach(ExponentVector::validate);
+    }
+
+    private void propertiesExponentVectors_List_Variable() {
+        initialize("exponentVectors(List<Variable>)");
+        for (List<Variable> vs : take(LIMIT, P.subsets(P.variables()))) {
+            Iterable<ExponentVector> evs = QEP.exponentVectors(vs);
+            simpleTest(vs, evs, ev -> isSubsetOf(ev.variables(), vs));
+            take(TINY_LIMIT, evs).forEach(ExponentVector::validate);
+        }
+
+        for (List<Variable> vs : take(LIMIT, filterInfinite(us -> !increasing(us), P.lists(P.variables())))) {
+            try {
+                QEP.exponentVectors(vs);
+                fail(vs);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        Iterable<List<Variable>> vsFail = filterInfinite(
+                us -> increasing(filter(u -> u != null, us)),
+                P.listsWithElement(null, P.variables())
+        );
+        for (List<Variable> vs : take(LIMIT, vsFail)) {
+            try {
+                QEP.exponentVectors(vs);
+                fail(vs);
+            } catch (NullPointerException ignored) {}
+        }
+    }
+
+    private void propertiesMultivariatePolynomials() {
+        initializeConstant("multivariatePolynomials()");
+        biggerTest(QEP, QEP.multivariatePolynomials(), p -> true);
+        take(TINY_LIMIT, QEP.multivariatePolynomials()).forEach(MultivariatePolynomial::validate);
+    }
+
+    private void propertiesMultivariatePolynomials_List_Variable() {
+        initialize("multivariatePolynomials(List<Variable>)");
+        for (List<Variable> vs : take(LIMIT, P.subsets(P.variables()))) {
+            Iterable<MultivariatePolynomial> ps = QEP.multivariatePolynomials(vs);
+            simpleTest(vs, ps, p -> isSubsetOf(p.variables(), vs));
+            take(TINY_LIMIT, ps).forEach(MultivariatePolynomial::validate);
+        }
+
+        for (List<Variable> vs : take(LIMIT, filterInfinite(us -> !increasing(us), P.lists(P.variables())))) {
+            try {
+                QEP.multivariatePolynomials(vs);
+                fail(vs);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        Iterable<List<Variable>> vsFail = filterInfinite(
+                us -> increasing(filter(u -> u != null, us)),
+                P.listsWithElement(null, P.variables())
+        );
+        for (List<Variable> vs : take(LIMIT, vsFail)) {
+            try {
+                QEP.multivariatePolynomials(vs);
+                fail(vs);
+            } catch (NullPointerException ignored) {}
+        }
+    }
+
+    private void propertiesPositiveAlgebraics_int() {
+        initialize("positiveAlgebraics(int)");
+        for (int i : take(TINY_LIMIT, P.withScale(2).positiveIntegersGeometric())) {
+            Iterable<Algebraic> xs = QEP.positiveAlgebraics(i);
+            simpleTest(i, xs, x -> x.signum() == 1);
+            take(TINY_LIMIT, xs).forEach(Algebraic::validate);
+        }
+
+        for (int i : take(LIMIT, P.withElement(0, P.negativeIntegers()))) {
+            try {
+                QEP.positiveAlgebraics(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesPositiveAlgebraics() {
+        initializeConstant("positiveAlgebraics()");
+        simpleTest(QEP, QEP.positiveAlgebraics(), x -> x.signum() == 1);
+        take(TINY_LIMIT, QEP.positiveAlgebraics()).forEach(Algebraic::validate);
+    }
+
+    private void propertiesNegativeAlgebraics_int() {
+        initialize("negativeAlgebraics(int)");
+        for (int i : take(TINY_LIMIT, P.withScale(2).positiveIntegersGeometric())) {
+            Iterable<Algebraic> xs = QEP.negativeAlgebraics(i);
+            simpleTest(i, xs, x -> x.signum() == -1);
+            take(TINY_LIMIT, xs).forEach(Algebraic::validate);
+        }
+
+        for (int i : take(LIMIT, P.withElement(0, P.negativeIntegers()))) {
+            try {
+                QEP.negativeAlgebraics(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesNegativeAlgebraics() {
+        initializeConstant("negativeAlgebraics()");
+        simpleTest(QEP, QEP.negativeAlgebraics(), x -> x.signum() == -1);
+        take(TINY_LIMIT, QEP.negativeAlgebraics()).forEach(Algebraic::validate);
+    }
+
+    private void propertiesNonzeroAlgebraics_int() {
+        initialize("nonzeroAlgebraics(int)");
+        for (int i : take(TINY_LIMIT, P.withScale(2).positiveIntegersGeometric())) {
+            Iterable<Algebraic> xs = QEP.nonzeroAlgebraics(i);
+            simpleTest(i, xs, x -> x != Algebraic.ZERO);
+            take(TINY_LIMIT, xs).forEach(Algebraic::validate);
+        }
+
+        for (int i : take(LIMIT, P.withElement(0, P.negativeIntegers()))) {
+            try {
+                QEP.nonzeroAlgebraics(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesNonzeroAlgebraics() {
+        initializeConstant("nonzeroAlgebraics()");
+        simpleTest(QEP, QEP.nonzeroAlgebraics(), x -> x != Algebraic.ZERO);
+        take(TINY_LIMIT, QEP.nonzeroAlgebraics()).forEach(Algebraic::validate);
+    }
+
+    private void propertiesAlgebraics_int() {
+        initialize("algebraics(int)");
+        for (int i : take(TINY_LIMIT, P.withScale(2).positiveIntegersGeometric())) {
+            Iterable<Algebraic> xs = QEP.nonzeroAlgebraics(i);
+            simpleTest(i, xs, x -> true);
+            take(TINY_LIMIT, xs).forEach(Algebraic::validate);
+        }
+
+        for (int i : take(LIMIT, P.withElement(0, P.negativeIntegers()))) {
+            try {
+                QEP.algebraics(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesAlgebraics() {
+        initializeConstant("algebraics()");
+        simpleTest(QEP, QEP.algebraics(), x -> true);
+        take(TINY_LIMIT, QEP.algebraics()).forEach(Algebraic::validate);
+    }
+
+    private void propertiesNonNegativeAlgebraicsLessThanOne_int() {
+        initialize("nonNegativeAlgebraicsLessThanOne(int)");
+        for (int i : take(TINY_LIMIT / 2, P.withScale(2).positiveIntegersGeometric())) {
+            Iterable<Algebraic> xs = QEP.nonNegativeAlgebraicsLessThanOne(i);
+            simpleTest(i, xs, x -> x.signum() != -1 && lt(x, Algebraic.ONE));
+            take(TINY_LIMIT, xs).forEach(Algebraic::validate);
+        }
+
+        for (int i : take(LIMIT, P.withElement(0, P.negativeIntegers()))) {
+            try {
+                QEP.nonNegativeAlgebraicsLessThanOne(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesNonNegativeAlgebraicsLessThanOne() {
+        initializeConstant("nonNegativeAlgebraicsLessThanOne()");
+        simpleTest(QEP, QEP.nonNegativeAlgebraicsLessThanOne(), x -> x.signum() != -1 && lt(x, Algebraic.ONE));
+        take(TINY_LIMIT, QEP.nonNegativeAlgebraicsLessThanOne()).forEach(Algebraic::validate);
     }
 }

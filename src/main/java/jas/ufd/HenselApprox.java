@@ -22,11 +22,6 @@ public class HenselApprox {
     }
 
     @Override
-    public String toString() {
-        return A.toString() + "," + B.toString() + "," + Am.toString() + "," + Bm.toString();
-    }
-
-    @Override
     public int hashCode() {
         int h = A.hashCode();
         h = 37 * h + B.hashCode();

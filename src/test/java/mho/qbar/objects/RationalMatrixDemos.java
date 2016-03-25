@@ -6,10 +6,10 @@ import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import static mho.qbar.objects.RationalMatrix.*;
-import static mho.qbar.objects.RationalVector.ZERO_DIMENSIONAL;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.*;
 
@@ -53,6 +53,19 @@ public class RationalMatrixDemos extends QBarDemos {
         }
     }
 
+    private void demoOnlyHasIntegralElements() {
+        for (RationalMatrix m : take(LIMIT, P.withScale(4).rationalMatrices())) {
+            System.out.println(m + (m.onlyHasIntegralElements() ? " only has " : " doesn't only have ") +
+                    "integral elements");
+        }
+    }
+
+    private void demoToMatrix() {
+        for (RationalMatrix m : take(LIMIT, map(Matrix::toRationalMatrix, P.withScale(4).matrices()))) {
+            System.out.println("toMatrix(" + m + ") = " + m.toMatrix());
+        }
+    }
+
     private void demoGet() {
         Iterable<Triple<RationalMatrix, Integer, Integer>> ts = map(
                 p -> new Triple<>(p.a, p.b.a, p.b.b),
@@ -77,7 +90,10 @@ public class RationalMatrixDemos extends QBarDemos {
                                 p -> P.withScale(4).lists(p.a, P.withScale(4).rationalVectors(p.b))
                         )
                 ),
-                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.withScale(4).positiveIntegersGeometric())
+                map(
+                        i -> toList(replicate(i, RationalVector.ZERO_DIMENSIONAL)),
+                        P.withScale(4).positiveIntegersGeometric()
+                )
         );
         for (List<RationalVector> vs : take(LIMIT, vss)) {
             String listString = tail(init(vs.toString()));
@@ -94,11 +110,20 @@ public class RationalMatrixDemos extends QBarDemos {
                                 p -> P.withScale(4).lists(p.a, P.withScale(4).rationalVectors(p.b))
                         )
                 ),
-                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.withScale(4).positiveIntegersGeometric())
+                map(
+                        i -> toList(replicate(i, RationalVector.ZERO_DIMENSIONAL)),
+                        P.withScale(4).positiveIntegersGeometric()
+                )
         );
         for (List<RationalVector> vs : take(LIMIT, vss)) {
             String listString = tail(init(vs.toString()));
             System.out.println("fromColumns(" + listString + ") = " + fromColumns(vs));
+        }
+    }
+
+    private void demoMaxElementBitLength() {
+        for (RationalMatrix m : take(LIMIT, P.withScale(4).rationalMatrices())) {
+            System.out.println("maxElementBitLength(" + m + ") = " + m.maxElementBitLength());
         }
     }
 
@@ -139,8 +164,14 @@ public class RationalMatrixDemos extends QBarDemos {
     }
 
     private void demoIdentity() {
-        for (int i : take(SMALL_LIMIT, P.withScale(4).positiveIntegersGeometric())) {
+        for (int i : take(SMALL_LIMIT, P.withScale(4).naturalIntegersGeometric())) {
             System.out.println("identity(" + i + ") = " + identity(i));
+        }
+    }
+
+    private void demoTrace() {
+        for (RationalMatrix m : take(LIMIT, P.withScale(4).squareRationalMatrices())) {
+            System.out.println("trace(" + m + ") = " + m.trace());
         }
     }
 
@@ -258,14 +289,14 @@ public class RationalMatrixDemos extends QBarDemos {
                 P.choose(
                         map(
                                 i -> {
-                                    RationalMatrix m = RationalMatrix.zero(0, i);
+                                    RationalMatrix m = zero(0, i);
                                     return new Pair<>(m, m);
                                 },
                                 P.withScale(4).naturalIntegersGeometric()
                         ),
                         map(
                                 i -> {
-                                    RationalMatrix m = RationalMatrix.zero(i, 0);
+                                    RationalMatrix m = zero(i, 0);
                                     return new Pair<>(m, m);
                                 },
                                 P.withScale(4).positiveIntegersGeometric()
@@ -295,14 +326,14 @@ public class RationalMatrixDemos extends QBarDemos {
                 P.choose(
                         map(
                                 i -> {
-                                    RationalMatrix m = RationalMatrix.zero(0, i);
+                                    RationalMatrix m = zero(0, i);
                                     return new Pair<>(m, m);
                                 },
                                 P.withScale(4).naturalIntegersGeometric()
                         ),
                         map(
                                 i -> {
-                                    RationalMatrix m = RationalMatrix.zero(i, 0);
+                                    RationalMatrix m = zero(i, 0);
                                     return new Pair<>(m, m);
                                 },
                                 P.withScale(4).positiveIntegersGeometric()
@@ -311,6 +342,223 @@ public class RationalMatrixDemos extends QBarDemos {
         );
         for (Pair<RationalMatrix, RationalMatrix> m : take(MEDIUM_LIMIT, ps)) {
             System.out.println(m.a + " - " + m.b + " = " + m.a.subtract(m.b));
+        }
+    }
+
+    private void demoMultiply_Rational() {
+        Iterable<Pair<RationalMatrix, Rational>> ps = P.pairs(P.withScale(4).rationalMatrices(), P.rationals());
+        for (Pair<RationalMatrix, Rational> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoMultiply_BigInteger() {
+        Iterable<Pair<RationalMatrix, BigInteger>> ps = P.pairs(P.withScale(4).rationalMatrices(), P.bigIntegers());
+        for (Pair<RationalMatrix, BigInteger> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoMultiply_int() {
+        Iterable<Pair<RationalMatrix, Integer>> ps = P.pairs(P.withScale(4).rationalMatrices(), P.integers());
+        for (Pair<RationalMatrix, Integer> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoDivide_Rational() {
+        Iterable<Pair<RationalMatrix, Rational>> ps = P.pairs(P.withScale(4).rationalMatrices(), P.nonzeroRationals());
+        for (Pair<RationalMatrix, Rational> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
+        }
+    }
+
+    private void demoDivide_BigInteger() {
+        Iterable<Pair<RationalMatrix, BigInteger>> ps = P.pairs(
+                P.withScale(4).rationalMatrices(),
+                P.nonzeroBigIntegers()
+        );
+        for (Pair<RationalMatrix, BigInteger> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
+        }
+    }
+
+    private void demoDivide_int() {
+        Iterable<Pair<RationalMatrix, Integer>> ps = P.pairs(P.withScale(4).rationalMatrices(), P.nonzeroIntegers());
+        for (Pair<RationalMatrix, Integer> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
+        }
+    }
+
+    private void demoMultiply_RationalVector() {
+        Iterable<Pair<RationalMatrix, RationalVector>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.withScale(4).positiveIntegersGeometric()),
+                                p -> P.pairs(
+                                        P.withScale(4).rationalMatrices(p.a, p.b),
+                                        P.withScale(4).rationalVectors(p.b)
+                                )
+                        )
+                ),
+                P.choose(
+                        map(
+                                i -> new Pair<>(zero(i, 0), RationalVector.ZERO_DIMENSIONAL),
+                                P.withScale(4).naturalIntegersGeometric()
+                        ),
+                        map(v -> new Pair<>(zero(0, v.dimension()), v), P.withScale(4).rationalVectorsAtLeast(1))
+                )
+        );
+        for (Pair<RationalMatrix, RationalVector> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoMultiply_RationalMatrix() {
+        Iterable<Pair<RationalMatrix, RationalMatrix>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.triples(P.withScale(4).positiveIntegersGeometric()),
+                                t -> P.pairs(
+                                        P.withScale(4).rationalMatrices(t.a, t.b),
+                                        P.withScale(4).rationalMatrices(t.b, t.c)
+                                )
+                        )
+                ),
+                P.choose(
+                    P.choose(
+                            map(
+                                    m -> new Pair<>(m, zero(m.width(), 0)),
+                                    filterInfinite(
+                                            m -> m.height() != 0 && m.width() != 0,
+                                            P.withScale(4).rationalMatrices()
+                                    )
+                            ),
+                            map(
+                                    m -> new Pair<>(zero(0, m.height()), m),
+                                    filterInfinite(
+                                            m -> m.height() != 0 && m.width() != 0,
+                                            P.withScale(4).rationalMatrices()
+                                    )
+                            )
+                    ),
+                    map(
+                            p -> new Pair<>(zero(p.a, 0), zero(0, p.b)),
+                            P.pairs(P.withScale(4).positiveIntegersGeometric())
+                    )
+                )
+        );
+        for (Pair<RationalMatrix, RationalMatrix> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoShiftLeft() {
+        Iterable<Pair<RationalMatrix, Integer>> ps = P.pairs(P.withScale(4).rationalMatrices(), P.integersGeometric());
+        for (Pair<RationalMatrix, Integer> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " << " + p.b + " = " + p.a.shiftLeft(p.b));
+        }
+    }
+
+    private void demoShiftRight() {
+        Iterable<Pair<RationalMatrix, Integer>> ps = P.pairs(P.withScale(4).rationalMatrices(), P.integersGeometric());
+        for (Pair<RationalMatrix, Integer> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " >> " + p.b + " = " + p.a.shiftRight(p.b));
+        }
+    }
+
+    private void demoIsInRowEchelonForm() {
+        for (RationalMatrix m : take(LIMIT, P.withScale(4).rationalMatrices())) {
+            System.out.println(m + " is " + (m.isInRowEchelonForm() ? "" : "not ") + "in row echelon form");
+        }
+    }
+
+    private void demoRowEchelonForm() {
+        for (RationalMatrix m : take(LIMIT, P.withScale(4).rationalMatrices())) {
+            System.out.println("rowEchelonForm(" + m + ") = " + m.rowEchelonForm());
+        }
+    }
+
+    private void demoRank() {
+        for (RationalMatrix m : take(LIMIT, P.withScale(4).rationalMatrices())) {
+            System.out.println("rank(" + m + ") = " + m.rank());
+        }
+    }
+
+    private void demoIsInvertible() {
+        for (RationalMatrix m : take(LIMIT, P.withScale(4).squareRationalMatrices())) {
+            System.out.println(m + " is " + (m.isInvertible() ? "" : "not ") + "invertible");
+        }
+    }
+
+    private void demoIsInReducedRowEchelonForm() {
+        for (RationalMatrix m : take(LIMIT, P.withScale(4).rationalMatrices())) {
+            System.out.println(m + " is " + (m.isInReducedRowEchelonForm() ? "" : "not ") +
+                    "in reduced row echelon form");
+        }
+    }
+
+    private void demoReducedRowEchelonForm() {
+        for (RationalMatrix m : take(LIMIT, P.withScale(4).rationalMatrices())) {
+            System.out.println("reducedRowEchelonForm(" + m + ") = " + m.reducedRowEchelonForm());
+        }
+    }
+
+    private void demoSolveLinearSystem() {
+        Iterable<Pair<RationalMatrix, RationalVector>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.withScale(4).positiveIntegersGeometric()),
+                                p -> P.pairs(
+                                        P.withScale(4).rationalMatrices(p.a, p.b),
+                                        P.withScale(4).rationalVectors(p.a)
+                                )
+                        )
+                ),
+                P.choose(
+                        map(
+                                i -> new Pair<>(zero(0, i), RationalVector.ZERO_DIMENSIONAL),
+                                P.withScale(4).naturalIntegersGeometric()
+                        ),
+                        map(v -> new Pair<>(zero(v.dimension(), 0), v), P.withScale(4).rationalVectorsAtLeast(1))
+                )
+        );
+        for (Pair<RationalMatrix, RationalVector> p : take(LIMIT, ps)) {
+            System.out.println("solveLinearSystem(" + p.a + ", " + p.b + ") = " + p.a.solveLinearSystem(p.b));
+        }
+    }
+
+    private void demoInvert() {
+        for (RationalMatrix m : take(LIMIT, P.withScale(4).squareRationalMatrices())) {
+            System.out.println(m + "⁻¹ = " + m.invert());
+        }
+    }
+
+    private void demoDeterminant() {
+        for (RationalMatrix m : take(LIMIT, P.withScale(4).squareRationalMatrices())) {
+            System.out.println("det(" + m + ") = " + m.determinant());
+        }
+    }
+
+    private void demoCharacteristicPolynomial() {
+        for (RationalMatrix m : take(LIMIT, P.withScale(4).squareRationalMatrices())) {
+            System.out.println("characteristicPolynomial(" + m + ") = " + m.characteristicPolynomial());
+        }
+    }
+
+    private void demoKroneckerMultiply() {
+        for (Pair<RationalMatrix, RationalMatrix> p : take(LIMIT, P.pairs(P.withScale(4).rationalMatrices()))) {
+            System.out.println(p.a + " ⊗ " + p.b + " = " + p.a.kroneckerMultiply(p.b));
+        }
+    }
+
+    private void demoKroneckerAdd() {
+        Iterable<Pair<RationalMatrix, RationalMatrix>> ps = P.pairs(P.withScale(4).squareRationalMatrices());
+        for (Pair<RationalMatrix, RationalMatrix> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println(p.a + " ⊕ " + p.b + " = " + p.a.kroneckerAdd(p.b));
         }
     }
 

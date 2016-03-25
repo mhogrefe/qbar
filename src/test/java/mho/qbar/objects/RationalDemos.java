@@ -185,6 +185,12 @@ public class RationalDemos extends QBarDemos {
         }
     }
 
+    private void demoRoundUpToPowerOfTwo() {
+        for (Rational r : take(LIMIT, P.positiveRationals())) {
+            System.out.println("roundUpToPowerOfTwo(" + r + ") = " + r.roundUpToPowerOfTwo());
+        }
+    }
+
     private void demoIsBinaryFraction() {
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println(r + " is " + (r.isBinaryFraction() ? "a" : "not a") + " binary fraction");
@@ -558,6 +564,21 @@ public class RationalDemos extends QBarDemos {
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             Pair<List<BigInteger>, Iterable<BigInteger>> digits = p.a.digits(p.b);
             System.out.println("digits(" + p.a + ", " + p.b + ") = " + new Pair<>(digits.a.toString(), its(digits.b)));
+        }
+    }
+
+    private void demoCommonLeadingDigits() {
+        //noinspection Convert2MethodRef
+        Iterable<Triple<BigInteger, Rational, Rational>> ts = map(
+                p -> new Triple<>(p.b, p.a.a, p.a.b),
+                P.pairsSquareRootOrder(
+                        filterInfinite(p -> p.a != p.b, P.pairs(P.withElement(ZERO, P.positiveRationals()))),
+                        map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
+                )
+        );
+        for (Triple<BigInteger, Rational, Rational> t : take(LIMIT, ts)) {
+            System.out.println("commonLeadingDigits(" + t.a + ", " + t.b + ", " + t.c + ") = " +
+                    commonLeadingDigits(t.a, t.b, t.c));
         }
     }
 

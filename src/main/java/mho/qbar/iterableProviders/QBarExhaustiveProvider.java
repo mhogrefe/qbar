@@ -3,6 +3,7 @@ package mho.qbar.iterableProviders;
 import mho.qbar.objects.*;
 import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.IterableUtils;
+import mho.wheels.iterables.NoRemoveIterable;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.Ordering;
 import org.jetbrains.annotations.NotNull;
@@ -214,6 +215,38 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
     }
 
     /**
+     * An {@code Iterable} that generates all {@code Vector}s.
+     *
+     * <ul>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Vector}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Vector> vectors() {
+        return map(Vector::of, lists(bigIntegers()));
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code Vector}s with a minimum dimension.
+     *
+     * <ul>
+     *  <li>{@code dimension} cannot be negative.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Vector}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDimension the minimum dimension of the generated {@code Vector}s
+     * @return all {@code Vector}s with dimension at least {@code minDimension}
+     */
+    @Override
+    public @NotNull Iterable<Vector> vectorsAtLeast(int minDimension) {
+        return map(Vector::of, listsAtLeast(minDimension, bigIntegers()));
+    }
+
+    /**
      * An {@code Iterable} that generates all {@code RationalVector}s.
      *
      * <ul>
@@ -243,6 +276,70 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
     @Override
     public @NotNull Iterable<RationalVector> rationalVectorsAtLeast(int minDimension) {
         return map(RationalVector::of, listsAtLeast(minDimension, rationals()));
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code PolynomialVector}s.
+     *
+     * <ul>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code PolynomialVector}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<PolynomialVector> polynomialVectors() {
+        return map(PolynomialVector::of, lists(polynomials()));
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code PolynomialVector}s with a minimum dimension.
+     *
+     * <ul>
+     *  <li>{@code dimension} cannot be negative.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code PolynomialVector}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDimension the minimum dimension of the generated {@code PolynomialVector}s
+     * @return all {@code PolynomialVector}s with dimension at least {@code minDimension}
+     */
+    @Override
+    public @NotNull Iterable<PolynomialVector> polynomialVectorsAtLeast(int minDimension) {
+        return map(PolynomialVector::of, listsAtLeast(minDimension, polynomials()));
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code RationalPolynomialVector}s.
+     *
+     * <ul>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code RationalPolynomialVector}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<RationalPolynomialVector> rationalPolynomialVectors() {
+        return map(RationalPolynomialVector::of, lists(rationalPolynomials()));
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code RationalPolynomialVector}s with a minimum dimension.
+     *
+     * <ul>
+     *  <li>{@code dimension} cannot be negative.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code RationalPolynomialVector}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDimension the minimum dimension of the generated {@code RationalPolynomialVector}s
+     * @return all {@code RationalPolynomialVector}s with dimension at least {@code minDimension}
+     */
+    @Override
+    public @NotNull Iterable<RationalPolynomialVector> rationalPolynomialVectorsAtLeast(int minDimension) {
+        return map(RationalPolynomialVector::of, listsAtLeast(minDimension, rationalPolynomials()));
     }
 
     /**
@@ -305,6 +402,71 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
     }
 
     /**
+     * An {@code Iterable} that generates all {@code Matrix}es with a given height and width.
+     *
+     * <ul>
+     *  <li>{@code height} cannot be negative.</li>
+     *  <li>{@code width} cannot be negative.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Matrix}es.</li>
+     * </ul>
+     *
+     * Length is 1 if either {@code height} or {@code width} are 0, infinite otherwise
+     *
+     * @param height the height (number of rows) of the generated {@code Matrix}es
+     * @param width the width (number of columns) of the generated {@code Matrix}es
+     * @return all {@code Matrix}es with height {@code height} and width {@code width}
+     */
+    @Override
+    public @NotNull Iterable<Matrix> matrices(int height, int width) {
+        if (height == 0 || width == 0) {
+            return Collections.singletonList(Matrix.zero(height, width));
+        } else {
+            return map(Matrix::fromRows, lists(height, vectors(width)));
+        }
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code Matrix}es.
+     *
+     * <ul>
+     *  <li>{@code height} cannot be negative.</li>
+     *  <li>{@code width} cannot be negative.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Matrix}es.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Matrix> matrices() {
+        return chooseLogarithmicOrder(
+                map(
+                        p -> Matrix.fromRows(p.b),
+                        dependentPairsInfiniteSquareRootOrder(pairs(positiveIntegers()), p -> lists(p.a, vectors(p.b)))
+                ),
+                choose(map(i -> Matrix.zero(0, i), naturalIntegers()), map(i -> Matrix.zero(i, 0), positiveIntegers()))
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all square {@code Matrix}es.
+     *
+     * <ul>
+     *  <li>{@code height} cannot be negative.</li>
+     *  <li>{@code width} cannot be negative.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing square {@code Matrix}es.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Matrix> squareMatrices() {
+        return cons(
+                Matrix.zero(0, 0),
+                map(p -> p.b, dependentPairsInfiniteLogarithmicOrder(positiveIntegers(), i -> matrices(i, i)))
+        );
+    }
+
+    /**
      * An {@code Iterable} that generates all {@code RationalMatrix}es with a given height and width.
      *
      * <ul>
@@ -329,7 +491,7 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
     }
 
     /**
-     * An {@code Iterable} that generates all {@code RationalMatrix}.
+     * An {@code Iterable} that generates all {@code RationalMatrix}es.
      *
      * <ul>
      *  <li>{@code height} cannot be negative.</li>
@@ -357,7 +519,7 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
     }
 
     /**
-     * An {@code Iterable} that generates all square {@code RationalMatrix}.
+     * An {@code Iterable} that generates all square {@code RationalMatrix}es.
      *
      * <ul>
      *  <li>{@code height} cannot be negative.</li>
@@ -372,6 +534,157 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         return cons(
                 RationalMatrix.zero(0, 0),
                 map(p -> p.b, dependentPairsInfiniteLogarithmicOrder(positiveIntegers(), i -> rationalMatrices(i, i)))
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code PolynomialMatrix}es with a given height and width.
+     *
+     * <ul>
+     *  <li>{@code height} cannot be negative.</li>
+     *  <li>{@code width} cannot be negative.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code PolynomialMatrix}es.</li>
+     * </ul>
+     *
+     * Length is 1 if either {@code height} or {@code width} are 0, infinite otherwise
+     *
+     * @param height the height (number of rows) of the generated {@code PolynomialMatrix}es
+     * @param width the width (number of columns) of the generated {@code PolynomialMatrix}es
+     * @return all {@code PolynomialMatrix}es with height {@code height} and width {@code width}
+     */
+    @Override
+    public @NotNull Iterable<PolynomialMatrix> polynomialMatrices(int height, int width) {
+        if (height == 0 || width == 0) {
+            return Collections.singletonList(PolynomialMatrix.zero(height, width));
+        } else {
+            return map(PolynomialMatrix::fromRows, lists(height, polynomialVectors(width)));
+        }
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code PolynomialMatrix}es.
+     *
+     * <ul>
+     *  <li>{@code height} cannot be negative.</li>
+     *  <li>{@code width} cannot be negative.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code PolynomialMatrix}es.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<PolynomialMatrix> polynomialMatrices() {
+        return chooseLogarithmicOrder(
+                map(
+                        p -> PolynomialMatrix.fromRows(p.b),
+                        dependentPairsInfiniteSquareRootOrder(
+                                pairs(positiveIntegers()),
+                                p -> lists(p.a, polynomialVectors(p.b))
+                        )
+                ),
+                choose(
+                        map(i -> PolynomialMatrix.zero(0, i), naturalIntegers()),
+                        map(i -> PolynomialMatrix.zero(i, 0), positiveIntegers())
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all square {@code PolynomialMatrix}es.
+     *
+     * <ul>
+     *  <li>{@code height} cannot be negative.</li>
+     *  <li>{@code width} cannot be negative.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing square {@code PolynomialMatrix}es.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<PolynomialMatrix> squarePolynomialMatrices() {
+        return cons(
+                PolynomialMatrix.zero(0, 0),
+                map(
+                        p -> p.b,
+                        dependentPairsInfiniteLogarithmicOrder(positiveIntegers(), i -> polynomialMatrices(i, i))
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code RationalPolynomialMatrix}es with a given height and width.
+     *
+     * <ul>
+     *  <li>{@code height} cannot be negative.</li>
+     *  <li>{@code width} cannot be negative.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code RationalPolynomialMatrix}es.</li>
+     * </ul>
+     *
+     * Length is 1 if either {@code height} or {@code width} are 0, infinite otherwise
+     *
+     * @param height the height (number of rows) of the generated {@code RationalPolynomialMatrix}es
+     * @param width the width (number of columns) of the generated {@code RationalPolynomialMatrix}es
+     * @return all {@code PolynomialMatrix}es with height {@code height} and width {@code width}
+     */
+    @Override
+    public @NotNull Iterable<RationalPolynomialMatrix> rationalPolynomialMatrices(int height, int width) {
+        if (height == 0 || width == 0) {
+            return Collections.singletonList(RationalPolynomialMatrix.zero(height, width));
+        } else {
+            return map(RationalPolynomialMatrix::fromRows, lists(height, rationalPolynomialVectors(width)));
+        }
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code RationalPolynomialMatrix}es.
+     *
+     * <ul>
+     *  <li>{@code height} cannot be negative.</li>
+     *  <li>{@code width} cannot be negative.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code RationalPolynomialMatrix}es.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<RationalPolynomialMatrix> rationalPolynomialMatrices() {
+        return chooseLogarithmicOrder(
+                map(
+                        p -> RationalPolynomialMatrix.fromRows(p.b),
+                        dependentPairsInfiniteSquareRootOrder(
+                                pairs(positiveIntegers()),
+                                p -> lists(p.a, rationalPolynomialVectors(p.b))
+                        )
+                ),
+                choose(
+                        map(i ->RationalPolynomialMatrix.zero(0, i), naturalIntegers()),
+                        map(i ->RationalPolynomialMatrix.zero(i, 0), positiveIntegers())
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all square {@code RationalPolynomialMatrix}es.
+     *
+     * <ul>
+     *  <li>{@code height} cannot be negative.</li>
+     *  <li>{@code width} cannot be negative.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing square {@code RationalPolynomialMatrix}es.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<RationalPolynomialMatrix> squareRationalPolynomialMatrices() {
+        return cons(
+                RationalPolynomialMatrix.zero(0, 0),
+                map(
+                        p -> p.b,
+                        dependentPairsInfiniteLogarithmicOrder(
+                                positiveIntegers(),
+                                i -> rationalPolynomialMatrices(i, i)
+                        )
+                )
         );
     }
 
@@ -534,6 +847,75 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
     }
 
     /**
+     * An {@code Iterable} that generates all square-free {@code Polynomial}s with a given degree.
+     *
+     * <ul>
+     *  <li>{@code degree} must be at least -1.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing square-free {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is 0 if {@code degree} is –1, infinite otherwise
+     *
+     * @param degree the degree of the generated {@code Polynomial}s
+     * @return all square-free {@code Polynomial}s with degree {@code degree}
+     */
+    @Override
+    public @NotNull Iterable<Polynomial> squareFreePolynomials(int degree) {
+        return filter(Polynomial::isSquareFree, polynomials(degree));
+    }
+
+    /**
+     * An {@code Iterable} that generates all irreducible {@code Polynomial}s.
+     *
+     * <ul>
+     *  <li>The result is a non-removable {@code Iterable} containing irreducible {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Polynomial> irreduciblePolynomials() {
+        return withElement(
+                Polynomial.ONE, map(
+                        p -> p.b,
+                        dependentPairsInfiniteLogarithmicOrder(
+                                positiveBigIntegers(),
+                                i -> irreduciblePolynomials(i.intValueExact())
+                        )
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all irreducible {@code Polynomial}s with a minimum degree.
+     *
+     * <ul>
+     *  <li>{@code minDegree} must be at least -1.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing irreducible {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDegree the minimum degree of the generated {@code Polynomial}s
+     * @return all irreducible {@code Polynomial}s with positive leading coefficients and degree at least
+     * {@code minDegree}
+     */
+    @Override
+    public @NotNull Iterable<Polynomial> irreduciblePolynomialsAtLeast(int minDegree) {
+        if (minDegree < -1) {
+            throw new IllegalArgumentException("minDegree must be at least -1. Invalid minDegree: " + minDegree);
+        }
+        if (minDegree < 1) return irreduciblePolynomials();
+        return map(
+                p -> p.b,
+                dependentPairsInfiniteLogarithmicOrder(
+                        rangeUp(BigInteger.valueOf(minDegree)),
+                        i -> irreduciblePolynomials(i.intValueExact())
+                )
+        );
+    }
+
+    /**
      * An {@code Iterable} that generates all {@code RationalPolynomial}s.
      *
      * <ul>
@@ -570,6 +952,165 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
                 filterInfinite(
                         is -> is.isEmpty() || last(is) != Rational.ZERO,
                         listsAtLeast(minDegree + 1, rationals())
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@link MonomialOrder}s. Does not support removal.
+     *
+     * Length is 3
+     */
+    @Override
+    public @NotNull Iterable<MonomialOrder> monomialOrders() {
+        return new NoRemoveIterable<>(Arrays.asList(MonomialOrder.LEX, MonomialOrder.GRLEX, MonomialOrder.GREVLEX));
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code ExponentVector}s.
+     *
+     * <ul>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code ExponentVector}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<ExponentVector> exponentVectors() {
+        return map(
+                js -> ExponentVector.of(toList(js)),
+                filterInfinite(
+                        is -> is.isEmpty() || last(is) != 0,
+                        map(i -> toList(map(p -> p.b - 1, countAdjacent(IntegerUtils.bits(i)))), naturalIntegers())
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code MultivariatePolynomial}s.
+     *
+     * <ul>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code MultivariatePolynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<MultivariatePolynomial> multivariatePolynomials() {
+        return cons(
+                MultivariatePolynomial.ZERO,
+                map(
+                        p -> MultivariatePolynomial.of(toList(zip(p.a, p.b))),
+                        dependentPairsInfinite(
+                                subsetsAtLeast(1, exponentVectors()),
+                                evs -> lists(evs.size(), nonzeroBigIntegers())
+                        )
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code MultivariatePolynomial}s containing only (a subset of) the given
+     * variables.
+     *
+     * <ul>
+     *  <li>{@code variables} must be in increasing order and cannot contain repetitions.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code MultivariatePolynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param variables the allowed variables in the result
+     */
+    @Override
+    public @NotNull Iterable<MultivariatePolynomial> multivariatePolynomials(@NotNull List<Variable> variables) {
+        if (variables.isEmpty()) {
+            return map(MultivariatePolynomial::of, bigIntegers());
+        }
+        return cons(
+                MultivariatePolynomial.ZERO,
+                map(
+                        p -> MultivariatePolynomial.of(toList(zip(p.a, p.b))),
+                        dependentPairsInfinite(
+                                subsetsAtLeast(1, exponentVectors(variables)),
+                                evs -> lists(evs.size(), nonzeroBigIntegers())
+                        )
+                )
+        );
+    }
+
+    @Override
+    public @NotNull Iterable<Real> reals() {
+        return map(Algebraic::realValue, algebraics());
+    }
+
+    /**
+     * An {@code Iterable} that generates every positive {@link Algebraic}. Does not support removal.
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Algebraic> positiveAlgebraics() {
+        return map(
+                p -> p.b,
+                dependentPairsInfiniteLogarithmicOrder(
+                        positiveBigIntegers(),
+                        i -> positiveAlgebraics(i.intValueExact())
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates every negative {@link Algebraic}. Does not support removal.
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Algebraic> negativeAlgebraics() {
+        return map(
+                p -> p.b,
+                dependentPairsInfiniteLogarithmicOrder(
+                        positiveBigIntegers(),
+                        i -> negativeAlgebraics(i.intValueExact())
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates every nonzero {@link Algebraic}. Does not support removal.
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Algebraic> nonzeroAlgebraics() {
+        return tail(algebraics());
+    }
+
+    /**
+     * An {@code Iterable} that generates every {@link Algebraic}. Does not support removal.
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Algebraic> algebraics() {
+        return map(
+                p -> p.b,
+                dependentPairsInfiniteLogarithmicOrder(positiveBigIntegers(), i -> algebraics(i.intValueExact()))
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates every {@link Algebraic} in the interval [0, 1). Does not support removal.
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Algebraic> nonNegativeAlgebraicsLessThanOne() {
+        return map(
+                p -> p.b,
+                dependentPairsInfiniteLogarithmicOrder(
+                        positiveBigIntegers(),
+                        i -> nonNegativeAlgebraicsLessThanOne(i.intValueExact())
                 )
         );
     }

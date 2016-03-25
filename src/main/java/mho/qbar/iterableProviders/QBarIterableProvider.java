@@ -4,6 +4,7 @@ import mho.qbar.objects.*;
 import mho.wheels.iterables.IterableProvider;
 import mho.wheels.iterables.RandomProvider;
 import mho.wheels.math.BinaryFraction;
+import mho.wheels.math.MathUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.*;
 import org.jetbrains.annotations.NotNull;
@@ -93,6 +94,15 @@ public strictfp abstract class QBarIterableProvider {
      * @param secondaryScale the secondary scale.
      */
     public @NotNull QBarIterableProvider withSecondaryScale(int secondaryScale) {
+        return this;
+    }
+
+    /**
+     * Returns a shallow copy of {@code this} with a given tertiary scale.
+     *
+     * @param tertiaryScale the tertiary scale.
+     */
+    public @NotNull QBarIterableProvider withTertiaryScale(int tertiaryScale) {
         return this;
     }
 
@@ -2842,13 +2852,19 @@ public strictfp abstract class QBarIterableProvider {
     }
 
     /**
-     * Generates all {@code RandomProvider}s with a fixed {@code scale} and {@code secondaryScale}.
+     * Generates all {@code RandomProvider}s with a fixed {@code scale}, {@code secondaryScale}, and
+     * {@code tertiaryScale}.
      *
      * @param scale the {@code scale} of the generated {@code RandomProvider}s
      * @param secondaryScale the {@code secondaryScale} of the generated {@code RandomProvider}s
+     * @param tertiaryScale the {@code tertiaryScale} of the generated {@code RandomProvider}s
      */
-    public @NotNull Iterable<RandomProvider> randomProvidersFixedScales(int scale, int secondaryScale) {
-        return wheelsProvider.randomProvidersFixedScales(scale, secondaryScale);
+    public @NotNull Iterable<RandomProvider> randomProvidersFixedScales(
+            int scale,
+            int secondaryScale,
+            int tertiaryScale
+    ) {
+        return wheelsProvider.randomProvidersFixedScales(scale, secondaryScale, tertiaryScale);
     }
 
     /**
@@ -2859,10 +2875,17 @@ public strictfp abstract class QBarIterableProvider {
     }
 
     /**
-     * Generates all {@code RandomProvider}s with the default {@code secondaryScale}.
+     * Generates all {@code RandomProvider}s with the default {@code secondaryScale} and {@code tertiaryScale}.
      */
-    public @NotNull Iterable<RandomProvider> randomProvidersDefaultSecondaryScale() {
-        return wheelsProvider.randomProvidersDefaultSecondaryScale();
+    public @NotNull Iterable<RandomProvider> randomProvidersDefaultSecondaryAndTertiaryScale() {
+        return wheelsProvider.randomProvidersDefaultSecondaryAndTertiaryScale();
+    }
+
+    /**
+     * Generates all {@code RandomProvider}s with the default {@code tertiaryScale}.
+     */
+    public @NotNull Iterable<RandomProvider> randomProvidersDefaultTertiaryScale() {
+        return wheelsProvider.randomProvidersDefaultTertiaryScale();
     }
 
     /**
@@ -2958,6 +2981,27 @@ public strictfp abstract class QBarIterableProvider {
     public abstract @NotNull Iterable<Rational> rationalsNotIn(@NotNull Interval a);
 
     /**
+     * Generates {@code Vector}s with a given dimension.
+     *
+     * @param dimension the dimension of the generated {@code Vector}s
+     */
+    public @NotNull Iterable<Vector> vectors(int dimension) {
+        return map(Vector::of, lists(dimension, bigIntegers()));
+    }
+
+    /**
+     * Generates {@code Vector}s.
+     */
+    public abstract @NotNull Iterable<Vector> vectors();
+
+    /**
+     * Generates {@code Vector}s with a minimum dimension.
+     *
+     * @param minDimension the minimum dimension of the generated {@code Vector}s
+     */
+    public abstract @NotNull Iterable<Vector> vectorsAtLeast(int minDimension);
+
+    /**
      * Generates {@code RationalVector}s with a given dimension.
      *
      * @param dimension the dimension of the generated {@code RationalVector}s
@@ -2970,6 +3014,48 @@ public strictfp abstract class QBarIterableProvider {
      * Generates {@code RationalVector}s.
      */
     public abstract @NotNull Iterable<RationalVector> rationalVectors();
+
+    /**
+     * Generates {@code PolynomialVector}s with a minimum dimension.
+     *
+     * @param minDimension the minimum dimension of the generated {@code PolynomialVector}s
+     */
+    public abstract @NotNull Iterable<PolynomialVector> polynomialVectorsAtLeast(int minDimension);
+
+    /**
+     * Generates {@code PolynomialVector}s with a given dimension.
+     *
+     * @param dimension the dimension of the generated {@code PolynomialVector}s
+     */
+    public @NotNull Iterable<PolynomialVector> polynomialVectors(int dimension) {
+        return map(PolynomialVector::of, lists(dimension, polynomials()));
+    }
+
+    /**
+     * Generates {@code PolynomialVector}s.
+     */
+    public abstract @NotNull Iterable<PolynomialVector> polynomialVectors();
+
+    /**
+     * Generates {@code RationalPolynomialVector}s with a minimum dimension.
+     *
+     * @param minDimension the minimum dimension of the generated {@code RationalPolynomialVector}s
+     */
+    public abstract @NotNull Iterable<RationalPolynomialVector> rationalPolynomialVectorsAtLeast(int minDimension);
+
+    /**
+     * Generates {@code RationalPolynomialVector}s with a given dimension.
+     *
+     * @param dimension the dimension of the generated {@code RationalPolynomialVector}s
+     */
+    public @NotNull Iterable<RationalPolynomialVector> rationalPolynomialVectors(int dimension) {
+        return map(RationalPolynomialVector::of, lists(dimension, rationalPolynomials()));
+    }
+
+    /**
+     * Generates {@code RationalPolynomialVector}s.
+     */
+    public abstract @NotNull Iterable<RationalPolynomialVector> rationalPolynomialVectors();
 
     /**
      * Generates {@code RationalVector}s with a minimum dimension.
@@ -3008,7 +3094,7 @@ public strictfp abstract class QBarIterableProvider {
                                 is -> RationalVector.of(toList(map(Rational::of, is))),
                                 filterInfinite(
                                         js -> {
-                                            BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
+                                            BigInteger gcd = MathUtils.gcd(js);
                                             return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
                                         },
                                         bigIntegerLists
@@ -3038,6 +3124,31 @@ public strictfp abstract class QBarIterableProvider {
     public abstract @NotNull Iterable<RationalVector> reducedRationalVectorsAtLeast(int minDimension);
 
     /**
+     * Generates {@code Matrix}es with a given {@code height} and {@code width}.
+     *
+     * @param height the height (number of rows) of the generated {@code Matrix}es
+     * @param width the width (number of columns) of the generated {@code Matrix}es
+     */
+    public abstract @NotNull Iterable<Matrix> matrices(int height, int width);
+
+    /**
+     * Generates {@code Matrix}es.
+     */
+    public abstract @NotNull Iterable<Matrix> matrices();
+
+    /**
+     * Generates square {@code Matrix}es.
+     */
+    public abstract @NotNull Iterable<Matrix> squareMatrices();
+
+    /**
+     * Generates invertible {@code Matrix}es.
+     */
+    public @NotNull Iterable<Matrix> invertibleMatrices() {
+        return filter(Matrix::isInvertible, squareMatrices());
+    }
+
+    /**
      * Generates {@code RationalMatrix}es with a given {@code height} and {@code width}.
      *
      * @param height the height (number of rows) of the generated {@code RationalMatrix}es
@@ -3054,6 +3165,49 @@ public strictfp abstract class QBarIterableProvider {
      * Generates square {@code RationalMatrix}es.
      */
     public abstract @NotNull Iterable<RationalMatrix> squareRationalMatrices();
+
+    /**
+     * Generates invertible {@code RationalMatrix}es.
+     */
+    public @NotNull Iterable<RationalMatrix> invertibleRationalMatrices() {
+        return filter(RationalMatrix::isInvertible, squareRationalMatrices());
+    }
+
+    /**
+     * Generates {@code PolynomialMatrix}es with a given {@code height} and {@code width}.
+     *
+     * @param height the height (number of rows) of the generated {@code PolynomialMatrix}es
+     * @param width the width (number of columns) of the generated {@code PolynomialMatrix}es
+     */
+    public abstract @NotNull Iterable<PolynomialMatrix> polynomialMatrices(int height, int width);
+
+    /**
+     * Generates {@code PolynomialMatrix}es.
+     */
+    public abstract @NotNull Iterable<PolynomialMatrix> polynomialMatrices();
+
+    /**
+     * Generates square {@code PolynomialMatrix}es.
+     */
+    public abstract @NotNull Iterable<PolynomialMatrix> squarePolynomialMatrices();
+
+    /**
+     * Generates {@code RationalPolynomialMatrix}es with a given {@code height} and {@code width}.
+     *
+     * @param height the height (number of rows) of the generated {@code RationalPolynomialMatrix}es
+     * @param width the width (number of columns) of the generated {@code RationalPolynomialMatrix}es
+     */
+    public abstract @NotNull Iterable<RationalPolynomialMatrix> rationalPolynomialMatrices(int height, int width);
+
+    /**
+     * Generates {@code RationalPolynomialMatrix}es.
+     */
+    public abstract @NotNull Iterable<RationalPolynomialMatrix> rationalPolynomialMatrices();
+
+    /**
+     * Generates square {@code RationalPolynomialMatrix}es.
+     */
+    public abstract @NotNull Iterable<RationalPolynomialMatrix> squareRationalPolynomialMatrices();
 
     /**
      * Generates {@code Polynomial}s with a given degree.
@@ -3107,8 +3261,7 @@ public strictfp abstract class QBarIterableProvider {
         return map(
                 Polynomial::of,
                 filterInfinite(
-                        is -> !last(is).equals(BigInteger.ZERO) &&
-                                foldl(BigInteger::gcd, BigInteger.ZERO, is).equals(BigInteger.ONE),
+                        is -> !last(is).equals(BigInteger.ZERO) && MathUtils.gcd(is).equals(BigInteger.ONE),
                         bigIntegerLists
                 )
         );
@@ -3144,6 +3297,75 @@ public strictfp abstract class QBarIterableProvider {
      * @param minDegree the minimum degree of the generated {@code Polynomial}s
      */
     public abstract @NotNull Iterable<Polynomial> positivePrimitivePolynomialsAtLeast(int minDegree);
+
+    /**
+     * Generates square-free {@code Polynomial}s with a given degree.
+     *
+     * @param degree the degree of the generated {@code Polynomial}s
+     */
+    public abstract @NotNull Iterable<Polynomial> squareFreePolynomials(int degree);
+
+    /**
+     * Generates square-free {@code Polynomial}s.
+     */
+    public @NotNull Iterable<Polynomial> squareFreePolynomials() {
+        return filter(Polynomial::isSquareFree, polynomials());
+    }
+
+    /**
+     * Generates square-free {@code Polynomial}s with a minimum degree.
+     *
+     * @param minDegree the minimum degree of the generated {@code Polynomial}s
+     */
+    public @NotNull Iterable<Polynomial> squareFreePolynomialsAtLeast(int minDegree) {
+        return filterInfinite(Polynomial::isSquareFree, polynomialsAtLeast(minDegree));
+    }
+
+    /**
+     * Generates primitive square-free {@code Polynomial}s with positive leading coefficients with a given degree.
+     *
+     * @param degree the degree of the generated {@code Polynomial}s
+     */
+    public @NotNull Iterable<Polynomial> positivePrimitiveSquareFreePolynomials(int degree) {
+        return filter(Polynomial::isSquareFree, positivePrimitivePolynomials(degree));
+    }
+
+    /**
+     * Generates primitive square-free {@code Polynomial}s with positive leading coefficients.
+     */
+    public @NotNull Iterable<Polynomial> positivePrimitiveSquareFreePolynomials() {
+        return filter(Polynomial::isSquareFree, positivePrimitivePolynomials());
+    }
+
+    /**
+     * Generates primitive square-free {@code Polynomial}s with positive leading coefficients with a minimum degree.
+     *
+     * @param minDegree the minimum degree of the generated {@code Polynomial}s
+     */
+    public @NotNull Iterable<Polynomial> positivePrimitiveSquareFreePolynomialsAtLeast(int minDegree) {
+        return filterInfinite(Polynomial::isSquareFree, positivePrimitivePolynomialsAtLeast(minDegree));
+    }
+
+    /**
+     * Generates irreducible {@code Polynomial}s with a given degree.
+     *
+     * @param degree the degree of the generated {@code Polynomial}s
+     */
+    public @NotNull Iterable<Polynomial> irreduciblePolynomials(int degree) {
+        return filter(p -> p != Polynomial.ZERO && p.isIrreducible(), positivePrimitivePolynomials(degree));
+    }
+
+    /**
+     * Generates irreducible {@code Polynomial}s.
+     */
+    public abstract @NotNull Iterable<Polynomial> irreduciblePolynomials();
+
+    /**
+     * Generates irreducible {@code Polynomial}s with a minimum degree.
+     *
+     * @param minDegree the minimum degree of the generated {@code Polynomial}s
+     */
+    public abstract @NotNull Iterable<Polynomial> irreduciblePolynomialsAtLeast(int minDegree);
 
     /**
      * Generates {@code RationalPolynomial}s with a given degree.
@@ -3194,10 +3416,243 @@ public strictfp abstract class QBarIterableProvider {
         return map(p -> p.toRationalPolynomial().makeMonic(), positivePrimitivePolynomialsAtLeast(minDegree));
     }
 
-    public @NotNull Iterable<QBarRandomProvider> qbarRandomProvidersFixedScales(int scale, int secondaryScale) {
+    /**
+     * Generates {@code Variable}s.
+     */
+    public @NotNull Iterable<Variable> variables() {
+        return map(Variable::of, naturalIntegersGeometric());
+    }
+
+    /**
+     * Generates {@code MonomialOrder}s.
+     */
+    public abstract @NotNull Iterable<MonomialOrder> monomialOrders();
+
+    /**
+     * Generates {@code ExponentVector}s.
+     */
+    public abstract @NotNull Iterable<ExponentVector> exponentVectors();
+
+    /**
+     * Generates {@code ExponentVector}s containing only (a subset of) the given variables.
+     *
+     * <ul>
+     *  <li>{@code variables} must be in increasing order and cannot contain repetitions.</li>
+     * </ul>
+     *
+     * @param variables the allowed variables in the result
+     */
+    public @NotNull Iterable<ExponentVector> exponentVectors(@NotNull List<Variable> variables) {
+        if (any(v -> v == null, variables)) {
+            throw new NullPointerException();
+        }
+        if (!increasing(variables)) {
+            throw new IllegalArgumentException("variables must be in increasing order and cannot contain " +
+                    "repetitions. Invalid variables: " + variables);
+        }
+        List<Variable> reversed = reverse(variables);
+        return map(
+                es -> ExponentVector.fromTerms(toList(filter(p -> p.b != 0, zip(reversed, es)))),
+                lists(variables.size(), naturalIntegersGeometric())
+        );
+    }
+
+    /**
+     * Generates {@code MultivariatePolynomials}.
+     */
+    public abstract @NotNull Iterable<MultivariatePolynomial> multivariatePolynomials();
+
+    /**
+     * Generates {@code MultivariatePolynomial}s containing only (a subset of) the given variables.
+     *
+     * <ul>
+     *  <li>{@code variables} must be in increasing order and cannot contain repetitions.</li>
+     * </ul>
+     *
+     * @param variables the allowed variables in the result
+     */
+    public abstract @NotNull Iterable<MultivariatePolynomial> multivariatePolynomials(
+            @NotNull List<Variable> variables
+    );
+
+    public abstract @NotNull Iterable<Real> reals();
+
+    /**
+     * Generates positive {@code Algebraic}s with a given degree.
+     *
+     * <ul>
+     *  <li>{@code degree} must be positive.</li>
+     * </ul>
+     *
+     * @param degree the degree of the {@code Algebraic}s in the result
+     */
+    public @NotNull Iterable<Algebraic> positiveAlgebraics(int degree) {
+        if (degree < 1) {
+            throw new IllegalArgumentException("degree must be positive. Invalid degree: " + degree);
+        }
+        return map(
+                x -> x.negate().invert(),
+                filterInfinite(
+                        x -> x.signum() == -1,
+                        map(
+                                p -> Algebraic.of(p.a, p.b),
+                                filterInfinite(
+                                        q -> q.b != -1,
+                                        dependentPairs(
+                                                irreduciblePolynomials(degree),
+                                                q -> {
+                                                    int rootCount = q.rootCount();
+                                                    return rootCount == 0 ? range(-1, -1) : range(0, rootCount - 1);
+                                                }
+                                        )
+                                )
+                        )
+                )
+        );
+    }
+
+    /**
+     * Generates positive {@code Algebraic}s.
+     */
+    public abstract @NotNull Iterable<Algebraic> positiveAlgebraics();
+
+    /**
+     * Generates negative {@code Algebraic}s with a given degree.
+     *
+     * <ul>
+     *  <li>{@code degree} must be positive.</li>
+     * </ul>
+     *
+     * @param degree the degree of the {@code Algebraic}s in the result
+     */
+    public @NotNull Iterable<Algebraic> negativeAlgebraics(int degree) {
+        if (degree < 1) {
+            throw new IllegalArgumentException("degree must be positive. Invalid degree: " + degree);
+        }
+        return map(
+                Algebraic::invert,
+                filterInfinite(
+                        x -> x.signum() == -1,
+                        map(
+                                p -> Algebraic.of(p.a, p.b),
+                                filterInfinite(
+                                        q -> q.b != -1,
+                                        dependentPairs(
+                                                irreduciblePolynomials(degree),
+                                                q -> {
+                                                    int rootCount = q.rootCount();
+                                                    return rootCount == 0 ? range(-1, -1) : range(0, rootCount - 1);
+                                                }
+                                        )
+                                )
+                        )
+                )
+        );
+    }
+
+    /**
+     * Generates negative {@code Algebraic}s.
+     */
+    public abstract @NotNull Iterable<Algebraic> negativeAlgebraics();
+
+    /**
+     * Generates nonzero {@code Algebraic}s with a given degree.
+     *
+     * <ul>
+     *  <li>{@code degree} must be positive.</li>
+     * </ul>
+     *
+     * @param degree the degree of the {@code Algebraic}s in the result
+     */
+    public @NotNull Iterable<Algebraic> nonzeroAlgebraics(int degree) {
+        return degree == 1 ? filterInfinite(x -> x != Algebraic.ZERO, algebraics(1)) : algebraics(degree);
+    }
+
+    /**
+     * Generates nonzero {@code Algebraic}s.
+     */
+    public abstract @NotNull Iterable<Algebraic> nonzeroAlgebraics();
+
+    /**
+     * Generates {@code Algebraic}s with a given degree.
+     *
+     * <ul>
+     *  <li>{@code degree} must be positive.</li>
+     * </ul>
+     *
+     * @param degree the degree of the {@code Algebraic}s in the result
+     */
+    public @NotNull Iterable<Algebraic> algebraics(int degree) {
+        if (degree < 1) {
+            throw new IllegalArgumentException("degree must be positive. Invalid degree: " + degree);
+        }
+        return map(
+                p -> {
+                    Algebraic x = Algebraic.of(p.a, p.b);
+                    return x == Algebraic.ZERO ? x : x.negate().invert();
+                },
+                filterInfinite(
+                        q -> q.b != -1,
+                        dependentPairs(
+                                irreduciblePolynomials(degree),
+                                q -> {
+                                    int rootCount = q.rootCount();
+                                    return rootCount == 0 ? range(-1, -1) : range(0, rootCount - 1);
+                                }
+                        )
+                )
+        );
+    }
+
+    /**
+     * Generates {@code Algebraic}s.
+     */
+    public abstract @NotNull Iterable<Algebraic> algebraics();
+
+    /**
+     * Generates {@code Algebraic}s in the interval [0, 1) with a given degree.
+     *
+     * <ul>
+     *  <li>{@code degree} must be positive.</li>
+     * </ul>
+     *
+     * @param degree the degree of the {@code Algebraic}s in the result
+     */
+    public @NotNull Iterable<Algebraic> nonNegativeAlgebraicsLessThanOne(int degree) {
+        if (degree < 1) {
+            throw new IllegalArgumentException("degree must be positive. Invalid degree: " + degree);
+        }
+        return filterInfinite(
+                x -> x.signum() != -1 && Ordering.lt(x, Algebraic.ONE),
+                map(
+                        p -> Algebraic.of(p.a, p.b),
+                        filterInfinite(
+                                q -> q.b != -1,
+                                dependentPairs(
+                                        irreduciblePolynomials(degree),
+                                        q -> {
+                                            int rootCount = q.rootCount();
+                                            return rootCount == 0 ? range(-1, -1) : range(0, rootCount - 1);
+                                        }
+                                )
+                        )
+                )
+        );
+    }
+
+    /**
+     * Generates {@code Algebraic}s in the interval [0, 1).
+     */
+    public abstract @NotNull Iterable<Algebraic> nonNegativeAlgebraicsLessThanOne();
+
+    public @NotNull Iterable<QBarRandomProvider> qbarRandomProvidersFixedScales(
+            int scale,
+            int secondaryScale,
+            int tertiaryScale
+    ) {
         return map(
                 rp -> (QBarRandomProvider) new QBarRandomProvider(rp.getSeed())
-                        .withScale(scale).withSecondaryScale(secondaryScale),
+                        .withScale(scale).withSecondaryScale(secondaryScale).withTertiaryScale(tertiaryScale),
                 wheelsProvider.randomProvidersDefault()
         );
     }
@@ -3206,17 +3661,26 @@ public strictfp abstract class QBarIterableProvider {
         return map(rp -> new QBarRandomProvider(rp.getSeed()), wheelsProvider.randomProvidersDefault());
     }
 
-    public @NotNull Iterable<QBarRandomProvider> qbarRandomProvidersDefaultSecondaryScale() {
+    public @NotNull Iterable<QBarRandomProvider> qbarRandomProvidersDefaultSecondaryAndTertiaryScale() {
         return map(
                 rp -> (QBarRandomProvider) new QBarRandomProvider(rp.getSeed()).withScale(rp.getScale()),
-                wheelsProvider.randomProvidersDefaultSecondaryScale()
+                wheelsProvider.randomProvidersDefaultSecondaryAndTertiaryScale()
+        );
+    }
+
+    public @NotNull Iterable<QBarRandomProvider> qbarRandomProvidersDefaultTertiaryScale() {
+        return map(
+                rp -> (QBarRandomProvider) new QBarRandomProvider(rp.getSeed()).withScale(rp.getScale())
+                        .withSecondaryScale(rp.getSecondaryScale()),
+                wheelsProvider.randomProvidersDefaultTertiaryScale()
         );
     }
 
     public @NotNull Iterable<QBarRandomProvider> qbarRandomProviders() {
         return map(
                 rp -> (QBarRandomProvider) new QBarRandomProvider(rp.getSeed())
-                        .withScale(rp.getScale()).withSecondaryScale(rp.getSecondaryScale()),
+                        .withScale(rp.getScale()).withSecondaryScale(rp.getSecondaryScale())
+                        .withTertiaryScale(rp.getTertiaryScale()),
                 wheelsProvider.randomProviders()
         );
     }

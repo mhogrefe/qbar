@@ -55,8 +55,8 @@ public final class RationalPolynomial implements
     private static final Comparator<Iterable<Rational>> RATIONAL_ITERABLE_COMPARATOR = new ShortlexComparator<>();
 
     /**
-     * A {@code Comparator} that compares two {@code RationalPolynomial}s by their denominators, then lexicographically
-     * by their coefficients.
+     * A {@code Comparator} that compares two {@code RationalPolynomial}s by their degrees, then lexicographically by
+     * their coefficients.
      */
     private static final @NotNull Comparator<RationalPolynomial> DEGREE_COEFFICIENT_COMPARATOR = (p, q) -> {
         int c = Integer.compare(p.degree(), q.degree());
@@ -117,6 +117,38 @@ public final class RationalPolynomial implements
     @Override
     public @NotNull Rational apply(@NotNull Rational x) {
         return foldr((c, y) -> y.multiply(x).add(c), Rational.ZERO, coefficients);
+    }
+
+    /**
+     * Determines whether the coefficients of {@code this} are all integers.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} has integral coefficients.
+     */
+    public boolean onlyHasIntegralCoefficients() {
+        return all(Rational::isInteger, coefficients);
+    }
+
+    /**
+     * Converts {@code this} to a {@code Polynomial}.
+     *
+     * <ul>
+     *  <li>{@code this} must only have integral coefficients.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Length is deg({@code this})+1
+     *
+     * @return a {@code Polynomial} with the same value as {@code this}
+     */
+    public @NotNull Polynomial toPolynomial() {
+        if (this == ZERO) return Polynomial.ZERO;
+        if (this == ONE) return Polynomial.ONE;
+        return Polynomial.of(toList(map(Rational::bigIntegerValueExact, coefficients)));
     }
 
     /**
@@ -209,6 +241,22 @@ public final class RationalPolynomial implements
     }
 
     /**
+     * Returns the maximum bit length of any coefficient, or 0 if {@code this} is 0.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>The result is non-negative.</li>
+     * </ul>
+     *
+     * @return the maximum coefficient bit length
+     */
+    public int maxCoefficientBitLength() {
+        if (this == ZERO) return 0;
+        //noinspection RedundantCast
+        return maximum((Iterable<Integer>) map(Rational::bitLength, coefficients));
+    }
+
+    /**
      * Returns this {@code RationalPolynomial}'s degree. We consider 0 to have degree –1.
      *
      * <ul>
@@ -216,8 +264,9 @@ public final class RationalPolynomial implements
      *  <li>The result is at least –1.</li>
      * </ul>
      *
-     * @return this {@code RationalPolynomial}'s degree
+     * @return deg({@code this})
      */
+    @SuppressWarnings("JavaDoc")
     public int degree() {
         return coefficients.size() - 1;
     }
@@ -234,6 +283,27 @@ public final class RationalPolynomial implements
      */
     public @NotNull Optional<Rational> leading() {
         return this == ZERO ? Optional.<Rational>empty() : Optional.of(last(coefficients));
+    }
+
+    /**
+     * Multiplies {@code this} by a power of x.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>{@code p} cannot be negative.</li>
+     * </ul>
+     *
+     * Length is deg({@code this})+{@code p}+1
+     *
+     * @param p the power of x that {@code this} is multiplied by
+     * @return {@code this}×x<sup>{@code p}</sup>
+     */
+    public @NotNull RationalPolynomial multiplyByPowerOfX(int p) {
+        if (p < 0) {
+            throw new ArithmeticException("p cannot be negative. Invalid p: " + p);
+        }
+        if (this == ZERO || p == 0) return this;
+        return new RationalPolynomial(toList(concat(replicate(p, Rational.ZERO), coefficients)));
     }
 
     /**
@@ -303,6 +373,25 @@ public final class RationalPolynomial implements
     @SuppressWarnings("JavaDoc")
     public int signum() {
         return this == ZERO ? 0 : leading().get().signum();
+    }
+
+    /**
+     * Returns the sign of {@code this} when evaluated at {@code x}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param x where {@code this} is evaluated
+     * @return sgn({@code this}(x))
+     */
+    @SuppressWarnings("JavaDoc")
+    public int signum(@NotNull Rational x) {
+        if (this == ZERO) return 0;
+        Rational partialResult = foldr((c, y) -> y.multiply(x).add(c), Rational.ZERO, tail(coefficients)).multiply(x);
+        return Integer.signum(partialResult.compareTo(head(coefficients).negate()));
     }
 
     /**
@@ -510,8 +599,7 @@ public final class RationalPolynomial implements
      * @return {@code this}≪{@code bits}
      */
     public @NotNull RationalPolynomial shiftLeft(int bits) {
-        if (this == ZERO) return ZERO;
-        if (bits == 0) return this;
+        if (this == ZERO || bits == 0) return this;
         List<Rational> shiftedCoefficients = toList(map(r -> r.shiftLeft(bits), coefficients));
         if (shiftedCoefficients.size() == 1 && shiftedCoefficients.get(0) == Rational.ONE) return ONE;
         return new RationalPolynomial(shiftedCoefficients);
@@ -533,8 +621,7 @@ public final class RationalPolynomial implements
      * @return {@code this}≫{@code bits}
      */
     public @NotNull RationalPolynomial shiftRight(int bits) {
-        if (this == ZERO) return ZERO;
-        if (bits == 0) return this;
+        if (this == ZERO || bits == 0) return this;
         List<Rational> shiftedCoefficients = toList(map(r -> r.shiftRight(bits), coefficients));
         if (shiftedCoefficients.size() == 1 && shiftedCoefficients.get(0) == Rational.ONE) return ONE;
         return new RationalPolynomial(shiftedCoefficients);
@@ -689,7 +776,7 @@ public final class RationalPolynomial implements
     }
 
     /**
-     * Divides {@code this} by a constant to make it monic. {@code this} cannot be 0.
+     * Divides {@code this} by a constant to make it monic. {@code this} cannot be zero.
      *
      * <ul>
      *  <li>{@code this} cannot be zero.</li>
@@ -739,7 +826,7 @@ public final class RationalPolynomial implements
      *
      * <ul>
      *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
-     *  <li>{@code that} cannot be 0.</li>
+     *  <li>{@code that} cannot be zero.</li>
      *  <li>Neither element of the result is null.</li>
      * </ul>
      *
@@ -749,20 +836,336 @@ public final class RationalPolynomial implements
     @SuppressWarnings("JavaDoc")
     public @NotNull Pair<RationalPolynomial, RationalPolynomial> divide(@NotNull RationalPolynomial that) {
         if (that == ZERO) {
-            throw new ArithmeticException("this cannot be 0.");
+            throw new ArithmeticException("that cannot be zero.");
         }
         int m = degree();
         int n = that.degree();
         if (m < n) return new Pair<>(ZERO, this);
-        List<Rational> q = toList(replicate(m - n + 1, Rational.ZERO));
+        if (that == ONE) return new Pair<>(this, ZERO);
+        List<Rational> q = new ArrayList<>();
         List<Rational> r = toList(coefficients);
         for (int k = m - n; k >= 0; k--) {
-            q.set(k, r.get(n + k).divide(that.coefficient(n)));
+            Rational qCoefficient = r.get(n + k).divide(that.coefficient(n));
+            q.add(qCoefficient);
             for (int j = n + k - 1; j >= k; j--) {
-                r.set(j, r.get(j).subtract(q.get(k).multiply(that.coefficient(j - k))));
+                r.set(j, r.get(j).subtract(qCoefficient.multiply(that.coefficient(j - k))));
             }
         }
-        return new Pair<>(of(q), of(toList(take(n, r))));
+        return new Pair<>(of(reverse(q)), of(toList(take(n, r))));
+    }
+
+    /**
+     * Determines whether {@code this} is divisible by {@code that}, i.e. whether there exists a
+     * {@code RationalPolynomial} p such that {@code p}×{@code that}={@code this}. {@code that} cannot be zero, even
+     * when {@code this} is zero.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     * </ul>
+     *
+     * @param that the {@code RationalPolynomial} that {@code this} may or may not be divisible by
+     * @return whether {@code this} is divisible by {@code that}
+     */
+    public boolean isDivisibleBy(@NotNull RationalPolynomial that) {
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        return this == ZERO ||
+                degree() >= that.degree() &&
+                constantFactor().b.pseudoDivide(that.constantFactor().b).b == Polynomial.ZERO;
+    }
+
+    /**
+     * Given two {@code RationalPolynomial}s, returns a list of {@code RatinalPolynomial}s with certain useful
+     * properties. For example, the last element is a GCD of the two polynomials.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} cannot both be zero.</li>
+     *  <li>No element of the result is null.</li>
+     * </ul>
+     *
+     * @param that another {@code RationalPolynomial}
+     * @return the remainder sequence of {@code this} and {@code that}
+     */
+    public @NotNull List<RationalPolynomial> remainderSequence(@NotNull RationalPolynomial that) {
+        if (this == ZERO && that == ZERO) {
+            throw new ArithmeticException("this and that cannot both be zero.");
+        }
+        List<RationalPolynomial> sequence = new ArrayList<>();
+        sequence.add(this);
+        if (that == ZERO) return sequence;
+        sequence.add(that);
+        for (int i = 0; ; i++) {
+            RationalPolynomial next = sequence.get(i).divide(sequence.get(i + 1)).b;
+            if (next == ZERO) return sequence;
+            sequence.add(next);
+        }
+    }
+
+    /**
+     * Given two {@code RationalPolynomial}s, returns a list of {@code RatinalPolynomial}s with certain useful
+     * properties. For example, the last element is a GCD of the two polynomials, and the signed remainder sequence of
+     * a squarefree polynomial and its derivative is a Sturm chain.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} cannot both be zero.</li>
+     *  <li>No element of the result is null.</li>
+     * </ul>
+     *
+     * @param that another {@code RationalPolynomial}
+     * @return the signed remainder sequence of {@code this} and {@code that}
+     */
+    public @NotNull List<RationalPolynomial> signedRemainderSequence(@NotNull RationalPolynomial that) {
+        if (this == ZERO && that == ZERO) {
+            throw new ArithmeticException("this and that cannot both be zero.");
+        }
+        List<RationalPolynomial> sequence = new ArrayList<>();
+        sequence.add(this);
+        if (that == ZERO) return sequence;
+        sequence.add(that);
+        for (int i = 0; ; i++) {
+            RationalPolynomial next = sequence.get(i).divide(sequence.get(i + 1)).b.negate();
+            if (next == ZERO) return sequence;
+            sequence.add(next);
+        }
+    }
+
+    /**
+     * Let i range from 0 to deg({@code this}); this method returns a list that contains, for every i, the sum of the
+     * ith powers of the roots of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} must be monic.</li>
+     *  <li>The result is non-empty and contains no nulls. The first element is equal to deg({@code this}).</li>
+     * </ul>
+     *
+     * @return the first deg({@code this}) Newton sums of {@code this}
+     */
+    public @NotNull List<Rational> powerSums() {
+        if (!isMonic()) {
+            throw new IllegalArgumentException("this must be monic. Invalid this: " + this);
+        }
+        List<Rational> powerSums = new ArrayList<>();
+        int n = degree();
+        powerSums.add(Rational.of(n));
+        if (n == 0) return powerSums;
+        int k = degree();
+        powerSums.add(coefficient(k - 1).negate());
+        if (n == 1) return powerSums;
+        for (int i = 2; i <= n; i++) {
+            List<Rational> terms = new ArrayList<>();
+            for (int j = 1; j < i; j++) {
+                terms.add(coefficient(k - j).multiply(powerSums.get(i - j)).negate());
+            }
+            terms.add(coefficient(k - i).multiply(i).negate());
+            powerSums.add(Rational.sum(terms));
+        }
+        return powerSums;
+    }
+
+    /**
+     * Given the 0th to dth power sums of a d-degree monic polynomial, where the ith power sum is the sum of the ith
+     * powers of the roots, returns the polynomial.
+     *
+     * <ul>
+     *  <li>{@code powerSums} cannot be empty, and its first element must be one less than its length.</li>
+     *  <li>The result is monic.</li>
+     * </ul>
+     *
+     * @param powerSums the Newton sums of a monic {@code RationalPolynomial}
+     * @return the monic {@code RationalPolynomial} whose Newton sums are {@code powerSums}
+     */
+    public static @NotNull RationalPolynomial fromPowerSums(@NotNull List<Rational> powerSums) {
+        if (powerSums.isEmpty()) {
+            throw new IllegalArgumentException("powerSums cannot be empty.");
+        }
+        if (!head(powerSums).equals(Rational.of(powerSums.size() - 1))) {
+            throw new IllegalArgumentException("The first element of powerSums must be one less than its length." +
+                    " Invalid powerSums: " + powerSums);
+        }
+        List<Rational> coefficients = new ArrayList<>();
+        coefficients.add(Rational.ONE);
+        for (int i = 1; i < powerSums.size(); i++) {
+            List<Rational> terms = new ArrayList<>();
+            for (int j = 1; j <= i; j++) {
+                terms.add(powerSums.get(j).multiply(coefficients.get(i - j)));
+            }
+            coefficients.add(Rational.sum(terms).negate().divide(i));
+        }
+        return coefficients.size() == 1 ? ONE : new RationalPolynomial(reverse(coefficients));
+    }
+
+    /**
+     * Given a {@code List} of {@code Pair}s of {@code Rational}s representing (x, y)-points, returns the
+     * minimal-degree {@code RationalPolynomial} passing through those points. The x-values, or the first elements of
+     * the pairs, must be unique. A list with duplicates will cause an exception, even if the y-values are the same. If
+     * {@code points} is empty, the result is 0.
+     *
+     * <ul>
+     *  <li>{@code points} cannot contain nulls, and neither element of any {@code Pair} can be null. The first
+     *  elements of the {@code Pair}s must be unique.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param points the (x, y)-values of the points to be interpolated
+     * @return the {@code RationalPolynomial} with the smallest degree that passes through {@code points}
+     */
+    public static @NotNull RationalPolynomial interpolate(@NotNull List<Pair<Rational, Rational>> points) {
+        if (any(p -> p.a == null, points)) {
+            throw new NullPointerException();
+        }
+        if (!unique(map(p -> p.a, points))) {
+            throw new IllegalArgumentException();
+        }
+        int degree = points.size() - 1;
+        List<RationalVector> rows = new ArrayList<>();
+        //noinspection Convert2streamapi
+        for (Pair<Rational, Rational> point : points) {
+            rows.add(RationalVector.of(toList(take(degree + 1, iterate(r -> r.multiply(point.a), Rational.ONE)))));
+        }
+        RationalMatrix matrix = RationalMatrix.fromRows(rows);
+        RationalVector yValues = RationalVector.of(toList(map(p -> p.b, points)));
+        return of(toList(matrix.solveLinearSystem(yValues).get()));
+    }
+
+    /**
+     * Returns the Frobenius companion matrix of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} must be monic.</li>
+     *  <li>The first row of the result has zeros in all but the last column, and the submatrix produced by omitting
+     *  the first row and the last column is the identity.</li>
+     * </ul>
+     *
+     * @return the companion matrix of {@code this}
+     */
+    public @NotNull RationalMatrix companionMatrix() {
+        if (this == ONE) {
+            return RationalMatrix.zero(0, 0);
+        }
+        if (!isMonic()) {
+            throw new IllegalArgumentException("this must be monic. Invalid this: " + this);
+        }
+        int degree = degree();
+        List<RationalVector> rows = new ArrayList<>();
+        List<Rational> row = toList(replicate(degree - 1, Rational.ZERO));
+        row.add(coefficients.get(0).negate());
+        rows.add(RationalVector.of(row));
+        for (int i = 1; i < degree; i++) {
+            row.clear();
+            for (int j = 1; j < degree; j++) {
+                row.add(i == j ? Rational.ONE : Rational.ZERO);
+            }
+            row.add(coefficients.get(i).negate());
+            rows.add(RationalVector.of(row));
+        }
+        return RationalMatrix.fromRows(rows);
+    }
+
+    /**
+     * Returns a {@code RationalMatrix} containing the coefficients of a {@code List} of {@code RationalPolynomial}s.
+     *
+     * <ul>
+     *  <li>{@code ps} may not have more elements than one more than the maximum degree of {@code ps}.</li>
+     *  <li>The result has a height less than or equal to its width, and its first column, if it exists, does not only
+     *  contain zeros.</li>
+     * </ul>
+     *
+     * Size is length({@code ps})×(max({deg(p)|p∈{@code ps}})+1)
+     *
+     * @param ps a {@code List} of {@code RationalPolynomial}s
+     * @return Mat({@code ps})
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull RationalMatrix coefficientMatrix(@NotNull List<RationalPolynomial> ps) {
+        if (ps.isEmpty()) return RationalMatrix.zero(0, 0);
+        int width = maximum(map(RationalPolynomial::degree, ps)) + 1;
+        if (ps.size() > width) {
+            throw new IllegalArgumentException("ps may not have more elements than one more than the maximum degree" +
+                    " of ps. Invalid ps: " + ps);
+        }
+        List<RationalVector> rows = new ArrayList<>();
+        for (RationalPolynomial p : ps) {
+            List<Rational> row = new ArrayList<>();
+            for (int i = width - 1; i >= 0; i--) {
+                row.add(p.coefficient(i));
+            }
+            rows.add(RationalVector.of(row));
+        }
+        return RationalMatrix.fromRows(rows);
+    }
+
+    /**
+     * Returns the reflection of {@code this} across the y-axis. If {@code this} has odd degree, the result is negated
+     * as well; this preserves the sign of the leading coefficient. The roots of the result are the negatives of the
+     * roots of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return {@code this} reflected across the y-axis
+     */
+    public @NotNull RationalPolynomial reflect() {
+        if (degree() < 1) return this;
+        List<Rational> reflectedCoefficients = new ArrayList<>();
+        boolean negateResult = degree() % 2 == 0;
+        for (int i = 0; i < coefficients.size(); i++) {
+            reflectedCoefficients.add(i % 2 == 0 == negateResult ? coefficients.get(i) : coefficients.get(i).negate());
+        }
+        return of(reflectedCoefficients);
+    }
+
+    /**
+     * Returns the translation of {@code this} by {@code t}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>{@code t} is not null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param t the amount that {@code this} is translated by in the x-direction
+     * @return {@code this}(x–t)
+     */
+    public @NotNull RationalPolynomial translate(@NotNull Rational t) {
+        if (degree() < 1 || t == Rational.ZERO) return this;
+        return substitute(new RationalPolynomial(Arrays.asList(t.negate(), Rational.ONE)));
+    }
+
+    /**
+     * Returns {@code this} stretched in the x-direction by a factor of {@code f}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>{@code f} must be positive.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param f the amount that {@code this} is stretched in the x-direction
+     * @return {@code this}(x/f)
+     */
+    public @NotNull RationalPolynomial stretch(@NotNull Rational f) {
+        if (f.signum() != 1) {
+            throw new ArithmeticException("f must be positive. Invalid f: " + f);
+        }
+        int degree = degree();
+        if (degree < 1 || f == Rational.ONE) return this;
+        List<Rational> stretchedCoefficients = new ArrayList<>();
+        Rational d = Rational.ONE;
+        for (int i = 0; i <= degree; i++) {
+            stretchedCoefficients.add(coefficients.get(i).divide(d));
+            if (i != degree) {
+                d = d.multiply(f);
+            }
+        }
+        return new RationalPolynomial(stretchedCoefficients);
     }
 
     /**
@@ -952,7 +1355,7 @@ public final class RationalPolynomial implements
     }
 
     /**
-     * Creates an {@code RationalPolynomial} from a {@code String}. Valid input takes the form of a {@code String} that
+     * Creates a {@code RationalPolynomial} from a {@code String}. Valid input takes the form of a {@code String} that
      * could have been returned by {@link mho.qbar.objects.RationalPolynomial#toString}. The input
      * {@code RationalPolynomial} cannot have a degree greater than {@code maxExponent}.
      *
@@ -962,6 +1365,7 @@ public final class RationalPolynomial implements
      *  <li>The result may be any {@code Optional<RationalPolynomial>}.</li>
      * </ul>
      *
+     * @param maxExponent the largest accepted exponent
      * @param s a string representation of a {@code RationalPolynomial}.
      * @return the wrapped {@code RationalPolynomial} (with degree no greater than {@code maxExponent}) represented by
      * {@code s}, or {@code empty} if {@code s} is invalid.
@@ -1010,12 +1414,13 @@ public final class RationalPolynomial implements
      * {@code maxExponent}.
      *
      * <ul>
-     *  <li>{@code maxExponent} can be any {@code int}.</li>
+     *  <li>{@code maxExponent} must be positive.</li>
      *  <li>{@code s} must be non-null.</li>
      *  <li>The result is non-null. If it is non-empty, then neither of the {@code Pair}'s components is null, and the
      *  second component is non-negative.</li>
      * </ul>
      *
+     * @param maxExponent the largest accepted exponent
      * @param s the input {@code String}
      * @return the first {@code RationalPolynomial} found in {@code s} (with degree no greater than
      * {@code maxExponent}), and the index at which it was found
@@ -1062,9 +1467,11 @@ public final class RationalPolynomial implements
     }
 
     /**
-     * Ensures that {@code this} is valid. Must return true for any {@code RationalPolynomial} used outside this class.
+     * Ensures that {@code this} is valid. Must return without exceptions for any {@code RationalPolynomial} used
+     * outside this class.
      */
     public void validate() {
+        assertTrue(this, all(r -> r != null, coefficients));
         if (!coefficients.isEmpty()) {
             assertTrue(this, last(coefficients) != Rational.ZERO);
         }

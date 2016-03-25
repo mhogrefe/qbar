@@ -1,8 +1,6 @@
 package jas.ufd;
 
 import jas.poly.GenPolynomial;
-import jas.poly.GenPolynomialRing;
-import jas.poly.PolyUtil;
 import jas.structure.RingElem;
 
 /**
@@ -11,16 +9,6 @@ import jas.structure.RingElem;
  * @author Heinz Kredel
  */
 public abstract class GreatestCommonDivisorAbstract<C extends RingElem<C>> {
-    /**
-     * Get the String representation.
-     *
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return getClass().getName();
-    }
-
     /**
      * GenPolynomial base coefficient content.
      *
@@ -82,66 +70,6 @@ public abstract class GreatestCommonDivisorAbstract<C extends RingElem<C>> {
     public abstract GenPolynomial<C> baseGcd(GenPolynomial<C> P, GenPolynomial<C> S);
 
     /**
-     * GenPolynomial recursive content.
-     *
-     * @param P recursive GenPolynomial.
-     * @return cont(P).
-     */
-    public GenPolynomial<C> recursiveContent(GenPolynomial<GenPolynomial<C>> P) {
-        if (P == null) {
-            throw new IllegalArgumentException(this.getClass().getName() + " P != null");
-        }
-        if (P.isZERO()) {
-            return P.ring.getZEROCoefficient();
-        }
-        GenPolynomial<C> d = null;
-        for (GenPolynomial<C> c : P.getMap().values()) {
-            if (d == null) {
-                d = c;
-            } else {
-                d = gcd(d, c); // go to recursion
-            }
-            if (d.isONE()) {
-                return d;
-            }
-        }
-        return d.abs();
-    }
-
-    /**
-     * GenPolynomial recursive primitive part.
-     *
-     * @param P recursive GenPolynomial.
-     * @return pp(P).
-     */
-    GenPolynomial<GenPolynomial<C>> recursivePrimitivePart(GenPolynomial<GenPolynomial<C>> P) {
-        if (P == null) {
-            throw new IllegalArgumentException(this.getClass().getName() + " P != null");
-        }
-        if (P.isZERO()) {
-            return P;
-        }
-        GenPolynomial<C> d = recursiveContent(P);
-        if (d.isONE()) {
-            return P;
-        }
-        return PolyUtil.recursiveDivide(P, d);
-    }
-
-    /**
-     * Univariate GenPolynomial recursive greatest common divisor. Uses
-     * pseudoRemainder for remainder.
-     *
-     * @param P univariate recursive GenPolynomial.
-     * @param S univariate recursive GenPolynomial.
-     * @return gcd(P, S).
-     */
-    public abstract GenPolynomial<GenPolynomial<C>> recursiveUnivariateGcd(
-            GenPolynomial<GenPolynomial<C>> P,
-            GenPolynomial<GenPolynomial<C>> S
-    );
-
-    /**
      * GenPolynomial division. Indirection to GenPolynomial method.
      *
      * @param a GenPolynomial.
@@ -189,23 +117,6 @@ public abstract class GreatestCommonDivisorAbstract<C extends RingElem<C>> {
         if (P == null || P.isZERO()) {
             return S;
         }
-        GenPolynomialRing<C> pfac = P.ring;
-        if (pfac.nvar <= 1) {
-            return baseGcd(P, S);
-        }
-        System.exit(1);
-        GenPolynomialRing<C> cfac = null;
-        GenPolynomialRing<GenPolynomial<C>> rfac;
-        if (pfac.getVars() != null && pfac.getVars().length > 0) {
-            rfac = GenPolynomialRing.make(cfac);
-        } else {
-            rfac = new GenPolynomialRing<>(cfac);
-        }
-        GenPolynomial<GenPolynomial<C>> Pr = PolyUtil.recursive(rfac, P);
-        GenPolynomial<GenPolynomial<C>> Sr = PolyUtil.recursive(rfac, S);
-        GenPolynomial<GenPolynomial<C>> Dr = recursiveUnivariateGcd(Pr, Sr);
-        System.exit(1);
-        return null;
-//        return PolyUtil.distribute(pfac, Dr);
+        return baseGcd(P, S);
     }
 }

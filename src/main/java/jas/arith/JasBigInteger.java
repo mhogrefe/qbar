@@ -66,15 +66,6 @@ public final class JasBigInteger implements RingElem<JasBigInteger>, RingFactory
     }
 
     /**
-     * Get the value as long.
-     *
-     * @return val as long.
-     */
-    public long longValue() {
-        return val.longValue();
-    }
-
-    /**
      * Get the corresponding element factory.
      *
      * @return factory for this Element.
@@ -175,16 +166,6 @@ public final class JasBigInteger implements RingElem<JasBigInteger>, RingFactory
      */
     public boolean isUnit() {
         return (this.isONE() || this.negate().isONE());
-    }
-
-    /**
-     * Get the String representation.
-     *
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return val.toString();
     }
 
     //

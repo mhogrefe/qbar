@@ -1518,7 +1518,8 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Ensures that {@code this} is valid. Must return true for any {@code Interval} used outside this class.
+     * Ensures that {@code this} is valid. Must return without exceptions for any {@code Interval} used outside this
+     * class.
      */
     public void validate() {
         assertTrue(this, lower == null || upper == null || le(lower, upper));

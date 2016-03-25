@@ -72,6 +72,37 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
     }
 
     /**
+     * Determines whether the coordinates of {@code this} are all integers.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} only has integral coordinates.
+     */
+    public boolean onlyHasIntegralCoordinates() {
+        return all(Rational::isInteger, coordinates);
+    }
+
+    /**
+     * Converts {@code this} to a {@code Vector}.
+     *
+     * <ul>
+     *  <li>{@code this} must only have integral coordinates.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Length is dim({@code this})
+     *
+     * @return a {@code Vector} with the same value as {@code this}
+     */
+    public @NotNull Vector toVector() {
+        if (this == ZERO_DIMENSIONAL) return Vector.ZERO_DIMENSIONAL;
+        return Vector.of(toList(map(Rational::bigIntegerValueExact, coordinates)));
+    }
+
+    /**
      * Returns one of {@code this}'s coordinates. 0-indexed.
      *
      * <ul>
@@ -128,7 +159,22 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
     }
 
     /**
-     * Returns this {@code RationalVector}'s dimension
+     * Returns the maximum bit length of any coordinate, or 0 if {@code this} is 0-dimensional.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
+     *  <li>The result is non-negative.</li>
+     * </ul>
+     *
+     * @return the maximum coordinate bit length
+     */
+    public int maxCoordinateBitLength() {
+        if (this == ZERO_DIMENSIONAL) return 0;
+        return maximum(map(Rational::bitLength, coordinates));
+    }
+
+    /**
+     * Returns this {@code RationalVector}'s dimension.
      *
      * <ul>
      *  <li>{@code this} may be any {@code RationalVector}.</li>
@@ -142,7 +188,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
     }
 
     /**
-     * Determines whether {@code this} is a zero vector
+     * Determines whether {@code this} is a zero vector.
      *
      * <ul>
      *  <li>{@code this} may be any {@code RationalVector}.</li>
@@ -284,32 +330,12 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      *
      * Length is dim({@code this})
      *
-     * @param that the {@code RationalVector} {@code this} is multiplied by
+     * @param that the {@code Rational} {@code this} is multiplied by
      * @return {@code this}×{@code that}
      */
     public @NotNull RationalVector multiply(@NotNull Rational that) {
         if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
         if (that == Rational.ONE) return this;
-        return new RationalVector(toList(map(r -> r.multiply(that), coordinates)));
-    }
-
-    /**
-     * Returns the scalar product of {@code this} and {@code that}.
-     *
-     * <ul>
-     *  <li>{@code this} can be any {@code RationalVector}.</li>
-     *  <li>{@code that} may be any {@code int}.</li>
-     *  <li>The result is not null.</li>
-     * </ul>
-     *
-     * Length is dim({@code this})
-     *
-     * @param that the {@code RationalVector} {@code this} is multiplied by
-     * @return {@code this}×{@code that}
-     */
-    public @NotNull RationalVector multiply(@NotNull BigInteger that) {
-        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
-        if (that.equals(BigInteger.ONE)) return this;
         return new RationalVector(toList(map(r -> r.multiply(that), coordinates)));
     }
 
@@ -324,7 +350,27 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      *
      * Length is dim({@code this})
      *
-     * @param that the {@code RationalVector} {@code this} is multiplied by
+     * @param that the {@code BigInteger} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull RationalVector multiply(@NotNull BigInteger that) {
+        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
+        if (that.equals(BigInteger.ONE)) return this;
+        return new RationalVector(toList(map(r -> r.multiply(that), coordinates)));
+    }
+
+    /**
+     * Returns the scalar product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalVector}.</li>
+     *  <li>{@code that} may be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Length is dim({@code this})
+     *
+     * @param that the {@code int} {@code this} is multiplied by
      * @return {@code this}×{@code that}
      */
     public @NotNull RationalVector multiply(int that) {
@@ -344,7 +390,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      *
      * Length is dim({@code this})
      *
-     * @param that the {@code RationalVector} {@code this} is multiplied by
+     * @param that the {@code Rational} {@code this} is divided by
      * @return {@code this}/{@code that}
      */
     public @NotNull RationalVector divide(@NotNull Rational that) {
@@ -362,7 +408,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      *
      * Length is dim({@code this})
      *
-     * @param that the {@code RationalVector} {@code this} is multiplied by
+     * @param that the {@code BigInteger} {@code this} is divided by
      * @return {@code this}/{@code that}
      */
     public @NotNull RationalVector divide(@NotNull BigInteger that) {
@@ -380,7 +426,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      *
      * Length is dim({@code this})
      *
-     * @param that the {@code RationalVector} {@code this} is multiplied by
+     * @param that the {@code int} {@code this} is divided by
      * @return {@code this}/{@code that}
      */
     public @NotNull RationalVector divide(int that) {
@@ -403,8 +449,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * @return {@code this}≪{@code bits}
      */
     public @NotNull RationalVector shiftLeft(int bits) {
-        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
-        if (bits == 0) return this;
+        if (this == ZERO_DIMENSIONAL || bits == 0) return this;
         return new RationalVector(toList(map(r -> r.shiftLeft(bits), coordinates)));
     }
 
@@ -424,8 +469,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * @return {@code this}≫{@code bits}
      */
     public @NotNull RationalVector shiftRight(int bits) {
-        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
-        if (bits == 0) return this;
+        if (this == ZERO_DIMENSIONAL || bits == 0) return this;
         return new RationalVector(toList(map(r -> r.shiftRight(bits), coordinates)));
     }
 
@@ -725,7 +769,8 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
     }
 
     /**
-     * Ensures that {@code this} is valid. Must return true for any {@code RationalVector} used outside this class.
+     * Ensures that {@code this} is valid. Must return without exceptions for any {@code RationalVector} used outside
+     * this class.
      */
     public void validate() {
         assertTrue(this, all(r -> r != null, coordinates));

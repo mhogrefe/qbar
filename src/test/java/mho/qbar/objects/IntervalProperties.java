@@ -15,8 +15,6 @@ import java.util.*;
 import java.util.function.Function;
 
 import static mho.qbar.objects.Interval.*;
-import static mho.qbar.objects.Interval.greaterThanOrEqualTo;
-import static mho.qbar.objects.Interval.lessThanOrEqualTo;
 import static mho.qbar.objects.Interval.sum;
 import static mho.qbar.testing.QBarTesting.*;
 import static mho.qbar.testing.QBarTesting.propertiesCompareToHelper;

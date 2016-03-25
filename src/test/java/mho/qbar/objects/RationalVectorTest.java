@@ -32,6 +32,39 @@ public class RationalVectorTest {
         iterator_helper("[5/3, -1/4, 23]");
     }
 
+    private static void onlyHasIntegralCoordinates_helper(@NotNull String input, boolean output) {
+        aeq(read(input).get().onlyHasIntegralCoordinates(), output);
+    }
+
+    @Test
+    public void testHasIntegralCoordinates() {
+        onlyHasIntegralCoordinates_helper("[]", true);
+        onlyHasIntegralCoordinates_helper("[2]", true);
+        onlyHasIntegralCoordinates_helper("[12, -4, 0, 2]", true);
+        onlyHasIntegralCoordinates_helper("[1/2]", false);
+        onlyHasIntegralCoordinates_helper("[5/3, -1/4, 23]", false);
+    }
+
+    private static void toVector_helper(@NotNull String input) {
+        aeq(read(input).get().toVector(), input);
+    }
+
+    private static void toVector_fail_helper(@NotNull String input) {
+        try {
+            read(input).get().toVector();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testToVector() {
+        toVector_helper("[]");
+        toVector_helper("[2]");
+        toVector_helper("[12, -4, 0, 2]");
+        toVector_fail_helper("[1/2]");
+        toVector_fail_helper("[5/3, -1/4, 23]");
+    }
+
     private static void get_helper(@NotNull String input, int i, @NotNull String output) {
         aeq(read(input).get().get(i), output);
     }
@@ -81,6 +114,17 @@ public class RationalVectorTest {
         of_Rational_helper("1/2", "[1/2]");
         of_Rational_helper("-5", "[-5]");
         of_Rational_helper("0", "[0]");
+    }
+
+    private static void maxCoordinateBitLength_helper(@NotNull String input, int output) {
+        aeq(read(input).get().maxCoordinateBitLength(), output);
+    }
+
+    @Test
+    public void testMaxCoordinateBitLength() {
+        maxCoordinateBitLength_helper("[]", 0);
+        maxCoordinateBitLength_helper("[1/2]", 3);
+        maxCoordinateBitLength_helper("[5/3, -1/4, 23]", 6);
     }
 
     private static void dimension_helper(@NotNull String input, int output) {
@@ -218,9 +262,11 @@ public class RationalVectorTest {
         multiply_Rational_helper("[]", "0", "[]");
         multiply_Rational_helper("[]", "1", "[]");
         multiply_Rational_helper("[]", "-3/2", "[]");
+
         multiply_Rational_helper("[2]", "0", "[0]");
         multiply_Rational_helper("[2]", "1", "[2]");
         multiply_Rational_helper("[2]", "-3/2", "[-3]");
+
         multiply_Rational_helper("[5/3, 4, 0]", "0", "[0, 0, 0]");
         multiply_Rational_helper("[5/3, 4, 0]", "1", "[5/3, 4, 0]");
         multiply_Rational_helper("[5/3, 4, 0]", "-3/2", "[-5/2, -6, 0]");
@@ -235,9 +281,11 @@ public class RationalVectorTest {
         multiply_BigInteger_helper("[]", "0", "[]");
         multiply_BigInteger_helper("[]", "1", "[]");
         multiply_BigInteger_helper("[]", "5", "[]");
+
         multiply_BigInteger_helper("[2]", "0", "[0]");
         multiply_BigInteger_helper("[2]", "1", "[2]");
         multiply_BigInteger_helper("[2]", "5", "[10]");
+
         multiply_BigInteger_helper("[5/3, 4, 0]", "0", "[0, 0, 0]");
         multiply_BigInteger_helper("[5/3, 4, 0]", "1", "[5/3, 4, 0]");
         multiply_BigInteger_helper("[5/3, 4, 0]", "5", "[25/3, 20, 0]");
@@ -252,9 +300,11 @@ public class RationalVectorTest {
         multiply_int_helper("[]", 0, "[]");
         multiply_int_helper("[]", 1, "[]");
         multiply_int_helper("[]", 5, "[]");
+
         multiply_int_helper("[2]", 0, "[0]");
         multiply_int_helper("[2]", 1, "[2]");
         multiply_int_helper("[2]", 5, "[10]");
+
         multiply_int_helper("[5/3, 4, 0]", 0, "[0, 0, 0]");
         multiply_int_helper("[5/3, 4, 0]", 1, "[5/3, 4, 0]");
         multiply_int_helper("[5/3, 4, 0]", 5, "[25/3, 20, 0]");
@@ -275,10 +325,13 @@ public class RationalVectorTest {
     public void testDivide_Rational() {
         divide_Rational_helper("[]", "1", "[]");
         divide_Rational_helper("[]", "-3/2", "[]");
+
         divide_Rational_helper("[2]", "1", "[2]");
         divide_Rational_helper("[2]", "-3/2", "[-4/3]");
+
         divide_Rational_helper("[5/3, 4, 0]", "1", "[5/3, 4, 0]");
         divide_Rational_helper("[5/3, 4, 0]", "-3/2", "[-10/9, -8/3, 0]");
+
         divide_Rational_fail_helper("[]", "0");
         divide_Rational_fail_helper("[5/3, 4, 0]", "0");
     }
@@ -298,10 +351,13 @@ public class RationalVectorTest {
     public void testDivide_BigInteger() {
         divide_BigInteger_helper("[]", "1", "[]");
         divide_BigInteger_helper("[]", "5", "[]");
+
         divide_BigInteger_helper("[2]", "1", "[2]");
         divide_BigInteger_helper("[2]", "5", "[2/5]");
+
         divide_BigInteger_helper("[5/3, 4, 0]", "1", "[5/3, 4, 0]");
         divide_BigInteger_helper("[5/3, 4, 0]", "5", "[1/3, 4/5, 0]");
+
         divide_BigInteger_fail_helper("[]", "0");
         divide_BigInteger_fail_helper("[5/3, 4, 0]", "0");
     }
@@ -321,10 +377,13 @@ public class RationalVectorTest {
     public void testDivide_int() {
         divide_int_helper("[]", 1, "[]");
         divide_int_helper("[]", 5, "[]");
+
         divide_int_helper("[2]", 1, "[2]");
         divide_int_helper("[2]", 5, "[2/5]");
+
         divide_int_helper("[5/3, 4, 0]", 1, "[5/3, 4, 0]");
         divide_int_helper("[5/3, 4, 0]", 5, "[1/3, 4/5, 0]");
+
         divide_int_fail_helper("[]", 0);
         divide_int_fail_helper("[5/3, 4, 0]", 0);
     }
@@ -344,6 +403,7 @@ public class RationalVectorTest {
         shiftLeft_helper("[]", -2, "[]");
         shiftLeft_helper("[]", -3, "[]");
         shiftLeft_helper("[]", -4, "[]");
+
         shiftLeft_helper("[1/2]", 0, "[1/2]");
         shiftLeft_helper("[1/2]", 1, "[1]");
         shiftLeft_helper("[1/2]", 2, "[2]");
@@ -353,6 +413,7 @@ public class RationalVectorTest {
         shiftLeft_helper("[1/2]", -2, "[1/8]");
         shiftLeft_helper("[1/2]", -3, "[1/16]");
         shiftLeft_helper("[1/2]", -4, "[1/32]");
+
         shiftLeft_helper("[5/3, -1/4, 23]", 0, "[5/3, -1/4, 23]");
         shiftLeft_helper("[5/3, -1/4, 23]", 1, "[10/3, -1/2, 46]");
         shiftLeft_helper("[5/3, -1/4, 23]", 2, "[20/3, -1, 92]");
@@ -379,6 +440,7 @@ public class RationalVectorTest {
         shiftRight_helper("[]", -2, "[]");
         shiftRight_helper("[]", -3, "[]");
         shiftRight_helper("[]", -4, "[]");
+
         shiftRight_helper("[1/2]", 0, "[1/2]");
         shiftRight_helper("[1/2]", 1, "[1/4]");
         shiftRight_helper("[1/2]", 2, "[1/8]");
@@ -388,6 +450,7 @@ public class RationalVectorTest {
         shiftRight_helper("[1/2]", -2, "[2]");
         shiftRight_helper("[1/2]", -3, "[4]");
         shiftRight_helper("[1/2]", -4, "[8]");
+
         shiftRight_helper("[5/3, -1/4, 23]", 0, "[5/3, -1/4, 23]");
         shiftRight_helper("[5/3, -1/4, 23]", 1, "[5/6, -1/8, 23/2]");
         shiftRight_helper("[5/3, -1/4, 23]", 2, "[5/12, -1/16, 23/4]");

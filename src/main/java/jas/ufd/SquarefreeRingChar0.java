@@ -18,27 +18,14 @@ public class SquarefreeRingChar0<C extends RingElem<C>> extends SquarefreeAbstra
     /**
      * Factory for ring of characteristic 0 coefficients.
      */
-    private final RingFactory<C> coFac;
-
     public SquarefreeRingChar0(RingFactory<C> fac) {
-        super(GCDFactory.<C>getProxy(fac));
+        super(GCDFactory.<C>getImplementation(fac));
         if (fac.isField()) {
             throw new IllegalArgumentException("fac is a field: use SquarefreeFieldChar0");
         }
         if (fac.characteristic().signum() != 0) {
             throw new IllegalArgumentException("characterisic(fac) must be zero");
         }
-        coFac = fac;
-    }
-
-    /**
-     * Get the String representation.
-     *
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return getClass().getName() + " with " + engine + " over " + coFac;
     }
 
     @Override
@@ -52,9 +39,6 @@ public class SquarefreeRingChar0<C extends RingElem<C>> extends SquarefreeAbstra
             return sfactors;
         }
         GenPolynomialRing<C> pfac = A.ring;
-        if (pfac.nvar > 1) {
-            throw new IllegalArgumentException(this.getClass().getName() + " only for univariate polynomials");
-        }
         C ldbcf = A.leadingBaseCoefficient();
         if (!ldbcf.isONE()) {
             C cc = engine.baseContent(A);
@@ -98,7 +82,7 @@ public class SquarefreeRingChar0<C extends RingElem<C>> extends SquarefreeAbstra
             T = PolyUtil.basePseudoDivide(T, V);
             //System.out.println("V = " + V);
             //System.out.println("T = " + T);
-            if (z.degree(0) > 0) {
+            if (z.degree() > 0) {
                 if (ldbcf.isONE() && !z.leadingBaseCoefficient().isONE()) {
                     z = engine.basePrimitivePart(z);
                 }

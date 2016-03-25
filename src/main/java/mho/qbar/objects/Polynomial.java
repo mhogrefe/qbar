@@ -1,8 +1,11 @@
 package mho.qbar.objects;
 
+import jas.JasApi;
+import mho.wheels.concurrency.ResultCache;
 import mho.wheels.io.Readers;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.NoRemoveIterable;
+import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.comparators.ShortlexComparator;
 import mho.wheels.structures.Pair;
@@ -52,8 +55,19 @@ public final class Polynomial implements
     private static final Comparator<Iterable<BigInteger>> BIG_INTEGER_ITERABLE_COMPARATOR = new ShortlexComparator<>();
 
     /**
-     * A {@code Comparator} that compares two {@code Polynomial}s by their denominators, then lexicographically by
-     * their coefficients.
+     * Whether to cache some results of {@link Polynomial#factor()}
+     */
+    public static boolean USE_FACTOR_CACHE = true;
+
+    /**
+     * A thread-safe cache of some of the results of {@link Polynomial#factor()}
+     */
+    private static final ResultCache<Polynomial, List<Polynomial>> FACTOR_CACHE =
+            new ResultCache<>(Polynomial::factorRaw, p -> p.degree() > 6);
+
+    /**
+     * A {@code Comparator} that compares two {@code Polynomial}s by their degrees, then lexicographically by their
+     * coefficients.
      */
     private static final @NotNull Comparator<Polynomial> DEGREE_COEFFICIENT_COMPARATOR = (p, q) -> {
         int c = Integer.compare(p.degree(), q.degree());
@@ -128,11 +142,38 @@ public final class Polynomial implements
      */
     @Override
     public @NotNull Rational apply(@NotNull Rational x) {
-        return foldr((c, y) -> x.multiply(y).add(Rational.of(c)), Rational.ZERO, coefficients);
+        if (this == ZERO) return Rational.ZERO;
+        return Rational.of(specialApply(x), x.getDenominator().pow(degree()));
     }
 
     /**
-     * Converts this to a {@code RationalPolynomial}.
+     * Given a {@code Rational x} = b/c, return c<sup>deg({@code this})</sup>{@code this}({@code x}). This modification
+     * of {@link Polynomial#apply(Rational)} only uses {@code BigInteger} arithmetic.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param x the argument
+     * @return {@code this} evaluated at {@code x}, times the denominator of {@code x} raised to the degree of
+     * {@code this}
+     */
+    public @NotNull BigInteger specialApply(@NotNull Rational x) {
+        if (this == ZERO) return BigInteger.ZERO;
+        BigInteger numerator = x.getNumerator();
+        BigInteger denominator = x.getDenominator();
+        BigInteger result = last(coefficients);
+        BigInteger multiplier = BigInteger.ONE;
+        for (int i = coefficients.size() - 2; i >= 0; i--) {
+            multiplier = multiplier.multiply(denominator);
+            result = result.multiply(numerator).add(coefficients.get(i).multiply(multiplier));
+        }
+        return result;
+    }
+
+    /**
+     * Converts {@code this} to a {@code RationalPolynomial}.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Polynomial}.</li>
@@ -239,6 +280,52 @@ public final class Polynomial implements
     }
 
     /**
+     * Returns a degree-1 {@code Polynomial} whose root is a given {@code BigInteger}.
+     *
+     * <ul>
+     *  <li>{@code i} cannot be null.</li>
+     *  <li>The result is monic and has degree 1.</li>
+     * </ul>
+     *
+     * @param i the root of a {@code Polynomial}
+     * @return the minimal polynomial of {@code i}
+     */
+    public static @NotNull Polynomial fromRoot(@NotNull BigInteger i) {
+        return new Polynomial(Arrays.asList(i.negate(), BigInteger.ONE));
+    }
+
+    /**
+     * Returns a degree-1 {@code Polynomial} whose root is a given {@code Rational}.
+     *
+     * <ul>
+     *  <li>{@code r} cannot be null.</li>
+     *  <li>The result is primitive and has degree 1.</li>
+     * </ul>
+     *
+     * @param r the root of a {@code Polynomial}
+     * @return the minimal polynomial of {@code r}
+     */
+    public static @NotNull Polynomial fromRoot(@NotNull Rational r) {
+        return new Polynomial(Arrays.asList(r.getNumerator().negate(), r.getDenominator()));
+    }
+
+    /**
+     * Returns the maximum bit length of any coefficient, or 0 if {@code this} is 0.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>The result is non-negative.</li>
+     * </ul>
+     *
+     * @return the maximum coefficient bit length
+     */
+    public int maxCoefficientBitLength() {
+        if (this == ZERO) return 0;
+        //noinspection RedundantCast
+        return maximum((Iterable<Integer>) map(c -> c.abs().bitLength(), coefficients));
+    }
+
+    /**
      * Returns this {@code Polynomial}'s degree. We consider 0 to have degree –1.
      *
      * <ul>
@@ -246,8 +333,9 @@ public final class Polynomial implements
      *  <li>The result is at least –1.</li>
      * </ul>
      *
-     * @return this {@code Polynomial}'s degree
+     * @return deg({@code this})
      */
+    @SuppressWarnings("JavaDoc")
     public int degree() {
         return coefficients.size() - 1;
     }
@@ -264,6 +352,27 @@ public final class Polynomial implements
      */
     public @NotNull Optional<BigInteger> leading() {
         return this == ZERO ? Optional.<BigInteger>empty() : Optional.of(last(coefficients));
+    }
+
+    /**
+     * Multiplies {@code this} by a power of x.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code p} cannot be negative.</li>
+     * </ul>
+     *
+     * Length is deg({@code this})+{@code p}+1
+     *
+     * @param p the power of x that {@code this} is multiplied by
+     * @return {@code this}×x<sup>{@code p}</sup>
+     */
+    public @NotNull Polynomial multiplyByPowerOfX(int p) {
+        if (p < 0) {
+            throw new ArithmeticException("p cannot be negative. Invalid p: " + p);
+        }
+        if (this == ZERO || p == 0) return this;
+        return new Polynomial(toList(concat(replicate(p, BigInteger.ZERO), coefficients)));
     }
 
     /**
@@ -338,11 +447,45 @@ public final class Polynomial implements
      *  <li>The result may be –1, 0, or 1.</li>
      * </ul>
      *
-     * @return sgn(p(∞))
+     * @return sgn({@code this}(∞))
      */
     @SuppressWarnings("JavaDoc")
     public int signum() {
         return this == ZERO ? 0 : leading().get().signum();
+    }
+
+    /**
+     * Returns the sign of {@code this} when evaluated at {@code x}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param x where {@code this} is evaluated
+     * @return sgn({@code this}(x))
+     */
+    @SuppressWarnings("JavaDoc")
+    public int signum(@NotNull BigInteger x) {
+        return apply(x).signum();
+    }
+
+    /**
+     * Returns the sign of {@code this} when evaluated at {@code x}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param x where {@code this} is evaluated
+     * @return sgn({@code this}(x))
+     */
+    @SuppressWarnings("JavaDoc")
+    public int signum(@NotNull Rational x) {
+        return specialApply(x).signum();
     }
 
     /**
@@ -458,6 +601,60 @@ public final class Polynomial implements
     }
 
     /**
+     * Returns the {@code this} divided by {@code that}, assuming that {@code that} divides each coefficient of
+     * {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>{@code that must divide each coefficient of {@code this}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Length is 0 if {@code this} is 0, or deg({@code this}))+1 otherwise
+     *
+     * @param that the {@code BigInteger} {@code this} is divided by
+     * @return {@code this}/{@code that}
+     */
+    public @NotNull Polynomial divideExact(@NotNull BigInteger that) {
+        if (that.equals(BigInteger.ZERO)) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        if (this == ZERO) return ZERO;
+        if (that.equals(BigInteger.ONE)) return this;
+        List<BigInteger> quotientCoefficients = toList(map(c -> c.divide(that), coefficients));
+        if (quotientCoefficients.size() == 1 && quotientCoefficients.get(0).equals(BigInteger.ONE)) return ONE;
+        return new Polynomial(quotientCoefficients);
+    }
+
+    /**
+     * Returns the {@code this} divided by {@code that}, assuming that {@code that} divides each coefficient of
+     * {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>{@code that must divide each coefficient of {@code this}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Length is 0 if {@code this} is 0, or deg({@code this}))+1 otherwise
+     *
+     * @param that the {@code int} {@code this} is divided by
+     * @return {@code this}/{@code that}
+     */
+    public @NotNull Polynomial divideExact(int that) {
+        if (that == 0) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        if (this == ZERO) return ZERO;
+        if (that == 1) return this;
+        List<BigInteger> quotientCoefficients = toList(map(c -> c.divide(BigInteger.valueOf(that)), coefficients));
+        if (quotientCoefficients.size() == 1 && quotientCoefficients.get(0).equals(BigInteger.ONE)) return ONE;
+        return new Polynomial(quotientCoefficients);
+    }
+
+    /**
      * Returns the left shift of {@code this} by {@code bits}; {@code this}×2<sup>{@code bits}</sup>. Negative
      * {@code bits} are not allowed, even if {@code this} is divisible by a power of 2.
      *
@@ -476,8 +673,7 @@ public final class Polynomial implements
         if (bits < 0) {
             throw new ArithmeticException("bits cannot be negative. Invalid bits: " + bits);
         }
-        if (this == ZERO) return ZERO;
-        if (bits == 0) return this;
+        if (this == ZERO || bits == 0) return this;
         List<BigInteger> shiftedCoefficients = toList(map(r -> r.shiftLeft(bits), coefficients));
         if (shiftedCoefficients.size() == 1 && shiftedCoefficients.get(0).equals(BigInteger.ONE)) return ONE;
         return new Polynomial(shiftedCoefficients);
@@ -641,7 +837,7 @@ public final class Polynomial implements
      * @return whether {@code this} is primitive
      */
     public boolean isPrimitive() {
-        return foldl(BigInteger::gcd, BigInteger.ZERO, coefficients).equals(BigInteger.ONE);
+        return MathUtils.gcd(coefficients).equals(BigInteger.ONE);
     }
 
     /**
@@ -670,11 +866,11 @@ public final class Polynomial implements
                     new Pair<>(constant, ONE) :
                     new Pair<>(constant.negate(), of(IntegerUtils.NEGATIVE_ONE));
         }
-        BigInteger content = foldl(BigInteger::gcd, BigInteger.ZERO, coefficients);
+        BigInteger content = MathUtils.gcd(coefficients);
         if (content.equals(BigInteger.ONE)) {
             return new Pair<>(BigInteger.ONE, this);
         } else {
-            return new Pair<>(content, new Polynomial(toList(map(c -> c.divide(content), coefficients))));
+            return new Pair<>(content, divideExact(content));
         }
     }
 
@@ -698,12 +894,1892 @@ public final class Polynomial implements
             throw new ArithmeticException("this cannot be zero.");
         }
         if (coefficients.size() == 1) return new Pair<>(coefficients.get(0), ONE);
-        BigInteger content = foldl(BigInteger::gcd, BigInteger.ZERO, coefficients);
+        BigInteger content = MathUtils.gcd(coefficients);
         BigInteger factor = signum() == -1 ? content.negate() : content;
         if (factor.equals(BigInteger.ONE)) {
             return new Pair<>(BigInteger.ONE, this);
         } else {
-            return new Pair<>(factor, new Polynomial(toList(map(c -> c.divide(factor), coefficients))));
+            return new Pair<>(factor, divideExact(factor));
+        }
+    }
+
+    /**
+     * Returns the pseudo-quotient and pseudo-remainder when {@code this} is divided by {@code that}. To be more
+     * precise, the result is (q, r) such that
+     * {@code this}×leading({@code that})<sup>deg({@code a})–deg({@code n})+1</sup>={@code that}×q+r and
+     * deg(r){@literal <}deg({@code that}). This is a useful variant of polynomial division that does not require
+     * rational arithmetic.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>{@code that} cannot be 0.</li>
+     *  <li>The degree of {@code this} must be greater than or equal to the degree of {@code that}.</li>
+     *  <li>Neither element of the result is null.</li>
+     * </ul>
+     *
+     * @param that the {@code RationalPolynomial} {@code this} is divided by
+     * @return ({@code this}/{@code that}, {@code this}%{code that})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Pair<Polynomial, Polynomial> pseudoDivide(@NotNull Polynomial that) {
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        int m = degree();
+        int n = that.degree();
+        if (m < n) {
+            throw new ArithmeticException("The degree of this must be greater than or equal to the degree of that." +
+                    " this: " + this + ", that: " + that);
+        }
+        List<BigInteger> q = new ArrayList<>();
+        List<BigInteger> r = toList(coefficients);
+        BigInteger thatLeading = that.leading().get();
+        List<BigInteger> leadingPowers = new ArrayList<>();
+        BigInteger power = BigInteger.ONE;
+        for (int i = 0; i < m - n; i++) {
+            leadingPowers.add(power);
+            power = power.multiply(thatLeading);
+        }
+        leadingPowers.add(power);
+        for (int k = m - n; k >= 0; k--) {
+            q.add(r.get(n + k).multiply(leadingPowers.get(k)));
+            for (int j = n + k - 1; j >= k; j--) {
+                r.set(j, thatLeading.multiply(r.get(j)).subtract(r.get(n + k).multiply(that.coefficients.get(j - k))));
+            }
+            for (int j = k - 1; j >= 0; j--) {
+                r.set(j, thatLeading.multiply(r.get(j)));
+            }
+        }
+        return new Pair<>(of(reverse(q)), of(toList(take(n, r))));
+    }
+
+    /**
+     * Returns the pseudo-remainder when {@code this} is divided by {@code that}. To be more precise, the result is r
+     * such that there exists a q such that
+     * {@code this}×leading({@code that})<sup>deg({@code a})–deg({@code n})+1</sup>={@code that}×q+r and
+     * deg(r){@literal <}deg({@code that}).
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} cannot be 0.</li>
+     *  <li>The degree of {@code this} must be greater than or equal to the degree of {@code that}.</li>
+     *  <li>Neither element of the result is null.</li>
+     * </ul>
+     *
+     * @param that the {@code RationalPolynomial} {@code this} is divided by
+     * @return {@code this}%{code that}
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Polynomial pseudoRemainder(@NotNull Polynomial that) {
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        int m = degree();
+        int n = that.degree();
+        if (m < n) {
+            throw new ArithmeticException("The degree of this must be greater than or equal to the degree of that." +
+                    " this: " + this + ", that: " + that);
+        }
+        List<BigInteger> r = toList(coefficients);
+        BigInteger thatLeading = that.leading().get();
+        for (int k = m - n; k >= 0; k--) {
+            for (int j = n + k - 1; j >= k; j--) {
+                r.set(j, thatLeading.multiply(r.get(j)).subtract(r.get(n + k).multiply(that.coefficients.get(j - k))));
+            }
+            for (int j = k - 1; j >= 0; j--) {
+                r.set(j, thatLeading.multiply(r.get(j)));
+            }
+        }
+        return of(toList(take(n, r)));
+    }
+
+    /**
+     * Returns a variant of the pseudo-quotient and pseudo-remainder when {@code this} is divided by {@code that}. To
+     * be more precise, the result is (q, r) such that
+     * {@code this}×|leading({@code that})|<sup>deg({@code a})–deg({@code n})+1</sup>={@code that}×q+r and
+     * deg(r){@literal <}deg({@code that}).
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>{@code that} cannot be 0.</li>
+     *  <li>The degree of {@code this} must be greater than or equal to the degree of {@code that}.</li>
+     *  <li>Neither element of the result is null.</li>
+     * </ul>
+     *
+     * @param that the {@code RationalPolynomial} {@code this} is divided by
+     * @return ({@code this}/{@code that}, {@code this}%{code that})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Pair<Polynomial, Polynomial> absolutePseudoDivide(@NotNull Polynomial that) {
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        int m = degree();
+        int n = that.degree();
+        if (m < n) {
+            throw new ArithmeticException("The degree of this must be greater than or equal to the degree of that." +
+                    " this: " + this + ", that: " + that);
+        }
+        List<BigInteger> q = new ArrayList<>();
+        List<BigInteger> r = toList(multiply(that.leading().get().abs().pow(m - n + 1)));
+        for (int k = m - n; k >= 0; k--) {
+            BigInteger qCoefficient = r.get(n + k).divide(that.coefficient(n));
+            q.add(qCoefficient);
+            for (int j = n + k - 1; j >= k; j--) {
+                r.set(j, r.get(j).subtract(qCoefficient.multiply(that.coefficient(j - k))));
+            }
+        }
+        return new Pair<>(of(reverse(q)), of(toList(take(n, r))));
+    }
+
+    /**
+     * Returns a variant of the pseudo-remainder when {@code this} is divided by {@code that}. To be more precise, the
+     * result is r such that there exists a q such that
+     * {@code this}×|leading({@code that})|<sup>deg({@code a})–deg({@code n})+1</sup>={@code that}×q+r and
+     * deg(r){@literal <}deg({@code that}).
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} cannot be 0.</li>
+     *  <li>The degree of {@code this} must be greater than or equal to the degree of {@code that}.</li>
+     *  <li>Neither element of the result is null.</li>
+     * </ul>
+     *
+     * @param that the {@code RationalPolynomial} {@code this} is divided by
+     * @return {@code this}%{code that}
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Polynomial absolutePseudoRemainder(@NotNull Polynomial that) {
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        int m = degree();
+        int n = that.degree();
+        if (m < n) {
+            throw new ArithmeticException("The degree of this must be greater than or equal to the degree of that." +
+                    " this: " + this + ", that: " + that);
+        }
+        List<BigInteger> r = toList(multiply(that.leading().get().abs().pow(m - n + 1)));
+        for (int k = m - n; k >= 0; k--) {
+            BigInteger qCoefficient = r.get(n + k).divide(that.coefficient(n));
+            for (int j = n + k - 1; j >= k; j--) {
+                r.set(j, r.get(j).subtract(qCoefficient.multiply(that.coefficient(j - k))));
+            }
+        }
+        return of(toList(take(n, r)));
+    }
+
+    /**
+     * Returns a variant of the pseudo-quotient and pseudo-remainder when {@code this} is divided by {@code that}. To
+     * be more precise, the result is (q, r) such that
+     * {@code this}×leading({@code that})<sup>d</sup>={@code that}×q+r and deg(r){@literal <}deg({@code that}), where
+     * d is the smallest even integer greater than or equal to deg({@code a})–deg({@code n})+1.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>{@code that} cannot be 0.</li>
+     *  <li>The degree of {@code this} must be greater than or equal to the degree of {@code that}.</li>
+     *  <li>Neither element of the result is null.</li>
+     * </ul>
+     *
+     * @param that the {@code RationalPolynomial} {@code this} is divided by
+     * @return ({@code this}/{@code that}, {@code this}%{code that})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Pair<Polynomial, Polynomial> evenPseudoDivide(@NotNull Polynomial that) {
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        int m = degree();
+        int n = that.degree();
+        if (m < n) {
+            throw new ArithmeticException("The degree of this must be greater than or equal to the degree of that." +
+                    " this: " + this + ", that: " + that);
+        }
+        List<BigInteger> q = new ArrayList<>();
+        int d = m - n + 1;
+        if ((d & 1) != 0) d++;
+        List<BigInteger> r = toList(multiply(that.leading().get().pow(d)));
+        for (int k = m - n; k >= 0; k--) {
+            BigInteger qCoefficient = r.get(n + k).divide(that.coefficient(n));
+            q.add(qCoefficient);
+            for (int j = n + k - 1; j >= k; j--) {
+                r.set(j, r.get(j).subtract(qCoefficient.multiply(that.coefficient(j - k))));
+            }
+        }
+        return new Pair<>(of(reverse(q)), of(toList(take(n, r))));
+    }
+
+    /**
+     * Returns a variant of the pseudo-remainder when {@code this} is divided by {@code that}. To be more precise, the
+     * result is r such that there exists a q such that
+     * {@code this}×leading({@code that})<sup>d</sup>={@code that}×q+r and deg(r){@literal <}deg({@code that}), where
+     * d is the smallest even integer greater than or equal to deg({@code a})–deg({@code n})+1.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} cannot be 0.</li>
+     *  <li>The degree of {@code this} must be greater than or equal to the degree of {@code that}.</li>
+     *  <li>Neither element of the result is null.</li>
+     * </ul>
+     *
+     * @param that the {@code RationalPolynomial} {@code this} is divided by
+     * @return {@code this}%{code that}
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Polynomial evenPseudoRemainder(@NotNull Polynomial that) {
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        int m = degree();
+        int n = that.degree();
+        if (m < n) {
+            throw new ArithmeticException("The degree of this must be greater than or equal to the degree of that." +
+                    " this: " + this + ", that: " + that);
+        }
+        int d = m - n + 1;
+        if ((d & 1) != 0) d++;
+        List<BigInteger> r = toList(multiply(that.leading().get().pow(d)));
+        for (int k = m - n; k >= 0; k--) {
+            BigInteger qCoefficient = r.get(n + k).divide(that.coefficient(n));
+            for (int j = n + k - 1; j >= k; j--) {
+                r.set(j, r.get(j).subtract(qCoefficient.multiply(that.coefficient(j - k))));
+            }
+        }
+        return of(toList(take(n, r)));
+    }
+
+    /**
+     * Determines whether {@code this} is divisible by {@code that}, i.e. whether there exists a
+     * {@code RationalPolynomial} p (with not-necessarily-integral coefficients) such that
+     * {@code p}×{@code that}={@code this}. {@code that} cannot be 0, even when {@code this} is 0.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} cannot be 0.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @param that the {@code Polynomial} that {@code this} may or may not be divisible by
+     * @return whether {@code this} is divisible by {@code that}
+     */
+    public boolean isDivisibleBy(@NotNull Polynomial that) {
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        return this == ZERO || degree() >= that.degree() && pseudoDivide(that).b == ZERO;
+    }
+
+    /**
+     * Returns the quotient of {@code this} and {@code that}, assuming that {@code this} is divisible by {@code that}
+     * in the ring ℤ[x]. Otherwise, an exception is thrown.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>{@code this} must be divisible by {@code that} and the quotient must have integral coefficients.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code Polynomial} {@code this} is divided by
+     * @return {@code this}/{@code that}.
+     */
+    public @NotNull Polynomial divideExact(@NotNull Polynomial that) {
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        if (this == ZERO) return ZERO;
+        int m = degree();
+        int n = that.degree();
+        if (m < n) {
+            throw new ArithmeticException("this must be divisible by that. this: " + this + ", that: " + that);
+        }
+        if (that == ONE) return this;
+        List<BigInteger> q = new ArrayList<>();
+        List<BigInteger> r = toList(coefficients);
+        for (int k = m - n; k >= 0; k--) {
+            BigInteger[] qCoefficient = r.get(n + k).divideAndRemainder(that.coefficient(n));
+            if (!qCoefficient[1].equals(BigInteger.ZERO)) {
+                throw new ArithmeticException("this must be divisible by that. this: " + this + ", that: " + that);
+            }
+            q.add(qCoefficient[0]);
+            for (int j = n + k - 1; j >= k; j--) {
+                r.set(j, r.get(j).subtract(qCoefficient[0].multiply(that.coefficient(j - k))));
+            }
+        }
+        if (any(c -> !c.equals(BigInteger.ZERO), take(n, r))) {
+            throw new ArithmeticException("this must be divisible by that. this: " + this + ", that: " + that);
+        }
+        return of(reverse(q));
+    }
+
+    /**
+     * Returns the remainder of {@code this} and {@code that}, assuming that both the quotient and the remainder are in
+     * the ring ℤ[x]. Otherwise, an exception is thrown.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>The quotient and remainder of {@code this} divided by {@code that} must have integral coefficients.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code Polynomial} {@code this} is divided by
+     * @return {@code this}%{@code that}
+     */
+    public @NotNull Polynomial remainderExact(@NotNull Polynomial that) {
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        int m = degree();
+        int n = that.degree();
+        if (m < n) return this;
+        if (that == ONE) return ZERO;
+        List<BigInteger> r = toList(coefficients);
+        for (int k = m - n; k >= 0; k--) {
+            BigInteger[] qCoefficient = r.get(n + k).divideAndRemainder(that.coefficient(n));
+            if (!qCoefficient[1].equals(BigInteger.ZERO)) {
+                throw new ArithmeticException("The quotient and remainder of this divided by that must have integral" +
+                        " coefficients.");
+            }
+            for (int j = n + k - 1; j >= k; j--) {
+                r.set(j, r.get(j).subtract(qCoefficient[0].multiply(that.coefficient(j - k))));
+            }
+        }
+        return of(toList(take(n, r)));
+    }
+
+    /**
+     * Given two {@code Polynomial}s, returns a list of {@code Polynomial}s with certain useful properties. For
+     * example, the last element is a GCD of the two polynomials. This particular sequence is inefficient and is only
+     * implemented here for testing purposes.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} may be any {@code Polynomial}.</li>
+     *  <li>The degree of {@code this} must be greater than or equal to the degree of {@code that}.</li>
+     *  <li>{@code this} and {@code that} cannot both be zero.</li>
+     *  <li>No element of the result is null.</li>
+     * </ul>
+     *
+     * @param that another {@code RationalPolynomial}
+     * @return the trivial pseudo-remainder sequence of {@code this} and {@code that}
+     */
+    public @NotNull List<Polynomial> trivialPseudoRemainderSequence(@NotNull Polynomial that) {
+        if (this == ZERO && that == ZERO) {
+            throw new ArithmeticException("this and that cannot both be zero.");
+        }
+        List<Polynomial> sequence = new ArrayList<>();
+        sequence.add(this);
+        if (that == ZERO) return sequence;
+        sequence.add(that);
+        for (int i = 0; ; i++) {
+            Polynomial next = sequence.get(i).pseudoRemainder(sequence.get(i + 1));
+            if (next == ZERO) return sequence;
+            sequence.add(next);
+        }
+    }
+
+    /**
+     * Given two {@code Polynomial}s, returns a list of {@code Polynomial}s with certain useful properties. For
+     * example, every element in the list is primitive or zero, and the last element is a GCD of the two polynomials.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} may be any {@code Polynomial}.</li>
+     *  <li>The degree of {@code this} must be greater than or equal to the degree of {@code that}.</li>
+     *  <li>{@code this} and {@code that} cannot both be zero.</li>
+     *  <li>No element of the result is null.</li>
+     * </ul>
+     *
+     * @param that another {@code RationalPolynomial}
+     * @return the primitive pseudo-remainder sequence of {@code this} and {@code that}
+     */
+    public @NotNull List<Polynomial> primitivePseudoRemainderSequence(@NotNull Polynomial that) {
+        if (this == ZERO && that == ZERO) {
+            throw new ArithmeticException("this and that cannot both be zero.");
+        }
+        List<Polynomial> sequence = new ArrayList<>();
+        sequence.add(this == ZERO ? ZERO : contentAndPrimitive().b);
+        if (that == ZERO) return sequence;
+        sequence.add(that.contentAndPrimitive().b);
+        for (int i = 0; ; i++) {
+            Polynomial next = sequence.get(i).pseudoRemainder(sequence.get(i + 1));
+            if (next == ZERO) return sequence;
+            sequence.add(next.contentAndPrimitive().b);
+        }
+    }
+
+    /**
+     * Given two {@code Polynomial}s, returns a list of {@code Polynomial}s with certain useful properties. For
+     * example, the last element is a GCD of the two polynomials.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} may be any {@code Polynomial}.</li>
+     *  <li>The degree of {@code this} must be greater than or equal to the degree of {@code that}.</li>
+     *  <li>{@code this} and {@code that} cannot both be zero.</li>
+     *  <li>No element of the result is null.</li>
+     * </ul>
+     *
+     * @param that another {@code RationalPolynomial}
+     * @return the subresultant sequence of {@code this} and {@code that}
+     */
+    public @NotNull List<Polynomial> subresultantSequence(@NotNull Polynomial that) {
+        if (this == ZERO && that == ZERO) {
+            throw new ArithmeticException("this and that cannot both be zero.");
+        }
+        List<Polynomial> sequence = new ArrayList<>();
+        sequence.add(this);
+        if (that == ZERO) return sequence;
+        sequence.add(that);
+        BigInteger g = BigInteger.ONE;
+        BigInteger h = BigInteger.ONE;
+        Polynomial a = this;
+        Polynomial b = that;
+        while (true) {
+            Polynomial r = a.pseudoRemainder(b);
+            if (r == ZERO) return sequence;
+            int delta = a.degree() - b.degree();
+            BigInteger divisor = g.multiply(h.pow(delta));
+            g = b.leading().get();
+            h = delta > 0 ? g.pow(delta).divide(h.pow(delta - 1)) : g.pow(delta).multiply(h.pow(1 - delta));
+            a = b;
+            b = of(toList(map(c -> c.divide(divisor), r)));
+            sequence.add(b);
+        }
+    }
+
+    /**
+     * Returns the unique primitive GCD with positive leading coefficient of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} may be any {@code Polynomial}.</li>
+     *  <li>{@code this} and {@code that} cannot both be zero.</li>
+     *  <li>The result is primitive and has positive leading coefficient.</li>
+     * </ul>
+     *
+     * @param that the {@code Polynomial} that {@code this} is GCD'd with
+     * @return the primitive polynomial of maximum degree with positive leading coefficient that divides {@code this}
+     * and {@code that}
+     */
+    public @NotNull Polynomial gcd(@NotNull Polynomial that) {
+        if (this == ZERO && that == ZERO) {
+            throw new ArithmeticException("this and that cannot both be zero.");
+        }
+        if (this == ZERO) return that.constantFactor().b;
+        if (that == ZERO) return constantFactor().b;
+        if (this == ONE || that == ONE) return ONE;
+        Polynomial a;
+        Polynomial b;
+        if (degree() >= that.degree()) {
+            a = this;
+            b = that;
+        } else {
+            a = that;
+            b = this;
+        }
+        BigInteger g = BigInteger.ONE;
+        BigInteger h = BigInteger.ONE;
+        while (true) {
+            Polynomial r = a.pseudoRemainder(b);
+            if (r == ZERO) return b.constantFactor().b;
+            int delta = a.degree() - b.degree();
+            BigInteger divisor = g.multiply(h.pow(delta));
+            g = b.leading().get();
+            h = delta > 0 ? g.pow(delta).divide(h.pow(delta - 1)) : g.pow(delta).multiply(h.pow(1 - delta));
+            a = b;
+            b = of(toList(map(c -> c.divide(divisor), r)));
+        }
+    }
+
+    /**
+     * Returns the unique primitive GCD with positive leading coefficient of {@code ps}. The GCD of a set containing
+     * only zeros is undefined.
+     *
+     * <ul>
+     *  <li>{@code ps} cannot contain nulls and must contain at least one nonzero {@code Polynomial}.</li>
+     *  <li>The result is primitive and has a positive leading coefficient.</li>
+     * </ul>
+     *
+     * @param ps the {@code Polynomial}s whose GCD is sought
+     * @return the primitive polynomial of maximum degree with positive leading coefficient that divides all of
+     * {@code ps}
+     */
+    public static @NotNull Polynomial gcd(@NotNull List<Polynomial> ps) {
+        if (any(p -> p == null, ps)) {
+            throw new NullPointerException();
+        }
+        List<Polynomial> noZeros = toList(filter(p -> p != ZERO, ps));
+        if (noZeros.isEmpty()) {
+            throw new ArithmeticException("ps must contain at least one nonzero Polynomial. Invalid ps: " + ps);
+        }
+        if (noZeros.size() == 1) {
+            return head(noZeros).constantFactor().b;
+        } else {
+            return foldl1(Polynomial::gcd, noZeros);
+        }
+    }
+
+    /**
+     * Returns the unique primitive LCM with positive leading coefficient of {@code this} and {@code that}, or zero if
+     * either input is zero.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} may be any {@code Polynomial}.</li>
+     *  <li>The result is zero or primitive and with positive leading coefficient.</li>
+     * </ul>
+     *
+     * @param that the {@code Polynomial} that {@code this} is LCM'd with
+     * @return the polynomial of minimum degree that has {@code this} and {@code that} as factors and is primitive with
+     * positive leading coefficient or zero
+     */
+    public @NotNull Polynomial lcm(@NotNull Polynomial that) {
+        if (this == ZERO || that == ZERO) return ZERO;
+        Polynomial ppThis = constantFactor().b;
+        Polynomial ppThat = that.constantFactor().b;
+        return ppThis.divideExact(ppThis.gcd(ppThat)).multiply(ppThat);
+    }
+
+    /**
+     * Determines whether {@code this} is relatively prime to {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} may be any {@code Polynomial}.</li>
+     *  <li>{@code this} and {@code that} cannot both be zero.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @param that the {@code Polynomial} that may be relatively prime to {@code this}
+     * @return whether {@code this} and {@code that} have no nonconstant common factors
+     */
+    public boolean isRelativelyPrimeTo(@NotNull Polynomial that) {
+        if (this == ZERO && that == ZERO) {
+            throw new ArithmeticException();
+        }
+        if (degree() == 0 || that.degree() == 0) return true;
+        if (this == ZERO || that == ZERO) return false;
+        int aLowestPower = findIndex(c -> !c.equals(BigInteger.ZERO), coefficients).get();
+        int bLowestPower = findIndex(c -> !c.equals(BigInteger.ZERO), that.coefficients).get();
+        return (aLowestPower == 0 || bLowestPower == 0) && gcd(that) == ONE;
+    }
+
+    /**
+     * Determines whether {@code this} is square-free.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} has no repeated factors
+     */
+    public boolean isSquareFree() {
+        return this != ZERO && isRelativelyPrimeTo(differentiate());
+    }
+
+    /**
+     * Returns the square-free part of {@code this}, or {@code this} with all repeated factors removed.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>The result is primitive and has positive leading coefficient.</li>
+     * </ul>
+     *
+     * @return the square-free part of {@code this}
+     */
+    public @NotNull Polynomial squareFreePart() {
+        Polynomial ppThis = constantFactor().b;
+        return ppThis.divideExact(ppThis.gcd(ppThis.differentiate()));
+    }
+
+    /**
+     * Returns a list of {@code Polynomial}s whose product is the positive primitive part of {@code this} and each of
+     * which is square-free. Uses Yun's algorithm.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero, must have a positive leading coefficient, and must be primitive.</li>
+     *  <li>The result is a list of primitive, square-free {@code Polynomial}s with positive leading coefficients.</li>
+     * </ul>
+     *
+     * @return a square-free factorization of {@code this}
+     */
+    public @NotNull List<Polynomial> squareFreeFactor() {
+        List<Polynomial> factors = new ArrayList<>();
+        Polynomial p = this;
+        while (p != ONE) {
+            Polynomial gcd = p.gcd(p.differentiate());
+            factors.add(p.divideExact(gcd));
+            p = gcd;
+        }
+        return factors;
+    }
+
+    /**
+     * The no-cache version of {@link Polynomial#factor()}.
+     */
+    public @NotNull List<Polynomial> factorRaw() {
+        if (this == ZERO) {
+            throw new ArithmeticException("this cannot be zero.");
+        }
+        if (this == ONE) return Collections.emptyList();
+        if (degree() < 1) return Collections.singletonList(this);
+        List<Polynomial> factors = new ArrayList<>();
+        Pair<BigInteger, Polynomial> cf = constantFactor();
+        if (!cf.a.equals(BigInteger.ONE)) {
+            factors.add(of(cf.a));
+        }
+        Map<Polynomial, Integer> factorMultiset = new HashMap<>();
+        for (Polynomial p : cf.b.squareFreeFactor()) {
+            Integer frequency = factorMultiset.get(p);
+            if (frequency == null) {
+                frequency = 0;
+            }
+            factorMultiset.put(p, frequency + 1);
+        }
+        for (Map.Entry<Polynomial, Integer> entry : factorMultiset.entrySet()) {
+            List<Polynomial> fs = toList(map(Polynomial::of, JasApi.factorSquareFree(toList(entry.getKey()))));
+            for (int i = 0; i < entry.getValue(); i++) {
+                factors.addAll(fs);
+            }
+        }
+        return sort(factors);
+    }
+
+    /**
+     * Factors {@code this}. The result is sorted (see {@link Polynomial#compareTo(Polynomial)}). 0 cannot be factored.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>The result is weakly increasing. All elements, except possibly the first, are non-constant, primitive,
+     *  irreducible, and have a positive leading coefficient.</li>
+     * </ul>
+     *
+     * @return the irreducible factors of {@code this}
+     */
+    public @NotNull List<Polynomial> factor() {
+        return USE_FACTOR_CACHE ? FACTOR_CACHE.get(this) : factorRaw();
+    }
+
+    /**
+     * Determines whether {@code this} is irreducible–that is, it has a positive leading coefficient and no nontrivial
+     * factors, including constant factors.
+     *
+     * <li>{@code this} cannot be zero.</li>
+     * <li>The result may be either {@code boolean}.</li>
+     *
+     * @return whether {@code this} is irreducible
+     */
+    public boolean isIrreducible() {
+        if (this == ZERO) {
+            throw new ArithmeticException("this cannot be zero.");
+        }
+        return this == ONE ||
+                degree() > 0 && signum() != -1 && (equals(X) || !coefficient(0).equals(BigInteger.ZERO)) &&
+                factor().size() == 1;
+    }
+
+    /**
+     * Given a {@code List} of {@code Pair}s of {@code BigInteger}s representing (x, y)-points, returns the
+     * minimal-degree {@code RationalPolynomial} passing through those points. The x-values, or the first elements of
+     * the pairs, must be unique. A list with duplicates will cause an exception, even if the y-values are the same. If
+     * {@code points} is empty, the result is 0.
+     *
+     * <ul>
+     *  <li>{@code points} cannot contain nulls, and neither element of any {@code Pair} can be null. The first
+     *  elements of the {@code Pair}s must be unique.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param points the (x, y)-values of the points to be interpolated
+     * @return the {@code RationalPolynomial} with the smallest degree that passes through {@code points}
+     */
+    public static @NotNull RationalPolynomial interpolate(@NotNull List<Pair<BigInteger, BigInteger>> points) {
+        if (any(p -> p.a == null, points)) {
+            throw new NullPointerException();
+        }
+        if (!unique(map(p -> p.a, points))) {
+            throw new IllegalArgumentException();
+        }
+        int degree = points.size() - 1;
+        List<Vector> rows = new ArrayList<>();
+        //noinspection Convert2streamapi
+        for (Pair<BigInteger, BigInteger> point : points) {
+            rows.add(Vector.of(toList(take(degree + 1, iterate(r -> r.multiply(point.a), BigInteger.ONE)))));
+        }
+        Matrix matrix = Matrix.fromRows(rows);
+        Vector yValues = Vector.of(toList(map(p -> p.b, points)));
+        return RationalPolynomial.of(toList(matrix.solveLinearSystem(yValues).get()));
+    }
+
+    /**
+     * Returns the Frobenius companion matrix of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} must be monic.</li>
+     *  <li>The first row of the result has zeros in all but the last column, and the submatrix produced by omitting
+     *  the first row and the last column is the identity.</li>
+     * </ul>
+     *
+     * @return the companion matrix of {@code this}
+     */
+    public @NotNull Matrix companionMatrix() {
+        if (this == ONE) {
+            return Matrix.zero(0, 0);
+        }
+        if (!isMonic()) {
+            throw new IllegalArgumentException("this must be monic. Invalid this: " + this);
+        }
+        int degree = degree();
+        List<Vector> rows = new ArrayList<>();
+        List<BigInteger> row = toList(replicate(degree - 1, BigInteger.ZERO));
+        row.add(coefficients.get(0).negate());
+        rows.add(Vector.of(row));
+        for (int i = 1; i < degree; i++) {
+            row.clear();
+            for (int j = 1; j < degree; j++) {
+                row.add(i == j ? BigInteger.ONE : BigInteger.ZERO);
+            }
+            row.add(coefficients.get(i).negate());
+            rows.add(Vector.of(row));
+        }
+        return Matrix.fromRows(rows);
+    }
+
+    /**
+     * Returns a {@code Matrix} containing the coefficients of a {@code List} of {@code Polynomial}s.
+     *
+     * <ul>
+     *  <li>{@code ps} may not have more elements than one more than the maximum degree of {@code ps}.</li>
+     *  <li>The result has a height less than or equal to its width, and its first column, if it exists, does not only
+     *  contain zeros.</li>
+     * </ul>
+     *
+     * Size is length({@code ps})×(max({deg(p)|p∈{@code ps}})+1)
+     *
+     * @param ps a {@code List} of {@code Polynomial}s
+     * @return Mat({@code ps})
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull Matrix coefficientMatrix(@NotNull List<Polynomial> ps) {
+        if (ps.isEmpty()) return Matrix.zero(0, 0);
+        int width = maximum(map(Polynomial::degree, ps)) + 1;
+        if (ps.size() > width) {
+            throw new IllegalArgumentException("ps may not have more elements than one more than the maximum degree" +
+                    " of ps. Invalid ps: " + ps);
+        }
+        List<Vector> rows = new ArrayList<>();
+        for (Polynomial p : ps) {
+            List<BigInteger> row = new ArrayList<>();
+            for (int i = width - 1; i >= 0; i--) {
+                row.add(p.coefficient(i));
+            }
+            rows.add(Vector.of(row));
+        }
+        return Matrix.fromRows(rows);
+    }
+
+    /**
+     * Returns a square {@code PolynomialMatrix} derived from a {@code List} of {@code Polynomial}s.
+     *
+     * <ul>
+     *  <li>{@code ps} may not have more elements than one more than the maximum degree of {@code ps}.</li>
+     *  <li>The result is square, and all elements not in the last column are constant.</li>
+     * </ul>
+     *
+     * Size is length({@code ps})×length({@code ps})
+     *
+     * @param ps a {@code List} of {@code Polynomial}s
+     * @return Mat({@code ps})*
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull PolynomialMatrix augmentedCoefficientMatrix(@NotNull List<Polynomial> ps) {
+        if (ps.isEmpty()) return PolynomialMatrix.zero(0, 0);
+        Matrix coefficientMatrix = coefficientMatrix(ps);
+        int m = ps.size();
+        return PolynomialMatrix.of(coefficientMatrix.submatrix(toList(range(0, m - 1)), toList(range(0, m - 2))))
+                .augment(PolynomialMatrix.fromColumns(Collections.singletonList(PolynomialVector.of(ps))));
+    }
+
+    /**
+     * Returns the polynomial determinant of a {@code List} of {@code Polynomial}s.
+     *
+     * <ul>
+     *  <li>{@code ps} may not have more elements than one more than the maximum degree of {@code ps}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param ps a {@code List} of {@code Polynomial}s
+     * @return pdet({@code ps})
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull Polynomial determinant(@NotNull List<Polynomial> ps) {
+        Matrix coefficientMatrix = coefficientMatrix(ps);
+        int m = ps.size();
+        int n = coefficientMatrix.width();
+        if (m == n) return of(coefficientMatrix.determinant());
+        List<BigInteger> detCoefficients = new ArrayList<>();
+        for (int i = 0; i <= n - m; i++) {
+            Matrix sub = coefficientMatrix.submatrix(
+                    toList(range(0, m - 1)),
+                    toList(concat(range(0, m - 2), Collections.singletonList(n - i - 1)))
+            );
+            detCoefficients.add(sub.determinant());
+        }
+        return of(detCoefficients);
+    }
+
+    /**
+     * Returns the Sylvester matrix of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>The result is a Sylvester matrix.</li>
+     * </ul>
+     *
+     * Size is (length({@code this})+length({@code that})–2)×(length({@code this})+length({@code that})–2)
+     *
+     * @param that a {@code Polynomial}
+     * @return S<sub>{@code this},{@code that}</sub>
+     */
+    public @NotNull Matrix sylvesterMatrix(@NotNull Polynomial that) {
+        if (this == ZERO) {
+            throw new ArithmeticException("this cannot be zero.");
+        }
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        int thisDegree = degree();
+        int thatDegree = that.degree();
+        List<BigInteger> thisCoefficients = reverse(coefficients);
+        List<BigInteger> thatCoefficients = reverse(that.coefficients);
+        List<Vector> rows = new ArrayList<>();
+        for (int i = 0; i < thatDegree; i++) {
+            List<BigInteger> row = new ArrayList<>();
+            for (int j = 0; j < i; j++) {
+                row.add(BigInteger.ZERO);
+            }
+            row.addAll(thisCoefficients);
+            for (int j = 0; j < thatDegree - i - 1; j++) {
+                row.add(BigInteger.ZERO);
+            }
+            rows.add(Vector.of(row));
+        }
+        for (int i = 0; i < thisDegree; i++) {
+            List<BigInteger> row = new ArrayList<>();
+            for (int j = 0; j < i; j++) {
+                row.add(BigInteger.ZERO);
+            }
+            row.addAll(thatCoefficients);
+            for (int j = 0; j < thisDegree - i - 1; j++) {
+                row.add(BigInteger.ZERO);
+            }
+            rows.add(Vector.of(row));
+        }
+        return Matrix.fromRows(rows);
+    }
+
+    /**
+     * Returns the resultant of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that a {@code Polynomial}
+     * @return Res({@code this},{@code that})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull BigInteger resultant(@NotNull Polynomial that) {
+        return sylvesterMatrix(that).determinant();
+    }
+
+    /**
+     * Returns the {@code j}th Sylvester-Habicht matrix of {@code this} and {@code that}. This matrix is useful in
+     * defining subresultants and subresultant coefficients.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>{@code this} must have a degree greater than {@code that}.</li>
+     *  <li>{@code j} cannot be negative.</li>
+     *  <li>{@code j} cannot be greater than the degree of {@code that}.</li>
+     *  <li>The result is a Sylvester-Habicht matrix.</li>
+     * </ul>
+     *
+     * Size is (length({@code this})+length({@code that})–2–2j)×(length({@code this})+length({@code that})–2–j)
+     *
+     * @param that a {@code Polynomial}
+     * @param j the index of the matrix
+     * @return SyHa<sub>j</sub>({@code this}, {@code that})
+     */
+    public @NotNull Matrix sylvesterHabichtMatrix(@NotNull Polynomial that, int j) {
+        if (this == ZERO) {
+            throw new ArithmeticException("this cannot be zero.");
+        }
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        int thisDegree = degree();
+        int thatDegree = that.degree();
+        if (thisDegree <= thatDegree) {
+            throw new IllegalArgumentException("this must have a degree greater than that. this: " +
+                    this + ", that: " + that);
+        }
+        if (j < 0) {
+            throw new IllegalArgumentException("j cannot be negative. Invalid j: " + j);
+        }
+        if (j > thatDegree) {
+            throw new IllegalArgumentException("j cannot be greater than the degree of that. j: " + j + ", that: " +
+                    that);
+        }
+        List<BigInteger> thisCoefficients = reverse(coefficients);
+        List<BigInteger> thatCoefficients = reverse(that.coefficients);
+        List<Vector> rows = new ArrayList<>();
+        for (int i = 0; i < thatDegree - j; i++) {
+            List<BigInteger> row = new ArrayList<>();
+            for (int k = 0; k < i; k++) {
+                row.add(BigInteger.ZERO);
+            }
+            row.addAll(thisCoefficients);
+            for (int k = 0; k < thatDegree - j - i - 1; k++) {
+                row.add(BigInteger.ZERO);
+            }
+            rows.add(Vector.of(row));
+        }
+        for (int i = 0; i < thisDegree - j; i++) {
+            List<BigInteger> row = new ArrayList<>();
+            for (int k = 0; k < thisDegree - j - i - 1; k++) {
+                row.add(BigInteger.ZERO);
+            }
+            row.addAll(thatCoefficients);
+            for (int k = 0; k < i; k++) {
+                row.add(BigInteger.ZERO);
+            }
+            rows.add(Vector.of(row));
+        }
+        return Matrix.fromRows(rows);
+    }
+
+    /**
+     * Returns the {@code j}th signed subresultant coefficient of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>{@code this} must have a degree greater than {@code that}.</li>
+     *  <li>{@code j} cannot be negative.</li>
+     *  <li>{@code j} cannot be greater than the degree of {@code this}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that a {@code Polynomial}
+     * @param j the index of the coefficient
+     * @return sRes<sub>j</sub>({@code this}, {@code that})
+     */
+    public @NotNull BigInteger signedSubresultantCoefficient(@NotNull Polynomial that, int j) {
+        if (this == ZERO) {
+            throw new ArithmeticException("this cannot be zero.");
+        }
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        int thisDegree = degree();
+        int thatDegree = that.degree();
+        if (j < 0) {
+            throw new IllegalArgumentException("j cannot be negative. Invalid j: " + j);
+        } else if (j <= thatDegree) {
+            Matrix sylvesterHabichtMatrix = sylvesterHabichtMatrix(that, j);
+            List<Integer> range = toList(range(0, sylvesterHabichtMatrix.height() - 1));
+            return sylvesterHabichtMatrix.submatrix(range, range).determinant();
+        } else if (j < thisDegree - 1) {
+            return BigInteger.ZERO;
+        } else if (j == thisDegree - 1) {
+            return that.leading().get();
+        } else if (j == thisDegree) {
+            return leading().get();
+        } else {
+            throw new IllegalArgumentException("j cannot be greater than the degree of this. j: " + j + ", this: " +
+                    that);
+        }
+    }
+
+    /**
+     * Returns the {@code j}th Sylvester-Habicht polynomial matrix of {@code this} and {@code that}. This matrix is
+     * useful in defining subresultants and subresultant coefficients.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>{@code this} must have a degree greater than {@code that}.</li>
+     *  <li>{@code j} cannot be negative.</li>
+     *  <li>{@code j} cannot be greater than the degree of {@code that}.</li>
+     *  <li>The result is a Sylvester-Habicht polynomial matrix.</li>
+     * </ul>
+     *
+     * Size is (length({@code this})+length({@code that})–2–2j)×(length({@code this})+length({@code that})–2–j)
+     *
+     * @param that a {@code Polynomial}
+     * @param j the index of the matrix
+     * @return SyHaPol<sub>j</sub>({@code this}, {@code that})
+     */
+    public @NotNull PolynomialMatrix sylvesterHabichtPolynomialMatrix(@NotNull Polynomial that, int j) {
+        if (this == ZERO) {
+            throw new ArithmeticException("this cannot be zero.");
+        }
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        int thisDegree = degree();
+        int thatDegree = that.degree();
+        if (thisDegree <= thatDegree) {
+            throw new IllegalArgumentException("this must have a degree greater than that. this: " +
+                    this + ", that: " + that);
+        }
+        if (j < 0) {
+            throw new IllegalArgumentException("j cannot be negative. Invalid j: " + j);
+        }
+        if (j > thatDegree) {
+            throw new IllegalArgumentException("j cannot be greater than the degree of that. j: " + j + ", that: " +
+                    that);
+        }
+        Matrix shm = sylvesterHabichtMatrix(that, j);
+        Matrix left = shm.submatrix(toList(range(0, shm.height() - 1)), toList(range(0, shm.height() - 2)));
+        List<Polynomial> ps = new ArrayList<>();
+        for (int i = thatDegree - 1 - j; i >= 0; i--) {
+            ps.add(multiplyByPowerOfX(i));
+        }
+        for (int i = 0; i < thisDegree - j; i++) {
+            ps.add(that.multiplyByPowerOfX(i));
+        }
+        PolynomialMatrix lastColumn = PolynomialMatrix.fromColumns(Collections.singletonList(PolynomialVector.of(ps)));
+        return PolynomialMatrix.of(left).augment(lastColumn);
+    }
+
+    /**
+     * Returns the {@code j}th signed subresultant of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>{@code this} must have a degree greater than {@code that}.</li>
+     *  <li>{@code j} cannot be negative.</li>
+     *  <li>{@code j} cannot be greater than the degree of {@code this}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that a {@code Polynomial}
+     * @param j the index of the subresultant
+     * @return sResP<sub>j</sub>({@code this}, {@code that})
+     */
+    public @NotNull Polynomial signedSubresultant(@NotNull Polynomial that, int j) {
+        if (this == ZERO) {
+            throw new ArithmeticException("this cannot be zero.");
+        }
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        int thisDegree = degree();
+        int thatDegree = that.degree();
+        if (j < 0) {
+            throw new IllegalArgumentException("j cannot be negative. Invalid j: " + j);
+        } else if (j <= thatDegree) {
+            return sylvesterHabichtPolynomialMatrix(that, j).determinant();
+        } else if (j < thisDegree - 1) {
+            return ZERO;
+        } else if (j == thisDegree - 1) {
+            return that;
+        } else if (j == thisDegree) {
+            return this;
+        } else {
+            throw new IllegalArgumentException("j cannot be greater than the degree of this. j: " + j + ", this: " +
+                    that);
+        }
+    }
+
+    /**
+     * Returns the signed subresultant sequence of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>{@code this} must have a degree greater than {@code that}.</li>
+     *  <li>The result contains no nulls.</li>
+     * </ul>
+     *
+     * @param that a {@code Polynomial}
+     * @return sResP<sub>deg({@code this})</sub>, ..., sResP<sub>0</sub>
+     */
+    public @NotNull List<Polynomial> signedSubresultantSequence(@NotNull Polynomial that) {
+        if (this == ZERO) {
+            throw new ArithmeticException("this cannot be zero.");
+        }
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        int p = degree();
+        int q = that.degree();
+        if (p <= q) {
+            throw new IllegalArgumentException("this must have a degree greater than that. this: " +
+                    this + ", that: " + that);
+        }
+        List<Polynomial> sResP = toList(replicate(p + 2, ZERO));
+        List<BigInteger> s = toList(replicate(p + 1, BigInteger.ZERO));
+        List<BigInteger> t = toList(s);
+        BigInteger thatLeading = that.leading().get();
+        boolean rps = MathUtils.reversePermutationSign(p - q);
+        sResP.set(p + 1, this);
+        sResP.set(p, that);
+        Polynomial xp = that.multiply(thatLeading.pow(p - q - 1));
+        sResP.set(q + 1, rps ? xp : xp.negate());
+        s.set(p, BigInteger.ONE);
+        BigInteger xi = thatLeading.pow(p - q);
+        s.set(q, rps ? xi : xi.negate());
+        t.set(p, BigInteger.ONE);
+        t.set(p - 1, thatLeading);
+        int i = p + 1;
+        int j = p;
+        while (sResP.get(j) != ZERO) {
+            int k = sResP.get(j).degree();
+            BigInteger denominator = s.get(j).multiply(t.get(i - 1));
+            if (k == j - 1) {
+                s.set(j - 1, t.get(j - 1));
+                sResP.set(
+                        k,
+                        sResP.get(i).multiply(s.get(j - 1).pow(2)).remainderExact(sResP.get(j)).negate()
+                                .divideExact(denominator)
+                );
+            } else if (k < j - 1) {
+                s.set(j - 1, BigInteger.ZERO);
+                for (int d = 1; d < j - k; d++) {
+                    xi = t.get(j - 1).multiply(t.get(j - d)).divide(s.get(j));
+                    t.set(j - d - 1, (d & 1) == 0 ? xi : xi.negate());
+                }
+                s.set(k, t.get(k));
+                sResP.set(k + 1, sResP.get(j).multiply(s.get(k)).divideExact(t.get(j - 1)));
+                sResP.set(
+                        k,
+                        sResP.get(i).multiply(t.get(j - 1).multiply(s.get(k))).remainderExact(sResP.get(j)).negate()
+                                .divideExact(denominator)
+                );
+            }
+            if (k > 0) {
+                t.set(k - 1, sResP.get(k).leading().orElse(BigInteger.ONE));
+            }
+            i = j;
+            j = k;
+        }
+        return reverse(tail(sResP));
+    }
+
+    /**
+     * Returns the signed pseudo-remainder sequence of {@code this} and {@code that}, all of whose elements are
+     * primitive. When applied to a polynomial and its derivative, the result is a Sturm sequence.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} cannot both be zero.</li>
+     *  <li>The degree of {@code this} must be greater than or equal to the degree of {@code that}.</li>
+     *  <li>The result contains no nulls.</li>
+     * </ul>
+     *
+     * @param that a {@code Polynomial}
+     * @return the primitive pseudo-remainder sequence of {@code this} and {@code that}
+     */
+    public @NotNull List<Polynomial> primitiveSignedPseudoRemainderSequence(@NotNull Polynomial that) {
+        if (this == ZERO && that == ZERO) {
+            throw new ArithmeticException("this and that cannot both be zero.");
+        }
+        List<Polynomial> sequence = new ArrayList<>();
+        sequence.add(this == ZERO ? ZERO : contentAndPrimitive().b);
+        if (that == ZERO) return sequence;
+        sequence.add(that.contentAndPrimitive().b);
+        for (int i = 0; ; i++) {
+            Polynomial next = sequence.get(i).absolutePseudoRemainder(sequence.get(i + 1)).negate();
+            if (next == ZERO) return sequence;
+            sequence.add(next.contentAndPrimitive().b);
+        }
+    }
+
+    /**
+     * Returns a variation of the signed subresultant sequence which omits some terms while preserving its
+     * Sturm-sequence property. When applied to a polynomial and its derivative, the result is a Sturm sequence.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>{@code this} must have a degree greater than {@code that}.</li>
+     *  <li>The result contains no nulls, and the degrees of its elements are strictly decreasing.</li>
+     * </ul>
+     *
+     * @param that a {@code Polynomial}
+     * @return the abbreviated signed subresultant sequence of {@code this} and {@code that}
+     */
+    public @NotNull List<Polynomial> abbreviatedSignedSubresultantSequence(@NotNull Polynomial that) {
+        List<Polynomial> abbreviated = new ArrayList<>();
+        Polynomial previous = null;
+        for (Polynomial p : signedSubresultantSequence(that)) {
+            if (p != ZERO) {
+                if (previous == null || p.degree() < previous.degree()) {
+                    abbreviated.add(p);
+                    previous = p;
+                } else if (p.signum() != previous.signum()) {
+                    abbreviated.remove(abbreviated.size() - 1);
+                    previous = abbreviated.isEmpty() ? null : last(abbreviated);
+                }
+            }
+        }
+        return abbreviated;
+    }
+
+    /**
+     * Finds a {@code Rational} r greater than the absolute value of any real root of {@code this}, applies some
+     * transformation to r, and then returns the {@code Interval} [–r, r].
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>{@code postProcessor} should not decrease the value of any positive {@code Rational}.</li>
+     *  <li>The result is symmetric about 0 and has finite bounds.</li>
+     * </ul>
+     *
+     * @param postProcessor a function that transforms the upper limit of the bounding interval
+     * @return an {@code Interval} containing all real roots of {@code this}
+     */
+    private @NotNull Interval rootBoundHelper(@NotNull Function<Rational, Rational> postProcessor) {
+        if (this == ZERO) {
+            throw new ArithmeticException("this cannot be zero");
+        }
+        if (degree() < 1) return Interval.ZERO;
+        BigInteger denominator = leading().get().abs();
+        //noinspection RedundantCast
+        Rational max = maximum(
+                (Iterable<Rational>) map(c -> Rational.of(c.abs(), denominator), init(coefficients))
+        ).add(Rational.ONE);
+        max = postProcessor.apply(max);
+        return Interval.of(max.negate(), max);
+    }
+
+    /**
+     * Returns an {@code Interval} with finite bounds that contains all the real roots of {@code this}. This is a
+     * modified Cauchy's bound.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>The result is symmetric about 0 and has finite bounds.</li>
+     * </ul>
+     *
+     * @return an {@code Interval} containing all real roots of {@code this}
+     */
+    public @NotNull Interval rootBound() {
+        return rootBoundHelper(Function.identity());
+    }
+
+    /**
+     * Returns an {@code Interval} with finite bounds that contains all the real roots of {@code this}. Additionally,
+     * the upper bound is a power of two and the lower bound is its negative, which may speed up the bisection of the
+     * interval.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>The result is symmetric about 0 and has finite bounds. The upper bound is a power of two.</li>
+     * </ul>
+     *
+     * @return an {@code Interval} containing all real roots of {@code this}
+     */
+    public @NotNull Interval powerOfTwoRootBound() {
+        if (degree() == 0) {
+            return Interval.of(Rational.NEGATIVE_ONE, Rational.ONE);
+        }
+        return rootBoundHelper(Rational::roundUpToPowerOfTwo);
+    }
+
+    /**
+     * Counts the sign changes, ignoring zeros, when evaluating each polynomial of a Sturm sequence at a point.
+     *
+     * <ul>
+     *  <li>{@code signChangeMap} must either be null or a correct mapping from some {@code Rational}s to sign
+     *  changes.</li>
+     *  <li>{@code sturmSequence} must be a Sturm sequence.</li>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>The result is not negative.</li>
+     * </ul>
+     *
+     * @param signChangeMap a mapping from {@code Rational}s to sign changes. If {@code signChangeMap} is not null, it
+     * is used as a cache of sign changes.
+     * @param sturmSequence a Sturm sequence
+     * @param x a point
+     * @return the number of sign changes in map(p({@code x}), p∈{@code sturmSequence})
+     */
+    private static int signChanges(
+            Map<Rational, Integer> signChangeMap,
+            @NotNull List<Polynomial> sturmSequence,
+            @NotNull Rational x
+    ) {
+        if (signChangeMap != null) {
+            Integer cachedChanges = signChangeMap.get(x);
+            if (cachedChanges != null) {
+                return cachedChanges;
+            }
+        }
+        int changes = 0;
+        int previousSign = 0;
+        for (Polynomial p : sturmSequence) {
+            int sign = p.signum(x);
+            if (sign != 0) {
+                if (sign == -previousSign) {
+                    changes++;
+                }
+                previousSign = sign;
+            }
+        }
+        if (signChangeMap != null) {
+            signChangeMap.put(x, changes);
+        }
+        return changes;
+    }
+
+    /**
+     * Returns the number of real roots of {@code this} in a given interval. {@code this} must be squarefree, so there
+     * is no possibility of multiple roots.
+     *
+     * <ul>
+     *  <li>{@code this} must be squarefree.</li>
+     *  <li>{@code interval} cannot be null.</li>
+     *  <li>The result is not negative.</li>
+     * </ul>
+     *
+     * @param interval the interval which we are checking for roots
+     * @return the number of roots in {@code interval} of {@code this}
+     */
+    public int rootCount(@NotNull Interval interval) {
+        if (this == ZERO) {
+            throw new ArithmeticException("this cannot be zero.");
+        }
+        if (degree() < 1) return 0;
+        if (!interval.isFinitelyBounded()) {
+            interval = interval.intersection(powerOfTwoRootBound()).orElse(Interval.ZERO);
+        }
+        Rational lower = interval.getLower().get();
+        Rational upper = interval.getUpper().get();
+        int rootCount = signum(lower) == 0 ? 1 : 0;
+        if (lower.equals(upper)) {
+            return rootCount;
+        }
+        List<Polynomial> sturmSequence = primitiveSignedPseudoRemainderSequence(differentiate());
+        rootCount += signChanges(null, sturmSequence, lower) - signChanges(null, sturmSequence, upper);
+        return rootCount;
+    }
+
+    /**
+     * Returns the number of real roots of {@code this}. {@code this} must be squarefree, so there is no possibility of
+     * multiple roots.
+     *
+     * <ul>
+     *  <li>{@code this} must be squarefree.</li>
+     *  <li>The result is not negative.</li>
+     * </ul>
+     *
+     * @return the number of real roots of {@code this}
+     */
+    public int rootCount() {
+        return rootCount(powerOfTwoRootBound());
+    }
+
+    /**
+     * Given a bound on all the real roots of {@code this} and a 0-based root index, returns an interval that contains
+     * the {@code rootIndex}th real root of {@code this} and no other real root.
+     *
+     * <ul>
+     *  <li>{@code this} must be squarefree.</li>
+     *  <li>{@code signChangeMap} must either be null or a correct mapping from some {@code Rational}s to sign
+     *  changes.</li>
+     *  <li>{@code rootBound} must contain all real roots of {@code this} and have finite bounds.</li>
+     *  <li>{@code rootIndex} cannot be negative.</li>
+     *  <li>{@code rootIndex} must be less than the number of real roots of {@code this}.</li>
+     *  <li>The result has finite bounds.</li>
+     * </ul>
+     *
+     * @param signChangeMap a mapping from {@code Rational}s to sign changes. If {@code signChangeMap} is not null, it
+     * is used as a cache of sign changes.
+     * @param rootBound an {@code Interval} containing all real roots of {@code this}
+     * @param rootIndex the index of a real of root of {@code this}, starting from 0
+     * @return an interval that contains the {@code rootIndex}th real root of {@code this} and no other real root
+     */
+    private @NotNull Interval isolatingIntervalHelper(
+            Map<Rational, Integer> signChangeMap,
+            @NotNull List<Polynomial> sturmSequence,
+            @NotNull Interval rootBound,
+            int rootIndex
+    ) {
+        if (rootIndex < 0) {
+            throw new ArithmeticException("rootIndex cannot be negative. Invalid rootIndex: " + rootIndex);
+        }
+        Rational lower = rootBound.getLower().get();
+        Rational upper = rootBound.getUpper().get();
+        boolean rootAtLower = signum(lower) == 0;
+        int rootCount = rootAtLower ? 1 : 0;
+        int lowerSignChanges = signChanges(signChangeMap, sturmSequence, lower);
+        int upperSignChanges = signChanges(signChangeMap, sturmSequence, upper);
+        rootCount += lowerSignChanges - upperSignChanges;
+        if (rootIndex >= rootCount) {
+            throw new ArithmeticException("rootIndex must be less than the number of real roots of this. rootIndex: " +
+                    rootIndex + ", number of real roots of this: " + rootCount);
+        }
+        if (rootCount == 1) {
+            return rootBound;
+        }
+        while (true) {
+            Rational mid = lower.add(upper).shiftRight(1);
+            int lowerMidRootCount = rootAtLower ? 1 : 0;
+            int midSignChanges = signChanges(signChangeMap, sturmSequence, mid);
+            lowerMidRootCount += lowerSignChanges - midSignChanges;
+            if (rootIndex < lowerMidRootCount) {
+                rootBound = Interval.of(lower, mid);
+                rootCount = lowerMidRootCount;
+                if (rootCount == 1) {
+                    return rootBound;
+                }
+                upper = mid;
+            } else {
+                rootBound = Interval.of(mid, upper);
+                boolean rootAtMid = signum(mid) == 0;
+                if (rootAtMid) {
+                    rootIndex++;
+                    rootCount++;
+                }
+                rootIndex -= lowerMidRootCount;
+                rootCount -= lowerMidRootCount;
+                if (rootCount == 1) {
+                    return rootBound;
+                }
+                lower = mid;
+                rootAtLower = rootAtMid;
+                lowerSignChanges = midSignChanges;
+            }
+        }
+    }
+
+    /**
+     * Given a 0-based root index, returns an interval that contains the {@code rootIndex}th real root of {@code this}
+     * and no other real root.
+     *
+     * <ul>
+     *  <li>{@code this} must be squarefree.</li>
+     *  <li>{@code rootIndex} cannot be negative.</li>
+     *  <li>{@code rootIndex} must be less than the number of real roots of {@code this}.</li>
+     *  <li>The result has finite bounds.</li>
+     * </ul>
+     *
+     * @param rootIndex the index of a real of root of {@code this}, starting from 0
+     * @return an interval that contains the {@code rootIndex}th real root of {@code this} and no other real root
+     */
+    public @NotNull Interval isolatingInterval(int rootIndex) {
+        return isolatingIntervalHelper(
+                null,
+                primitiveSignedPseudoRemainderSequence(differentiate()),
+                rootBound(),
+                rootIndex
+        );
+    }
+
+    /**
+     * Given a 0-based root index, returns an interval that contains the {@code rootIndex}th real root of {@code this}
+     * and no other real root. The interval may be larger than the one given by
+     * {@link Polynomial#isolatingInterval(int)}, but its bounds are binary fractions and may have smaller numerators
+     * and denominators.
+     *
+     * <ul>
+     *  <li>{@code this} must be squarefree.</li>
+     *  <li>{@code rootIndex} cannot be negative.</li>
+     *  <li>{@code rootIndex} must be less than the number of real roots of {@code this}.</li>
+     *  <li>The results are finite and are binary fractions.</li>
+     * </ul>
+     *
+     * @param rootIndex the index of a real of root of {@code this}, starting from 0
+     * @return an interval that contains the {@code rootIndex}th real root of {@code this} and no other real root
+     */
+    public @NotNull Interval powerOfTwoIsolatingInterval(int rootIndex) {
+        return isolatingIntervalHelper(
+                null,
+                primitiveSignedPseudoRemainderSequence(differentiate()),
+                powerOfTwoRootBound(),
+                rootIndex
+        );
+    }
+
+    /**
+     * Given a bound on all the real roots of {@code this}, returns a {@code List} of {@code Interval}s such that for
+     * each real root of {@code this}, there is exactly one {@code Interval} that contains that root and no others.
+     *
+     * <ul>
+     *  <li>{@code this} must be squarefree.</li>
+     *  <li>{@code rootBound} must contain all real roots of {@code this} and have finite bounds.</li>
+     *  <li>Every element of the result has finite bounds.</li>
+     * </ul>
+     *
+     * @param rootBound an {@code Interval} containing all real roots of {@code this}
+     * @return a list of root-isolating {@code Interval}s of {@code this}
+     */
+    private @NotNull List<Interval> isolatingIntervalsHelper(@NotNull Interval rootBound) {
+        List<Polynomial> sturmSequence = primitiveSignedPseudoRemainderSequence(differentiate());
+        Map<Rational, Integer> signChangeMap = new HashMap<>();
+        Rational lower = rootBound.getLower().get();
+        Rational upper = rootBound.getUpper().get();
+        boolean rootAtLower = signum(lower) == 0;
+        int rootCount = rootAtLower ? 1 : 0;
+        int lowerSignChanges = signChanges(signChangeMap, sturmSequence, lower);
+        int upperSignChanges = signChanges(signChangeMap, sturmSequence, upper);
+        rootCount += lowerSignChanges - upperSignChanges;
+        List<Interval> isolatingIntervals = new ArrayList<>();
+        for (int i = 0; i < rootCount; i++) {
+            isolatingIntervals.add(isolatingIntervalHelper(signChangeMap, sturmSequence, rootBound, i));
+        }
+        return isolatingIntervals;
+    }
+
+    /**
+     * Returns a {@code List} of {@code Interval}s such that for each real root of {@code this}, there is exactly one
+     * {@code Interval} that contains that root and no others.
+     *
+     * <ul>
+     *  <li>{@code this} must be squarefree.</li>
+     *  <li>Every element of the result has finite bounds.</li>
+     * </ul>
+     *
+     * @return a list of root-isolating {@code Interval}s of {@code this}
+     */
+    public @NotNull List<Interval> isolatingIntervals() {
+        return isolatingIntervalsHelper(rootBound());
+    }
+
+    /**
+     * Returns a {@code List} of {@code Interval}s such that for each real root of {@code this}, there is exactly one
+     * {@code Interval} that contains that root and no others. The intervals may be larger than the ones given by
+     * {@link Polynomial#isolatingIntervals()}, but their bounds are binary fractions and may have smaller numerators
+     * and denominators.
+     *
+     * <ul>
+     *  <li>{@code this} must be squarefree.</li>
+     *  <li>Every element of the result has finite bounds, and all bounds are binary fractions.</li>
+     * </ul>
+     *
+     * @return a list of root-isolating {@code Interval}s of {@code this}
+     */
+    public @NotNull List<Interval> powerOfTwoIsolatingIntervals() {
+        return isolatingIntervalsHelper(powerOfTwoRootBound());
+    }
+
+    /**
+     * Returns the reflection of {@code this} across the y-axis. If {@code this} has odd degree, the result is negated
+     * as well; this preserves the sign of the leading coefficient. The roots of the result are the negatives of the
+     * roots of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return (–1)<sup>deg({@code this})</sup>{@code this}(–x)
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Polynomial reflect() {
+        if (degree() < 1) return this;
+        List<BigInteger> reflectedCoefficients = new ArrayList<>();
+        boolean negateResult = degree() % 2 == 0;
+        for (int i = 0; i < coefficients.size(); i++) {
+            reflectedCoefficients.add(i % 2 == 0 == negateResult ? coefficients.get(i) : coefficients.get(i).negate());
+        }
+        return of(reflectedCoefficients);
+    }
+
+    /**
+     * Returns the translation of {@code this} by {@code t}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code t} is not null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param t the amount that {@code this} is translated by in the x-direction
+     * @return {@code this}(x–t)
+     */
+    public @NotNull Polynomial translate(@NotNull BigInteger t) {
+        if (degree() < 1 || t.equals(BigInteger.ZERO)) return this;
+        return substitute(fromRoot(t));
+    }
+
+    /**
+     * Returns {@code this} translated by {@code t} and multiplied by
+     * denominator({@code t})<sup>degree({@code this})</sup>.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code t} is not null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param t the amount that {@code this} is translated by in the x-direction
+     * @return denominator({@code t})<sup>deg({@code this})</sup>{@code this}(x–t)
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Polynomial specialTranslate(@NotNull Rational t) {
+        if (degree() < 1 || t == Rational.ZERO) return this;
+        BigInteger denominator = t.getDenominator();
+        BigInteger mutliplier = BigInteger.ONE;
+        Polynomial r = fromRoot(t);
+        Polynomial result = of(last(coefficients));
+        for (int i = degree() - 1; i >= 0; i--) {
+            mutliplier = mutliplier.multiply(denominator);
+            result = result.multiply(r).add(of(coefficients.get(i).multiply(mutliplier)));
+        }
+        return result;
+    }
+
+    /**
+     * Returns {@code this} translated by {@code t} and scaled to either zero or a primitive {@code Polynomial} with a
+     * positive leading coefficient.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code t} is not null.</li>
+     *  <li>The result is either zero or primitive with a positive leading coefficient.</li>
+     * </ul>
+     *
+     * @param t the amount that {@code this} is translated by in the x-direction
+     * @return {@code this}(x–t), scaled
+     */
+    public @NotNull Polynomial positivePrimitiveTranslate(@NotNull Rational t) {
+        if (this == ZERO) return ZERO;
+        if (degree() == 0) return ONE;
+        return specialTranslate(t).constantFactor().b;
+    }
+
+    /**
+     * Stretches a polynomial in the x-direction by a positive factor {@code f}, possibly scaling it vertically as well
+     * in order for its coefficients to remain integers.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code f} must be positive.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param f a positive scaling factor
+     * @return numerator({@code f})<sup>deg({@code this})</sup>{@code this}(x/f)
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Polynomial stretch(@NotNull Rational f) {
+        if (f.signum() != 1) {
+            throw new ArithmeticException("f must be positive. Invalid f: " + f);
+        }
+        int degree = degree();
+        if (degree < 1 || f == Rational.ONE) return this;
+        BigInteger numerator = f.getNumerator();
+        BigInteger denominator = f.getDenominator();
+        BigInteger multiplier = numerator.pow(degree);
+        List<BigInteger> resultCoefficients = new ArrayList<>();
+        for (int i = 0; i < coefficients.size(); i++) {
+            resultCoefficients.add(coefficients.get(i).multiply(multiplier));
+            if (i != degree) {
+                multiplier = multiplier.divide(numerator).multiply(denominator);
+            }
+        }
+        return new Polynomial(resultCoefficients);
+    }
+
+    /**
+     * Returns {@code this} stretched in the x-direction by a positive factor {@code f} and scaled to either zero or a
+     * primitive {@code Polynomial} with a positive leading coefficient.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code f} must be positive.</li>
+     *  <li>The result is either zero or primitive with a positive leading coefficient.</li>
+     * </ul>
+     *
+     * @param f a positive scaling factor
+     * @return {@code this}(x/t), scaled
+     */
+    public @NotNull Polynomial positivePrimitiveStretch(@NotNull Rational f) {
+        if (f.signum() != 1) {
+            throw new ArithmeticException("f must be positive. Invalid f: " + f);
+        }
+        if (this == ZERO) return ZERO;
+        if (degree() == 0) return ONE;
+        return stretch(f).constantFactor().b;
+    }
+
+    /**
+     * Returns {@code this} stretched so that the real roots of {@code this} are multiplied by 2<sup>bits</sup>.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code bits} cannot be negative.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param bits the power of two that the roots of {@code this} are multiplied by
+     * @return (2<sup>deg({@code this)</sup>){@code this}(x/2<sup>{@code bits}</sup>)
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Polynomial shiftRootsLeft(int bits) {
+        if (bits < 0) {
+            throw new IllegalArgumentException("bits cannot be negative. Invalid bits: " + bits);
+        }
+        int degree = degree();
+        if (degree < 1 || bits == 0) return this;
+        int exponent = bits * degree;
+        List<BigInteger> resultCoefficients = new ArrayList<>();
+        for (BigInteger coefficient : coefficients) {
+            resultCoefficients.add(coefficient.shiftLeft(exponent));
+            exponent -= bits;
+        }
+        return new Polynomial(resultCoefficients);
+    }
+
+    /**
+     * Returns {@code this} stretched so that the real roots of {@code this} are divided by 2<sup>bits</sup>.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code bits} cannot be negative.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param bits the power of two that the roots of {@code this} are divided by
+     * @return {@code this}(2<sup>{@code bits}</sup>x)
+     */
+    public @NotNull Polynomial shiftRootsRight(int bits) {
+        if (bits < 0) {
+            throw new IllegalArgumentException("bits cannot be negative. Invalid bits: " + bits);
+        }
+        int degree = degree();
+        if (degree < 1 || bits == 0) return this;
+        int exponent = 0;
+        List<BigInteger> resultCoefficients = new ArrayList<>();
+        for (BigInteger coefficient : coefficients) {
+            resultCoefficients.add(coefficient.shiftLeft(exponent));
+            exponent += bits;
+        }
+        return new Polynomial(resultCoefficients);
+    }
+
+    /**
+     * Returns {@code this} stretched by a factor of 2<sup>{@code bits}</sup> and scaled to either zero or a primitive
+     * {@code Polynomial} with a positive leading coefficient.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code bits} cannot be negative.</li>
+     *  <li>The result is either zero or primitive with a positive leading coefficient.</li>
+     * </ul>
+     *
+     * @param bits the power of two that the roots of {@code this} are multiplied by
+     * @return {@code this}(x/2<sup>{@code bits}</sup>), scaled
+     */
+    public @NotNull Polynomial positivePrimitiveShiftRootsLeft(int bits) {
+        if (bits < 0) {
+            throw new IllegalArgumentException("bits cannot be negative. Invalid bits: " + bits);
+        }
+        if (this == ZERO) return ZERO;
+        if (degree() == 0) return ONE;
+        return shiftRootsLeft(bits).constantFactor().b;
+    }
+
+    /**
+     * Returns {@code this} stretched by a factor of 2<sup>–{@code bits}</sup> and scaled to either zero or a primitive
+     * {@code Polynomial} with a positive leading coefficient.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code bits} cannot be negative.</li>
+     *  <li>The result is either zero or primitive with a positive leading coefficient.</li>
+     * </ul>
+     *
+     * @param bits the power of two that the roots of {@code this} are divided by
+     * @return {@code this}(2<sup>{@code bits}</sup>x), scaled
+     */
+    public @NotNull Polynomial positivePrimitiveShiftRootsRight(int bits) {
+        if (bits < 0) {
+            throw new IllegalArgumentException("bits cannot be negative. Invalid bits: " + bits);
+        }
+        if (this == ZERO) return ZERO;
+        if (degree() == 0) return ONE;
+        return shiftRootsRight(bits).constantFactor().b;
+    }
+
+    /**
+     * Returns a {@code Polynomial} whose roots are the inverses of the roots of {@code this}. If {@code this} has a
+     * positive leading coefficient, so does the result.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>The result is zero or has a positive leading coefficient.</li>
+     * </ul>
+     *
+     * @return |x<sup>deg({@code this})</sup>{@code this}(1/x)|
+     */
+    public @NotNull Polynomial invertRoots() {
+        if (degree() < 1) return abs();
+        return of(reverse(coefficients)).abs();
+    }
+
+    /**
+     * Returns a {@code Polynomial} whose roots are the sums of each pair of roots of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is primitive and has a positive leading coefficient.</li>
+     * </ul>
+     *
+     * @param that the {@code Polynomial} whose roots are being added to the roots of {@code this}
+     * @return a {@code Polynomial} whose roots are the sums of the roots of {@code this} and {@code that}
+     */
+    public @NotNull Polynomial addRoots(@NotNull Polynomial that) {
+        if (degree() < 1 || that.degree() < 1) return ONE;
+        if (isMonic() && that.isMonic()) {
+            return companionMatrix().kroneckerAdd(that.companionMatrix()).characteristicPolynomial();
+        } else {
+            RationalPolynomial rThis = toRationalPolynomial().makeMonic();
+            RationalPolynomial rThat = that.toRationalPolynomial().makeMonic();
+            RationalPolynomial cp = rThis.companionMatrix().kroneckerAdd(rThat.companionMatrix())
+                    .characteristicPolynomial();
+            return cp.constantFactor().b;
+        }
+    }
+
+    /**
+     * Returns a {@code Polynomial} whose roots are the products of each pair of roots of {@code this} and
+     * {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is primitive and has a positive leading coefficient.</li>
+     * </ul>
+     *
+     * @param that the {@code Polynomial} whose roots are being multiplied by the roots of {@code this}
+     * @return a {@code Polynomial} whose roots are the products of the roots of {@code this} and {@code that}
+     */
+    public @NotNull Polynomial multiplyRoots(@NotNull Polynomial that) {
+        if (degree() < 1 || that.degree() < 1) return ONE;
+        if (isMonic() && that.isMonic()) {
+            return companionMatrix().kroneckerMultiply(that.companionMatrix()).characteristicPolynomial();
+        } else {
+            RationalPolynomial rThis = toRationalPolynomial().makeMonic();
+            RationalPolynomial rThat = that.toRationalPolynomial().makeMonic();
+            RationalPolynomial cp = rThis.companionMatrix().kroneckerMultiply(rThat.companionMatrix())
+                    .characteristicPolynomial();
+            return cp.constantFactor().b;
         }
     }
 
@@ -766,9 +2842,9 @@ public final class Polynomial implements
     }
 
     /**
-     * Creates an {@code Polynomial} from a {@code String}. Valid input takes the form of a {@code String} that could
+     * Creates a {@code Polynomial} from a {@code String}. Valid input takes the form of a {@code String} that could
      * have been returned by {@link mho.qbar.objects.Polynomial#toString}. This method also takes
-     * {@code exponentHandler}, which reads an exponent for a {@code String} if the {@code String} is valid.
+     * {@code exponentHandler}, which reads an exponent from a {@code String} if the {@code String} is valid.
      *
      * <ul>
      *  <li>{@code s} cannot be null.</li>
@@ -874,7 +2950,7 @@ public final class Polynomial implements
     }
 
     /**
-     * Creates an {@code Polynomial} from a {@code String}. Valid input takes the form of a {@code String} that could
+     * Creates a {@code Polynomial} from a {@code String}. Valid input takes the form of a {@code String} that could
      * have been returned by {@link mho.qbar.objects.Polynomial#toString}. Caution: It's easy to run out of time and
      * memory reading something like {@code "x^1000000000"}. If such an input is possible, consider using
      * {@link Polynomial#read(int, String)} instead.
@@ -892,7 +2968,7 @@ public final class Polynomial implements
     }
 
     /**
-     * Creates an {@code Polynomial} from a {@code String}. Valid input takes the form of a {@code String} that could
+     * Creates a {@code Polynomial} from a {@code String}. Valid input takes the form of a {@code String} that could
      * have been returned by {@link mho.qbar.objects.Polynomial#toString}. The input {@code Polynomial} cannot have a
      * degree greater than {@code maxExponent}.
      *
@@ -902,7 +2978,8 @@ public final class Polynomial implements
      *  <li>The result may be any {@code Optional<Polynomial>}.</li>
      * </ul>
      *
-     * @param s a string representation of a {@code Polynomial}.
+     * @param maxExponent the largest accepted exponent
+     * @param s a string representation of a {@code Polynomial}
      * @return the wrapped {@code Polynomial} (with degree no greater than {@code maxExponent}) represented by
      * {@code s}, or {@code empty} if {@code s} is invalid.
      */
@@ -920,7 +2997,7 @@ public final class Polynomial implements
     }
 
     /**
-     * Finds the first occurrence of an {@code Polynomial} in a {@code String}. Returns the {@code Polynomial} and the
+     * Finds the first occurrence of a {@code Polynomial} in a {@code String}. Returns the {@code Polynomial} and the
      * index at which it was found. Returns an empty {@code Optional} if no {@code Polynomial} is found. Only
      * {@code String}s which could have been emitted by {@link mho.qbar.objects.Polynomial#toString} are recognized.
      * The longest possible {@code Polynomial} is parsed. Caution: It's easy to run out of time and memory finding
@@ -941,19 +3018,20 @@ public final class Polynomial implements
     }
 
     /**
-     * Finds the first occurrence of an {@code Polynomial} in a {@code String}. Returns the {@code Polynomial} and the
+     * Finds the first occurrence of a {@code Polynomial} in a {@code String}. Returns the {@code Polynomial} and the
      * index at which it was found. Returns an empty {@code Optional} if no {@code Polynomial} is found. Only
      * {@code String}s which could have been emitted by {@link mho.qbar.objects.Polynomial#toString} are recognized.
      * The longest possible {@code Polynomial} is parsed. The input {@code Polynomial} cannot have a degree greater
      * than {@code maxExponent}.
      *
      * <ul>
-     *  <li>{@code maxExponent} can be any {@code int}.</li>
+     *  <li>{@code maxExponent} must be positive.</li>
      *  <li>{@code s} must be non-null.</li>
      *  <li>The result is non-null. If it is non-empty, then neither of the {@code Pair}'s components is null, and the
      *  second component is non-negative.</li>
      * </ul>
      *
+     * @param maxExponent the largest accepted exponent
      * @param s the input {@code String}
      * @return the first {@code Polynomial} found in {@code s} (with degree no greater than {@code maxExponent}), and
      * the index at which it was found
@@ -1000,9 +3078,11 @@ public final class Polynomial implements
     }
 
     /**
-     * Ensures that {@code this} is valid. Must return true for any {@code Polynomial} used outside this class.
+     * Ensures that {@code this} is valid. Must return without exceptions for any {@code Polynomial} used outside this
+     * class.
      */
     public void validate() {
+        assertTrue(this, all(r -> r != null, coefficients));
         if (!coefficients.isEmpty()) {
             assertTrue(this, !last(coefficients).equals(BigInteger.ZERO));
         }

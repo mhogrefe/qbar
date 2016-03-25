@@ -1,12 +1,12 @@
 package jas.ufd;
 
 import jas.arith.*;
-import jas.poly.ExpVector;
 import jas.poly.GenPolynomial;
 import jas.poly.GenPolynomialRing;
 import jas.poly.PolyUtil;
 import jas.structure.Power;
 import jas.util.KsubSet;
+import mho.wheels.math.MathUtils;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -14,11 +14,13 @@ import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 
-public class FactorInteger extends FactorAbstract<JasBigInteger> {
+public class FactorInteger {
+    final GreatestCommonDivisorModular engine;
+
     /**
      * Factorization engine for modular base coefficients.
      */
-    private final FactorAbstract<ModLong> mfactor;
+    private final FactorModular<ModLong> mfactor;
 
     /**
      * Gcd engine for modular base coefficients.
@@ -27,10 +29,9 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
 
     @SuppressWarnings("unchecked")
     public FactorInteger() {
-        super(JasBigInteger.ONE);
-        ModularRingFactory<ModLong> mcofac = new ModLongRing(13, true);
-        mfactor = FactorFactory.getImplementation(mcofac);
-        mengine = GCDFactory.getImplementation(mcofac);
+        engine = new GreatestCommonDivisorModular();
+        mfactor = new FactorModular(new ModLongRing(13));
+        mengine = new GreatestCommonDivisorModEval<>();
     }
 
     /**
@@ -40,27 +41,9 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
      * @return [p_1, ..., p_k] with P = prod_{i=1, ..., k} p_i.
      */
     @SuppressWarnings("unchecked")
-    @Override
     public List<GenPolynomial<JasBigInteger>> baseFactorsSquarefree(GenPolynomial<JasBigInteger> P) {
-        if (P == null) {
-            throw new IllegalArgumentException(this.getClass().getName() + " P == null");
-        }
         List<GenPolynomial<JasBigInteger>> factors = new ArrayList<>();
-        if (P.isZERO()) {
-            return factors;
-        }
-        if (P.isONE()) {
-            factors.add(P);
-            return factors;
-        }
-        GenPolynomialRing<JasBigInteger> pfac = P.ring;
-        if (pfac.nvar > 1) {
-            throw new IllegalArgumentException(this.getClass().getName() + " only for univariate polynomials");
-        }
-        if (!engine.baseContent(P).isONE()) {
-            throw new IllegalArgumentException(this.getClass().getName() + " P not primitive");
-        }
-        if (P.degree(0) <= 1L) { // linear is irreducible
+        if (P.degree() <= 1L) { // linear is irreducible
             factors.add(P);
             return factors;
         }
@@ -68,46 +51,33 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
         JasBigInteger an = P.maxNorm();
         JasBigInteger ac = P.leadingBaseCoefficient();
         //compute factor coefficient bounds
-        ExpVector degv = P.degreeVector();
-        int degi = (int) P.degree(0);
+        long degv = P.degreeVector();
+        int degi = (int) P.degree();
         JasBigInteger M = an.multiply(PolyUtil.factorBound(degv));
         M = M.multiply(ac.abs().multiply(ac.fromInteger(8)));
-        //System.out.println("M = " + M);
-        //M = M.multiply(M); // test
-
         //initialize prime list and degree vector
-        PrimeList primes = new PrimeList(PrimeList.Range.small);
-        int pn = 30; //primes.size();
+        PrimeList primes;
         ModularRingFactory<ModLong> cofac;
         GenPolynomial<ModLong> am = null;
         GenPolynomialRing<ModLong> mfac = null;
         final int TT = 5; // 7
         List<GenPolynomial<ModLong>>[] modfac = new List[TT];
         List<GenPolynomial<ModLong>> mlist = null;
-        int i = 0;
-        Iterator<BigInteger> pit = primes.iterator();
+        Iterator<BigInteger> pit = MathUtils.primes().iterator();
         pit.next(); // skip p = 2
         pit.next(); // skip p = 3
         ModLong nf = null;
         for (int k = 0; k < TT; k++) {
             if (k == TT - 1) { // -2
-                primes = new PrimeList(PrimeList.Range.medium);
-                pit = primes.iterator();
-            }
-            if (k == TT + 1) { // -1
-                primes = new PrimeList(PrimeList.Range.large);
+                primes = new PrimeList();
                 pit = primes.iterator();
             }
             while (pit.hasNext()) {
                 BigInteger p = pit.next();
-                //System.out.println("next run ++++++++++++++++++++++++++++++++++");
-                if (++i >= pn) {
-                    throw new ArithmeticException("prime list exhausted");
-                }
                 if (ModLongRing.MAX_LONG.compareTo(p) > 0) {
-                    cofac = (ModularRingFactory) new ModLongRing(p, true);
+                    cofac = (ModularRingFactory) new ModLongRing(p);
                 } else {
-                    cofac = (ModularRingFactory) new ModIntegerRing(p, true);
+                    cofac = (ModularRingFactory) new ModIntegerRing(p);
                 }
 
                 nf = cofac.fromInteger(ac.getVal());
@@ -116,9 +86,9 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
                     continue;
                 }
                 // initialize polynomial factory and map polynomial
-                mfac = new GenPolynomialRing<>(cofac, pfac);
+                mfac = new GenPolynomialRing<>(cofac);
                 am = PolyUtil.fromIntegerCoefficients(mfac, P);
-                if (!am.degreeVector().equals(degv)) {
+                if (am.degreeVector() != degv) {
                     //System.out.println("unlucky prime (deg) = " + p);
                     continue;
                 }
@@ -157,7 +127,7 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
         int min = Integer.MAX_VALUE;
         BitSet AD = null;
         for (int k = 0; k < TT; k++) {
-            List<ExpVector> ev = PolyUtil.leadingExpVector(modfac[k]);
+            List<Long> ev = PolyUtil.leadingExpVector(modfac[k]);
             BitSet D = factorDegrees(ev, degi);
             if (AD == null) {
                 AD = D;
@@ -217,9 +187,6 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
             throw new IllegalArgumentException("C must be nonzero and F must be nonempty");
         }
         GenPolynomialRing<JasBigInteger> pfac = C.ring;
-        if (pfac.nvar != 1) { // todo assert
-            throw new IllegalArgumentException("polynomial ring not univariate");
-        }
         List<GenPolynomial<JasBigInteger>> factors = new ArrayList<>(F.size());
         List<GenPolynomial<ModLong>> lift;
 
@@ -255,7 +222,7 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
                     continue;
                 }
                 GenPolynomial<ModLong> mtrial = Power.multiply(mpfac, flist);
-                mtrial.degree(0);
+                mtrial.degree();
                 GenPolynomial<JasBigInteger> trial = PolyUtil.integerFromModularCoefficients(pfac, mtrial);
                 trial = engine.basePrimitivePart(trial);
                 if (PolyUtil.baseSparsePseudoRemainder(u, trial).isZERO()) {
@@ -275,6 +242,33 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
             factors.add(C);
         }
         return normalizeFactorization(factors);
+    }
+
+    static <T> List<T> removeOnce(List<T> a, List<T> b) {
+        List<T> res = new ArrayList<>();
+        res.addAll(a);
+        b.forEach(res::remove);
+        return res;
+    }
+
+    List<GenPolynomial<JasBigInteger>> normalizeFactorization(List<GenPolynomial<JasBigInteger>> F) {
+        if (F == null || F.size() <= 1) {
+            return F;
+        }
+        List<GenPolynomial<JasBigInteger>> Fp = new ArrayList<>(F.size());
+        GenPolynomial<JasBigInteger> f0 = F.get(0);
+        for (int i = 1; i < F.size(); i++) {
+            GenPolynomial<JasBigInteger> fi = F.get(i);
+            if (fi.signum() < 0) {
+                fi = fi.negate();
+                f0 = f0.negate();
+            }
+            Fp.add(fi);
+        }
+        if (!f0.isONE()) {
+            Fp.add(0, f0);
+        }
+        return Fp;
     }
 
     /**
@@ -297,10 +291,6 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
     ) {
         if (C == null || C.isZERO() || F == null || F.size() == 0) {
             throw new IllegalArgumentException("C must be nonzero and F must be nonempty");
-        }
-        GenPolynomialRing<JasBigInteger> pfac = C.ring;
-        if (pfac.nvar != 1) { // todo assert
-            throw new IllegalArgumentException("polynomial ring not univariate");
         }
         List<GenPolynomial<JasBigInteger>> factors = new ArrayList<>(F.size());
         List<GenPolynomial<ModLong>> mlist = F;
@@ -333,7 +323,7 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
                 for (GenPolynomial<ModLong> fk : flist) {
                     trial = trial.multiply(fk);
                 }
-                trial.degree(0);
+                trial.degree();
                 GenPolynomial<ModLong> cofactor = um.divide(trial);
                 try {
                     ilist = HenselUtil.liftHenselQuadratic(PP, M, trial, cofactor);
@@ -373,18 +363,17 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
     private static long degreeSum(List<GenPolynomial<ModLong>> L) {
         long s = 0L;
         for (GenPolynomial<ModLong> p : L) {
-            ExpVector e = p.leadingExpVector();
-            long d = e.getVal(0);
+            long d = p.leadingExpVector();
             s += d;
         }
         return s;
     }
 
-    public static BitSet factorDegrees(List<ExpVector> E, int deg) {
+    public static BitSet factorDegrees(List<Long> E, int deg) {
         BitSet D = new BitSet(deg + 1);
         D.set(0); // constant factor
-        for (ExpVector e : E) {
-            int i = (int) e.getVal(0);
+        for (Long e : E) {
+            int i = e.intValue();
             BitSet s = new BitSet(deg + 1);
             for (int k = 0; k < deg + 1 - i; k++) { // shift by i places
                 s.set(i + k, D.get(k));

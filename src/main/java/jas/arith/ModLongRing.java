@@ -34,36 +34,11 @@ public final class ModLongRing implements ModularRingFactory<ModLong> {
      * The constructor creates a ModLongRing object from a long integer as
      * module part.
      *
-     * @param m long integer.
-     */
-    private ModLongRing(long m) {
-        modul = m;
-    }
-
-    /**
-     * The constructor creates a ModLongRing object from a long integer as
-     * module part.
-     *
      * @param m       long integer.
-     * @param isField indicator if m is prime.
      */
-    public ModLongRing(long m, boolean isField) {
+    public ModLongRing(long m) {
         modul = m;
-        this.isField = (isField ? 1 : 0);
-    }
-
-    /**
-     * The constructor creates a ModLongRing object from a JasBigInteger converted
-     * to long as module part.
-     *
-     * @param m java.math.JasBigInteger.
-     */
-    public ModLongRing(BigInteger m) {
-        this(m.longValue());
-        if (MAX_LONG.compareTo(m) < 0) { // m > max
-            System.out.println("modul to large for long " + m + ",max=" + MAX_LONG);
-            throw new IllegalArgumentException("modul to large for long " + m);
-        }
+        this.isField = 1;
     }
 
     /**
@@ -71,12 +46,10 @@ public final class ModLongRing implements ModularRingFactory<ModLong> {
      * to long as module part.
      *
      * @param m       java.math.JasBigInteger.
-     * @param isField indicator if m is prime.
      */
-    public ModLongRing(BigInteger m, boolean isField) {
-        this(m.longValue(), true);
+    public ModLongRing(BigInteger m) {
+        this(m.longValue());
         if (MAX_LONG.compareTo(m) < 0) { // m > max
-            System.out.println("modul to large for long " + m + ",max=" + MAX_LONG);
             throw new IllegalArgumentException("modul to large for long " + m);
         }
     }
@@ -179,16 +152,6 @@ public final class ModLongRing implements ModularRingFactory<ModLong> {
     }
 
     /**
-     * Get the String representation.
-     *
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return " mod(" + modul + ")"; //",max="  + MAX_LONG + ")";
-    }
-
-    /**
      * Comparison with any other object.
      *
      * @see java.lang.Object#equals(java.lang.Object)
@@ -222,20 +185,5 @@ public final class ModLongRing implements ModularRingFactory<ModLong> {
     public ModLong random(int n, Random rnd) {
         BigInteger v = new BigInteger(n, rnd);
         return new ModLong(this, v); // rnd.nextLong() not ok
-    }
-
-    public ModLong chineseRemainder(ModLong c, ModLong ci, ModLong a) {
-        if (c.ring.modul < a.ring.modul) {
-            System.out.println("ModLong error " + c.ring + ", " + a.ring);
-        }
-        ModLong b = a.ring.fromInteger(c.val); // c mod a.modul
-        ModLong d = a.subtract(b); // a-c mod a.modul
-        if (d.isZERO()) {
-            return new ModLong(this, c.val);
-        }
-        b = d.multiply(ci); // b = (a-c)*ci mod a.modul
-        long s = c.ring.modul * b.val;
-        s = s + c.val;
-        return new ModLong(this, s);
     }
 }

@@ -1,6 +1,10 @@
 package jas.poly;
 
+import jas.arith.JasBigInteger;
+import jas.arith.ModInteger;
+import jas.arith.ModLong;
 import jas.structure.RingElem;
+import mho.wheels.iterables.IterableUtils;
 
 import java.util.*;
 
@@ -18,8 +22,31 @@ import java.util.*;
  * @param <C> coefficient type
  * @author Heinz Kredel
  */
-public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynomial<C>>, /* not yet Polynomial<C> */
-        Iterable<Monomial<C>> {
+public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynomial<C>>,
+Iterable<SortedMap.Entry<Long, C>> {
+    public Class elementClass() {
+        return IterableUtils.head(factory().getONE().val.values()).getClass();
+    }
+
+    public static long EVRAND(long k, float q, Random rnd) {
+        long[] w = new long[1];
+        long e;
+        float f;
+        for (int i = 0; i < w.length; i++) {
+            f = rnd.nextFloat();
+            if (f > q) {
+                e = 0;
+            } else {
+                e = rnd.nextLong() % k;
+                if (e < 0) {
+                    e = -e;
+                }
+            }
+            w[i] = e;
+        }
+        return w[0];
+    }
+
     /**
      * The factory for the polynomial ring.
      */
@@ -28,7 +55,7 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
     /**
      * The data structure for polynomials.
      */
-    public final SortedMap<ExpVector, C> val; // do not change to TreeMap
+    public final SortedMap<Long, C> val; // do not change to TreeMap
 
     /**
      * Private constructor for GenPolynomial.
@@ -36,7 +63,10 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
      * @param r polynomial ring factory.
      * @param t TreeMap with correct ordering.
      */
-    private GenPolynomial(GenPolynomialRing<C> r, TreeMap<ExpVector, C> t) {
+    private GenPolynomial(GenPolynomialRing<C> r, TreeMap<Long, C> t) {
+        //C is either JasBigInteger or ModLong, or ModInteger
+        Class c = r.coFac.getONE().getClass();
+        if (c != ModInteger.class && c != ModLong.class && c != JasBigInteger.class) System.out.println(c);
         ring = r;
         val = t;
     }
@@ -47,7 +77,7 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
      * @param r polynomial ring factory.
      */
     public GenPolynomial(GenPolynomialRing<C> r) {
-        this(r, new TreeMap<>(r.tord.getDescendComparator()));
+        this(r, new TreeMap<>((x, y) -> -Long.compare(x, y)));
     }
 
     /**
@@ -57,7 +87,7 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
      * @param c coefficient.
      * @param e exponent.
      */
-    public GenPolynomial(GenPolynomialRing<C> r, C c, ExpVector e) {
+    public GenPolynomial(GenPolynomialRing<C> r, C c, long e) {
         this(r);
         if (!c.isZERO()) {
             val.put(e, c);
@@ -70,7 +100,7 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
      * @param r polynomial ring factory.
      * @param v the SortedMap of some other polynomial.
      */
-    public GenPolynomial(GenPolynomialRing<C> r, SortedMap<ExpVector, C> v) {
+    public GenPolynomial(GenPolynomialRing<C> r, SortedMap<Long, C> v) {
         this(r);
         val.putAll(v); // assume no zero coefficients
     }
@@ -98,7 +128,7 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
      *
      * @return val as unmodifiable SortedMap.
      */
-    public SortedMap<ExpVector, C> getMap() {
+    public SortedMap<Long, C> getMap() {
         // return val;
         return Collections.unmodifiableSortedMap(val);
     }
@@ -112,91 +142,10 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
      * @param c coefficient.
      * @param e exponent.
      */
-    public void doPutToMap(ExpVector e, C c) {
+    public void doPutToMap(Long e, C c) {
         if (!c.isZERO()) {
             val.put(e, c);
         }
-    }
-
-    /**
-     * String representation of GenPolynomial.
-     *
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        if (ring.vars != null) {
-            return toString(ring.vars);
-        }
-        StringBuilder s = new StringBuilder();
-        s.append(this.getClass().getSimpleName()).append(":");
-        s.append(ring.coFac.getClass().getSimpleName());
-        if (ring.coFac.characteristic().signum() != 0) {
-            s.append("(").append(ring.coFac.characteristic()).append(")");
-        }
-        s.append("[ ");
-        boolean first = true;
-        for (Map.Entry<ExpVector, C> m : val.entrySet()) {
-            if (first) {
-                first = false;
-            } else {
-                s.append(", ");
-            }
-            s.append(m.getValue().toString());
-            s.append(" ");
-            s.append(m.getKey().toString());
-        }
-        s.append(" ] "); // no not use: ring.toString() );
-        return s.toString();
-    }
-
-    /**
-     * String representation of GenPolynomial.
-     *
-     * @param v names for variables.
-     * @see java.lang.Object#toString()
-     */
-    String toString(String[] v) {
-        StringBuilder s = new StringBuilder();
-        if (val.size() == 0) {
-            s.append("0");
-        } else {
-            // s.append( "( " );
-            boolean first = true;
-            for (Map.Entry<ExpVector, C> m : val.entrySet()) {
-                C c = m.getValue();
-                if (first) {
-                    first = false;
-                } else {
-                    if (c.signum() < 0) {
-                        s.append(" - ");
-                        c = c.negate();
-                    } else {
-                        s.append(" + ");
-                    }
-                }
-                ExpVector e = m.getKey();
-                if (!c.isONE() || e.isZERO()) {
-                    String cs = c.toString();
-                    //if (c instanceof GenPolynomial || c instanceof AlgebraicNumber) {
-                    if (cs.contains("-") || cs.contains("+")) {
-                        s.append("( ");
-                        s.append(cs);
-                        s.append(" )");
-                    } else {
-                        s.append(cs);
-                    }
-                    s.append(" ");
-                }
-                if (e != null && v != null) {
-                    s.append(e.toString(v));
-                } else {
-                    s.append(e);
-                }
-            }
-            //s.append(" )");
-        }
-        return s.toString();
     }
 
     /**
@@ -287,18 +236,18 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         if (b == null) {
             return 1;
         }
-        SortedMap<ExpVector, C> av = this.val;
-        SortedMap<ExpVector, C> bv = b.val;
-        Iterator<Map.Entry<ExpVector, C>> ai = av.entrySet().iterator();
-        Iterator<Map.Entry<ExpVector, C>> bi = bv.entrySet().iterator();
+        SortedMap<Long, C> av = this.val;
+        SortedMap<Long, C> bv = b.val;
+        Iterator<Map.Entry<Long, C>> ai = av.entrySet().iterator();
+        Iterator<Map.Entry<Long, C>> bi = bv.entrySet().iterator();
         int s;
         int c = 0;
         while (ai.hasNext() && bi.hasNext()) {
-            Map.Entry<ExpVector, C> aie = ai.next();
-            Map.Entry<ExpVector, C> bie = bi.next();
-            ExpVector ae = aie.getKey();
-            ExpVector be = bie.getKey();
-            s = ae.compareTo(be);
+            Map.Entry<Long, C> aie = ai.next();
+            Map.Entry<Long, C> bie = bi.next();
+            long ae = aie.getKey();
+            long be = bie.getKey();
+            s = Long.compare(ae, be);
             if (s != 0) {
                 return s;
             }
@@ -322,7 +271,7 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         if (this.isZERO()) {
             return 0;
         }
-        ExpVector t = val.firstKey();
+        long t = val.firstKey();
         C c = val.get(t);
         return c.signum();
     }
@@ -332,7 +281,7 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
      *
      * @return first exponent.
      */
-    public ExpVector leadingExpVector() {
+    public Long leadingExpVector() {
         if (val.size() == 0) {
             return null; // ring.evzero? needs many changes
         }
@@ -352,44 +301,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
     }
 
     /**
-     * Trailing base coefficient.
-     *
-     * @return coefficient of constant term.
-     */
-    public C trailingBaseCoefficient() {
-        C c = val.get(ring.evzero);
-        if (c == null) {
-            return ring.coFac.getZERO();
-        }
-        return c;
-    }
-
-    //
-    //Degree in variable i.
-    //
-    //@return maximal degree in the variable i.
-    //
-    public long degree(int i) {
-        if (val.size() == 0) {
-            return 0; // 0 or -1 ?;
-        }
-        int j;
-        if (i >= 0) {
-            j = ring.nvar - 1 - i;
-        } else { // python like -1 means main variable
-            j = ring.nvar + i;
-        }
-        long deg = 0;
-        for (ExpVector e : val.keySet()) {
-            long d = e.getVal(j);
-            if (d > deg) {
-                deg = d;
-            }
-        }
-        return deg;
-    }
-
-    /**
      * Maximal degree.
      *
      * @return maximal degree in any variables.
@@ -399,8 +310,8 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
             return 0; // 0 or -1 ?;
         }
         long deg = 0;
-        for (ExpVector e : val.keySet()) {
-            long d = e.maxDeg();
+        for (Long e : val.keySet()) {
+            long d = e;
             if (d > deg) {
                 deg = d;
             }
@@ -413,13 +324,13 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
      *
      * @return maximal degree vector of all variables.
      */
-    public ExpVector degreeVector() {
-        ExpVector deg = ring.evzero;
+    public long degreeVector() {
+        long deg = ring.evzero;
         if (val.size() == 0) {
             return deg;
         }
-        for (ExpVector e : val.keySet()) {
-            deg = deg.lcm(e);
+        for (long e : val.keySet()) {
+            deg = Long.max(deg, e);
         }
         return deg;
     }
@@ -441,20 +352,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
     }
 
     /**
-     * GenPolynomial sum norm.
-     *
-     * @return sum of all absolute values of coefficients.
-     */
-    public C sumNorm() {
-        C n = ring.getZEROCoefficient();
-        for (C c : val.values()) {
-            C x = c.abs();
-            n = n.sum(x);
-        }
-        return n;
-    }
-
-    /**
      * GenPolynomial summation.
      *
      * @param S GenPolynomial.
@@ -471,12 +368,11 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         if (this.isZERO()) {
             return S;
         }
-        assert (ring.nvar == S.ring.nvar);
         GenPolynomial<C> n = this.copy(); //new GenPolynomial<C>(ring, val);
-        SortedMap<ExpVector, C> nv = n.val;
-        SortedMap<ExpVector, C> sv = S.val;
-        for (Map.Entry<ExpVector, C> me : sv.entrySet()) {
-            ExpVector e = me.getKey();
+        SortedMap<Long, C> nv = n.val;
+        SortedMap<Long, C> sv = S.val;
+        for (Map.Entry<Long, C> me : sv.entrySet()) {
+            long e = me.getKey();
             C y = me.getValue(); //sv.get(e); // assert y != null
             C x = nv.get(e);
             if (x != null) {
@@ -501,7 +397,7 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
      * @param e exponent.
      * @return this + a x<sup>e</sup>.
      */
-    public GenPolynomial<C> sum(C a, ExpVector e) {
+    public GenPolynomial<C> sum(C a, Long e) {
         if (a == null) {
             return this;
         }
@@ -509,7 +405,7 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
             return this;
         }
         GenPolynomial<C> n = this.copy(); //new GenPolynomial<C>(ring, val);
-        SortedMap<ExpVector, C> nv = n.val;
+        SortedMap<Long, C> nv = n.val;
         //if ( nv.size() == 0 ) { nv.put(e,a); return n; }
         C x = nv.get(e);
         if (x != null) {
@@ -552,12 +448,11 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         if (this.isZERO()) {
             return S.negate();
         }
-        assert (ring.nvar == S.ring.nvar);
         GenPolynomial<C> n = this.copy(); //new GenPolynomial<C>(ring, val);
-        SortedMap<ExpVector, C> nv = n.val;
-        SortedMap<ExpVector, C> sv = S.val;
-        for (Map.Entry<ExpVector, C> me : sv.entrySet()) {
-            ExpVector e = me.getKey();
+        SortedMap<Long, C> nv = n.val;
+        SortedMap<Long, C> sv = S.val;
+        for (Map.Entry<Long, C> me : sv.entrySet()) {
+            Long e = me.getKey();
             C y = me.getValue(); //sv.get(e); // assert y != null
             C x = nv.get(e);
             if (x != null) {
@@ -582,8 +477,8 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
     public GenPolynomial<C> negate() {
         GenPolynomial<C> n = ring.getZERO().copy();
         //new GenPolynomial<C>(ring, ring.getZERO().val);
-        SortedMap<ExpVector, C> v = n.val;
-        for (Map.Entry<ExpVector, C> m : val.entrySet()) {
+        SortedMap<Long, C> v = n.val;
+        for (Map.Entry<Long, C> m : val.entrySet()) {
             C x = m.getValue(); // != null, 0
             v.put(m.getKey(), x.negate());
             // or m.setValue( x.negate() ) if this cloned
@@ -619,7 +514,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         if (this.isZERO()) {
             return this;
         }
-        assert (ring.nvar == S.ring.nvar);
         if (this instanceof GenSolvablePolynomial || S instanceof GenSolvablePolynomial) {
             //throw new RuntimeException("wrong method dispatch in JRE ");
             GenSolvablePolynomial<C> T = (GenSolvablePolynomial<C>) this;
@@ -627,16 +521,16 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
             return T.multiply(Sp);
         }
         GenPolynomial<C> p = ring.getZERO().copy();
-        SortedMap<ExpVector, C> pv = p.val;
-        for (Map.Entry<ExpVector, C> m1 : val.entrySet()) {
+        SortedMap<Long, C> pv = p.val;
+        for (Map.Entry<Long, C> m1 : val.entrySet()) {
             C c1 = m1.getValue();
-            ExpVector e1 = m1.getKey();
-            for (Map.Entry<ExpVector, C> m2 : S.val.entrySet()) {
+            long e1 = m1.getKey();
+            for (Map.Entry<Long, C> m2 : S.val.entrySet()) {
                 C c2 = m2.getValue();
-                ExpVector e2 = m2.getKey();
+                long e2 = m2.getKey();
                 C c = c1.multiply(c2); // check non zero if not domain
                 if (!c.isZERO()) {
-                    ExpVector e = e1.sum(e2);
+                    long e = e1 + e2;
                     C c0 = pv.get(e);
                     if (c0 == null) {
                         pv.put(e, c);
@@ -671,10 +565,10 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
             return this;
         }
         GenPolynomial<C> p = ring.getZERO().copy();
-        SortedMap<ExpVector, C> pv = p.val;
-        for (Map.Entry<ExpVector, C> m1 : val.entrySet()) {
+        SortedMap<Long, C> pv = p.val;
+        for (Map.Entry<Long, C> m1 : val.entrySet()) {
             C c1 = m1.getValue();
-            ExpVector e1 = m1.getKey();
+            Long e1 = m1.getKey();
             C c = c1.multiply(s); // check non zero if not domain
             if (!c.isZERO()) {
                 pv.put(e1, c); // or m1.setValue( c )
@@ -695,7 +589,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         }
         C lc = leadingBaseCoefficient();
         if (!lc.isUnit()) {
-            //System.out.println("lc = "+lc);
             return this;
         }
         C lm = lc.inverse();
@@ -710,7 +603,7 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
      * @param e exponent.
      * @return this * s x<sup>e</sup>.
      */
-    public GenPolynomial<C> multiply(C s, ExpVector e) {
+    public GenPolynomial<C> multiply(C s, Long e) {
         if (s == null) {
             return ring.getZERO();
         }
@@ -726,13 +619,13 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
             return T.multiply(s, e);
         }
         GenPolynomial<C> p = ring.getZERO().copy();
-        SortedMap<ExpVector, C> pv = p.val;
-        for (Map.Entry<ExpVector, C> m1 : val.entrySet()) {
+        SortedMap<Long, C> pv = p.val;
+        for (Map.Entry<Long, C> m1 : val.entrySet()) {
             C c1 = m1.getValue();
-            ExpVector e1 = m1.getKey();
+            long e1 = m1.getKey();
             C c = c1.multiply(s); // check non zero if not domain
             if (!c.isZERO()) {
-                ExpVector e2 = e1.sum(e);
+                long e2 = e1 + e;
                 pv.put(e2, c);
             }
         }
@@ -756,9 +649,9 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         //C t = s.inverse();
         //return multiply(t);
         GenPolynomial<C> p = ring.getZERO().copy();
-        SortedMap<ExpVector, C> pv = p.val;
-        for (Map.Entry<ExpVector, C> m : val.entrySet()) {
-            ExpVector e = m.getKey();
+        SortedMap<Long, C> pv = p.val;
+        for (Map.Entry<Long, C> m : val.entrySet()) {
+            Long e = m.getKey();
             C c1 = m.getValue();
             C c = c1.divide(s);
             if (c.isZERO()) {
@@ -779,16 +672,15 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
             throw new ArithmeticException("lbcf not invertible " + c);
         }
         C ci = c.inverse();
-        assert (ring.nvar == S.ring.nvar);
-        ExpVector e = S.leadingExpVector();
+        long e = S.leadingExpVector();
         GenPolynomial<C> h;
         GenPolynomial<C> q = ring.getZERO().copy();
         GenPolynomial<C> r = this.copy();
         while (!r.isZERO()) {
-            ExpVector f = r.leadingExpVector();
-            if (f.multipleOf(e)) {
+            long f = r.leadingExpVector();
+            if (f >= e) {
                 C a = r.leadingBaseCoefficient();
-                f = f.subtract(e);
+                f = f - e;
                 a = a.multiply(ci);
                 q = q.sum(a, f);
                 h = S.multiply(a, f);
@@ -850,15 +742,14 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
             throw new ArithmeticException("lbc not invertible " + c);
         }
         C ci = c.inverse();
-        assert (ring.nvar == S.ring.nvar);
-        ExpVector e = S.leadingExpVector();
+        long e = S.leadingExpVector();
         GenPolynomial<C> h;
         GenPolynomial<C> r = this.copy();
         while (!r.isZERO()) {
-            ExpVector f = r.leadingExpVector();
-            if (f.multipleOf(e)) {
+            long f = r.leadingExpVector();
+            if (f >= e) {
                 C a = r.leadingBaseCoefficient();
-                f = f.subtract(e);
+                f = f - e;
                 //
                 a = a.multiply(ci);
                 h = S.multiply(a, f);
@@ -883,9 +774,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         }
         if (this.isZERO()) {
             return S;
-        }
-        if (ring.nvar != 1) {
-            throw new IllegalArgumentException("not univariate polynomials" + ring);
         }
         GenPolynomial<C> x;
         GenPolynomial<C> q = this;
@@ -916,15 +804,10 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
             ret[2] = this.ring.getONE();
             return ret;
         }
-        if (ring.nvar != 1) {
-            throw new IllegalArgumentException(this.getClass().getName() + " not univariate polynomials"
-                    + ring);
-        }
         if (this.isConstant() && S.isConstant()) {
             C t = this.leadingBaseCoefficient();
             C s = S.leadingBaseCoefficient();
             C[] gg = t.egcd(s);
-            //System.out.println("coeff gcd = " + Arrays.toString(gg));
             GenPolynomial<C> z = this.ring.getZERO();
             ret[0] = z.sum(gg[0]);
             ret[1] = z.sum(gg[1]);
@@ -980,40 +863,11 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
     }
 
     /**
-     * Extend variables. Used e.g. in module embedding. Extend all ExpVectors by
-     * i elements and multiply by x_j^k.
-     *
-     * @param pfac extended polynomial ring factory (by i variables).
-     * @param k    exponent for x_j.
-     * @return extended polynomial.
-     */
-    public GenPolynomial<C> extend(GenPolynomialRing<C> pfac, long k) {
-        if (ring.equals(pfac)) { // nothing to do
-            return this;
-        }
-        GenPolynomial<C> Cp = pfac.getZERO().copy();
-        if (this.isZERO()) {
-            return Cp;
-        }
-        int i = pfac.nvar - ring.nvar;
-        Map<ExpVector, C> C = Cp.val; //getMap();
-        Map<ExpVector, C> A = val;
-        for (Map.Entry<ExpVector, C> y : A.entrySet()) {
-            ExpVector e = y.getKey();
-            C a = y.getValue();
-            System.exit(1);
-            ExpVector f = null;
-            C.put(f, a);
-        }
-        return Cp;
-    }
-
-    /**
      * Iterator over monomials.
      *
      * @return a PolyIterator.
      */
-    public Iterator<Monomial<C>> iterator() {
-        return new PolyIterator<>(val);
+    public Iterator<SortedMap.Entry<Long, C>> iterator() {
+        return val.entrySet().iterator();
     }
 }

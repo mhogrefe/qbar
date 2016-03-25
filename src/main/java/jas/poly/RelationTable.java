@@ -59,29 +59,4 @@ class RelationTable<C extends RingElem<C>> implements Serializable {
         h = 31 * h + table.hashCode();
         return h;
     }
-
-    /**
-     * Get the String representation.
-     *
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        List v;
-        StringBuilder s = new StringBuilder("RelationTable[");
-        boolean first = true;
-        for (List<Integer> k : table.keySet()) {
-            if (first) {
-                first = false;
-            } else {
-                s.append(", ");
-            }
-            s.append(k.toString());
-            v = table.get(k);
-            s.append("=");
-            s.append(v.toString());
-        }
-        s.append("]");
-        return s.toString();
-    }
 }

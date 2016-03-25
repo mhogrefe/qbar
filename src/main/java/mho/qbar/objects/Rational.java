@@ -62,7 +62,7 @@ public final class Rational implements Comparable<Rational> {
     public static final @NotNull Rational NEGATIVE_ONE = of(-1);
 
     /**
-     * -1
+     * 1/2
      */
     public static final @NotNull Rational ONE_HALF = of(1, 2);
 
@@ -683,6 +683,24 @@ public final class Rational implements Comparable<Rational> {
         }
         return denominator.equals(BigInteger.ONE) && IntegerUtils.isPowerOfTwo(numerator) ||
                 numerator.equals(BigInteger.ONE) && IntegerUtils.isPowerOfTwo(denominator);
+    }
+
+    /**
+     * Rounds {@code this} to the next-highest power of two. If {@code this} is a power of two, it is returned.
+     *
+     * <ul>
+     *  <li>{@code this} must be positive.</li>
+     *  <li>The result is a power of two.</li>
+     * </ul>
+     *
+     * @return the smallest power of 2 greater than or equal to {@code this}.
+     */
+    public @NotNull Rational roundUpToPowerOfTwo() {
+        if (signum() != 1) {
+            throw new ArithmeticException("this must be positive. Invalid this: " + this);
+        }
+        if (isPowerOfTwo()) return this;
+        return ONE.shiftLeft(binaryExponent() + 1);
     }
 
     /**
@@ -2111,6 +2129,77 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
+     * Given two {@code Rational}s {@code a} and {@code b}, returns a {@code Pair} containing their common leading
+     * digits (excluding leading zeros) in base {@code base} and the smallest integer p such that {@code a} and
+     * {@code b} have the same {@code base}<sup>x</sup>-place digits for all x≥p.
+     *
+     * For example, in base 10, 22/7 is 3.1428571428... and 157/50 is 3.14, so they share digits up to the hundredths
+     * (10<sup>–2</sup>) place. Thus, commonLeadingDigits(10, 22/7, 157/50) returns ([3, 1, 4], -2). On the other hand,
+     * 2 and 3 share no digits and are only equal up to the tens (10<sup>1</sup>) place, so
+     * commonLeadingDigits(10, 2, 3) returns ([], 1).
+     *
+     * <ul>
+     *  <li>{@code a} cannot be negative.</li>
+     *  <li>{@code b} cannot be negative.</li>
+     *  <li>{@code base} must be at least 2.</li>
+     *  <li>{@code a} and {@code b} cannot be equal.</li>
+     *  <li>The result is a pair whose first element contains no leading zeros and whose second element is not
+     *  null.</li>
+     * </ul>
+     *
+     * @param base the base of the digits we are considering
+     * @param a the first {@code Rational}
+     * @param b the second {@code Rational}
+     * @return the common leading digits of {@code a} and {@code b} and an offset specifying which digits they are
+     */
+    public static @NotNull Pair<List<BigInteger>, Integer> commonLeadingDigits(
+            @NotNull BigInteger base,
+            @NotNull Rational a,
+            @NotNull Rational b
+    ) {
+        if (a.signum() == -1) {
+            throw new IllegalArgumentException();
+        }
+        if (b.signum() == -1) {
+            throw new IllegalArgumentException();
+        }
+        if (a.equals(b)) {
+            throw new IllegalArgumentException();
+        }
+        Pair<List<BigInteger>, Iterable<BigInteger>> aDigits = a.digits(base);
+        Pair<List<BigInteger>, Iterable<BigInteger>> bDigits = b.digits(base);
+        List<BigInteger> aFloorDigits = aDigits.a;
+        List<BigInteger> bFloorDigits = bDigits.a;
+        if (aFloorDigits.size() != bFloorDigits.size()) {
+            return new Pair<>(Collections.emptyList(), max(aFloorDigits.size(), bFloorDigits.size()));
+        }
+        List<BigInteger> commonDigits = new ArrayList<>();
+        boolean seenNonzero = false;
+        for (int i = 0; i < aFloorDigits.size(); i++) {
+            BigInteger aDigit = aFloorDigits.get(i);
+            BigInteger bDigit = bFloorDigits.get(i);
+            if (!aDigit.equals(bDigit)) {
+                return new Pair<>(commonDigits, aFloorDigits.size() - i);
+            }
+            seenNonzero = seenNonzero || !aDigit.equals(BigInteger.ZERO);
+            commonDigits.add(aDigit);
+        }
+        Iterator<BigInteger> aFractionDigits = concat(aDigits.b, repeat(BigInteger.ZERO)).iterator();
+        Iterator<BigInteger> bFractionDigits = concat(bDigits.b, repeat(BigInteger.ZERO)).iterator();
+        for (int i = 0; ; i--) {
+            BigInteger aDigit = aFractionDigits.next();
+            BigInteger bDigit = bFractionDigits.next();
+            if (!aDigit.equals(bDigit)) {
+                return new Pair<>(commonDigits, i);
+            }
+            seenNonzero = seenNonzero || !aDigit.equals(BigInteger.ZERO);
+            if (seenNonzero) {
+                commonDigits.add(aDigit);
+            }
+        }
+    }
+
+    /**
      * Converts {@code this} to a {@code String} in any base greater than 1. {@code this} must have a terminating
      * expansion in the base. If the base is 36 or less, the digits are '0' through '9' followed by 'A' through 'Z'. If
      * the base is greater than 36, the digits are written in decimal and each digit is surrounded by parentheses. If
@@ -2310,7 +2399,7 @@ public final class Rational implements Comparable<Rational> {
     public static @NotNull List<BigInteger> cancelDenominators(@NotNull List<Rational> xs) {
         BigInteger lcm = foldl(MathUtils::lcm, BigInteger.ONE, map(Rational::getDenominator, xs));
         List<BigInteger> canceled = toList(map(x -> x.multiply(lcm).getNumerator(), xs));
-        BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, canceled);
+        BigInteger gcd = MathUtils.gcd(canceled);
         return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE) ?
                 canceled :
                 toList(map(x -> x.divide(gcd), canceled));
@@ -2444,7 +2533,8 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * Ensures that {@code this} is valid. Must return true for any {@code Rational} used outside this class.
+     * Ensures that {@code this} is valid. Must return without exceptions for any {@code Rational} used outside this
+     * class.
      */
     public void validate() {
         assertEquals(this, numerator.gcd(denominator), BigInteger.ONE);

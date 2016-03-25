@@ -1,12 +1,16 @@
 package jas.ufd;
 
 import jas.arith.*;
-import jas.poly.*;
+import jas.poly.GenPolynomial;
+import jas.poly.GenPolynomialRing;
+import jas.poly.PolyUtil;
+import jas.poly.PolyUtil_ModLong;
 import jas.structure.Power;
 import jas.structure.RingFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedMap;
 
 public class HenselUtil {
     /**
@@ -29,9 +33,6 @@ public class HenselUtil {
             throw new IllegalArgumentException("C must be nonzero and F must be nonempty");
         }
         GenPolynomialRing<JasBigInteger> fac = C.ring;
-        if (fac.nvar != 1) { // todo assert
-            throw new IllegalArgumentException("polynomial ring not univariate");
-        }
         List<GenPolynomial<ModLong>> lift = new ArrayList<>(F.size());
         GenPolynomialRing<ModLong> pfac = F.get(0).ring;
         RingFactory<ModLong> pcfac = pfac.coFac;
@@ -46,13 +47,13 @@ public class HenselUtil {
             } else {
                 mcfac = (ModularRingFactory) new ModIntegerRing(P.getVal());
             }
-            GenPolynomialRing<ModLong> mfac = new GenPolynomialRing<>(mcfac, fac);
+            GenPolynomialRing<ModLong> mfac = new GenPolynomialRing<>(mcfac);
             f = PolyUtil.fromIntegerCoefficients(mfac, PolyUtil_ModLong.integerFromModularCoefficients(fac, f));
             lift.add(f);
             return lift;
         }
 
-        GenPolynomialRing<JasBigInteger> ifac = new GenPolynomialRing<>(new JasBigInteger(), fac);
+        GenPolynomialRing<JasBigInteger> ifac = new GenPolynomialRing<>(new JasBigInteger());
         List<GenPolynomial<JasBigInteger>> Fi = PolyUtil_ModLong.integerFromModularCoefficients(ifac, F);
 
         List<GenPolynomial<ModLong>> S = liftExtendedEuclidean(F, k + 1); // lift works for any k, TODO: use this
@@ -70,7 +71,7 @@ public class HenselUtil {
         ModularRingFactory<ModLong> mcfac = PF;
         JasBigInteger p = mcfac.getIntegerModul();
         JasBigInteger modul = p;
-        GenPolynomialRing<ModLong> mfac = new GenPolynomialRing<>(mcfac, fac);
+        GenPolynomialRing<ModLong> mfac = new GenPolynomialRing<>(mcfac);
         List<GenPolynomial<ModLong>> Sp = PolyUtil.fromIntegerCoefficients(mfac, Si);
         //System.out.println("Sp = " + Sp);
         for (int i = 1; i < k; i++) {
@@ -126,10 +127,8 @@ public class HenselUtil {
         } else {
             mcfac = (ModularRingFactory) new ModIntegerRing(modul.getVal());
         }
-        //System.out.println("mcfac = " + mcfac);
-        mfac = new GenPolynomialRing<>(mcfac, fac);
+        mfac = new GenPolynomialRing<>(mcfac);
         lift = PolyUtil.fromIntegerCoefficients(mfac, Fi);
-        //System.out.println("lift = " + lift + ": " + lift.get(0).ring.coFac);
         return lift;
     }
 
@@ -147,9 +146,6 @@ public class HenselUtil {
             throw new IllegalArgumentException("A must be non null and non empty");
         }
         GenPolynomialRing<ModLong> fac = A.get(0).ring;
-        if (fac.nvar != 1) { // todo assert
-            throw new IllegalArgumentException("polynomial ring not univariate");
-        }
         GenPolynomial<ModLong> zero = fac.getZERO();
         int r = A.size();
         List<GenPolynomial<ModLong>> Q = new ArrayList<>(r);
@@ -170,7 +166,7 @@ public class HenselUtil {
             lift.add(zero);
         }
         GenPolynomial<ModLong> one = fac.getONE();
-        GenPolynomialRing<JasBigInteger> ifac = new GenPolynomialRing<>(new JasBigInteger(), fac);
+        GenPolynomialRing<JasBigInteger> ifac = new GenPolynomialRing<>(new JasBigInteger());
         B.add(0, one);
         //System.out.println("B(0) = " + B.get(0));
         GenPolynomial<ModLong> b = one;
@@ -212,9 +208,6 @@ public class HenselUtil {
             throw new IllegalArgumentException("A and B must be nonzero, A = " + A + ", B = " + B);
         }
         GenPolynomialRing<ModLong> fac = A.ring;
-        if (fac.nvar != 1) { // todo assert
-            throw new IllegalArgumentException("polynomial ring not univariate");
-        }
         // start with extended Euclidean relation mod p
         GenPolynomial<ModLong>[] gst;
         try {
@@ -229,7 +222,7 @@ public class HenselUtil {
         GenPolynomial<ModLong> T = gst[2];
 
         // setup integer polynomial ring
-        GenPolynomialRing<JasBigInteger> ifac = new GenPolynomialRing<>(new JasBigInteger(), fac);
+        GenPolynomialRing<JasBigInteger> ifac = new GenPolynomialRing<>(new JasBigInteger());
         GenPolynomial<JasBigInteger> one = ifac.getONE();
         GenPolynomial<JasBigInteger> Ai = PolyUtil_ModLong.integerFromModularCoefficients(ifac, A);
         GenPolynomial<JasBigInteger> Bi = PolyUtil_ModLong.integerFromModularCoefficients(ifac, B);
@@ -288,12 +281,9 @@ public class HenselUtil {
         } else {
             mcfac = (ModularRingFactory) new ModIntegerRing(modul.getVal());
         }
-        //System.out.println("mcfac = " + mcfac);
-        mfac = new GenPolynomialRing<>(mcfac, fac);
+        mfac = new GenPolynomialRing<>(mcfac);
         S = PolyUtil.fromIntegerCoefficients(mfac, Si);
         T = PolyUtil.fromIntegerCoefficients(mfac, Ti);
-        //System.out.println("S = " + S + ": " + S.ring.coFac);
-        //System.out.println("T = " + T + ": " + T.ring.coFac);
         List<GenPolynomial<ModLong>> AP = new ArrayList<>();
         AP.add(B);
         AP.add(A);
@@ -326,35 +316,25 @@ public class HenselUtil {
         }
         List<GenPolynomial<ModLong>> sol = new ArrayList<>();
         GenPolynomialRing<ModLong> fac = C.ring;
-        if (fac.nvar != 1) { // todo assert
-            throw new IllegalArgumentException("polynomial ring not univariate");
-        }
         //System.out.println("C = " + C);
         GenPolynomial<ModLong> zero = fac.getZERO();
         for (int i = 0; i < 2; i++) {
             sol.add(zero);
         }
-        GenPolynomialRing<JasBigInteger> ifac = new GenPolynomialRing<>(new JasBigInteger(), fac);
-        for (Monomial<ModLong> m : C) {
-            //System.out.println("monomial = " + m);
-            long e = m.e.getVal(0);
+        GenPolynomialRing<JasBigInteger> ifac = new GenPolynomialRing<>(new JasBigInteger());
+        for (SortedMap.Entry<Long, ModLong> m : C) {
+            long e = m.getKey();
             List<GenPolynomial<ModLong>> S = liftDiophant(A, B, e, k);
-            //System.out.println("Se = " + S);
-            ModLong a = m.c;
-            //System.out.println("C.fac = " + fac.toScript());
+            ModLong a = m.getValue();
             a = fac.coFac.fromInteger(a.getSymmetricInteger().getVal());
             int i = 0;
             for (GenPolynomial<ModLong> d : S) {
-                //System.out.println("d = " + d);
                 d = PolyUtil.fromIntegerCoefficients(fac, PolyUtil_ModLong.integerFromModularCoefficients(ifac, d));
                 d = d.multiply(a);
                 d = sol.get(i).sum(d);
-                //System.out.println("d = " + d);
                 sol.set(i++, d);
             }
-            //System.out.println("sol = " + sol + ", for " + m);
         }
-        //GenPolynomialRing<JasBigInteger> ifac = new GenPolynomialRing<JasBigInteger>(new JasBigInteger(), fac);
         A = PolyUtil.fromIntegerCoefficients(fac, PolyUtil_ModLong.integerFromModularCoefficients(ifac, A));
         B = PolyUtil.fromIntegerCoefficients(fac, PolyUtil_ModLong.integerFromModularCoefficients(ifac, B));
         C = PolyUtil.fromIntegerCoefficients(fac, PolyUtil_ModLong.integerFromModularCoefficients(ifac, C));
@@ -383,10 +363,6 @@ public class HenselUtil {
             throw new IllegalArgumentException("A and B must be nonzero, A = " + A + ", B = " + B);
         }
         List<GenPolynomial<ModLong>> sol = new ArrayList<>();
-        GenPolynomialRing<ModLong> fac = A.ring;
-        if (fac.nvar != 1) { // todo assert
-            throw new IllegalArgumentException("polynomial ring not univariate");
-        }
         // lift EE relation to p^k
         GenPolynomial<ModLong>[] lee = liftExtendedEuclidean(B, A, k);
         GenPolynomial<ModLong> s1 = lee[0];
@@ -397,12 +373,12 @@ public class HenselUtil {
             //System.out.println("sol@0 = " + sol);
             return sol;
         }
-        fac = s1.ring;
-        GenPolynomialRing<JasBigInteger> ifac = new GenPolynomialRing<>(new JasBigInteger(), fac);
+        GenPolynomialRing<ModLong> fac = s1.ring;
+        GenPolynomialRing<JasBigInteger> ifac = new GenPolynomialRing<>(new JasBigInteger());
         A = PolyUtil.fromIntegerCoefficients(fac, PolyUtil_ModLong.integerFromModularCoefficients(ifac, A));
         B = PolyUtil.fromIntegerCoefficients(fac, PolyUtil_ModLong.integerFromModularCoefficients(ifac, B));
 
-        GenPolynomial<ModLong> xe = fac.univariate(0, e);
+        GenPolynomial<ModLong> xe = fac.univariateB(0, e);
         GenPolynomial<ModLong> q = s1.multiply(xe);
         GenPolynomial<ModLong>[] QR = q.quotientRemainder(A);
         q = QR[0];
@@ -448,9 +424,6 @@ public class HenselUtil {
             throw new IllegalArgumentException("A and B must be nonzero");
         }
         GenPolynomialRing<JasBigInteger> fac = C.ring;
-        if (fac.nvar != 1) { // todo assert
-            throw new IllegalArgumentException("polynomial ring not univariate");
-        }
         // setup factories
         GenPolynomialRing<ModLong> pfac = A.ring;
         RingFactory<ModLong> p = pfac.coFac;
@@ -460,7 +433,7 @@ public class HenselUtil {
         JasBigInteger M2 = M.multiply(M.fromInteger(2));
         JasBigInteger Mq = Qi;
         GenPolynomialRing<ModLong> qfac;
-        qfac = new GenPolynomialRing<>(Q, pfac);
+        qfac = new GenPolynomialRing<>(Q);
 
         // normalize c and a, b factors, assert p is prime
         GenPolynomial<JasBigInteger> Ai;
@@ -485,8 +458,8 @@ public class HenselUtil {
         Ai = PolyUtil.integerFromModularCoefficients(fac, A);
         Bi = PolyUtil.integerFromModularCoefficients(fac, B);
         // replace leading base coefficients
-        ExpVector ea = Ai.leadingExpVector();
-        ExpVector eb = Bi.leadingExpVector();
+        Long ea = Ai.leadingExpVector();
+        Long eb = Bi.leadingExpVector();
         Ai.doPutToMap(ea, c);
         Bi.doPutToMap(eb, c);
 
@@ -555,10 +528,7 @@ public class HenselUtil {
             Eb1 = Eb.multiply(Qi);
             Ea = Ai.sum(Eb1); // Eb1 and Ea1 are required
             Eb = Bi.sum(Ea1); //--------------------------
-            assert (Ea.degree(0) + Eb.degree(0) <= C.degree(0));
-            //if ( Ea.degree(0)+Eb.degree(0) > C.degree(0) ) { // debug
-            //   throw new RuntimeException("deg(A)+deg(B) > deg(C)");
-            //}
+            assert (Ea.degree() + Eb.degree() <= C.degree());
             Ai = Ea;
             Bi = Eb;
 
@@ -598,10 +568,7 @@ public class HenselUtil {
             } else {
                 Q = (ModularRingFactory) new ModIntegerRing(Qi.getVal());
             }
-            //Q = new ModIntegerRing(Qi.getVal());
-            //System.out.println("Q = " + Q + ", from Q = " + Mq);
-
-            qfac = new GenPolynomialRing<>(Q, pfac);
+            qfac = new GenPolynomialRing<>(Q);
 
             Aq = PolyUtil.fromIntegerCoefficients(qfac, Ai);
             Bq = PolyUtil.fromIntegerCoefficients(qfac, Bi);
@@ -644,10 +611,6 @@ public class HenselUtil {
         if (A == null || A.isZERO() || B == null || B.isZERO()) {
             throw new IllegalArgumentException("A and B must be nonzero");
         }
-        GenPolynomialRing<JasBigInteger> fac = C.ring;
-        if (fac.nvar != 1) { // todo assert
-            throw new IllegalArgumentException("polynomial ring not univariate");
-        }
         // one Hensel step on part polynomials
         try {
             GenPolynomial<ModLong>[] gst = A.egcd(B);
@@ -688,7 +651,7 @@ public class HenselUtil {
     private static boolean isDiophantLift(
             List<GenPolynomial<ModLong>> A, List<GenPolynomial<ModLong>> S, GenPolynomial<ModLong> C) {
         GenPolynomialRing<ModLong> fac = A.get(0).ring;
-        GenPolynomialRing<JasBigInteger> ifac = new GenPolynomialRing<>(new JasBigInteger(), fac);
+        GenPolynomialRing<JasBigInteger> ifac = new GenPolynomialRing<>(new JasBigInteger());
         List<GenPolynomial<ModLong>> B = new ArrayList<>(A.size());
         int i = 0;
         for (GenPolynomial<ModLong> ai : A) {

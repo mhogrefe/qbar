@@ -2,10 +2,15 @@ package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.Interval;
 import mho.qbar.objects.Rational;
+import mho.qbar.objects.Variable;
+import mho.wheels.io.Readers;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
+import java.util.List;
+
 import static mho.qbar.testing.QBarTesting.QEP;
+import static mho.qbar.testing.QBarTesting.aeqitLimitQBarLog;
 import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -13,49 +18,34 @@ import static org.junit.Assert.fail;
 
 public class QBarExhaustiveProviderTest {
     private static <T> void simpleProviderHelper(@NotNull Iterable<T> xs, @NotNull String output) {
-        aeqitLimit(SMALLER_LIMIT, xs, output);
+        aeqitLimitQBarLog(SMALLER_LIMIT, xs, output);
         testNoRemove(SMALLER_LIMIT, xs);
     }
 
     @Test
     public void testPositiveRationals() {
-        simpleProviderHelper(QEP.positiveRationals(),
-                "[1, 1/2, 2, 1/3, 1/4, 2/3, 3, 3/2, 4, 3/4, 4/3, 1/5, 1/6, 2/5, 1/7, 1/8, 2/7, 3/5, 4/5, 3/7, 3/8," +
-                " 4/7, 5, 5/2, 6, 5/3, 5/4, 7, 7/2, 8, 7/3, 7/4, 8/3, 5/6, 6/5, 5/7, 5/8, 6/7, 7/5, 7/6, 8/5, 7/8," +
-                " 8/7, 1/9, 1/10, 2/9, 1/11, 1/12, 2/11, 3/10, ...]");
+        simpleProviderHelper(QEP.positiveRationals(), "QBarExhaustiveProvider_positiveRationals");
     }
 
     @Test
     public void testNegativeRationals() {
-        simpleProviderHelper(QEP.negativeRationals(),
-                "[-1, -1/2, -2, -1/3, -1/4, -2/3, -3, -3/2, -4, -3/4, -4/3, -1/5, -1/6, -2/5, -1/7, -1/8, -2/7," +
-                " -3/5, -4/5, -3/7, -3/8, -4/7, -5, -5/2, -6, -5/3, -5/4, -7, -7/2, -8, -7/3, -7/4, -8/3, -5/6," +
-                " -6/5, -5/7, -5/8, -6/7, -7/5, -7/6, -8/5, -7/8, -8/7, -1/9, -1/10, -2/9, -1/11, -1/12, -2/11," +
-                " -3/10, ...]");
+        simpleProviderHelper(QEP.negativeRationals(), "QBarExhaustiveProvider_negativeRationals");
     }
 
     @Test
     public void testNonzeroRationals() {
-        simpleProviderHelper(QEP.nonzeroRationals(),
-                "[1, 1/2, -1, -1/2, 1/3, 1/4, -1/3, -1/4, 2, -2, 2/3, -2/3, 1/5, 1/6, -1/5, -1/6, 1/7, 1/8, -1/7," +
-                " -1/8, 2/5, -2/5, 2/7, -2/7, 3, 3/2, -3, -3/2, 3/4, -3/4, 4, -4, 4/3, -4/3, 3/5, -3/5, 3/7, 3/8," +
-                " -3/7, -3/8, 4/5, -4/5, 4/7, -4/7, 1/9, 1/10, -1/9, -1/10, 1/11, 1/12, ...]");
+        simpleProviderHelper(QEP.nonzeroRationals(), "QBarExhaustiveProvider_nonzeroRationals");
     }
 
     @Test
     public void testRationals() {
-        simpleProviderHelper(QEP.rationals(),
-                "[0, 1, 1/2, 1/3, 1/4, -1, -1/2, 2, -1/3, -1/4, 2/3, 1/5, 1/6, 1/7, 1/8, -1/5, -1/6, 2/5, -1/7," +
-                " -1/8, 2/7, -2, 3, 3/2, -2/3, 3/4, -3, -3/2, 4, -3/4, 4/3, -2/5, 3/5, -2/7, 3/7, 3/8, -3/5, 4/5," +
-                " -3/7, -3/8, 4/7, 1/9, 1/10, 1/11, 1/12, -1/9, -1/10, 2/9, -1/11, -1/12, ...]");
+        simpleProviderHelper(QEP.rationals(), "QBarExhaustiveProvider_rationals");
     }
 
     @Test
     public void testNonNegativeRationalsLessThanOne() {
         simpleProviderHelper(QEP.nonNegativeRationalsLessThanOne(),
-                "[0, 1/2, 1/3, 2/3, 1/4, 3/4, 1/5, 2/5, 3/5, 4/5, 1/6, 5/6, 1/7, 2/7, 3/7, 4/7, 5/7, 6/7, 1/8, 3/8," +
-                " 5/8, 7/8, 1/9, 2/9, 4/9, 5/9, 7/9, 8/9, 1/10, 3/10, 7/10, 9/10, 1/11, 2/11, 3/11, 4/11, 5/11," +
-                " 6/11, 7/11, 8/11, 9/11, 10/11, 1/12, 5/12, 7/12, 11/12, 1/13, 2/13, 3/13, 4/13, ...]");
+                "QBarExhaustiveProvider_nonNegativeRationalsLessThanOne");
     }
 
     private static void rangeUp_Rational_helper(@NotNull String a, @NotNull String output) {
@@ -64,33 +54,12 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testRangeUp_Rational() {
-        rangeUp_Rational_helper("0",
-                "[0, 1, 1/2, 2, 1/3, 1/4, 2/3, 3, 3/2, 4, 3/4, 4/3, 1/5, 1/6, 2/5, 1/7, 1/8, 2/7, 3/5, 4/5, 3/7," +
-                " 3/8, 4/7, 5, 5/2, 6, 5/3, 5/4, 7, 7/2, 8, 7/3, 7/4, 8/3, 5/6, 6/5, 5/7, 5/8, 6/7, 7/5, 7/6, 8/5," +
-                " 7/8, 8/7, 1/9, 1/10, 2/9, 1/11, 1/12, 2/11, ...]");
-        rangeUp_Rational_helper("1",
-                "[1, 2, 3/2, 3, 4/3, 5/4, 5/3, 4, 5/2, 5, 7/4, 7/3, 6/5, 7/6, 7/5, 8/7, 9/8, 9/7, 8/5, 9/5, 10/7," +
-                " 11/8, 11/7, 6, 7/2, 7, 8/3, 9/4, 8, 9/2, 9, 10/3, 11/4, 11/3, 11/6, 11/5, 12/7, 13/8, 13/7, 12/5," +
-                " 13/6, 13/5, 15/8, 15/7, 10/9, 11/10, 11/9, 12/11, 13/12, 13/11, ...]");
-        rangeUp_Rational_helper("2",
-                "[2, 3, 5/2, 4, 7/3, 9/4, 8/3, 5, 7/2, 6, 11/4, 10/3, 11/5, 13/6, 12/5, 15/7, 17/8, 16/7, 13/5," +
-                " 14/5, 17/7, 19/8, 18/7, 7, 9/2, 8, 11/3, 13/4, 9, 11/2, 10, 13/3, 15/4, 14/3, 17/6, 16/5, 19/7," +
-                " 21/8, 20/7, 17/5, 19/6, 18/5, 23/8, 22/7, 19/9, 21/10, 20/9, 23/11, 25/12, 24/11, ...]");
-        rangeUp_Rational_helper("-2",
-                "[-2, -1, -3/2, 0, -5/3, -7/4, -4/3, 1, -1/2, 2, -5/4, -2/3, -9/5, -11/6, -8/5, -13/7, -15/8, -12/7," +
-                " -7/5, -6/5, -11/7, -13/8, -10/7, 3, 1/2, 4, -1/3, -3/4, 5, 3/2, 6, 1/3, -1/4, 2/3, -7/6, -4/5," +
-                " -9/7, -11/8, -8/7, -3/5, -5/6, -2/5, -9/8, -6/7, -17/9, -19/10, -16/9, -21/11, -23/12, -20/11," +
-                " ...]");
-        rangeUp_Rational_helper("5/3",
-                "[5/3, 8/3, 13/6, 11/3, 2, 23/12, 7/3, 14/3, 19/6, 17/3, 29/12, 3, 28/15, 11/6, 31/15, 38/21, 43/24," +
-                " 41/21, 34/15, 37/15, 44/21, 49/24, 47/21, 20/3, 25/6, 23/3, 10/3, 35/12, 26/3, 31/6, 29/3, 4," +
-                " 41/12, 13/3, 5/2, 43/15, 50/21, 55/24, 53/21, 46/15, 17/6, 49/15, 61/24, 59/21, 16/9, 53/30, 17/9," +
-                " 58/33, 7/4, 61/33, ...]");
-        rangeUp_Rational_helper("-5/3",
-                "[-5/3, -2/3, -7/6, 1/3, -4/3, -17/12, -1, 4/3, -1/6, 7/3, -11/12, -1/3, -22/15, -3/2, -19/15," +
-                " -32/21, -37/24, -29/21, -16/15, -13/15, -26/21, -31/24, -23/21, 10/3, 5/6, 13/3, 0, -5/12, 16/3," +
-                " 11/6, 19/3, 2/3, 1/12, 1, -5/6, -7/15, -20/21, -25/24, -17/21, -4/15, -1/2, -1/15, -19/24, -11/21," +
-                " -14/9, -47/30, -13/9, -52/33, -19/12, -49/33, ...]");
+        rangeUp_Rational_helper("0", "QBarExhaustiveProvider_rangeUp_Rational_i");
+        rangeUp_Rational_helper("1", "QBarExhaustiveProvider_rangeUp_Rational_ii");
+        rangeUp_Rational_helper("2", "QBarExhaustiveProvider_rangeUp_Rational_iii");
+        rangeUp_Rational_helper("-2", "QBarExhaustiveProvider_rangeUp_Rational_iv");
+        rangeUp_Rational_helper("5/3", "QBarExhaustiveProvider_rangeUp_Rational_v");
+        rangeUp_Rational_helper("-5/3", "QBarExhaustiveProvider_rangeUp_Rational_vi");
     }
 
     private static void rangeDown_Rational_helper(@NotNull String a, @NotNull String output) {
@@ -99,33 +68,12 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testRangeDown_Rational() {
-        rangeDown_Rational_helper("0",
-                "[0, -1, -1/2, -2, -1/3, -1/4, -2/3, -3, -3/2, -4, -3/4, -4/3, -1/5, -1/6, -2/5, -1/7, -1/8, -2/7," +
-                " -3/5, -4/5, -3/7, -3/8, -4/7, -5, -5/2, -6, -5/3, -5/4, -7, -7/2, -8, -7/3, -7/4, -8/3, -5/6," +
-                " -6/5, -5/7, -5/8, -6/7, -7/5, -7/6, -8/5, -7/8, -8/7, -1/9, -1/10, -2/9, -1/11, -1/12, -2/11, ...]");
-        rangeDown_Rational_helper("1",
-                "[1, 0, 1/2, -1, 2/3, 3/4, 1/3, -2, -1/2, -3, 1/4, -1/3, 4/5, 5/6, 3/5, 6/7, 7/8, 5/7, 2/5, 1/5," +
-                " 4/7, 5/8, 3/7, -4, -3/2, -5, -2/3, -1/4, -6, -5/2, -7, -4/3, -3/4, -5/3, 1/6, -1/5, 2/7, 3/8, 1/7," +
-                " -2/5, -1/6, -3/5, 1/8, -1/7, 8/9, 9/10, 7/9, 10/11, 11/12, 9/11, ...]");
-        rangeDown_Rational_helper("2",
-                "[2, 1, 3/2, 0, 5/3, 7/4, 4/3, -1, 1/2, -2, 5/4, 2/3, 9/5, 11/6, 8/5, 13/7, 15/8, 12/7, 7/5, 6/5," +
-                " 11/7, 13/8, 10/7, -3, -1/2, -4, 1/3, 3/4, -5, -3/2, -6, -1/3, 1/4, -2/3, 7/6, 4/5, 9/7, 11/8, 8/7," +
-                " 3/5, 5/6, 2/5, 9/8, 6/7, 17/9, 19/10, 16/9, 21/11, 23/12, 20/11, ...]");
-        rangeDown_Rational_helper("-2",
-                "[-2, -3, -5/2, -4, -7/3, -9/4, -8/3, -5, -7/2, -6, -11/4, -10/3, -11/5, -13/6, -12/5, -15/7, -17/8," +
-                " -16/7, -13/5, -14/5, -17/7, -19/8, -18/7, -7, -9/2, -8, -11/3, -13/4, -9, -11/2, -10, -13/3," +
-                " -15/4, -14/3, -17/6, -16/5, -19/7, -21/8, -20/7, -17/5, -19/6, -18/5, -23/8, -22/7, -19/9, -21/10," +
-                " -20/9, -23/11, -25/12, -24/11, ...]");
-        rangeDown_Rational_helper("5/3",
-                "[5/3, 2/3, 7/6, -1/3, 4/3, 17/12, 1, -4/3, 1/6, -7/3, 11/12, 1/3, 22/15, 3/2, 19/15, 32/21, 37/24," +
-                " 29/21, 16/15, 13/15, 26/21, 31/24, 23/21, -10/3, -5/6, -13/3, 0, 5/12, -16/3, -11/6, -19/3, -2/3," +
-                " -1/12, -1, 5/6, 7/15, 20/21, 25/24, 17/21, 4/15, 1/2, 1/15, 19/24, 11/21, 14/9, 47/30, 13/9," +
-                " 52/33, 19/12, 49/33, ...]");
-        rangeDown_Rational_helper("-5/3",
-                "[-5/3, -8/3, -13/6, -11/3, -2, -23/12, -7/3, -14/3, -19/6, -17/3, -29/12, -3, -28/15, -11/6," +
-                " -31/15, -38/21, -43/24, -41/21, -34/15, -37/15, -44/21, -49/24, -47/21, -20/3, -25/6, -23/3," +
-                " -10/3, -35/12, -26/3, -31/6, -29/3, -4, -41/12, -13/3, -5/2, -43/15, -50/21, -55/24, -53/21," +
-                " -46/15, -17/6, -49/15, -61/24, -59/21, -16/9, -53/30, -17/9, -58/33, -7/4, -61/33, ...]");
+        rangeDown_Rational_helper("0", "QBarExhaustiveProvider_rangeDown_Rational_i");
+        rangeDown_Rational_helper("1", "QBarExhaustiveProvider_rangeDown_Rational_ii");
+        rangeDown_Rational_helper("2", "QBarExhaustiveProvider_rangeDown_Rational_iii");
+        rangeDown_Rational_helper("-2", "QBarExhaustiveProvider_rangeDown_Rational_iv");
+        rangeDown_Rational_helper("5/3", "QBarExhaustiveProvider_rangeDown_Rational_v");
+        rangeDown_Rational_helper("-5/3", "QBarExhaustiveProvider_rangeDown_Rational_vi");
     }
 
     private static void range_Rational_Rational_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
@@ -134,53 +82,24 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testRange_Rational_Rational() {
-        range_Rational_Rational_helper("1", "0", "[]");
-        range_Rational_Rational_helper("1/2", "1/3", "[]");
-        range_Rational_Rational_helper("0", "0", "[0]");
-        range_Rational_Rational_helper("5/3", "5/3", "[5/3]");
-        range_Rational_Rational_helper("0", "1",
-                "[0, 1, 1/2, 1/3, 2/3, 1/4, 3/4, 1/5, 2/5, 3/5, 4/5, 1/6, 5/6, 1/7, 2/7, 3/7, 4/7, 5/7, 6/7, 1/8," +
-                " 3/8, 5/8, 7/8, 1/9, 2/9, 4/9, 5/9, 7/9, 8/9, 1/10, 3/10, 7/10, 9/10, 1/11, 2/11, 3/11, 4/11, 5/11," +
-                " 6/11, 7/11, 8/11, 9/11, 10/11, 1/12, 5/12, 7/12, 11/12, 1/13, 2/13, 3/13, ...]");
-        range_Rational_Rational_helper("-1", "0",
-                "[-1, 0, -1/2, -2/3, -1/3, -3/4, -1/4, -4/5, -3/5, -2/5, -1/5, -5/6, -1/6, -6/7, -5/7, -4/7, -3/7," +
-                " -2/7, -1/7, -7/8, -5/8, -3/8, -1/8, -8/9, -7/9, -5/9, -4/9, -2/9, -1/9, -9/10, -7/10, -3/10," +
-                " -1/10, -10/11, -9/11, -8/11, -7/11, -6/11, -5/11, -4/11, -3/11, -2/11, -1/11, -11/12, -7/12," +
-                " -5/12, -1/12, -12/13, -11/13, -10/13, ...]");
-        range_Rational_Rational_helper("1/3", "1/2",
-                "[1/3, 1/2, 5/12, 7/18, 4/9, 3/8, 11/24, 11/30, 2/5, 13/30, 7/15, 13/36, 17/36, 5/14, 8/21, 17/42," +
-                " 3/7, 19/42, 10/21, 17/48, 19/48, 7/16, 23/48, 19/54, 10/27, 11/27, 23/54, 25/54, 13/27, 7/20," +
-                " 23/60, 9/20, 29/60, 23/66, 4/11, 25/66, 13/33, 9/22, 14/33, 29/66, 5/11, 31/66, 16/33, 25/72," +
-                " 29/72, 31/72, 35/72, 9/26, 14/39, 29/78, ...]");
-        range_Rational_Rational_helper("-1", "5/3",
-                "[-1, 5/3, 1/3, -1/9, 7/9, -1/3, 1, -7/15, 1/15, 3/5, 17/15, -5/9, 11/9, -13/21, -5/21, 1/7, 11/21," +
-                " 19/21, 9/7, -2/3, 0, 2/3, 4/3, -19/27, -11/27, 5/27, 13/27, 29/27, 37/27, -11/15, -1/5, 13/15," +
-                " 7/5, -25/33, -17/33, -3/11, -1/33, 7/33, 5/11, 23/33, 31/33, 13/11, 47/33, -7/9, 1/9, 5/9, 13/9," +
-                " -31/39, -23/39, -5/13, ...]");
+        range_Rational_Rational_helper("1", "0", "QBarExhaustiveProvider_range_Rational_Rational_i");
+        range_Rational_Rational_helper("1/2", "1/3", "QBarExhaustiveProvider_range_Rational_Rational_ii");
+        range_Rational_Rational_helper("0", "0", "QBarExhaustiveProvider_range_Rational_Rational_iii");
+        range_Rational_Rational_helper("5/3", "5/3", "QBarExhaustiveProvider_range_Rational_Rational_iv");
+        range_Rational_Rational_helper("0", "1", "QBarExhaustiveProvider_range_Rational_Rational_v");
+        range_Rational_Rational_helper("-1", "0", "QBarExhaustiveProvider_range_Rational_Rational_vi");
+        range_Rational_Rational_helper("1/3", "1/2", "QBarExhaustiveProvider_range_Rational_Rational_vii");
+        range_Rational_Rational_helper("-1", "5/3", "QBarExhaustiveProvider_range_Rational_Rational_viii");
     }
 
     @Test
     public void testFinitelyBoundedIntervals() {
-        simpleProviderHelper(QEP.finitelyBoundedIntervals(),
-                "[[0, 0], [0, 1], [1, 1], [1/2, 1], [0, 1/2], [0, 1/3], [1/3, 1], [1/4, 1], [1/2, 1/2], [1/3, 1/2]," +
-                " [1/3, 1/3], [1/4, 1/3], [1/4, 1/2], [-1, 1/2], [-1, 1/3], [-1/2, 1/3], [0, 1/4], [-1, 0], [-1, 1]," +
-                " [-1/2, 1], [-1/2, 0], [0, 2], [1, 2], [-1/3, 1], [-1/2, 1/2], [1/2, 2], [1/3, 2], [-1/3, 1/3]," +
-                " [-1/3, 1/2], [-1/4, 1/2], [-1/4, 1/3], [1/3, 2/3], [1/4, 1/4], [-1, 1/4], [-1, -1], [-1, -1/2]," +
-                " [-1/2, 1/4], [1/4, 2], [-1, 2], [-1, -1/3], [-1/2, -1/2], [-1/2, 2], [2, 2], [-1/3, 2]," +
-                " [-1/2, -1/3], [-1/2, -1/4], [-1/4, 2], [2/3, 2], [-1/3, 1/4], [-1/4, 1/4], ...]");
+        simpleProviderHelper(QEP.finitelyBoundedIntervals(), "QBarExhaustiveProvider_finitelyBoundedIntervals");
     }
 
     @Test
     public void testIntervals() {
-        simpleProviderHelper(QEP.intervals(),
-                "[(-Infinity, Infinity), (-Infinity, 0], [0, Infinity), [0, 0], (-Infinity, 1], (-Infinity, 1/2]," +
-                " [0, 1], [0, 1/2], [1, Infinity), [1/2, Infinity), [1, 1], [1/2, 1], [1/2, 1/2], (-Infinity, 1/3]," +
-                " (-Infinity, 1/4], [0, 1/3], [0, 1/4], (-Infinity, -1], (-Infinity, -1/2], [1/3, Infinity)," +
-                " [1/4, Infinity), [1/3, 1], [1/3, 1/2], [1/4, 1], [1/4, 1/2], [-1, Infinity), [-1, 0]," +
-                " [-1/2, Infinity), [-1/2, 0], [-1, 1], [-1, 1/2], [-1/2, 1], [-1/2, 1/2], [1/3, 1/3], [1/4, 1/3]," +
-                " [1/4, 1/4], [-1, 1/3], [-1, 1/4], [-1/2, 1/3], [-1/2, 1/4], [-1, -1], [-1, -1/2], [-1/2, -1/2]," +
-                " (-Infinity, 2], (-Infinity, -1/3], [0, 2], (-Infinity, -1/4], (-Infinity, 2/3], [0, 2/3], [1, 2]," +
-                " ...]");
+        simpleProviderHelper(QEP.intervals(), "QBarExhaustiveProvider_intervals");
     }
 
     private static void rationalsIn_helper(@NotNull String a, @NotNull String output) {
@@ -189,26 +108,12 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testRationalsIn() {
-        rationalsIn_helper("[0, 0]", "[0]");
-        rationalsIn_helper("[1, 1]", "[1]");
-        rationalsIn_helper("(-Infinity, Infinity)",
-                "[0, 1, 1/2, 1/3, 1/4, -1, -1/2, 2, -1/3, -1/4, 2/3, 1/5, 1/6, 1/7, 1/8, -1/5, -1/6, 2/5, -1/7," +
-                " -1/8, 2/7, -2, 3, 3/2, -2/3, 3/4, -3, -3/2, 4, -3/4, 4/3, -2/5, 3/5, -2/7, 3/7, 3/8, -3/5, 4/5," +
-                " -3/7, -3/8, 4/7, 1/9, 1/10, 1/11, 1/12, -1/9, -1/10, 2/9, -1/11, -1/12, ...]");
-        rationalsIn_helper("[1, 4]",
-                "[1, 4, 5/2, 2, 3, 7/4, 13/4, 8/5, 11/5, 14/5, 17/5, 3/2, 7/2, 10/7, 13/7, 16/7, 19/7, 22/7, 25/7," +
-                " 11/8, 17/8, 23/8, 29/8, 4/3, 5/3, 7/3, 8/3, 10/3, 11/3, 13/10, 19/10, 31/10, 37/10, 14/11, 17/11," +
-                " 20/11, 23/11, 26/11, 29/11, 32/11, 35/11, 38/11, 41/11, 5/4, 9/4, 11/4, 15/4, 16/13, 19/13, 22/13," +
-                " ...]");
-        rationalsIn_helper("(-Infinity, 1/2]",
-                "[1/2, -1/2, 0, -3/2, 1/6, 1/4, -1/6, -5/2, -1, -7/2, -1/4, -5/6, 3/10, 1/3, 1/10, 5/14, 3/8, 3/14," +
-                " -1/10, -3/10, 1/14, 1/8, -1/14, -9/2, -2, -11/2, -7/6, -3/4, -13/2, -3, -15/2, -11/6, -5/4, -13/6," +
-                " -1/3, -7/10, -3/14, -1/8, -5/14, -9/10, -2/3, -11/10, -3/8, -9/14, 7/18, 2/5, 5/18, 9/22, 5/12," +
-                " 7/22, ...]");
-        rationalsIn_helper("[1/2, Infinity)",
-                "[1/2, 3/2, 1, 5/2, 5/6, 3/4, 7/6, 7/2, 2, 9/2, 5/4, 11/6, 7/10, 2/3, 9/10, 9/14, 5/8, 11/14, 11/10," +
-                " 13/10, 13/14, 7/8, 15/14, 11/2, 3, 13/2, 13/6, 7/4, 15/2, 4, 17/2, 17/6, 9/4, 19/6, 4/3, 17/10," +
-                " 17/14, 9/8, 19/14, 19/10, 5/3, 21/10, 11/8, 23/14, 11/18, 3/5, 13/18, 13/22, 7/12, 15/22, ...]");
+        rationalsIn_helper("[0, 0]", "QBarExhaustiveProvider_rationalsIn_i");
+        rationalsIn_helper("[1, 1]", "QBarExhaustiveProvider_rationalsIn_ii");
+        rationalsIn_helper("(-Infinity, Infinity)", "QBarExhaustiveProvider_rationalsIn_iii");
+        rationalsIn_helper("[1, 4]", "QBarExhaustiveProvider_rationalsIn_iv");
+        rationalsIn_helper("(-Infinity, 1/2]", "QBarExhaustiveProvider_rationalsIn_v");
+        rationalsIn_helper("[1/2, Infinity)", "QBarExhaustiveProvider_rationalsIn_vi");
     }
 
     private static void rationalsNotIn_helper(@NotNull String a, @NotNull String output) {
@@ -217,29 +122,59 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testRationalsNotIn() {
-        rationalsNotIn_helper("[0, 0]",
-                "[1, 1/2, 1/3, 1/4, -1, -1/2, 2, -1/3, -1/4, 2/3, 1/5, 1/6, 1/7, 1/8, -1/5, -1/6, 2/5, -1/7, -1/8," +
-                " 2/7, -2, 3, 3/2, -2/3, 3/4, -3, -3/2, 4, -3/4, 4/3, -2/5, 3/5, -2/7, 3/7, 3/8, -3/5, 4/5, -3/7," +
-                " -3/8, 4/7, 1/9, 1/10, 1/11, 1/12, -1/9, -1/10, 2/9, -1/11, -1/12, 2/11, ...]");
-        rationalsNotIn_helper("[1, 1]",
-                "[0, 1/2, 1/3, 1/4, -1, -1/2, 2, -1/3, -1/4, 2/3, 1/5, 1/6, 1/7, 1/8, -1/5, -1/6, 2/5, -1/7, -1/8," +
-                " 2/7, -2, 3, 3/2, -2/3, 3/4, -3, -3/2, 4, -3/4, 4/3, -2/5, 3/5, -2/7, 3/7, 3/8, -3/5, 4/5, -3/7," +
-                " -3/8, 4/7, 1/9, 1/10, 1/11, 1/12, -1/9, -1/10, 2/9, -1/11, -1/12, 2/11, ...]");
-        rationalsNotIn_helper("(-Infinity, Infinity)", "[]");
-        rationalsNotIn_helper("[1, 4]",
-                "[0, 5, 1/2, 9/2, -1, 6, 2/3, 13/3, 3/4, 17/4, 1/3, 14/3, -2, 7, -1/2, 11/2, -3, 8, 1/4, 19/4, -1/3," +
-                " 16/3, 4/5, 21/5, 5/6, 25/6, 3/5, 22/5, 6/7, 29/7, 7/8, 33/8, 5/7, 30/7, 2/5, 23/5, 1/5, 24/5, 4/7," +
-                " 31/7, 5/8, 35/8, 3/7, 32/7, -4, 9, -3/2, 13/2, -5, 10, ...]");
-        rationalsNotIn_helper("(-Infinity, 1/2]",
-                "[3/2, 1, 5/2, 5/6, 3/4, 7/6, 7/2, 2, 9/2, 5/4, 11/6, 7/10, 2/3, 9/10, 9/14, 5/8, 11/14, 11/10," +
-                " 13/10, 13/14, 7/8, 15/14, 11/2, 3, 13/2, 13/6, 7/4, 15/2, 4, 17/2, 17/6, 9/4, 19/6, 4/3, 17/10," +
-                " 17/14, 9/8, 19/14, 19/10, 5/3, 21/10, 11/8, 23/14, 11/18, 3/5, 13/18, 13/22, 7/12, 15/22, 4/5," +
-                " ...]");
-        rationalsNotIn_helper("[1/2, Infinity)",
-                "[-1/2, 0, -3/2, 1/6, 1/4, -1/6, -5/2, -1, -7/2, -1/4, -5/6, 3/10, 1/3, 1/10, 5/14, 3/8, 3/14," +
-                " -1/10, -3/10, 1/14, 1/8, -1/14, -9/2, -2, -11/2, -7/6, -3/4, -13/2, -3, -15/2, -11/6, -5/4, -13/6," +
-                " -1/3, -7/10, -3/14, -1/8, -5/14, -9/10, -2/3, -11/10, -3/8, -9/14, 7/18, 2/5, 5/18, 9/22, 5/12," +
-                " 7/22, 1/5, ...]");
+        rationalsNotIn_helper("[0, 0]", "QBarExhaustiveProvider_rationalsNotIn_i");
+        rationalsNotIn_helper("[1, 1]", "QBarExhaustiveProvider_rationalsNotIn_ii");
+        rationalsNotIn_helper("(-Infinity, Infinity)", "QBarExhaustiveProvider_rationalsNotIn_iii");
+        rationalsNotIn_helper("[1, 4]", "QBarExhaustiveProvider_rationalsNotIn_iv");
+        rationalsNotIn_helper("(-Infinity, 1/2]", "QBarExhaustiveProvider_rationalsNotIn_v");
+        rationalsNotIn_helper("[1/2, Infinity)", "QBarExhaustiveProvider_rationalsNotIn_vi");
+    }
+
+    private static void vectors_int_helper(int dimension, @NotNull String output) {
+        simpleProviderHelper(QEP.vectors(dimension), output);
+    }
+
+    private static void vectors_int_fail_helper(int dimension) {
+        try {
+            QEP.vectors(dimension);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testVectors_int() {
+        vectors_int_helper(0, "QBarExhaustiveProvider_vectors_int_i");
+        vectors_int_helper(1, "QBarExhaustiveProvider_vectors_int_ii");
+        vectors_int_helper(2, "QBarExhaustiveProvider_vectors_int_iii");
+        vectors_int_helper(3, "QBarExhaustiveProvider_vectors_int_iv");
+        vectors_int_helper(10, "QBarExhaustiveProvider_vectors_int_v");
+        vectors_int_fail_helper(-1);
+    }
+
+    @Test
+    public void testVectors() {
+        simpleProviderHelper(QEP.vectors(), "QBarExhaustiveProvider_vectors");
+    }
+
+    private static void vectorsAtLeast_helper(int minDimension, @NotNull String output) {
+        simpleProviderHelper(QEP.vectorsAtLeast(minDimension), output);
+    }
+
+    private static void vectorsAtLeast_fail_helper(int minDimension) {
+        try {
+            QEP.vectorsAtLeast(minDimension);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testVectorsAtLeast() {
+        vectorsAtLeast_helper(0, "QBarExhaustiveProvider_vectorsAtLeast_i");
+        vectorsAtLeast_helper(1, "QBarExhaustiveProvider_vectorsAtLeast_ii");
+        vectorsAtLeast_helper(2, "QBarExhaustiveProvider_vectorsAtLeast_iii");
+        vectorsAtLeast_helper(3, "QBarExhaustiveProvider_vectorsAtLeast_iv");
+        vectorsAtLeast_helper(10, "QBarExhaustiveProvider_vectorsAtLeast_v");
+        vectorsAtLeast_fail_helper(-1);
     }
 
     private static void rationalVectors_int_helper(int dimension, @NotNull String output) {
@@ -255,57 +190,17 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testRationalVectors_int() {
-        rationalVectors_int_helper(0, "[[]]");
-        rationalVectors_int_helper(1,
-                "[[0], [1], [1/2], [1/3], [1/4], [-1], [-1/2], [2], [-1/3], [-1/4], [2/3], [1/5], [1/6], [1/7]," +
-                " [1/8], [-1/5], [-1/6], [2/5], [-1/7], [-1/8], [2/7], [-2], [3], [3/2], [-2/3], [3/4], [-3]," +
-                " [-3/2], [4], [-3/4], [4/3], [-2/5], [3/5], [-2/7], [3/7], [3/8], [-3/5], [4/5], [-3/7], [-3/8]," +
-                " [4/7], [1/9], [1/10], [1/11], [1/12], [-1/9], [-1/10], [2/9], [-1/11], [-1/12], ...]");
-        rationalVectors_int_helper(2,
-                "[[0, 0], [0, 1], [1, 0], [1, 1], [0, 1/2], [0, 1/3], [1, 1/2], [1, 1/3], [1/2, 0], [1/2, 1]," +
-                " [1/3, 0], [1/3, 1], [1/2, 1/2], [1/2, 1/3], [1/3, 1/2], [1/3, 1/3], [0, 1/4], [0, -1], [1, 1/4]," +
-                " [1, -1], [0, -1/2], [0, 2], [1, -1/2], [1, 2], [1/2, 1/4], [1/2, -1], [1/3, 1/4], [1/3, -1]," +
-                " [1/2, -1/2], [1/2, 2], [1/3, -1/2], [1/3, 2], [1/4, 0], [1/4, 1], [-1, 0], [-1, 1], [1/4, 1/2]," +
-                " [1/4, 1/3], [-1, 1/2], [-1, 1/3], [-1/2, 0], [-1/2, 1], [2, 0], [2, 1], [-1/2, 1/2], [-1/2, 1/3]," +
-                " [2, 1/2], [2, 1/3], [1/4, 1/4], [1/4, -1], ...]");
-        rationalVectors_int_helper(3,
-                "[[0, 0, 0], [0, 0, 1], [0, 1, 0], [0, 1, 1], [1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1]," +
-                " [0, 0, 1/2], [0, 0, 1/3], [0, 1, 1/2], [0, 1, 1/3], [1, 0, 1/2], [1, 0, 1/3], [1, 1, 1/2]," +
-                " [1, 1, 1/3], [0, 1/2, 0], [0, 1/2, 1], [0, 1/3, 0], [0, 1/3, 1], [1, 1/2, 0], [1, 1/2, 1]," +
-                " [1, 1/3, 0], [1, 1/3, 1], [0, 1/2, 1/2], [0, 1/2, 1/3], [0, 1/3, 1/2], [0, 1/3, 1/3]," +
-                " [1, 1/2, 1/2], [1, 1/2, 1/3], [1, 1/3, 1/2], [1, 1/3, 1/3], [1/2, 0, 0], [1/2, 0, 1], [1/2, 1, 0]," +
-                " [1/2, 1, 1], [1/3, 0, 0], [1/3, 0, 1], [1/3, 1, 0], [1/3, 1, 1], [1/2, 0, 1/2], [1/2, 0, 1/3]," +
-                " [1/2, 1, 1/2], [1/2, 1, 1/3], [1/3, 0, 1/2], [1/3, 0, 1/3], [1/3, 1, 1/2], [1/3, 1, 1/3]," +
-                " [1/2, 1/2, 0], [1/2, 1/2, 1], ...]");
-        rationalVectors_int_helper(10,
-                "[[0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0, 0, 0, 1, 0]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 1, 1], [0, 0, 0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 0, 1]," +
-                " [0, 0, 0, 0, 0, 0, 0, 1, 1, 0], [0, 0, 0, 0, 0, 0, 0, 1, 1, 1], [0, 0, 0, 0, 0, 0, 1, 0, 0, 0]," +
-                " [0, 0, 0, 0, 0, 0, 1, 0, 0, 1], [0, 0, 0, 0, 0, 0, 1, 0, 1, 0], [0, 0, 0, 0, 0, 0, 1, 0, 1, 1]," +
-                " [0, 0, 0, 0, 0, 0, 1, 1, 0, 0], [0, 0, 0, 0, 0, 0, 1, 1, 0, 1], [0, 0, 0, 0, 0, 0, 1, 1, 1, 0]," +
-                " [0, 0, 0, 0, 0, 0, 1, 1, 1, 1], [0, 0, 0, 0, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 0, 0, 1]," +
-                " [0, 0, 0, 0, 0, 1, 0, 0, 1, 0], [0, 0, 0, 0, 0, 1, 0, 0, 1, 1], [0, 0, 0, 0, 0, 1, 0, 1, 0, 0]," +
-                " [0, 0, 0, 0, 0, 1, 0, 1, 0, 1], [0, 0, 0, 0, 0, 1, 0, 1, 1, 0], [0, 0, 0, 0, 0, 1, 0, 1, 1, 1]," +
-                " [0, 0, 0, 0, 0, 1, 1, 0, 0, 0], [0, 0, 0, 0, 0, 1, 1, 0, 0, 1], [0, 0, 0, 0, 0, 1, 1, 0, 1, 0]," +
-                " [0, 0, 0, 0, 0, 1, 1, 0, 1, 1], [0, 0, 0, 0, 0, 1, 1, 1, 0, 0], [0, 0, 0, 0, 0, 1, 1, 1, 0, 1]," +
-                " [0, 0, 0, 0, 0, 1, 1, 1, 1, 0], [0, 0, 0, 0, 0, 1, 1, 1, 1, 1], [0, 0, 0, 0, 1, 0, 0, 0, 0, 0]," +
-                " [0, 0, 0, 0, 1, 0, 0, 0, 0, 1], [0, 0, 0, 0, 1, 0, 0, 0, 1, 0], [0, 0, 0, 0, 1, 0, 0, 0, 1, 1]," +
-                " [0, 0, 0, 0, 1, 0, 0, 1, 0, 0], [0, 0, 0, 0, 1, 0, 0, 1, 0, 1], [0, 0, 0, 0, 1, 0, 0, 1, 1, 0]," +
-                " [0, 0, 0, 0, 1, 0, 0, 1, 1, 1], [0, 0, 0, 0, 1, 0, 1, 0, 0, 0], [0, 0, 0, 0, 1, 0, 1, 0, 0, 1]," +
-                " [0, 0, 0, 0, 1, 0, 1, 0, 1, 0], [0, 0, 0, 0, 1, 0, 1, 0, 1, 1], [0, 0, 0, 0, 1, 0, 1, 1, 0, 0]," +
-                " [0, 0, 0, 0, 1, 0, 1, 1, 0, 1], [0, 0, 0, 0, 1, 0, 1, 1, 1, 0], [0, 0, 0, 0, 1, 0, 1, 1, 1, 1]," +
-                " [0, 0, 0, 0, 1, 1, 0, 0, 0, 0], [0, 0, 0, 0, 1, 1, 0, 0, 0, 1], ...]");
+        rationalVectors_int_helper(0, "QBarExhaustiveProvider_rationalVectors_int_i");
+        rationalVectors_int_helper(1, "QBarExhaustiveProvider_rationalVectors_int_ii");
+        rationalVectors_int_helper(2, "QBarExhaustiveProvider_rationalVectors_int_iii");
+        rationalVectors_int_helper(3, "QBarExhaustiveProvider_rationalVectors_int_iv");
+        rationalVectors_int_helper(10, "QBarExhaustiveProvider_rationalVectors_int_v");
         rationalVectors_int_fail_helper(-1);
     }
 
     @Test
     public void testRationalVectors() {
-        simpleProviderHelper(QEP.rationalVectors(),
-                "[[], [0], [0, 0], [1], [0, 0, 0], [1/2], [0, 1], [1/3], [0, 0, 0, 0], [1/4], [1, 0], [-1]," +
-                " [0, 0, 1], [-1/2], [1, 1], [2], [0, 0, 0, 0, 0], [-1/3], [0, 1/2], [-1/4], [0, 1, 0], [2/3]," +
-                " [0, 1/3], [1/5], [0, 0, 0, 1], [1/6], [1, 1/2], [1/7], [0, 1, 1], [1/8], [1, 1/3], [-1/5]," +
-                " [0, 0, 0, 0, 0, 0], [-1/6], [1/2, 0], [2/5], [1, 0, 0], [-1/7], [1/2, 1], [-1/8], [0, 0, 1, 0]," +
-                " [2/7], [1/3, 0], [-2], [1, 0, 1], [3], [1/3, 1], [3/2], [0, 0, 0, 0, 1], [-2/3], ...]");
+        simpleProviderHelper(QEP.rationalVectors(), "QBarExhaustiveProvider_rationalVectors");
     }
 
     private static void rationalVectorsAtLeast_helper(int minDimension, @NotNull String output) {
@@ -321,61 +216,11 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testRationalVectorsAtLeast() {
-        rationalVectorsAtLeast_helper(0,
-                "[[], [0], [0, 0], [1], [0, 0, 0], [1/2], [0, 1], [1/3], [0, 0, 0, 0], [1/4], [1, 0], [-1]," +
-                " [0, 0, 1], [-1/2], [1, 1], [2], [0, 0, 0, 0, 0], [-1/3], [0, 1/2], [-1/4], [0, 1, 0], [2/3]," +
-                " [0, 1/3], [1/5], [0, 0, 0, 1], [1/6], [1, 1/2], [1/7], [0, 1, 1], [1/8], [1, 1/3], [-1/5]," +
-                " [0, 0, 0, 0, 0, 0], [-1/6], [1/2, 0], [2/5], [1, 0, 0], [-1/7], [1/2, 1], [-1/8], [0, 0, 1, 0]," +
-                " [2/7], [1/3, 0], [-2], [1, 0, 1], [3], [1/3, 1], [3/2], [0, 0, 0, 0, 1], [-2/3], ...]");
-        rationalVectorsAtLeast_helper(1,
-                "[[0], [0, 0], [1], [0, 0, 0], [1/2], [0, 1], [1/3], [0, 0, 0, 0], [1/4], [1, 0], [-1], [0, 0, 1]," +
-                " [-1/2], [1, 1], [2], [0, 0, 0, 0, 0], [-1/3], [0, 1/2], [-1/4], [0, 1, 0], [2/3], [0, 1/3], [1/5]," +
-                " [0, 0, 0, 1], [1/6], [1, 1/2], [1/7], [0, 1, 1], [1/8], [1, 1/3], [-1/5], [0, 0, 0, 0, 0, 0]," +
-                " [-1/6], [1/2, 0], [2/5], [1, 0, 0], [-1/7], [1/2, 1], [-1/8], [0, 0, 1, 0], [2/7], [1/3, 0], [-2]," +
-                " [1, 0, 1], [3], [1/3, 1], [3/2], [0, 0, 0, 0, 1], [-2/3], [1/2, 1/2], ...]");
-        rationalVectorsAtLeast_helper(2,
-                "[[0, 0], [0, 0, 0], [0, 1], [0, 0, 0, 0], [1, 0], [0, 0, 1], [1, 1], [0, 0, 0, 0, 0], [0, 1/2]," +
-                " [0, 1, 0], [0, 1/3], [0, 0, 0, 1], [1, 1/2], [0, 1, 1], [1, 1/3], [0, 0, 0, 0, 0, 0], [1/2, 0]," +
-                " [1, 0, 0], [1/2, 1], [0, 0, 1, 0], [1/3, 0], [1, 0, 1], [1/3, 1], [0, 0, 0, 0, 1], [1/2, 1/2]," +
-                " [1, 1, 0], [1/2, 1/3], [0, 0, 1, 1], [1/3, 1/2], [1, 1, 1], [1/3, 1/3], [0, 0, 0, 0, 0, 0, 0]," +
-                " [0, 1/4], [0, 0, 1/2], [0, -1], [0, 1, 0, 0], [1, 1/4], [0, 0, 1/3], [1, -1], [0, 0, 0, 1, 0]," +
-                " [0, -1/2], [0, 1, 1/2], [0, 2], [0, 1, 0, 1], [1, -1/2], [0, 1, 1/3], [1, 2], [0, 0, 0, 0, 0, 1]," +
-                " [1/2, 1/4], [1, 0, 1/2], ...]");
-        rationalVectorsAtLeast_helper(3,
-                "[[0, 0, 0], [0, 0, 0, 0], [0, 0, 1], [0, 0, 0, 0, 0], [0, 1, 0], [0, 0, 0, 1], [0, 1, 1]," +
-                " [0, 0, 0, 0, 0, 0], [1, 0, 0], [0, 0, 1, 0], [1, 0, 1], [0, 0, 0, 0, 1], [1, 1, 0], [0, 0, 1, 1]," +
-                " [1, 1, 1], [0, 0, 0, 0, 0, 0, 0], [0, 0, 1/2], [0, 1, 0, 0], [0, 0, 1/3], [0, 0, 0, 1, 0]," +
-                " [0, 1, 1/2], [0, 1, 0, 1], [0, 1, 1/3], [0, 0, 0, 0, 0, 1], [1, 0, 1/2], [0, 1, 1, 0]," +
-                " [1, 0, 1/3], [0, 0, 0, 1, 1], [1, 1, 1/2], [0, 1, 1, 1], [1, 1, 1/3], [0, 0, 0, 0, 0, 0, 0, 0]," +
-                " [0, 1/2, 0], [1, 0, 0, 0], [0, 1/2, 1], [0, 0, 1, 0, 0], [0, 1/3, 0], [1, 0, 0, 1], [0, 1/3, 1]," +
-                " [0, 0, 0, 0, 1, 0], [1, 1/2, 0], [1, 0, 1, 0], [1, 1/2, 1], [0, 0, 1, 0, 1], [1, 1/3, 0]," +
-                " [1, 0, 1, 1], [1, 1/3, 1], [0, 0, 0, 0, 0, 0, 1], [0, 1/2, 1/2], [1, 1, 0, 0], ...]");
-        rationalVectorsAtLeast_helper(10,
-                "[[0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 1, 0]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0, 0, 0, 1, 1]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 0, 0]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0, 0, 1, 0, 1]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0, 0, 1, 1, 0]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1], [0, 0, 0, 0, 0, 0, 0, 1, 1, 1]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 1, 0, 0, 0]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0, 1, 0, 0, 1]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0, 1, 0, 1, 0]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1], [0, 0, 0, 0, 0, 0, 1, 0, 1, 1]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0, 1, 1, 0, 0]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0], [0, 0, 0, 0, 0, 0, 1, 1, 0, 1]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1], [0, 0, 0, 0, 0, 0, 1, 1, 1, 0]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1], [0, 0, 0, 0, 0, 0, 1, 1, 1, 1]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 0, 0, 0]," +
-                " [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 0, 0, 1]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 1, 0, 0, 1, 0]," +
-                " [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1], [0, 0, 0, 0, 0, 1, 0, 0, 1, 1]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 1, 0, 1, 0, 0]," +
-                " [0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0], [0, 0, 0, 0, 0, 1, 0, 1, 0, 1]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1], [0, 0, 0, 0, 0, 1, 0, 1, 1, 0]," +
-                " [0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1], [0, 0, 0, 0, 0, 1, 0, 1, 1, 1]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 1, 1, 0, 0, 0]," +
-                " [0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0], ...]");
+        rationalVectorsAtLeast_helper(0, "QBarExhaustiveProvider_rationalVectorsAtLeast_i");
+        rationalVectorsAtLeast_helper(1, "QBarExhaustiveProvider_rationalVectorsAtLeast_ii");
+        rationalVectorsAtLeast_helper(2, "QBarExhaustiveProvider_rationalVectorsAtLeast_iii");
+        rationalVectorsAtLeast_helper(3, "QBarExhaustiveProvider_rationalVectorsAtLeast_iv");
+        rationalVectorsAtLeast_helper(10, "QBarExhaustiveProvider_rationalVectorsAtLeast_v");
         rationalVectorsAtLeast_fail_helper(-1);
     }
 
@@ -392,54 +237,17 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testReducedRationalVectors_int() {
-        reducedRationalVectors_int_helper(0, "[[]]");
-        reducedRationalVectors_int_helper(1, "[[0], [1]]");
-        reducedRationalVectors_int_helper(2,
-                "[[0, 0], [0, 1], [1, 0], [1, 1], [1, -1], [1, 2], [1, 1/2], [1, -1/2], [1, -2], [1, 3], [1, -3]," +
-                " [1, 4], [1, 3/2], [1, -3/2], [1, 1/3], [1, -1/3], [1, 2/3], [1, 1/4], [1, -1/4], [1, -2/3]," +
-                " [1, 4/3], [1, 3/4], [1, -3/4], [1, -4], [1, 5], [1, -5], [1, 6], [1, 5/2], [1, -5/2], [1, -6]," +
-                " [1, 7], [1, -7], [1, 8], [1, 7/2], [1, -7/2], [1, -4/3], [1, 5/3], [1, -5/3], [1, 5/4], [1, -5/4]," +
-                " [1, 7/3], [1, -7/3], [1, 8/3], [1, 7/4], [1, -7/4], [1, 1/5], [1, -1/5], [1, 2/5], [1, 1/6]," +
-                " [1, -1/6], ...]");
-        reducedRationalVectors_int_helper(3,
-                "[[0, 0, 0], [0, 0, 1], [0, 1, 0], [0, 1, 1], [1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1]," +
-                " [0, 1, -1], [0, 1, 2], [1, 0, -1], [1, 0, 2], [1, 1, -1], [1, 1, 2], [0, 1, 1/2], [1, -1, 0]," +
-                " [1, -1, 1], [1, 2, 0], [1, 2, 1], [0, 1, -1/2], [1, -1, -1], [1, -1, 2], [1, 2, -1], [1, 2, 2]," +
-                " [1, 0, 1/2], [1, 1/2, 0], [1, 1/2, 1/2], [1, 0, -1/2], [1, 1/2, -1/2], [1, 1/2, 1], [1, -1/2, 0]," +
-                " [1, -1/2, 1/2], [1, 1, 1/2], [1, -1/2, -1/2], [1, -1/2, 1], [1, 1, -1/2], [0, 1, -2], [0, 1, 3]," +
-                " [1, 0, -2], [1, 0, 3], [1, 1, -2], [1, 1, 3], [0, 1, -3], [0, 1, 4], [1, 0, -3], [1, 0, 4]," +
-                " [1, 1, -3], [1, 1, 4], [0, 1, 3/2], [1, -1, -2], ...]");
-        reducedRationalVectors_int_helper(10,
-                "[[0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0, 0, 0, 1, 0]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 1, 1], [0, 0, 0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 0, 1]," +
-                " [0, 0, 0, 0, 0, 0, 0, 1, 1, 0], [0, 0, 0, 0, 0, 0, 0, 1, 1, 1], [0, 0, 0, 0, 0, 0, 1, 0, 0, 0]," +
-                " [0, 0, 0, 0, 0, 0, 1, 0, 0, 1], [0, 0, 0, 0, 0, 0, 1, 0, 1, 0], [0, 0, 0, 0, 0, 0, 1, 0, 1, 1]," +
-                " [0, 0, 0, 0, 0, 0, 1, 1, 0, 0], [0, 0, 0, 0, 0, 0, 1, 1, 0, 1], [0, 0, 0, 0, 0, 0, 1, 1, 1, 0]," +
-                " [0, 0, 0, 0, 0, 0, 1, 1, 1, 1], [0, 0, 0, 0, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 0, 0, 1]," +
-                " [0, 0, 0, 0, 0, 1, 0, 0, 1, 0], [0, 0, 0, 0, 0, 1, 0, 0, 1, 1], [0, 0, 0, 0, 0, 1, 0, 1, 0, 0]," +
-                " [0, 0, 0, 0, 0, 1, 0, 1, 0, 1], [0, 0, 0, 0, 0, 1, 0, 1, 1, 0], [0, 0, 0, 0, 0, 1, 0, 1, 1, 1]," +
-                " [0, 0, 0, 0, 0, 1, 1, 0, 0, 0], [0, 0, 0, 0, 0, 1, 1, 0, 0, 1], [0, 0, 0, 0, 0, 1, 1, 0, 1, 0]," +
-                " [0, 0, 0, 0, 0, 1, 1, 0, 1, 1], [0, 0, 0, 0, 0, 1, 1, 1, 0, 0], [0, 0, 0, 0, 0, 1, 1, 1, 0, 1]," +
-                " [0, 0, 0, 0, 0, 1, 1, 1, 1, 0], [0, 0, 0, 0, 0, 1, 1, 1, 1, 1], [0, 0, 0, 0, 1, 0, 0, 0, 0, 0]," +
-                " [0, 0, 0, 0, 1, 0, 0, 0, 0, 1], [0, 0, 0, 0, 1, 0, 0, 0, 1, 0], [0, 0, 0, 0, 1, 0, 0, 0, 1, 1]," +
-                " [0, 0, 0, 0, 1, 0, 0, 1, 0, 0], [0, 0, 0, 0, 1, 0, 0, 1, 0, 1], [0, 0, 0, 0, 1, 0, 0, 1, 1, 0]," +
-                " [0, 0, 0, 0, 1, 0, 0, 1, 1, 1], [0, 0, 0, 0, 1, 0, 1, 0, 0, 0], [0, 0, 0, 0, 1, 0, 1, 0, 0, 1]," +
-                " [0, 0, 0, 0, 1, 0, 1, 0, 1, 0], [0, 0, 0, 0, 1, 0, 1, 0, 1, 1], [0, 0, 0, 0, 1, 0, 1, 1, 0, 0]," +
-                " [0, 0, 0, 0, 1, 0, 1, 1, 0, 1], [0, 0, 0, 0, 1, 0, 1, 1, 1, 0], [0, 0, 0, 0, 1, 0, 1, 1, 1, 1]," +
-                " [0, 0, 0, 0, 1, 1, 0, 0, 0, 0], [0, 0, 0, 0, 1, 1, 0, 0, 0, 1], ...]");
+        reducedRationalVectors_int_helper(0, "QBarExhaustiveProvider_reducedRationalVectors_int_i");
+        reducedRationalVectors_int_helper(1, "QBarExhaustiveProvider_reducedRationalVectors_int_ii");
+        reducedRationalVectors_int_helper(2, "QBarExhaustiveProvider_reducedRationalVectors_int_iii");
+        reducedRationalVectors_int_helper(3, "QBarExhaustiveProvider_reducedRationalVectors_int_iv");
+        reducedRationalVectors_int_helper(10, "QBarExhaustiveProvider_reducedRationalVectors_int_v");
         reducedRationalVectors_int_fail_helper(-1);
     }
 
     @Test
     public void testReducedRationalVectors() {
-        simpleProviderHelper(QEP.reducedRationalVectors(),
-                "[[], [0], [0, 0], [1], [0, 0, 0], [0, 1], [0, 0, 0, 0], [1, 0], [0, 0, 1], [1, 1], [0, 0, 0, 0, 0]," +
-                " [0, 1, 0], [0, 0, 0, 1], [1, -1], [0, 1, 1], [1, 2], [0, 0, 0, 0, 0, 0], [1, 0, 0], [0, 0, 1, 0]," +
-                " [1, 0, 1], [1, 1/2], [0, 0, 0, 0, 1], [1, 1, 0], [0, 0, 1, 1], [1, -1/2], [1, 1, 1]," +
-                " [0, 0, 0, 0, 0, 0, 0], [0, 1, 0, 0], [1, -2], [1, 3], [0, 0, 0, 1, 0], [0, 1, -1], [0, 1, 0, 1]," +
-                " [1, -3], [0, 1, 2], [1, 4], [0, 0, 0, 0, 0, 1], [1, 0, -1], [0, 1, 1, 0], [1, 0, 2], [1, 3/2]," +
-                " [0, 0, 0, 1, 1], [1, 1, -1], [0, 1, 1, 1], [1, -3/2], [1, 1, 2], [0, 0, 0, 0, 0, 0, 0, 0]," +
-                " [1, 0, 0, 0], [1, 1/3], [0, 0, 1, 0, 0], ...]");
+        simpleProviderHelper(QEP.reducedRationalVectors(), "QBarExhaustiveProvider_reducedRationalVectors");
     }
 
     private static void reducedRationalVectorsAtLeast_helper(int minDimension, @NotNull String output) {
@@ -455,66 +263,147 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testReducedRationalVectorsAtLeast() {
-        reducedRationalVectorsAtLeast_helper(0,
-                "[[], [0], [0, 0], [1], [0, 0, 0], [0, 1], [0, 0, 0, 0], [1, 0], [0, 0, 1], [1, 1], [0, 0, 0, 0, 0]," +
-                " [0, 1, 0], [0, 0, 0, 1], [1, -1], [0, 1, 1], [1, 2], [0, 0, 0, 0, 0, 0], [1, 0, 0], [0, 0, 1, 0]," +
-                " [1, 0, 1], [1, 1/2], [0, 0, 0, 0, 1], [1, 1, 0], [0, 0, 1, 1], [1, -1/2], [1, 1, 1]," +
-                " [0, 0, 0, 0, 0, 0, 0], [0, 1, 0, 0], [1, -2], [1, 3], [0, 0, 0, 1, 0], [0, 1, -1], [0, 1, 0, 1]," +
-                " [1, -3], [0, 1, 2], [1, 4], [0, 0, 0, 0, 0, 1], [1, 0, -1], [0, 1, 1, 0], [1, 0, 2], [1, 3/2]," +
-                " [0, 0, 0, 1, 1], [1, 1, -1], [0, 1, 1, 1], [1, -3/2], [1, 1, 2], [0, 0, 0, 0, 0, 0, 0, 0]," +
-                " [1, 0, 0, 0], [1, 1/3], [0, 0, 1, 0, 0], ...]");
-        reducedRationalVectorsAtLeast_helper(1,
-                "[[0], [0, 0], [1], [0, 0, 0], [0, 1], [0, 0, 0, 0], [1, 0], [0, 0, 1], [1, 1], [0, 0, 0, 0, 0]," +
-                " [0, 1, 0], [0, 0, 0, 1], [1, -1], [0, 1, 1], [1, 2], [0, 0, 0, 0, 0, 0], [1, 0, 0], [0, 0, 1, 0]," +
-                " [1, 0, 1], [1, 1/2], [0, 0, 0, 0, 1], [1, 1, 0], [0, 0, 1, 1], [1, -1/2], [1, 1, 1]," +
-                " [0, 0, 0, 0, 0, 0, 0], [0, 1, 0, 0], [1, -2], [1, 3], [0, 0, 0, 1, 0], [0, 1, -1], [0, 1, 0, 1]," +
-                " [1, -3], [0, 1, 2], [1, 4], [0, 0, 0, 0, 0, 1], [1, 0, -1], [0, 1, 1, 0], [1, 0, 2], [1, 3/2]," +
-                " [0, 0, 0, 1, 1], [1, 1, -1], [0, 1, 1, 1], [1, -3/2], [1, 1, 2], [0, 0, 0, 0, 0, 0, 0, 0]," +
-                " [1, 0, 0, 0], [1, 1/3], [0, 0, 1, 0, 0], [1, 0, 0, 1], ...]");
-        reducedRationalVectorsAtLeast_helper(2,
-                "[[0, 0], [0, 0, 0], [0, 1], [0, 0, 0, 0], [1, 0], [0, 0, 1], [1, 1], [0, 0, 0, 0, 0], [0, 1, 0]," +
-                " [0, 0, 0, 1], [1, -1], [0, 1, 1], [1, 2], [0, 0, 0, 0, 0, 0], [1, 0, 0], [0, 0, 1, 0], [1, 0, 1]," +
-                " [1, 1/2], [0, 0, 0, 0, 1], [1, 1, 0], [0, 0, 1, 1], [1, -1/2], [1, 1, 1], [0, 0, 0, 0, 0, 0, 0]," +
-                " [0, 1, 0, 0], [1, -2], [1, 3], [0, 0, 0, 1, 0], [0, 1, -1], [0, 1, 0, 1], [1, -3], [0, 1, 2]," +
-                " [1, 4], [0, 0, 0, 0, 0, 1], [1, 0, -1], [0, 1, 1, 0], [1, 0, 2], [1, 3/2], [0, 0, 0, 1, 1]," +
-                " [1, 1, -1], [0, 1, 1, 1], [1, -3/2], [1, 1, 2], [0, 0, 0, 0, 0, 0, 0, 0], [1, 0, 0, 0], [1, 1/3]," +
-                " [0, 0, 1, 0, 0], [1, 0, 0, 1], [1, -1/3], [0, 1, 1/2], ...]");
-        reducedRationalVectorsAtLeast_helper(3,
-                "[[0, 0, 0], [0, 0, 0, 0], [0, 0, 1], [0, 0, 0, 0, 0], [0, 1, 0], [0, 0, 0, 1], [0, 1, 1]," +
-                " [0, 0, 0, 0, 0, 0], [1, 0, 0], [0, 0, 1, 0], [1, 0, 1], [0, 0, 0, 0, 1], [1, 1, 0], [0, 0, 1, 1]," +
-                " [1, 1, 1], [0, 0, 0, 0, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 1, -1], [0, 1, 0, 1]," +
-                " [0, 1, 2], [0, 0, 0, 0, 0, 1], [1, 0, -1], [0, 1, 1, 0], [1, 0, 2], [0, 0, 0, 1, 1], [1, 1, -1]," +
-                " [0, 1, 1, 1], [1, 1, 2], [0, 0, 0, 0, 0, 0, 0, 0], [1, 0, 0, 0], [0, 0, 1, 0, 0], [1, 0, 0, 1]," +
-                " [0, 1, 1/2], [0, 0, 0, 0, 1, 0], [1, -1, 0], [1, 0, 1, 0], [1, -1, 1], [0, 0, 1, 0, 1], [1, 2, 0]," +
-                " [1, 0, 1, 1], [1, 2, 1], [0, 0, 0, 0, 0, 0, 1], [1, 1, 0, 0], [0, 0, 1, 1, 0], [0, 1, -1/2]," +
-                " [1, 1, 0, 1], [0, 0, 0, 0, 1, 1], [1, -1, -1], [1, 1, 1, 0], ...]");
-        reducedRationalVectorsAtLeast_helper(10,
-                "[[0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 1, 0]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0, 0, 0, 1, 1]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 0, 0]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0, 0, 1, 0, 1]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0, 0, 1, 1, 0]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1], [0, 0, 0, 0, 0, 0, 0, 1, 1, 1]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 1, 0, 0, 0]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0, 1, 0, 0, 1]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0, 1, 0, 1, 0]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1], [0, 0, 0, 0, 0, 0, 1, 0, 1, 1]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0, 1, 1, 0, 0]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0], [0, 0, 0, 0, 0, 0, 1, 1, 0, 1]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1], [0, 0, 0, 0, 0, 0, 1, 1, 1, 0]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1], [0, 0, 0, 0, 0, 0, 1, 1, 1, 1]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 0, 0, 0]," +
-                " [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 0, 0, 1]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 1, 0, 0, 1, 0]," +
-                " [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1], [0, 0, 0, 0, 0, 1, 0, 0, 1, 1]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 1, 0, 1, 0, 0]," +
-                " [0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0], [0, 0, 0, 0, 0, 1, 0, 1, 0, 1]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1], [0, 0, 0, 0, 0, 1, 0, 1, 1, 0]," +
-                " [0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1], [0, 0, 0, 0, 0, 1, 0, 1, 1, 1]," +
-                " [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 1, 1, 0, 0, 0]," +
-                " [0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0], ...]");
+        reducedRationalVectorsAtLeast_helper(0, "QBarExhaustiveProvider_reducedRationalVectorsAtLeast_i");
+        reducedRationalVectorsAtLeast_helper(1, "QBarExhaustiveProvider_reducedRationalVectorsAtLeast_ii");
+        reducedRationalVectorsAtLeast_helper(2, "QBarExhaustiveProvider_reducedRationalVectorsAtLeast_iii");
+        reducedRationalVectorsAtLeast_helper(3, "QBarExhaustiveProvider_reducedRationalVectorsAtLeast_iv");
+        reducedRationalVectorsAtLeast_helper(10, "QBarExhaustiveProvider_reducedRationalVectorsAtLeast_v");
         reducedRationalVectorsAtLeast_fail_helper(-1);
+    }
+
+    private static void polynomialVectors_int_helper(int dimension, @NotNull String output) {
+        simpleProviderHelper(QEP.polynomialVectors(dimension), output);
+    }
+
+    private static void polynomialVectors_int_fail_helper(int dimension) {
+        try {
+            QEP.polynomialVectors(dimension);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testPolynomialVectors_int() {
+        polynomialVectors_int_helper(0, "QBarExhaustiveProvider_polynomialVectors_int_i");
+        polynomialVectors_int_helper(1, "QBarExhaustiveProvider_polynomialVectors_int_ii");
+        polynomialVectors_int_helper(2, "QBarExhaustiveProvider_polynomialVectors_int_iii");
+        polynomialVectors_int_helper(3, "QBarExhaustiveProvider_polynomialVectors_int_iv");
+        polynomialVectors_int_helper(10, "QBarExhaustiveProvider_polynomialVectors_int_v");
+        polynomialVectors_int_fail_helper(-1);
+    }
+
+    @Test
+    public void testPolynomialVectors() {
+        simpleProviderHelper(QEP.polynomialVectors(), "QBarExhaustiveProvider_polynomialVectors");
+    }
+
+    private static void polynomialVectorsAtLeast_helper(int minDimension, @NotNull String output) {
+        simpleProviderHelper(QEP.polynomialVectorsAtLeast(minDimension), output);
+    }
+
+    private static void polynomialVectorsAtLeast_fail_helper(int minDimension) {
+        try {
+            QEP.polynomialVectorsAtLeast(minDimension);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testPolynomialVectorsAtLeast() {
+        polynomialVectorsAtLeast_helper(0, "QBarExhaustiveProvider_polynomialVectorsAtLeast_i");
+        polynomialVectorsAtLeast_helper(1, "QBarExhaustiveProvider_polynomialVectorsAtLeast_ii");
+        polynomialVectorsAtLeast_helper(2, "QBarExhaustiveProvider_polynomialVectorsAtLeast_iii");
+        polynomialVectorsAtLeast_helper(3, "QBarExhaustiveProvider_polynomialVectorsAtLeast_iv");
+        polynomialVectorsAtLeast_helper(10, "QBarExhaustiveProvider_polynomialVectorsAtLeast_v");
+        polynomialVectorsAtLeast_fail_helper(-1);
+    }
+
+    private static void rationalPolynomialVectors_int_helper(int dimension, @NotNull String output) {
+        simpleProviderHelper(QEP.rationalPolynomialVectors(dimension), output);
+    }
+
+    private static void rationalPolynomialVectors_int_fail_helper(int dimension) {
+        try {
+            QEP.rationalPolynomialVectors(dimension);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testRationalPolynomialVectors_int() {
+        rationalPolynomialVectors_int_helper(0, "QBarExhaustiveProvider_rationalPolynomialVectors_int_i");
+        rationalPolynomialVectors_int_helper(1, "QBarExhaustiveProvider_rationalPolynomialVectors_int_ii");
+        rationalPolynomialVectors_int_helper(2, "QBarExhaustiveProvider_rationalPolynomialVectors_int_iii");
+        rationalPolynomialVectors_int_helper(3, "QBarExhaustiveProvider_rationalPolynomialVectors_int_iv");
+        rationalPolynomialVectors_int_helper(10, "QBarExhaustiveProvider_rationalPolynomialVectors_int_v");
+        rationalPolynomialVectors_int_fail_helper(-1);
+    }
+
+    @Test
+    public void testRationalPolynomialVectors() {
+        simpleProviderHelper(QEP.rationalPolynomialVectors(), "QBarExhaustiveProvider_rationalPolynomialVectors");
+    }
+
+    private static void rationalPolynomialVectorsAtLeast_helper(int minDimension, @NotNull String output) {
+        simpleProviderHelper(QEP.rationalPolynomialVectorsAtLeast(minDimension), output);
+    }
+
+    private static void rationalPolynomialVectorsAtLeast_fail_helper(int minDimension) {
+        try {
+            QEP.rationalPolynomialVectorsAtLeast(minDimension);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testRationalPolynomialVectorsAtLeast() {
+        rationalPolynomialVectorsAtLeast_helper(0, "QBarExhaustiveProvider_rationalPolynomialVectorsAtLeast_i");
+        rationalPolynomialVectorsAtLeast_helper(1, "QBarExhaustiveProvider_rationalPolynomialVectorsAtLeast_ii");
+        rationalPolynomialVectorsAtLeast_helper(2, "QBarExhaustiveProvider_rationalPolynomialVectorsAtLeast_iii");
+        rationalPolynomialVectorsAtLeast_helper(3, "QBarExhaustiveProvider_rationalPolynomialVectorsAtLeast_iv");
+        rationalPolynomialVectorsAtLeast_helper(10, "QBarExhaustiveProvider_rationalPolynomialVectorsAtLeast_v");
+        rationalPolynomialVectorsAtLeast_fail_helper(-1);
+    }
+
+    private static void matrices_int_int_helper(int height, int width, @NotNull String output) {
+        simpleProviderHelper(QEP.matrices(height, width), output);
+    }
+
+    private static void matrices_int_int_fail_helper(int height, int width) {
+        try {
+            QEP.matrices(height, width);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testMatrices_int_int() {
+        matrices_int_int_helper(0, 0, "QBarExhaustiveProvider_matrices_int_int_i");
+        matrices_int_int_helper(0, 3, "QBarExhaustiveProvider_matrices_int_int_ii");
+        matrices_int_int_helper(3, 0, "QBarExhaustiveProvider_matrices_int_int_iii");
+        matrices_int_int_helper(1, 1, "QBarExhaustiveProvider_matrices_int_int_iv");
+        matrices_int_int_helper(2, 2, "QBarExhaustiveProvider_matrices_int_int_v");
+        matrices_int_int_helper(3, 4, "QBarExhaustiveProvider_matrices_int_int_vi");
+        matrices_int_int_fail_helper(-1, 0);
+        matrices_int_int_fail_helper(-1, 1);
+        matrices_int_int_fail_helper(0, -1);
+        matrices_int_int_fail_helper(1, -1);
+        matrices_int_int_fail_helper(-1, -1);
+    }
+
+    @Test
+    public void testMatrices() {
+        simpleProviderHelper(QEP.matrices(), "QBarExhaustiveProvider_matrices");
+    }
+
+    @Test
+    public void testSquareMatrices() {
+        simpleProviderHelper(QEP.squareMatrices(), "QBarExhaustiveProvider_squareMatrices");
+    }
+
+    @Test
+    public void testInvertibleMatrices() {
+        simpleProviderHelper(QEP.invertibleMatrices(), "QBarExhaustiveProvider_invertibleMatrices");
     }
 
     private static void rationalMatrices_int_int_helper(int height, int width, @NotNull String output) {
@@ -530,54 +419,12 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testRationalMatrices_int_int() {
-        rationalMatrices_int_int_helper(0, 0, "[[]#0]");
-        rationalMatrices_int_int_helper(0, 3, "[[]#3]");
-        rationalMatrices_int_int_helper(3, 0, "[[[], [], []]]");
-        rationalMatrices_int_int_helper(1, 1,
-                "[[[0]], [[1]], [[1/2]], [[1/3]], [[1/4]], [[-1]], [[-1/2]], [[2]], [[-1/3]], [[-1/4]], [[2/3]]," +
-                " [[1/5]], [[1/6]], [[1/7]], [[1/8]], [[-1/5]], [[-1/6]], [[2/5]], [[-1/7]], [[-1/8]], [[2/7]]," +
-                " [[-2]], [[3]], [[3/2]], [[-2/3]], [[3/4]], [[-3]], [[-3/2]], [[4]], [[-3/4]], [[4/3]], [[-2/5]]," +
-                " [[3/5]], [[-2/7]], [[3/7]], [[3/8]], [[-3/5]], [[4/5]], [[-3/7]], [[-3/8]], [[4/7]], [[1/9]]," +
-                " [[1/10]], [[1/11]], [[1/12]], [[-1/9]], [[-1/10]], [[2/9]], [[-1/11]], [[-1/12]], ...]");
-        rationalMatrices_int_int_helper(2, 2,
-                "[[[0, 0], [0, 0]], [[0, 0], [0, 1]], [[0, 1], [0, 0]], [[0, 1], [0, 1]], [[0, 0], [1, 0]]," +
-                " [[0, 0], [1, 1]], [[0, 1], [1, 0]], [[0, 1], [1, 1]], [[1, 0], [0, 0]], [[1, 0], [0, 1]]," +
-                " [[1, 1], [0, 0]], [[1, 1], [0, 1]], [[1, 0], [1, 0]], [[1, 0], [1, 1]], [[1, 1], [1, 0]]," +
-                " [[1, 1], [1, 1]], [[0, 0], [0, 1/2]], [[0, 0], [0, 1/3]], [[0, 1], [0, 1/2]], [[0, 1], [0, 1/3]]," +
-                " [[0, 0], [1, 1/2]], [[0, 0], [1, 1/3]], [[0, 1], [1, 1/2]], [[0, 1], [1, 1/3]]," +
-                " [[1, 0], [0, 1/2]], [[1, 0], [0, 1/3]], [[1, 1], [0, 1/2]], [[1, 1], [0, 1/3]]," +
-                " [[1, 0], [1, 1/2]], [[1, 0], [1, 1/3]], [[1, 1], [1, 1/2]], [[1, 1], [1, 1/3]]," +
-                " [[0, 1/2], [0, 0]], [[0, 1/2], [0, 1]], [[0, 1/3], [0, 0]], [[0, 1/3], [0, 1]]," +
-                " [[0, 1/2], [1, 0]], [[0, 1/2], [1, 1]], [[0, 1/3], [1, 0]], [[0, 1/3], [1, 1]]," +
-                " [[1, 1/2], [0, 0]], [[1, 1/2], [0, 1]], [[1, 1/3], [0, 0]], [[1, 1/3], [0, 1]]," +
-                " [[1, 1/2], [1, 0]], [[1, 1/2], [1, 1]], [[1, 1/3], [1, 0]], [[1, 1/3], [1, 1]]," +
-                " [[0, 1/2], [0, 1/2]], [[0, 1/2], [0, 1/3]], ...]");
-        rationalMatrices_int_int_helper(3, 4,
-                "[[[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 1]]," +
-                " [[0, 0, 0, 0], [0, 0, 0, 1], [0, 0, 0, 0]], [[0, 0, 0, 0], [0, 0, 0, 1], [0, 0, 0, 1]]," +
-                " [[0, 0, 0, 1], [0, 0, 0, 0], [0, 0, 0, 0]], [[0, 0, 0, 1], [0, 0, 0, 0], [0, 0, 0, 1]]," +
-                " [[0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 0]], [[0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1]]," +
-                " [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 1, 0]], [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 1, 1]]," +
-                " [[0, 0, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0]], [[0, 0, 0, 0], [0, 0, 0, 1], [0, 0, 1, 1]]," +
-                " [[0, 0, 0, 1], [0, 0, 0, 0], [0, 0, 1, 0]], [[0, 0, 0, 1], [0, 0, 0, 0], [0, 0, 1, 1]]," +
-                " [[0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 1, 0]], [[0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 1, 1]]," +
-                " [[0, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 0]], [[0, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]," +
-                " [[0, 0, 0, 0], [0, 0, 1, 1], [0, 0, 0, 0]], [[0, 0, 0, 0], [0, 0, 1, 1], [0, 0, 0, 1]]," +
-                " [[0, 0, 0, 1], [0, 0, 1, 0], [0, 0, 0, 0]], [[0, 0, 0, 1], [0, 0, 1, 0], [0, 0, 0, 1]]," +
-                " [[0, 0, 0, 1], [0, 0, 1, 1], [0, 0, 0, 0]], [[0, 0, 0, 1], [0, 0, 1, 1], [0, 0, 0, 1]]," +
-                " [[0, 0, 0, 0], [0, 0, 1, 0], [0, 0, 1, 0]], [[0, 0, 0, 0], [0, 0, 1, 0], [0, 0, 1, 1]]," +
-                " [[0, 0, 0, 0], [0, 0, 1, 1], [0, 0, 1, 0]], [[0, 0, 0, 0], [0, 0, 1, 1], [0, 0, 1, 1]]," +
-                " [[0, 0, 0, 1], [0, 0, 1, 0], [0, 0, 1, 0]], [[0, 0, 0, 1], [0, 0, 1, 0], [0, 0, 1, 1]]," +
-                " [[0, 0, 0, 1], [0, 0, 1, 1], [0, 0, 1, 0]], [[0, 0, 0, 1], [0, 0, 1, 1], [0, 0, 1, 1]]," +
-                " [[0, 0, 1, 0], [0, 0, 0, 0], [0, 0, 0, 0]], [[0, 0, 1, 0], [0, 0, 0, 0], [0, 0, 0, 1]]," +
-                " [[0, 0, 1, 0], [0, 0, 0, 1], [0, 0, 0, 0]], [[0, 0, 1, 0], [0, 0, 0, 1], [0, 0, 0, 1]]," +
-                " [[0, 0, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]], [[0, 0, 1, 1], [0, 0, 0, 0], [0, 0, 0, 1]]," +
-                " [[0, 0, 1, 1], [0, 0, 0, 1], [0, 0, 0, 0]], [[0, 0, 1, 1], [0, 0, 0, 1], [0, 0, 0, 1]]," +
-                " [[0, 0, 1, 0], [0, 0, 0, 0], [0, 0, 1, 0]], [[0, 0, 1, 0], [0, 0, 0, 0], [0, 0, 1, 1]]," +
-                " [[0, 0, 1, 0], [0, 0, 0, 1], [0, 0, 1, 0]], [[0, 0, 1, 0], [0, 0, 0, 1], [0, 0, 1, 1]]," +
-                " [[0, 0, 1, 1], [0, 0, 0, 0], [0, 0, 1, 0]], [[0, 0, 1, 1], [0, 0, 0, 0], [0, 0, 1, 1]]," +
-                " [[0, 0, 1, 1], [0, 0, 0, 1], [0, 0, 1, 0]], [[0, 0, 1, 1], [0, 0, 0, 1], [0, 0, 1, 1]]," +
-                " [[0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 0, 0]], [[0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 0, 1]], ...]");
+        rationalMatrices_int_int_helper(0, 0, "QBarExhaustiveProvider_rationalMatrices_int_int_i");
+        rationalMatrices_int_int_helper(0, 3, "QBarExhaustiveProvider_rationalMatrices_int_int_ii");
+        rationalMatrices_int_int_helper(3, 0, "QBarExhaustiveProvider_rationalMatrices_int_int_iii");
+        rationalMatrices_int_int_helper(1, 1, "QBarExhaustiveProvider_rationalMatrices_int_int_iv");
+        rationalMatrices_int_int_helper(2, 2, "QBarExhaustiveProvider_rationalMatrices_int_int_v");
+        rationalMatrices_int_int_helper(3, 4, "QBarExhaustiveProvider_rationalMatrices_int_int_vi");
         rationalMatrices_int_int_fail_helper(-1, 0);
         rationalMatrices_int_int_fail_helper(-1, 1);
         rationalMatrices_int_int_fail_helper(0, -1);
@@ -587,33 +434,94 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testRationalMatrices() {
-        simpleProviderHelper(QEP.rationalMatrices(),
-                "[[[0]], []#0, [[]], [[0, 0]], []#1, [[1]], [[0, 1]], [[1/2]], [[], []], [[1, 0]], [[1/3]]," +
-                " [[1, 1]], [[0], [0]], [[0, 0], [0, 0]], [[0], [1]], [[0, 0], [0, 1]], []#2, [[1], [0]]," +
-                " [[0, 1], [0, 0]], [[1], [1]], [[0, 1], [0, 1]], [[1/4]], [[0, 1/2]], [[-1]], [[0, 1/3]]," +
-                " [[-1/2]], [[1, 1/2]], [[2]], [[1, 1/3]], [[0], [1/2]], [[0, 0], [1, 0]], [[0], [1/3]]," +
-                " [[], [], []], [[0, 0], [1, 1]], [[1], [1/2]], [[0, 1], [1, 0]], [[1], [1/3]], [[0, 1], [1, 1]]," +
-                " [[-1/3]], [[1/2, 0]], [[-1/4]], [[1/2, 1]], [[2/3]], [[1/3, 0]], [[1/5]], [[1/3, 1]]," +
-                " [[1/2], [0]], [[1, 0], [0, 0]], [[1/2], [1]], [[1, 0], [0, 1]], ...]");
+        simpleProviderHelper(QEP.rationalMatrices(), "QBarExhaustiveProvider_rationalMatrices");
     }
 
     @Test
     public void testSquareRationalMatrices() {
-        simpleProviderHelper(QEP.squareRationalMatrices(),
-                "[[]#0, [[0]], [[0, 0], [0, 0]], [[1]], [[0, 0, 0], [0, 0, 0], [0, 0, 0]], [[1/2]]," +
-                " [[0, 0], [0, 1]], [[1/3]], [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], [[1/4]]," +
-                " [[0, 1], [0, 0]], [[-1]], [[0, 0, 0], [0, 0, 0], [0, 0, 1]], [[-1/2]], [[0, 1], [0, 1]], [[2]]," +
-                " [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]], [[-1/3]]," +
-                " [[0, 0], [1, 0]], [[-1/4]], [[0, 0, 0], [0, 0, 1], [0, 0, 0]], [[2/3]], [[0, 0], [1, 1]], [[1/5]]," +
-                " [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 1]], [[1/6]], [[0, 1], [1, 0]], [[1/7]]," +
-                " [[0, 0, 0], [0, 0, 1], [0, 0, 1]], [[1/8]], [[0, 1], [1, 1]], [[-1/5]]," +
-                " [[0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]," +
-                " [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]], [[-1/6]], [[1, 0], [0, 0]], [[2/5]]," +
-                " [[0, 0, 1], [0, 0, 0], [0, 0, 0]], [[-1/7]], [[1, 0], [0, 1]], [[-1/8]]," +
-                " [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 1], [0, 0, 0, 0]], [[2/7]], [[1, 1], [0, 0]], [[-2]]," +
-                " [[0, 0, 1], [0, 0, 0], [0, 0, 1]], [[3]], [[1, 1], [0, 1]], [[3/2]]," +
-                " [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 1]], [[-2/3]]," +
-                " ...]");
+        simpleProviderHelper(QEP.squareRationalMatrices(), "QBarExhaustiveProvider_squareRationalMatrices");
+    }
+
+    @Test
+    public void testInvertibleRationalMatrices() {
+        simpleProviderHelper(QEP.invertibleRationalMatrices(), "QBarExhaustiveProvider_invertibleRationalMatrices");
+    }
+
+    private static void polynomialMatrices_int_int_helper(int height, int width, @NotNull String output) {
+        simpleProviderHelper(QEP.polynomialMatrices(height, width), output);
+    }
+
+    private static void polynomialMatrices_int_int_fail_helper(int height, int width) {
+        try {
+            QEP.polynomialMatrices(height, width);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testPolynomialMatrices_int_int() {
+        polynomialMatrices_int_int_helper(0, 0, "QBarExhaustiveProvider_polynomialMatrices_int_int_i");
+        polynomialMatrices_int_int_helper(0, 3, "QBarExhaustiveProvider_polynomialMatrices_int_int_ii");
+        polynomialMatrices_int_int_helper(3, 0, "QBarExhaustiveProvider_polynomialMatrices_int_int_iii");
+        polynomialMatrices_int_int_helper(1, 1, "QBarExhaustiveProvider_polynomialMatrices_int_int_iv");
+        polynomialMatrices_int_int_helper(2, 2, "QBarExhaustiveProvider_polynomialMatrices_int_int_v");
+        polynomialMatrices_int_int_helper(3, 4, "QBarExhaustiveProvider_polynomialMatrices_int_int_vi");
+        polynomialMatrices_int_int_fail_helper(-1, 0);
+        polynomialMatrices_int_int_fail_helper(-1, 1);
+        polynomialMatrices_int_int_fail_helper(0, -1);
+        polynomialMatrices_int_int_fail_helper(1, -1);
+        polynomialMatrices_int_int_fail_helper(-1, -1);
+    }
+
+    @Test
+    public void testPolynomialMatrices() {
+        simpleProviderHelper(QEP.polynomialMatrices(), "QBarExhaustiveProvider_polynomialMatrices");
+    }
+
+    @Test
+    public void testSquarePolynomialMatrices() {
+        simpleProviderHelper(QEP.squarePolynomialMatrices(), "QBarExhaustiveProvider_squarePolynomialMatrices");
+    }
+
+    private static void rationalPolynomialMatrices_int_int_helper(int height, int width, @NotNull String output) {
+        simpleProviderHelper(QEP.rationalPolynomialMatrices(height, width), output);
+    }
+
+    private static void rationalPolynomialMatrices_int_int_fail_helper(int height, int width) {
+        try {
+            QEP.rationalPolynomialMatrices(height, width);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testRationalPolynomialMatrices_int_int() {
+        rationalPolynomialMatrices_int_int_helper(0, 0, "QBarExhaustiveProvider_rationalPolynomialMatrices_int_int_i");
+        rationalPolynomialMatrices_int_int_helper(0, 3,
+                "QBarExhaustiveProvider_rationalPolynomialMatrices_int_int_ii");
+        rationalPolynomialMatrices_int_int_helper(3, 0,
+                "QBarExhaustiveProvider_rationalPolynomialMatrices_int_int_iii");
+        rationalPolynomialMatrices_int_int_helper(1, 1,
+                "QBarExhaustiveProvider_rationalPolynomialMatrices_int_int_iv");
+        rationalPolynomialMatrices_int_int_helper(2, 2, "QBarExhaustiveProvider_rationalPolynomialMatrices_int_int_v");
+        rationalPolynomialMatrices_int_int_helper(3, 4,
+                "QBarExhaustiveProvider_rationalPolynomialMatrices_int_int_vi");
+        rationalPolynomialMatrices_int_int_fail_helper(-1, 0);
+        rationalPolynomialMatrices_int_int_fail_helper(-1, 1);
+        rationalPolynomialMatrices_int_int_fail_helper(0, -1);
+        rationalPolynomialMatrices_int_int_fail_helper(1, -1);
+        rationalPolynomialMatrices_int_int_fail_helper(-1, -1);
+    }
+
+    @Test
+    public void testRationalPolynomialMatrices() {
+        simpleProviderHelper(QEP.rationalPolynomialMatrices(), "QBarExhaustiveProvider_rationalPolynomialMatrices");
+    }
+
+    @Test
+    public void testSquareRationalPolynomialMatrices() {
+        simpleProviderHelper(QEP.squareRationalPolynomialMatrices(),
+                "QBarExhaustiveProvider_squareRationalPolynomialMatrices");
     }
 
     private static void polynomials_int_helper(int degree, @NotNull String output) {
@@ -629,41 +537,17 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testPolynomials_int() {
-        polynomials_int_helper(-1, "[0]");
-        polynomials_int_helper(0,
-                "[1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6, 7, -7, 8, -8, 9, -9, 10, -10, 11, -11, 12, -12, 13, -13," +
-                " 14, -14, 15, -15, 16, -16, 17, -17, 18, -18, 19, -19, 20, -20, 21, -21, 22, -22, 23, -23, 24, -24," +
-                " 25, -25, ...]");
-        polynomials_int_helper(1,
-                "[x, x+1, -x, 2*x, -x+1, 2*x+1, x-1, x+2, -x-1, 2*x-1, -x+2, 2*x+2, -2*x, 3*x, -2*x+1, 3*x+1, -3*x," +
-                " 4*x, -3*x+1, 4*x+1, -2*x-1, 3*x-1, -2*x+2, 3*x+2, -3*x-1, 4*x-1, -3*x+2, 4*x+2, x-2, x+3, -x-2," +
-                " 2*x-2, -x+3, 2*x+3, x-3, x+4, -x-3, 2*x-3, -x+4, 2*x+4, -2*x-2, 3*x-2, -2*x+3, 3*x+3, -3*x-2," +
-                " 4*x-2, -3*x+3, 4*x+3, -2*x-3, 3*x-3, ...]");
-        polynomials_int_helper(2,
-                "[x^2, x^2+x, x^2+1, x^2+x+1, -x^2, 2*x^2, -x^2+x, 2*x^2+x, -x^2+1, 2*x^2+1, -x^2+x+1, 2*x^2+x+1," +
-                " x^2-x, x^2+2*x, x^2-x+1, x^2+2*x+1, -x^2-x, 2*x^2-x, -x^2+2*x, 2*x^2+2*x, -x^2-x+1, 2*x^2-x+1," +
-                " -x^2+2*x+1, 2*x^2+2*x+1, x^2-1, x^2+x-1, x^2+2, x^2+x+2, -x^2-1, 2*x^2-1, -x^2+x-1, 2*x^2+x-1," +
-                " -x^2+2, 2*x^2+2, -x^2+x+2, 2*x^2+x+2, x^2-x-1, x^2+2*x-1, x^2-x+2, x^2+2*x+2, -x^2-x-1, 2*x^2-x-1," +
-                " -x^2+2*x-1, 2*x^2+2*x-1, -x^2-x+2, 2*x^2-x+2, -x^2+2*x+2, 2*x^2+2*x+2, -2*x^2, 3*x^2, ...]");
-        polynomials_int_helper(9,
-                "[x^9, x^9+x^8, x^9+x^7, x^9+x^8+x^7, x^9+x^6, x^9+x^8+x^6, x^9+x^7+x^6, x^9+x^8+x^7+x^6, x^9+x^5," +
-                " x^9+x^8+x^5, x^9+x^7+x^5, x^9+x^8+x^7+x^5, x^9+x^6+x^5, x^9+x^8+x^6+x^5, x^9+x^7+x^6+x^5," +
-                " x^9+x^8+x^7+x^6+x^5, x^9+x^4, x^9+x^8+x^4, x^9+x^7+x^4, x^9+x^8+x^7+x^4, x^9+x^6+x^4," +
-                " x^9+x^8+x^6+x^4, x^9+x^7+x^6+x^4, x^9+x^8+x^7+x^6+x^4, x^9+x^5+x^4, x^9+x^8+x^5+x^4," +
-                " x^9+x^7+x^5+x^4, x^9+x^8+x^7+x^5+x^4, x^9+x^6+x^5+x^4, x^9+x^8+x^6+x^5+x^4, x^9+x^7+x^6+x^5+x^4," +
-                " x^9+x^8+x^7+x^6+x^5+x^4, x^9+x^3, x^9+x^8+x^3, x^9+x^7+x^3, x^9+x^8+x^7+x^3, x^9+x^6+x^3," +
-                " x^9+x^8+x^6+x^3, x^9+x^7+x^6+x^3, x^9+x^8+x^7+x^6+x^3, x^9+x^5+x^3, x^9+x^8+x^5+x^3," +
-                " x^9+x^7+x^5+x^3, x^9+x^8+x^7+x^5+x^3, x^9+x^6+x^5+x^3, x^9+x^8+x^6+x^5+x^3, x^9+x^7+x^6+x^5+x^3," +
-                " x^9+x^8+x^7+x^6+x^5+x^3, x^9+x^4+x^3, x^9+x^8+x^4+x^3, ...]");
+        polynomials_int_helper(-1, "QBarExhaustiveProvider_polynomials_int_i");
+        polynomials_int_helper(0, "QBarExhaustiveProvider_polynomials_int_ii");
+        polynomials_int_helper(1, "QBarExhaustiveProvider_polynomials_int_iii");
+        polynomials_int_helper(2, "QBarExhaustiveProvider_polynomials_int_iv");
+        polynomials_int_helper(9, "QBarExhaustiveProvider_polynomials_int_v");
         polynomials_int_fail_helper(-2);
     }
 
     @Test
     public void testPolynomials() {
-        simpleProviderHelper(QEP.polynomials(),
-                "[0, 1, -1, x, 2, -2, 3, x^2, -3, x+1, 4, -4, -x, 5, -5, 2*x, 6, x^3, -6, -x+1, 7, x^2+x, -7, 2*x+1," +
-                " 8, -8, 9, -9, x-1, 10, -10, 11, x^2+1, -11, x+2, 12, x^4, -12, -x-1, 13, -13, 2*x-1, 14, x^3+x^2," +
-                " -14, -x+2, 15, x^2+x+1, -15, 2*x+2, ...]");
+        simpleProviderHelper(QEP.polynomials(), "QBarExhaustiveProvider_polynomials");
     }
 
     private static void polynomialsAtLeast_helper(int minDegree, @NotNull String output) {
@@ -679,33 +563,11 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testPolynomialsAtLeast() {
-        polynomialsAtLeast_helper(-1,
-                "[0, 1, -1, x, 2, -2, 3, x^2, -3, x+1, 4, -4, -x, 5, -5, 2*x, 6, x^3, -6, -x+1, 7, x^2+x, -7, 2*x+1," +
-                " 8, -8, 9, -9, x-1, 10, -10, 11, x^2+1, -11, x+2, 12, x^4, -12, -x-1, 13, -13, 2*x-1, 14, x^3+x^2," +
-                " -14, -x+2, 15, x^2+x+1, -15, 2*x+2, ...]");
-        polynomialsAtLeast_helper(0,
-                "[1, -1, x, 2, -2, 3, x^2, -3, x+1, 4, -4, -x, 5, -5, 2*x, 6, x^3, -6, -x+1, 7, x^2+x, -7, 2*x+1, 8," +
-                " -8, 9, -9, x-1, 10, -10, 11, x^2+1, -11, x+2, 12, x^4, -12, -x-1, 13, -13, 2*x-1, 14, x^3+x^2," +
-                " -14, -x+2, 15, x^2+x+1, -15, 2*x+2, 16, ...]");
-        polynomialsAtLeast_helper(1,
-                "[x, x^2, x+1, -x, 2*x, x^3, -x+1, x^2+x, 2*x+1, x-1, x^2+1, x+2, x^4, -x-1, 2*x-1, x^3+x^2, -x+2," +
-                " x^2+x+1, 2*x+2, -2*x, -x^2, 3*x, -2*x+1, 2*x^2, 3*x+1, -3*x, -x^2+x, 4*x, x^3+x, -3*x+1, 2*x^2+x," +
-                " 4*x+1, x^5, -2*x-1, -x^2+1, 3*x-1, -2*x+2, 2*x^2+1, 3*x+2, x^4+x^3, -3*x-1, -x^2+x+1, 4*x-1," +
-                " x^3+x^2+x, -3*x+2, 2*x^2+x+1, 4*x+2, x-2, x^2-x, x+3, ...]");
-        polynomialsAtLeast_helper(2,
-                "[x^2, x^3, x^2+x, x^2+1, x^4, x^3+x^2, x^2+x+1, -x^2, 2*x^2, -x^2+x, x^3+x, 2*x^2+x, x^5, -x^2+1," +
-                " 2*x^2+1, x^4+x^3, -x^2+x+1, x^3+x^2+x, 2*x^2+x+1, x^2-x, x^3+1, x^2+2*x, x^2-x+1, x^4+x^2," +
-                " x^3+x^2+1, x^2+2*x+1, x^6, -x^2-x, 2*x^2-x, -x^2+2*x, x^3+x+1, 2*x^2+2*x, x^5+x^4, -x^2-x+1," +
-                " 2*x^2-x+1, x^4+x^3+x^2, -x^2+2*x+1, x^3+x^2+x+1, 2*x^2+2*x+1, -x^3, x^2-1, 2*x^3, x^2+x-1," +
-                " -x^3+x^2, x^2+2, x^4+x, 2*x^3+x^2, x^2+x+2, -x^2-1, -x^3+x, ...]");
-        polynomialsAtLeast_helper(9,
-                "[x^9, x^10, x^9+x^8, x^9+x^7, x^11, x^10+x^9, x^9+x^8+x^7, x^9+x^6, x^10+x^8, x^9+x^8+x^6, x^12," +
-                " x^9+x^7+x^6, x^11+x^10, x^10+x^9+x^8, x^9+x^8+x^7+x^6, x^9+x^5, x^10+x^7, x^9+x^8+x^5," +
-                " x^9+x^7+x^5, x^11+x^9, x^10+x^9+x^7, x^9+x^8+x^7+x^5, x^13, x^9+x^6+x^5, x^10+x^8+x^7," +
-                " x^9+x^8+x^6+x^5, x^12+x^11, x^9+x^7+x^6+x^5, x^11+x^10+x^9, x^10+x^9+x^8+x^7, x^9+x^8+x^7+x^6+x^5," +
-                " x^9+x^4, x^10+x^6, x^9+x^8+x^4, x^9+x^7+x^4, x^11+x^8, x^10+x^9+x^6, x^9+x^8+x^7+x^4, x^9+x^6+x^4," +
-                " x^10+x^8+x^6, x^9+x^8+x^6+x^4, x^12+x^10, x^9+x^7+x^6+x^4, x^11+x^10+x^8, x^10+x^9+x^8+x^6," +
-                " x^9+x^8+x^7+x^6+x^4, x^14, x^9+x^5+x^4, x^10+x^7+x^6, x^9+x^8+x^5+x^4, ...]");
+        polynomialsAtLeast_helper(-1, "QBarExhaustiveProvider_polynomialsAtLeast_i");
+        polynomialsAtLeast_helper(0, "QBarExhaustiveProvider_polynomialsAtLeast_ii");
+        polynomialsAtLeast_helper(1, "QBarExhaustiveProvider_polynomialsAtLeast_iii");
+        polynomialsAtLeast_helper(2, "QBarExhaustiveProvider_polynomialsAtLeast_iv");
+        polynomialsAtLeast_helper(9, "QBarExhaustiveProvider_polynomialsAtLeast_v");
         polynomialsAtLeast_fail_helper(-2);
     }
 
@@ -722,40 +584,17 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testPrimitivePolynomials_int() {
-        primitivePolynomials_int_helper(-1, "[]");
-        primitivePolynomials_int_helper(0, "[1, -1]");
-        primitivePolynomials_int_helper(1,
-                "[x, x+1, -x, -x+1, 2*x+1, x-1, x+2, -x-1, 2*x-1, -x+2, -2*x+1, 3*x+1, -3*x+1, 4*x+1, -2*x-1, 3*x-1," +
-                " 3*x+2, -3*x-1, 4*x-1, -3*x+2, x-2, x+3, -x-2, -x+3, 2*x+3, x-3, x+4, -x-3, 2*x-3, -x+4, 3*x-2," +
-                " -2*x+3, -3*x-2, 4*x+3, -2*x-3, 3*x+4, 4*x-3, -3*x+4, -4*x+1, 5*x+1, -5*x+1, 6*x+1, -4*x-1, 5*x-1," +
-                " 5*x+2, -5*x-1, 6*x-1, -5*x+2, -6*x+1, 7*x+1, ...]");
-        primitivePolynomials_int_helper(2,
-                "[x^2, x^2+x, x^2+1, x^2+x+1, -x^2, -x^2+x, 2*x^2+x, -x^2+1, 2*x^2+1, -x^2+x+1, 2*x^2+x+1, x^2-x," +
-                " x^2+2*x, x^2-x+1, x^2+2*x+1, -x^2-x, 2*x^2-x, -x^2+2*x, -x^2-x+1, 2*x^2-x+1, -x^2+2*x+1," +
-                " 2*x^2+2*x+1, x^2-1, x^2+x-1, x^2+2, x^2+x+2, -x^2-1, 2*x^2-1, -x^2+x-1, 2*x^2+x-1, -x^2+2," +
-                " -x^2+x+2, 2*x^2+x+2, x^2-x-1, x^2+2*x-1, x^2-x+2, x^2+2*x+2, -x^2-x-1, 2*x^2-x-1, -x^2+2*x-1," +
-                " 2*x^2+2*x-1, -x^2-x+2, 2*x^2-x+2, -x^2+2*x+2, -2*x^2+x, 3*x^2+x, -2*x^2+1, 3*x^2+1, -2*x^2+x+1," +
-                " 3*x^2+x+1, ...]");
-        primitivePolynomials_int_helper(8,
-                "[x^8, x^8+x^7, x^8+x^6, x^8+x^7+x^6, x^8+x^5, x^8+x^7+x^5, x^8+x^6+x^5, x^8+x^7+x^6+x^5, x^8+x^4," +
-                " x^8+x^7+x^4, x^8+x^6+x^4, x^8+x^7+x^6+x^4, x^8+x^5+x^4, x^8+x^7+x^5+x^4, x^8+x^6+x^5+x^4," +
-                " x^8+x^7+x^6+x^5+x^4, x^8+x^3, x^8+x^7+x^3, x^8+x^6+x^3, x^8+x^7+x^6+x^3, x^8+x^5+x^3," +
-                " x^8+x^7+x^5+x^3, x^8+x^6+x^5+x^3, x^8+x^7+x^6+x^5+x^3, x^8+x^4+x^3, x^8+x^7+x^4+x^3," +
-                " x^8+x^6+x^4+x^3, x^8+x^7+x^6+x^4+x^3, x^8+x^5+x^4+x^3, x^8+x^7+x^5+x^4+x^3, x^8+x^6+x^5+x^4+x^3," +
-                " x^8+x^7+x^6+x^5+x^4+x^3, x^8+x^2, x^8+x^7+x^2, x^8+x^6+x^2, x^8+x^7+x^6+x^2, x^8+x^5+x^2," +
-                " x^8+x^7+x^5+x^2, x^8+x^6+x^5+x^2, x^8+x^7+x^6+x^5+x^2, x^8+x^4+x^2, x^8+x^7+x^4+x^2," +
-                " x^8+x^6+x^4+x^2, x^8+x^7+x^6+x^4+x^2, x^8+x^5+x^4+x^2, x^8+x^7+x^5+x^4+x^2, x^8+x^6+x^5+x^4+x^2," +
-                " x^8+x^7+x^6+x^5+x^4+x^2, x^8+x^3+x^2, x^8+x^7+x^3+x^2, ...]");
+        primitivePolynomials_int_helper(-1, "QBarExhaustiveProvider_primitivePolynomials_int_i");
+        primitivePolynomials_int_helper(0, "QBarExhaustiveProvider_primitivePolynomials_int_ii");
+        primitivePolynomials_int_helper(1, "QBarExhaustiveProvider_primitivePolynomials_int_iii");
+        primitivePolynomials_int_helper(2, "QBarExhaustiveProvider_primitivePolynomials_int_iv");
+        primitivePolynomials_int_helper(8, "QBarExhaustiveProvider_primitivePolynomials_int_v");
         primitivePolynomials_int_fail_helper(-2);
     }
 
     @Test
     public void testPrimitivePolynomials() {
-        simpleProviderHelper(QEP.primitivePolynomials(),
-                "[1, -1, x, x^2, x+1, -x, x^3, -x+1, x^2+x, 2*x+1, x-1, x^2+1, x+2, x^4, -x-1, 2*x-1, x^3+x^2, -x+2," +
-                " x^2+x+1, -x^2, -2*x+1, 3*x+1, -x^2+x, x^3+x, -3*x+1, 2*x^2+x, 4*x+1, x^5, -2*x-1, -x^2+1, 3*x-1," +
-                " 2*x^2+1, 3*x+2, x^4+x^3, -3*x-1, -x^2+x+1, 4*x-1, x^3+x^2+x, -3*x+2, 2*x^2+x+1, x-2, x^2-x, x+3," +
-                " -x-2, x^3+1, -x+3, x^2+2*x, 2*x+3, x-3, x^2-x+1, ...]");
+        simpleProviderHelper(QEP.primitivePolynomials(), "QBarExhaustiveProvider_primitivePolynomials");
     }
 
     private static void primitivePolynomialsAtLeast_helper(int minDegree, @NotNull String output) {
@@ -771,35 +610,11 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testPrimitivePolynomialsAtLeast() {
-        primitivePolynomialsAtLeast_helper(-1,
-                "[1, -1, x, x^2, x+1, -x, x^3, -x+1, x^2+x, 2*x+1, x-1, x^2+1, x+2, x^4, -x-1, 2*x-1, x^3+x^2, -x+2," +
-                " x^2+x+1, -x^2, -2*x+1, 3*x+1, -x^2+x, x^3+x, -3*x+1, 2*x^2+x, 4*x+1, x^5, -2*x-1, -x^2+1, 3*x-1," +
-                " 2*x^2+1, 3*x+2, x^4+x^3, -3*x-1, -x^2+x+1, 4*x-1, x^3+x^2+x, -3*x+2, 2*x^2+x+1, x-2, x^2-x, x+3," +
-                " -x-2, x^3+1, -x+3, x^2+2*x, 2*x+3, x-3, x^2-x+1, ...]");
-        primitivePolynomialsAtLeast_helper(0,
-                "[1, -1, x, x^2, x+1, -x, x^3, -x+1, x^2+x, 2*x+1, x-1, x^2+1, x+2, x^4, -x-1, 2*x-1, x^3+x^2, -x+2," +
-                " x^2+x+1, -x^2, -2*x+1, 3*x+1, -x^2+x, x^3+x, -3*x+1, 2*x^2+x, 4*x+1, x^5, -2*x-1, -x^2+1, 3*x-1," +
-                " 2*x^2+1, 3*x+2, x^4+x^3, -3*x-1, -x^2+x+1, 4*x-1, x^3+x^2+x, -3*x+2, 2*x^2+x+1, x-2, x^2-x, x+3," +
-                " -x-2, x^3+1, -x+3, x^2+2*x, 2*x+3, x-3, x^2-x+1, ...]");
-        primitivePolynomialsAtLeast_helper(1,
-                "[x, x^2, x+1, -x, x^3, -x+1, x^2+x, 2*x+1, x-1, x^2+1, x+2, x^4, -x-1, 2*x-1, x^3+x^2, -x+2," +
-                " x^2+x+1, -x^2, -2*x+1, 3*x+1, -x^2+x, x^3+x, -3*x+1, 2*x^2+x, 4*x+1, x^5, -2*x-1, -x^2+1, 3*x-1," +
-                " 2*x^2+1, 3*x+2, x^4+x^3, -3*x-1, -x^2+x+1, 4*x-1, x^3+x^2+x, -3*x+2, 2*x^2+x+1, x-2, x^2-x, x+3," +
-                " -x-2, x^3+1, -x+3, x^2+2*x, 2*x+3, x-3, x^2-x+1, x+4, x^4+x^2, ...]");
-        primitivePolynomialsAtLeast_helper(2,
-                "[x^2, x^3, x^2+x, x^2+1, x^4, x^3+x^2, x^2+x+1, -x^2, -x^2+x, x^3+x, 2*x^2+x, x^5, -x^2+1, 2*x^2+1," +
-                " x^4+x^3, -x^2+x+1, x^3+x^2+x, 2*x^2+x+1, x^2-x, x^3+1, x^2+2*x, x^2-x+1, x^4+x^2, x^3+x^2+1," +
-                " x^2+2*x+1, x^6, -x^2-x, 2*x^2-x, -x^2+2*x, x^3+x+1, x^5+x^4, -x^2-x+1, 2*x^2-x+1, x^4+x^3+x^2," +
-                " -x^2+2*x+1, x^3+x^2+x+1, 2*x^2+2*x+1, -x^3, x^2-1, x^2+x-1, -x^3+x^2, x^2+2, x^4+x, 2*x^3+x^2," +
-                " x^2+x+2, -x^2-1, -x^3+x, 2*x^2-1, -x^2+x-1, 2*x^3+x, ...]");
-        primitivePolynomialsAtLeast_helper(8,
-                "[x^8, x^9, x^8+x^7, x^8+x^6, x^10, x^9+x^8, x^8+x^7+x^6, x^8+x^5, x^9+x^7, x^8+x^7+x^5, x^11," +
-                " x^8+x^6+x^5, x^10+x^9, x^9+x^8+x^7, x^8+x^7+x^6+x^5, x^8+x^4, x^9+x^6, x^8+x^7+x^4, x^8+x^6+x^4," +
-                " x^10+x^8, x^9+x^8+x^6, x^8+x^7+x^6+x^4, x^12, x^8+x^5+x^4, x^9+x^7+x^6, x^8+x^7+x^5+x^4," +
-                " x^11+x^10, x^8+x^6+x^5+x^4, x^10+x^9+x^8, x^9+x^8+x^7+x^6, x^8+x^7+x^6+x^5+x^4, x^8+x^3, x^9+x^5," +
-                " x^8+x^7+x^3, x^8+x^6+x^3, x^10+x^7, x^9+x^8+x^5, x^8+x^7+x^6+x^3, x^8+x^5+x^3, x^9+x^7+x^5," +
-                " x^8+x^7+x^5+x^3, x^11+x^9, x^8+x^6+x^5+x^3, x^10+x^9+x^7, x^9+x^8+x^7+x^5, x^8+x^7+x^6+x^5+x^3," +
-                " x^13, x^8+x^4+x^3, x^9+x^6+x^5, x^8+x^7+x^4+x^3, ...]");
+        primitivePolynomialsAtLeast_helper(-1, "QBarExhaustiveProvider_primitivePolynomialsAtLeast_i");
+        primitivePolynomialsAtLeast_helper(0, "QBarExhaustiveProvider_primitivePolynomialsAtLeast_ii");
+        primitivePolynomialsAtLeast_helper(1, "QBarExhaustiveProvider_primitivePolynomialsAtLeast_iii");
+        primitivePolynomialsAtLeast_helper(2, "QBarExhaustiveProvider_primitivePolynomialsAtLeast_iv");
+        primitivePolynomialsAtLeast_helper(8, "QBarExhaustiveProvider_primitivePolynomialsAtLeast_v");
         primitivePolynomialsAtLeast_fail_helper(-2);
     }
 
@@ -816,40 +631,18 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testPositivePrimitivePolynomials_int() {
-        positivePrimitivePolynomials_int_helper(-1, "[]");
-        positivePrimitivePolynomials_int_helper(0, "[1]");
-        positivePrimitivePolynomials_int_helper(1,
-                "[x, x+1, 2*x+1, x-1, x+2, 2*x-1, 3*x+1, 4*x+1, 3*x-1, 3*x+2, 4*x-1, x-2, x+3, 2*x+3, x-3, x+4," +
-                " 2*x-3, 3*x-2, 4*x+3, 3*x+4, 4*x-3, 5*x+1, 6*x+1, 5*x-1, 5*x+2, 6*x-1, 7*x+1, 8*x+1, 7*x-1, 7*x+2," +
-                " 8*x-1, 5*x-2, 5*x+3, 5*x-3, 5*x+4, 7*x-2, 7*x+3, 8*x+3, 7*x-3, 7*x+4, 8*x-3, x-4, x+5, 2*x+5, x-5," +
-                " x+6, 2*x-5, 3*x-4, 3*x+5, 4*x+5, ...]");
-        positivePrimitivePolynomials_int_helper(2,
-                "[x^2, x^2+x, x^2+1, x^2+x+1, 2*x^2+x, 2*x^2+1, 2*x^2+x+1, x^2-x, x^2+2*x, x^2-x+1, x^2+2*x+1," +
-                " 2*x^2-x, 2*x^2-x+1, 2*x^2+2*x+1, x^2-1, x^2+x-1, x^2+2, x^2+x+2, 2*x^2-1, 2*x^2+x-1, 2*x^2+x+2," +
-                " x^2-x-1, x^2+2*x-1, x^2-x+2, x^2+2*x+2, 2*x^2-x-1, 2*x^2+2*x-1, 2*x^2-x+2, 3*x^2+x, 3*x^2+1," +
-                " 3*x^2+x+1, 4*x^2+x, 4*x^2+1, 4*x^2+x+1, 3*x^2-x, 3*x^2+2*x, 3*x^2-x+1, 3*x^2+2*x+1, 4*x^2-x," +
-                " 4*x^2-x+1, 4*x^2+2*x+1, 3*x^2-1, 3*x^2+x-1, 3*x^2+2, 3*x^2+x+2, 4*x^2-1, 4*x^2+x-1, 4*x^2+x+2," +
-                " 3*x^2-x-1, 3*x^2+2*x-1, ...]");
-        positivePrimitivePolynomials_int_helper(8,
-                "[x^8, x^8+x^7, x^8+x^6, x^8+x^7+x^6, x^8+x^5, x^8+x^7+x^5, x^8+x^6+x^5, x^8+x^7+x^6+x^5, x^8+x^4," +
-                " x^8+x^7+x^4, x^8+x^6+x^4, x^8+x^7+x^6+x^4, x^8+x^5+x^4, x^8+x^7+x^5+x^4, x^8+x^6+x^5+x^4," +
-                " x^8+x^7+x^6+x^5+x^4, x^8+x^3, x^8+x^7+x^3, x^8+x^6+x^3, x^8+x^7+x^6+x^3, x^8+x^5+x^3," +
-                " x^8+x^7+x^5+x^3, x^8+x^6+x^5+x^3, x^8+x^7+x^6+x^5+x^3, x^8+x^4+x^3, x^8+x^7+x^4+x^3," +
-                " x^8+x^6+x^4+x^3, x^8+x^7+x^6+x^4+x^3, x^8+x^5+x^4+x^3, x^8+x^7+x^5+x^4+x^3, x^8+x^6+x^5+x^4+x^3," +
-                " x^8+x^7+x^6+x^5+x^4+x^3, x^8+x^2, x^8+x^7+x^2, x^8+x^6+x^2, x^8+x^7+x^6+x^2, x^8+x^5+x^2," +
-                " x^8+x^7+x^5+x^2, x^8+x^6+x^5+x^2, x^8+x^7+x^6+x^5+x^2, x^8+x^4+x^2, x^8+x^7+x^4+x^2," +
-                " x^8+x^6+x^4+x^2, x^8+x^7+x^6+x^4+x^2, x^8+x^5+x^4+x^2, x^8+x^7+x^5+x^4+x^2, x^8+x^6+x^5+x^4+x^2," +
-                " x^8+x^7+x^6+x^5+x^4+x^2, x^8+x^3+x^2, x^8+x^7+x^3+x^2, ...]");
+        positivePrimitivePolynomials_int_helper(-1, "QBarExhaustiveProvider_positivePrimitivePolynomials_int_i");
+        positivePrimitivePolynomials_int_helper(0, "QBarExhaustiveProvider_positivePrimitivePolynomials_int_ii");
+        positivePrimitivePolynomials_int_helper(1, "QBarExhaustiveProvider_positivePrimitivePolynomials_int_iii");
+        positivePrimitivePolynomials_int_helper(2, "QBarExhaustiveProvider_positivePrimitivePolynomials_int_iv");
+        positivePrimitivePolynomials_int_helper(8, "QBarExhaustiveProvider_positivePrimitivePolynomials_int_v");
         positivePrimitivePolynomials_int_fail_helper(-2);
     }
 
     @Test
     public void testPositivePrimitivePolynomials() {
         simpleProviderHelper(QEP.positivePrimitivePolynomials(),
-                "[1, x, x^2, x+1, x^3, x^2+x, 2*x+1, x-1, x^2+1, x+2, x^4, 2*x-1, x^3+x^2, x^2+x+1, 3*x+1, x^3+x," +
-                " 2*x^2+x, 4*x+1, x^5, 3*x-1, 2*x^2+1, 3*x+2, x^4+x^3, 4*x-1, x^3+x^2+x, 2*x^2+x+1, x-2, x^2-x, x+3," +
-                " x^3+1, x^2+2*x, 2*x+3, x-3, x^2-x+1, x+4, x^4+x^2, 2*x-3, x^3+x^2+1, x^2+2*x+1, x^6, 3*x-2," +
-                " 2*x^2-x, x^3+x+1, 4*x+3, x^5+x^4, 2*x^2-x+1, 3*x+4, x^4+x^3+x^2, 4*x-3, x^3+x^2+x+1, ...]");
+                "QBarExhaustiveProvider_positivePrimitivePolynomials");
     }
 
     private static void positivePrimitivePolynomialsAtLeast_helper(int minDegree, @NotNull String output) {
@@ -865,37 +658,165 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testPositivePrimitivePolynomialsAtLeast() {
-        positivePrimitivePolynomialsAtLeast_helper(-1,
-                "[1, x, x^2, x+1, x^3, x^2+x, 2*x+1, x-1, x^2+1, x+2, x^4, 2*x-1, x^3+x^2, x^2+x+1, 3*x+1, x^3+x," +
-                " 2*x^2+x, 4*x+1, x^5, 3*x-1, 2*x^2+1, 3*x+2, x^4+x^3, 4*x-1, x^3+x^2+x, 2*x^2+x+1, x-2, x^2-x, x+3," +
-                " x^3+1, x^2+2*x, 2*x+3, x-3, x^2-x+1, x+4, x^4+x^2, 2*x-3, x^3+x^2+1, x^2+2*x+1, x^6, 3*x-2," +
-                " 2*x^2-x, x^3+x+1, 4*x+3, x^5+x^4, 2*x^2-x+1, 3*x+4, x^4+x^3+x^2, 4*x-3, x^3+x^2+x+1, ...]");
-        positivePrimitivePolynomialsAtLeast_helper(0,
-                "[1, x, x^2, x+1, x^3, x^2+x, 2*x+1, x-1, x^2+1, x+2, x^4, 2*x-1, x^3+x^2, x^2+x+1, 3*x+1, x^3+x," +
-                " 2*x^2+x, 4*x+1, x^5, 3*x-1, 2*x^2+1, 3*x+2, x^4+x^3, 4*x-1, x^3+x^2+x, 2*x^2+x+1, x-2, x^2-x, x+3," +
-                " x^3+1, x^2+2*x, 2*x+3, x-3, x^2-x+1, x+4, x^4+x^2, 2*x-3, x^3+x^2+1, x^2+2*x+1, x^6, 3*x-2," +
-                " 2*x^2-x, x^3+x+1, 4*x+3, x^5+x^4, 2*x^2-x+1, 3*x+4, x^4+x^3+x^2, 4*x-3, x^3+x^2+x+1, ...]");
+        positivePrimitivePolynomialsAtLeast_helper(-1, "QBarExhaustiveProvider_positivePrimitivePolynomialsAtLeast_i");
+        positivePrimitivePolynomialsAtLeast_helper(0, "QBarExhaustiveProvider_positivePrimitivePolynomialsAtLeast_ii");
         positivePrimitivePolynomialsAtLeast_helper(1,
-                "[x, x^2, x+1, x^3, x^2+x, 2*x+1, x-1, x^2+1, x+2, x^4, 2*x-1, x^3+x^2, x^2+x+1, 3*x+1, x^3+x," +
-                " 2*x^2+x, 4*x+1, x^5, 3*x-1, 2*x^2+1, 3*x+2, x^4+x^3, 4*x-1, x^3+x^2+x, 2*x^2+x+1, x-2, x^2-x, x+3," +
-                " x^3+1, x^2+2*x, 2*x+3, x-3, x^2-x+1, x+4, x^4+x^2, 2*x-3, x^3+x^2+1, x^2+2*x+1, x^6, 3*x-2," +
-                " 2*x^2-x, x^3+x+1, 4*x+3, x^5+x^4, 2*x^2-x+1, 3*x+4, x^4+x^3+x^2, 4*x-3, x^3+x^2+x+1, 2*x^2+2*x+1," +
-                " ...]");
-        positivePrimitivePolynomialsAtLeast_helper(2,
-                "[x^2, x^3, x^2+x, x^2+1, x^4, x^3+x^2, x^2+x+1, x^3+x, 2*x^2+x, x^5, 2*x^2+1, x^4+x^3, x^3+x^2+x," +
-                " 2*x^2+x+1, x^2-x, x^3+1, x^2+2*x, x^2-x+1, x^4+x^2, x^3+x^2+1, x^2+2*x+1, x^6, 2*x^2-x, x^3+x+1," +
-                " x^5+x^4, 2*x^2-x+1, x^4+x^3+x^2, x^3+x^2+x+1, 2*x^2+2*x+1, x^2-1, x^2+x-1, x^2+2, x^4+x," +
-                " 2*x^3+x^2, x^2+x+2, 2*x^2-1, 2*x^3+x, 2*x^2+x-1, x^5+x^3, x^4+x^3+x, 2*x^3+x^2+x, 2*x^2+x+2, x^7," +
-                " x^2-x-1, 2*x^3+1, x^2+2*x-1, x^2-x+2, x^4+x^2+x, 2*x^3+x^2+1, x^2+2*x+2, ...]");
-        positivePrimitivePolynomialsAtLeast_helper(8,
-                "[x^8, x^9, x^8+x^7, x^8+x^6, x^10, x^9+x^8, x^8+x^7+x^6, x^8+x^5, x^9+x^7, x^8+x^7+x^5, x^11," +
-                " x^8+x^6+x^5, x^10+x^9, x^9+x^8+x^7, x^8+x^7+x^6+x^5, x^8+x^4, x^9+x^6, x^8+x^7+x^4, x^8+x^6+x^4," +
-                " x^10+x^8, x^9+x^8+x^6, x^8+x^7+x^6+x^4, x^12, x^8+x^5+x^4, x^9+x^7+x^6, x^8+x^7+x^5+x^4," +
-                " x^11+x^10, x^8+x^6+x^5+x^4, x^10+x^9+x^8, x^9+x^8+x^7+x^6, x^8+x^7+x^6+x^5+x^4, x^8+x^3, x^9+x^5," +
-                " x^8+x^7+x^3, x^8+x^6+x^3, x^10+x^7, x^9+x^8+x^5, x^8+x^7+x^6+x^3, x^8+x^5+x^3, x^9+x^7+x^5," +
-                " x^8+x^7+x^5+x^3, x^11+x^9, x^8+x^6+x^5+x^3, x^10+x^9+x^7, x^9+x^8+x^7+x^5, x^8+x^7+x^6+x^5+x^3," +
-                " x^13, x^8+x^4+x^3, x^9+x^6+x^5, x^8+x^7+x^4+x^3, ...]");
+                "QBarExhaustiveProvider_positivePrimitivePolynomialsAtLeast_iii");
+        positivePrimitivePolynomialsAtLeast_helper(2, "QBarExhaustiveProvider_positivePrimitivePolynomialsAtLeast_iv");
+        positivePrimitivePolynomialsAtLeast_helper(8, "QBarExhaustiveProvider_positivePrimitivePolynomialsAtLeast_v");
         positivePrimitivePolynomialsAtLeast_fail_helper(-2);
+    }
+
+    private static void squareFreePolynomials_int_helper(int degree, @NotNull String output) {
+        simpleProviderHelper(QEP.squareFreePolynomials(degree), output);
+    }
+
+    private static void squareFreePolynomials_int_fail_helper(int degree) {
+        try {
+            QEP.squareFreePolynomials(degree);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testSquareFreePolynomials_int() {
+        squareFreePolynomials_int_helper(-1, "QBarExhaustiveProvider_squareFreePolynomials_int_i");
+        squareFreePolynomials_int_helper(0, "QBarExhaustiveProvider_squareFreePolynomials_int_ii");
+        squareFreePolynomials_int_helper(1, "QBarExhaustiveProvider_squareFreePolynomials_int_iii");
+        squareFreePolynomials_int_helper(2, "QBarExhaustiveProvider_squareFreePolynomials_int_iv");
+        squareFreePolynomials_int_helper(8, "QBarExhaustiveProvider_squareFreePolynomials_int_v");
+        squareFreePolynomials_int_fail_helper(-2);
+    }
+
+    @Test
+    public void testSquareFreePolynomials() {
+        simpleProviderHelper(QEP.squareFreePolynomials(), "QBarExhaustiveProvider_squareFreePolynomials");
+    }
+
+    private static void squareFreePolynomialsAtLeast_helper(int minDegree, @NotNull String output) {
+        simpleProviderHelper(QEP.squareFreePolynomialsAtLeast(minDegree), output);
+    }
+
+    private static void squareFreePolynomialsAtLeast_fail_helper(int minDegree) {
+        try {
+            QEP.squareFreePolynomialsAtLeast(minDegree);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testSquareFreePolynomialsAtLeast() {
+        squareFreePolynomialsAtLeast_helper(-1, "QBarExhaustiveProvider_squareFreePolynomialsAtLeast_i");
+        squareFreePolynomialsAtLeast_helper(0, "QBarExhaustiveProvider_squareFreePolynomialsAtLeast_ii");
+        squareFreePolynomialsAtLeast_helper(1, "QBarExhaustiveProvider_squareFreePolynomialsAtLeast_iii");
+        squareFreePolynomialsAtLeast_helper(2, "QBarExhaustiveProvider_squareFreePolynomialsAtLeast_iv");
+        squareFreePolynomialsAtLeast_helper(8, "QBarExhaustiveProvider_squareFreePolynomialsAtLeast_v");
+        squareFreePolynomialsAtLeast_fail_helper(-2);
+    }
+
+    private static void positivePrimitiveSquareFreePolynomials_int_helper(int degree, @NotNull String output) {
+        simpleProviderHelper(QEP.positivePrimitiveSquareFreePolynomials(degree), output);
+    }
+
+    private static void positivePrimitiveSquareFreePolynomials_int_fail_helper(int degree) {
+        try {
+            QEP.positivePrimitiveSquareFreePolynomials(degree);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testPositivePrimitiveSquareFreePolynomials_int() {
+        positivePrimitiveSquareFreePolynomials_int_helper(-1,
+                "QBarExhaustiveProvider_positivePrimitiveSquareFreePolynomials_int_i");
+        positivePrimitiveSquareFreePolynomials_int_helper(0,
+                "QBarExhaustiveProvider_positivePrimitiveSquareFreePolynomials_int_ii");
+        positivePrimitiveSquareFreePolynomials_int_helper(1,
+                "QBarExhaustiveProvider_positivePrimitiveSquareFreePolynomials_int_iii");
+        positivePrimitiveSquareFreePolynomials_int_helper(2,
+                "QBarExhaustiveProvider_positivePrimitiveSquareFreePolynomials_int_iv");
+        positivePrimitiveSquareFreePolynomials_int_helper(8,
+                "QBarExhaustiveProvider_positivePrimitiveSquareFreePolynomials_int_v");
+        positivePrimitiveSquareFreePolynomials_int_fail_helper(-2);
+    }
+
+    @Test
+    public void testPositivePrimitiveSquareFreePolynomials() {
+        simpleProviderHelper(QEP.positivePrimitiveSquareFreePolynomials(),
+                "QBarExhaustiveProvider_positivePrimitiveSquareFreePolynomials");
+    }
+
+    private static void positivePrimitiveSquareFreePolynomialsAtLeast_helper(int minDegree, @NotNull String output) {
+        simpleProviderHelper(QEP.positivePrimitiveSquareFreePolynomialsAtLeast(minDegree), output);
+    }
+
+    private static void positivePrimitiveSquareFreePolynomialsAtLeast_fail_helper(int minDegree) {
+        try {
+            QEP.positivePrimitiveSquareFreePolynomialsAtLeast(minDegree);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testPositivePrimitiveSquareFreePolynomialsAtLeast() {
+        positivePrimitiveSquareFreePolynomialsAtLeast_helper(-1,
+                "QBarExhaustiveProvider_positivePrimitiveSquareFreePolynomialsAtLeast_i");
+        positivePrimitiveSquareFreePolynomialsAtLeast_helper(0,
+                "QBarExhaustiveProvider_positivePrimitiveSquareFreePolynomialsAtLeast_ii");
+        positivePrimitiveSquareFreePolynomialsAtLeast_helper(1,
+                "QBarExhaustiveProvider_positivePrimitiveSquareFreePolynomialsAtLeast_iii");
+        positivePrimitiveSquareFreePolynomialsAtLeast_helper(2,
+                "QBarExhaustiveProvider_positivePrimitiveSquareFreePolynomialsAtLeast_iv");
+        positivePrimitiveSquareFreePolynomialsAtLeast_helper(8,
+                "QBarExhaustiveProvider_positivePrimitiveSquareFreePolynomialsAtLeast_v");
+        positivePrimitiveSquareFreePolynomialsAtLeast_fail_helper(-2);
+    }
+
+    private static void irreduciblePolynomials_int_helper(int degree, @NotNull String output) {
+        simpleProviderHelper(QEP.irreduciblePolynomials(degree), output);
+    }
+
+    private static void irreduciblePolynomials_int_fail_helper(int degree) {
+        try {
+            QEP.irreduciblePolynomials(degree);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testIrreduciblePolynomials_int() {
+        irreduciblePolynomials_int_helper(-1, "QBarExhaustiveProvider_irreduciblePolynomials_int_i");
+        irreduciblePolynomials_int_helper(0, "QBarExhaustiveProvider_irreduciblePolynomials_int_ii");
+        irreduciblePolynomials_int_helper(1, "QBarExhaustiveProvider_irreduciblePolynomials_int_iii");
+        irreduciblePolynomials_int_helper(2, "QBarExhaustiveProvider_irreduciblePolynomials_int_iv");
+        irreduciblePolynomials_int_helper(8, "QBarExhaustiveProvider_irreduciblePolynomials_int_v");
+        irreduciblePolynomials_int_fail_helper(-2);
+    }
+
+    @Test
+    public void testIrreduciblePolynomials() {
+        simpleProviderHelper(QEP.irreduciblePolynomials(), "QBarExhaustiveProvider_irreduciblePolynomials");
+    }
+
+    private static void irreduciblePolynomialsAtLeast_helper(int minDegree, @NotNull String output) {
+        simpleProviderHelper(QEP.irreduciblePolynomialsAtLeast(minDegree), output);
+    }
+
+    private static void irreduciblePolynomialsAtLeast_fail_helper(int minDegree) {
+        try {
+            QEP.irreduciblePolynomialsAtLeast(minDegree);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testIrreduciblePolynomialsAtLeast() {
+        irreduciblePolynomialsAtLeast_helper(-1, "QBarExhaustiveProvider_irreduciblePolynomialsAtLeast_i");
+        irreduciblePolynomialsAtLeast_helper(0, "QBarExhaustiveProvider_irreduciblePolynomialsAtLeast_ii");
+        irreduciblePolynomialsAtLeast_helper(1, "QBarExhaustiveProvider_irreduciblePolynomialsAtLeast_iii");
+        irreduciblePolynomialsAtLeast_helper(2, "QBarExhaustiveProvider_irreduciblePolynomialsAtLeast_iv");
+        irreduciblePolynomialsAtLeast_helper(8, "QBarExhaustiveProvider_irreduciblePolynomialsAtLeast_v");
+        irreduciblePolynomialsAtLeast_fail_helper(-2);
     }
 
     private static void rationalPolynomials_int_helper(int degree, @NotNull String output) {
@@ -911,46 +832,17 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testRationalPolynomials_int() {
-        rationalPolynomials_int_helper(-1, "[0]");
-        rationalPolynomials_int_helper(0,
-                "[1, 1/2, 1/3, 1/4, -1, -1/2, 2, -1/3, -1/4, 2/3, 1/5, 1/6, 1/7, 1/8, -1/5, -1/6, 2/5, -1/7, -1/8," +
-                " 2/7, -2, 3, 3/2, -2/3, 3/4, -3, -3/2, 4, -3/4, 4/3, -2/5, 3/5, -2/7, 3/7, 3/8, -3/5, 4/5, -3/7," +
-                " -3/8, 4/7, 1/9, 1/10, 1/11, 1/12, -1/9, -1/10, 2/9, -1/11, -1/12, 2/11, ...]");
-        rationalPolynomials_int_helper(1,
-                "[x, x+1, 1/2*x, 1/3*x, 1/2*x+1, 1/3*x+1, x+1/2, x+1/3, 1/2*x+1/2, 1/3*x+1/2, 1/2*x+1/3, 1/3*x+1/3," +
-                " 1/4*x, -x, 1/4*x+1, -x+1, -1/2*x, 2*x, -1/2*x+1, 2*x+1, 1/4*x+1/2, -x+1/2, 1/4*x+1/3, -x+1/3," +
-                " -1/2*x+1/2, 2*x+1/2, -1/2*x+1/3, 2*x+1/3, x+1/4, x-1, 1/2*x+1/4, 1/3*x+1/4, 1/2*x-1, 1/3*x-1," +
-                " x-1/2, x+2, 1/2*x-1/2, 1/3*x-1/2, 1/2*x+2, 1/3*x+2, 1/4*x+1/4, -x+1/4, 1/4*x-1, -x-1, -1/2*x+1/4," +
-                " 2*x+1/4, -1/2*x-1, 2*x-1, 1/4*x-1/2, -x-1/2, ...]");
-        rationalPolynomials_int_helper(2,
-                "[x^2, x^2+x, x^2+1, x^2+x+1, 1/2*x^2, 1/3*x^2, 1/2*x^2+x, 1/3*x^2+x, 1/2*x^2+1, 1/3*x^2+1," +
-                " 1/2*x^2+x+1, 1/3*x^2+x+1, x^2+1/2*x, x^2+1/3*x, x^2+1/2*x+1, x^2+1/3*x+1, 1/2*x^2+1/2*x," +
-                " 1/3*x^2+1/2*x, 1/2*x^2+1/3*x, 1/3*x^2+1/3*x, 1/2*x^2+1/2*x+1, 1/3*x^2+1/2*x+1, 1/2*x^2+1/3*x+1," +
-                " 1/3*x^2+1/3*x+1, x^2+1/2, x^2+x+1/2, x^2+1/3, x^2+x+1/3, 1/2*x^2+1/2, 1/3*x^2+1/2, 1/2*x^2+x+1/2," +
-                " 1/3*x^2+x+1/2, 1/2*x^2+1/3, 1/3*x^2+1/3, 1/2*x^2+x+1/3, 1/3*x^2+x+1/3, x^2+1/2*x+1/2," +
-                " x^2+1/3*x+1/2, x^2+1/2*x+1/3, x^2+1/3*x+1/3, 1/2*x^2+1/2*x+1/2, 1/3*x^2+1/2*x+1/2," +
-                " 1/2*x^2+1/3*x+1/2, 1/3*x^2+1/3*x+1/2, 1/2*x^2+1/2*x+1/3, 1/3*x^2+1/2*x+1/3, 1/2*x^2+1/3*x+1/3," +
-                " 1/3*x^2+1/3*x+1/3, 1/4*x^2, -x^2, ...]");
-        rationalPolynomials_int_helper(9,
-                "[x^9, x^9+x^8, x^9+x^7, x^9+x^8+x^7, x^9+x^6, x^9+x^8+x^6, x^9+x^7+x^6, x^9+x^8+x^7+x^6, x^9+x^5," +
-                " x^9+x^8+x^5, x^9+x^7+x^5, x^9+x^8+x^7+x^5, x^9+x^6+x^5, x^9+x^8+x^6+x^5, x^9+x^7+x^6+x^5," +
-                " x^9+x^8+x^7+x^6+x^5, x^9+x^4, x^9+x^8+x^4, x^9+x^7+x^4, x^9+x^8+x^7+x^4, x^9+x^6+x^4," +
-                " x^9+x^8+x^6+x^4, x^9+x^7+x^6+x^4, x^9+x^8+x^7+x^6+x^4, x^9+x^5+x^4, x^9+x^8+x^5+x^4," +
-                " x^9+x^7+x^5+x^4, x^9+x^8+x^7+x^5+x^4, x^9+x^6+x^5+x^4, x^9+x^8+x^6+x^5+x^4, x^9+x^7+x^6+x^5+x^4," +
-                " x^9+x^8+x^7+x^6+x^5+x^4, x^9+x^3, x^9+x^8+x^3, x^9+x^7+x^3, x^9+x^8+x^7+x^3, x^9+x^6+x^3," +
-                " x^9+x^8+x^6+x^3, x^9+x^7+x^6+x^3, x^9+x^8+x^7+x^6+x^3, x^9+x^5+x^3, x^9+x^8+x^5+x^3," +
-                " x^9+x^7+x^5+x^3, x^9+x^8+x^7+x^5+x^3, x^9+x^6+x^5+x^3, x^9+x^8+x^6+x^5+x^3, x^9+x^7+x^6+x^5+x^3," +
-                " x^9+x^8+x^7+x^6+x^5+x^3, x^9+x^4+x^3, x^9+x^8+x^4+x^3, ...]");
+        rationalPolynomials_int_helper(-1, "QBarExhaustiveProvider_rationalPolynomials_int_i");
+        rationalPolynomials_int_helper(0, "QBarExhaustiveProvider_rationalPolynomials_int_ii");
+        rationalPolynomials_int_helper(1, "QBarExhaustiveProvider_rationalPolynomials_int_iii");
+        rationalPolynomials_int_helper(2, "QBarExhaustiveProvider_rationalPolynomials_int_iv");
+        rationalPolynomials_int_helper(9, "QBarExhaustiveProvider_rationalPolynomials_int_v");
         rationalPolynomials_int_fail_helper(-2);
     }
 
     @Test
     public void testRationalPolynomials() {
-        simpleProviderHelper(QEP.rationalPolynomials(),
-                "[0, 1, 1/2, x, 1/3, 1/4, -1, x^2, -1/2, x+1, 2, -1/3, 1/2*x, -1/4, 2/3, 1/3*x, 1/5, x^3, 1/6," +
-                " 1/2*x+1, 1/7, x^2+x, 1/8, 1/3*x+1, -1/5, -1/6, 2/5, -1/7, x+1/2, -1/8, 2/7, -2, x^2+1, 3, x+1/3," +
-                " 3/2, x^4, -2/3, 1/2*x+1/2, 3/4, -3, 1/3*x+1/2, -3/2, x^3+x^2, 4, 1/2*x+1/3, -3/4, x^2+x+1, 4/3," +
-                " 1/3*x+1/3, ...]");
+        simpleProviderHelper(QEP.rationalPolynomials(), "QBarExhaustiveProvider_rationalPolynomials");
     }
 
     private static void rationalPolynomialsAtLeast_helper(int minDegree, @NotNull String output) {
@@ -966,37 +858,11 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testRationalPolynomialsAtLeast() {
-        rationalPolynomialsAtLeast_helper(-1,
-                "[0, 1, 1/2, x, 1/3, 1/4, -1, x^2, -1/2, x+1, 2, -1/3, 1/2*x, -1/4, 2/3, 1/3*x, 1/5, x^3, 1/6," +
-                " 1/2*x+1, 1/7, x^2+x, 1/8, 1/3*x+1, -1/5, -1/6, 2/5, -1/7, x+1/2, -1/8, 2/7, -2, x^2+1, 3, x+1/3," +
-                " 3/2, x^4, -2/3, 1/2*x+1/2, 3/4, -3, 1/3*x+1/2, -3/2, x^3+x^2, 4, 1/2*x+1/3, -3/4, x^2+x+1, 4/3," +
-                " 1/3*x+1/3, ...]");
-        rationalPolynomialsAtLeast_helper(0,
-                "[1, 1/2, x, 1/3, 1/4, -1, x^2, -1/2, x+1, 2, -1/3, 1/2*x, -1/4, 2/3, 1/3*x, 1/5, x^3, 1/6, 1/2*x+1," +
-                " 1/7, x^2+x, 1/8, 1/3*x+1, -1/5, -1/6, 2/5, -1/7, x+1/2, -1/8, 2/7, -2, x^2+1, 3, x+1/3, 3/2, x^4," +
-                " -2/3, 1/2*x+1/2, 3/4, -3, 1/3*x+1/2, -3/2, x^3+x^2, 4, 1/2*x+1/3, -3/4, x^2+x+1, 4/3, 1/3*x+1/3," +
-                " -2/5, ...]");
-        rationalPolynomialsAtLeast_helper(1,
-                "[x, x^2, x+1, 1/2*x, 1/3*x, x^3, 1/2*x+1, x^2+x, 1/3*x+1, x+1/2, x^2+1, x+1/3, x^4, 1/2*x+1/2," +
-                " 1/3*x+1/2, x^3+x^2, 1/2*x+1/3, x^2+x+1, 1/3*x+1/3, 1/4*x, 1/2*x^2, -x, 1/4*x+1, 1/3*x^2, -x+1," +
-                " -1/2*x, 1/2*x^2+x, 2*x, x^3+x, -1/2*x+1, 1/3*x^2+x, 2*x+1, x^5, 1/4*x+1/2, 1/2*x^2+1, -x+1/2," +
-                " 1/4*x+1/3, 1/3*x^2+1, -x+1/3, x^4+x^3, -1/2*x+1/2, 1/2*x^2+x+1, 2*x+1/2, x^3+x^2+x, -1/2*x+1/3," +
-                " 1/3*x^2+x+1, 2*x+1/3, x+1/4, x^2+1/2*x, x-1, ...]");
-        rationalPolynomialsAtLeast_helper(2,
-                "[x^2, x^3, x^2+x, x^2+1, x^4, x^3+x^2, x^2+x+1, 1/2*x^2, 1/3*x^2, 1/2*x^2+x, x^3+x, 1/3*x^2+x, x^5," +
-                " 1/2*x^2+1, 1/3*x^2+1, x^4+x^3, 1/2*x^2+x+1, x^3+x^2+x, 1/3*x^2+x+1, x^2+1/2*x, x^3+1, x^2+1/3*x," +
-                " x^2+1/2*x+1, x^4+x^2, x^3+x^2+1, x^2+1/3*x+1, x^6, 1/2*x^2+1/2*x, 1/3*x^2+1/2*x, 1/2*x^2+1/3*x," +
-                " x^3+x+1, 1/3*x^2+1/3*x, x^5+x^4, 1/2*x^2+1/2*x+1, 1/3*x^2+1/2*x+1, x^4+x^3+x^2, 1/2*x^2+1/3*x+1," +
-                " x^3+x^2+x+1, 1/3*x^2+1/3*x+1, 1/2*x^3, x^2+1/2, 1/3*x^3, x^2+x+1/2, 1/2*x^3+x^2, x^2+1/3, x^4+x," +
-                " 1/3*x^3+x^2, x^2+x+1/3, 1/2*x^2+1/2, 1/2*x^3+x, ...]");
-        rationalPolynomialsAtLeast_helper(9,
-                "[x^9, x^10, x^9+x^8, x^9+x^7, x^11, x^10+x^9, x^9+x^8+x^7, x^9+x^6, x^10+x^8, x^9+x^8+x^6, x^12," +
-                " x^9+x^7+x^6, x^11+x^10, x^10+x^9+x^8, x^9+x^8+x^7+x^6, x^9+x^5, x^10+x^7, x^9+x^8+x^5," +
-                " x^9+x^7+x^5, x^11+x^9, x^10+x^9+x^7, x^9+x^8+x^7+x^5, x^13, x^9+x^6+x^5, x^10+x^8+x^7," +
-                " x^9+x^8+x^6+x^5, x^12+x^11, x^9+x^7+x^6+x^5, x^11+x^10+x^9, x^10+x^9+x^8+x^7, x^9+x^8+x^7+x^6+x^5," +
-                " x^9+x^4, x^10+x^6, x^9+x^8+x^4, x^9+x^7+x^4, x^11+x^8, x^10+x^9+x^6, x^9+x^8+x^7+x^4, x^9+x^6+x^4," +
-                " x^10+x^8+x^6, x^9+x^8+x^6+x^4, x^12+x^10, x^9+x^7+x^6+x^4, x^11+x^10+x^8, x^10+x^9+x^8+x^6," +
-                " x^9+x^8+x^7+x^6+x^4, x^14, x^9+x^5+x^4, x^10+x^7+x^6, x^9+x^8+x^5+x^4, ...]");
+        rationalPolynomialsAtLeast_helper(-1, "QBarExhaustiveProvider_rationalPolynomialsAtLeast_i");
+        rationalPolynomialsAtLeast_helper(0, "QBarExhaustiveProvider_rationalPolynomialsAtLeast_ii");
+        rationalPolynomialsAtLeast_helper(1, "QBarExhaustiveProvider_rationalPolynomialsAtLeast_iii");
+        rationalPolynomialsAtLeast_helper(2, "QBarExhaustiveProvider_rationalPolynomialsAtLeast_iv");
+        rationalPolynomialsAtLeast_helper(9, "QBarExhaustiveProvider_rationalPolynomialsAtLeast_v");
         rationalPolynomialsAtLeast_fail_helper(-2);
     }
 
@@ -1013,41 +879,17 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testMonicRationalPolynomials_int() {
-        monicRationalPolynomials_int_helper(-1, "[]");
-        monicRationalPolynomials_int_helper(0, "[1]");
-        monicRationalPolynomials_int_helper(1,
-                "[x, x+1, x+1/2, x-1, x+2, x-1/2, x+1/3, x+1/4, x-1/3, x+2/3, x-1/4, x-2, x+3, x+3/2, x-3, x+4," +
-                " x-3/2, x-2/3, x+3/4, x+4/3, x-3/4, x+1/5, x+1/6, x-1/5, x+2/5, x-1/6, x+1/7, x+1/8, x-1/7, x+2/7," +
-                " x-1/8, x-2/5, x+3/5, x-3/5, x+4/5, x-2/7, x+3/7, x+3/8, x-3/7, x+4/7, x-3/8, x-4, x+5, x+5/2, x-5," +
-                " x+6, x-5/2, x-4/3, x+5/3, x+5/4, ...]");
-        monicRationalPolynomials_int_helper(2,
-                "[x^2, x^2+x, x^2+1, x^2+x+1, x^2+1/2*x, x^2+1/2, x^2+1/2*x+1/2, x^2-x, x^2+2*x, x^2-x+1, x^2+2*x+1," +
-                " x^2-1/2*x, x^2-1/2*x+1/2, x^2+x+1/2, x^2-1, x^2+x-1, x^2+2, x^2+x+2, x^2-1/2, x^2+1/2*x-1/2," +
-                " x^2+1/2*x+1, x^2-x-1, x^2+2*x-1, x^2-x+2, x^2+2*x+2, x^2-1/2*x-1/2, x^2+x-1/2, x^2-1/2*x+1," +
-                " x^2+1/3*x, x^2+1/3, x^2+1/3*x+1/3, x^2+1/4*x, x^2+1/4, x^2+1/4*x+1/4, x^2-1/3*x, x^2+2/3*x," +
-                " x^2-1/3*x+1/3, x^2+2/3*x+1/3, x^2-1/4*x, x^2-1/4*x+1/4, x^2+1/2*x+1/4, x^2-1/3, x^2+1/3*x-1/3," +
-                " x^2+2/3, x^2+1/3*x+2/3, x^2-1/4, x^2+1/4*x-1/4, x^2+1/4*x+1/2, x^2-1/3*x-1/3, x^2+2/3*x-1/3, ...]");
-        monicRationalPolynomials_int_helper(8,
-                "[x^8, x^8+x^7, x^8+x^6, x^8+x^7+x^6, x^8+x^5, x^8+x^7+x^5, x^8+x^6+x^5, x^8+x^7+x^6+x^5, x^8+x^4," +
-                " x^8+x^7+x^4, x^8+x^6+x^4, x^8+x^7+x^6+x^4, x^8+x^5+x^4, x^8+x^7+x^5+x^4, x^8+x^6+x^5+x^4," +
-                " x^8+x^7+x^6+x^5+x^4, x^8+x^3, x^8+x^7+x^3, x^8+x^6+x^3, x^8+x^7+x^6+x^3, x^8+x^5+x^3," +
-                " x^8+x^7+x^5+x^3, x^8+x^6+x^5+x^3, x^8+x^7+x^6+x^5+x^3, x^8+x^4+x^3, x^8+x^7+x^4+x^3," +
-                " x^8+x^6+x^4+x^3, x^8+x^7+x^6+x^4+x^3, x^8+x^5+x^4+x^3, x^8+x^7+x^5+x^4+x^3, x^8+x^6+x^5+x^4+x^3," +
-                " x^8+x^7+x^6+x^5+x^4+x^3, x^8+x^2, x^8+x^7+x^2, x^8+x^6+x^2, x^8+x^7+x^6+x^2, x^8+x^5+x^2," +
-                " x^8+x^7+x^5+x^2, x^8+x^6+x^5+x^2, x^8+x^7+x^6+x^5+x^2, x^8+x^4+x^2, x^8+x^7+x^4+x^2," +
-                " x^8+x^6+x^4+x^2, x^8+x^7+x^6+x^4+x^2, x^8+x^5+x^4+x^2, x^8+x^7+x^5+x^4+x^2, x^8+x^6+x^5+x^4+x^2," +
-                " x^8+x^7+x^6+x^5+x^4+x^2, x^8+x^3+x^2, x^8+x^7+x^3+x^2, ...]");
+        monicRationalPolynomials_int_helper(-1, "QBarExhaustiveProvider_monicRationalPolynomials_int_i");
+        monicRationalPolynomials_int_helper(0, "QBarExhaustiveProvider_monicRationalPolynomials_int_ii");
+        monicRationalPolynomials_int_helper(1, "QBarExhaustiveProvider_monicRationalPolynomials_int_iii");
+        monicRationalPolynomials_int_helper(2, "QBarExhaustiveProvider_monicRationalPolynomials_int_iv");
+        monicRationalPolynomials_int_helper(8, "QBarExhaustiveProvider_monicRationalPolynomials_int_v");
         monicRationalPolynomials_int_fail_helper(-2);
     }
 
     @Test
     public void testMonicRationalPolynomials() {
-        simpleProviderHelper(QEP.monicRationalPolynomials(),
-                "[1, x, x^2, x+1, x^3, x^2+x, x+1/2, x-1, x^2+1, x+2, x^4, x-1/2, x^3+x^2, x^2+x+1, x+1/3, x^3+x," +
-                " x^2+1/2*x, x+1/4, x^5, x-1/3, x^2+1/2, x+2/3, x^4+x^3, x-1/4, x^3+x^2+x, x^2+1/2*x+1/2, x-2," +
-                " x^2-x, x+3, x^3+1, x^2+2*x, x+3/2, x-3, x^2-x+1, x+4, x^4+x^2, x-3/2, x^3+x^2+1, x^2+2*x+1, x^6," +
-                " x-2/3, x^2-1/2*x, x^3+x+1, x+3/4, x^5+x^4, x^2-1/2*x+1/2, x+4/3, x^4+x^3+x^2, x-3/4, x^3+x^2+x+1," +
-                " ...]");
+        simpleProviderHelper(QEP.monicRationalPolynomials(), "QBarExhaustiveProvider_monicRationalPolynomials");
     }
 
     private static void monicRationalPolynomialsAtLeast_helper(int minDegree, @NotNull String output) {
@@ -1063,40 +905,247 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testMonicRationalPolynomialsAtLeast() {
-        monicRationalPolynomialsAtLeast_helper(-1,
-                "[1, x, x^2, x+1, x^3, x^2+x, x+1/2, x-1, x^2+1, x+2, x^4, x-1/2, x^3+x^2, x^2+x+1, x+1/3, x^3+x," +
-                " x^2+1/2*x, x+1/4, x^5, x-1/3, x^2+1/2, x+2/3, x^4+x^3, x-1/4, x^3+x^2+x, x^2+1/2*x+1/2, x-2," +
-                " x^2-x, x+3, x^3+1, x^2+2*x, x+3/2, x-3, x^2-x+1, x+4, x^4+x^2, x-3/2, x^3+x^2+1, x^2+2*x+1, x^6," +
-                " x-2/3, x^2-1/2*x, x^3+x+1, x+3/4, x^5+x^4, x^2-1/2*x+1/2, x+4/3, x^4+x^3+x^2, x-3/4, x^3+x^2+x+1," +
-                " ...]");
-        monicRationalPolynomialsAtLeast_helper(0,
-                "[1, x, x^2, x+1, x^3, x^2+x, x+1/2, x-1, x^2+1, x+2, x^4, x-1/2, x^3+x^2, x^2+x+1, x+1/3, x^3+x," +
-                " x^2+1/2*x, x+1/4, x^5, x-1/3, x^2+1/2, x+2/3, x^4+x^3, x-1/4, x^3+x^2+x, x^2+1/2*x+1/2, x-2," +
-                " x^2-x, x+3, x^3+1, x^2+2*x, x+3/2, x-3, x^2-x+1, x+4, x^4+x^2, x-3/2, x^3+x^2+1, x^2+2*x+1, x^6," +
-                " x-2/3, x^2-1/2*x, x^3+x+1, x+3/4, x^5+x^4, x^2-1/2*x+1/2, x+4/3, x^4+x^3+x^2, x-3/4, x^3+x^2+x+1," +
-                " ...]");
-        monicRationalPolynomialsAtLeast_helper(1,
-                "[x, x^2, x+1, x^3, x^2+x, x+1/2, x-1, x^2+1, x+2, x^4, x-1/2, x^3+x^2, x^2+x+1, x+1/3, x^3+x," +
-                " x^2+1/2*x, x+1/4, x^5, x-1/3, x^2+1/2, x+2/3, x^4+x^3, x-1/4, x^3+x^2+x, x^2+1/2*x+1/2, x-2," +
-                " x^2-x, x+3, x^3+1, x^2+2*x, x+3/2, x-3, x^2-x+1, x+4, x^4+x^2, x-3/2, x^3+x^2+1, x^2+2*x+1, x^6," +
-                " x-2/3, x^2-1/2*x, x^3+x+1, x+3/4, x^5+x^4, x^2-1/2*x+1/2, x+4/3, x^4+x^3+x^2, x-3/4, x^3+x^2+x+1," +
-                " x^2+x+1/2, ...]");
-        monicRationalPolynomialsAtLeast_helper(2,
-                "[x^2, x^3, x^2+x, x^2+1, x^4, x^3+x^2, x^2+x+1, x^3+x, x^2+1/2*x, x^5, x^2+1/2, x^4+x^3, x^3+x^2+x," +
-                " x^2+1/2*x+1/2, x^2-x, x^3+1, x^2+2*x, x^2-x+1, x^4+x^2, x^3+x^2+1, x^2+2*x+1, x^6, x^2-1/2*x," +
-                " x^3+x+1, x^5+x^4, x^2-1/2*x+1/2, x^4+x^3+x^2, x^3+x^2+x+1, x^2+x+1/2, x^2-1, x^2+x-1, x^2+2," +
-                " x^4+x, x^3+1/2*x^2, x^2+x+2, x^2-1/2, x^3+1/2*x, x^2+1/2*x-1/2, x^5+x^3, x^4+x^3+x," +
-                " x^3+1/2*x^2+1/2*x, x^2+1/2*x+1, x^7, x^2-x-1, x^3+1/2, x^2+2*x-1, x^2-x+2, x^4+x^2+x," +
-                " x^3+1/2*x^2+1/2, x^2+2*x+2, ...]");
-        monicRationalPolynomialsAtLeast_helper(8,
-                "[x^8, x^9, x^8+x^7, x^8+x^6, x^10, x^9+x^8, x^8+x^7+x^6, x^8+x^5, x^9+x^7, x^8+x^7+x^5, x^11," +
-                " x^8+x^6+x^5, x^10+x^9, x^9+x^8+x^7, x^8+x^7+x^6+x^5, x^8+x^4, x^9+x^6, x^8+x^7+x^4, x^8+x^6+x^4," +
-                " x^10+x^8, x^9+x^8+x^6, x^8+x^7+x^6+x^4, x^12, x^8+x^5+x^4, x^9+x^7+x^6, x^8+x^7+x^5+x^4," +
-                " x^11+x^10, x^8+x^6+x^5+x^4, x^10+x^9+x^8, x^9+x^8+x^7+x^6, x^8+x^7+x^6+x^5+x^4, x^8+x^3, x^9+x^5," +
-                " x^8+x^7+x^3, x^8+x^6+x^3, x^10+x^7, x^9+x^8+x^5, x^8+x^7+x^6+x^3, x^8+x^5+x^3, x^9+x^7+x^5," +
-                " x^8+x^7+x^5+x^3, x^11+x^9, x^8+x^6+x^5+x^3, x^10+x^9+x^7, x^9+x^8+x^7+x^5, x^8+x^7+x^6+x^5+x^3," +
-                " x^13, x^8+x^4+x^3, x^9+x^6+x^5, x^8+x^7+x^4+x^3, ...]");
+        monicRationalPolynomialsAtLeast_helper(-1, "QBarExhaustiveProvider_monicRationalPolynomialsAtLeast_i");
+        monicRationalPolynomialsAtLeast_helper(0, "QBarExhaustiveProvider_monicRationalPolynomialsAtLeast_ii");
+        monicRationalPolynomialsAtLeast_helper(1, "QBarExhaustiveProvider_monicRationalPolynomialsAtLeast_iii");
+        monicRationalPolynomialsAtLeast_helper(2, "QBarExhaustiveProvider_monicRationalPolynomialsAtLeast_iv");
+        monicRationalPolynomialsAtLeast_helper(8, "QBarExhaustiveProvider_monicRationalPolynomialsAtLeast_v");
         monicRationalPolynomialsAtLeast_fail_helper(-2);
+    }
+
+    @Test
+    public void testVariables() {
+        simpleProviderHelper(QEP.variables(), "QBarExhaustiveProvider_variables");
+    }
+
+    @Test
+    public void testMonomialOrders() {
+        simpleProviderHelper(QEP.monomialOrders(), "QBarExhaustiveProvider_monomialOrders");
+    }
+
+    @Test
+    public void testExponentVectors() {
+        simpleProviderHelper(QEP.exponentVectors(), "QBarExhaustiveProvider_exponentVectors");
+    }
+
+    private static void exponentVectors_List_Variable_helper(@NotNull String variables, @NotNull String output) {
+        simpleProviderHelper(QEP.exponentVectors(readVariableList(variables)), output);
+    }
+
+    private static void exponentVectors_List_Variable_fail_helper(@NotNull String variables) {
+        try {
+            QEP.exponentVectors(readVariableListWithNulls(variables));
+            fail();
+        } catch (IllegalArgumentException | NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testExponentVectors_List_Variable() {
+        exponentVectors_List_Variable_helper("[]", "QBarExhaustiveProvider_exponentVectors_List_Variable_i");
+        exponentVectors_List_Variable_helper("[a]", "QBarExhaustiveProvider_exponentVectors_List_Variable_ii");
+        exponentVectors_List_Variable_helper("[x]", "QBarExhaustiveProvider_exponentVectors_List_Variable_iii");
+        exponentVectors_List_Variable_helper("[ooo]", "QBarExhaustiveProvider_exponentVectors_List_Variable_iv");
+        exponentVectors_List_Variable_helper("[x, y]", "QBarExhaustiveProvider_exponentVectors_List_Variable_v");
+        exponentVectors_List_Variable_helper("[x, y, z]", "QBarExhaustiveProvider_exponentVectors_List_Variable_vi");
+
+        exponentVectors_List_Variable_fail_helper("[a, a]");
+        exponentVectors_List_Variable_fail_helper("[b, a]");
+        exponentVectors_List_Variable_fail_helper("[a, null]");
+    }
+
+    @Test
+    public void testMultivariatePolynomials() {
+        simpleProviderHelper(QEP.multivariatePolynomials(), "QBarExhaustiveProvider_multivariatePolynomials");
+    }
+
+    private static void multivariatePolynomials_List_Variable_helper(
+            @NotNull String variables,
+            @NotNull String output
+    ) {
+        simpleProviderHelper(QEP.multivariatePolynomials(readVariableList(variables)), output);
+    }
+
+    private static void multivariatePolynomials_List_Variable_fail_helper(@NotNull String variables) {
+        try {
+            QEP.multivariatePolynomials(readVariableListWithNulls(variables));
+            fail();
+        } catch (IllegalArgumentException | NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testMultivariatePolynomials_List_Variable() {
+        multivariatePolynomials_List_Variable_helper("[]",
+                "QBarExhaustiveProvider_multivariatePolynomials_List_Variable_i");
+        multivariatePolynomials_List_Variable_helper("[a]",
+                "QBarExhaustiveProvider_multivariatePolynomials_List_Variable_ii");
+        multivariatePolynomials_List_Variable_helper("[x]",
+                "QBarExhaustiveProvider_multivariatePolynomials_List_Variable_iii");
+        multivariatePolynomials_List_Variable_helper("[ooo]",
+                "QBarExhaustiveProvider_multivariatePolynomials_List_Variable_iv");
+        multivariatePolynomials_List_Variable_helper("[x, y]",
+                "QBarExhaustiveProvider_multivariatePolynomials_List_Variable_v");
+        multivariatePolynomials_List_Variable_helper("[x, y, z]",
+                "QBarExhaustiveProvider_multivariatePolynomials_List_Variable_vi");
+
+        multivariatePolynomials_List_Variable_fail_helper("[a, a]");
+        multivariatePolynomials_List_Variable_fail_helper("[b, a]");
+        multivariatePolynomials_List_Variable_fail_helper("[a, null]");
+    }
+
+    private static void positiveAlgebraics_int_helper(int degree, @NotNull String output) {
+        simpleProviderHelper(QEP.positiveAlgebraics(degree), output);
+    }
+
+    private static void positiveAlgebraics_int_fail_helper(int degree) {
+        try {
+            QEP.positiveAlgebraics(degree);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testPositiveAlgebraics_int() {
+        positiveAlgebraics_int_helper(1, "QBarExhaustiveProvider_positiveAlgebraics_int_i");
+        positiveAlgebraics_int_helper(2, "QBarExhaustiveProvider_positiveAlgebraics_int_ii");
+        positiveAlgebraics_int_helper(3, "QBarExhaustiveProvider_positiveAlgebraics_int_iii");
+        positiveAlgebraics_int_helper(4, "QBarExhaustiveProvider_positiveAlgebraics_int_iv");
+        positiveAlgebraics_int_helper(10, "QBarExhaustiveProvider_positiveAlgebraics_int_v");
+
+        positiveAlgebraics_int_fail_helper(0);
+        positiveAlgebraics_int_fail_helper(-1);
+    }
+
+    @Test
+    public void testPositiveAlgebraics() {
+        simpleProviderHelper(QEP.positiveAlgebraics(), "QBarExhaustiveProvider_positiveAlgebraics");
+    }
+
+    private static void negativeAlgebraics_int_helper(int degree, @NotNull String output) {
+        simpleProviderHelper(QEP.negativeAlgebraics(degree), output);
+    }
+
+    private static void negativeAlgebraics_int_fail_helper(int degree) {
+        try {
+            QEP.negativeAlgebraics(degree);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testNegativeAlgebraics_int() {
+        negativeAlgebraics_int_helper(1, "QBarExhaustiveProvider_negativeAlgebraics_int_i");
+        negativeAlgebraics_int_helper(2, "QBarExhaustiveProvider_negativeAlgebraics_int_ii");
+        negativeAlgebraics_int_helper(3, "QBarExhaustiveProvider_negativeAlgebraics_int_iii");
+        negativeAlgebraics_int_helper(4, "QBarExhaustiveProvider_negativeAlgebraics_int_iv");
+        negativeAlgebraics_int_helper(10, "QBarExhaustiveProvider_negativeAlgebraics_int_v");
+
+        negativeAlgebraics_int_fail_helper(0);
+        negativeAlgebraics_int_fail_helper(-1);
+    }
+
+    @Test
+    public void testNegativeAlgebraics() {
+        simpleProviderHelper(QEP.negativeAlgebraics(), "QBarExhaustiveProvider_negativeAlgebraics");
+    }
+
+    private static void nonzeroAlgebraics_int_helper(int degree, @NotNull String output) {
+        simpleProviderHelper(QEP.nonzeroAlgebraics(degree), output);
+    }
+
+    private static void nonzeroAlgebraics_int_fail_helper(int degree) {
+        try {
+            QEP.nonzeroAlgebraics(degree);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testNonzeroAlgebraics_int() {
+        nonzeroAlgebraics_int_helper(1, "QBarExhaustiveProvider_nonzeroAlgebraics_int_i");
+        nonzeroAlgebraics_int_helper(2, "QBarExhaustiveProvider_nonzeroAlgebraics_int_ii");
+        nonzeroAlgebraics_int_helper(3, "QBarExhaustiveProvider_nonzeroAlgebraics_int_iii");
+        nonzeroAlgebraics_int_helper(4, "QBarExhaustiveProvider_nonzeroAlgebraics_int_iv");
+        nonzeroAlgebraics_int_helper(10, "QBarExhaustiveProvider_nonzeroAlgebraics_int_v");
+
+        nonzeroAlgebraics_int_fail_helper(0);
+        nonzeroAlgebraics_int_fail_helper(-1);
+    }
+
+    @Test
+    public void testNonzeroAlgebraics() {
+        simpleProviderHelper(QEP.nonzeroAlgebraics(), "QBarExhaustiveProvider_nonzeroAlgebraics");
+    }
+
+    private static void algebraics_int_helper(int degree, @NotNull String output) {
+        simpleProviderHelper(QEP.algebraics(degree), output);
+    }
+
+    private static void algebraics_int_fail_helper(int degree) {
+        try {
+            QEP.algebraics(degree);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testAlgebraics_int() {
+        algebraics_int_helper(1, "QBarExhaustiveProvider_algebraics_int_i");
+        algebraics_int_helper(2, "QBarExhaustiveProvider_algebraics_int_ii");
+        algebraics_int_helper(3, "QBarExhaustiveProvider_algebraics_int_iii");
+        algebraics_int_helper(4, "QBarExhaustiveProvider_algebraics_int_iv");
+        algebraics_int_helper(10, "QBarExhaustiveProvider_algebraics_int_v");
+
+        algebraics_int_fail_helper(0);
+        algebraics_int_fail_helper(-1);
+    }
+
+    @Test
+    public void testAlgebraics() {
+        simpleProviderHelper(QEP.algebraics(), "QBarExhaustiveProvider_algebraics");
+    }
+
+    private static void nonNegativeAlgebraicsLessThanOne_int_helper(int degree, @NotNull String output) {
+        simpleProviderHelper(QEP.nonNegativeAlgebraicsLessThanOne(degree), output);
+    }
+
+    private static void nonNegativeAlgebraicsLessThanOne_int_fail_helper(int degree) {
+        try {
+            QEP.nonNegativeAlgebraicsLessThanOne(degree);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testNonNegativeAlgebraicsLessThanOne_int() {
+        nonNegativeAlgebraicsLessThanOne_int_helper(
+                1,
+                "QBarExhaustiveProvider_nonNegativeAlgebraicsLessThanOne_int_i"
+        );
+        nonNegativeAlgebraicsLessThanOne_int_helper(
+                2,
+                "QBarExhaustiveProvider_nonNegativeAlgebraicsLessThanOne_int_ii"
+        );
+        nonNegativeAlgebraicsLessThanOne_int_helper(
+                3,
+                "QBarExhaustiveProvider_nonNegativeAlgebraicsLessThanOne_int_iii"
+        );
+        nonNegativeAlgebraicsLessThanOne_int_helper(
+                4,
+                "QBarExhaustiveProvider_nonNegativeAlgebraicsLessThanOne_int_iv"
+        );
+        nonNegativeAlgebraicsLessThanOne_int_helper(
+                10,
+                "QBarExhaustiveProvider_nonNegativeAlgebraicsLessThanOne_int_v"
+        );
+
+        nonNegativeAlgebraicsLessThanOne_int_fail_helper(0);
+        nonNegativeAlgebraicsLessThanOne_int_fail_helper(-1);
+    }
+
+    @Test
+    public void testNonNegativeAlgebraicsLessThanOne() {
+        simpleProviderHelper(QEP.nonNegativeAlgebraicsLessThanOne(),
+                "QBarExhaustiveProvider_nonNegativeAlgebraicsLessThanOne");
     }
 
     @Test
@@ -1117,5 +1166,13 @@ public class QBarExhaustiveProviderTest {
     @Test
     public void testToString() {
         aeq(QEP, "QBarExhaustiveProvider");
+    }
+
+    private static @NotNull List<Variable> readVariableList(@NotNull String s) {
+        return Readers.readList(Variable::read).apply(s).get();
+    }
+
+    private static @NotNull List<Variable> readVariableListWithNulls(@NotNull String s) {
+        return Readers.readListWithNulls(Variable::read).apply(s).get();
     }
 }

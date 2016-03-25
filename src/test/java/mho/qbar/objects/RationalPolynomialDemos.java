@@ -7,13 +7,14 @@ import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static mho.qbar.objects.RationalPolynomial.*;
+import static mho.qbar.objects.RationalPolynomial.sum;
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.testing.Testing.its;
-import static mho.wheels.testing.Testing.nicePrint;
+import static mho.wheels.testing.Testing.*;
 
 @SuppressWarnings("UnusedDeclaration")
 public class RationalPolynomialDemos extends QBarDemos {
@@ -33,6 +34,19 @@ public class RationalPolynomialDemos extends QBarDemos {
         Iterable<Pair<RationalPolynomial, Rational>> ps = P.pairs(P.withScale(4).rationalPolynomials(), P.rationals());
         for (Pair<RationalPolynomial, Rational> p : take(LIMIT, ps)) {
             System.out.println(p.a + " at " + p.b + " = " + p.a.apply(p.b));
+        }
+    }
+
+    private void demoOnlyHasIntegralCoefficients() {
+        for (RationalPolynomial p : take(LIMIT, P.withScale(4).rationalPolynomials())) {
+            System.out.println(p + (p.onlyHasIntegralCoefficients() ? " only has " : " doesn't only have ") +
+                    "integral coefficients");
+        }
+    }
+
+    private void demoToPolynomial() {
+        for (RationalPolynomial p : take(LIMIT, map(Polynomial::toRationalPolynomial, P.withScale(4).polynomials()))) {
+            System.out.println("toPolynomial(" + p + ") = " + p.toPolynomial());
         }
     }
 
@@ -69,6 +83,12 @@ public class RationalPolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoMaxCoefficientBitLength() {
+        for (RationalPolynomial p : take(LIMIT, P.withScale(4).rationalPolynomials())) {
+            System.out.println("maxCoefficientBitLength(" + p + ") = " + p.maxCoefficientBitLength());
+        }
+    }
+
     private void demoDegree() {
         for (RationalPolynomial p : take(LIMIT, P.withScale(4).rationalPolynomials())) {
             System.out.println("degree(" + p + ") = " + p.degree());
@@ -78,6 +98,16 @@ public class RationalPolynomialDemos extends QBarDemos {
     private void demoLeading() {
         for (RationalPolynomial p : take(LIMIT, P.withScale(4).rationalPolynomials())) {
             System.out.println("leading(" + p + ") = " + p.leading());
+        }
+    }
+
+    private void demoMultiplyByPowerOfX() {
+        Iterable<Pair<RationalPolynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).rationalPolynomials(),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
+            System.out.println("multiplyByPowerOfX(" + p.a + ", " + p.b + ") = " + p.a.multiplyByPowerOfX(p.b));
         }
     }
 
@@ -103,6 +133,13 @@ public class RationalPolynomialDemos extends QBarDemos {
     private void demoSignum() {
         for (RationalPolynomial p : take(LIMIT, P.withScale(4).rationalPolynomials())) {
             System.out.println("signum(" + p + ") = " + p.signum());
+        }
+    }
+
+    private void demoSignum_Rational() {
+        Iterable<Pair<RationalPolynomial, Rational>> ps = P.pairs(P.withScale(4).rationalPolynomials(), P.rationals());
+        for (Pair<RationalPolynomial, Rational> p : take(LIMIT, ps)) {
+            System.out.println("signum(" + p.a + ", " + p.b + ") = " + p.a.signum(p.b));
         }
     }
 
@@ -266,6 +303,117 @@ public class RationalPolynomialDemos extends QBarDemos {
         );
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {
             System.out.println("(" + p.a + ") / (" + p.b + ") = " + p.a.divide(p.b));
+        }
+    }
+
+    private void demoIsDivisibleBy_RationalPolynomial() {
+        Iterable<Pair<RationalPolynomial, RationalPolynomial>> ps = P.pairs(
+                P.withScale(4).rationalPolynomials(),
+                P.withScale(4).rationalPolynomialsAtLeast(0)
+        );
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " is " + (p.a.isDivisibleBy(p.b) ? "" : "not ") + "divisible by " + p.b);
+        }
+    }
+
+    private void demoRemainderSequence() {
+        Iterable<Pair<RationalPolynomial, RationalPolynomial>> ps = filterInfinite(
+                p -> p.a != ZERO || p.b != ZERO,
+                P.pairs(P.withScale(4).withSecondaryScale(4).rationalPolynomials())
+        );
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(SMALL_LIMIT, ps)) {
+            System.out.println("remainderSequence(" + p.a + ", " + p.b + ") = " + p.a.remainderSequence(p.b));
+        }
+    }
+
+    private void demoSignedRemainderSequence() {
+        Iterable<Pair<RationalPolynomial, RationalPolynomial>> ps = filterInfinite(
+                p -> p.a != ZERO || p.b != ZERO,
+                P.pairs(P.withScale(4).withSecondaryScale(4).rationalPolynomials())
+        );
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(SMALL_LIMIT, ps)) {
+            System.out.println("signedRemainderSequence(" + p.a + ", " + p.b + ") = " +
+                    p.a.signedRemainderSequence(p.b));
+        }
+    }
+
+    private void demoPowerSums() {
+        for (RationalPolynomial p : take(LIMIT, P.withScale(4).monicRationalPolynomials())) {
+            System.out.println("powerSums(" + p + ") = " + p.powerSums());
+        }
+    }
+
+    private void demoFromPowerSums() {
+        Iterable<List<Rational>> rss = map(
+                rs -> toList(cons(Rational.of(rs.size()), rs)),
+                P.withScale(4).lists(P.rationals())
+        );
+        for (List<Rational> rs : take(LIMIT, rss)) {
+            String listString = tail(init(rs.toString()));
+            System.out.println("fromPowerSums(" + listString + ") = " + fromPowerSums(rs));
+        }
+    }
+
+    private void demoInterpolate() {
+        Iterable<List<Pair<Rational, Rational>>> pss = P.withElement(
+                Collections.emptyList(),
+                map(
+                        p -> toList(zip(p.a, p.b)),
+                        P.dependentPairsInfinite(
+                                P.withScale(4).distinctListsAtLeast(1, P.withScale(4).rationals()),
+                                rs -> P.lists(rs.size(), P.withScale(4).rationals())
+                        )
+                )
+        );
+        for (List<Pair<Rational, Rational>> ps : take(LIMIT, pss)) {
+            String listString = tail(init(ps.toString()));
+            System.out.println("interpolate(" + listString + ") = " + interpolate(ps));
+        }
+    }
+
+    private void demoCompanionMatrix() {
+        for (RationalPolynomial p : take(LIMIT, P.withScale(4).monicRationalPolynomials())) {
+            System.out.println("companionMatrix(" + p + ") = " + p.companionMatrix());
+        }
+    }
+
+    private void demoCoefficientMatrix() {
+        Iterable<List<RationalPolynomial>> pss = P.withElement(
+                Collections.emptyList(),
+                filterInfinite(
+                        ps -> ps.size() <= maximum(map(RationalPolynomial::degree, ps)) + 1,
+                        P.withScale(4).listsAtLeast(1, P.withScale(4).rationalPolynomials())
+                )
+        );
+        for (List<RationalPolynomial> ps : take(LIMIT, pss)) {
+            String listString = tail(init(ps.toString()));
+            System.out.println("coefficientMatrix(" + listString + ") = " + coefficientMatrix(ps));
+        }
+    }
+
+    private void demoReflect() {
+        for (RationalPolynomial p : take(LIMIT, P.withScale(4).rationalPolynomials())) {
+            System.out.println("reflect(" + p + ") = " + p.reflect());
+        }
+    }
+
+    private void demoTranslate() {
+        Iterable<Pair<RationalPolynomial, Rational>> ps = P.pairs(
+                P.withScale(4).rationalPolynomials(),
+                P.withScale(4).rationals()
+        );
+        for (Pair<RationalPolynomial, Rational> p : take(LIMIT, ps)) {
+            System.out.println("translate(" + p.a + ", " + p.b + ") = " + p.a.translate(p.b));
+        }
+    }
+
+    private void demoStretch() {
+        Iterable<Pair<RationalPolynomial, Rational>> ps = P.pairs(
+                P.withScale(4).rationalPolynomials(),
+                P.withScale(4).positiveRationals()
+        );
+        for (Pair<RationalPolynomial, Rational> p : take(LIMIT, ps)) {
+            System.out.println("stretch(" + p.a + ", " + p.b + ") = " + p.a.stretch(p.b));
         }
     }
 
