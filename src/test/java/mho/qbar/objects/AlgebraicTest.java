@@ -128,7 +128,7 @@ public class AlgebraicTest {
         assertFalse(read(maxDegree, input).isPresent());
     }
 
-    private static void read_int_String_bad_maxDegree_fail_helper(int maxDegree, @NotNull String input) {
+    private static void read_int_String_bad_maxExponent_fail_helper(int maxDegree, @NotNull String input) {
         try {
             read(maxDegree, input);
             fail();
@@ -190,8 +190,9 @@ public class AlgebraicTest {
         read_int_String_fail_helper(10, "root 0 of 1");
         read_int_String_fail_helper(10, "root 0 of x^2-2");
         read_int_String_fail_helper(10, "root 0 of x-2");
-        read_int_String_bad_maxDegree_fail_helper(0, "sqrt(2)");
-        read_int_String_bad_maxDegree_fail_helper(-1, "sqrt(2)");
+        read_int_String_bad_maxExponent_fail_helper(1, "sqrt(2)");
+        read_int_String_bad_maxExponent_fail_helper(0, "sqrt(2)");
+        read_int_String_bad_maxExponent_fail_helper(-1, "sqrt(2)");
     }
 
     private static void findIn_String_helper(@NotNull String input, @NotNull String output, int index) {
@@ -212,13 +213,52 @@ public class AlgebraicTest {
         findIn_String_helper("x3+sqrt(2)", "3+sqrt(2)", 1);
         findIn_String_helper("root 2 of x^2-2", "2", 5);
         findIn_String_helper("(2+4*sqrt(2))/2", "2+4*sqrt(2)", 1);
+        findIn_String_helper("root 0 of 2*x^3-12", "root 0 of 2*x^3-1", 1);
 
         findIn_String_fail_helper("");
         findIn_String_fail_helper("o");
         findIn_String_fail_helper("hello");
     }
 
-    //todo other findIn
+    private static void findIn_int_String_helper(
+            int maxExponent,
+            @NotNull String input,
+            @NotNull String output,
+            int index
+    ) {
+        Pair<Algebraic, Integer> result = findIn(maxExponent, input).get();
+        aeq(result.a, output);
+        aeq(result.b, index);
+    }
+
+    private static void findIn_int_String_fail_helper(int maxExponent, @NotNull String input) {
+        assertFalse(findIn(maxExponent, input).isPresent());
+    }
+
+    private static void findIn_int_String_bad_maxExponent_fail_helper(int maxExponent, @NotNull String input) {
+        try {
+            findIn(maxExponent, input);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testFindIn_int_String() {
+        findIn_int_String_helper(2, "sqrt(2)", "sqrt(2)", 0);
+        findIn_int_String_helper(2, "sqrt(-2)", "-2", 5);
+        findIn_int_String_helper(2, "03+sqrt(2)", "0", 0);
+        findIn_int_String_helper(2, "x3+sqrt(2)", "3+sqrt(2)", 1);
+        findIn_int_String_helper(2, "root 2 of x^2-2", "2", 5);
+        findIn_int_String_helper(2, "(2+4*sqrt(2))/2", "2+4*sqrt(2)", 1);
+        findIn_int_String_helper(3, "root 0 of 2*x^3-12", "root 0 of 2*x^3-1", 0);
+
+        findIn_int_String_fail_helper(2, "");
+        findIn_int_String_fail_helper(2, "o");
+        findIn_int_String_fail_helper(2, "hello");
+        findIn_int_String_bad_maxExponent_fail_helper(1, "sqrt(2)");
+        findIn_int_String_bad_maxExponent_fail_helper(0, "sqrt(2)");
+        findIn_int_String_bad_maxExponent_fail_helper(-1, "sqrt(2)");
+    }
 
     private static @NotNull List<Algebraic> readAlgebraicList(@NotNull String s) {
         return Readers.readList(Algebraic::read).apply(s).get();

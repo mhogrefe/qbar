@@ -920,7 +920,7 @@ public class QBarRandomProviderDemos extends QBarDemos {
 
     private void demoPositiveAlgebraics() {
         Iterable<QBarRandomProvider> rps = filterInfinite(
-                s -> s.getScale() > 0 && s.getSecondaryScale() >= 2,
+                s -> s.getScale() > 0 && s.getSecondaryScale() >= 4,
                 P.withScale(2).qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
@@ -943,7 +943,7 @@ public class QBarRandomProviderDemos extends QBarDemos {
 
     private void demoNegativeAlgebraics() {
         Iterable<QBarRandomProvider> rps = filterInfinite(
-                s -> s.getScale() > 0 && s.getSecondaryScale() >= 2,
+                s -> s.getScale() > 0 && s.getSecondaryScale() >= 4,
                 P.withScale(2).qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
@@ -966,7 +966,7 @@ public class QBarRandomProviderDemos extends QBarDemos {
 
     private void demoNonzeroAlgebraics() {
         Iterable<QBarRandomProvider> rps = filterInfinite(
-                s -> s.getScale() > 0 && s.getSecondaryScale() >= 2,
+                s -> s.getScale() > 0 && s.getSecondaryScale() >= 4,
                 P.withScale(2).qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
@@ -989,7 +989,7 @@ public class QBarRandomProviderDemos extends QBarDemos {
 
     private void demoAlgebraics() {
         Iterable<QBarRandomProvider> rps = filterInfinite(
-                s -> s.getScale() > 0 && s.getSecondaryScale() >= 2,
+                s -> s.getScale() > 0 && s.getSecondaryScale() >= 4,
                 P.withScale(2).qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
@@ -1013,7 +1013,7 @@ public class QBarRandomProviderDemos extends QBarDemos {
 
     private void demoNonNegativeAlgebraicsLessThanOne() {
         Iterable<QBarRandomProvider> rps = filterInfinite(
-                s -> s.getScale() > 0 && s.getSecondaryScale() >= 2,
+                s -> s.getScale() > 0 && s.getSecondaryScale() >= 4,
                 P.withScale(2).qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {

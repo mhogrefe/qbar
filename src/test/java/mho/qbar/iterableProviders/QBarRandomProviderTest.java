@@ -4949,7 +4949,7 @@ public class QBarRandomProviderTest {
     public void testPositiveAlgebraics() {
         positiveAlgebraics_helper(
                 1,
-                2,
+                4,
                 "QBarRandomProvider_positiveAlgebraics_i",
                 1.9975999999998322,
                 1.4489925273554884,
@@ -4957,14 +4957,14 @@ public class QBarRandomProviderTest {
         );
         positiveAlgebraics_helper(
                 5,
-                3,
+                6,
                 "QBarRandomProvider_positiveAlgebraics_ii",
                 2.9775000000002008,
                 5.409729729729074,
                 5.1291800819379814E10
         );
-        positiveAlgebraics_fail_helper(0, 2);
-        positiveAlgebraics_fail_helper(1, 1);
+        positiveAlgebraics_fail_helper(0, 4);
+        positiveAlgebraics_fail_helper(1, 3);
     }
 
     private static void negativeAlgebraics_int_helper(
@@ -5081,7 +5081,7 @@ public class QBarRandomProviderTest {
     public void testNegativeAlgebraics() {
         negativeAlgebraics_helper(
                 1,
-                2,
+                4,
                 "QBarRandomProvider_negativeAlgebraics_i",
                 1.9975999999998322,
                 1.6003469442224292,
@@ -5089,14 +5089,14 @@ public class QBarRandomProviderTest {
         );
         negativeAlgebraics_helper(
                 5,
-                3,
+                6,
                 "QBarRandomProvider_negativeAlgebraics_ii",
                 2.9775000000002008,
                 5.447316153362046,
                 -5.1291800819379814E10
         );
-        negativeAlgebraics_fail_helper(0, 2);
-        negativeAlgebraics_fail_helper(1, 1);
+        negativeAlgebraics_fail_helper(0, 4);
+        negativeAlgebraics_fail_helper(1, 3);
     }
 
     private static void nonzeroAlgebraics_int_helper(
@@ -5213,7 +5213,7 @@ public class QBarRandomProviderTest {
     public void testNonzeroAlgebraics() {
         nonzeroAlgebraics_helper(
                 1,
-                2,
+                4,
                 "QBarRandomProvider_nonzeroAlgebraics_i",
                 2.185799999999937,
                 1.508035658233894,
@@ -5221,14 +5221,14 @@ public class QBarRandomProviderTest {
         );
         nonzeroAlgebraics_helper(
                 5,
-                3,
+                6,
                 "QBarRandomProvider_nonzeroAlgebraics_ii",
                 3.0289000000002093,
                 5.422050683809328,
                 1.069223599469271E15
         );
-        nonzeroAlgebraics_fail_helper(0, 2);
-        nonzeroAlgebraics_fail_helper(1, 1);
+        nonzeroAlgebraics_fail_helper(0, 4);
+        nonzeroAlgebraics_fail_helper(1, 3);
     }
 
     private static void algebraics_int_helper(
@@ -5345,7 +5345,7 @@ public class QBarRandomProviderTest {
     public void testAlgebraics() {
         algebraics_helper(
                 1,
-                2,
+                4,
                 "QBarRandomProvider_algebraics_i",
                 1.9695999999998353,
                 1.3931505926726353,
@@ -5353,14 +5353,14 @@ public class QBarRandomProviderTest {
         );
         algebraics_helper(
                 5,
-                3,
+                6,
                 "QBarRandomProvider_algebraics_ii",
                 3.0044000000002047,
                 5.37798421736037,
                 1.0692235994147452E15
         );
-        algebraics_fail_helper(0, 2);
-        algebraics_fail_helper(1, 1);
+        algebraics_fail_helper(0, 4);
+        algebraics_fail_helper(1, 3);
     }
 
     private static void nonNegativeAlgebraicsLessThanOne_int_helper(
@@ -5477,7 +5477,7 @@ public class QBarRandomProviderTest {
     public void testNonNegativeAlgebraicsLessThanOne() {
         nonNegativeAlgebraicsLessThanOne_helper(
                 1,
-                2,
+                4,
                 "QBarRandomProvider_nonNegativeAlgebraicsLessThanOne_i",
                 1.9699999999998343,
                 1.1894276094277596,
@@ -5485,14 +5485,14 @@ public class QBarRandomProviderTest {
         );
         nonNegativeAlgebraicsLessThanOne_helper(
                 5,
-                3,
+                6,
                 "QBarRandomProvider_nonNegativeAlgebraicsLessThanOne_ii",
                 2.9635000000001956,
                 5.271704301752999,
                 0.20190432263300273
         );
-        nonNegativeAlgebraicsLessThanOne_fail_helper(0, 2);
-        nonNegativeAlgebraicsLessThanOne_fail_helper(1, 1);
+        nonNegativeAlgebraicsLessThanOne_fail_helper(0, 4);
+        nonNegativeAlgebraicsLessThanOne_fail_helper(1, 3);
     }
 
     private static double meanOfIntegers(@NotNull List<Integer> xs) {

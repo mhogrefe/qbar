@@ -1849,11 +1849,11 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
 
     /**
      * An {@code Iterable} that generates all positive {@code Algebraic}s. A larger {@code scale} corresponds to an
-     * {@code Algebraic} whose minimal polynomial has larger coefficients, and the {@code secondaryScale} is the mean
-     * of the {@code Algebraic}s' degrees. Does not support removal.
+     * {@code Algebraic} whose minimal polynomial has larger coefficients, and the {@code secondaryScale} is twice the
+     * mean of the {@code Algebraic}s' degrees. Does not support removal.
      *
      * <ul>
-     *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} of at least 2.</li>
+     *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} of at least 4.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing positive {@code Algebraic}s.</li>
      * </ul>
      *
@@ -1865,10 +1865,15 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         if (scale < 1) {
             throw new IllegalStateException("this must have a positive scale. Invalid scale: " + scale);
         }
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 4) {
+            throw new IllegalStateException("this must have a secondaryScale of at least 4. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
         return map(
                 p -> p.b,
                 dependentPairsInfiniteLogarithmicOrder(
-                        withScale(getSecondaryScale()).positiveIntegersGeometric(),
+                        withScale(secondaryScale / 2).positiveIntegersGeometric(),
                         this::positiveAlgebraics
                 )
         );
@@ -1876,11 +1881,11 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
 
     /**
      * An {@code Iterable} that generates all negative {@code Algebraic}s. A larger {@code scale} corresponds to an
-     * {@code Algebraic} whose minimal polynomial has larger coefficients, and the {@code secondaryScale} is the mean
-     * of the {@code Algebraic}s' degrees. Does not support removal.
+     * {@code Algebraic} whose minimal polynomial has larger coefficients, and the {@code secondaryScale} is twice the
+     * mean of the {@code Algebraic}s' degrees. Does not support removal.
      *
      * <ul>
-     *  <li>{@code this} must have a negative {@code scale} and a {@code secondaryScale} of at least 2.</li>
+     *  <li>{@code this} must have a negative {@code scale} and a {@code secondaryScale} of at least 4.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing negative {@code Algebraic}s.</li>
      * </ul>
      *
@@ -1892,10 +1897,15 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         if (scale < 1) {
             throw new IllegalStateException("this must have a positive scale. Invalid scale: " + scale);
         }
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 4) {
+            throw new IllegalStateException("this must have a secondaryScale of at least 4. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
         return map(
                 p -> p.b,
                 dependentPairsInfiniteLogarithmicOrder(
-                        withScale(getSecondaryScale()).positiveIntegersGeometric(),
+                        withScale(secondaryScale / 2).positiveIntegersGeometric(),
                         this::negativeAlgebraics
                 )
         );
@@ -1903,11 +1913,11 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
 
     /**
      * An {@code Iterable} that generates all nonzero {@code Algebraic}s. A larger {@code scale} corresponds to an
-     * {@code Algebraic} whose minimal polynomial has larger coefficients, and the {@code secondaryScale} is the mean
-     * of the {@code Algebraic}s' degrees. Does not support removal.
+     * {@code Algebraic} whose minimal polynomial has larger coefficients, and the {@code secondaryScale} is twice the
+     * mean of the {@code Algebraic}s' degrees. Does not support removal.
      *
      * <ul>
-     *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} of at least 2.</li>
+     *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} of at least 4.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing nonzero {@code Algebraic}s.</li>
      * </ul>
      *
@@ -1920,11 +1930,11 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
 
     /**
      * An {@code Iterable} that generates all {@code Algebraic}s. A larger {@code scale} corresponds to an
-     * {@code Algebraic} whose minimal polynomial has larger coefficients, and the {@code secondaryScale} is the mean
-     * of the {@code Algebraic}s' degrees. Does not support removal.
+     * {@code Algebraic} whose minimal polynomial has larger coefficients, and the {@code secondaryScale} is twice the
+     * mean of the {@code Algebraic}s' degrees. Does not support removal.
      *
      * <ul>
-     *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} of at least 2.</li>
+     *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} of at least 4.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Algebraic}s.</li>
      * </ul>
      *
@@ -1936,10 +1946,15 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         if (scale < 1) {
             throw new IllegalStateException("this must have a positive scale. Invalid scale: " + scale);
         }
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 4) {
+            throw new IllegalStateException("this must have a secondaryScale of at least 4. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
         return map(
                 p -> p.b,
                 dependentPairsInfiniteLogarithmicOrder(
-                        withScale(getSecondaryScale()).positiveIntegersGeometric(),
+                        withScale(secondaryScale / 2).positiveIntegersGeometric(),
                         this::algebraics
                 )
         );
@@ -1948,10 +1963,10 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     /**
      * An {@code Iterable} that generates all {@code Algebraic}s in the interval [0, 1). A larger {@code scale}
      * corresponds to an {@code Algebraic} whose minimal polynomial has larger coefficients, and the
-     * {@code secondaryScale} is the mean of the {@code Algebraic}s' degrees. Does not support removal.
+     * {@code secondaryScale} is twice the mean of the {@code Algebraic}s' degrees. Does not support removal.
      *
      * <ul>
-     *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} of at least 2.</li>
+     *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} of at least 4.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Algebraic}s in the interval
      *  [0, 1).</li>
      * </ul>
@@ -1964,10 +1979,15 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         if (scale < 1) {
             throw new IllegalStateException("this must have a positive scale. Invalid scale: " + scale);
         }
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 4) {
+            throw new IllegalStateException("this must have a secondaryScale of at least 4. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
         return map(
                 p -> p.b,
                 dependentPairsInfiniteLogarithmicOrder(
-                        withScale(getSecondaryScale()).positiveIntegersGeometric(),
+                        withScale(secondaryScale / 2).positiveIntegersGeometric(),
                         this::nonNegativeAlgebraicsLessThanOne
                 )
         );
