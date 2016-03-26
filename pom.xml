@@ -35,6 +35,7 @@
                         <include>**/QBarRandomProviderTest.java</include>
                         <include>**/QBarRandomProviderProperties.java</include>
                         <include>**/AlgebraicTest.java</include>
+                        <include>**/AlgebraicProperties.java</include>
                         <include>**/ExponentVectorTest.java</include>
                         <include>**/ExponentVectorProperties.java</include>
                         <include>**/IntervalTest.java</include>
