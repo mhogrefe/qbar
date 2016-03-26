@@ -666,8 +666,8 @@ public class RationalTest {
         bigIntegerValueExact_fail_helper("-11/2");
     }
 
-    private static void byteValueExact_helper(@NotNull String r, @NotNull String output) {
-        aeq(read(r).get().byteValueExact(), output);
+    private static void byteValueExact_helper(@NotNull String r) {
+        aeq(read(r).get().byteValueExact(), r);
     }
 
     private static void byteValueExact_fail_helper(@NotNull String r) {
@@ -679,18 +679,18 @@ public class RationalTest {
 
     @Test
     public void testByteValueExact() {
-        byteValueExact_helper("1", "1");
-        byteValueExact_helper("0", "0");
-        byteValueExact_helper("-1", "-1");
-        byteValueExact_helper("23", "23");
-        byteValueExact_helper("8", "8");
+        byteValueExact_helper("1");
+        byteValueExact_helper("0");
+        byteValueExact_helper("-1");
+        byteValueExact_helper("23");
+        byteValueExact_helper("8");
         byteValueExact_fail_helper("11/2");
         byteValueExact_fail_helper("-8/5");
         byteValueExact_fail_helper("1000");
     }
 
-    private static void shortValueExact_helper(@NotNull String r, @NotNull String output) {
-        aeq(read(r).get().shortValueExact(), output);
+    private static void shortValueExact_helper(@NotNull String r) {
+        aeq(read(r).get().shortValueExact(), r);
     }
 
     private static void shortValueExact_fail_helper(@NotNull String r) {
@@ -702,18 +702,18 @@ public class RationalTest {
 
     @Test
     public void testShortValueExact() {
-        shortValueExact_helper("1", "1");
-        shortValueExact_helper("0", "0");
-        shortValueExact_helper("-1", "-1");
-        shortValueExact_helper("23", "23");
-        shortValueExact_helper("8", "8");
+        shortValueExact_helper("1");
+        shortValueExact_helper("0");
+        shortValueExact_helper("-1");
+        shortValueExact_helper("23");
+        shortValueExact_helper("8");
         shortValueExact_fail_helper("11/2");
         shortValueExact_fail_helper("-8/5");
         shortValueExact_fail_helper("100000");
     }
 
-    private static void intValueExact_helper(@NotNull String r, @NotNull String output) {
-        aeq(read(r).get().intValueExact(), output);
+    private static void intValueExact_helper(@NotNull String r) {
+        aeq(read(r).get().intValueExact(), r);
     }
 
     private static void intValueExact_fail_helper(@NotNull String r) {
@@ -725,18 +725,18 @@ public class RationalTest {
 
     @Test
     public void testIntValueExact() {
-        intValueExact_helper("1", "1");
-        intValueExact_helper("0", "0");
-        intValueExact_helper("-1", "-1");
-        intValueExact_helper("23", "23");
-        intValueExact_helper("8", "8");
+        intValueExact_helper("1");
+        intValueExact_helper("0");
+        intValueExact_helper("-1");
+        intValueExact_helper("23");
+        intValueExact_helper("8");
         intValueExact_fail_helper("11/2");
         intValueExact_fail_helper("-8/5");
         intValueExact_fail_helper("10000000000");
     }
 
-    private static void longValueExact_helper(@NotNull String r, @NotNull String output) {
-        aeq(read(r).get().longValueExact(), output);
+    private static void longValueExact_helper(@NotNull String r) {
+        aeq(read(r).get().longValueExact(), r);
     }
 
     private static void longValueExact_fail_helper(@NotNull String r) {
@@ -748,11 +748,11 @@ public class RationalTest {
 
     @Test
     public void testLongValueExact() {
-        longValueExact_helper("1", "1");
-        longValueExact_helper("0", "0");
-        longValueExact_helper("-1", "-1");
-        longValueExact_helper("23", "23");
-        longValueExact_helper("8", "8");
+        longValueExact_helper("1");
+        longValueExact_helper("0");
+        longValueExact_helper("-1");
+        longValueExact_helper("23");
+        longValueExact_helper("8");
         longValueExact_fail_helper("11/2");
         longValueExact_fail_helper("-8/5");
         longValueExact_fail_helper("10000000000000000000");

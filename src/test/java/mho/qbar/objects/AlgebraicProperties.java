@@ -28,6 +28,7 @@ public class AlgebraicProperties extends QBarTestProperties {
         propertiesOf_Polynomial_int();
         propertiesOf_Rational();
         propertiesOf_BigInteger();
+        propertiesOf_long();
         propertiesOf_int();
         propertiesIsInteger();
         propertiesBigIntegerValue_RoundingMode();
@@ -35,6 +36,10 @@ public class AlgebraicProperties extends QBarTestProperties {
         propertiesFloor();
         propertiesCeiling();
         propertiesBigIntegerValueExact();
+        propertiesByteValueExact();
+        propertiesShortValueExact();
+        propertiesIntValueExact();
+        propertiesLongValueExact();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -94,6 +99,7 @@ public class AlgebraicProperties extends QBarTestProperties {
     }
 
     private void propertiesOf_Rational() {
+        initialize("of(Rational)");
         for (Rational r : take(LIMIT, P.rationals())) {
             Algebraic x = of(r);
             x.validate();
@@ -102,6 +108,7 @@ public class AlgebraicProperties extends QBarTestProperties {
     }
 
     private void propertiesOf_BigInteger() {
+        initialize("of(BigInteger)");
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
             Algebraic x = of(i);
             x.validate();
@@ -109,7 +116,21 @@ public class AlgebraicProperties extends QBarTestProperties {
         }
     }
 
+    private void propertiesOf_long() {
+        initialize("of(long)");
+        Algebraic lowerLimit = of(Long.MIN_VALUE);
+        Algebraic upperLimit = of(Long.MAX_VALUE);
+        for (long l : take(LIMIT, P.longs())) {
+            Algebraic x = of(l);
+            x.validate();
+            assertTrue(l, x.isInteger());
+            assertTrue(l, ge(x, lowerLimit));
+            assertTrue(l, le(x, upperLimit));
+        }
+    }
+
     private void propertiesOf_int() {
+        initialize("of(int)");
         Algebraic lowerLimit = of(Integer.MIN_VALUE);
         Algebraic upperLimit = of(Integer.MAX_VALUE);
         for (int i : take(LIMIT, P.integers())) {
@@ -262,6 +283,153 @@ public class AlgebraicProperties extends QBarTestProperties {
             try {
                 x.bigIntegerValueExact();
                 fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesByteValueExact() {
+        initialize("byteValueExact()");
+        for (byte b : take(LIMIT, P.bytes())) {
+            Algebraic x = of(b);
+            assertEquals(b, x.byteValueExact(), b);
+            inverse(Algebraic::byteValueExact, c -> of((int) c), x);
+        }
+
+        for (byte b : take(LIMIT, filter(c -> c != Byte.MIN_VALUE, P.bytes()))) {
+            Algebraic x = of(b);
+            homomorphic(Algebraic::negate, c -> (byte) -c, Algebraic::byteValueExact, Algebraic::byteValueExact, x);
+        }
+
+        for (Rational r : take(LIMIT, filterInfinite(s -> !s.isInteger(), P.rationals()))) {
+            try {
+                r.byteValueExact();
+                fail(r);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        for (BigInteger i : take(LIMIT, P.rangeUp(BigInteger.valueOf(Byte.MAX_VALUE).add(BigInteger.ONE)))) {
+            try {
+                of(i).byteValueExact();
+                fail(i);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        for (BigInteger i : take(LIMIT, P.rangeDown(BigInteger.valueOf(Byte.MIN_VALUE).subtract(BigInteger.ONE)))) {
+            try {
+                of(i).byteValueExact();
+                fail(i);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesShortValueExact() {
+        initialize("shortValueExact()");
+        for (short s : take(LIMIT, P.shorts())) {
+            Algebraic x = of(s);
+            assertEquals(s, x.shortValueExact(), s);
+            inverse(Algebraic::shortValueExact, t -> of((int) t), x);
+        }
+
+        for (short s : take(LIMIT, filter(t -> t != Short.MIN_VALUE, P.shorts()))) {
+            Algebraic x = of(s);
+            homomorphic(Algebraic::negate, t -> (short) -t, Algebraic::shortValueExact, Algebraic::shortValueExact, x);
+        }
+
+        for (Algebraic x : take(LIMIT, filterInfinite(s -> !s.isInteger(), P.algebraics()))) {
+            try {
+                x.shortValueExact();
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        for (BigInteger i : take(LIMIT, P.rangeUp(BigInteger.valueOf(Short.MAX_VALUE).add(BigInteger.ONE)))) {
+            try {
+                of(i).shortValueExact();
+                fail(i);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        for (BigInteger i : take(LIMIT, P.rangeDown(BigInteger.valueOf(Short.MIN_VALUE).subtract(BigInteger.ONE)))) {
+            try {
+                of(i).shortValueExact();
+                fail(i);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesIntValueExact() {
+        initialize("intValueExact()");
+        for (int i : take(LIMIT, P.integers())) {
+            Algebraic x = of(i);
+            assertEquals(i, x.intValueExact(), i);
+            inverse(Algebraic::intValueExact, Algebraic::of, x);
+        }
+
+        for (int i : take(LIMIT, filter(j -> j != Integer.MIN_VALUE, P.integers()))) {
+            Algebraic x = of(i);
+            homomorphic(Algebraic::negate, j -> -j, Algebraic::intValueExact, Algebraic::intValueExact, x);
+        }
+
+        for (Algebraic x : take(LIMIT, filterInfinite(s -> !s.isInteger(), P.algebraics()))) {
+            try {
+                x.intValueExact();
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<BigInteger> isFail = P.withScale(33)
+                .rangeUp(BigInteger.valueOf(Integer.MAX_VALUE).add(BigInteger.ONE));
+        for (BigInteger i : take(LIMIT, isFail)) {
+            try {
+                of(i).intValueExact();
+                fail(i);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<BigInteger> isFail2 = P.withScale(33)
+                .rangeDown(BigInteger.valueOf(Integer.MIN_VALUE).subtract(BigInteger.ONE));
+        for (BigInteger i : take(LIMIT, isFail2)) {
+            try {
+                of(i).intValueExact();
+                fail(i);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesLongValueExact() {
+        initialize("longValueExact()");
+        for (long l : take(LIMIT, P.longs())) {
+            Algebraic x = of(l);
+            assertEquals(l, x.longValueExact(), l);
+            inverse(Algebraic::longValueExact, Algebraic::of, x);
+        }
+
+        for (long l : take(LIMIT, filter(m -> m != Long.MIN_VALUE, P.longs()))) {
+            Algebraic x = of(l);
+            homomorphic(Algebraic::negate, m -> -m, Algebraic::longValueExact, Algebraic::longValueExact, x);
+        }
+
+        for (Algebraic x : take(LIMIT, filterInfinite(s -> !s.isInteger(), P.algebraics()))) {
+            try {
+                x.longValueExact();
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<BigInteger> isFail = P.withScale(65).rangeUp(BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE));
+        for (BigInteger i : take(LIMIT, isFail)) {
+            try {
+                of(i).longValueExact();
+                fail(i);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<BigInteger> isFail2 = P.withScale(65)
+                .rangeDown(BigInteger.valueOf(Long.MIN_VALUE).subtract(BigInteger.ONE));
+        for (BigInteger i : take(LIMIT, isFail2)) {
+            try {
+                of(i).longValueExact();
+                fail(i);
             } catch (ArithmeticException ignored) {}
         }
     }

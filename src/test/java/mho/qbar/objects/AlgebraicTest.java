@@ -92,6 +92,21 @@ public class AlgebraicTest {
         of_BigInteger_helper("-23");
     }
 
+    private static void of_long_helper(long input) {
+        Algebraic x = of(input);
+        x.validate();
+        aeq(x, input);
+    }
+
+    @Test
+    public void testOf_long() {
+        of_long_helper(0L);
+        of_long_helper(1L);
+        of_long_helper(-1L);
+        of_long_helper(23L);
+        of_long_helper(-23L);
+    }
+
     private static void of_int_helper(int input) {
         Algebraic x = of(input);
         x.validate();
@@ -285,6 +300,98 @@ public class AlgebraicTest {
         bigIntegerValueExact_fail_helper("-sqrt(2)");
         bigIntegerValueExact_fail_helper("(1+sqrt(5))/2");
         bigIntegerValueExact_fail_helper("root 0 of x^5-x-1");
+    }
+
+    private static void byteValueExact_helper(@NotNull String r) {
+        aeq(read(r).get().byteValueExact(), r);
+    }
+
+    private static void byteValueExact_fail_helper(@NotNull String r) {
+        try {
+            read(r).get().byteValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testByteValueExact() {
+        byteValueExact_helper("1");
+        byteValueExact_helper("0");
+        byteValueExact_helper("-1");
+        byteValueExact_helper("23");
+        byteValueExact_helper("8");
+        byteValueExact_fail_helper("11/2");
+        byteValueExact_fail_helper("sqrt(2)");
+        byteValueExact_fail_helper("1000");
+    }
+
+    private static void shortValueExact_helper(@NotNull String r) {
+        aeq(read(r).get().shortValueExact(), r);
+    }
+
+    private static void shortValueExact_fail_helper(@NotNull String r) {
+        try {
+            read(r).get().shortValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testShortValueExact() {
+        shortValueExact_helper("1");
+        shortValueExact_helper("0");
+        shortValueExact_helper("-1");
+        shortValueExact_helper("23");
+        shortValueExact_helper("8");
+        shortValueExact_fail_helper("11/2");
+        shortValueExact_fail_helper("sqrt(2)");
+        shortValueExact_fail_helper("100000");
+    }
+
+    private static void intValueExact_helper(@NotNull String r) {
+        aeq(read(r).get().intValueExact(), r);
+    }
+
+    private static void intValueExact_fail_helper(@NotNull String r) {
+        try {
+            read(r).get().intValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testIntValueExact() {
+        intValueExact_helper("1");
+        intValueExact_helper("0");
+        intValueExact_helper("-1");
+        intValueExact_helper("23");
+        intValueExact_helper("8");
+        intValueExact_fail_helper("11/2");
+        intValueExact_fail_helper("sqrt(2)");
+        intValueExact_fail_helper("10000000000");
+    }
+
+    private static void longValueExact_helper(@NotNull String r) {
+        aeq(read(r).get().longValueExact(), r);
+    }
+
+    private static void longValueExact_fail_helper(@NotNull String r) {
+        try {
+            read(r).get().longValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testLongValueExact() {
+        longValueExact_helper("1");
+        longValueExact_helper("0");
+        longValueExact_helper("-1");
+        longValueExact_helper("23");
+        longValueExact_helper("8");
+        longValueExact_fail_helper("11/2");
+        longValueExact_fail_helper("sqrt(2)");
+        longValueExact_fail_helper("10000000000000000000");
     }
 
     @Test

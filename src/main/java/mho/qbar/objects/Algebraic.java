@@ -266,6 +266,23 @@ public class Algebraic implements Comparable<Algebraic> {
     }
 
     /**
+     * Creates an {@code Algebraic} equal to a {@code long}.
+     *
+     * <ul>
+     *  <li>{@code n} cannot be null.</li>
+     *  <li>The result is an integer satisfying –2<sup>63</sup>≤x{@literal <}2<sup>63</sup>.</li>
+     * </ul>
+     *
+     * @param n a {@code BigInteger}
+     * @return the {@code Algebraic} equal to {@code n}
+     */
+    public static @NotNull Algebraic of(long n) {
+        if (n == 0L) return ZERO;
+        if (n == 1L) return ONE;
+        return new Algebraic(Rational.of(n));
+    }
+
+    /**
      * Creates an {@code Algebraic} equal to an {@code int}.
      *
      * <ul>
@@ -387,6 +404,66 @@ public class Algebraic implements Comparable<Algebraic> {
         } else {
             throw new ArithmeticException("this must be an integer. Invalid this: " + this);
         }
+    }
+
+    /**
+     * Converts {@code this} to a {@code byte}. Throws an {@link java.lang.ArithmeticException} if {@code this} is not
+     * integral or outside of a {@code byte}'s range.
+     *
+     * <ul>
+     *  <li>{@code this} must be an integer within a {@code byte}'s range.</li>
+     *  <li>The result can be any {@code byte}.</li>
+     * </ul>
+     *
+     * @return the {@code byte} value of {@code this}
+     */
+    public byte byteValueExact() {
+        return bigIntegerValueExact().byteValueExact();
+    }
+
+    /**
+     * Converts {@code this} to a {@code short}. Throws an {@link java.lang.ArithmeticException} if {@code this} is not
+     * integral or outside of a {@code short}'s range.
+     *
+     * <ul>
+     *  <li>{@code this} must be an integer within a {@code short}'s range.</li>
+     *  <li>The result can be any {@code short}.</li>
+     * </ul>
+     *
+     * @return the {@code short} value of {@code this}
+     */
+    public short shortValueExact() {
+        return bigIntegerValueExact().shortValueExact();
+    }
+
+    /**
+     * Converts {@code this} to an {@code int}. Throws an {@link java.lang.ArithmeticException} if {@code this} is not
+     * integral or outside of an {@code int}'s range.
+     *
+     * <ul>
+     *  <li>{@code this} must be an integer within an {@code int}'s range.</li>
+     *  <li>The result can be any {@code int}.</li>
+     * </ul>
+     *
+     * @return the {@code int} value of {@code this}
+     */
+    public int intValueExact() {
+        return bigIntegerValueExact().intValueExact();
+    }
+
+    /**
+     * Converts {@code this} to a {@code long}. Throws an {@link java.lang.ArithmeticException} if {@code this} is not
+     * integral or outside of a {@code long}'s range.
+     *
+     * <ul>
+     *  <li>{@code this} must be an integer within a {@code long}'s range.</li>
+     *  <li>The result can be any {@code long}.</li>
+     * </ul>
+     *
+     * @return the {@code long} value of {@code this}
+     */
+    public long longValueExact() {
+        return bigIntegerValueExact().longValueExact();
     }
 
     public @NotNull Polynomial minimalPolynomial() {

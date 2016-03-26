@@ -48,6 +48,12 @@ public class AlgebraicDemos extends QBarDemos {
         }
     }
 
+    private void demoOf_long() {
+        for (long l : take(LIMIT, P.longs())) {
+            System.out.println("of(" + l + ") = " + of(l));
+        }
+    }
+
     private void demoOf_int() {
         for (int i : take(LIMIT, P.integers())) {
             System.out.println("of(" + i + ") = " + of(i));
@@ -91,6 +97,30 @@ public class AlgebraicDemos extends QBarDemos {
     private void demoBigIntegerValueExact() {
         for (Algebraic x : take(LIMIT, map(Algebraic::of, P.bigIntegers()))) {
             System.out.println("bigIntegerValueExact(" + x + ") = " + x.bigIntegerValueExact());
+        }
+    }
+
+    private void demoByteValueExact() {
+        for (Algebraic x : take(LIMIT, map(Algebraic::of, P.bytes()))) {
+            System.out.println("byteValueExact(" + x + ") = " + x.byteValueExact());
+        }
+    }
+
+    private void demoShortValueExact() {
+        for (Algebraic x : take(LIMIT, map(Algebraic::of, P.shorts()))) {
+            System.out.println("shortValueExact(" + x + ") = " + x.shortValueExact());
+        }
+    }
+
+    private void demoIntValueExact() {
+        for (Algebraic x : take(LIMIT, map(Algebraic::of, P.integers()))) {
+            System.out.println("intValueExact(" + x + ") = " + x.intValueExact());
+        }
+    }
+
+    private void demoLongValueExact() {
+        for (Algebraic x : take(LIMIT, map(Algebraic::of, P.longs()))) {
+            System.out.println("longValueExact(" + x + ") = " + x.longValueExact());
         }
     }
 
