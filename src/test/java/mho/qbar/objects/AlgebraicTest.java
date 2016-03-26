@@ -107,6 +107,186 @@ public class AlgebraicTest {
         of_int_helper(-23);
     }
 
+    private static void isInteger_helper(@NotNull String input, boolean output) {
+        aeq(read(input).get().isInteger(), output);
+    }
+
+    @Test
+    public void testIsInteger() {
+        isInteger_helper("0", true);
+        isInteger_helper("1", true);
+        isInteger_helper("-1", true);
+        isInteger_helper("10", true);
+        isInteger_helper("1/2", false);
+        isInteger_helper("-4/3", false);
+        isInteger_helper("sqrt(2)", false);
+        isInteger_helper("-sqrt(2)", false);
+        isInteger_helper("(1+sqrt(5))/2", false);
+        isInteger_helper("root 0 of x^5-x-1", false);
+    }
+
+    private static void bigIntegerValue_RoundingMode_helper(
+            @NotNull String x,
+            @NotNull String roundingMode,
+            @NotNull String output
+    ) {
+        aeq(read(x).get().bigIntegerValue(Readers.readRoundingMode(roundingMode).get()), output);
+    }
+
+    private static void bigIntegerValue_RoundingMode_fail_helper(@NotNull String x, @NotNull String roundingMode) {
+        try {
+            read(x).get().bigIntegerValue(Readers.readRoundingMode(roundingMode).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testBigIntegerValue_RoundingMode() {
+        bigIntegerValue_RoundingMode_helper("0", "UP", "0");
+        bigIntegerValue_RoundingMode_helper("1", "UP", "1");
+        bigIntegerValue_RoundingMode_helper("1/2", "UP", "1");
+        bigIntegerValue_RoundingMode_helper("-4/3", "UP", "-2");
+        bigIntegerValue_RoundingMode_helper("sqrt(2)", "UP", "2");
+        bigIntegerValue_RoundingMode_helper("-sqrt(2)", "UP", "-2");
+        bigIntegerValue_RoundingMode_helper("(1+sqrt(5))/2", "UP", "2");
+        bigIntegerValue_RoundingMode_helper("root 0 of x^5-x-1", "UP", "2");
+
+        bigIntegerValue_RoundingMode_helper("0", "DOWN", "0");
+        bigIntegerValue_RoundingMode_helper("1", "DOWN", "1");
+        bigIntegerValue_RoundingMode_helper("1/2", "DOWN", "0");
+        bigIntegerValue_RoundingMode_helper("-4/3", "DOWN", "-1");
+        bigIntegerValue_RoundingMode_helper("sqrt(2)", "DOWN", "1");
+        bigIntegerValue_RoundingMode_helper("-sqrt(2)", "DOWN", "-1");
+        bigIntegerValue_RoundingMode_helper("(1+sqrt(5))/2", "DOWN", "1");
+        bigIntegerValue_RoundingMode_helper("root 0 of x^5-x-1", "DOWN", "1");
+
+        bigIntegerValue_RoundingMode_helper("0", "CEILING", "0");
+        bigIntegerValue_RoundingMode_helper("1", "CEILING", "1");
+        bigIntegerValue_RoundingMode_helper("1/2", "CEILING", "1");
+        bigIntegerValue_RoundingMode_helper("-4/3", "CEILING", "-1");
+        bigIntegerValue_RoundingMode_helper("sqrt(2)", "CEILING", "2");
+        bigIntegerValue_RoundingMode_helper("-sqrt(2)", "CEILING", "-1");
+        bigIntegerValue_RoundingMode_helper("(1+sqrt(5))/2", "CEILING", "2");
+        bigIntegerValue_RoundingMode_helper("root 0 of x^5-x-1", "CEILING", "2");
+
+        bigIntegerValue_RoundingMode_helper("0", "FLOOR", "0");
+        bigIntegerValue_RoundingMode_helper("1", "FLOOR", "1");
+        bigIntegerValue_RoundingMode_helper("1/2", "FLOOR", "0");
+        bigIntegerValue_RoundingMode_helper("-4/3", "FLOOR", "-2");
+        bigIntegerValue_RoundingMode_helper("sqrt(2)", "FLOOR", "1");
+        bigIntegerValue_RoundingMode_helper("-sqrt(2)", "FLOOR", "-2");
+        bigIntegerValue_RoundingMode_helper("(1+sqrt(5))/2", "FLOOR", "1");
+        bigIntegerValue_RoundingMode_helper("root 0 of x^5-x-1", "FLOOR", "1");
+
+        bigIntegerValue_RoundingMode_helper("0", "HALF_UP", "0");
+        bigIntegerValue_RoundingMode_helper("1", "HALF_UP", "1");
+        bigIntegerValue_RoundingMode_helper("1/2", "HALF_UP", "1");
+        bigIntegerValue_RoundingMode_helper("-4/3", "HALF_UP", "-1");
+        bigIntegerValue_RoundingMode_helper("sqrt(2)", "HALF_UP", "1");
+        bigIntegerValue_RoundingMode_helper("-sqrt(2)", "HALF_UP", "-1");
+        bigIntegerValue_RoundingMode_helper("(1+sqrt(5))/2", "HALF_UP", "2");
+        bigIntegerValue_RoundingMode_helper("root 0 of x^5-x-1", "HALF_UP", "1");
+
+        bigIntegerValue_RoundingMode_helper("0", "HALF_DOWN", "0");
+        bigIntegerValue_RoundingMode_helper("1", "HALF_DOWN", "1");
+        bigIntegerValue_RoundingMode_helper("1/2", "HALF_DOWN", "0");
+        bigIntegerValue_RoundingMode_helper("-4/3", "HALF_DOWN", "-1");
+        bigIntegerValue_RoundingMode_helper("sqrt(2)", "HALF_DOWN", "1");
+        bigIntegerValue_RoundingMode_helper("-sqrt(2)", "HALF_DOWN", "-1");
+        bigIntegerValue_RoundingMode_helper("(1+sqrt(5))/2", "HALF_DOWN", "2");
+        bigIntegerValue_RoundingMode_helper("root 0 of x^5-x-1", "HALF_DOWN", "1");
+
+        bigIntegerValue_RoundingMode_helper("0", "HALF_EVEN", "0");
+        bigIntegerValue_RoundingMode_helper("1", "HALF_EVEN", "1");
+        bigIntegerValue_RoundingMode_helper("1/2", "HALF_EVEN", "0");
+        bigIntegerValue_RoundingMode_helper("-4/3", "HALF_EVEN", "-1");
+        bigIntegerValue_RoundingMode_helper("sqrt(2)", "HALF_EVEN", "1");
+        bigIntegerValue_RoundingMode_helper("-sqrt(2)", "HALF_EVEN", "-1");
+        bigIntegerValue_RoundingMode_helper("(1+sqrt(5))/2", "HALF_EVEN", "2");
+        bigIntegerValue_RoundingMode_helper("root 0 of x^5-x-1", "HALF_EVEN", "1");
+
+        bigIntegerValue_RoundingMode_helper("0", "UNNECESSARY", "0");
+        bigIntegerValue_RoundingMode_helper("1", "UNNECESSARY", "1");
+        bigIntegerValue_RoundingMode_fail_helper("1/2", "UNNECESSARY");
+        bigIntegerValue_RoundingMode_fail_helper("-4/3", "UNNECESSARY");
+        bigIntegerValue_RoundingMode_fail_helper("sqrt(2)", "UNNECESSARY");
+        bigIntegerValue_RoundingMode_fail_helper("-sqrt(2)", "UNNECESSARY");
+        bigIntegerValue_RoundingMode_fail_helper("(1+sqrt(5))/2", "UNNECESSARY");
+        bigIntegerValue_RoundingMode_fail_helper("root 0 of x^5-x-1", "UNNECESSARY");
+    }
+
+    private static void bigIntegerValue_helper(@NotNull String x, @NotNull String output) {
+        aeq(read(x).get().bigIntegerValue(), output);
+    }
+
+    @Test
+    public void testBigIntegerValue() {
+        bigIntegerValue_helper("0", "0");
+        bigIntegerValue_helper("1", "1");
+        bigIntegerValue_helper("1/2", "0");
+        bigIntegerValue_helper("-4/3", "-1");
+        bigIntegerValue_helper("sqrt(2)", "1");
+        bigIntegerValue_helper("-sqrt(2)", "-1");
+        bigIntegerValue_helper("(1+sqrt(5))/2", "2");
+        bigIntegerValue_helper("root 0 of x^5-x-1", "1");
+    }
+
+    private static void floor_helper(@NotNull String x, @NotNull String output) {
+        aeq(read(x).get().floor(), output);
+    }
+
+    @Test
+    public void testFloor() {
+        floor_helper("0", "0");
+        floor_helper("1", "1");
+        floor_helper("1/2", "0");
+        floor_helper("-4/3", "-2");
+        floor_helper("sqrt(2)", "1");
+        floor_helper("-sqrt(2)", "-2");
+        floor_helper("(1+sqrt(5))/2", "1");
+        floor_helper("root 0 of x^5-x-1", "1");
+    }
+
+    private static void ceiling_helper(@NotNull String x, @NotNull String output) {
+        aeq(read(x).get().ceiling(), output);
+    }
+
+    @Test
+    public void testCeiling() {
+        ceiling_helper("0", "0");
+        ceiling_helper("1", "1");
+        ceiling_helper("1/2", "1");
+        ceiling_helper("-4/3", "-1");
+        ceiling_helper("sqrt(2)", "2");
+        ceiling_helper("-sqrt(2)", "-1");
+        ceiling_helper("(1+sqrt(5))/2", "2");
+        ceiling_helper("root 0 of x^5-x-1", "2");
+    }
+
+    private static void bigIntegerValueExact_helper(@NotNull String x, @NotNull String output) {
+        aeq(read(x).get().bigIntegerValueExact(), output);
+    }
+
+    private static void bigIntegerValueExact_fail_helper(@NotNull String x) {
+        try {
+            read(x).get().bigIntegerValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testBigIntegerValueExact() {
+        bigIntegerValueExact_helper("0", "0");
+        bigIntegerValueExact_helper("1", "1");
+
+        bigIntegerValueExact_fail_helper("1/2");
+        bigIntegerValueExact_fail_helper("-4/3");
+        bigIntegerValueExact_fail_helper("sqrt(2)");
+        bigIntegerValueExact_fail_helper("-sqrt(2)");
+        bigIntegerValueExact_fail_helper("(1+sqrt(5))/2");
+        bigIntegerValueExact_fail_helper("root 0 of x^5-x-1");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

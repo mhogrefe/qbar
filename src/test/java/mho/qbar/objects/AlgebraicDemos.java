@@ -7,12 +7,14 @@ import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.util.Optional;
 
 import static mho.qbar.objects.Algebraic.findIn;
 import static mho.qbar.objects.Algebraic.of;
 import static mho.qbar.objects.Algebraic.read;
 import static mho.wheels.iterables.IterableUtils.filterInfinite;
+import static mho.wheels.iterables.IterableUtils.map;
 import static mho.wheels.iterables.IterableUtils.take;
 import static mho.wheels.testing.Testing.nicePrint;
 
@@ -49,6 +51,46 @@ public class AlgebraicDemos extends QBarDemos {
     private void demoOf_int() {
         for (int i : take(LIMIT, P.integers())) {
             System.out.println("of(" + i + ") = " + of(i));
+        }
+    }
+
+    private void demoIsInteger() {
+        for (Algebraic x : take(LIMIT, P.withScale(4).algebraics())) {
+            System.out.println(x + " is " + (x.isInteger() ? "" : "not ") + "an integer");
+        }
+    }
+
+    private void demoBigIntegerValue_RoundingMode() {
+        Iterable<Pair<Algebraic, RoundingMode>> ps = filterInfinite(
+                p -> p.b != RoundingMode.UNNECESSARY || p.a.isInteger(),
+                P.pairs(P.withScale(4).algebraics(), P.roundingModes())
+        );
+        for (Pair<Algebraic, RoundingMode> p : take(LIMIT, ps)) {
+            System.out.println("bigIntegerValue(" + p.a + ", " + p.b + ") = " + p.a.bigIntegerValue(p.b));
+        }
+    }
+
+    private void demoBigIntegerValue() {
+        for (Algebraic x : take(LIMIT, P.withScale(4).algebraics())) {
+            System.out.println("bigIntegerValue(" + x + ") = " + x.bigIntegerValue());
+        }
+    }
+
+    private void demoFloor() {
+        for (Algebraic x : take(LIMIT, P.withScale(4).algebraics())) {
+            System.out.println("floor(" + x + ") = " + x.floor());
+        }
+    }
+
+    private void demoCeiling() {
+        for (Algebraic x : take(LIMIT, P.withScale(4).algebraics())) {
+            System.out.println("ceiling(" + x + ") = " + x.ceiling());
+        }
+    }
+
+    private void demoBigIntegerValueExact() {
+        for (Algebraic x : take(LIMIT, map(Algebraic::of, P.bigIntegers()))) {
+            System.out.println("bigIntegerValueExact(" + x + ") = " + x.bigIntegerValueExact());
         }
     }
 

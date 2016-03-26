@@ -145,7 +145,7 @@ public class RationalDemos extends QBarDemos {
 
     private void demoCeiling() {
         for (Rational r : take(LIMIT, P.rationals())) {
-            System.out.println("ceil(" + r + ") = " + r.ceiling());
+            System.out.println("ceiling(" + r + ") = " + r.ceiling());
         }
     }
 

@@ -7,6 +7,7 @@ import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -281,6 +282,113 @@ public class Algebraic implements Comparable<Algebraic> {
         return new Algebraic(Rational.of(n));
     }
 
+    /**
+     * Determines whether {@code this} is integral.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether this is an integer
+     */
+    public boolean isInteger() {
+        return rational.isPresent() && rational.get().isInteger();
+    }
+
+    /**
+     * Rounds {@code this} to an integer according to {@code roundingMode}; see {@link java.math.RoundingMode} for
+     * details.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>{@code roundingMode} may be any {@code RoundingMode}.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#UNNECESSARY}, {@code this} must be an
+     *  integer.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param roundingMode determines the way in which {@code this} is rounded. Options are
+     * {@link java.math.RoundingMode#UP}, {@link java.math.RoundingMode#DOWN}, {@link java.math.RoundingMode#CEILING},
+     * {@link java.math.RoundingMode#FLOOR}, {@link java.math.RoundingMode#HALF_UP},
+     * {@link java.math.RoundingMode#HALF_DOWN}, {@link java.math.RoundingMode#HALF_EVEN}, and
+     * {@link java.math.RoundingMode#UNNECESSARY}.
+     * @return {@code this}, rounded
+     */
+    public @NotNull BigInteger bigIntegerValue(@NotNull RoundingMode roundingMode) {
+        if (rational.isPresent()) {
+            return rational.get().bigIntegerValue(roundingMode);
+        } else {
+            if (roundingMode == RoundingMode.UNNECESSARY) {
+                throw new ArithmeticException("If roundingMode is UNNECESSARY, this must be an integer. Invalid" +
+                        " this: " + this);
+            }
+            return realValue().bigIntegerValue(roundingMode);
+        }
+    }
+
+    /**
+     * Rounds {@code this} to the nearest {@code BigInteger}, breaking ties with the half-even rule (see
+     * {@link java.math.RoundingMode#HALF_EVEN}).
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return {@code this}, rounded
+     */
+    public @NotNull BigInteger bigIntegerValue() {
+        return bigIntegerValue(RoundingMode.HALF_EVEN);
+    }
+
+    /**
+     * Returns the floor of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return ⌊{@code this}⌋;
+     */
+    public @NotNull BigInteger floor() {
+        return bigIntegerValue(RoundingMode.FLOOR);
+    }
+
+    /**
+     * Returns the ceiling of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return ⌈{@code this}⌉
+     */
+    public @NotNull BigInteger ceiling() {
+        return bigIntegerValue(RoundingMode.CEILING);
+    }
+
+    /**
+     * Converts {@code this} to a {@code BigInteger}. Throws an {@link java.lang.ArithmeticException} if {@code this}
+     * is not integral.
+     *
+     * <ul>
+     *  <li>{@code this} must be an integer.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return the {@code BigInteger} value of {@code this}
+     */
+    public @NotNull BigInteger bigIntegerValueExact() {
+        if (rational.isPresent()) {
+            return rational.get().bigIntegerValueExact();
+        } else {
+            throw new ArithmeticException("this must be an integer. Invalid this: " + this);
+        }
+    }
+
     public @NotNull Polynomial minimalPolynomial() {
         return minimalPolynomial;
     }
@@ -295,10 +403,6 @@ public class Algebraic implements Comparable<Algebraic> {
 
     public boolean isRational() {
         return rational.isPresent();
-    }
-
-    public boolean isInteger() {
-        return rational.isPresent() && rational.get().isInteger();
     }
 
     public boolean isAlgebraicInteger() {

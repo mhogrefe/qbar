@@ -269,6 +269,10 @@ public class Real implements Iterable<Interval>, Comparable<Real> {
         return (signum() == -1 ? "-" + result : result) + "...";
     }
 
+    public @NotNull BigInteger bigIntegerValue(@NotNull RoundingMode roundingMode) {
+        return limitValue(r -> r.bigIntegerValue(roundingMode));
+    }
+
     public float floatValue(@NotNull RoundingMode roundingMode) {
         return limitValue(r -> r.floatValue(roundingMode));
     }
