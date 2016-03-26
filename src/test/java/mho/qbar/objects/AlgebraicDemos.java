@@ -6,9 +6,11 @@ import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigInteger;
 import java.util.Optional;
 
 import static mho.qbar.objects.Algebraic.findIn;
+import static mho.qbar.objects.Algebraic.of;
 import static mho.qbar.objects.Algebraic.read;
 import static mho.wheels.iterables.IterableUtils.filterInfinite;
 import static mho.wheels.iterables.IterableUtils.take;
@@ -20,6 +22,34 @@ public class AlgebraicDemos extends QBarDemos {
 
     public AlgebraicDemos(boolean useRandom) {
         super(useRandom);
+    }
+
+    private void demoOf_Polynomial_int() {
+        Iterable<Pair<Polynomial, Integer>> ps = P.dependentPairs(
+                filterInfinite(p -> p.rootCount() > 0, P.withScale(4).polynomialsAtLeast(1)),
+                q -> P.range(0, q.rootCount() - 1)
+        );
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            System.out.println("of(" + p.a + ", " + p.b + ") = " + of(p.a, p.b));
+        }
+    }
+
+    private void demoOf_Rational() {
+        for (Rational r : take(LIMIT, P.rationals())) {
+            System.out.println("of(" + r + ") = " + of(r));
+        }
+    }
+
+    private void demoOf_BigInteger() {
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            System.out.println("of(" + i + ") = " + of(i));
+        }
+    }
+
+    private void demoOf_int() {
+        for (int i : take(LIMIT, P.integers())) {
+            System.out.println("of(" + i + ") = " + of(i));
+        }
     }
 
     private void demoEquals_Algebraic() {
@@ -145,7 +175,7 @@ public class AlgebraicDemos extends QBarDemos {
     }
 
     private void demoToString() {
-        for (Algebraic x : take(LIMIT, P.withScale(4).algebraics())) {
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
             System.out.println(x);
         }
     }

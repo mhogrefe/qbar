@@ -25,6 +25,88 @@ public class AlgebraicTest {
         aeq(PHI, "(1+sqrt(5))/2");
     }
 
+    private static void of_Polynomial_int_helper(@NotNull String polynomial, int rootIndex, @NotNull String output) {
+        Algebraic x = of(Polynomial.read(polynomial).get(), rootIndex);
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void of_Polynomial_int_fail_helper(@NotNull String polynomial, int rootIndex) {
+        try {
+            of(Polynomial.read(polynomial).get(), rootIndex);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testOf_Polynomial_int() {
+        of_Polynomial_int_helper("x", 0, "0");
+        of_Polynomial_int_helper("x-1", 0, "1");
+        of_Polynomial_int_helper("2*x-1", 0, "1/2");
+        of_Polynomial_int_helper("x^2-2*x+1", 0, "1");
+        of_Polynomial_int_helper("x^2-2", 0, "-sqrt(2)");
+        of_Polynomial_int_helper("x^2-2", 1, "sqrt(2)");
+        of_Polynomial_int_helper("x^2-4", 0, "-2");
+        of_Polynomial_int_helper("x^2-4", 1, "2");
+        of_Polynomial_int_helper("x^2-x-1", 0, "(1-sqrt(5))/2");
+        of_Polynomial_int_helper("x^2-x-1", 1, "(1+sqrt(5))/2");
+        of_Polynomial_int_helper("x^10", 0, "0");
+        of_Polynomial_int_helper("x^5-x-1", 0, "root 0 of x^5-x-1");
+
+        of_Polynomial_int_fail_helper("0", 0);
+        of_Polynomial_int_fail_helper("1", 0);
+        of_Polynomial_int_fail_helper("x", 1);
+        of_Polynomial_int_fail_helper("x", -1);
+        of_Polynomial_int_fail_helper("x^2+1", 0);
+        of_Polynomial_int_fail_helper("x^2-1", 2);
+    }
+
+    private static void of_Rational_helper(@NotNull String input) {
+        Algebraic x = of(Rational.read(input).get());
+        x.validate();
+        aeq(x, input);
+    }
+
+    @Test
+    public void testOf_Rational() {
+        of_Rational_helper("0");
+        of_Rational_helper("1");
+        of_Rational_helper("2");
+        of_Rational_helper("-2");
+        of_Rational_helper("5/3");
+        of_Rational_helper("-5/3");
+    }
+
+    private static void of_BigInteger_helper(@NotNull String input) {
+        Algebraic x = of(Readers.readBigInteger(input).get());
+        x.validate();
+        aeq(x, input);
+    }
+
+    @Test
+    public void testOf_BigInteger() {
+        of_BigInteger_helper("0");
+        of_BigInteger_helper("1");
+        of_BigInteger_helper("-1");
+        of_BigInteger_helper("23");
+        of_BigInteger_helper("-23");
+    }
+
+    private static void of_int_helper(int input) {
+        Algebraic x = of(input);
+        x.validate();
+        aeq(x, input);
+    }
+
+    @Test
+    public void testOf_int() {
+        of_int_helper(0);
+        of_int_helper(1);
+        of_int_helper(-1);
+        of_int_helper(23);
+        of_int_helper(-23);
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(
@@ -213,7 +295,7 @@ public class AlgebraicTest {
         findIn_String_helper("x3+sqrt(2)", "3+sqrt(2)", 1);
         findIn_String_helper("root 2 of x^2-2", "2", 5);
         findIn_String_helper("(2+4*sqrt(2))/2", "2+4*sqrt(2)", 1);
-        findIn_String_helper("root 0 of 2*x^3-12", "root 0 of 2*x^3-1", 1);
+        findIn_String_helper("root 0 of 2*x^3-12", "root 0 of 2*x^3-1", 0);
 
         findIn_String_fail_helper("");
         findIn_String_fail_helper("o");

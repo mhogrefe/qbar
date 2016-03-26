@@ -98,6 +98,46 @@ public class Algebraic implements Comparable<Algebraic> {
      */
     private final int mpRootCount;
 
+    /**
+     * Private constructor of rational {@code Algebraic}s.
+     *
+     * <ul>
+     *  <li>{@code rational} cannot be null.</li>
+     *  <li>Any rational {@code Algebraic} may be constructed with this constructor.</li>
+     * </ul>
+     *
+     * @param rational the {@code Rational} equal to {@code this}
+     */
+    private Algebraic(@NotNull Rational rational) {
+        rootIndex = 0;
+        minimalPolynomial = Polynomial.fromRoot(rational);
+        this.rational = Optional.of(rational);
+        isolatingInterval = Interval.of(rational);
+        mpRootCount = 1;
+    }
+
+    /**
+     * Private constructor of irrational {@code Algebraic}s; assumes arguments are valid.
+     *
+     * <ul>
+     *  <li>{@code minimalPolynomial} must be of degree greater than 1, irreducible (see
+     *  {@link Polynomial#isIrreducible()}) and must have at least one real root.
+     *  <li>{@code rootIndex} cannot be negative.</li>
+     *  <li>{@code rootIndex} must be less than the number of real roots of {@code minimalPolynomial}.</li>
+     *  <li>{@code isolatingInterval} must be equal to
+     *  {@code minimalPolynomial.powerOfTwoIsolatingInterval(rootIndex)} (see
+     *  {@link Polynomial#powerOfTwoIsolatingInterval(int)}).</li>
+     *  <li>{@code mpRootCount} cannot be negative.</li>
+     *  <li>{@code mpRootCount} must be the number of real roots of {@code minimalPolynomial}</li>
+     *  <li>Any irrational {@code Algebraic} may be constructed with this constructor.</li>
+     * </ul>
+     *
+     * @param minimalPolynomial the minimal polynomial of {@code this}
+     * @param rootIndex the number of real roots of {@code minimalPolynomial} less than {@code this}
+     * @param isolatingInterval an {@code Interval} with finite, binary-fraction bounds that contains {@code this} and
+     * no other real roots of {@code minimalPolynomial}
+     * @param mpRootCount the number of real roots of {@code minimalPolynomial}
+     */
     private Algebraic(
             @NotNull Polynomial minimalPolynomial,
             int rootIndex,
@@ -111,41 +151,56 @@ public class Algebraic implements Comparable<Algebraic> {
         this.mpRootCount = mpRootCount;
     }
 
-    private Algebraic(@NotNull Rational rational) {
-        rootIndex = 0;
-        minimalPolynomial = Polynomial.fromRoot(rational);
-        this.rational = Optional.of(rational);
-        isolatingInterval = Interval.of(rational);
-        mpRootCount = 1;
-    }
-
+    /**
+     * Creates an {@code Algebraic} as the {@code rootIndex}th real root of a {@code Polynomial}. {@code rootIndex} is
+     * 0-based.
+     *
+     * <ul>
+     *  <li>{@code polynomial} must be nonzero and must have at least one real root.</li>
+     *  <li>{@code rootIndex} cannot be negative.</li>
+     *  <li>{@code rootIndex} must be less than the number of real roots of {@code polynomial}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param polynomial a {@code Polynomial} of which the number of interest is a real root
+     * @param rootIndex the number of real roots of {@code polynomial} less than the number of interest
+     * @return the {@code Algebraic} satisfying the above properties
+     */
     public static @NotNull Algebraic of(@NotNull Polynomial polynomial, int rootIndex) {
         if (rootIndex < 0) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("rootIndex cannot be negative. Invalid rootIndex: " + rootIndex);
         }
         if (polynomial == Polynomial.ZERO) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("polynomial cannot be zero.");
         }
-        if (polynomial.degree() == 1) {
+        if (polynomial.degree() == 0) {
+            throw new IllegalArgumentException("polynomial must have at least one real root. Invalid polynomial: " +
+                    polynomial);
+        }
+        Polynomial squareFree = polynomial.squareFreePart();
+        if (squareFree.degree() == 1) {
             if (rootIndex != 0) {
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("rootIndex must be less than the number of real roots of" +
+                        " polynomial. rootIndex: " + rootIndex + ", number of real roots of " + polynomial + ": 1");
             }
-            Rational r = Rational.of(polynomial.coefficient(0).negate(), polynomial.coefficient(1));
+            Rational r = Rational.of(squareFree.coefficient(0).negate(), squareFree.coefficient(1));
             if (r == Rational.ZERO) return ZERO;
             if (r == Rational.ONE) return ONE;
             return new Algebraic(r);
         }
-        polynomial = polynomial.squareFreePart();
-        if (polynomial == Polynomial.ONE) {
-            throw new IllegalArgumentException();
+
+        int rootCount = squareFree.rootCount();
+        if (rootCount == 0) {
+            throw new IllegalArgumentException("polynomial must have at least one real root. Invalid polynomial: " +
+                    polynomial);
         }
-        int rootCount = polynomial.rootCount();
         if (rootIndex >= rootCount) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("rootIndex must be less than the number of real roots of polynomial." +
+                    " rootIndex: " + rootIndex + ", number of real roots of " + polynomial + ": " + rootCount);
         }
-        List<Polynomial> factors = polynomial.factor();
+        List<Polynomial> factors = squareFree.factor();
         if (factors.size() == 1) {
-            return new Algebraic(polynomial, rootIndex, polynomial.powerOfTwoIsolatingInterval(rootIndex), rootCount);
+            return new Algebraic(squareFree, rootIndex, squareFree.powerOfTwoIsolatingInterval(rootIndex), rootCount);
         }
         List<Pair<Polynomial, Integer>> polyRootPairs = new ArrayList<>();
         List<Real> realRoots = new ArrayList<>();
@@ -161,39 +216,93 @@ public class Algebraic implements Comparable<Algebraic> {
                 rootCounts.add(factorRootCount);
             }
         }
-        Interval isolatingInterval = polynomial.powerOfTwoIsolatingInterval(rootIndex);
-        int matchIndex = Real.root(polynomial::signum, isolatingInterval).match(realRoots);
+        Interval isolatingInterval = squareFree.powerOfTwoIsolatingInterval(rootIndex);
+        int matchIndex = Real.root(squareFree::signum, isolatingInterval).match(realRoots);
         Pair<Polynomial, Integer> pair = polyRootPairs.get(matchIndex);
-        polynomial = pair.a;
+        Polynomial factor = pair.a;
         rootIndex = pair.b;
-        if (polynomial.degree() == 1) {
-            if (rootIndex != 0) {
-                throw new IllegalArgumentException();
-            }
-            Rational r = Rational.of(polynomial.coefficient(0).negate(), polynomial.coefficient(1));
+        if (factor.degree() == 1) {
+            Rational r = Rational.of(factor.coefficient(0).negate(), factor.coefficient(1));
             if (r == Rational.ZERO) return ZERO;
             if (r == Rational.ONE) return ONE;
             return new Algebraic(r);
         }
-        return new Algebraic(pair.a, pair.b, isolatingIntervals.get(matchIndex), rootCounts.get(matchIndex));
+        return new Algebraic(factor, rootIndex, isolatingIntervals.get(matchIndex), rootCounts.get(matchIndex));
     }
 
+    /**
+     * Creates an {@code Algebraic} equal to a {@code Rational}.
+     *
+     * <ul>
+     *  <li>{@code rational} cannot be null.</li>
+     *  <li>The result is rational.</li>
+     * </ul>
+     *
+     * @param rational a {@code Rational}
+     * @return the {@code Algebraic} equal to {@code rational}
+     */
     public static @NotNull Algebraic of(@NotNull Rational rational) {
         if (rational == Rational.ZERO) return ZERO;
         if (rational == Rational.ONE) return ONE;
         return new Algebraic(rational);
     }
 
+    /**
+     * Creates an {@code Algebraic} equal to a {@code BigInteger}.
+     *
+     * <ul>
+     *  <li>{@code n} cannot be null.</li>
+     *  <li>The result is an integer.</li>
+     * </ul>
+     *
+     * @param n a {@code BigInteger}
+     * @return the {@code Algebraic} equal to {@code n}
+     */
+    public static @NotNull Algebraic of(@NotNull BigInteger n) {
+        if (n.equals(BigInteger.ZERO)) return ZERO;
+        if (n.equals(BigInteger.ONE)) return ONE;
+        return new Algebraic(Rational.of(n));
+    }
+
+    /**
+     * Creates an {@code Algebraic} equal to an {@code int}.
+     *
+     * <ul>
+     *  <li>{@code n} cannot be null.</li>
+     *  <li>The result is an integer satisfying –2<sup>31</sup>≤x{@literal <}2<sup>31</sup>.</li>
+     * </ul>
+     *
+     * @param n a {@code BigInteger}
+     * @return the {@code Algebraic} equal to {@code n}
+     */
+    public static @NotNull Algebraic of(int n) {
+        if (n == 0) return ZERO;
+        if (n == 1) return ONE;
+        return new Algebraic(Rational.of(n));
+    }
+
+    public @NotNull Polynomial minimalPolynomial() {
+        return minimalPolynomial;
+    }
+
+    public int rootIndex() {
+        return rootIndex;
+    }
+
     public int degree() {
         return minimalPolynomial.degree();
     }
 
-    public int getRootIndex() {
-        return rootIndex;
+    public boolean isRational() {
+        return rational.isPresent();
     }
 
-    public @NotNull Polynomial getMinimalPolynomial() {
-        return minimalPolynomial;
+    public boolean isInteger() {
+        return rational.isPresent() && rational.get().isInteger();
+    }
+
+    public boolean isAlgebraicInteger() {
+        return minimalPolynomial.isMonic();
     }
 
     public @NotNull Real realValue() {

@@ -4828,7 +4828,7 @@ public class QBarRandomProviderTest {
         aeqMapQBarLog(topSampleCount(DEFAULT_TOP_COUNT, sample), output);
         aeq(meanOfIntegers(toList(map(Algebraic::degree, sample))), meanDegree);
         aeq(
-                meanOfIntegers(toList(concatMap(p -> map(BigInteger::bitLength, p.getMinimalPolynomial()), sample))),
+                meanOfIntegers(toList(concatMap(p -> map(BigInteger::bitLength, p.minimalPolynomial()), sample))),
                 meanCoefficientBitSize
         );
         aeq(meanOfAlgebraics(sample), meanValue);
