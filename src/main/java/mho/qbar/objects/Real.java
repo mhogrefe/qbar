@@ -269,6 +269,47 @@ public class Real implements Iterable<Interval>, Comparable<Real> {
         return (signum() == -1 ? "-" + result : result) + "...";
     }
 
+    public @NotNull Optional<Rational> rationalValue() {
+        Interval first = head(intervals);
+        if (first.getLower().isPresent() && first.getLower().equals(first.getUpper())) {
+            return Optional.of(first.getLower().get());
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    public @NotNull Rational roundUpToIntegerPowerOfTwo() {
+        Optional<Rational> previousLower = Optional.empty();
+        Optional<Rational> previousUpper = Optional.empty();
+        Rational lowerValue = null;
+        Rational upperValue = null;
+        for (Interval a : intervals) {
+            if (a.isFinitelyBounded()) {
+                Rational lower = a.getLower().get();
+                Rational upper = a.getUpper().get();
+                if (upper.signum() != 1) {
+                    throw new ArithmeticException();
+                }
+                if (lower.signum() != 1) {
+                    continue;
+                }
+                if (!previousLower.isPresent() || !previousLower.get().equals(lower)) {
+                    lowerValue = lower.roundUpToPowerOfTwo();
+                }
+                if (!previousUpper.isPresent() || !previousUpper.get().equals(upper)) {
+                    upperValue = upper.roundUpToPowerOfTwo();
+                }
+                if (Objects.equals(lowerValue, upperValue)) {
+                    //noinspection ConstantConditions
+                    return lowerValue;
+                }
+                previousLower = Optional.of(lower);
+                previousUpper = Optional.of(upper);
+            }
+        }
+        throw new IllegalStateException("unreachable");
+    }
+
     public @NotNull BigInteger bigIntegerValue(@NotNull RoundingMode roundingMode) {
         return limitValue(r -> r.bigIntegerValue(roundingMode));
     }

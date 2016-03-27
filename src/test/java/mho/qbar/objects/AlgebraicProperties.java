@@ -3,6 +3,7 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
+import mho.wheels.math.BinaryFraction;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -40,6 +41,10 @@ public class AlgebraicProperties extends QBarTestProperties {
         propertiesShortValueExact();
         propertiesIntValueExact();
         propertiesLongValueExact();
+        propertiesIsIntegerPowerOfTwo();
+        propertiesRoundUpToIntegerPowerOfTwo();
+        propertiesIsBinaryFraction();
+        propertiesBinaryFractionValueExact();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -430,6 +435,72 @@ public class AlgebraicProperties extends QBarTestProperties {
             try {
                 of(i).longValueExact();
                 fail(i);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesIsIntegerPowerOfTwo() {
+        initialize("isPowerOfTwo()");
+        for (Algebraic x : take(LIMIT, P.positiveAlgebraics())) {
+            //todo assertEquals(r, r.isPowerOfTwo(), ONE.shiftLeft(r.binaryExponent()).equals(r));
+        }
+
+        for (Algebraic x : take(LIMIT, P.withElement(ZERO, P.negativeAlgebraics()))) {
+            try {
+                x.isIntegerPowerOfTwo();
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesRoundUpToIntegerPowerOfTwo() {
+        initialize("roundUpToIntegerPowerOfTwo()");
+        for (Algebraic x : take(LIMIT, P.positiveAlgebraics())) {
+            Rational powerOfTwo = x.roundUpToIntegerPowerOfTwo();
+            assertTrue(x, powerOfTwo.isPowerOfTwo());
+            assertTrue(x, le(x, of(powerOfTwo)));
+            assertTrue(x, lt(of(powerOfTwo.shiftRight(1)), x));
+        }
+
+        for (Algebraic x : take(LIMIT, P.withElement(ZERO, P.negativeAlgebraics()))) {
+            try {
+                x.roundUpToIntegerPowerOfTwo();
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesIsBinaryFraction() {
+        initialize("isBinaryFraction()");
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            x.isBinaryFraction();
+            homomorphic(
+                    Algebraic::negate,
+                    Function.identity(),
+                    Algebraic::isBinaryFraction,
+                    Algebraic::isBinaryFraction,
+                    x
+            );
+        }
+    }
+
+    private void propertiesBinaryFractionValueExact() {
+        initialize("binaryFractionValueExact()");
+        for (Algebraic x : take(LIMIT, map(bf -> of(Rational.of(bf)), P.binaryFractions()))) {
+            inverse(Algebraic::binaryFractionValueExact, bf -> of(Rational.of(bf)), x);
+            homomorphic(
+                    Algebraic::negate,
+                    BinaryFraction::negate,
+                    Algebraic::binaryFractionValueExact,
+                    Algebraic::binaryFractionValueExact,
+                    x
+            );
+        }
+
+        for (Algebraic x : take(LIMIT, filterInfinite(s -> !s.isBinaryFraction(), P.algebraics()))) {
+            try {
+                x.binaryFractionValueExact();
+                fail(x);
             } catch (ArithmeticException ignored) {}
         }
     }

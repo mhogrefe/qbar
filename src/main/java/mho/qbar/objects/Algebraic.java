@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.math.BinaryFraction;
 import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.structures.Pair;
@@ -464,6 +465,82 @@ public class Algebraic implements Comparable<Algebraic> {
      */
     public long longValueExact() {
         return bigIntegerValueExact().longValueExact();
+    }
+
+    /**
+     * Determines whether {@code this} is an integer power of 2.
+     *
+     * <ul>
+     *  <li>{@code this} must be positive.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is an integer power of two
+     */
+    public boolean isIntegerPowerOfTwo() {
+        if (signum() != 1) {
+            throw new ArithmeticException("this must be positive. Invalid this: " + this);
+        }
+        return rational.isPresent() && rational.get().isPowerOfTwo();
+    }
+
+    /**
+     * Rounds {@code this} to the next-highest integer power of two. If {@code this} is an integer power of two, it is
+     * returned.
+     *
+     * <ul>
+     *  <li>{@code this} must be positive.</li>
+     *  <li>The result is an integer power of two. (That is, it is equal to 2<sup>p</sup> for some integer p, but the
+     *  result itself is not necessarily an integer.)</li>
+     * </ul>
+     *
+     * @return the smallest integer power of 2 greater than or equal to {@code this}.
+     */
+    public @NotNull Rational roundUpToIntegerPowerOfTwo() {
+        if (signum() != 1) {
+            throw new ArithmeticException("this must be positive. Invalid this: " + this);
+        }
+        if (rational.isPresent()) {
+            return rational.get().roundUpToPowerOfTwo();
+        } else {
+            return realValue().roundUpToIntegerPowerOfTwo();
+        }
+    }
+
+    /**
+     * Determines whether {@code this} is a binary fraction (whether it is rational and its denominator is a power of
+     * 2).
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is a binary fraction
+     */
+    public boolean isBinaryFraction() {
+        return rational.isPresent() && rational.get().isBinaryFraction();
+    }
+
+    /**
+     * Converts {@code this} to a {@code BinaryFraction}. Throws an {@link java.lang.ArithmeticException} if
+     * {@code this} is not a binary fraction.
+     *
+     * <ul>
+     *  <li>{@code this} must be a binary fraction (its denominator must be a power of 2.)</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return the {@code BinaryFraction} value of {@code this}
+     */
+    public @NotNull BinaryFraction binaryFractionValueExact() {
+        if (this == ZERO) return BinaryFraction.ZERO;
+        if (this == ONE) return BinaryFraction.ONE;
+        if (rational.isPresent()) {
+            return rational.get().binaryFractionValueExact();
+        } else {
+            throw new ArithmeticException("this must be a binary fraction. Invalid this: " + this);
+        }
     }
 
     public @NotNull Polynomial minimalPolynomial() {

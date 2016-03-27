@@ -394,6 +394,100 @@ public class AlgebraicTest {
         longValueExact_fail_helper("10000000000000000000");
     }
 
+    private static void isIntegerPowerOfTwo_helper(@NotNull String input, boolean output) {
+        aeq(read(input).get().isIntegerPowerOfTwo(), output);
+    }
+
+    private static void isIntegerPowerOfTwo_fail_helper(@NotNull String input) {
+        try {
+            read(input).get().isIntegerPowerOfTwo();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testIsIntegerPowerOfTwo() {
+        isIntegerPowerOfTwo_helper("1", true);
+        isIntegerPowerOfTwo_helper("1/2", true);
+        isIntegerPowerOfTwo_helper("8", true);
+        isIntegerPowerOfTwo_helper("10", false);
+        isIntegerPowerOfTwo_helper("sqrt(2)", false);
+        isIntegerPowerOfTwo_helper("(1+sqrt(5))/2", false);
+        isIntegerPowerOfTwo_helper("root 0 of x^5-x-1", false);
+
+        isIntegerPowerOfTwo_fail_helper("0");
+        isIntegerPowerOfTwo_fail_helper("-1");
+        isIntegerPowerOfTwo_fail_helper("(1-sqrt(5))/2");
+    }
+
+    private static void roundUpToIntegerPowerOfTwo_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().roundUpToIntegerPowerOfTwo(), output);
+    }
+
+    private static void roundUpToIntegerPowerOfTwo_fail_helper(@NotNull String input) {
+        try {
+            read(input).get().roundUpToIntegerPowerOfTwo();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testRoundUpToIntegerPowerOfTwo() {
+        roundUpToIntegerPowerOfTwo_helper("1", "1");
+        roundUpToIntegerPowerOfTwo_helper("1/2", "1/2");
+        roundUpToIntegerPowerOfTwo_helper("10", "16");
+        roundUpToIntegerPowerOfTwo_helper("sqrt(2)", "2");
+        roundUpToIntegerPowerOfTwo_helper("(1+sqrt(5))/2", "2");
+        roundUpToIntegerPowerOfTwo_helper("root 0 of x^5-x-1", "2");
+
+        roundUpToIntegerPowerOfTwo_fail_helper("0");
+        roundUpToIntegerPowerOfTwo_fail_helper("-1");
+        roundUpToIntegerPowerOfTwo_fail_helper("(1-sqrt(5))/2");
+    }
+
+    private static void isBinaryFraction_helper(@NotNull String input, boolean output) {
+        aeq(read(input).get().isBinaryFraction(), output);
+    }
+
+    @Test
+    public void testIsBinaryFraction() {
+        isBinaryFraction_helper("0", true);
+        isBinaryFraction_helper("1", true);
+        isBinaryFraction_helper("-1", true);
+        isBinaryFraction_helper("1/2", true);
+        isBinaryFraction_helper("8", true);
+        isBinaryFraction_helper("10", true);
+        isBinaryFraction_helper("1/3", false);
+        isBinaryFraction_helper("sqrt(2)", false);
+        isBinaryFraction_helper("(1-sqrt(5))/2", false);
+        isBinaryFraction_helper("(1+sqrt(5))/2", false);
+        isBinaryFraction_helper("root 0 of x^5-x-1", false);
+    }
+
+    private static void binaryFractionValueExact_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().binaryFractionValueExact(), output);
+    }
+
+    private static void binaryFractionValueExact_fail_helper(@NotNull String input) {
+        try {
+            read(input).get().binaryFractionValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testBinaryFractionValueExact() {
+        binaryFractionValueExact_helper("0", "0");
+        binaryFractionValueExact_helper("1", "1");
+        binaryFractionValueExact_helper("-1", "-1");
+        binaryFractionValueExact_helper("1/2", "1 >> 1");
+        binaryFractionValueExact_helper("10", "5 << 1");
+
+        binaryFractionValueExact_fail_helper("1/3");
+        binaryFractionValueExact_fail_helper("sqrt(2)");
+        binaryFractionValueExact_fail_helper("root 0 of x^5-x-1");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

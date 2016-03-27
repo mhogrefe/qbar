@@ -124,6 +124,30 @@ public class AlgebraicDemos extends QBarDemos {
         }
     }
 
+    private void demoIsIntegerPowerOfTwo() {
+        for (Algebraic x : take(LIMIT, P.positiveAlgebraics())) {
+            System.out.println(x + " is " + (x.isIntegerPowerOfTwo() ? "an" : "not an") + " integer power of 2");
+        }
+    }
+
+    private void demoRoundUpToIntegerPowerOfTwo() {
+        for (Algebraic x : take(LIMIT, P.positiveAlgebraics())) {
+            System.out.println("roundUpToIntegerPowerOfTwo(" + x + ") = " + x.roundUpToIntegerPowerOfTwo());
+        }
+    }
+
+    private void demoIsBinaryFraction() {
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            System.out.println(x + " is " + (x.isBinaryFraction() ? "a" : "not a") + " binary fraction");
+        }
+    }
+
+    private void demoBinaryFractionValueExact() {
+        for (Algebraic x : take(LIMIT, map(bf -> of(Rational.of(bf)), P.binaryFractions()))) {
+            System.out.println("binaryFractionValueExact(" + x + ") = " + x.binaryFractionValueExact());
+        }
+    }
+
     private void demoEquals_Algebraic() {
         for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.pairs(P.withScale(4).algebraics()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);
