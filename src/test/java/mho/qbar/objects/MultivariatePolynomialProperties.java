@@ -33,6 +33,9 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         propertiesOf_List_Pair_ExponentVector_BigInteger();
         propertiesOf_ExponentVector_BigInteger();
         compareImplementationsOf_ExponentVector_BigInteger();
+        propertiesOf_BigInteger();
+        propertiesOf_int();
+        propertiesOf_Polynomial_Variable();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -113,6 +116,45 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         functions.put("standard", p -> of(p.a, p.b));
         Iterable<Pair<ExponentVector, BigInteger>> ps = P.pairs(P.exponentVectors(), P.bigIntegers());
         compareImplementations("of(ExponentVector, BigInteger)", take(LIMIT, ps), functions);
+    }
+
+    private void propertiesOf_BigInteger() {
+        initialize("of(BigInteger)");
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            MultivariatePolynomial p = of(i);
+            p.validate();
+            assertTrue(i, p.degree() <= 0);
+            assertTrue(i, p.termCount() <= 1);
+            assertEquals(i, p.toString(), i.toString());
+            inverse(MultivariatePolynomial::of, (MultivariatePolynomial q) -> q.coefficient(ExponentVector.ONE), i);
+        }
+    }
+
+    private void propertiesOf_int() {
+        initialize("of(int)");
+        for (int i : take(LIMIT, P.integers())) {
+            MultivariatePolynomial p = of(i);
+            p.validate();
+            assertTrue(i, p.degree() <= 0);
+            assertTrue(i, p.termCount() <= 1);
+            assertEquals(i, p.toString(), Integer.toString(i));
+            inverse(
+                    MultivariatePolynomial::of,
+                    (MultivariatePolynomial q) -> q.coefficient(ExponentVector.ONE).intValueExact(),
+                    i
+            );
+        }
+    }
+
+    private void propertiesOf_Polynomial_Variable() {
+        initialize("of(Polynomial, Variable)");
+        for (Pair<Polynomial, Variable> p : take(LIMIT, P.pairs(P.polynomials(), P.variables()))) {
+            MultivariatePolynomial q = of(p.a, p.b);
+            q.validate();
+            assertTrue(p, q.variableCount() <= 1);
+            assertEquals(p, q.toPolynomial(), p.a);
+            assertEquals(p, p.a.degree(), q.degree());
+        }
     }
 
     private void propertiesEquals() {
