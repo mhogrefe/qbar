@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import static mho.qbar.objects.MultivariatePolynomial.ZERO;
 import static mho.qbar.objects.MultivariatePolynomial.of;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.compare;
@@ -36,6 +37,12 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         propertiesOf_BigInteger();
         propertiesOf_int();
         propertiesOf_Polynomial_Variable();
+        propertiesToPolynomial();
+        propertiesVariables();
+        propertiesVariableCount();
+        propertiesTermCount();
+        propertiesMaxCoefficientBitLength();
+        propertiesDegree();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -154,6 +161,86 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
             assertTrue(p, q.variableCount() <= 1);
             assertEquals(p, q.toPolynomial(), p.a);
             assertEquals(p, p.a.degree(), q.degree());
+        }
+    }
+
+    private void propertiesToPolynomial() {
+        initialize("toPolynomial()");
+        Iterable<MultivariatePolynomial> ps = P.withElement(
+                ZERO,
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.optionals(P.variables()),
+                                v -> v.isPresent() ?
+                                        filterInfinite(
+                                                q -> q.degree() > 0,
+                                                P.withScale(4).multivariatePolynomials(
+                                                        Collections.singletonList(v.get())
+                                                )
+                                        ) :
+                                        map(q -> of(q, Variable.of(0)), P.withScale(4).polynomials(0))
+                        )
+                )
+        );
+        for (MultivariatePolynomial p : take(LIMIT, ps)) {
+            p.toPolynomial();
+            List<Variable> vs = p.variables();
+            if (vs.size() == 1) {
+                Variable v = head(vs);
+                inverse(MultivariatePolynomial::toPolynomial, r -> of(r, v), p);
+            }
+        }
+
+        Iterable<MultivariatePolynomial> psFail = filterInfinite(
+                q -> q.variableCount() > 1,
+                P.multivariatePolynomials()
+        );
+        for (MultivariatePolynomial p : take(LIMIT, psFail)) {
+            try {
+                p.toPolynomial();
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesVariables() {
+        initialize("variables()");
+        for (MultivariatePolynomial p : take(LIMIT, P.multivariatePolynomials())) {
+            List<Variable> vs = p.variables();
+            assertTrue(p, increasing(vs));
+        }
+    }
+
+    private void propertiesVariableCount() {
+        initialize("variableCount()");
+        for (MultivariatePolynomial p : take(LIMIT, P.multivariatePolynomials())) {
+            int count = p.variableCount();
+            assertTrue(p, count >= 0);
+        }
+    }
+
+    private void propertiesTermCount() {
+        initialize("termCount()");
+        for (MultivariatePolynomial p : take(LIMIT, P.multivariatePolynomials())) {
+            int count = p.termCount();
+            assertTrue(p, count >= 0);
+        }
+    }
+
+    private void propertiesMaxCoefficientBitLength() {
+        initialize("maxCoefficientBitLength()");
+        for (MultivariatePolynomial p : take(LIMIT, P.multivariatePolynomials())) {
+            int bitLength = p.maxCoefficientBitLength();
+            assertTrue(p, bitLength >= 0);
+        }
+    }
+
+    private void propertiesDegree() {
+        initialize("degree()");
+        for (MultivariatePolynomial p : take(LIMIT, P.multivariatePolynomials())) {
+            int degree = p.degree();
+            assertTrue(p, degree >= -1);
         }
     }
 
