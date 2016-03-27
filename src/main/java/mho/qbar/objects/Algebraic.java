@@ -601,11 +601,285 @@ public class Algebraic implements Comparable<Algebraic> {
      * @return the {@code Real} value of {@code this}
      */
     public @NotNull Real realValue() {
+        if (this == ZERO) return Real.ZERO;
+        if (this == ONE) return Real.ONE;
         if (rational.isPresent()) {
             return Real.of(rational.get());
         } else {
             return Real.root(minimalPolynomial::signum, isolatingInterval);
         }
+    }
+
+    /**
+     * This method returns the floor of the base-2 logarithm of {@code this}. In other words, every positive
+     * {@code Algebrauc} may be written as a×2<sup>b</sup>, where a is an {@code Algebraic} such that 1≤a{@literal <}2
+     * and b is an integer; this method returns b.
+     *
+     * <ul>
+     *  <li>{@code this} must be positive.</li>
+     *  <li>The result can be any integer.</li>
+     * </ul>
+     *
+     * @return ⌊{@code log<sub>2</sub>this}⌋
+     */
+    public int binaryExponent() {
+        if (this == ONE) return 0;
+        if (this == ZERO || signum() != 1) {
+            throw new IllegalArgumentException("this must be positive. Invalid this: " + this);
+        }
+        if (rational.isPresent()) {
+            return rational.get().binaryExponent();
+        } else {
+            return realValue().binaryExponent();
+        }
+    }
+
+    /**
+     * Determines whether {@code this} is exactly equal to some {@code float}. If true, the {@code float} may be found
+     * using {@link Algebraic#floatValueExact()}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is exactly equal to a {@code float}
+     */
+    public boolean isEqualToFloat() {
+        return rational.isPresent() && rational.get().isEqualToFloat();
+    }
+
+    /**
+     * Determines whether {@code this} is exactly equal to some {@code double}. If true, the {@code double} may be
+     * found using {@link Algebraic#doubleValueExact()}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is exactly equal to a {@code double}
+     */
+    public boolean isEqualToDouble() {
+        return rational.isPresent() && rational.get().isEqualToFloat();
+    }
+
+    /**
+     * Rounds {@code this} to a {@code float}. The details of the rounding are specified by {@code roundingMode}.
+     * <ul>
+     *  <li>{@code RoundingMode.UNNECESSARY}: If {@code this} is exactly equal to a {@code float}, that {@code float}
+     *  is returned. Otherwise, an {@link java.lang.ArithmeticException} is thrown. If {@code this} is zero, positive
+     *  zero is returned. Negative zero, {@code Infinity}, and {@code -Infinity} cannot be returned.</li>
+     *  <li>{@code RoundingMode.FLOOR}: The largest {@code float} less than or equal to {@code this} is returned. If
+     *  {@code this} is greater than or equal to zero and less than {@code Float.MIN_VALUE}, positive zero is returned.
+     *  If {@code this} is less than –{@code Float.MAX_VALUE}, {@code -Infinity} is returned. If {@code this} is
+     *  greater than or equal to {@code Float.MAX_VALUE}, {@code Float.MAX_VALUE} is returned. Negative zero and
+     *  {@code Infinity} cannot be returned.</li>
+     *  <li>{@code RoundingMode.CEILING}: The smallest {@code float} greater than or equal to {@code this} is returned.
+     *  If {@code this} is equal to zero, positive zero is returned. If {@code this} is less than zero and greater than
+     *  –{@code Float.MIN_VALUE}, negative zero is returned. If {@code this} is greater than {@code Float.MAX_VALUE},
+     *  Infinity is returned. If {@code this} is less than or equal to –{@code Float.MAX_VALUE},
+     *  –{@code Float.MAX_VALUE} is returned. {@code -Infinity} cannot be returned.</li>
+     *  <li>{@code RoundingMode.DOWN}: The first {@code float} going from {@code this} to 0 (possibly equal to
+     *  {@code this}) is returned. If {@code this} is greater than or equal to zero and less than
+     *  {@code Float.MIN_VALUE}, positive zero is returned. If {@code this} is less than zero and greater than
+     *  –{@code Float.MIN_VALUE}, negative zero is returned. If {@code this} is greater than or equal to
+     *  {@code Float.MAX_VALUE}, {@code Float.MAX_VALUE} is returned. If {@code this} is less than or equal to
+     *  –{@code Float.MAX_VALUE}, –{@code Float.MAX_VALUE} is returned. {@code Infinity} and {@code -Infinity} cannot
+     *  be returned.</li>
+     *  <li>{@code RoundingMode.UP}: The first {@code float} going from {@code this} to the infinity of the same sign
+     *  (possibly equal to {@code this}) is returned. If {@code this} is equal to zero, positive zero is returned. If
+     *  {@code this} is greater than {@code Float.MAX_VALUE}, {@code Infinity} is returned. If {@code this} is less
+     *  than {@code Float.MIN_VALUE}, {@code -Infinity} is returned. Negative zero cannot be returned.</li>
+     *  <li>{@code RoundingMode.HALF_DOWN}: If {@code this} is closest to one {@code float}, that {@code float} is
+     *  returned. If there are two closest {@code float}s, the one with the lower absolute value is returned. If
+     *  {@code this} is greater than or equal to zero and less than or equal to {@code Float.MIN_VALUE}/2, positive
+     *  zero is returned. If {@code this} is greater than or equal to –{@code Float.MIN_VALUE}/2 and less than zero,
+     *  negative zero is returned. If {@code this} is greater than or equal to {@code Float.MAX_VALUE},
+     *  {@code Float.MAX_VALUE} is returned. If {@code this} is less than or equal to –{@code Float.MAX_VALUE},
+     *  –{@code Float.MAX_VALUE} is returned. {@code Infinity} and {@code -Infinity} cannot be returned.</li>
+     *  <li>{@code RoundingMode.HALF_UP}: If {@code this} is closest to one {@code float}, that {@code float} is
+     *  returned. If there are two closest {@code float}s, the one with the higher absolute value is returned. If
+     *  {@code this} is greater than or equal to zero and less than {@code Float.MIN_VALUE}/2, positive zero is
+     *  returned. If {@code this} is greater than –{@code Float.MIN_VALUE}/2 and less than zero, negative zero is
+     *  returned. If {@code this} is greater than {@code Float.MAX_VALUE}, {@code Infinity} is returned. If
+     *  {@code this} is less than –{@code Float.MAX_VALUE}, {@code -Infinity} is returned.</li>
+     *  <li>{@code RoundingMode.HALF_EVEN}: If {@code this} is closest to one {@code float}, that {@code float} is
+     *  returned. If there are two closest {@code float}s, the one with the unset lowest-order bit is returned. If
+     *  {@code this} is greater than or equal to zero and less than or equal to {@code Float.MIN_VALUE}/2, positive
+     *  zero is returned. If {@code this} is greater than or equal to –{@code Float.MIN_VALUE}/2 and less than zero,
+     *  negative zero is returned. If {@code this} is greater than {@code Float.MAX_VALUE}, {@code Infinity} is
+     *  returned. If {@code this} is less than –{@code Float.MAX_VALUE}, {@code -Infinity} is returned.</li>
+     * </ul>
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>{@code roundingMode} cannot be null.</li>
+     *  <li>If {@code roundingMode} is {@code RoundingMode.UNNECESSARY}, {@code this} must be exactly equal to a
+     *  {@code float}.</li>
+     *  <li>The result may be any {@code float} except {@code NaN}.</li>
+     * </ul>
+     *
+     * @param roundingMode specifies the details of how to round {@code this}.
+     * @return {@code this}, rounded
+     */
+    public float floatValue(@NotNull RoundingMode roundingMode) {
+        if (rational.isPresent()) {
+            return rational.get().floatValue(roundingMode);
+        } else {
+            if (roundingMode == RoundingMode.UNNECESSARY) {
+                throw new ArithmeticException("If roundingMode is UNNECESSARY, this must be exactly equal to a" +
+                        " float. Invalid this: " + this);
+            }
+            return realValue().floatValue(roundingMode);
+        }
+    }
+
+    /**
+     * Rounds {@code this} to a {@code float} using {@code RoundingMode.HALF_EVEN}. If {@code this} is closest to one
+     * {@code float}, that {@code float} is returned. If there are two closest {@code float}s, the one with the unset
+     * lowest-order bit is returned. If {@code this} is greater than or equal to zero and less than or equal to
+     * {@code Float.MIN_VALUE}/2, positive zero is returned. If {@code this} is greater than or equal to
+     * –{@code Float.MIN_VALUE}/2 and less than zero, negative zero is returned. If {@code this} is greater than
+     * {@code Float.MAX_VALUE}, Infinity is returned. If {@code this} is less than –{@code Float.MAX_VALUE},
+     * {@code -Infinity} is returned.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>The result may be any {@code float} except {@code NaN}.</li>
+     * </ul>
+     *
+     * @return {@code this}, rounded
+     */
+    public float floatValue() {
+        return floatValue(RoundingMode.HALF_EVEN);
+    }
+
+    /**
+     * Returns a {@code float} exactly equal to {@code this}. Throws an {@code ArithmeticException} if {@code this} is
+     * not exactly equal to a {@code float}.
+     *
+     * <ul>
+     *  <li>{@code this} must be an {@code Algebraic} equal to a {@code float}.</li>
+     *  <li>The result is not {@code NaN}, infinite, or negative 0.</li>
+     * </ul>
+     *
+     * @return {@code this}, in {@code float} form
+     */
+    public float floatValueExact() {
+        if (this == ZERO) return 0.0f;
+        if (this == ONE) return 1.0f;
+        if (rational.isPresent()) {
+            return rational.get().floatValueExact();
+        } else {
+            throw new ArithmeticException("this must be an Algebraic equal to a float. Invalid this: " + this);
+        }
+    }
+
+    /**
+     * Rounds {@code this} to a {@code double}. The details of the rounding are specified by {@code roundingMode}.
+     * <ul>
+     *  <li>{@code RoundingMode.UNNECESSARY}: If {@code this} is exactly equal to a {@code double}, that {@code double}
+     *  is returned. Otherwise, an {@code ArithmeticException} is thrown. If {@code this} is zero, positive zero is
+     *  returned. Negative zero, {@code Infinity}, and {@code -Infinity} cannot be returned.</li>
+     *  <li>{@code RoundingMode.FLOOR}: The largest {@code double} less than or equal to {@code this} is returned. If
+     *  {@code this} is greater than or equal to zero and less than {@code Double.MIN_VALUE}, positive zero is
+     *  returned. If {@code this} is less than –{@code Double.MAX_VALUE}, {@code -Infinity} is returned. If
+     *  {@code this} is greater than or equal to {@code Double.MAX_VALUE}, {@code Double.MAX_VALUE} is returned.
+     *  Negative zero and {@code Infinity} cannot be returned.</li>
+     *  <li>{@code RoundingMode.CEILING}: The smallest {@code double} greater than or equal to {@code this} is
+     *  returned. If {@code this} is equal to zero, positive zero is returned. If {@code this} is less than zero and
+     *  greater than –{@code Double.MIN_VALUE}, negative zero is returned. If {@code this} is greater than
+     *  {@code Double.MAX_VALUE}, {@code Infinity} is returned. If {@code this} is less than or equal to
+     *  –{@code Double.MAX_VALUE}, –{@code Double.MAX_VALUE} is returned. {@code -Infinity} cannot be returned.</li>
+     *  <li>{@code RoundingMode.DOWN}: The first {@code double} going from {@code this} to 0 (possibly equal to
+     *  {@code this}) is returned. If {@code this} is greater than or equal to zero and less than
+     *  {@code Double.MIN_VALUE}, positive zero is returned. If {@code this} is greater than –{@code Double.MIN_VALUE}
+     *  and less than zero, negative zero is returned. If {@code this} is greater than or equal to
+     *  {@code Double.MAX_VALUE}, {@code Double.MAX_VALUE} is returned. If {@code this} is less than or equal to
+     *  –{@code Double.MAX_VALUE}, –{@code Double.MAX_VALUE} is returned. {@code Infinity} and {@code -Infinity} cannot
+     *  be returned.</li>
+     *  <li>{@code RoundingMode.UP}: The first {@code double} going from {@code this} to the infinity of the same sign
+     *  (possibly equal to {@code this}) is returned. If {@code this} is equal to zero, positive zero is returned. If
+     *  {@code this} is greater than {@code Double.MAX_VALUE}, {@code Infinity} is returned. If {@code this} is less
+     *  than {@code Double.MIN_VALUE}, {@code -Infinity} is returned. Negative zero cannot be returned.</li>
+     *  <li>{@code RoundingMode.HALF_DOWN}: If {@code this} is closest to one {@code double}, that {@code double} is
+     *  returned. If there are two closest {@code double}s, the one with the lower absolute value is returned. If
+     *  {@code this} is greater than or equal to zero and less than or equal to {@code Double.MIN_VALUE}/2, positive
+     *  zero is returned. If {@code this} is greater than or equal to –{@code Double.MIN_VALUE}/2 and less than zero,
+     *  negative zero is returned. If {@code this} is greater than or equal to {@code Double.MAX_VALUE},
+     *  {@code Double.MAX_VALUE} is returned. If {@code this} is less than or equal to –{@code Double.MAX_VALUE},
+     *  –{@code Double.MAX_VALUE} is returned. {@code Infinity} and {@code -Infinity} cannot be returned.</li>
+     *  <li>{@code RoundingMode.HALF_UP}: If {@code this} is closest to one {@code double}, that {@code double} is
+     *  returned. If there are two closest {@code double}s, the one with the higher absolute value is returned. If
+     *  {@code this} is greater than or equal to zero and less than {@code Double.MIN_VALUE}/2, positive zero is
+     *  returned. If {@code this} is greater than –{@code Double.MIN_VALUE}/2 and less than zero, negative zero is
+     *  returned. If {@code this} is greater than {@code Double.MAX_VALUE}, {@code Infinity} is returned. If
+     *  {@code this} is less than –{@code Double.MAX_VALUE}, {@code -Infinity} is returned.</li>
+     *  <li>{@code RoundingMode.HALF_EVEN}: If {@code this} is closest to one {@code double}, that {@code double} is
+     *  returned. If there are two closest {@code double}s, the one with the unset lowest-order bit is returned. If
+     *  {@code this} is greater than or equal to zero and less than or equal to {@code Double.MIN_VALUE}/2, positive
+     *  zero is returned. If {@code this} is greater than or equal to –{@code Double.MIN_VALUE}/2 and less than zero,
+     *  negative zero is returned. If {@code this} is greater than {@code Double.MAX_VALUE}, Infinity is returned. If
+     *  {@code this} is less than –{@code Double.MAX_VALUE}, {@code -Infinity} is returned.</li>
+     * </ul>
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>{@code roundingMode} cannot be null.</li>
+     *  <li>If {@code roundingMode} is {@code RoundingMode.UNNECESSARY}, {@code this} must be exactly equal to a
+     *  {@code double}.</li>
+     *  <li>The result may be any {@code double} except {@code NaN}.</li>
+     * </ul>
+     *
+     * @param roundingMode specifies the details of how to round {@code this}.
+     * @return {@code this}, rounded
+     */
+    public double doubleValue(@NotNull RoundingMode roundingMode) {
+        if (rational.isPresent()) {
+            return rational.get().doubleValue(roundingMode);
+        } else {
+            if (roundingMode == RoundingMode.UNNECESSARY) {
+                throw new ArithmeticException("If roundingMode is UNNECESSARY, this must be exactly equal to a" +
+                        " double. Invalid this: " + this);
+            }
+            return realValue().doubleValue(roundingMode);
+        }
+    }
+
+    /**
+     * Rounds {@code this} to a {@code double} using {@code RoundingMode.HALF_EVEN}. If {@code this} is closest to one
+     * {@code double}, that {@code double} is returned. If there are two closest {@code double}s, the one with the
+     * unset lowest-order bit is returned. If {@code this} is greater than or equal to zero and less than or equal to
+     * {@code Double.MIN_VALUE}/2, positive zero is returned. If {@code this} is greater than or equal to
+     * –{@code Double.MIN_VALUE}/2 and less than zero, negative zero is returned. If {@code this} is greater than
+     * {@code Double.MAX_VALUE}, Infinity is returned. If {@code this} is less than –{@code Double.MAX_VALUE},
+     * –Infinity is returned.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>The result may be any {@code double} except {@code NaN}.</li>
+     * </ul>
+     *
+     * @return {@code this}, rounded
+     */
+    public double doubleValue() {
+        return doubleValue(RoundingMode.HALF_EVEN);
+    }
+
+    /**
+     * Returns a {@code double} exactly equal to {@code this}. Throws an {@code ArithmeticException} if {@code this} is
+     * not exactly equal to a {@code double}.
+     *
+     * <ul>
+     *  <li>{@code this} must be an {@code Algebraic} equal to a {@code double}.</li>
+     *  <li>The result is not {@code NaN}, infinite, or negative 0.</li>
+     * </ul>
+     *
+     * @return {@code this}, in {@code double} form
+     */
+    public double doubleValueExact() {
+        return doubleValue(RoundingMode.UNNECESSARY);
     }
 
     public @NotNull Polynomial minimalPolynomial() {
@@ -618,14 +892,6 @@ public class Algebraic implements Comparable<Algebraic> {
 
     public int degree() {
         return minimalPolynomial.degree();
-    }
-
-    public double doubleValue() {
-        if (rational.isPresent()) {
-            return rational.get().doubleValue();
-        } else {
-            return realValue().doubleValue();
-        }
     }
 
     public int signum() {

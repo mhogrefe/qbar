@@ -343,6 +343,10 @@ public class Real implements Iterable<Interval>, Comparable<Real> {
         return limitValue(r -> r.bigIntegerValue(roundingMode));
     }
 
+    public int binaryExponent() {
+        return limitValue(Rational::binaryExponent);
+    }
+
     public float floatValue(@NotNull RoundingMode roundingMode) {
         return limitValue(r -> r.floatValue(roundingMode));
     }

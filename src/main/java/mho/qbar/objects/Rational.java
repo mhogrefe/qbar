@@ -744,7 +744,7 @@ public final class Rational implements Comparable<Rational> {
      *
      * <ul>
      *  <li>{@code this} must be positive.</li>
-     *  <li>The result could be any integer.</li>
+     *  <li>The result can be any integer.</li>
      * </ul>
      *
      * @return ⌊{@code log<sub>2</sub>this}⌋
