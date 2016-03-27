@@ -45,6 +45,10 @@ public class AlgebraicProperties extends QBarTestProperties {
         propertiesRoundUpToIntegerPowerOfTwo();
         propertiesIsBinaryFraction();
         propertiesBinaryFractionValueExact();
+        propertiesIsRational();
+        propertiesIsAlgebraicInteger();
+        propertiesRationalValueExact();
+        propertiesRealValue();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -502,6 +506,62 @@ public class AlgebraicProperties extends QBarTestProperties {
                 x.binaryFractionValueExact();
                 fail(x);
             } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesIsRational() {
+        initialize("isRational()");
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            x.isRational();
+            homomorphic(
+                    Algebraic::negate,
+                    Function.identity(),
+                    Algebraic::isRational,
+                    Algebraic::isRational,
+                    x
+            );
+        }
+    }
+
+    private void propertiesIsAlgebraicInteger() {
+        initialize("isAlgebraicInteger()");
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            x.isAlgebraicInteger();
+            homomorphic(
+                    Algebraic::negate,
+                    Function.identity(),
+                    Algebraic::isAlgebraicInteger,
+                    Algebraic::isAlgebraicInteger,
+                    x
+            );
+        }
+    }
+
+    private void propertiesRationalValueExact() {
+        initialize("rationalValueExact()");
+        for (Algebraic x : take(LIMIT, P.algebraics(1))) {
+            inverse(Algebraic::rationalValueExact, Algebraic::of, x);
+            homomorphic(
+                    Algebraic::negate,
+                    Rational::negate,
+                    Algebraic::rationalValueExact,
+                    Algebraic::rationalValueExact,
+                    x
+            );
+        }
+
+        for (Algebraic x : take(LIMIT, filterInfinite(y -> !y.isRational(), P.algebraics()))) {
+            try {
+                x.rationalValueExact();
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesRealValue() {
+        initialize("realValue()");
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            x.realValue();
         }
     }
 

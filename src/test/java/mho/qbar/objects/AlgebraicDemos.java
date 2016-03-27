@@ -148,6 +148,30 @@ public class AlgebraicDemos extends QBarDemos {
         }
     }
 
+    private void demoIsRational() {
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            System.out.println(x + " is " + (x.isRational() ? "rational" : "irrational"));
+        }
+    }
+
+    private void demoIsAlgebraicInteger() {
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            System.out.println(x + " is " + (x.isAlgebraicInteger() ? "an" : "not an") + " algebraic integer");
+        }
+    }
+
+    private void demoRationalValueExact() {
+        for (Algebraic x : take(LIMIT, P.algebraics(1))) {
+            System.out.println("rationalValueExact(" + x + ") = " + x.rationalValueExact());
+        }
+    }
+
+    private void demoRealValue() {
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            System.out.println("realValue(" + x + ") = " + x.realValue());
+        }
+    }
+
     private void demoEquals_Algebraic() {
         for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.pairs(P.withScale(4).algebraics()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);

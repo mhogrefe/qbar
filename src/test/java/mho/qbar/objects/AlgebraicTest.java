@@ -488,6 +488,87 @@ public class AlgebraicTest {
         binaryFractionValueExact_fail_helper("root 0 of x^5-x-1");
     }
 
+    private static void isRational_helper(@NotNull String input, boolean output) {
+        aeq(read(input).get().isRational(), output);
+    }
+
+    @Test
+    public void testIsRational() {
+        isRational_helper("0", true);
+        isRational_helper("1", true);
+        isRational_helper("-1", true);
+        isRational_helper("1/2", true);
+        isRational_helper("8", true);
+        isRational_helper("10", true);
+        isRational_helper("1/3", true);
+        isRational_helper("sqrt(2)", false);
+        isRational_helper("(1-sqrt(5))/2", false);
+        isRational_helper("(1+sqrt(5))/2", false);
+        isRational_helper("root 0 of x^5-x-1", false);
+    }
+
+    private static void isAlgebraicInteger_helper(@NotNull String input, boolean output) {
+        aeq(read(input).get().isAlgebraicInteger(), output);
+    }
+
+    @Test
+    public void testIsAlgebraicInteger() {
+        isAlgebraicInteger_helper("0", true);
+        isAlgebraicInteger_helper("1", true);
+        isAlgebraicInteger_helper("-1", true);
+        isAlgebraicInteger_helper("1/2", false);
+        isAlgebraicInteger_helper("10", true);
+        isAlgebraicInteger_helper("1/3", false);
+        isAlgebraicInteger_helper("sqrt(2)", true);
+        isAlgebraicInteger_helper("(1-sqrt(5))/2", true);
+        isAlgebraicInteger_helper("(1+sqrt(5))/2", true);
+        isAlgebraicInteger_helper("root 0 of x^5-x-1", true);
+        isAlgebraicInteger_helper("sqrt(2)/2", false);
+    }
+
+    private static void rationalValueExact_helper(@NotNull String input) {
+        aeq(read(input).get().rationalValueExact(), input);
+    }
+
+    private static void rationalValueExact_fail_helper(@NotNull String input) {
+        try {
+            read(input).get().rationalValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testRationalValueExact() {
+        rationalValueExact_helper("0");
+        rationalValueExact_helper("1");
+        rationalValueExact_helper("-1");
+        rationalValueExact_helper("1/2");
+        rationalValueExact_helper("10");
+        rationalValueExact_helper("4/3");
+
+        rationalValueExact_fail_helper("sqrt(2)");
+        rationalValueExact_fail_helper("root 0 of x^5-x-1");
+    }
+
+    private static void realValue_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().realValue(), output);
+    }
+
+    @Test
+    public void testRealValue() {
+        realValue_helper("0", "0");
+        realValue_helper("1", "1");
+        realValue_helper("-1", "-1");
+        realValue_helper("1/2", "0.5");
+        realValue_helper("10", "10");
+        realValue_helper("1/3", "0.33333333333333333333...");
+        realValue_helper("sqrt(2)", "1.41421356237309504880...");
+        realValue_helper("(1-sqrt(5))/2", "-0.61803398874989484820...");
+        realValue_helper("(1+sqrt(5))/2", "1.61803398874989484820...");
+        realValue_helper("sqrt(2)/2", "0.70710678118654752440...");
+        realValue_helper("root 0 of x^5-x-1", "1.16730397826141868425...");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

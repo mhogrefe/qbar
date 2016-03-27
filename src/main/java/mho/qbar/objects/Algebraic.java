@@ -543,6 +543,71 @@ public class Algebraic implements Comparable<Algebraic> {
         }
     }
 
+    /**
+     * Determines whether {@code this} is rational.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is rational
+     */
+    public boolean isRational() {
+        return rational.isPresent();
+    }
+
+    /**
+     * Determines whether {@code this} is an algebraic integer—that is, whether its minimal polynomial over ℤ is monic.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is an algebraic integer
+     */
+    public boolean isAlgebraicInteger() {
+        return minimalPolynomial.isMonic();
+    }
+
+    /**
+     * Converts {@code this} to a {@code Rational}. Throws an {@link java.lang.ArithmeticException} if {@code this} is
+     * irrational.
+     *
+     * <ul>
+     *  <li>{@code this} must rational.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return the {@code Rational} value of {@code this}
+     */
+    public @NotNull Rational rationalValueExact() {
+        if (rational.isPresent()) {
+            return rational.get();
+        } else {
+            throw new ArithmeticException("this must be rational. Invalid this: " + this);
+        }
+    }
+
+    /**
+     * Converts {@code this} to a {@code Real}. The result is either exact or irrational.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>The result is irrational or exact.</li>
+     * </ul>
+     *
+     * @return the {@code Real} value of {@code this}
+     */
+    public @NotNull Real realValue() {
+        if (rational.isPresent()) {
+            return Real.of(rational.get());
+        } else {
+            return Real.root(minimalPolynomial::signum, isolatingInterval);
+        }
+    }
+
     public @NotNull Polynomial minimalPolynomial() {
         return minimalPolynomial;
     }
@@ -553,22 +618,6 @@ public class Algebraic implements Comparable<Algebraic> {
 
     public int degree() {
         return minimalPolynomial.degree();
-    }
-
-    public boolean isRational() {
-        return rational.isPresent();
-    }
-
-    public boolean isAlgebraicInteger() {
-        return minimalPolynomial.isMonic();
-    }
-
-    public @NotNull Real realValue() {
-        if (rational.isPresent()) {
-            return Real.of(rational.get());
-        } else {
-            return Real.root(minimalPolynomial::signum, isolatingInterval);
-        }
     }
 
     public double doubleValue() {

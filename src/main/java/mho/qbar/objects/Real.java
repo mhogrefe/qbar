@@ -16,7 +16,32 @@ import java.util.function.Function;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.le;
 import static mho.wheels.ordering.Ordering.lt;
+import static mho.wheels.testing.Testing.*;
 
+/**
+ * <p>The {@code Real} class represents real numbers as infinite, converging sequences of bounding intervals. Every
+ * interval in the sequence must be contained in the preceding interval, and the intervals' diameters must converge to
+ * zero. The rate of convergence is unspecified. These conditions cannot be enforced except by the caller, so be
+ * careful when constructing your own reals, and prefer to use the methods of this class, which, when given valid
+ * {@code Real}s, will always return valid {@code Real}s.</p>
+ *
+ * <p>Any real number may be represented by infinitely many {@code Real}s. Given a rational number r, the {@code Real}
+ * whose intervals are [r, r], [r, r], [r, r], ... is called the exact representation of r, and all other {@code Real}s
+ * representing r are called fuzzy representations. Fuzzy {@code Real}s are difficult to work with, but also difficult
+ * to avoid. Sometimes, a method that takes a {@code Real} will loop forever given certain fuzzy {@code Real}s. If this
+ * is the case, that behavior is documented and the method is labeled unsafe. Often, a safe alternative that gives up
+ * after some number of loops is provided.</p>
+ *
+ * <p>For example, consider the {@link Real#signum()}, which returns the sign of a {@code Real}: –1, 0, or 1. It works
+ * by looking at the signs of the lower and upper bounds of the {@code Real}'s intervals, and returning when they are
+ * equal. This will always work for irrational {@code Real}s and exact {@code Real}s, but will loop forever on a fuzzy
+ * zero whose intervals are [–1, 0], [–1/2, 0], [–1/4, 0], [–1/8, 0], ..., because the method will never know whether
+ * the {@code Real} is actually zero or just a negative number with a small magnitude. In fact, any fuzzy zero will
+ * cause this problem.</p>
+ *
+ * <p>The above should make it clear that {@code Real}s are not user friendly. Make sure to read the documentation
+ * carefully, and, whenever possible, use {@link Rational} or {@link Algebraic} instead.</p>
+ */
 public class Real implements Iterable<Interval>, Comparable<Real> {
     public static final @NotNull Real ZERO = of(Rational.ZERO);
 
@@ -255,6 +280,10 @@ public class Real implements Iterable<Interval>, Comparable<Real> {
         if (lt(base, IntegerUtils.TWO)) {
             throw new IllegalArgumentException("base must be at least 2. Invalid base: " + base);
         }
+        Optional<Rational> or = rationalValue();
+        if (or.isPresent()) {
+            return or.get().toStringBase(base, scale);
+        }
         boolean baseIsSmall = le(base, BigInteger.valueOf(36));
         Pair<List<BigInteger>, Iterable<BigInteger>> digits = abs().digits(base);
         Function<BigInteger, String> digitFunction = baseIsSmall ?
@@ -459,7 +488,7 @@ public class Real implements Iterable<Interval>, Comparable<Real> {
     }
 
     public @NotNull String toString() {
-        return toStringBase(BigInteger.TEN, Testing.TINY_LIMIT);
+        return toStringBase(BigInteger.TEN, TINY_LIMIT);
     }
 
     @Override
@@ -483,5 +512,19 @@ public class Real implements Iterable<Interval>, Comparable<Real> {
             }
         }
         throw new IllegalStateException("unreachable");
+    }
+
+    /**
+     * Tries to check if {@code this} is valid. Must return without exceptions for any {@code Real} used outside this
+     * class. Does not catch all invalid {@code Real}s.
+     */
+    public void validate() {
+        Interval previous = null;
+        for (Interval a : take(TINY_LIMIT, intervals)) {
+            if (previous != null) {
+                assertTrue(this, previous.contains(a));
+            }
+            previous = a;
+        }
     }
 }
