@@ -7,6 +7,7 @@ import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -298,6 +299,141 @@ public class Algebraic implements Comparable<Algebraic> {
         if (n == 0) return ZERO;
         if (n == 1) return ONE;
         return new Algebraic(Rational.of(n));
+    }
+
+    /**
+     * Creates an {@code Algebraic} from a {@code BinaryFraction}.
+     *
+     * <ul>
+     *  <li>{@code bf} cannot be null.</li>
+     *  <li>The result is a rational {@code Algebraic} whose denominator is a power of 2.</li>
+     * </ul>
+     *
+     * @param bf the {@code BinaryFraction}
+     * @return the {@code Algebraic} corresponding to {@code bf}
+     */
+    public static @NotNull Algebraic of(@NotNull BinaryFraction bf) {
+        if (bf == BinaryFraction.ZERO) return ZERO;
+        if (bf == BinaryFraction.ONE) return ONE;
+        return new Algebraic(Rational.of(bf));
+    }
+
+    /**
+     * Creates an {@code Algebraic} from a {@link float}. This method uses the {@code float}'s {@code String}
+     * representation, so that 0.1f becomes 1/10 as might be expected. To get {@code float}'s exact,
+     * sometimes-counterintuitive value, use {@link Algebraic#ofExact} instead. Returns empty if the {@code float} is
+     * {@code Infinity}, {@code -Infinity}, or {@code NaN}.
+     *
+     * <ul>
+     *  <li>{@code f} may be any {@code float}.</li>
+     *  <li>The result is empty or an {@code Algebraic} whose decimal expansion is equal to the displayed decimal
+     *  expansion of some {@code float}. A necessary but not sufficient condition for this is that the denominator is
+     *  of the form 2<sup>m</sup>5<sup>n</sup>, with m,n≥0.</li>
+     * </ul>
+     *
+     * @param f the {@code float}
+     * @return the {@code Algebraic} corresponding to {@code f}, or empty if {@code f} is {@code Infinity},
+     * {@code -Infinity}, or {@code NaN}
+     */
+    public static @NotNull Optional<Algebraic> of(float f) {
+        if (f == 0.0f) return Optional.of(ZERO);
+        if (f == 1.0f) return Optional.of(ONE);
+        return Rational.of(f).map(Algebraic::new);
+    }
+
+    /**
+     * Creates an {@code Algebraic} from a {@link double}. This method uses the {@code double}'s {@code String}
+     * representation, so that 0.1 becomes 1/10 as might be expected. To get {@code double}'s exact,
+     * sometimes-counterintuitive value, use {@link Algebraic#ofExact} instead. Returns empty if the {@code double} is
+     * {@code Infinity}, {@code -Infinity}, or {@code NaN}.
+     *
+     * <ul>
+     *  <li>{@code d} may be any {@code double}.</li>
+     *  <li>The result is empty or an {@code Algebraic} whose decimal expansion is equal to the displayed decimal
+     *  expansion of some {@code double}. A necessary but not sufficient conditions for this is that the denominator is
+     *  of the form 2<sup>m</sup>5<sup>n</sup>, with m,n≥0.</li>
+     * </ul>
+     *
+     * @param d the {@code double}
+     * @return the {@code Algebraic} corresponding to {@code d}, or empty if {@code d} is {@code Infinity},
+     * {@code -Infinity}, or {@code NaN}
+     */
+    public static @NotNull Optional<Algebraic> of(double d) {
+        if (d == 0.0) return Optional.of(ZERO);
+        if (d == 1.0) return Optional.of(ONE);
+        return Rational.of(d).map(Algebraic::new);
+    }
+
+    /**
+     * Creates an {@code Algebraic} from a {@code float}. No rounding occurs; the {@code Algebraic} has exactly the
+     * same value as the {@code float}. For example, {@code of(1.0f/3.0f)} yields 11184811/33554432, not 1/3. Returns
+     * empty if the {@code float} is {@code Infinity}, {@code -Infinity}, or {@code NaN}.
+     *
+     * <ul>
+     *  <li>{@code f} may be any {@code float}.</li>
+     *  <li>
+     *   The result is empty or an {@code Algebraic} that may be exactly represented as a {@code float}. Here are some,
+     *   but not all, of the conditions on the result:
+     *   <ul>
+     *    <li>The denominator is a power of 2 less than or equal to 2<sup>149</sup>.</li>
+     *    <li>The numerator is less than or equal to 2<sup>128</sup>–2<sup>104</sup>.</li>
+     *   </ul>
+     *  </li>
+     * </ul>
+     *
+     * @param f the {@code float}
+     * @return the {@code Algebraic} corresponding to {@code f}, or empty if {@code f} is {@code Infinity},
+     * {@code -Infinity}, or {@code NaN}
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull Optional<Algebraic> ofExact(float f) {
+        if (f == 0.0f) return Optional.of(ZERO);
+        if (f == 1.0f) return Optional.of(ONE);
+        return Rational.ofExact(f).map(Algebraic::new);
+    }
+
+    /**
+     * Creates an {@code Algebraic} from a {@link double}. No rounding occurs; the {@code Algebraic} has exactly the
+     * same value as the {@code double}. For example, {@code of(1.0/3.0)} yields 6004799503160661/18014398509481984,
+     * not 1/3. Returns empty if the {@code double} is {@code Infinity}, {@code -Infinity}, or {@code NaN}.
+     *
+     * <ul>
+     *  <li>{@code d} may be any {@code double}.</li>
+     *  <li>
+     *   The result is empty or an {@code Algebraic} that may be exactly represented as a {@code double}. Here are
+     *   some, but not all, of the conditions on the result:
+     *   <ul>
+     *    <li>The denominator is a power of 2 less than or equal to 2<sup>1074</sup>.</li>
+     *    <li>The numerator is less than or equal to 2<sup>1024</sup>–2<sup>971</sup>.</li>
+     *   </ul>
+     *  </li>
+     * </ul>
+     *
+     * @param d the {@code double}
+     * @return the {@code Algebraic} corresponding to {@code d}, or empty if {@code d} is {@code Infinity},
+     * {@code -Infinity}, or {@code NaN}
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull Optional<Algebraic> ofExact(double d) {
+        if (d == 0.0) return Optional.of(ZERO);
+        if (d == 1.0) return Optional.of(ONE);
+        return Rational.ofExact(d).map(Algebraic::new);
+    }
+
+    /**
+     * Creates an {@code Algebraic} from a {@link BigDecimal}.
+     *
+     * <ul>
+     *  <li>{@code bd} may not be null.</li>
+     *  <li>The result is a rational {@code Algebraic} whose denominator may be written as 2<sup>m</sup>5<sup>n</sup>,
+     *  with m,n≥0.</li>
+     * </ul>
+     *
+     * @param bd the {@code BigDecimal}
+     * @return the {@code Algebraic} corresponding to {@code d}
+     */
+    public static @NotNull Algebraic of(@NotNull BigDecimal bd) {
+        return of(Rational.of(bd));
     }
 
     /**

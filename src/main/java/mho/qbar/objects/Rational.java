@@ -357,8 +357,8 @@ public final class Rational implements Comparable<Rational> {
      * {@code -Infinity}, or {@code NaN}
      */
     public static @NotNull Optional<Rational> of(float f) {
-        if (f == 0.0) return Optional.of(ZERO);
-        if (f == 1.0) return Optional.of(ONE);
+        if (f == 0.0f) return Optional.of(ZERO);
+        if (f == 1.0f) return Optional.of(ONE);
         if (Float.isInfinite(f) || Float.isNaN(f)) return Optional.empty();
         return Optional.of(of(new BigDecimal(Float.toString(f))));
     }
@@ -453,16 +453,16 @@ public final class Rational implements Comparable<Rational> {
      * Creates a {@code Rational} from a {@link BigDecimal}.
      *
      * <ul>
-     *  <li>{@code d} may not be null.</li>
+     *  <li>{@code bd} may not be null.</li>
      *  <li>The result is a {@code Rational} whose denominator may be written as 2<sup>m</sup>5<sup>n</sup>, with
      *  m,n≥0.</li>
      * </ul>
      *
-     * @param d the {@code BigDecimal}
-     * @return the {@code Rational} corresponding to {@code d}
+     * @param bd the {@code BigDecimal}
+     * @return the {@code Rational} corresponding to {@code bd}
      */
-    public static @NotNull Rational of(@NotNull BigDecimal d) {
-        return of(d.unscaledValue()).divide(TEN.pow(d.scale()));
+    public static @NotNull Rational of(@NotNull BigDecimal bd) {
+        return of(bd.unscaledValue()).divide(TEN.pow(bd.scale()));
     }
 
     /**

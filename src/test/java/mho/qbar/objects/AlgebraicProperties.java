@@ -8,12 +8,15 @@ import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.util.Optional;
 import java.util.function.Function;
 
 import static mho.qbar.objects.Algebraic.*;
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.numberUtils.FloatingPointUtils.*;
 import static mho.wheels.ordering.Ordering.*;
 import static mho.wheels.testing.Testing.*;
 
@@ -31,6 +34,12 @@ public class AlgebraicProperties extends QBarTestProperties {
         propertiesOf_BigInteger();
         propertiesOf_long();
         propertiesOf_int();
+        propertiesOf_BinaryFraction();
+        propertiesOf_float();
+        propertiesOf_double();
+        propertiesOfExact_float();
+        propertiesOfExact_double();
+        propertiesOf_BigDecimal();
         propertiesIsInteger();
         propertiesBigIntegerValue_RoundingMode();
         propertiesBigIntegerValue();
@@ -149,6 +158,119 @@ public class AlgebraicProperties extends QBarTestProperties {
             assertTrue(i, ge(x, lowerLimit));
             assertTrue(i, le(x, upperLimit));
         }
+    }
+
+    private void propertiesOf_BinaryFraction() {
+        initialize("of(BinaryFraction)");
+        for (BinaryFraction bf : take(LIMIT, P.binaryFractions())) {
+            Algebraic x = of(bf);
+            x.validate();
+            //todo assertEquals(bf, of(bf.getMantissa()).multiply(ONE.shiftLeft(bf.getExponent())), x);
+            assertTrue(bf, IntegerUtils.isPowerOfTwo(x.rationalValueExact().getDenominator()));
+            inverse(Algebraic::of, Algebraic::binaryFractionValueExact, bf);
+        }
+    }
+
+    private void propertiesOf_float() {
+        initialize("of(float)");
+        for (float f : take(LIMIT, filter(Float::isFinite, P.floats()))) {
+            Algebraic x = of(f).get();
+            x.validate();
+            //todo assertTrue(f, x.hasTerminatingBaseExpansion(BigInteger.TEN));
+        }
+
+        for (float f : take(LIMIT, filter(g -> Float.isFinite(g) && !isNegativeZero(g), P.floats()))) {
+            Algebraic x = of(f).get();
+            aeqf(f, f, x.floatValue());
+            //todo assertTrue(f, eq(new BigDecimal(Float.toString(f)), x.bigDecimalValueExact()));
+        }
+    }
+
+    private void propertiesOf_double() {
+        initialize("of(double)");
+        for (double d : take(LIMIT, filter(Double::isFinite, P.doubles()))) {
+            Algebraic x = of(d).get();
+            x.validate();
+            //todo assertTrue(d, x.hasTerminatingBaseExpansion(BigInteger.TEN));
+        }
+
+        for (double d : take(LIMIT, filter(e -> Double.isFinite(e) && !isNegativeZero(e), P.doubles()))) {
+            Algebraic x = of(d).get();
+            aeqd(d, d, x.doubleValue());
+            //todo assertTrue(d, eq(new BigDecimal(Double.toString(d)), x.bigDecimalValueExact()));
+        }
+    }
+
+    private void propertiesOfExact_float() {
+        initialize("ofExact(float)");
+        for (float f : take(LIMIT, P.floats())) {
+            Optional<Algebraic> ox = ofExact(f);
+            assertEquals(f, Float.isFinite(f), ox.isPresent());
+        }
+
+        for (float f : take(LIMIT, filter(g -> Float.isFinite(g) && !isNegativeZero(g), P.floats()))) {
+            inverse(g -> ofExact(g).get(), Algebraic::floatValueExact, f);
+        }
+
+        int x = 1 << (FLOAT_EXPONENT_WIDTH - 1);
+        BigInteger y = BigInteger.ONE.shiftLeft(-MIN_SUBNORMAL_FLOAT_EXPONENT);
+        BigInteger z = BigInteger.ONE.shiftLeft(x).subtract(BigInteger.ONE.shiftLeft(x - FLOAT_FRACTION_WIDTH - 1));
+        for (float f : take(LIMIT, filter(Float::isFinite, P.floats()))) {
+            Algebraic a = ofExact(f).get();
+            a.validate();
+            Rational r = a.rationalValueExact();
+            assertTrue(f, IntegerUtils.isPowerOfTwo(r.getDenominator()));
+            assertTrue(f, le(r.getDenominator(), y));
+            assertTrue(f, le(r.getNumerator(), z));
+        }
+
+        for (float f : take(LIMIT, filter(g -> Float.isFinite(g) && !isNegativeZero(g), P.floats()))) {
+            Algebraic a = ofExact(f).get();
+            aeqf(f, f, a.floatValue());
+        }
+    }
+
+    private void propertiesOfExact_double() {
+        initialize("ofExact(double)");
+        for (double d : take(LIMIT, P.doubles())) {
+            Optional<Algebraic> ox = ofExact(d);
+            assertEquals(d, Double.isFinite(d), ox.isPresent());
+        }
+
+        for (double d : take(LIMIT, filter(e -> Double.isFinite(e) && !isNegativeZero(e), P.doubles()))) {
+            inverse(e -> ofExact(e).get(), Algebraic::doubleValueExact, d);
+        }
+
+        int x = 1 << (DOUBLE_EXPONENT_WIDTH - 1);
+        BigInteger y = BigInteger.ONE.shiftLeft(-MIN_SUBNORMAL_DOUBLE_EXPONENT);
+        BigInteger z = BigInteger.ONE.shiftLeft(x).subtract(BigInteger.ONE.shiftLeft(x - DOUBLE_FRACTION_WIDTH - 1));
+        for (double d : take(LIMIT, filter(Double::isFinite, P.doubles()))) {
+            Algebraic a = ofExact(d).get();
+            a.validate();
+            Rational r = a.rationalValueExact();
+            assertTrue(d, IntegerUtils.isPowerOfTwo(r.getDenominator()));
+            assertTrue(d, le(r.getDenominator(), y));
+            assertTrue(d, le(r.getNumerator(), z));
+        }
+
+        for (double d : take(LIMIT, filter(e -> Double.isFinite(e) && !isNegativeZero(e), P.doubles()))) {
+            Algebraic a = ofExact(d).get();
+            aeqd(d, d, a.doubleValue());
+        }
+    }
+
+    private void propertiesOf_BigDecimal() {
+        initialize("of(BigDecimal)");
+        for (BigDecimal bd : take(LIMIT, P.bigDecimals())) {
+            Algebraic x = of(bd);
+            x.validate();
+            //todo assertTrue(bd, eq(bd, x.bigDecimalValueExact()));
+            //todo assertTrue(bd, x.hasTerminatingBaseExpansion(BigInteger.TEN));
+        }
+
+//        for (BigDecimal bd : take(LIMIT, P.canonicalBigDecimals())) {
+//            inverse(Algebraic::of, Algebraic::bigDecimalValueExact, bd);
+//        }
     }
 
     private void propertiesIsInteger() {
@@ -490,8 +612,8 @@ public class AlgebraicProperties extends QBarTestProperties {
 
     private void propertiesBinaryFractionValueExact() {
         initialize("binaryFractionValueExact()");
-        for (Algebraic x : take(LIMIT, map(bf -> of(Rational.of(bf)), P.binaryFractions()))) {
-            inverse(Algebraic::binaryFractionValueExact, bf -> of(Rational.of(bf)), x);
+        for (Algebraic x : take(LIMIT, map(Algebraic::of, P.binaryFractions()))) {
+            inverse(Algebraic::binaryFractionValueExact, Algebraic::of, x);
             homomorphic(
                     Algebraic::negate,
                     BinaryFraction::negate,

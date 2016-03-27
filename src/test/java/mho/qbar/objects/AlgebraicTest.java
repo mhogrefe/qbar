@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.math.BinaryFraction;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
@@ -122,6 +123,213 @@ public class AlgebraicTest {
         of_int_helper(-23);
     }
 
+    private static void of_BinaryFraction_helper(@NotNull String input, @NotNull String output) {
+        Algebraic x = of(BinaryFraction.read(input).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testOf_BinaryFraction() {
+        of_BinaryFraction_helper("0", "0");
+        of_BinaryFraction_helper("1", "1");
+        of_BinaryFraction_helper("11", "11");
+        of_BinaryFraction_helper("5 >> 20", "5/1048576");
+        of_BinaryFraction_helper("5 << 20", "5242880");
+        of_BinaryFraction_helper("-1", "-1");
+        of_BinaryFraction_helper("-11", "-11");
+        of_BinaryFraction_helper("-5 >> 20", "-5/1048576");
+        of_BinaryFraction_helper("-5 << 20", "-5242880");
+    }
+
+    private static void of_float_helper(float f, @NotNull String output) {
+        Algebraic x = of(f).get();
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void of_float_empty_helper(float f) {
+        assertFalse(of(f).isPresent());
+    }
+
+    @Test
+    public void testOf_float() {
+        of_float_helper(0.0f, "0");
+        of_float_helper(1.0f, "1");
+        of_float_helper(13.0f, "13");
+        of_float_helper(-5.0f, "-5");
+        of_float_helper(1.5f, "3/2");
+        of_float_helper(0.15625f, "5/32");
+        of_float_helper(0.1f, "1/10");
+        of_float_helper(1.0f / 3.0f, "16666667/50000000");
+        of_float_helper(1.0e10f, "10000000000");
+        of_float_helper(1.0e30f, "1000000000000000000000000000000");
+        of_float_helper((float) Math.PI, "31415927/10000000");
+        of_float_helper((float) Math.E, "27182817/10000000");
+        of_float_helper((float) Math.sqrt(2), "2828427/2000000");
+        of_float_helper(Float.MIN_VALUE, "7/5000000000000000000000000000000000000000000000");
+        of_float_helper(-Float.MIN_VALUE, "-7/5000000000000000000000000000000000000000000000");
+        of_float_helper(Float.MIN_NORMAL, "23509887/2000000000000000000000000000000000000000000000");
+        of_float_helper(-Float.MIN_NORMAL, "-23509887/2000000000000000000000000000000000000000000000");
+        of_float_helper(Float.MAX_VALUE, "340282350000000000000000000000000000000");
+        of_float_helper(-Float.MAX_VALUE, "-340282350000000000000000000000000000000");
+        of_float_empty_helper(Float.POSITIVE_INFINITY);
+        of_float_empty_helper(Float.NEGATIVE_INFINITY);
+        of_float_empty_helper(Float.NaN);
+    }
+
+    private static void of_double_helper(double d, @NotNull String output) {
+        Algebraic x = of(d).get();
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void of_double_empty_helper(double d) {
+        assertFalse(of(d).isPresent());
+    }
+
+    @Test
+    public void testOf_double() {
+        of_double_helper(0.0, "0");
+        of_double_helper(1.0, "1");
+        of_double_helper(13.0, "13");
+        of_double_helper(-5.0, "-5");
+        of_double_helper(1.5, "3/2");
+        of_double_helper(0.15625, "5/32");
+        of_double_helper(0.1, "1/10");
+        of_double_helper(1.0 / 3.0, "3333333333333333/10000000000000000");
+        of_double_helper(1.0e10, "10000000000");
+        of_double_helper(1.0e30, "1000000000000000000000000000000");
+        of_double_helper(Math.PI, "3141592653589793/1000000000000000");
+        of_double_helper(Math.E, "543656365691809/200000000000000");
+        of_double_helper(Math.sqrt(2), "14142135623730951/10000000000000000");
+        of_double_helper(Double.MIN_VALUE,
+                "49/100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+                "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+                "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+                "00000000000000000000000000000000");
+        of_double_helper(-Double.MIN_VALUE,
+                "-49/10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+                "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+                "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+                "000000000000000000000000000000000");
+        of_double_helper(Double.MIN_NORMAL,
+                "11125369292536007/500000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+                "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+                "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+                "000000000000000000000000000000000000000000000");
+        of_double_helper(-Double.MIN_NORMAL,
+                "-11125369292536007/50000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+                "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+                "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+                "0000000000000000000000000000000000000000000000");
+        of_double_helper(Double.MAX_VALUE,
+                "179769313486231570000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+                "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+                "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+                "000000000000");
+        of_double_helper(-Double.MAX_VALUE,
+                "-17976931348623157000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+                "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+                "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+                "0000000000000");
+        of_double_empty_helper(Double.POSITIVE_INFINITY);
+        of_double_empty_helper(Double.NEGATIVE_INFINITY);
+        of_double_empty_helper(Double.NaN);
+    }
+
+    private static void ofExact_float_helper(float f, @NotNull Object output) {
+        Algebraic x = ofExact(f).get();
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void ofExact_float_empty_helper(float f) {
+        assertFalse(ofExact(f).isPresent());
+    }
+
+    @Test
+    public void testOfExact_float() {
+        ofExact_float_helper(0.0f, "0");
+        ofExact_float_helper(1.0f, "1");
+        ofExact_float_helper(13.0f, "13");
+        ofExact_float_helper(-5.0f, "-5");
+        ofExact_float_helper(1.5f, "3/2");
+        ofExact_float_helper(0.15625f, "5/32");
+        ofExact_float_helper(0.1f, "13421773/134217728");
+        ofExact_float_helper(1.0f / 3.0f, "11184811/33554432");
+        ofExact_float_helper(1.0e10f, "10000000000");
+        ofExact_float_helper(1.0e30f, "1000000015047466219876688855040");
+        ofExact_float_helper((float) Math.PI, "13176795/4194304");
+        ofExact_float_helper((float) Math.E, "2850325/1048576");
+        ofExact_float_helper((float) Math.sqrt(2), "11863283/8388608");
+        ofExact_float_helper(Float.MIN_VALUE, Rational.SMALLEST_FLOAT);
+        ofExact_float_helper(-Float.MIN_VALUE, Rational.SMALLEST_FLOAT.negate());
+        ofExact_float_helper(Float.MIN_NORMAL, Rational.SMALLEST_NORMAL_FLOAT);
+        ofExact_float_helper(-Float.MIN_NORMAL, Rational.SMALLEST_NORMAL_FLOAT.negate());
+        ofExact_float_helper(Float.MAX_VALUE, Rational.LARGEST_FLOAT);
+        ofExact_float_helper(-Float.MAX_VALUE, Rational.LARGEST_FLOAT.negate());
+        ofExact_float_empty_helper(Float.POSITIVE_INFINITY);
+        ofExact_float_empty_helper(Float.NEGATIVE_INFINITY);
+        ofExact_float_empty_helper(Float.NaN);
+    }
+
+    private static void ofExact_double_helper(double d, @NotNull Object output) {
+        Algebraic x = ofExact(d).get();
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void ofExact_double_empty_helper(double d) {
+        assertFalse(ofExact(d).isPresent());
+    }
+
+    @Test
+    public void testOfExact_double() {
+        ofExact_double_helper(0.0, "0");
+        ofExact_double_helper(1.0, "1");
+        ofExact_double_helper(13.0, "13");
+        ofExact_double_helper(-5.0, "-5");
+        ofExact_double_helper(1.5, "3/2");
+        ofExact_double_helper(0.15625, "5/32");
+        ofExact_double_helper(0.1, "3602879701896397/36028797018963968");
+        ofExact_double_helper(1.0 / 3.0, "6004799503160661/18014398509481984");
+        ofExact_double_helper(1.0e10, "10000000000");
+        ofExact_double_helper(1.0e30, "1000000000000000019884624838656");
+        ofExact_double_helper(Math.PI, "884279719003555/281474976710656");
+        ofExact_double_helper(Math.E, "6121026514868073/2251799813685248");
+        ofExact_double_helper(Math.sqrt(2), "6369051672525773/4503599627370496");
+        ofExact_double_helper(Double.MIN_VALUE, Rational.SMALLEST_DOUBLE);
+        ofExact_double_helper(-Double.MIN_VALUE, Rational.SMALLEST_DOUBLE.negate());
+        ofExact_double_helper(Double.MIN_NORMAL, Rational.SMALLEST_NORMAL_DOUBLE);
+        ofExact_double_helper(-Double.MIN_NORMAL, Rational.SMALLEST_NORMAL_DOUBLE.negate());
+        ofExact_double_helper(Double.MAX_VALUE, Rational.LARGEST_DOUBLE);
+        ofExact_double_helper(-Double.MAX_VALUE, Rational.LARGEST_DOUBLE.negate());
+        ofExact_double_empty_helper(Double.POSITIVE_INFINITY);
+        ofExact_double_empty_helper(Double.NEGATIVE_INFINITY);
+        ofExact_double_empty_helper(Double.NaN);
+    }
+
+    private static void of_BigDecimal_helper(@NotNull String input, @NotNull String output) {
+        Algebraic x = of(Readers.readBigDecimal(input).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testOf_BigDecimal() {
+        of_BigDecimal_helper("0", "0");
+        of_BigDecimal_helper("1", "1");
+        of_BigDecimal_helper("3", "3");
+        of_BigDecimal_helper("-5", "-5");
+        of_BigDecimal_helper("0.1", "1/10");
+        of_BigDecimal_helper("3.14159", "314159/100000");
+        of_BigDecimal_helper("-2.718281828459045", "-543656365691809/200000000000000");
+        of_BigDecimal_helper("1E-14", "1/100000000000000");
+        of_BigDecimal_helper("1000000000000000", "1000000000000000");
+        of_BigDecimal_helper("1E+15", "1000000000000000");
+    }
+
     private static void isInteger_helper(@NotNull String input, boolean output) {
         aeq(read(input).get().isInteger(), output);
     }
@@ -222,6 +430,7 @@ public class AlgebraicTest {
 
         bigIntegerValue_RoundingMode_helper("0", "UNNECESSARY", "0");
         bigIntegerValue_RoundingMode_helper("1", "UNNECESSARY", "1");
+
         bigIntegerValue_RoundingMode_fail_helper("1/2", "UNNECESSARY");
         bigIntegerValue_RoundingMode_fail_helper("-4/3", "UNNECESSARY");
         bigIntegerValue_RoundingMode_fail_helper("sqrt(2)", "UNNECESSARY");
@@ -320,6 +529,7 @@ public class AlgebraicTest {
         byteValueExact_helper("-1");
         byteValueExact_helper("23");
         byteValueExact_helper("8");
+
         byteValueExact_fail_helper("11/2");
         byteValueExact_fail_helper("sqrt(2)");
         byteValueExact_fail_helper("1000");
@@ -343,6 +553,7 @@ public class AlgebraicTest {
         shortValueExact_helper("-1");
         shortValueExact_helper("23");
         shortValueExact_helper("8");
+
         shortValueExact_fail_helper("11/2");
         shortValueExact_fail_helper("sqrt(2)");
         shortValueExact_fail_helper("100000");
@@ -366,6 +577,7 @@ public class AlgebraicTest {
         intValueExact_helper("-1");
         intValueExact_helper("23");
         intValueExact_helper("8");
+
         intValueExact_fail_helper("11/2");
         intValueExact_fail_helper("sqrt(2)");
         intValueExact_fail_helper("10000000000");
@@ -389,6 +601,7 @@ public class AlgebraicTest {
         longValueExact_helper("-1");
         longValueExact_helper("23");
         longValueExact_helper("8");
+
         longValueExact_fail_helper("11/2");
         longValueExact_fail_helper("sqrt(2)");
         longValueExact_fail_helper("10000000000000000000");
@@ -601,7 +814,9 @@ public class AlgebraicTest {
     }
 
     private static void read_String_helper(@NotNull String input) {
-        aeq(read(input).get(), input);
+        Algebraic x = read(input).get();
+        x.validate();
+        aeq(x, input);
     }
 
     private static void read_String_fail_helper(@NotNull String input) {
@@ -665,7 +880,9 @@ public class AlgebraicTest {
     }
 
     private static void read_int_String_helper(int maxDegree, @NotNull String input) {
-        aeq(read(maxDegree, input).get(), input);
+        Algebraic x = read(maxDegree, input).get();
+        x.validate();
+        aeq(x, input);
     }
 
     private static void read_int_String_fail_helper(int maxDegree, @NotNull String input) {
@@ -741,6 +958,7 @@ public class AlgebraicTest {
 
     private static void findIn_String_helper(@NotNull String input, @NotNull String output, int index) {
         Pair<Algebraic, Integer> result = findIn(input).get();
+        result.a.validate();
         aeq(result.a, output);
         aeq(result.b, index);
     }
@@ -771,6 +989,7 @@ public class AlgebraicTest {
             int index
     ) {
         Pair<Algebraic, Integer> result = findIn(maxExponent, input).get();
+        result.a.validate();
         aeq(result.a, output);
         aeq(result.b, index);
     }
