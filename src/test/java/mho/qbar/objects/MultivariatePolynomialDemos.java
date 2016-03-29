@@ -125,6 +125,30 @@ public class MultivariatePolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoAdd() {
+        Iterable<Pair<MultivariatePolynomial, MultivariatePolynomial>> ps = P.pairs(
+                P.withScale(4).multivariatePolynomials()
+        );
+        for (Pair<MultivariatePolynomial, MultivariatePolynomial> p : take(LIMIT, ps)) {
+            System.out.println("(" + p.a + ") + (" + p.b + ") = " + p.a.add(p.b));
+        }
+    }
+
+    private void demoNegate() {
+        for (MultivariatePolynomial p : take(LIMIT, P.withScale(4).multivariatePolynomials())) {
+            System.out.println("-(" + p + ") = " + p.negate());
+        }
+    }
+
+    private void demoSubtract() {
+        Iterable<Pair<MultivariatePolynomial, MultivariatePolynomial>> ps = P.pairs(
+                P.withScale(4).multivariatePolynomials()
+        );
+        for (Pair<MultivariatePolynomial, MultivariatePolynomial> p : take(LIMIT, ps)) {
+            System.out.println("(" + p.a + ") - (" + p.b + ") = " + p.a.subtract(p.b));
+        }
+    }
+
     private void demoEquals_MultivariatePolynomial() {
         Iterable<Pair<MultivariatePolynomial, MultivariatePolynomial>> ps = P.pairs(
                 P.withScale(4).multivariatePolynomials()

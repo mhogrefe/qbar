@@ -5,6 +5,7 @@ import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.structures.Pair;
+import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
@@ -17,6 +18,7 @@ import java.util.function.Function;
 import static mho.qbar.objects.MultivariatePolynomial.ZERO;
 import static mho.qbar.objects.MultivariatePolynomial.of;
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.ordering.Ordering.*;
 import static mho.wheels.ordering.Ordering.compare;
 import static mho.wheels.testing.Testing.*;
 
@@ -43,6 +45,11 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         propertiesTermCount();
         propertiesMaxCoefficientBitLength();
         propertiesDegree();
+        propertiesAdd();
+        compareImplementationsAdd();
+        propertiesNegate();
+        propertiesSubtract();
+        compareImplementationsSubtract();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -242,6 +249,95 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
             int degree = p.degree();
             assertTrue(p, degree >= -1);
         }
+    }
+
+    private static @NotNull MultivariatePolynomial add_simplest(
+            @NotNull MultivariatePolynomial a,
+            @NotNull MultivariatePolynomial b
+    ) {
+        return of(toList(concat(a, b)));
+    }
+
+    private void propertiesAdd() {
+        initialize("add(MultivariatePolynomial)");
+        Iterable<Pair<MultivariatePolynomial, MultivariatePolynomial>> ps = P.pairs(P.multivariatePolynomials());
+        for (Pair<MultivariatePolynomial, MultivariatePolynomial> p : take(LIMIT, ps)) {
+            MultivariatePolynomial sum = p.a.add(p.b);
+            sum.validate();
+            assertEquals(p, sum, add_simplest(p.a, p.b));
+            commutative(MultivariatePolynomial::add, p);
+            inverse(r -> r.add(p.b), (MultivariatePolynomial q) -> q.subtract(p.b), p.a);
+        }
+
+        for (MultivariatePolynomial p : take(LIMIT, P.multivariatePolynomials())) {
+            fixedPoint(ZERO::add, p);
+            fixedPoint(s -> p.add(ZERO), p);
+            assertTrue(p, p.add(p.negate()) == ZERO);
+        }
+
+        Iterable<Triple<MultivariatePolynomial, MultivariatePolynomial, MultivariatePolynomial>> ts =
+                P.triples(P.multivariatePolynomials());
+        for (Triple<MultivariatePolynomial, MultivariatePolynomial, MultivariatePolynomial> t : take(LIMIT, ts)) {
+            associative(MultivariatePolynomial::add, t);
+        }
+    }
+
+    private void compareImplementationsAdd() {
+        Map<String, Function<Pair<MultivariatePolynomial, MultivariatePolynomial>, MultivariatePolynomial>> functions =
+                new LinkedHashMap<>();
+        functions.put("simplest", p -> add_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.add(p.b));
+        Iterable<Pair<MultivariatePolynomial, MultivariatePolynomial>> ps = P.pairs(P.multivariatePolynomials());
+        compareImplementations("add(MultivariatePolynomial)", take(LIMIT, ps), functions);
+    }
+
+    private void propertiesNegate() {
+        initialize("negate()");
+        for (MultivariatePolynomial p : take(LIMIT, P.multivariatePolynomials())) {
+            MultivariatePolynomial negative = p.negate();
+            negative.validate();
+            involution(MultivariatePolynomial::negate, p);
+            assertTrue(p, p.add(negative) == ZERO);
+        }
+
+        for (MultivariatePolynomial p : take(LIMIT, filterInfinite(q -> q != ZERO, P.multivariatePolynomials()))) {
+            assertNotEquals(p, p, p.negate());
+        }
+    }
+
+    private static @NotNull MultivariatePolynomial subtract_simplest(
+            @NotNull MultivariatePolynomial a,
+            @NotNull MultivariatePolynomial b
+    ) {
+        return a.add(b.negate());
+    }
+
+    private void propertiesSubtract() {
+        initialize("subtract(MultivariatePolynomial)");
+        Iterable<Pair<MultivariatePolynomial, MultivariatePolynomial>> ps = P.pairs(P.multivariatePolynomials());
+        for (Pair<MultivariatePolynomial, MultivariatePolynomial> p : take(LIMIT, ps)) {
+            MultivariatePolynomial difference = p.a.subtract(p.b);
+            difference.validate();
+            assertTrue(p, difference.degree() <= max(p.a.degree(), p.b.degree()));
+            assertEquals(p, difference, subtract_simplest(p.a, p.b));
+            antiCommutative(MultivariatePolynomial::subtract, MultivariatePolynomial::negate, p);
+            inverse(q -> q.subtract(p.b), (MultivariatePolynomial q) -> q.add(p.b), p.a);
+        }
+
+        for (MultivariatePolynomial p : take(LIMIT, P.multivariatePolynomials())) {
+            assertEquals(p, ZERO.subtract(p), p.negate());
+            fixedPoint(q -> q.subtract(ZERO), p);
+            assertTrue(p, p.subtract(p) == ZERO);
+        }
+    }
+
+    private void compareImplementationsSubtract() {
+        Map<String, Function<Pair<MultivariatePolynomial, MultivariatePolynomial>, MultivariatePolynomial>> functions =
+                new LinkedHashMap<>();
+        functions.put("simplest", p -> subtract_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.subtract(p.b));
+        Iterable<Pair<MultivariatePolynomial, MultivariatePolynomial>> ps = P.pairs(P.multivariatePolynomials());
+        compareImplementations("subtract(MultivariatePolynomial)", take(LIMIT, ps), functions);
     }
 
     private void propertiesEquals() {

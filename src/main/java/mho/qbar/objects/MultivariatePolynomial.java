@@ -318,6 +318,131 @@ public class MultivariatePolynomial implements
     }
 
     /**
+     * Returns the sum of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code MultivariatePolynomial} added to {@code this}
+     * @return {@code this}+{@code that}
+     */
+    public @NotNull MultivariatePolynomial add(@NotNull MultivariatePolynomial that) {
+        if (this == ZERO) return that;
+        if (that == ZERO) return this;
+        List<Pair<ExponentVector, BigInteger>> sumTerms = new ArrayList<>();
+        Iterator<Pair<ExponentVector, BigInteger>> thisTerms = terms.iterator();
+        Iterator<Pair<ExponentVector, BigInteger>> thatTerms = that.terms.iterator();
+        Pair<ExponentVector, BigInteger> thisTerm = thisTerms.hasNext() ? thisTerms.next() : null;
+        Pair<ExponentVector, BigInteger> thatTerm = thatTerms.hasNext() ? thatTerms.next() : null;
+        while (thisTerm != null || thatTerm != null) {
+            if (thisTerm == null) {
+                sumTerms.add(thatTerm);
+                thatTerm = thatTerms.hasNext() ? thatTerms.next() : null;
+            } else if (thatTerm == null) {
+                sumTerms.add(thisTerm);
+                thisTerm = thisTerms.hasNext() ? thisTerms.next() : null;
+            } else {
+                int vectorCompare = thisTerm.a.compareTo(thatTerm.a);
+                if (vectorCompare == 0) {
+                    BigInteger sum = thisTerm.b.add(thatTerm.b);
+                    if (!sum.equals(BigInteger.ZERO)) {
+                        sumTerms.add(new Pair<>(thisTerm.a, sum));
+                    }
+                    thisTerm = thisTerms.hasNext() ? thisTerms.next() : null;
+                    thatTerm = thatTerms.hasNext() ? thatTerms.next() : null;
+                } else if (vectorCompare > 0) {
+                    sumTerms.add(thatTerm);
+                    thatTerm = thatTerms.hasNext() ? thatTerms.next() : null;
+                } else {
+                    sumTerms.add(thisTerm);
+                    thisTerm = thisTerms.hasNext() ? thisTerms.next() : null;
+                }
+            }
+        }
+        if (sumTerms.size() == 0) return ZERO;
+        if (sumTerms.size() == 1) {
+            Pair<ExponentVector, BigInteger> term = sumTerms.get(0);
+            if (term.a == ExponentVector.ONE && term.b.equals(BigInteger.ONE)) return ONE;
+        }
+        return new MultivariatePolynomial(sumTerms);
+    }
+
+    /**
+     * Returns the negative of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * @return –{@code this}
+     */
+    public @NotNull MultivariatePolynomial negate() {
+        if (this == ZERO) return ZERO;
+        if (terms.size() == 1) {
+            Pair<ExponentVector, BigInteger> term = terms.get(0);
+            if (term.a == ExponentVector.ONE && term.b.equals(IntegerUtils.NEGATIVE_ONE)) return ONE;
+        }
+        return new MultivariatePolynomial(toList(map(t -> new Pair<>(t.a, t.b.negate()), terms)));
+    }
+
+    /**
+     * Returns the difference of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code MultivariatePolynomial} subtracted by {@code this}
+     * @return {@code this}–{@code that}
+     */
+    public @NotNull MultivariatePolynomial subtract(@NotNull MultivariatePolynomial that) {
+        if (this == ZERO) return that.negate();
+        if (that == ZERO) return this;
+        List<Pair<ExponentVector, BigInteger>> differenceTerms = new ArrayList<>();
+        Iterator<Pair<ExponentVector, BigInteger>> thisTerms = terms.iterator();
+        Iterator<Pair<ExponentVector, BigInteger>> thatTerms = that.terms.iterator();
+        Pair<ExponentVector, BigInteger> thisTerm = thisTerms.hasNext() ? thisTerms.next() : null;
+        Pair<ExponentVector, BigInteger> thatTerm = thatTerms.hasNext() ? thatTerms.next() : null;
+        while (thisTerm != null || thatTerm != null) {
+            if (thisTerm == null) {
+                differenceTerms.add(new Pair<>(thatTerm.a, thatTerm.b.negate()));
+                thatTerm = thatTerms.hasNext() ? thatTerms.next() : null;
+            } else if (thatTerm == null) {
+                differenceTerms.add(thisTerm);
+                thisTerm = thisTerms.hasNext() ? thisTerms.next() : null;
+            } else {
+                int vectorCompare = thisTerm.a.compareTo(thatTerm.a);
+                if (vectorCompare == 0) {
+                    if (!thisTerm.b.equals(thatTerm.b)) {
+                        BigInteger difference = thisTerm.b.subtract(thatTerm.b);
+                        differenceTerms.add(new Pair<>(thisTerm.a, difference));
+                    }
+                    thisTerm = thisTerms.hasNext() ? thisTerms.next() : null;
+                    thatTerm = thatTerms.hasNext() ? thatTerms.next() : null;
+                } else if (vectorCompare > 0) {
+                    differenceTerms.add(new Pair<>(thatTerm.a, thatTerm.b.negate()));
+                    thatTerm = thatTerms.hasNext() ? thatTerms.next() : null;
+                } else {
+                    differenceTerms.add(thisTerm);
+                    thisTerm = thisTerms.hasNext() ? thisTerms.next() : null;
+                }
+            }
+        }
+        if (differenceTerms.size() == 0) return ZERO;
+        if (differenceTerms.size() == 1) {
+            Pair<ExponentVector, BigInteger> term = differenceTerms.get(0);
+            if (term.a == ExponentVector.ONE && term.b.equals(BigInteger.ONE)) return ONE;
+        }
+        return new MultivariatePolynomial(differenceTerms);
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>
