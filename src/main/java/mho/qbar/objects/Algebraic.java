@@ -797,7 +797,7 @@ public class Algebraic implements Comparable<Algebraic> {
      * @return whether {@code this} is exactly equal to a {@code double}
      */
     public boolean isEqualToDouble() {
-        return rational.isPresent() && rational.get().isEqualToFloat();
+        return rational.isPresent() && rational.get().isEqualToDouble();
     }
 
     /**
@@ -860,6 +860,8 @@ public class Algebraic implements Comparable<Algebraic> {
      * @return {@code this}, rounded
      */
     public float floatValue(@NotNull RoundingMode roundingMode) {
+        if (this == ZERO) return 0.0f;
+        if (this == ONE) return 1.0f;
         if (rational.isPresent()) {
             return rational.get().floatValue(roundingMode);
         } else {
@@ -972,6 +974,8 @@ public class Algebraic implements Comparable<Algebraic> {
      * @return {@code this}, rounded
      */
     public double doubleValue(@NotNull RoundingMode roundingMode) {
+        if (this == ZERO) return 0.0;
+        if (this == ONE) return 1.0;
         if (rational.isPresent()) {
             return rational.get().doubleValue(roundingMode);
         } else {
@@ -1015,7 +1019,13 @@ public class Algebraic implements Comparable<Algebraic> {
      * @return {@code this}, in {@code double} form
      */
     public double doubleValueExact() {
-        return doubleValue(RoundingMode.UNNECESSARY);
+        if (this == ZERO) return 0.0;
+        if (this == ONE) return 1.0;
+        if (rational.isPresent()) {
+            return rational.get().doubleValueExact();
+        } else {
+            throw new ArithmeticException("this must be an Algebraic equal to a double. Invalid this: " + this);
+        }
     }
 
     public @NotNull Polynomial minimalPolynomial() {

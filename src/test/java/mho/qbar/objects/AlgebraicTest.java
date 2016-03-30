@@ -782,6 +782,329 @@ public class AlgebraicTest {
         realValue_helper("root 0 of x^5-x-1", "1.16730397826141868425...");
     }
 
+    private static void binaryExponent_helper(@NotNull String input, int output) {
+        aeq(read(input).get().binaryExponent(), output);
+    }
+
+    private static void binaryExponent_fail_helper(@NotNull String input) {
+        try {
+            read(input).get().binaryExponent();
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testBinaryExponent() {
+        binaryExponent_helper("1", 0);
+        binaryExponent_helper("1/2", -1);
+        binaryExponent_helper("10", 3);
+        binaryExponent_helper("1/3", -2);
+        binaryExponent_helper("sqrt(2)", 0);
+        binaryExponent_helper("(1+sqrt(5))/2", 0);
+        binaryExponent_helper("sqrt(2)/2", -1);
+        binaryExponent_helper("root 0 of x^5-x-1", 0);
+
+        binaryExponent_fail_helper("0");
+        binaryExponent_fail_helper("-1");
+        binaryExponent_fail_helper("-sqrt(2)");
+    }
+
+    private static void isEqualToFloat_helper(@NotNull String r, boolean output) {
+        aeq(read(r).get().isEqualToFloat(), output);
+    }
+
+    @Test
+    public void testIsEqualToFloat() {
+        isEqualToFloat_helper("0", true);
+        isEqualToFloat_helper("1", true);
+        isEqualToFloat_helper("1/2", true);
+        isEqualToFloat_helper("-1/2", true);
+        isEqualToFloat_helper("1/3", false);
+        isEqualToFloat_helper("-1/3", false);
+        isEqualToFloat_helper("1/10", false);
+        isEqualToFloat_helper("-1/10", false);
+        isEqualToFloat_helper("sqrt(2)", false);
+        isEqualToFloat_helper("-sqrt(2)", false);
+        isEqualToFloat_helper("root 0 of x^5-x-1", false);
+    }
+
+    private static void isEqualToDouble_helper(@NotNull String r, boolean output) {
+        aeq(read(r).get().isEqualToDouble(), output);
+    }
+
+    @Test
+    public void testIsEqualToDouble() {
+        isEqualToDouble_helper("0", true);
+        isEqualToDouble_helper("1", true);
+        isEqualToDouble_helper("1/2", true);
+        isEqualToDouble_helper("-1/2", true);
+        isEqualToDouble_helper("1/3", false);
+        isEqualToDouble_helper("-1/3", false);
+        isEqualToDouble_helper("1/10", false);
+        isEqualToDouble_helper("-1/10", false);
+        isEqualToDouble_helper("sqrt(2)", false);
+        isEqualToDouble_helper("-sqrt(2)", false);
+        isEqualToDouble_helper("root 0 of x^5-x-1", false);
+    }
+
+    private static void floatValue_RoundingMode_helper(@NotNull String x, @NotNull String roundingMode, float output) {
+        aeq(read(x).get().floatValue(Readers.readRoundingMode(roundingMode).get()), output);
+    }
+
+    private static void floatValue_RoundingMode_fail_helper(@NotNull String x, @NotNull String roundingMode) {
+        try {
+            read(x).get().floatValue(Readers.readRoundingMode(roundingMode).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testFloatValue_RoundingMode() {
+        floatValue_RoundingMode_helper("0", "UP", 0.0f);
+        floatValue_RoundingMode_helper("1", "UP", 1.0f);
+        floatValue_RoundingMode_helper("1/2", "UP", 0.5f);
+        floatValue_RoundingMode_helper("-4/3", "UP", -1.3333334f);
+        floatValue_RoundingMode_helper("sqrt(2)", "UP", 1.4142137f);
+        floatValue_RoundingMode_helper("-sqrt(2)", "UP", -1.4142137f);
+        floatValue_RoundingMode_helper("(1+sqrt(5))/2", "UP", 1.618034f);
+        floatValue_RoundingMode_helper("root 0 of x^5-x-1", "UP", 1.167304f);
+
+        floatValue_RoundingMode_helper("0", "DOWN", 0.0f);
+        floatValue_RoundingMode_helper("1", "DOWN", 1.0f);
+        floatValue_RoundingMode_helper("1/2", "DOWN", 0.5f);
+        floatValue_RoundingMode_helper("-4/3", "DOWN", -1.3333333f);
+        floatValue_RoundingMode_helper("sqrt(2)", "DOWN", 1.4142135f);
+        floatValue_RoundingMode_helper("-sqrt(2)", "DOWN", -1.4142135f);
+        floatValue_RoundingMode_helper("(1+sqrt(5))/2", "DOWN", 1.6180339f);
+        floatValue_RoundingMode_helper("root 0 of x^5-x-1", "DOWN", 1.1673039f);
+
+        floatValue_RoundingMode_helper("0", "CEILING", 0.0f);
+        floatValue_RoundingMode_helper("1", "CEILING", 1.0f);
+        floatValue_RoundingMode_helper("1/2", "CEILING", 0.5f);
+        floatValue_RoundingMode_helper("-4/3", "CEILING", -1.3333333f);
+        floatValue_RoundingMode_helper("sqrt(2)", "CEILING", 1.4142137f);
+        floatValue_RoundingMode_helper("-sqrt(2)", "CEILING", -1.4142135f);
+        floatValue_RoundingMode_helper("(1+sqrt(5))/2", "CEILING", 1.618034f);
+        floatValue_RoundingMode_helper("root 0 of x^5-x-1", "CEILING", 1.167304f);
+
+        floatValue_RoundingMode_helper("0", "FLOOR", 0.0f);
+        floatValue_RoundingMode_helper("1", "FLOOR", 1.0f);
+        floatValue_RoundingMode_helper("1/2", "FLOOR", 0.5f);
+        floatValue_RoundingMode_helper("-4/3", "FLOOR", -1.3333334f);
+        floatValue_RoundingMode_helper("sqrt(2)", "FLOOR", 1.4142135f);
+        floatValue_RoundingMode_helper("-sqrt(2)", "FLOOR", -1.4142137f);
+        floatValue_RoundingMode_helper("(1+sqrt(5))/2", "FLOOR", 1.6180339f);
+        floatValue_RoundingMode_helper("root 0 of x^5-x-1", "FLOOR", 1.1673039f);
+
+        floatValue_RoundingMode_helper("0", "HALF_UP", 0.0f);
+        floatValue_RoundingMode_helper("1", "HALF_UP", 1.0f);
+        floatValue_RoundingMode_helper("1/2", "HALF_UP", 0.5f);
+        floatValue_RoundingMode_helper("-4/3", "HALF_UP", -1.3333334f);
+        floatValue_RoundingMode_helper("sqrt(2)", "HALF_UP", 1.4142135f);
+        floatValue_RoundingMode_helper("-sqrt(2)", "HALF_UP", -1.4142135f);
+        floatValue_RoundingMode_helper("(1+sqrt(5))/2", "HALF_UP", 1.618034f);
+        floatValue_RoundingMode_helper("root 0 of x^5-x-1", "HALF_UP", 1.1673039f);
+
+        floatValue_RoundingMode_helper("0", "HALF_DOWN", 0.0f);
+        floatValue_RoundingMode_helper("1", "HALF_DOWN", 1.0f);
+        floatValue_RoundingMode_helper("1/2", "HALF_DOWN", 0.5f);
+        floatValue_RoundingMode_helper("-4/3", "HALF_DOWN", -1.3333334f);
+        floatValue_RoundingMode_helper("sqrt(2)", "HALF_DOWN", 1.4142135f);
+        floatValue_RoundingMode_helper("-sqrt(2)", "HALF_DOWN", -1.4142135f);
+        floatValue_RoundingMode_helper("(1+sqrt(5))/2", "HALF_DOWN", 1.618034f);
+        floatValue_RoundingMode_helper("root 0 of x^5-x-1", "HALF_DOWN", 1.1673039f);
+
+        floatValue_RoundingMode_helper("0", "HALF_EVEN", 0.0f);
+        floatValue_RoundingMode_helper("1", "HALF_EVEN", 1.0f);
+        floatValue_RoundingMode_helper("1/2", "HALF_EVEN", 0.5f);
+        floatValue_RoundingMode_helper("-4/3", "HALF_EVEN", -1.3333334f);
+        floatValue_RoundingMode_helper("sqrt(2)", "HALF_EVEN", 1.4142135f);
+        floatValue_RoundingMode_helper("-sqrt(2)", "HALF_EVEN", -1.4142135f);
+        floatValue_RoundingMode_helper("(1+sqrt(5))/2", "HALF_EVEN", 1.618034f);
+        floatValue_RoundingMode_helper("root 0 of x^5-x-1", "HALF_EVEN", 1.1673039f);
+
+        floatValue_RoundingMode_helper("0", "UNNECESSARY", 0.0f);
+        floatValue_RoundingMode_helper("1", "UNNECESSARY", 1.0f);
+        floatValue_RoundingMode_helper("1/2", "UNNECESSARY", 0.5f);
+
+        floatValue_RoundingMode_fail_helper("-4/3", "UNNECESSARY");
+        floatValue_RoundingMode_fail_helper("sqrt(2)", "UNNECESSARY");
+        floatValue_RoundingMode_fail_helper("-sqrt(2)", "UNNECESSARY");
+        floatValue_RoundingMode_fail_helper("(1+sqrt(5))/2", "UNNECESSARY");
+        floatValue_RoundingMode_fail_helper("root 0 of x^5-x-1", "UNNECESSARY");
+    }
+
+    private static void floatValue_helper(@NotNull String x, float output) {
+        aeq(read(x).get().floatValue(), output);
+    }
+
+    @Test
+    public void testFloatValue() {
+        floatValue_helper("0", 0.0f);
+        floatValue_helper("1", 1.0f);
+        floatValue_helper("1/2", 0.5f);
+        floatValue_helper("-4/3", -1.3333334f);
+        floatValue_helper("sqrt(2)", 1.4142135f);
+        floatValue_helper("-sqrt(2)", -1.4142135f);
+        floatValue_helper("(1+sqrt(5))/2", 1.618034f);
+        floatValue_helper("root 0 of x^5-x-1", 1.1673039f);
+    }
+
+    private static void floatValueExact_helper(@NotNull String x, float output) {
+        aeq(read(x).get().floatValueExact(), output);
+    }
+
+    private static void floatValueExact_fail_helper(@NotNull String x) {
+        try {
+            read(x).get().floatValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testFloatValueExact() {
+        floatValueExact_helper("0", 0.0f);
+        floatValueExact_helper("1", 1.0f);
+        floatValueExact_helper("1/2", 0.5f);
+
+        floatValueExact_fail_helper("-4/3");
+        floatValueExact_fail_helper("sqrt(2)");
+        floatValueExact_fail_helper("-sqrt(2)");
+        floatValueExact_fail_helper("(1+sqrt(5))/2");
+        floatValueExact_fail_helper("root 0 of x^5-x-1");
+    }
+
+    private static void doubleValue_RoundingMode_helper(
+            @NotNull String x,
+            @NotNull String roundingMode,
+            double output
+    ) {
+        aeq(read(x).get().doubleValue(Readers.readRoundingMode(roundingMode).get()), output);
+    }
+
+    private static void doubleValue_RoundingMode_fail_helper(@NotNull String x, @NotNull String roundingMode) {
+        try {
+            read(x).get().doubleValue(Readers.readRoundingMode(roundingMode).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDoubleValue_RoundingMode() {
+        doubleValue_RoundingMode_helper("0", "UP", 0.0);
+        doubleValue_RoundingMode_helper("1", "UP", 1.0);
+        doubleValue_RoundingMode_helper("1/2", "UP", 0.5);
+        doubleValue_RoundingMode_helper("-4/3", "UP", -1.3333333333333335);
+        doubleValue_RoundingMode_helper("sqrt(2)", "UP", 1.4142135623730951);
+        doubleValue_RoundingMode_helper("-sqrt(2)", "UP", -1.4142135623730951);
+        doubleValue_RoundingMode_helper("(1+sqrt(5))/2", "UP", 1.618033988749895);
+        doubleValue_RoundingMode_helper("root 0 of x^5-x-1", "UP", 1.1673039782614187);
+
+        doubleValue_RoundingMode_helper("0", "DOWN", 0.0);
+        doubleValue_RoundingMode_helper("1", "DOWN", 1.0);
+        doubleValue_RoundingMode_helper("1/2", "DOWN", 0.5);
+        doubleValue_RoundingMode_helper("-4/3", "DOWN", -1.3333333333333333);
+        doubleValue_RoundingMode_helper("sqrt(2)", "DOWN", 1.414213562373095);
+        doubleValue_RoundingMode_helper("-sqrt(2)", "DOWN", -1.414213562373095);
+        doubleValue_RoundingMode_helper("(1+sqrt(5))/2", "DOWN", 1.6180339887498947);
+        doubleValue_RoundingMode_helper("root 0 of x^5-x-1", "DOWN", 1.1673039782614185);
+
+        doubleValue_RoundingMode_helper("0", "CEILING", 0.0);
+        doubleValue_RoundingMode_helper("1", "CEILING", 1.0);
+        doubleValue_RoundingMode_helper("1/2", "CEILING", 0.5);
+        doubleValue_RoundingMode_helper("-4/3", "CEILING", -1.3333333333333333);
+        doubleValue_RoundingMode_helper("sqrt(2)", "CEILING", 1.4142135623730951);
+        doubleValue_RoundingMode_helper("-sqrt(2)", "CEILING", -1.414213562373095);
+        doubleValue_RoundingMode_helper("(1+sqrt(5))/2", "CEILING", 1.618033988749895);
+        doubleValue_RoundingMode_helper("root 0 of x^5-x-1", "CEILING", 1.1673039782614187);
+
+        doubleValue_RoundingMode_helper("0", "FLOOR", 0.0);
+        doubleValue_RoundingMode_helper("1", "FLOOR", 1.0);
+        doubleValue_RoundingMode_helper("1/2", "FLOOR", 0.5);
+        doubleValue_RoundingMode_helper("-4/3", "FLOOR", -1.3333333333333335);
+        doubleValue_RoundingMode_helper("sqrt(2)", "FLOOR", 1.414213562373095);
+        doubleValue_RoundingMode_helper("-sqrt(2)", "FLOOR", -1.4142135623730951);
+        doubleValue_RoundingMode_helper("(1+sqrt(5))/2", "FLOOR", 1.6180339887498947);
+        doubleValue_RoundingMode_helper("root 0 of x^5-x-1", "FLOOR", 1.1673039782614185);
+
+        doubleValue_RoundingMode_helper("0", "HALF_UP", 0.0);
+        doubleValue_RoundingMode_helper("1", "HALF_UP", 1.0);
+        doubleValue_RoundingMode_helper("1/2", "HALF_UP", 0.5);
+        doubleValue_RoundingMode_helper("-4/3", "HALF_UP", -1.3333333333333333);
+        doubleValue_RoundingMode_helper("sqrt(2)", "HALF_UP", 1.4142135623730951);
+        doubleValue_RoundingMode_helper("-sqrt(2)", "HALF_UP", -1.4142135623730951);
+        doubleValue_RoundingMode_helper("(1+sqrt(5))/2", "HALF_UP", 1.618033988749895);
+        doubleValue_RoundingMode_helper("root 0 of x^5-x-1", "HALF_UP", 1.1673039782614187);
+
+        doubleValue_RoundingMode_helper("0", "HALF_DOWN", 0.0);
+        doubleValue_RoundingMode_helper("1", "HALF_DOWN", 1.0);
+        doubleValue_RoundingMode_helper("1/2", "HALF_DOWN", 0.5);
+        doubleValue_RoundingMode_helper("-4/3", "HALF_DOWN", -1.3333333333333333);
+        doubleValue_RoundingMode_helper("sqrt(2)", "HALF_DOWN", 1.4142135623730951);
+        doubleValue_RoundingMode_helper("-sqrt(2)", "HALF_DOWN", -1.4142135623730951);
+        doubleValue_RoundingMode_helper("(1+sqrt(5))/2", "HALF_DOWN", 1.618033988749895);
+        doubleValue_RoundingMode_helper("root 0 of x^5-x-1", "HALF_DOWN", 1.1673039782614187);
+
+        doubleValue_RoundingMode_helper("0", "HALF_EVEN", 0.0);
+        doubleValue_RoundingMode_helper("1", "HALF_EVEN", 1.0);
+        doubleValue_RoundingMode_helper("1/2", "HALF_EVEN", 0.5);
+        doubleValue_RoundingMode_helper("-4/3", "HALF_EVEN", -1.3333333333333333);
+        doubleValue_RoundingMode_helper("sqrt(2)", "HALF_EVEN", 1.4142135623730951);
+        doubleValue_RoundingMode_helper("-sqrt(2)", "HALF_EVEN", -1.4142135623730951);
+        doubleValue_RoundingMode_helper("(1+sqrt(5))/2", "HALF_EVEN", 1.618033988749895);
+        doubleValue_RoundingMode_helper("root 0 of x^5-x-1", "HALF_EVEN", 1.1673039782614187);
+
+        doubleValue_RoundingMode_helper("0", "UNNECESSARY", 0.0f);
+        doubleValue_RoundingMode_helper("1", "UNNECESSARY", 1.0f);
+        doubleValue_RoundingMode_helper("1/2", "UNNECESSARY", 0.5f);
+
+        doubleValue_RoundingMode_fail_helper("-4/3", "UNNECESSARY");
+        doubleValue_RoundingMode_fail_helper("sqrt(2)", "UNNECESSARY");
+        doubleValue_RoundingMode_fail_helper("-sqrt(2)", "UNNECESSARY");
+        doubleValue_RoundingMode_fail_helper("(1+sqrt(5))/2", "UNNECESSARY");
+        doubleValue_RoundingMode_fail_helper("root 0 of x^5-x-1", "UNNECESSARY");
+    }
+
+    private static void doubleValue_helper(@NotNull String x, double output) {
+        aeq(read(x).get().doubleValue(), output);
+    }
+
+    @Test
+    public void testDoubleValue() {
+        doubleValue_helper("0", 0.0);
+        doubleValue_helper("1", 1.0);
+        doubleValue_helper("1/2", 0.5);
+        doubleValue_helper("-4/3", -1.3333333333333333);
+        doubleValue_helper("sqrt(2)", 1.4142135623730951);
+        doubleValue_helper("-sqrt(2)", -1.4142135623730951);
+        doubleValue_helper("(1+sqrt(5))/2", 1.618033988749895);
+        doubleValue_helper("root 0 of x^5-x-1", 1.1673039782614187);
+    }
+
+    private static void doubleValueExact_helper(@NotNull String x, double output) {
+        aeq(read(x).get().doubleValueExact(), output);
+    }
+
+    private static void doubleValueExact_fail_helper(@NotNull String x) {
+        try {
+            read(x).get().doubleValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDoubleValueExact() {
+        doubleValueExact_helper("0", 0.0);
+        doubleValueExact_helper("1", 1.0);
+        doubleValueExact_helper("1/2", 0.5);
+
+        doubleValueExact_fail_helper("-4/3");
+        doubleValueExact_fail_helper("sqrt(2)");
+        doubleValueExact_fail_helper("-sqrt(2)");
+        doubleValueExact_fail_helper("(1+sqrt(5))/2");
+        doubleValueExact_fail_helper("root 0 of x^5-x-1");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

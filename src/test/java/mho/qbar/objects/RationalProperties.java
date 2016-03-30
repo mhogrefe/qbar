@@ -784,7 +784,8 @@ public class RationalProperties extends QBarTestProperties {
     }
 
     private static boolean isEqualToFloat_simplest(@NotNull Rational r) {
-        return ofExact(r.floatValue(RoundingMode.FLOOR)).get().equals(r);
+        Optional<Rational> or = ofExact(r.floatValue(RoundingMode.FLOOR));
+        return or.isPresent() && or.get().equals(r);
     }
 
     private static boolean isEqualToFloat_alt(@NotNull Rational r) {
@@ -824,7 +825,8 @@ public class RationalProperties extends QBarTestProperties {
     }
 
     private static boolean isEqualToDouble_simplest(@NotNull Rational r) {
-        return ofExact(r.doubleValue(RoundingMode.FLOOR)).get().equals(r);
+        Optional<Rational> or = ofExact(r.doubleValue(RoundingMode.FLOOR));
+        return or.isPresent() && or.get().equals(r);
     }
 
     private static boolean isEqualToDouble_alt(@NotNull Rational r) {

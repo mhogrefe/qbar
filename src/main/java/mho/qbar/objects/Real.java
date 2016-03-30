@@ -339,12 +339,40 @@ public class Real implements Iterable<Interval>, Comparable<Real> {
         throw new IllegalStateException("unreachable");
     }
 
-    public @NotNull BigInteger bigIntegerValue(@NotNull RoundingMode roundingMode) {
-        return limitValue(r -> r.bigIntegerValue(roundingMode));
+    public int binaryExponent() {
+        Optional<Rational> previousLower = Optional.empty();
+        Optional<Rational> previousUpper = Optional.empty();
+        int lowerValue = 0;
+        int upperValue = 0;
+        for (Interval a : intervals) {
+            if (a.isFinitelyBounded()) {
+                Rational lower = a.getLower().get();
+                Rational upper = a.getUpper().get();
+                if (upper.signum() != 1) {
+                    throw new ArithmeticException();
+                }
+                if (lower.signum() != 1) {
+                    continue;
+                }
+                if (!previousLower.isPresent() || previousLower.get() != lower) {
+                    lowerValue = lower.binaryExponent();
+                }
+                if (!previousUpper.isPresent() || previousUpper.get() != upper) {
+                    upperValue = upper.binaryExponent();
+                }
+                if (Objects.equals(lowerValue, upperValue)) {
+                    //noinspection ConstantConditions
+                    return lowerValue;
+                }
+                previousLower = Optional.of(lower);
+                previousUpper = Optional.of(upper);
+            }
+        }
+        throw new IllegalStateException("unreachable");
     }
 
-    public int binaryExponent() {
-        return limitValue(Rational::binaryExponent);
+    public @NotNull BigInteger bigIntegerValue(@NotNull RoundingMode roundingMode) {
+        return limitValue(r -> r.bigIntegerValue(roundingMode));
     }
 
     public float floatValue(@NotNull RoundingMode roundingMode) {

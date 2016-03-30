@@ -3,6 +3,7 @@ package mho.qbar.objects;
 import mho.qbar.testing.QBarDemos;
 import mho.wheels.io.Readers;
 import mho.wheels.math.BinaryFraction;
+import mho.wheels.numberUtils.FloatingPointUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -13,6 +14,7 @@ import java.math.RoundingMode;
 import java.util.Optional;
 
 import static mho.qbar.objects.Algebraic.*;
+import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.iterables.IterableUtils.filterInfinite;
 import static mho.wheels.iterables.IterableUtils.map;
 import static mho.wheels.iterables.IterableUtils.take;
@@ -205,6 +207,75 @@ public class AlgebraicDemos extends QBarDemos {
     private void demoRealValue() {
         for (Algebraic x : take(LIMIT, P.algebraics())) {
             System.out.println("realValue(" + x + ") = " + x.realValue());
+        }
+    }
+
+    private void demoBinaryExponent() {
+        for (Algebraic x : take(LIMIT, P.positiveAlgebraics())) {
+            System.out.println("binaryExponent(" + x + ") = " + x.binaryExponent());
+        }
+    }
+
+    private void demoIsEqualToFloat() {
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            System.out.println(x + " is " + (x.isEqualToFloat() ? "" : "not ") + "equal to a float");
+        }
+    }
+
+    private void demoIsEqualToDouble() {
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            System.out.println(x + " is " + (x.isEqualToDouble() ? "" : "not ") + "equal to a double");
+        }
+    }
+
+    private void demoFloatValue_RoundingMode() {
+        Iterable<Pair<Algebraic, RoundingMode>> ps = filterInfinite(
+                p -> p.b != RoundingMode.UNNECESSARY || p.a.isEqualToFloat(),
+                P.pairs(P.algebraics(), P.roundingModes())
+        );
+        for (Pair<Algebraic, RoundingMode> p : take(LIMIT, ps)) {
+            System.out.println("floatValue(" + p.a + ", " + p.b + ") = " + p.a.floatValue(p.b));
+        }
+    }
+
+    private void demoFloatValue() {
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            System.out.println("floatValue(" + x + ") = " + x.floatValue());
+        }
+    }
+
+    private void demoFloatValueExact() {
+        Iterable<Algebraic> xs = map(
+                f -> ofExact(f).get(),
+                filter(f -> Float.isFinite(f) && !FloatingPointUtils.isNegativeZero(f), P.floats())
+        );
+        for (Algebraic x : take(LIMIT, xs)) {
+            System.out.println("floatValueExact(" + x + ") = " + x.floatValueExact());
+        }
+    }
+
+    private void demoDoubleValue_RoundingMode() {
+        Iterable<Pair<Algebraic, RoundingMode>> ps = filterInfinite(
+                p -> p.b != RoundingMode.UNNECESSARY || p.a.isEqualToDouble(),
+                P.pairs(P.algebraics(), P.roundingModes()));
+        for (Pair<Algebraic, RoundingMode> p : take(LIMIT, ps)) {
+            System.out.println("doubleValue(" + p.a + ", " + p.b + ") = " + p.a.doubleValue(p.b));
+        }
+    }
+
+    private void demoDoubleValue() {
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            System.out.println("doubleValue(" + x + ") = " + x.doubleValue());
+        }
+    }
+
+    private void demoDoubleValueExact() {
+        Iterable<Algebraic> xs = map(
+                d -> ofExact(d).get(),
+                filter(d -> Double.isFinite(d) && !FloatingPointUtils.isNegativeZero(d), P.doubles())
+        );
+        for (Algebraic x : take(LIMIT, xs)) {
+            System.out.println("doubleValueExact(" + x + ") = " + x.doubleValueExact());
         }
     }
 
