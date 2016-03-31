@@ -407,6 +407,25 @@ public class Real implements Iterable<Interval>, Comparable<Real> {
         return bigDecimalValueByScale(scale, RoundingMode.HALF_EVEN);
     }
 
+    public static @NotNull Interval intervalExtension(@NotNull Real lower, @NotNull Real upper) {
+        Iterator<Interval> lowerIntervals = lower.iterator();
+        Iterator<Interval> upperIntervals = upper.iterator();
+        while (true) {
+            Interval lowerInterval = lowerIntervals.next();
+            Interval upperInterval = upperIntervals.next();
+            if (!lowerInterval.isFinitelyBounded() || !upperInterval.isFinitelyBounded() ||
+                    !lowerInterval.disjoint(upperInterval)) continue;
+            Rational gapSize = upperInterval.getLower().get().subtract(lowerInterval.getUpper().get());
+            if (gapSize.signum() == -1) {
+                throw new IllegalArgumentException();
+            }
+            Rational diameterSum = lowerInterval.diameter().get().add(upperInterval.diameter().get());
+            if (Ordering.ge(gapSize, diameterSum)) {
+                return lowerInterval.convexHull(upperInterval);
+            }
+        }
+    }
+
     public static @NotNull Real champernowne(@NotNull BigInteger base) {
         return fromDigits(
                 base,

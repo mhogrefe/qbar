@@ -68,12 +68,18 @@ public class AlgebraicProperties extends QBarTestProperties {
         propertiesFloatValue_RoundingMode();
         propertiesFloatValue();
         propertiesFloatValueExact();
+        propertiesMinimalPolynomial();
+        propertiesRootIndex();
+        propertiesDegree();
+        propertiesIsolatingInterval();
+        propertiesMinimalPolynomialRootCount();
+        propertiesIntervalExtension();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
         propertiesRead();
         propertiesFindIn();
-        propertiesToString();
+//        propertiesToString();
     }
 
     private void propertiesOf_Polynomial_int() {
@@ -1119,6 +1125,79 @@ public class AlgebraicProperties extends QBarTestProperties {
         }
     }
     //todo double stuff
+
+    private void propertiesMinimalPolynomial() {
+        initialize("minimalPolynomial()");
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            Polynomial p = x.minimalPolynomial();
+            assertNotEquals(x, p, ZERO);
+            assertTrue(x, p.isIrreducible());
+        }
+    }
+
+    private void propertiesRootIndex() {
+        initialize("rootIndex()");
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            int rootIndex = x.rootIndex();
+            assertTrue(x, rootIndex >= 0);
+            assertTrue(x, rootIndex < x.minimalPolynomialRootCount());
+        }
+    }
+
+    private void propertiesDegree() {
+        initialize("degree()");
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            int degree = x.degree();
+            assertTrue(x, degree > 0);
+        }
+    }
+
+    private void propertiesIsolatingInterval() {
+        initialize("isolatingInterval()");
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            Interval a = x.isolatingInterval();
+            assertTrue(x, a.isFinitelyBounded());
+        }
+
+        for (Algebraic x : take(LIMIT, filterInfinite(y -> !y.isRational(), P.algebraics()))) {
+            Interval a = x.isolatingInterval();
+            assertTrue(x, a.getLower().get().isBinaryFraction());
+            assertTrue(x, a.getUpper().get().isBinaryFraction());
+            assertEquals(x, a, x.minimalPolynomial().powerOfTwoIsolatingInterval(x.rootIndex()));
+        }
+    }
+
+    private void propertiesMinimalPolynomialRootCount() {
+        initialize("minimalPolynomialRootCount()");
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            int rootCount = x.minimalPolynomialRootCount();
+            assertTrue(x, rootCount > 0);
+            assertTrue(x, rootCount <= x.degree());
+        }
+    }
+
+    private void propertiesIntervalExtension() {
+        initialize("intervalExtension(Algebraic, Algebraic)");
+        for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.subsetPairs(P.algebraics()))) {
+            Interval extension = intervalExtension(p.a, p.b);
+            assertTrue(p, extension.isFinitelyBounded());
+            //todo length
+        }
+
+        Iterable<Pair<Algebraic, Algebraic>> ps = P.subsetPairs(filterInfinite(y -> !y.isRational(), P.algebraics()));
+        for (Pair<Algebraic, Algebraic> p : take(LIMIT, ps)) {
+            Interval extension = intervalExtension(p.a, p.b);
+            assertTrue(p, extension.getLower().get().isBinaryFraction());
+            assertTrue(p, extension.getUpper().get().isBinaryFraction());
+        }
+
+        for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.bagPairs(P.algebraics()))) {
+            try {
+                intervalExtension(p.b, p.a);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
 
     private void propertiesEquals() {
         initialize("equals(Object)");

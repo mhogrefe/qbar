@@ -279,6 +279,42 @@ public class AlgebraicDemos extends QBarDemos {
         }
     }
 
+    private void demoMinimalPolynomial() {
+        for (Algebraic x : take(LIMIT, P.withScale(4).algebraics())) {
+            System.out.println("minimalPolynomial(" + x + ") = " + x.minimalPolynomial());
+        }
+    }
+
+    private void demoRootIndex() {
+        for (Algebraic x : take(LIMIT, P.withScale(4).algebraics())) {
+            System.out.println("rootIndex(" + x + ") = " + x.rootIndex());
+        }
+    }
+
+    private void demoDegree() {
+        for (Algebraic x : take(LIMIT, P.withScale(4).algebraics())) {
+            System.out.println("degree(" + x + ") = " + x.degree());
+        }
+    }
+
+    private void demoIsolatingInterval() {
+        for (Algebraic x : take(LIMIT, P.withScale(4).algebraics())) {
+            System.out.println("isolatingInterval(" + x + ") = " + x.isolatingInterval());
+        }
+    }
+
+    private void demoMinimalPolynomialRootCount() {
+        for (Algebraic x : take(LIMIT, P.withScale(4).algebraics())) {
+            System.out.println("minimalPolynomialRootCount(" + x + ") = " + x.minimalPolynomialRootCount());
+        }
+    }
+
+    private void demoIntervalExtension() {
+        for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.subsetPairs(P.withScale(4).algebraics()))) {
+            System.out.println("intervalExtension(" + p.a + ", " + p.b + ") = " + intervalExtension(p.a, p.b));
+        }
+    }
+
     private void demoEquals_Algebraic() {
         for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.pairs(P.withScale(4).algebraics()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);

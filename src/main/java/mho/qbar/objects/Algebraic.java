@@ -17,6 +17,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.ordering.Ordering.*;
 import static mho.wheels.testing.Testing.assertEquals;
 import static mho.wheels.testing.Testing.assertTrue;
 
@@ -1028,16 +1029,108 @@ public class Algebraic implements Comparable<Algebraic> {
         }
     }
 
+    /**
+     * The minimal polynomial of {@code this}; the nonzero, irreducible, primitive polynomial with positive leading
+     * coefficient and minimal degree that has {@code this} as a root.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>The result is nonzero and irreducible (see {@link Polynomial#isIrreducible()}).</li>
+     * </ul>
+     *
+     * @return minPoly({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
     public @NotNull Polynomial minimalPolynomial() {
         return minimalPolynomial;
     }
 
+    /**
+     * The number of real roots of the minimal polynomial of {@code this} that are less than {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>The result is not negative.</li>
+     * </ul>
+     *
+     * @return the 0-based root index of {@code this}
+     */
     public int rootIndex() {
         return rootIndex;
     }
 
+    /**
+     * The degree of {@code this}; the degree of {@code this}'s minimal polynomial.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>The result is positive.</li>
+     * </ul>
+     *
+     * @return deg({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
     public int degree() {
         return minimalPolynomial.degree();
+    }
+
+    /**
+     * An interval that contains {@code this} and no other real roots of {@code this}'s minimal polynomial. If
+     * {@code this} is rational, the interval is [{@code this}, {@code this}]; otherwise, it is the result of
+     * {@code minimalPolynomial.powerOfTwoIsolatingInterval(rootIndex)} (see
+     * {@link Polynomial#powerOfTwoIsolatingInterval(int)}).
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>The result either has diameter zero or has finite, binary-fraction bounds.</li>
+     * </ul>
+     *
+     * @return an isolating interval of {@code this}
+     */
+    public @NotNull Interval isolatingInterval() {
+        return isolatingInterval;
+    }
+
+    /**
+     * The number of real roots of the minimal polynomial of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>The result is positive.</li>
+     * </ul>
+     *
+     * @return the number of real elements in {@code this}'s conjugate class
+     */
+    public int minimalPolynomialRootCount() {
+        return mpRootCount;
+    }
+
+    /**
+     * Given an interval [{@code lower}, {@code upper}], returns an {@code Interval} (with rational bounds) containing
+     * the given interval and with a diameter no more than twice the given interval's.
+     *
+     * <ul>
+     *  <li>{@code lower} cannot be null.</li>
+     *  <li>{@code upper} cannot be null.</li>
+     *  <li>{@code lower} must be less than {@code upper}.</li>
+     *  <li>The result is finitely bounded.</li>
+     * </ul>
+     *
+     * @param lower the lower bound of an interval
+     * @param upper the upper bound of an interval
+     * @return a rationally-bounded interval containing the given interval and no more than twice as large
+     */
+    public static @NotNull Interval intervalExtension(@NotNull Algebraic lower, @NotNull Algebraic upper) {
+        if (lower.equals(upper)) {
+            throw new IllegalArgumentException("lower must be less than upper. lower: " + lower + ", upper: " + upper);
+        }
+        if (lower.isRational() && upper.isRational()) {
+            if (gt(lower, upper)) {
+                throw new IllegalArgumentException();
+            }
+            return Interval.of(lower.rationalValueExact(), upper.rationalValueExact());
+        }
+        return Real.intervalExtension(lower.realValue(), upper.realValue());
     }
 
     public int signum() {

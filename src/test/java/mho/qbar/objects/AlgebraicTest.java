@@ -1105,6 +1105,141 @@ public class AlgebraicTest {
         doubleValueExact_fail_helper("root 0 of x^5-x-1");
     }
 
+    private static void minimalPolynomial_helper(@NotNull String x, @NotNull String output) {
+        aeq(read(x).get().minimalPolynomial(), output);
+    }
+
+    @Test
+    public void testMinimalPolynomial() {
+        minimalPolynomial_helper("0", "x");
+        minimalPolynomial_helper("1", "x-1");
+        minimalPolynomial_helper("1/2", "2*x-1");
+        minimalPolynomial_helper("-4/3", "3*x+4");
+        minimalPolynomial_helper("sqrt(2)", "x^2-2");
+        minimalPolynomial_helper("-sqrt(2)", "x^2-2");
+        minimalPolynomial_helper("(1+sqrt(5))/2", "x^2-x-1");
+        minimalPolynomial_helper("root 0 of x^5-x-1", "x^5-x-1");
+    }
+
+    private static void rootIndex_helper(@NotNull String x, int output) {
+        aeq(read(x).get().rootIndex(), output);
+    }
+
+    @Test
+    public void testRootIndex() {
+        rootIndex_helper("0", 0);
+        rootIndex_helper("1", 0);
+        rootIndex_helper("1/2", 0);
+        rootIndex_helper("-4/3", 0);
+        rootIndex_helper("sqrt(2)", 1);
+        rootIndex_helper("-sqrt(2)", 0);
+        rootIndex_helper("(1+sqrt(5))/2", 1);
+        rootIndex_helper("root 0 of x^5-x-1", 0);
+    }
+
+    private static void degree_helper(@NotNull String x, int output) {
+        aeq(read(x).get().degree(), output);
+    }
+
+    @Test
+    public void testDegree() {
+        degree_helper("0", 1);
+        degree_helper("1", 1);
+        degree_helper("1/2", 1);
+        degree_helper("-4/3", 1);
+        degree_helper("sqrt(2)", 2);
+        degree_helper("-sqrt(2)", 2);
+        degree_helper("(1+sqrt(5))/2", 2);
+        degree_helper("root 0 of x^5-x-1", 5);
+    }
+
+    private static void isolatingInterval_helper(@NotNull String x, @NotNull String output) {
+        aeq(read(x).get().isolatingInterval(), output);
+    }
+
+    @Test
+    public void testIsolatingInterval() {
+        isolatingInterval_helper("0", "[0, 0]");
+        isolatingInterval_helper("1", "[1, 1]");
+        isolatingInterval_helper("1/2", "[1/2, 1/2]");
+        isolatingInterval_helper("-4/3", "[-4/3, -4/3]");
+        isolatingInterval_helper("sqrt(2)", "[0, 4]");
+        isolatingInterval_helper("-sqrt(2)", "[-4, 0]");
+        isolatingInterval_helper("(1+sqrt(5))/2", "[0, 2]");
+        isolatingInterval_helper("root 0 of x^5-x-1", "[-2, 2]");
+    }
+
+    private static void minimalPolynomialRootCount_helper(@NotNull String x, int output) {
+        aeq(read(x).get().minimalPolynomialRootCount(), output);
+    }
+
+    @Test
+    public void testMinimalPolynomialRootCount() {
+        minimalPolynomialRootCount_helper("0", 1);
+        minimalPolynomialRootCount_helper("1", 1);
+        minimalPolynomialRootCount_helper("1/2", 1);
+        minimalPolynomialRootCount_helper("-4/3", 1);
+        minimalPolynomialRootCount_helper("sqrt(2)", 2);
+        minimalPolynomialRootCount_helper("-sqrt(2)", 2);
+        minimalPolynomialRootCount_helper("(1+sqrt(5))/2", 2);
+        minimalPolynomialRootCount_helper("root 0 of x^5-x-1", 1);
+    }
+
+    private static void intervalExtension_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(intervalExtension(read(a).get(), read(b).get()), output);
+    }
+
+    private static void intervalExtension_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            intervalExtension(read(a).get(), read(b).get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testIntervalExtension() {
+        intervalExtension_helper("-sqrt(2)", "-4/3", "[-23/16, -4/3]");
+        intervalExtension_helper("-sqrt(2)", "0", "[-2, 0]");
+        intervalExtension_helper("-sqrt(2)", "1/2", "[-2, 1/2]");
+        intervalExtension_helper("-sqrt(2)", "1", "[-2, 1]");
+        intervalExtension_helper("-sqrt(2)", "root 0 of x^5-x-1", "[-2, 2]");
+        intervalExtension_helper("-sqrt(2)", "sqrt(2)", "[-2, 2]");
+        intervalExtension_helper("-sqrt(2)", "(1+sqrt(5))/2", "[-2, 2]");
+
+        intervalExtension_helper("-4/3", "0", "[-4/3, 0]");
+        intervalExtension_helper("-4/3", "1/2", "[-4/3, 1/2]");
+        intervalExtension_helper("-4/3", "1", "[-4/3, 1]");
+        intervalExtension_helper("-4/3", "root 0 of x^5-x-1", "[-4/3, 2]");
+        intervalExtension_helper("-4/3", "sqrt(2)", "[-4/3, 2]");
+        intervalExtension_helper("-4/3", "(1+sqrt(5))/2", "[-4/3, 2]");
+
+        intervalExtension_helper("0", "1/2", "[0, 1/2]");
+        intervalExtension_helper("0", "1", "[0, 1]");
+        intervalExtension_helper("0", "root 0 of x^5-x-1", "[0, 2]");
+        intervalExtension_helper("0", "sqrt(2)", "[0, 2]");
+        intervalExtension_helper("0", "(1+sqrt(5))/2", "[0, 2]");
+
+        intervalExtension_helper("1/2", "1", "[1/2, 1]");
+        intervalExtension_helper("1/2", "root 0 of x^5-x-1", "[1/2, 3/2]");
+        intervalExtension_helper("1/2", "sqrt(2)", "[1/2, 3/2]");
+        intervalExtension_helper("1/2", "(1+sqrt(5))/2", "[1/2, 2]");
+
+        intervalExtension_helper("1", "root 0 of x^5-x-1", "[1, 5/4]");
+        intervalExtension_helper("1", "sqrt(2)", "[1, 3/2]");
+        intervalExtension_helper("1", "(1+sqrt(5))/2", "[1, 2]");
+
+        intervalExtension_helper("root 0 of x^5-x-1", "sqrt(2)", "[9/8, 23/16]");
+        intervalExtension_helper("root 0 of x^5-x-1", "(1+sqrt(5))/2", "[9/8, 13/8]");
+
+        intervalExtension_helper("sqrt(2)", "(1+sqrt(5))/2", "[11/8, 13/8]");
+
+        intervalExtension_fail_helper("0", "0");
+        intervalExtension_fail_helper("sqrt(2)", "sqrt(2)");
+        intervalExtension_fail_helper("sqrt(2)", "0");
+        intervalExtension_fail_helper("sqrt(2)", "-sqrt(2)");
+        intervalExtension_fail_helper("1", "0");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(
