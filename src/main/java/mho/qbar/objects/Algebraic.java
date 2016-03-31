@@ -1133,14 +1133,16 @@ public class Algebraic implements Comparable<Algebraic> {
         return Real.intervalExtension(lower.realValue(), upper.realValue());
     }
 
-    public int signum() {
-        if (rational.isPresent()) {
-            return rational.get().signum();
-        } else {
-            return realValue().signum();
-        }
-    }
-
+    /**
+     * Returns the negative of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * @return –{@code this}
+     */
     public @NotNull Algebraic negate() {
         if (this == ZERO) return ZERO;
         if (rational.isPresent()) {
@@ -1154,6 +1156,39 @@ public class Algebraic implements Comparable<Algebraic> {
                     isolatingInterval.negate(),
                     mpRootCount
             );
+        }
+    }
+
+    /**
+     * Returns the absolute value of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>The result is a non-negative {@code Algebraic}.</li>
+     * </ul>
+     *
+     * @return |{@code this}|
+     */
+    public @NotNull Algebraic abs() {
+        return signum() == -1 ? negate() : this;
+    }
+
+    /**
+     * Returns the sign of {@code this}: 1 if positive, –1 if negative, 0 if equal to 0.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>The result is –1, 0, or 1.</li>
+     * </ul>
+     *
+     * @return sgn({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public int signum() {
+        if (rational.isPresent()) {
+            return rational.get().signum();
+        } else {
+            return realValue().signum();
         }
     }
 

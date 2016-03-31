@@ -809,8 +809,8 @@ public class AlgebraicTest {
         binaryExponent_fail_helper("-sqrt(2)");
     }
 
-    private static void isEqualToFloat_helper(@NotNull String r, boolean output) {
-        aeq(read(r).get().isEqualToFloat(), output);
+    private static void isEqualToFloat_helper(@NotNull String input, boolean output) {
+        aeq(read(input).get().isEqualToFloat(), output);
     }
 
     @Test
@@ -828,8 +828,8 @@ public class AlgebraicTest {
         isEqualToFloat_helper("root 0 of x^5-x-1", false);
     }
 
-    private static void isEqualToDouble_helper(@NotNull String r, boolean output) {
-        aeq(read(r).get().isEqualToDouble(), output);
+    private static void isEqualToDouble_helper(@NotNull String input, boolean output) {
+        aeq(read(input).get().isEqualToDouble(), output);
     }
 
     @Test
@@ -934,8 +934,8 @@ public class AlgebraicTest {
         floatValue_RoundingMode_fail_helper("root 0 of x^5-x-1", "UNNECESSARY");
     }
 
-    private static void floatValue_helper(@NotNull String x, float output) {
-        aeq(read(x).get().floatValue(), output);
+    private static void floatValue_helper(@NotNull String input, float output) {
+        aeq(read(input).get().floatValue(), output);
     }
 
     @Test
@@ -950,13 +950,13 @@ public class AlgebraicTest {
         floatValue_helper("root 0 of x^5-x-1", 1.1673039f);
     }
 
-    private static void floatValueExact_helper(@NotNull String x, float output) {
-        aeq(read(x).get().floatValueExact(), output);
+    private static void floatValueExact_helper(@NotNull String input, float output) {
+        aeq(read(input).get().floatValueExact(), output);
     }
 
-    private static void floatValueExact_fail_helper(@NotNull String x) {
+    private static void floatValueExact_fail_helper(@NotNull String input) {
         try {
-            read(x).get().floatValueExact();
+            read(input).get().floatValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -1065,8 +1065,8 @@ public class AlgebraicTest {
         doubleValue_RoundingMode_fail_helper("root 0 of x^5-x-1", "UNNECESSARY");
     }
 
-    private static void doubleValue_helper(@NotNull String x, double output) {
-        aeq(read(x).get().doubleValue(), output);
+    private static void doubleValue_helper(@NotNull String input, double output) {
+        aeq(read(input).get().doubleValue(), output);
     }
 
     @Test
@@ -1081,8 +1081,8 @@ public class AlgebraicTest {
         doubleValue_helper("root 0 of x^5-x-1", 1.1673039782614187);
     }
 
-    private static void doubleValueExact_helper(@NotNull String x, double output) {
-        aeq(read(x).get().doubleValueExact(), output);
+    private static void doubleValueExact_helper(@NotNull String input, double output) {
+        aeq(read(input).get().doubleValueExact(), output);
     }
 
     private static void doubleValueExact_fail_helper(@NotNull String x) {
@@ -1105,8 +1105,8 @@ public class AlgebraicTest {
         doubleValueExact_fail_helper("root 0 of x^5-x-1");
     }
 
-    private static void minimalPolynomial_helper(@NotNull String x, @NotNull String output) {
-        aeq(read(x).get().minimalPolynomial(), output);
+    private static void minimalPolynomial_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().minimalPolynomial(), output);
     }
 
     @Test
@@ -1121,8 +1121,8 @@ public class AlgebraicTest {
         minimalPolynomial_helper("root 0 of x^5-x-1", "x^5-x-1");
     }
 
-    private static void rootIndex_helper(@NotNull String x, int output) {
-        aeq(read(x).get().rootIndex(), output);
+    private static void rootIndex_helper(@NotNull String input, int output) {
+        aeq(read(input).get().rootIndex(), output);
     }
 
     @Test
@@ -1137,8 +1137,8 @@ public class AlgebraicTest {
         rootIndex_helper("root 0 of x^5-x-1", 0);
     }
 
-    private static void degree_helper(@NotNull String x, int output) {
-        aeq(read(x).get().degree(), output);
+    private static void degree_helper(@NotNull String input, int output) {
+        aeq(read(input).get().degree(), output);
     }
 
     @Test
@@ -1153,8 +1153,8 @@ public class AlgebraicTest {
         degree_helper("root 0 of x^5-x-1", 5);
     }
 
-    private static void isolatingInterval_helper(@NotNull String x, @NotNull String output) {
-        aeq(read(x).get().isolatingInterval(), output);
+    private static void isolatingInterval_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().isolatingInterval(), output);
     }
 
     @Test
@@ -1169,8 +1169,8 @@ public class AlgebraicTest {
         isolatingInterval_helper("root 0 of x^5-x-1", "[-2, 2]");
     }
 
-    private static void minimalPolynomialRootCount_helper(@NotNull String x, int output) {
-        aeq(read(x).get().minimalPolynomialRootCount(), output);
+    private static void minimalPolynomialRootCount_helper(@NotNull String input, int output) {
+        aeq(read(input).get().minimalPolynomialRootCount(), output);
     }
 
     @Test
@@ -1238,6 +1238,58 @@ public class AlgebraicTest {
         intervalExtension_fail_helper("sqrt(2)", "0");
         intervalExtension_fail_helper("sqrt(2)", "-sqrt(2)");
         intervalExtension_fail_helper("1", "0");
+    }
+
+    private static void negate_helper(@NotNull String input, @NotNull String output) {
+        Algebraic x = read(input).get().negate();
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testNegate() {
+        negate_helper("0", "0");
+        negate_helper("1", "-1");
+        negate_helper("1/2", "-1/2");
+        negate_helper("-4/3", "4/3");
+        negate_helper("sqrt(2)", "-sqrt(2)");
+        negate_helper("-sqrt(2)", "sqrt(2)");
+        negate_helper("(1+sqrt(5))/2", "(-1-sqrt(5))/2");
+        negate_helper("root 0 of x^5-x-1", "root 0 of x^5-x+1");
+    }
+
+    private static void abs_helper(@NotNull String input, @NotNull String output) {
+        Algebraic x = read(input).get().abs();
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testAbs() {
+        abs_helper("0", "0");
+        abs_helper("1", "1");
+        abs_helper("1/2", "1/2");
+        abs_helper("-4/3", "4/3");
+        abs_helper("sqrt(2)", "sqrt(2)");
+        abs_helper("-sqrt(2)", "sqrt(2)");
+        abs_helper("(1+sqrt(5))/2", "(1+sqrt(5))/2");
+        abs_helper("root 0 of x^5-x-1", "root 0 of x^5-x-1");
+    }
+
+    private static void signum_helper(@NotNull String input, int output) {
+        aeq(read(input).get().signum(), output);
+    }
+
+    @Test
+    public void testSignum() {
+        signum_helper("0", 0);
+        signum_helper("1", 1);
+        signum_helper("1/2", 1);
+        signum_helper("-4/3", -1);
+        signum_helper("sqrt(2)", 1);
+        signum_helper("-sqrt(2)", -1);
+        signum_helper("(1+sqrt(5))/2", 1);
+        signum_helper("root 0 of x^5-x-1", 1);
     }
 
     @Test

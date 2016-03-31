@@ -5,6 +5,7 @@ import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.numberUtils.IntegerUtils;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
@@ -74,12 +75,15 @@ public class AlgebraicProperties extends QBarTestProperties {
         propertiesIsolatingInterval();
         propertiesMinimalPolynomialRootCount();
         propertiesIntervalExtension();
+        propertiesNegate();
+        propertiesAbs();
+        propertiesSignum();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
         propertiesRead();
         propertiesFindIn();
-//        propertiesToString();
+        propertiesToString();
     }
 
     private void propertiesOf_Polynomial_int() {
@@ -1196,6 +1200,44 @@ public class AlgebraicProperties extends QBarTestProperties {
                 intervalExtension(p.b, p.a);
                 fail(p);
             } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesNegate() {
+        initialize("negate()");
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            Algebraic negative = x.negate();
+            negative.validate();
+            involution(Algebraic::negate, x);
+            //todo assertTrue(x, x.add(negative) == ZERO);
+        }
+
+        for (Algebraic x : take(LIMIT, P.nonzeroAlgebraics())) {
+            assertNotEquals(x, x, x.negate());
+        }
+    }
+
+    private void propertiesAbs() {
+        initialize("abs()");
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            Algebraic abs = x.abs();
+            abs.validate();
+            idempotent(Algebraic::abs, x);
+            assertNotEquals(x, abs.signum(), -1);
+            assertTrue(x, ge(abs, ZERO));
+        }
+
+        for (Algebraic x : take(LIMIT, P.positiveAlgebraics())) {
+            fixedPoint(Algebraic::abs, x);
+        }
+    }
+
+    private void propertiesSignum() {
+        initialize("testing signum()");
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            int signum = x.signum();
+            assertEquals(x, signum, Ordering.compare(x, ZERO).toInt());
+            assertTrue(x, signum == -1 || signum == 0 || signum == 1);
         }
     }
 

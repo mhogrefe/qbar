@@ -315,6 +315,24 @@ public class AlgebraicDemos extends QBarDemos {
         }
     }
 
+    private void demoNegate() {
+        for (Algebraic x : take(LIMIT, P.withScale(4).algebraics())) {
+            System.out.println("-(" + x + ") = " + x.negate());
+        }
+    }
+
+    private void demoAbs() {
+        for (Algebraic x : take(LIMIT, P.withScale(4).algebraics())) {
+            System.out.println("|" + x + "| = " + x.abs());
+        }
+    }
+
+    private void demoSignum() {
+        for (Algebraic x : take(LIMIT, P.withScale(4).algebraics())) {
+            System.out.println("signum(" + x + ") = " + x.signum());
+        }
+    }
+
     private void demoEquals_Algebraic() {
         for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.pairs(P.withScale(4).algebraics()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);
