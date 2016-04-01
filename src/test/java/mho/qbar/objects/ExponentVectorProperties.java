@@ -4,6 +4,7 @@ import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
 import mho.wheels.structures.Pair;
+import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -30,6 +31,7 @@ public class ExponentVectorProperties extends QBarTestProperties {
         propertiesFromTerms();
         propertiesDegree();
         propertiesVariables();
+        propertiesMultiply();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -201,6 +203,24 @@ public class ExponentVectorProperties extends QBarTestProperties {
             for (Variable v : variables) {
                 assertTrue(ev, s.contains(v.toString()));
             }
+        }
+    }
+
+    private void propertiesMultiply() {
+        initialize("multiply(ExponentVector)");
+        for (Pair<ExponentVector, ExponentVector> p : take(LIMIT, P.pairs(P.exponentVectors()))) {
+            ExponentVector product = p.a.multiply(p.b);
+            product.validate();
+            commutative(ExponentVector::multiply, p);
+        }
+
+        for (ExponentVector ev : take(LIMIT, P.exponentVectors())) {
+            fixedPoint(ONE::multiply, ev);
+            fixedPoint(f -> f.multiply(ONE), ev);
+        }
+
+        for (Triple<ExponentVector, ExponentVector, ExponentVector> t : take(LIMIT, P.triples(P.exponentVectors()))) {
+            associative(ExponentVector::multiply, t);
         }
     }
 

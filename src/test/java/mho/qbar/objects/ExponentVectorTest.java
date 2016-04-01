@@ -146,8 +146,8 @@ public class ExponentVectorTest {
         degree_helper("x^2*y*z^3", 6);
     }
 
-    private static void variables_helper(@NotNull String x, @NotNull String output) {
-        aeq(read(x).get().variables(), output);
+    private static void variables_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().variables(), output);
     }
 
     @Test
@@ -159,6 +159,43 @@ public class ExponentVectorTest {
         variables_helper("a*b", "[a, b]");
         variables_helper("ooo", "[ooo]");
         variables_helper("x^2*y*z^3", "[x, y, z]");
+    }
+
+    private static void multiply_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().multiply(read(b).get()), output);
+    }
+
+    @Test
+    public void testMultiply() {
+        multiply_helper("1", "1", "1");
+        multiply_helper("1", "a", "a");
+        multiply_helper("1", "a^2", "a^2");
+        multiply_helper("1", "x^2*y*z^3", "x^2*y*z^3");
+        multiply_helper("1", "ooo", "ooo");
+
+        multiply_helper("a", "1", "a");
+        multiply_helper("a", "a", "a^2");
+        multiply_helper("a", "a^2", "a^3");
+        multiply_helper("a", "x^2*y*z^3", "a*x^2*y*z^3");
+        multiply_helper("a", "ooo", "a*ooo");
+
+        multiply_helper("a^2", "1", "a^2");
+        multiply_helper("a^2", "a", "a^3");
+        multiply_helper("a^2", "a^2", "a^4");
+        multiply_helper("a^2", "x^2*y*z^3", "a^2*x^2*y*z^3");
+        multiply_helper("a^2", "ooo", "a^2*ooo");
+
+        multiply_helper("x^2*y*z^3", "1", "x^2*y*z^3");
+        multiply_helper("x^2*y*z^3", "a", "a*x^2*y*z^3");
+        multiply_helper("x^2*y*z^3", "a^2", "a^2*x^2*y*z^3");
+        multiply_helper("x^2*y*z^3", "x^2*y*z^3", "x^4*y^2*z^6");
+        multiply_helper("x^2*y*z^3", "ooo", "x^2*y*z^3*ooo");
+
+        multiply_helper("ooo", "1", "ooo");
+        multiply_helper("ooo", "a", "a*ooo");
+        multiply_helper("ooo", "a^2", "a^2*ooo");
+        multiply_helper("ooo", "x^2*y*z^3", "x^2*y*z^3*ooo");
+        multiply_helper("ooo", "ooo", "ooo^2");
     }
 
     @Test

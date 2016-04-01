@@ -223,6 +223,24 @@ public class ExponentVector implements Comparable<ExponentVector> {
     }
 
     /**
+     * Returns the product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code ExponentVector}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code ExponentVector} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull ExponentVector multiply(@NotNull ExponentVector that) {
+        if (this == ONE) return that;
+        if (that == ONE) return this;
+        return new ExponentVector(toList(zipWithPadded((e, f) -> e + f, 0, 0, exponents, that.exponents)));
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>

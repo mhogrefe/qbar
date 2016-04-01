@@ -81,6 +81,12 @@ public class ExponentVectorDemos extends QBarDemos {
         }
     }
 
+    private void demoMultiply() {
+        for (Pair<ExponentVector, ExponentVector> p : take(LIMIT, P.pairs(P.exponentVectors()))) {
+            System.out.println("(" + p.a + ") * (" + p.b + ") = " + p.a.multiply(p.b));
+        }
+    }
+
     private void demoEquals_ExponentVector() {
         for (Pair<ExponentVector, ExponentVector> p : take(LIMIT, P.pairs(P.exponentVectors()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);
