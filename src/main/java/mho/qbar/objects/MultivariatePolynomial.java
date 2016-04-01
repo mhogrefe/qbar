@@ -1,8 +1,10 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.NoRemoveIterable;
 import mho.wheels.numberUtils.IntegerUtils;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
@@ -440,6 +442,64 @@ public class MultivariatePolynomial implements
             if (term.a == ExponentVector.ONE && term.b.equals(BigInteger.ONE)) return ONE;
         }
         return new MultivariatePolynomial(differenceTerms);
+    }
+
+    public @NotNull MultivariatePolynomial multiply(@NotNull BigInteger that) {
+        if (this == ZERO || that.equals(BigInteger.ZERO)) return ZERO;
+        if (this == ONE && that.equals(BigInteger.ONE)) return ONE;
+        return new MultivariatePolynomial(toList(map(t -> new Pair<>(t.a, t.b.multiply(that)), terms)));
+    }
+
+    public @NotNull MultivariatePolynomial multiply(@NotNull ExponentVector ev, @NotNull BigInteger c) {
+        if (this == ZERO || c.equals(BigInteger.ZERO)) return ZERO;
+        if (this == ONE) return of(ev, c);
+        if (ev == ExponentVector.ONE) return multiply(c);
+        return new MultivariatePolynomial(toList(map(t -> new Pair<>(t.a.multiply(ev), t.b.multiply(c)), terms)));
+    }
+
+    public @NotNull MultivariatePolynomial multiply(@NotNull MultivariatePolynomial that) {
+        if (this == ZERO || that == ZERO) return ZERO;
+        if (this == ONE) return that;
+        if (that == ONE) return this;
+        return sum(toList(map(t -> multiply(t.a, t.b), that.terms)));
+    }
+
+    public static @NotNull MultivariatePolynomial sum(@NotNull List<MultivariatePolynomial> xs) {
+        List<Pair<ExponentVector, BigInteger>> sumTerms = new ArrayList<>();
+        List<Iterator<Pair<ExponentVector, BigInteger>>> inputTermsIterators =
+                toList(map(MultivariatePolynomial::iterator, xs));
+        List<Pair<ExponentVector, BigInteger>> inputTerms =
+                toList(map(it -> it.hasNext() ? it.next() : null, inputTermsIterators));
+        while (true) {
+            ExponentVector lowestEV = null;
+            List<Integer> lowestIndices = new ArrayList<>();
+            for (int i = 0; i < inputTerms.size(); i++) {
+                Pair<ExponentVector, BigInteger> p = inputTerms.get(i);
+                if (lowestEV == null || Ordering.lt(p.a, lowestEV)) {
+                    lowestEV = p.a;
+                    lowestIndices.clear();
+                    lowestIndices.add(i);
+                } else if (p.a.equals(lowestEV)) {
+                    lowestIndices.add(i);
+                }
+            }
+            if (lowestEV == null) {
+                break;
+            }
+            BigInteger coefficient = BigInteger.ZERO;
+            for (int index : lowestIndices) {
+                coefficient = coefficient.add(inputTerms.get(index).b);
+                Iterator<Pair<ExponentVector, BigInteger>> it = inputTermsIterators.get(index);
+                inputTerms.set(index, it.hasNext() ? it.next() : null);
+            }
+            sumTerms.add(new Pair<>(lowestEV, coefficient));
+        }
+        if (sumTerms.size() == 0) return ZERO;
+        if (sumTerms.size() == 1) {
+            Pair<ExponentVector, BigInteger> term = sumTerms.get(0);
+            if (term.a == ExponentVector.ONE && term.b.equals(BigInteger.ONE)) return ONE;
+        }
+        return new MultivariatePolynomial(sumTerms);
     }
 
     /**
