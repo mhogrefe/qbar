@@ -1192,6 +1192,227 @@ public class Algebraic implements Comparable<Algebraic> {
         }
     }
 
+    /**
+     * Returns the sum of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code BigInteger} added to {@code this}
+     * @return {@code this}+{@code that}
+     */
+    public @NotNull Algebraic add(@NotNull BigInteger that) {
+        if (this == ZERO) return of(that);
+        if (that.equals(BigInteger.ZERO)) return this;
+        if (isRational()) {
+            return of(rational.get().add(Rational.of(that)));
+        }
+        Polynomial sumMP = minimalPolynomial.translate(that);
+        Interval sumIsolatingInterval = sumMP.powerOfTwoIsolatingInterval(rootIndex);
+        return new Algebraic(sumMP, rootIndex, sumIsolatingInterval, mpRootCount);
+    }
+
+    /**
+     * Returns the sum of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code Rational} added to {@code this}
+     * @return {@code this}+{@code that}
+     */
+    public @NotNull Algebraic add(@NotNull Rational that) {
+        if (this == ZERO) return of(that);
+        if (that == Rational.ZERO) return this;
+        if (isRational()) {
+            return of(rational.get().add(that));
+        }
+        Polynomial sumMP = minimalPolynomial.positivePrimitiveTranslate(that);
+        Interval sumIsolatingInterval = sumMP.powerOfTwoIsolatingInterval(rootIndex);
+        return new Algebraic(sumMP, rootIndex, sumIsolatingInterval, mpRootCount);
+    }
+
+    /**
+     * Returns the sum of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code Algebraic} added to {@code this}
+     * @return {@code this}+{@code that}
+     */
+    public @NotNull Algebraic add(@NotNull Algebraic that) {
+        if (this == ZERO) return that;
+        if (that == ZERO) return this;
+        if (isRational()) return that.add(rational.get());
+        if (that.isRational()) return add(that.rational.get());
+        if (degree() == that.degree()) {
+            //todo if (equals(that)) return shiftLeft(1);
+            if (equals(that.negate())) return ZERO;
+        }
+        Polynomial sumMP = minimalPolynomial.addRoots(that.minimalPolynomial).squareFreePart();
+        int sumMPRootCount = sumMP.rootCount();
+        List<Polynomial> factors;
+        if (MathUtils.gcd(degree(), that.degree()) == 1) {
+            factors = new ArrayList<>();
+            factors.add(sumMP);
+        } else {
+            factors = sumMP.factor();
+        }
+        if (factors.size() == 1 && sumMPRootCount == 1) {
+            Polynomial factor = factors.get(0);
+            if (factor.degree() == 1) {
+                return new Algebraic(Rational.of(factor.coefficient(0).negate(), factor.coefficient(1)));
+            } else {
+                return new Algebraic(factors.get(0), 0, sumMP.powerOfTwoIsolatingInterval(0), 1);
+            }
+        }
+        List<Pair<Polynomial, Integer>> polyRootPairs = new ArrayList<>();
+        List<Real> realRoots = new ArrayList<>();
+        List<Interval> isolatingIntervals = new ArrayList<>();
+        List<Integer> rootCounts = new ArrayList<>();
+        for (Polynomial factor : factors) {
+            List<Interval> factorIsolatingIntervals = factor.powerOfTwoIsolatingIntervals();
+            int factorRootCount = factor.rootCount();
+            for (int i = 0; i < factorRootCount; i++) {
+                polyRootPairs.add(new Pair<>(factor, i));
+                realRoots.add(Real.root(factor::signum, factorIsolatingIntervals.get(i)));
+                isolatingIntervals.add(factorIsolatingIntervals.get(i));
+                rootCounts.add(factorRootCount);
+            }
+        }
+        int matchIndex = realValue().add(that.realValue()).match(realRoots);
+        Pair<Polynomial, Integer> pair = polyRootPairs.get(matchIndex);
+        sumMP = pair.a;
+        if (sumMP.degree() == 1) {
+            return of(Rational.of(sumMP.coefficient(0).negate(), sumMP.coefficient(1)));
+        }
+        int sumRootIndex = pair.b;
+        return new Algebraic(sumMP, sumRootIndex, isolatingIntervals.get(matchIndex), rootCounts.get(matchIndex));
+    }
+
+    /**
+     * Returns the difference of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code BigInteger} subtracted from {@code this}
+     * @return {@code this}–{@code that}
+     */
+    public @NotNull Algebraic subtract(@NotNull BigInteger that) {
+        if (this == ZERO) return of(that.negate());
+        if (that.equals(BigInteger.ZERO)) return this;
+        if (isRational()) {
+            return of(rational.get().subtract(Rational.of(that)));
+        }
+        Polynomial sumMP = minimalPolynomial.translate(that.negate());
+        Interval sumIsolatingInterval = sumMP.powerOfTwoIsolatingInterval(rootIndex);
+        return new Algebraic(sumMP, rootIndex, sumIsolatingInterval, mpRootCount);
+    }
+
+    /**
+     * Returns the difference of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code Rational} subtracted from {@code this}
+     * @return {@code this}–{@code that}
+     */
+    public @NotNull Algebraic subtract(@NotNull Rational that) {
+        if (this == ZERO) return of(that.negate());
+        if (that == Rational.ZERO) return this;
+        if (isRational()) {
+            return of(rational.get().subtract(that));
+        }
+        Polynomial sumMP = minimalPolynomial.positivePrimitiveTranslate(that.negate());
+        Interval sumIsolatingInterval = sumMP.powerOfTwoIsolatingInterval(rootIndex);
+        return new Algebraic(sumMP, rootIndex, sumIsolatingInterval, mpRootCount);
+    }
+
+    /**
+     * Returns the difference of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code Algebraic} subtracted from {@code this}
+     * @return {@code this}–{@code that}
+     */
+    public @NotNull Algebraic subtract(@NotNull Algebraic that) {
+        if (this == ZERO) return that.negate();
+        if (that == ZERO) return this;
+        if (isRational()) return that.subtract(rational.get()).negate();
+        if (that.isRational()) return subtract(that.rational.get());
+        if (degree() == that.degree()) {
+            if (equals(that)) return ZERO;
+            //todo if (equals(that).negate()) return shiftLeft(1);
+        }
+        Polynomial differenceMP = minimalPolynomial.addRoots(that.minimalPolynomial.reflect()).squareFreePart();
+        int differenceMPRootCount = differenceMP.rootCount();
+        List<Polynomial> factors;
+        if (MathUtils.gcd(degree(), that.degree()) == 1) {
+            factors = new ArrayList<>();
+            factors.add(differenceMP);
+        } else {
+            factors = differenceMP.factor();
+        }
+        if (factors.size() == 1 && differenceMPRootCount == 1) {
+            Polynomial factor = factors.get(0);
+            if (factor.degree() == 1) {
+                return new Algebraic(Rational.of(factor.coefficient(0).negate(), factor.coefficient(1)));
+            } else {
+                return new Algebraic(factors.get(0), 0, differenceMP.powerOfTwoIsolatingInterval(0), 1);
+            }
+        }
+        List<Pair<Polynomial, Integer>> polyRootPairs = new ArrayList<>();
+        List<Real> realRoots = new ArrayList<>();
+        List<Interval> isolatingIntervals = new ArrayList<>();
+        List<Integer> rootCounts = new ArrayList<>();
+        for (Polynomial factor : factors) {
+            List<Interval> factorIsolatingIntervals = factor.powerOfTwoIsolatingIntervals();
+            int factorRootCount = factor.rootCount();
+            for (int i = 0; i < factorRootCount; i++) {
+                polyRootPairs.add(new Pair<>(factor, i));
+                realRoots.add(Real.root(factor::signum, factorIsolatingIntervals.get(i)));
+                isolatingIntervals.add(factorIsolatingIntervals.get(i));
+                rootCounts.add(factorRootCount);
+            }
+        }
+        int matchIndex = realValue().subtract(that.realValue()).match(realRoots);
+        Pair<Polynomial, Integer> pair = polyRootPairs.get(matchIndex);
+        differenceMP = pair.a;
+        if (differenceMP.degree() == 1) {
+            return of(Rational.of(differenceMP.coefficient(0).negate(), differenceMP.coefficient(1)));
+        }
+        int differenceRootIndex = pair.b;
+        return new Algebraic(
+                differenceMP,
+                differenceRootIndex,
+                isolatingIntervals.get(matchIndex),
+                rootCounts.get(matchIndex)
+        );
+    }
+
     public @NotNull Algebraic invert() {
         if (this == ZERO) {
             throw new ArithmeticException();

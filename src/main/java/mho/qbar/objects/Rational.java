@@ -1554,6 +1554,11 @@ public final class Rational implements Comparable<Rational> {
      * @return {@code this}/{@code that}
      */
     public @NotNull Rational divide(@NotNull Rational that) {
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        if (this == ZERO) return ZERO;
+        if (that == ONE) return this;
         return multiply(that.invert());
     }
 
@@ -1574,6 +1579,7 @@ public final class Rational implements Comparable<Rational> {
             throw new ArithmeticException("that cannot be zero.");
         }
         if (this == ZERO) return ZERO;
+        if (that.equals(BigInteger.ONE)) return this;
         if (denominator.equals(BigInteger.ONE) && numerator.equals(that)) return ONE;
         BigInteger gcd = numerator.gcd(that);
         if (that.signum() == -1) gcd = gcd.negate();
@@ -1597,6 +1603,7 @@ public final class Rational implements Comparable<Rational> {
             throw new ArithmeticException("that cannot be zero.");
         }
         if (this == ZERO) return ZERO;
+        if (that == 1) return this;
         if (denominator.equals(BigInteger.ONE) && numerator.equals(BigInteger.valueOf(that))) return ONE;
         BigInteger gcd = numerator.gcd(BigInteger.valueOf(that));
         if (that < 0) gcd = gcd.negate();

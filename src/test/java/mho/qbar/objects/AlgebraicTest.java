@@ -1292,6 +1292,444 @@ public class AlgebraicTest {
         signum_helper("root 0 of x^5-x-1", 1);
     }
 
+    private static void add_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        Algebraic x = read(a).get().add(Readers.readBigInteger(b).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testAdd_BigInteger() {
+        add_BigInteger_helper("0", "0", "0");
+        add_BigInteger_helper("0", "1", "1");
+        add_BigInteger_helper("0", "-1", "-1");
+        add_BigInteger_helper("0", "100", "100");
+
+        add_BigInteger_helper("1", "0", "1");
+        add_BigInteger_helper("1", "1", "2");
+        add_BigInteger_helper("1", "-1", "0");
+        add_BigInteger_helper("1", "100", "101");
+
+        add_BigInteger_helper("-1", "0", "-1");
+        add_BigInteger_helper("-1", "1", "0");
+        add_BigInteger_helper("-1", "-1", "-2");
+        add_BigInteger_helper("-1", "100", "99");
+
+        add_BigInteger_helper("1/2", "0", "1/2");
+        add_BigInteger_helper("1/2", "1", "3/2");
+        add_BigInteger_helper("1/2", "-1", "-1/2");
+        add_BigInteger_helper("1/2", "100", "201/2");
+
+        add_BigInteger_helper("-4/3", "0", "-4/3");
+        add_BigInteger_helper("-4/3", "1", "-1/3");
+        add_BigInteger_helper("-4/3", "-1", "-7/3");
+        add_BigInteger_helper("-4/3", "100", "296/3");
+
+        add_BigInteger_helper("sqrt(2)", "0", "sqrt(2)");
+        add_BigInteger_helper("sqrt(2)", "1", "1+sqrt(2)");
+        add_BigInteger_helper("sqrt(2)", "-1", "-1+sqrt(2)");
+        add_BigInteger_helper("sqrt(2)", "100", "100+sqrt(2)");
+
+        add_BigInteger_helper("-sqrt(2)", "0", "-sqrt(2)");
+        add_BigInteger_helper("-sqrt(2)", "1", "1-sqrt(2)");
+        add_BigInteger_helper("-sqrt(2)", "-1", "-1-sqrt(2)");
+        add_BigInteger_helper("-sqrt(2)", "100", "100-sqrt(2)");
+
+        add_BigInteger_helper("(1+sqrt(5))/2", "0", "(1+sqrt(5))/2");
+        add_BigInteger_helper("(1+sqrt(5))/2", "1", "(3+sqrt(5))/2");
+        add_BigInteger_helper("(1+sqrt(5))/2", "-1", "(-1+sqrt(5))/2");
+        add_BigInteger_helper("(1+sqrt(5))/2", "100", "(201+sqrt(5))/2");
+
+        add_BigInteger_helper("root 0 of x^5-x-1", "0", "root 0 of x^5-x-1");
+        add_BigInteger_helper("root 0 of x^5-x-1", "1", "root 0 of x^5-5*x^4+10*x^3-10*x^2+4*x-1");
+        add_BigInteger_helper("root 0 of x^5-x-1", "-1", "root 0 of x^5+5*x^4+10*x^3+10*x^2+4*x-1");
+        add_BigInteger_helper("root 0 of x^5-x-1", "100",
+                "root 0 of x^5-500*x^4+100000*x^3-10000000*x^2+499999999*x-9999999901");
+    }
+
+    private static void add_Rational_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        Algebraic x = read(a).get().add(Rational.read(b).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testAdd_Rational() {
+        add_Rational_helper("0", "0", "0");
+        add_Rational_helper("0", "1", "1");
+        add_Rational_helper("0", "-1", "-1");
+        add_Rational_helper("0", "100/3", "100/3");
+        add_Rational_helper("0", "1/100", "1/100");
+
+        add_Rational_helper("1", "0", "1");
+        add_Rational_helper("1", "1", "2");
+        add_Rational_helper("1", "-1", "0");
+        add_Rational_helper("1", "100/3", "103/3");
+        add_Rational_helper("1", "1/100", "101/100");
+
+        add_Rational_helper("-1", "0", "-1");
+        add_Rational_helper("-1", "1", "0");
+        add_Rational_helper("-1", "-1", "-2");
+        add_Rational_helper("-1", "100/3", "97/3");
+        add_Rational_helper("-1", "1/100", "-99/100");
+
+        add_Rational_helper("1/2", "0", "1/2");
+        add_Rational_helper("1/2", "1", "3/2");
+        add_Rational_helper("1/2", "-1", "-1/2");
+        add_Rational_helper("1/2", "100/3", "203/6");
+        add_Rational_helper("1/2", "1/100", "51/100");
+
+        add_Rational_helper("-4/3", "0", "-4/3");
+        add_Rational_helper("-4/3", "1", "-1/3");
+        add_Rational_helper("-4/3", "-1", "-7/3");
+        add_Rational_helper("-4/3", "100/3", "32");
+        add_Rational_helper("-4/3", "1/100", "-397/300");
+
+        add_Rational_helper("sqrt(2)", "0", "sqrt(2)");
+        add_Rational_helper("sqrt(2)", "1", "1+sqrt(2)");
+        add_Rational_helper("sqrt(2)", "-1", "-1+sqrt(2)");
+        add_Rational_helper("sqrt(2)", "100/3", "(100+3*sqrt(2))/3");
+        add_Rational_helper("sqrt(2)", "1/100", "(1+100*sqrt(2))/100");
+
+        add_Rational_helper("-sqrt(2)", "0", "-sqrt(2)");
+        add_Rational_helper("-sqrt(2)", "1", "1-sqrt(2)");
+        add_Rational_helper("-sqrt(2)", "-1", "-1-sqrt(2)");
+        add_Rational_helper("-sqrt(2)", "100/3", "(100-3*sqrt(2))/3");
+        add_Rational_helper("-sqrt(2)", "1/100", "(1-100*sqrt(2))/100");
+
+        add_Rational_helper("(1+sqrt(5))/2", "0", "(1+sqrt(5))/2");
+        add_Rational_helper("(1+sqrt(5))/2", "1", "(3+sqrt(5))/2");
+        add_Rational_helper("(1+sqrt(5))/2", "-1", "(-1+sqrt(5))/2");
+        add_Rational_helper("(1+sqrt(5))/2", "100/3", "(203+3*sqrt(5))/6");
+        add_Rational_helper("(1+sqrt(5))/2", "1/100", "(51+50*sqrt(5))/100");
+
+        add_Rational_helper("root 0 of x^5-x-1", "0", "root 0 of x^5-x-1");
+        add_Rational_helper("root 0 of x^5-x-1", "1", "root 0 of x^5-5*x^4+10*x^3-10*x^2+4*x-1");
+        add_Rational_helper("root 0 of x^5-x-1", "-1", "root 0 of x^5+5*x^4+10*x^3+10*x^2+4*x-1");
+        add_Rational_helper("root 0 of x^5-x-1", "100/3",
+                "root 0 of 243*x^5-40500*x^4+2700000*x^3-90000000*x^2+1499999757*x-9999992143");
+        add_Rational_helper("root 0 of x^5-x-1", "1/100",
+                "root 0 of 10000000000*x^5-500000000*x^4+10000000*x^3-100000*x^2-9999999500*x-9900000001");
+    }
+
+    private static void add_Algebraic_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        Algebraic x = read(a).get().add(read(b).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testAdd_Algebraic() {
+        add_Algebraic_helper("0", "0", "0");
+        add_Algebraic_helper("0", "1", "1");
+        add_Algebraic_helper("0", "-1", "-1");
+        add_Algebraic_helper("0", "1/2", "1/2");
+        add_Algebraic_helper("0", "-4/3", "-4/3");
+        add_Algebraic_helper("0", "sqrt(2)", "sqrt(2)");
+        add_Algebraic_helper("0", "-sqrt(2)", "-sqrt(2)");
+        add_Algebraic_helper("0", "(1+sqrt(5))/2", "(1+sqrt(5))/2");
+        add_Algebraic_helper("0", "root 0 of x^5-x-1", "root 0 of x^5-x-1");
+
+        add_Algebraic_helper("1", "0", "1");
+        add_Algebraic_helper("1", "1", "2");
+        add_Algebraic_helper("1", "-1", "0");
+        add_Algebraic_helper("1", "1/2", "3/2");
+        add_Algebraic_helper("1", "-4/3", "-1/3");
+        add_Algebraic_helper("1", "sqrt(2)", "1+sqrt(2)");
+        add_Algebraic_helper("1", "-sqrt(2)", "1-sqrt(2)");
+        add_Algebraic_helper("1", "(1+sqrt(5))/2", "(3+sqrt(5))/2");
+        add_Algebraic_helper("1", "root 0 of x^5-x-1", "root 0 of x^5-5*x^4+10*x^3-10*x^2+4*x-1");
+
+        add_Algebraic_helper("1/2", "0", "1/2");
+        add_Algebraic_helper("1/2", "1", "3/2");
+        add_Algebraic_helper("1/2", "-1", "-1/2");
+        add_Algebraic_helper("1/2", "1/2", "1");
+        add_Algebraic_helper("1/2", "-4/3", "-5/6");
+        add_Algebraic_helper("1/2", "sqrt(2)", "(1+2*sqrt(2))/2");
+        add_Algebraic_helper("1/2", "-sqrt(2)", "(1-2*sqrt(2))/2");
+        add_Algebraic_helper("1/2", "(1+sqrt(5))/2", "(2+sqrt(5))/2");
+        add_Algebraic_helper("1/2", "root 0 of x^5-x-1", "root 0 of 32*x^5-80*x^4+80*x^3-40*x^2-22*x-17");
+
+        add_Algebraic_helper("-4/3", "0", "-4/3");
+        add_Algebraic_helper("-4/3", "1", "-1/3");
+        add_Algebraic_helper("-4/3", "-1", "-7/3");
+        add_Algebraic_helper("-4/3", "1/2", "-5/6");
+        add_Algebraic_helper("-4/3", "-4/3", "-8/3");
+        add_Algebraic_helper("-4/3", "sqrt(2)", "(-4+3*sqrt(2))/3");
+        add_Algebraic_helper("-4/3", "-sqrt(2)", "(-4-3*sqrt(2))/3");
+        add_Algebraic_helper("-4/3", "(1+sqrt(5))/2", "(-5+3*sqrt(5))/6");
+        add_Algebraic_helper("-4/3", "root 0 of x^5-x-1", "root 0 of 243*x^5+1620*x^4+4320*x^3+5760*x^2+3597*x+457");
+
+        add_Algebraic_helper("sqrt(2)", "0", "sqrt(2)");
+        add_Algebraic_helper("sqrt(2)", "1", "1+sqrt(2)");
+        add_Algebraic_helper("sqrt(2)", "-1", "-1+sqrt(2)");
+        add_Algebraic_helper("sqrt(2)", "1/2", "(1+2*sqrt(2))/2");
+        add_Algebraic_helper("sqrt(2)", "-4/3", "(-4+3*sqrt(2))/3");
+        add_Algebraic_helper("sqrt(2)", "sqrt(2)", "2*sqrt(2)");
+        add_Algebraic_helper("sqrt(2)", "-sqrt(2)", "0");
+        add_Algebraic_helper("sqrt(2)", "(1+sqrt(5))/2", "root 3 of x^4-2*x^3-5*x^2+6*x-1");
+        add_Algebraic_helper("sqrt(2)", "root 0 of x^5-x-1",
+                "root 1 of x^10-10*x^8+38*x^6-2*x^5-100*x^4-40*x^3+121*x^2-38*x-17");
+
+        add_Algebraic_helper("-sqrt(2)", "0", "-sqrt(2)");
+        add_Algebraic_helper("-sqrt(2)", "1", "1-sqrt(2)");
+        add_Algebraic_helper("-sqrt(2)", "-1", "-1-sqrt(2)");
+        add_Algebraic_helper("-sqrt(2)", "1/2", "(1-2*sqrt(2))/2");
+        add_Algebraic_helper("-sqrt(2)", "-4/3", "(-4-3*sqrt(2))/3");
+        add_Algebraic_helper("-sqrt(2)", "sqrt(2)", "0");
+        add_Algebraic_helper("-sqrt(2)", "-sqrt(2)", "-2*sqrt(2)");
+        add_Algebraic_helper("-sqrt(2)", "(1+sqrt(5))/2", "root 1 of x^4-2*x^3-5*x^2+6*x-1");
+        add_Algebraic_helper("-sqrt(2)", "root 0 of x^5-x-1",
+                "root 0 of x^10-10*x^8+38*x^6-2*x^5-100*x^4-40*x^3+121*x^2-38*x-17");
+
+        add_Algebraic_helper("(1+sqrt(5))/2", "0", "(1+sqrt(5))/2");
+        add_Algebraic_helper("(1+sqrt(5))/2", "1", "(3+sqrt(5))/2");
+        add_Algebraic_helper("(1+sqrt(5))/2", "-1", "(-1+sqrt(5))/2");
+        add_Algebraic_helper("(1+sqrt(5))/2", "1/2", "(2+sqrt(5))/2");
+        add_Algebraic_helper("(1+sqrt(5))/2", "-4/3", "(-5+3*sqrt(5))/6");
+        add_Algebraic_helper("(1+sqrt(5))/2", "sqrt(2)", "root 3 of x^4-2*x^3-5*x^2+6*x-1");
+        add_Algebraic_helper("(1+sqrt(5))/2", "-sqrt(2)", "root 1 of x^4-2*x^3-5*x^2+6*x-1");
+        add_Algebraic_helper("(1+sqrt(5))/2", "(1+sqrt(5))/2", "1+sqrt(5)");
+        add_Algebraic_helper("(1+sqrt(5))/2", "root 0 of x^5-x-1",
+                "root 1 of x^10-5*x^9+5*x^8+10*x^7-17*x^6-7*x^5+10*x^3+31*x^2-48*x+16");
+
+        add_Algebraic_helper("root 0 of x^5-x-1", "0", "root 0 of x^5-x-1");
+        add_Algebraic_helper("root 0 of x^5-x-1", "1", "root 0 of x^5-5*x^4+10*x^3-10*x^2+4*x-1");
+        add_Algebraic_helper("root 0 of x^5-x-1", "-1", "root 0 of x^5+5*x^4+10*x^3+10*x^2+4*x-1");
+        add_Algebraic_helper("root 0 of x^5-x-1", "1/2", "root 0 of 32*x^5-80*x^4+80*x^3-40*x^2-22*x-17");
+        add_Algebraic_helper("root 0 of x^5-x-1", "-4/3", "root 0 of 243*x^5+1620*x^4+4320*x^3+5760*x^2+3597*x+457");
+        add_Algebraic_helper("root 0 of x^5-x-1", "sqrt(2)",
+                "root 1 of x^10-10*x^8+38*x^6-2*x^5-100*x^4-40*x^3+121*x^2-38*x-17");
+        add_Algebraic_helper("root 0 of x^5-x-1", "-sqrt(2)",
+                "root 0 of x^10-10*x^8+38*x^6-2*x^5-100*x^4-40*x^3+121*x^2-38*x-17");
+        add_Algebraic_helper("root 0 of x^5-x-1", "(1+sqrt(5))/2",
+                "root 1 of x^10-5*x^9+5*x^8+10*x^7-17*x^6-7*x^5+10*x^3+31*x^2-48*x+16");
+        add_Algebraic_helper("root 0 of x^5-x-1", "root 0 of x^5-x-1", "root 0 of x^5-16*x-32");
+
+        add_Algebraic_helper("sqrt(2)", "sqrt(3)", "root 3 of x^4-10*x^2+1");
+        add_Algebraic_helper("sqrt(2)", "1-sqrt(2)", "1");
+    }
+
+    private static void subtract_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        Algebraic x = read(a).get().subtract(Readers.readBigInteger(b).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testSubtract_BigInteger() {
+        subtract_BigInteger_helper("0", "0", "0");
+        subtract_BigInteger_helper("0", "1", "-1");
+        subtract_BigInteger_helper("0", "-1", "1");
+        subtract_BigInteger_helper("0", "100", "-100");
+
+        subtract_BigInteger_helper("1", "0", "1");
+        subtract_BigInteger_helper("1", "1", "0");
+        subtract_BigInteger_helper("1", "-1", "2");
+        subtract_BigInteger_helper("1", "100", "-99");
+
+        subtract_BigInteger_helper("-1", "0", "-1");
+        subtract_BigInteger_helper("-1", "1", "-2");
+        subtract_BigInteger_helper("-1", "-1", "0");
+        subtract_BigInteger_helper("-1", "100", "-101");
+
+        subtract_BigInteger_helper("1/2", "0", "1/2");
+        subtract_BigInteger_helper("1/2", "1", "-1/2");
+        subtract_BigInteger_helper("1/2", "-1", "3/2");
+        subtract_BigInteger_helper("1/2", "100", "-199/2");
+
+        subtract_BigInteger_helper("-4/3", "0", "-4/3");
+        subtract_BigInteger_helper("-4/3", "1", "-7/3");
+        subtract_BigInteger_helper("-4/3", "-1", "-1/3");
+        subtract_BigInteger_helper("-4/3", "100", "-304/3");
+
+        subtract_BigInteger_helper("sqrt(2)", "0", "sqrt(2)");
+        subtract_BigInteger_helper("sqrt(2)", "1", "-1+sqrt(2)");
+        subtract_BigInteger_helper("sqrt(2)", "-1", "1+sqrt(2)");
+        subtract_BigInteger_helper("sqrt(2)", "100", "-100+sqrt(2)");
+
+        subtract_BigInteger_helper("-sqrt(2)", "0", "-sqrt(2)");
+        subtract_BigInteger_helper("-sqrt(2)", "1", "-1-sqrt(2)");
+        subtract_BigInteger_helper("-sqrt(2)", "-1", "1-sqrt(2)");
+        subtract_BigInteger_helper("-sqrt(2)", "100", "-100-sqrt(2)");
+
+        subtract_BigInteger_helper("(1+sqrt(5))/2", "0", "(1+sqrt(5))/2");
+        subtract_BigInteger_helper("(1+sqrt(5))/2", "1", "(-1+sqrt(5))/2");
+        subtract_BigInteger_helper("(1+sqrt(5))/2", "-1", "(3+sqrt(5))/2");
+        subtract_BigInteger_helper("(1+sqrt(5))/2", "100", "(-199+sqrt(5))/2");
+
+        subtract_BigInteger_helper("root 0 of x^5-x-1", "0", "root 0 of x^5-x-1");
+        subtract_BigInteger_helper("root 0 of x^5-x-1", "1", "root 0 of x^5+5*x^4+10*x^3+10*x^2+4*x-1");
+        subtract_BigInteger_helper("root 0 of x^5-x-1", "-1", "root 0 of x^5-5*x^4+10*x^3-10*x^2+4*x-1");
+        subtract_BigInteger_helper("root 0 of x^5-x-1", "100",
+                "root 0 of x^5+500*x^4+100000*x^3+10000000*x^2+499999999*x+9999999899");
+    }
+
+    private static void subtract_Rational_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        Algebraic x = read(a).get().subtract(Rational.read(b).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testSubtract_Rational() {
+        subtract_Rational_helper("0", "0", "0");
+        subtract_Rational_helper("0", "1", "-1");
+        subtract_Rational_helper("0", "-1", "1");
+        subtract_Rational_helper("0", "100/3", "-100/3");
+        subtract_Rational_helper("0", "1/100", "-1/100");
+
+        subtract_Rational_helper("1", "0", "1");
+        subtract_Rational_helper("1", "1", "0");
+        subtract_Rational_helper("1", "-1", "2");
+        subtract_Rational_helper("1", "100/3", "-97/3");
+        subtract_Rational_helper("1", "1/100", "99/100");
+
+        subtract_Rational_helper("-1", "0", "-1");
+        subtract_Rational_helper("-1", "1", "-2");
+        subtract_Rational_helper("-1", "-1", "0");
+        subtract_Rational_helper("-1", "100/3", "-103/3");
+        subtract_Rational_helper("-1", "1/100", "-101/100");
+
+        subtract_Rational_helper("1/2", "0", "1/2");
+        subtract_Rational_helper("1/2", "1", "-1/2");
+        subtract_Rational_helper("1/2", "-1", "3/2");
+        subtract_Rational_helper("1/2", "100/3", "-197/6");
+        subtract_Rational_helper("1/2", "1/100", "49/100");
+
+        subtract_Rational_helper("-4/3", "0", "-4/3");
+        subtract_Rational_helper("-4/3", "1", "-7/3");
+        subtract_Rational_helper("-4/3", "-1", "-1/3");
+        subtract_Rational_helper("-4/3", "100/3", "-104/3");
+        subtract_Rational_helper("-4/3", "1/100", "-403/300");
+
+        subtract_Rational_helper("sqrt(2)", "0", "sqrt(2)");
+        subtract_Rational_helper("sqrt(2)", "1", "-1+sqrt(2)");
+        subtract_Rational_helper("sqrt(2)", "-1", "1+sqrt(2)");
+        subtract_Rational_helper("sqrt(2)", "100/3", "(-100+3*sqrt(2))/3");
+        subtract_Rational_helper("sqrt(2)", "1/100", "(-1+100*sqrt(2))/100");
+
+        subtract_Rational_helper("-sqrt(2)", "0", "-sqrt(2)");
+        subtract_Rational_helper("-sqrt(2)", "1", "-1-sqrt(2)");
+        subtract_Rational_helper("-sqrt(2)", "-1", "1-sqrt(2)");
+        subtract_Rational_helper("-sqrt(2)", "100/3", "(-100-3*sqrt(2))/3");
+        subtract_Rational_helper("-sqrt(2)", "1/100", "(-1-100*sqrt(2))/100");
+
+        subtract_Rational_helper("(1+sqrt(5))/2", "0", "(1+sqrt(5))/2");
+        subtract_Rational_helper("(1+sqrt(5))/2", "1", "(-1+sqrt(5))/2");
+        subtract_Rational_helper("(1+sqrt(5))/2", "-1", "(3+sqrt(5))/2");
+        subtract_Rational_helper("(1+sqrt(5))/2", "100/3", "(-197+3*sqrt(5))/6");
+        subtract_Rational_helper("(1+sqrt(5))/2", "1/100", "(49+50*sqrt(5))/100");
+
+        subtract_Rational_helper("root 0 of x^5-x-1", "0", "root 0 of x^5-x-1");
+        subtract_Rational_helper("root 0 of x^5-x-1", "1", "root 0 of x^5+5*x^4+10*x^3+10*x^2+4*x-1");
+        subtract_Rational_helper("root 0 of x^5-x-1", "-1", "root 0 of x^5-5*x^4+10*x^3-10*x^2+4*x-1");
+        subtract_Rational_helper("root 0 of x^5-x-1", "100/3",
+                "root 0 of 243*x^5+40500*x^4+2700000*x^3+90000000*x^2+1499999757*x+9999991657");
+        subtract_Rational_helper("root 0 of x^5-x-1", "1/100",
+                "root 0 of 10000000000*x^5+500000000*x^4+10000000*x^3+100000*x^2-9999999500*x-10099999999");
+    }
+
+    private static void subtract_Algebraic_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        Algebraic x = read(a).get().subtract(read(b).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testSubtract_Algebraic() {
+        subtract_Algebraic_helper("0", "0", "0");
+        subtract_Algebraic_helper("0", "1", "-1");
+        subtract_Algebraic_helper("0", "-1", "1");
+        subtract_Algebraic_helper("0", "1/2", "-1/2");
+        subtract_Algebraic_helper("0", "-4/3", "4/3");
+        subtract_Algebraic_helper("0", "sqrt(2)", "-sqrt(2)");
+        subtract_Algebraic_helper("0", "-sqrt(2)", "sqrt(2)");
+        subtract_Algebraic_helper("0", "(1+sqrt(5))/2", "(-1-sqrt(5))/2");
+        subtract_Algebraic_helper("0", "root 0 of x^5-x-1", "root 0 of x^5-x+1");
+
+        subtract_Algebraic_helper("1", "0", "1");
+        subtract_Algebraic_helper("1", "1", "0");
+        subtract_Algebraic_helper("1", "-1", "2");
+        subtract_Algebraic_helper("1", "1/2", "1/2");
+        subtract_Algebraic_helper("1", "-4/3", "7/3");
+        subtract_Algebraic_helper("1", "sqrt(2)", "1-sqrt(2)");
+        subtract_Algebraic_helper("1", "-sqrt(2)", "1+sqrt(2)");
+        subtract_Algebraic_helper("1", "(1+sqrt(5))/2", "(1-sqrt(5))/2");
+        subtract_Algebraic_helper("1", "root 0 of x^5-x-1", "root 0 of x^5-5*x^4+10*x^3-10*x^2+4*x+1");
+
+        subtract_Algebraic_helper("1/2", "0", "1/2");
+        subtract_Algebraic_helper("1/2", "1", "-1/2");
+        subtract_Algebraic_helper("1/2", "-1", "3/2");
+        subtract_Algebraic_helper("1/2", "1/2", "0");
+        subtract_Algebraic_helper("1/2", "-4/3", "11/6");
+        subtract_Algebraic_helper("1/2", "sqrt(2)", "(1-2*sqrt(2))/2");
+        subtract_Algebraic_helper("1/2", "-sqrt(2)", "(1+2*sqrt(2))/2");
+        subtract_Algebraic_helper("1/2", "(1+sqrt(5))/2", "-sqrt(5)/2");
+        subtract_Algebraic_helper("1/2", "root 0 of x^5-x-1", "root 0 of 32*x^5-80*x^4+80*x^3-40*x^2-22*x+47");
+
+        subtract_Algebraic_helper("-4/3", "0", "-4/3");
+        subtract_Algebraic_helper("-4/3", "1", "-7/3");
+        subtract_Algebraic_helper("-4/3", "-1", "-1/3");
+        subtract_Algebraic_helper("-4/3", "1/2", "-11/6");
+        subtract_Algebraic_helper("-4/3", "-4/3", "0");
+        subtract_Algebraic_helper("-4/3", "sqrt(2)", "(-4-3*sqrt(2))/3");
+        subtract_Algebraic_helper("-4/3", "-sqrt(2)", "(-4+3*sqrt(2))/3");
+        subtract_Algebraic_helper("-4/3", "(1+sqrt(5))/2", "(-11-3*sqrt(5))/6");
+        subtract_Algebraic_helper("-4/3", "root 0 of x^5-x-1",
+                "root 0 of 243*x^5+1620*x^4+4320*x^3+5760*x^2+3597*x+943");
+
+        subtract_Algebraic_helper("sqrt(2)", "0", "sqrt(2)");
+        subtract_Algebraic_helper("sqrt(2)", "1", "-1+sqrt(2)");
+        subtract_Algebraic_helper("sqrt(2)", "-1", "1+sqrt(2)");
+        subtract_Algebraic_helper("sqrt(2)", "1/2", "(-1+2*sqrt(2))/2");
+        subtract_Algebraic_helper("sqrt(2)", "-4/3", "(4+3*sqrt(2))/3");
+        subtract_Algebraic_helper("sqrt(2)", "sqrt(2)", "0");
+        subtract_Algebraic_helper("sqrt(2)", "-sqrt(2)", "2*sqrt(2)");
+        subtract_Algebraic_helper("sqrt(2)", "(1+sqrt(5))/2", "root 2 of x^4+2*x^3-5*x^2-6*x-1");
+        subtract_Algebraic_helper("sqrt(2)", "root 0 of x^5-x-1",
+                "root 1 of x^10-10*x^8+38*x^6+2*x^5-100*x^4+40*x^3+121*x^2+38*x-17");
+
+        subtract_Algebraic_helper("-sqrt(2)", "0", "-sqrt(2)");
+        subtract_Algebraic_helper("-sqrt(2)", "1", "-1-sqrt(2)");
+        subtract_Algebraic_helper("-sqrt(2)", "-1", "1-sqrt(2)");
+        subtract_Algebraic_helper("-sqrt(2)", "1/2", "(-1-2*sqrt(2))/2");
+        subtract_Algebraic_helper("-sqrt(2)", "-4/3", "(4-3*sqrt(2))/3");
+        subtract_Algebraic_helper("-sqrt(2)", "sqrt(2)", "-2*sqrt(2)");
+        subtract_Algebraic_helper("-sqrt(2)", "-sqrt(2)", "0");
+        subtract_Algebraic_helper("-sqrt(2)", "(1+sqrt(5))/2", "root 0 of x^4+2*x^3-5*x^2-6*x-1");
+        subtract_Algebraic_helper("-sqrt(2)", "root 0 of x^5-x-1",
+                "root 0 of x^10-10*x^8+38*x^6+2*x^5-100*x^4+40*x^3+121*x^2+38*x-17");
+
+        subtract_Algebraic_helper("(1+sqrt(5))/2", "0", "(1+sqrt(5))/2");
+        subtract_Algebraic_helper("(1+sqrt(5))/2", "1", "(-1+sqrt(5))/2");
+        subtract_Algebraic_helper("(1+sqrt(5))/2", "-1", "(3+sqrt(5))/2");
+        subtract_Algebraic_helper("(1+sqrt(5))/2", "1/2", "sqrt(5)/2");
+        subtract_Algebraic_helper("(1+sqrt(5))/2", "-4/3", "(11+3*sqrt(5))/6");
+        subtract_Algebraic_helper("(1+sqrt(5))/2", "sqrt(2)", "root 1 of x^4-2*x^3-5*x^2+6*x-1");
+        subtract_Algebraic_helper("(1+sqrt(5))/2", "-sqrt(2)", "root 3 of x^4-2*x^3-5*x^2+6*x-1");
+        subtract_Algebraic_helper("(1+sqrt(5))/2", "(1+sqrt(5))/2", "0");
+        subtract_Algebraic_helper("(1+sqrt(5))/2", "root 0 of x^5-x-1",
+                "root 1 of x^10-5*x^9+5*x^8+10*x^7-17*x^6-3*x^5-10*x^4+70*x^3-49*x^2+18*x-4");
+
+        subtract_Algebraic_helper("root 0 of x^5-x-1", "0", "root 0 of x^5-x-1");
+        subtract_Algebraic_helper("root 0 of x^5-x-1", "1", "root 0 of x^5+5*x^4+10*x^3+10*x^2+4*x-1");
+        subtract_Algebraic_helper("root 0 of x^5-x-1", "-1", "root 0 of x^5-5*x^4+10*x^3-10*x^2+4*x-1");
+        subtract_Algebraic_helper("root 0 of x^5-x-1", "1/2", "root 0 of 32*x^5+80*x^4+80*x^3+40*x^2-22*x-47");
+        subtract_Algebraic_helper("root 0 of x^5-x-1", "-4/3",
+                "root 0 of 243*x^5-1620*x^4+4320*x^3-5760*x^2+3597*x-943");
+        subtract_Algebraic_helper("root 0 of x^5-x-1", "sqrt(2)",
+                "root 0 of x^10-10*x^8+38*x^6-2*x^5-100*x^4-40*x^3+121*x^2-38*x-17");
+        subtract_Algebraic_helper("root 0 of x^5-x-1", "-sqrt(2)",
+                "root 1 of x^10-10*x^8+38*x^6-2*x^5-100*x^4-40*x^3+121*x^2-38*x-17");
+        subtract_Algebraic_helper("root 0 of x^5-x-1", "(1+sqrt(5))/2",
+                "root 0 of x^10+5*x^9+5*x^8-10*x^7-17*x^6+3*x^5-10*x^4-70*x^3-49*x^2-18*x-4");
+        subtract_Algebraic_helper("root 0 of x^5-x-1", "root 0 of x^5-x-1", "0");
+
+        subtract_Algebraic_helper("sqrt(2)", "sqrt(3)", "root 1 of x^4-10*x^2+1");
+        subtract_Algebraic_helper("1+sqrt(2)", "sqrt(2)", "1");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

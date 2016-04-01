@@ -333,6 +333,42 @@ public class AlgebraicDemos extends QBarDemos {
         }
     }
 
+    private void demoAdd_BigInteger() {
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, P.pairs(P.withScale(4).algebraics(), P.bigIntegers()))) {
+            System.out.println("(" + p.a + ") + " + p.b + " = " + p.a.add(p.b));
+        }
+    }
+
+    private void demoAdd_Rational() {
+        for (Pair<Algebraic, Rational> p : take(LIMIT, P.pairs(P.withScale(4).algebraics(), P.rationals()))) {
+            System.out.println("(" + p.a + ") + " + p.b + " = " + p.a.add(p.b));
+        }
+    }
+
+    private void demoAdd_Algebraic() {
+        for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.pairs(P.withScale(4).withSecondaryScale(4).algebraics()))) {
+            System.out.println("(" + p.a + ") + (" + p.b + ") = " + p.a.add(p.b));
+        }
+    }
+
+    private void demoSubtract_BigInteger() {
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, P.pairs(P.withScale(4).algebraics(), P.bigIntegers()))) {
+            System.out.println("(" + p.a + ") - " + p.b + " = " + p.a.subtract(p.b));
+        }
+    }
+
+    private void demoSubtract_Rational() {
+        for (Pair<Algebraic, Rational> p : take(LIMIT, P.pairs(P.withScale(4).algebraics(), P.rationals()))) {
+            System.out.println("(" + p.a + ") - " + p.b + " = " + p.a.subtract(p.b));
+        }
+    }
+
+    private void demoSubtract_Algebraic() {
+        for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.pairs(P.withScale(4).withSecondaryScale(4).algebraics()))) {
+            System.out.println("(" + p.a + ") - (" + p.b + ") = " + p.a.subtract(p.b));
+        }
+    }
+
     private void demoEquals_Algebraic() {
         for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.pairs(P.withScale(4).algebraics()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);

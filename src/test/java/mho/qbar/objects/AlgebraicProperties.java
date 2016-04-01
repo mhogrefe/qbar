@@ -7,6 +7,7 @@ import mho.wheels.math.BinaryFraction;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
+import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
@@ -78,6 +79,12 @@ public class AlgebraicProperties extends QBarTestProperties {
         propertiesNegate();
         propertiesAbs();
         propertiesSignum();
+        propertiesAdd_BigInteger();
+        propertiesAdd_Rational();
+        propertiesAdd_Algebraic();
+        propertiesSubtract_BigInteger();
+        propertiesSubtract_Rational();
+        propertiesSubtract_Algebraic();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -1238,6 +1245,121 @@ public class AlgebraicProperties extends QBarTestProperties {
             int signum = x.signum();
             assertEquals(x, signum, Ordering.compare(x, ZERO).toInt());
             assertTrue(x, signum == -1 || signum == 0 || signum == 1);
+        }
+    }
+
+    private void propertiesAdd_BigInteger() {
+        initialize("add(BigInteger)");
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, P.pairs(P.algebraics(), P.bigIntegers()))) {
+            Algebraic sum = p.a.add(p.b);
+            sum.validate();
+            assertEquals(p, sum.degree(), p.a.degree());
+            inverse(x -> x.add(p.b), (Algebraic x) -> x.subtract(p.b), p.a);
+        }
+
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            fixedPoint(y -> x.add(BigInteger.ZERO), x);
+        }
+
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            fixedPoint(j -> ZERO.add(j).bigIntegerValueExact(), i);
+        }
+    }
+
+    private void propertiesAdd_Rational() {
+        initialize("add(Rational)");
+        for (Pair<Algebraic, Rational> p : take(LIMIT, P.pairs(P.algebraics(), P.rationals()))) {
+            Algebraic sum = p.a.add(p.b);
+            sum.validate();
+            assertEquals(p, sum.degree(), p.a.degree());
+            inverse(x -> x.add(p.b), (Algebraic x) -> x.subtract(p.b), p.a);
+        }
+
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            fixedPoint(y -> x.add(Rational.ZERO), x);
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            fixedPoint(s -> ZERO.add(s).rationalValueExact(), r);
+        }
+    }
+
+    private void propertiesAdd_Algebraic() {
+        initialize("add(Algebraic)");
+        Iterable<Pair<Algebraic, Algebraic>> ps = P.pairs(P.withScale(1).withSecondaryScale(4).algebraics());
+        for (Pair<Algebraic, Algebraic> p : take(SMALL_LIMIT, ps)) {
+            Algebraic sum = p.a.add(p.b);
+            sum.validate();
+            assertTrue(p, sum.degree() <= p.a.degree() * p.b.degree());
+            commutative(Algebraic::add, p);
+            inverse(x -> x.add(p.b), (Algebraic x) -> x.subtract(p.b), p.a);
+        }
+
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            fixedPoint(ZERO::add, x);
+            fixedPoint(y -> x.add(ZERO), x);
+            assertEquals(x, x.add(x.negate()), ZERO);
+        }
+
+        Iterable<Triple<Algebraic, Algebraic, Algebraic>> ts = P.triples(
+                P.withScale(1).withSecondaryScale(4).algebraics()
+        );
+        for (Triple<Algebraic, Algebraic, Algebraic> t : take(SMALL_LIMIT, ts)) {
+            associative(Algebraic::add, t);
+        }
+    }
+
+    private void propertiesSubtract_BigInteger() {
+        initialize("subtract(BigInteger)");
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, P.pairs(P.algebraics(), P.bigIntegers()))) {
+            Algebraic difference = p.a.subtract(p.b);
+            difference.validate();
+            assertEquals(p, difference.degree(), p.a.degree());
+            inverse(x -> x.subtract(p.b), (Algebraic x) -> x.add(p.b), p.a);
+        }
+
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            fixedPoint(y -> x.subtract(BigInteger.ZERO), x);
+        }
+
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            assertEquals(i, ZERO.subtract(i).bigIntegerValueExact(), i.negate());
+        }
+    }
+
+    private void propertiesSubtract_Rational() {
+        initialize("subtract(Rational)");
+        for (Pair<Algebraic, Rational> p : take(LIMIT, P.pairs(P.algebraics(), P.rationals()))) {
+            Algebraic difference = p.a.subtract(p.b);
+            difference.validate();
+            assertEquals(p, difference.degree(), p.a.degree());
+            inverse(x -> x.subtract(p.b), (Algebraic x) -> x.add(p.b), p.a);
+        }
+
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            fixedPoint(y -> x.subtract(Rational.ZERO), x);
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertEquals(r, ZERO.subtract(r).rationalValueExact(), r.negate());
+        }
+    }
+
+    private void propertiesSubtract_Algebraic() {
+        initialize("subtract(Algebraic)");
+        Iterable<Pair<Algebraic, Algebraic>> ps = P.pairs(P.withScale(1).withSecondaryScale(4).algebraics());
+        for (Pair<Algebraic, Algebraic> p : take(SMALL_LIMIT, ps)) {
+            Algebraic difference = p.a.subtract(p.b);
+            difference.validate();
+            assertTrue(p, difference.degree() <= p.a.degree() * p.b.degree());
+            antiCommutative(Algebraic::subtract, Algebraic::negate, p);
+            inverse(x -> x.subtract(p.b), (Algebraic x) -> x.add(p.b), p.a);
+        }
+
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            assertEquals(x, ZERO.subtract(x), x.negate());
+            fixedPoint(y -> x.subtract(ZERO), x);
+            assertEquals(x, x.subtract(x), ZERO);
         }
     }
 
