@@ -9,12 +9,10 @@ import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
+import static mho.qbar.objects.MultivariatePolynomial.*;
 import static mho.qbar.objects.MultivariatePolynomial.ZERO;
 import static mho.qbar.objects.MultivariatePolynomial.of;
 import static mho.wheels.iterables.IterableUtils.*;
@@ -50,6 +48,11 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         propertiesNegate();
         propertiesSubtract();
         compareImplementationsSubtract();
+        propertiesMultiply_int();
+        propertiesMultiply_BigInteger();
+        propertiesMultiply_ExponentVector_BigInteger();
+        propertiesMultiply_MultivariatePolynomial();
+        compareImplementationsMultiply_MultivariatePolynomial();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -338,6 +341,199 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         functions.put("standard", p -> p.a.subtract(p.b));
         Iterable<Pair<MultivariatePolynomial, MultivariatePolynomial>> ps = P.pairs(P.multivariatePolynomials());
         compareImplementations("subtract(MultivariatePolynomial)", take(LIMIT, ps), functions);
+    }
+
+    private void propertiesMultiply_int() {
+        initialize("multiply(int)");
+        Iterable<Pair<MultivariatePolynomial, Integer>> ps = P.pairs(P.multivariatePolynomials(), P.integers());
+        for (Pair<MultivariatePolynomial, Integer> p : take(LIMIT, ps)) {
+            MultivariatePolynomial product = p.a.multiply(p.b);
+            product.validate();
+            assertTrue(p, p.b == 0 || product.degree() == p.a.degree());
+            assertEquals(p, product, p.a.multiply(of(BigInteger.valueOf(p.b))));
+            assertEquals(p, product, of(BigInteger.valueOf(p.b)).multiply(p.a));
+        }
+
+        for (Pair<BigInteger, Integer> p : take(LIMIT, P.pairs(P.bigIntegers(), P.integers()))) {
+            homomorphic(
+                    MultivariatePolynomial::of,
+                    Function.identity(),
+                    MultivariatePolynomial::of,
+                    (i, j) -> i.multiply(BigInteger.valueOf(j)),
+                    MultivariatePolynomial::multiply,
+                    p
+            );
+        }
+
+        for (int i : take(LIMIT, P.integers())) {
+            assertEquals(i, ONE.multiply(i), of(BigInteger.valueOf(i)));
+            fixedPoint(j -> j.multiply(i), ZERO);
+        }
+
+        for (MultivariatePolynomial p : take(LIMIT, P.multivariatePolynomials())) {
+            fixedPoint(q -> q.multiply(1), p);
+            assertTrue(p, p.multiply(0) == ZERO);
+        }
+
+        Iterable<Triple<MultivariatePolynomial, MultivariatePolynomial, Integer>> ts2 = P.triples(
+                P.multivariatePolynomials(),
+                P.multivariatePolynomials(),
+                P.integers()
+        );
+        for (Triple<MultivariatePolynomial, MultivariatePolynomial, Integer> t : take(LIMIT, ts2)) {
+            MultivariatePolynomial expression1 = t.a.add(t.b).multiply(t.c);
+            MultivariatePolynomial expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
+            assertEquals(t, expression1, expression2);
+        }
+    }
+
+    private void propertiesMultiply_BigInteger() {
+        initialize("multiply(BigInteger)");
+        Iterable<Pair<MultivariatePolynomial, BigInteger>> ps = P.pairs(P.multivariatePolynomials(), P.bigIntegers());
+        for (Pair<MultivariatePolynomial, BigInteger> p : take(LIMIT, ps)) {
+            MultivariatePolynomial product = p.a.multiply(p.b);
+            product.validate();
+            assertTrue(p, p.b.equals(BigInteger.ZERO) || product.degree() == p.a.degree());
+            assertEquals(p, product, p.a.multiply(of(p.b)));
+            assertEquals(p, product, of(p.b).multiply(p.a));
+        }
+
+        for (Pair<BigInteger, BigInteger> p : take(LIMIT, P.pairs(P.bigIntegers()))) {
+            //noinspection Convert2MethodRef
+            homomorphic(
+                    MultivariatePolynomial::of,
+                    Function.identity(),
+                    MultivariatePolynomial::of,
+                    (i, j) -> i.multiply(j),
+                    MultivariatePolynomial::multiply,
+                    p
+            );
+        }
+
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            assertEquals(i, ONE.multiply(i), of(i));
+            fixedPoint(j -> j.multiply(i), ZERO);
+        }
+
+        for (MultivariatePolynomial p : take(LIMIT, P.multivariatePolynomials())) {
+            fixedPoint(q -> q.multiply(BigInteger.ONE), p);
+            assertTrue(p, p.multiply(BigInteger.ZERO) == ZERO);
+        }
+
+        Iterable<Triple<MultivariatePolynomial, MultivariatePolynomial, BigInteger>> ts2 = P.triples(
+                P.multivariatePolynomials(),
+                P.multivariatePolynomials(),
+                P.bigIntegers()
+        );
+        for (Triple<MultivariatePolynomial, MultivariatePolynomial, BigInteger> t : take(LIMIT, ts2)) {
+            MultivariatePolynomial expression1 = t.a.add(t.b).multiply(t.c);
+            MultivariatePolynomial expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
+            assertEquals(t, expression1, expression2);
+        }
+    }
+
+    private void propertiesMultiply_ExponentVector_BigInteger() {
+        initialize("multiply(ExponentVector, BigInteger)");
+        Iterable<Triple<MultivariatePolynomial, ExponentVector, BigInteger>> ts = P.triples(
+                P.multivariatePolynomials(),
+                P.exponentVectors(),
+                P.bigIntegers()
+        );
+        for (Triple<MultivariatePolynomial, ExponentVector, BigInteger> t : take(LIMIT, ts)) {
+            MultivariatePolynomial product = t.a.multiply(t.b, t.c);
+            product.validate();
+            assertTrue(
+                    t,
+                    t.a == ZERO || t.c.equals(BigInteger.ZERO) || product.degree() == t.a.degree() + t.b.degree()
+            );
+            assertEquals(t, t.a.multiply(of(t.b, t.c)), product);
+        }
+
+        Iterable<Pair<MultivariatePolynomial, ExponentVector>> ps = P.pairs(
+                P.multivariatePolynomials(),
+                P.exponentVectors()
+        );
+        for (Pair<MultivariatePolynomial, ExponentVector> p : take(LIMIT, ps)) {
+            assertEquals(p, p.a.multiply(p.b, BigInteger.ZERO), ZERO);
+        }
+
+        Iterable<Pair<MultivariatePolynomial, BigInteger>> ps2 = P.pairs(P.multivariatePolynomials(), P.bigIntegers());
+        for (Pair<MultivariatePolynomial, BigInteger> p : take(LIMIT, ps2)) {
+            assertEquals(p, p.a.multiply(ExponentVector.ONE, p.b), p.a.multiply(p.b));
+        }
+    }
+
+    private static @NotNull MultivariatePolynomial multiply_MultivariatePolynomial_alt(
+            @NotNull MultivariatePolynomial a,
+            @NotNull MultivariatePolynomial b
+    ) {
+        if (a == ZERO || b == ZERO) return ZERO;
+        if (a == ONE) return b;
+        if (b == ONE) return a;
+        Map<ExponentVector, BigInteger> terms = new HashMap<>();
+        for (Pair<ExponentVector, BigInteger> aTerm : a) {
+            for (Pair<ExponentVector, BigInteger> bTerm : b) {
+                ExponentVector evProduct = aTerm.a.multiply(bTerm.a);
+                BigInteger cProduct = aTerm.b.multiply(bTerm.b);
+                BigInteger coefficient = terms.get(evProduct);
+                if (coefficient == null) coefficient = BigInteger.ZERO;
+                coefficient = coefficient.add(cProduct);
+                if (coefficient.equals(BigInteger.ZERO)) {
+                    terms.remove(evProduct);
+                } else {
+                    terms.put(evProduct, coefficient);
+                }
+            }
+        }
+        return of(toList(fromMap(terms)));
+    }
+
+    private void propertiesMultiply_MultivariatePolynomial() {
+        initialize("multiply(MultivariatePolynomial)");
+        Iterable<Pair<MultivariatePolynomial, MultivariatePolynomial>> ps = P.pairs(P.multivariatePolynomials());
+        for (Pair<MultivariatePolynomial, MultivariatePolynomial> p : take(LIMIT, ps)) {
+            MultivariatePolynomial product = p.a.multiply(p.b);
+            product.validate();
+            assertEquals(p, product, multiply_MultivariatePolynomial_alt(p.a, p.b));
+            assertTrue(p, p.a == ZERO || p.b == ZERO || product.degree() == p.a.degree() + p.b.degree());
+            commutative(MultivariatePolynomial::multiply, p);
+        }
+
+        for (Pair<BigInteger, BigInteger> p : take(LIMIT, P.pairs(P.bigIntegers()))) {
+            homomorphic(
+                    MultivariatePolynomial::of,
+                    MultivariatePolynomial::of,
+                    MultivariatePolynomial::of,
+                    BigInteger::multiply,
+                    MultivariatePolynomial::multiply,
+                    p
+            );
+        }
+
+        for (MultivariatePolynomial p : take(LIMIT, P.multivariatePolynomials())) {
+            fixedPoint(ONE::multiply, p);
+            fixedPoint(q -> q.multiply(ONE), p);
+            fixedPoint(q -> q.multiply(p), ZERO);
+            fixedPoint(p::multiply, ZERO);
+        }
+
+        Iterable<Triple<MultivariatePolynomial, MultivariatePolynomial, MultivariatePolynomial>> ts = P.triples(
+                P.multivariatePolynomials()
+        );
+        for (Triple<MultivariatePolynomial, MultivariatePolynomial, MultivariatePolynomial> t : take(LIMIT, ts)) {
+            associative(MultivariatePolynomial::multiply, t);
+            leftDistributive(MultivariatePolynomial::add, MultivariatePolynomial::multiply, t);
+            rightDistributive(MultivariatePolynomial::add, MultivariatePolynomial::multiply, t);
+        }
+    }
+
+    private void compareImplementationsMultiply_MultivariatePolynomial() {
+        Map<String, Function<Pair<MultivariatePolynomial, MultivariatePolynomial>, MultivariatePolynomial>> functions =
+                new LinkedHashMap<>();
+        functions.put("alt", p -> multiply_MultivariatePolynomial_alt(p.a, p.b));
+        functions.put("standard", p -> p.a.multiply(p.b));
+        Iterable<Pair<MultivariatePolynomial, MultivariatePolynomial>> ps = P.pairs(P.multivariatePolynomials());
+        compareImplementations("multiply(MultivariatePolynomial)", take(LIMIT, ps), functions);
     }
 
     private void propertiesEquals() {

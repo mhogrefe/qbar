@@ -473,6 +473,259 @@ public class MultivariatePolynomialTest {
         subtract_helper("a*b*c", "a*b*c-1", "1");
     }
 
+    private static void multiply_int_helper(@NotNull String a, int b, @NotNull String output) {
+        MultivariatePolynomial p = read(a).get().multiply(b);
+        p.validate();
+        aeq(p, output);
+    }
+
+    @Test
+    public void testMultiply_int() {
+        multiply_int_helper("0", 0, "0");
+        multiply_int_helper("0", 1, "0");
+        multiply_int_helper("0", -3, "0");
+        multiply_int_helper("0", 4, "0");
+
+        multiply_int_helper("1", 0, "0");
+        multiply_int_helper("1", 1, "1");
+        multiply_int_helper("1", -3, "-3");
+        multiply_int_helper("1", 4, "4");
+
+        multiply_int_helper("-17", 0, "0");
+        multiply_int_helper("-17", 1, "-17");
+        multiply_int_helper("-17", -3, "51");
+        multiply_int_helper("-17", 4, "-68");
+
+        multiply_int_helper("ooo", 0, "0");
+        multiply_int_helper("ooo", 1, "ooo");
+        multiply_int_helper("ooo", -3, "-3*ooo");
+        multiply_int_helper("ooo", 4, "4*ooo");
+
+        multiply_int_helper("a*b*c", 0, "0");
+        multiply_int_helper("a*b*c", 1, "a*b*c");
+        multiply_int_helper("a*b*c", -3, "-3*a*b*c");
+        multiply_int_helper("a*b*c", 4, "4*a*b*c");
+
+        multiply_int_helper("x^2-4*x+7", 0, "0");
+        multiply_int_helper("x^2-4*x+7", 1, "x^2-4*x+7");
+        multiply_int_helper("x^2-4*x+7", -3, "-3*x^2+12*x-21");
+        multiply_int_helper("x^2-4*x+7", 4, "4*x^2-16*x+28");
+
+        multiply_int_helper("x^2+2*x*y+y^2", 0, "0");
+        multiply_int_helper("x^2+2*x*y+y^2", 1, "x^2+2*x*y+y^2");
+        multiply_int_helper("x^2+2*x*y+y^2", -3, "-3*x^2-6*x*y-3*y^2");
+        multiply_int_helper("x^2+2*x*y+y^2", 4, "4*x^2+8*x*y+4*y^2");
+
+        multiply_int_helper("a+b+c+d+e+f", 0, "0");
+        multiply_int_helper("a+b+c+d+e+f", 1, "a+b+c+d+e+f");
+        multiply_int_helper("a+b+c+d+e+f", -3, "-3*a-3*b-3*c-3*d-3*e-3*f");
+        multiply_int_helper("a+b+c+d+e+f", 4, "4*a+4*b+4*c+4*d+4*e+4*f");
+    }
+
+    private static void multiply_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        MultivariatePolynomial p = read(a).get().multiply(Readers.readBigInteger(b).get());
+        p.validate();
+        aeq(p, output);
+    }
+
+    @Test
+    public void testMultiply_BigInteger() {
+        multiply_BigInteger_helper("0", "0", "0");
+        multiply_BigInteger_helper("0", "1", "0");
+        multiply_BigInteger_helper("0", "-3", "0");
+        multiply_BigInteger_helper("0", "4", "0");
+
+        multiply_BigInteger_helper("1", "0", "0");
+        multiply_BigInteger_helper("1", "1", "1");
+        multiply_BigInteger_helper("1", "-3", "-3");
+        multiply_BigInteger_helper("1", "4", "4");
+
+        multiply_BigInteger_helper("-17", "0", "0");
+        multiply_BigInteger_helper("-17", "1", "-17");
+        multiply_BigInteger_helper("-17", "-3", "51");
+        multiply_BigInteger_helper("-17", "4", "-68");
+
+        multiply_BigInteger_helper("ooo", "0", "0");
+        multiply_BigInteger_helper("ooo", "1", "ooo");
+        multiply_BigInteger_helper("ooo", "-3", "-3*ooo");
+        multiply_BigInteger_helper("ooo", "4", "4*ooo");
+
+        multiply_BigInteger_helper("a*b*c", "0", "0");
+        multiply_BigInteger_helper("a*b*c", "1", "a*b*c");
+        multiply_BigInteger_helper("a*b*c", "-3", "-3*a*b*c");
+        multiply_BigInteger_helper("a*b*c", "4", "4*a*b*c");
+
+        multiply_BigInteger_helper("x^2-4*x+7", "0", "0");
+        multiply_BigInteger_helper("x^2-4*x+7", "1", "x^2-4*x+7");
+        multiply_BigInteger_helper("x^2-4*x+7", "-3", "-3*x^2+12*x-21");
+        multiply_BigInteger_helper("x^2-4*x+7", "4", "4*x^2-16*x+28");
+
+        multiply_BigInteger_helper("x^2+2*x*y+y^2", "0", "0");
+        multiply_BigInteger_helper("x^2+2*x*y+y^2", "1", "x^2+2*x*y+y^2");
+        multiply_BigInteger_helper("x^2+2*x*y+y^2", "-3", "-3*x^2-6*x*y-3*y^2");
+        multiply_BigInteger_helper("x^2+2*x*y+y^2", "4", "4*x^2+8*x*y+4*y^2");
+
+        multiply_BigInteger_helper("a+b+c+d+e+f", "0", "0");
+        multiply_BigInteger_helper("a+b+c+d+e+f", "1", "a+b+c+d+e+f");
+        multiply_BigInteger_helper("a+b+c+d+e+f", "-3", "-3*a-3*b-3*c-3*d-3*e-3*f");
+        multiply_BigInteger_helper("a+b+c+d+e+f", "4", "4*a+4*b+4*c+4*d+4*e+4*f");
+    }
+
+    private static void multiply_ExponentVector_BigInteger_helper(
+            @NotNull String p,
+            @NotNull String ev,
+            @NotNull String c,
+            @NotNull String output
+    ) {
+        MultivariatePolynomial q = read(p).get()
+                .multiply(ExponentVector.read(ev).get(), Readers.readBigInteger(c).get());
+        q.validate();
+        aeq(q, output);
+    }
+
+    @Test
+    public void testMultiply_ExponentVector_BigInteger() {
+        multiply_ExponentVector_BigInteger_helper("0", "1", "0", "0");
+        multiply_ExponentVector_BigInteger_helper("0", "1", "1", "0");
+        multiply_ExponentVector_BigInteger_helper("0", "ooo", "2", "0");
+        multiply_ExponentVector_BigInteger_helper("0", "a*b*c", "-2", "0");
+
+        multiply_ExponentVector_BigInteger_helper("1", "1", "0", "0");
+        multiply_ExponentVector_BigInteger_helper("1", "1", "1", "1");
+        multiply_ExponentVector_BigInteger_helper("1", "ooo", "2", "2*ooo");
+        multiply_ExponentVector_BigInteger_helper("1", "a*b*c", "-2", "-2*a*b*c");
+
+        multiply_ExponentVector_BigInteger_helper("-17", "1", "0", "0");
+        multiply_ExponentVector_BigInteger_helper("-17", "1", "1", "-17");
+        multiply_ExponentVector_BigInteger_helper("-17", "ooo", "2", "-34*ooo");
+        multiply_ExponentVector_BigInteger_helper("-17", "a*b*c", "-2", "34*a*b*c");
+
+        multiply_ExponentVector_BigInteger_helper("ooo", "1", "0", "0");
+        multiply_ExponentVector_BigInteger_helper("ooo", "1", "1", "ooo");
+        multiply_ExponentVector_BigInteger_helper("ooo", "ooo", "2", "2*ooo^2");
+        multiply_ExponentVector_BigInteger_helper("ooo", "a*b*c", "-2", "-2*a*b*c*ooo");
+
+        multiply_ExponentVector_BigInteger_helper("a*b*c", "1", "0", "0");
+        multiply_ExponentVector_BigInteger_helper("a*b*c", "1", "1", "a*b*c");
+        multiply_ExponentVector_BigInteger_helper("a*b*c", "ooo", "2", "2*a*b*c*ooo");
+        multiply_ExponentVector_BigInteger_helper("a*b*c", "a*b*c", "-2", "-2*a^2*b^2*c^2");
+
+        multiply_ExponentVector_BigInteger_helper("x^2-4*x+7", "1", "0", "0");
+        multiply_ExponentVector_BigInteger_helper("x^2-4*x+7", "1", "1", "x^2-4*x+7");
+        multiply_ExponentVector_BigInteger_helper("x^2-4*x+7", "ooo", "2", "2*x^2*ooo-8*x*ooo+14*ooo");
+        multiply_ExponentVector_BigInteger_helper("x^2-4*x+7", "a*b*c", "-2", "-2*a*b*c*x^2+8*a*b*c*x-14*a*b*c");
+
+        multiply_ExponentVector_BigInteger_helper("x^2+2*x*y+y^2", "1", "0", "0");
+        multiply_ExponentVector_BigInteger_helper("x^2+2*x*y+y^2", "1", "1", "x^2+2*x*y+y^2");
+        multiply_ExponentVector_BigInteger_helper("x^2+2*x*y+y^2", "ooo", "2", "2*x^2*ooo+4*x*y*ooo+2*y^2*ooo");
+        multiply_ExponentVector_BigInteger_helper("x^2+2*x*y+y^2", "a*b*c", "-2",
+                "-2*a*b*c*x^2-4*a*b*c*x*y-2*a*b*c*y^2");
+
+        multiply_ExponentVector_BigInteger_helper("a+b+c+d+e+f", "1", "0", "0");
+        multiply_ExponentVector_BigInteger_helper("a+b+c+d+e+f", "1", "1", "a+b+c+d+e+f");
+        multiply_ExponentVector_BigInteger_helper("a+b+c+d+e+f", "ooo", "2",
+                "2*a*ooo+2*b*ooo+2*c*ooo+2*d*ooo+2*e*ooo+2*f*ooo");
+        multiply_ExponentVector_BigInteger_helper("a+b+c+d+e+f", "a*b*c", "-2",
+                "-2*a^2*b*c-2*a*b^2*c-2*a*b*c^2-2*a*b*c*d-2*a*b*c*e-2*a*b*c*f");
+    }
+
+    private static void multiply_MultivariatePolynomial_helper(
+            @NotNull String a,
+            @NotNull String b,
+            @NotNull String output
+    ) {
+        MultivariatePolynomial p = read(a).get().multiply(read(b).get());
+        p.validate();
+        aeq(p, output);
+    }
+
+    @Test
+    public void testMultiply_MultivariatePolynomial() {
+        multiply_MultivariatePolynomial_helper("0", "0", "0");
+        multiply_MultivariatePolynomial_helper("0", "1", "0");
+        multiply_MultivariatePolynomial_helper("0", "-17", "0");
+        multiply_MultivariatePolynomial_helper("0", "ooo", "0");
+        multiply_MultivariatePolynomial_helper("0", "a*b*c", "0");
+        multiply_MultivariatePolynomial_helper("0", "x^2-4*x+7", "0");
+        multiply_MultivariatePolynomial_helper("0", "x^2+2*x*y+y^2", "0");
+        multiply_MultivariatePolynomial_helper("0", "a+b+c+d+e+f", "0");
+
+        multiply_MultivariatePolynomial_helper("1", "0", "0");
+        multiply_MultivariatePolynomial_helper("1", "1", "1");
+        multiply_MultivariatePolynomial_helper("1", "-17", "-17");
+        multiply_MultivariatePolynomial_helper("1", "ooo", "ooo");
+        multiply_MultivariatePolynomial_helper("1", "a*b*c", "a*b*c");
+        multiply_MultivariatePolynomial_helper("1", "x^2-4*x+7", "x^2-4*x+7");
+        multiply_MultivariatePolynomial_helper("1", "x^2+2*x*y+y^2", "x^2+2*x*y+y^2");
+        multiply_MultivariatePolynomial_helper("1", "a+b+c+d+e+f", "a+b+c+d+e+f");
+
+        multiply_MultivariatePolynomial_helper("-17", "0", "0");
+        multiply_MultivariatePolynomial_helper("-17", "1", "-17");
+        multiply_MultivariatePolynomial_helper("-17", "-17", "289");
+        multiply_MultivariatePolynomial_helper("-17", "ooo", "-17*ooo");
+        multiply_MultivariatePolynomial_helper("-17", "a*b*c", "-17*a*b*c");
+        multiply_MultivariatePolynomial_helper("-17", "x^2-4*x+7", "-17*x^2+68*x-119");
+        multiply_MultivariatePolynomial_helper("-17", "x^2+2*x*y+y^2", "-17*x^2-34*x*y-17*y^2");
+        multiply_MultivariatePolynomial_helper("-17", "a+b+c+d+e+f", "-17*a-17*b-17*c-17*d-17*e-17*f");
+
+        multiply_MultivariatePolynomial_helper("ooo", "0", "0");
+        multiply_MultivariatePolynomial_helper("ooo", "1", "ooo");
+        multiply_MultivariatePolynomial_helper("ooo", "-17", "-17*ooo");
+        multiply_MultivariatePolynomial_helper("ooo", "ooo", "ooo^2");
+        multiply_MultivariatePolynomial_helper("ooo", "a*b*c", "a*b*c*ooo");
+        multiply_MultivariatePolynomial_helper("ooo", "x^2-4*x+7", "x^2*ooo-4*x*ooo+7*ooo");
+        multiply_MultivariatePolynomial_helper("ooo", "x^2+2*x*y+y^2", "x^2*ooo+2*x*y*ooo+y^2*ooo");
+        multiply_MultivariatePolynomial_helper("ooo", "a+b+c+d+e+f", "a*ooo+b*ooo+c*ooo+d*ooo+e*ooo+f*ooo");
+
+        multiply_MultivariatePolynomial_helper("a*b*c", "0", "0");
+        multiply_MultivariatePolynomial_helper("a*b*c", "1", "a*b*c");
+        multiply_MultivariatePolynomial_helper("a*b*c", "-17", "-17*a*b*c");
+        multiply_MultivariatePolynomial_helper("a*b*c", "ooo", "a*b*c*ooo");
+        multiply_MultivariatePolynomial_helper("a*b*c", "a*b*c", "a^2*b^2*c^2");
+        multiply_MultivariatePolynomial_helper("a*b*c", "x^2-4*x+7", "a*b*c*x^2-4*a*b*c*x+7*a*b*c");
+        multiply_MultivariatePolynomial_helper("a*b*c", "x^2+2*x*y+y^2", "a*b*c*x^2+2*a*b*c*x*y+a*b*c*y^2");
+        multiply_MultivariatePolynomial_helper("a*b*c", "a+b+c+d+e+f",
+                "a^2*b*c+a*b^2*c+a*b*c^2+a*b*c*d+a*b*c*e+a*b*c*f");
+
+        multiply_MultivariatePolynomial_helper("x^2-4*x+7", "0", "0");
+        multiply_MultivariatePolynomial_helper("x^2-4*x+7", "1", "x^2-4*x+7");
+        multiply_MultivariatePolynomial_helper("x^2-4*x+7", "-17", "-17*x^2+68*x-119");
+        multiply_MultivariatePolynomial_helper("x^2-4*x+7", "ooo", "x^2*ooo-4*x*ooo+7*ooo");
+        multiply_MultivariatePolynomial_helper("x^2-4*x+7", "a*b*c", "a*b*c*x^2-4*a*b*c*x+7*a*b*c");
+        multiply_MultivariatePolynomial_helper("x^2-4*x+7", "x^2-4*x+7", "x^4-8*x^3+30*x^2-56*x+49");
+        multiply_MultivariatePolynomial_helper("x^2-4*x+7", "x^2+2*x*y+y^2",
+                "x^4+2*x^3*y+x^2*y^2-4*x^3-8*x^2*y-4*x*y^2+7*x^2+14*x*y+7*y^2");
+        multiply_MultivariatePolynomial_helper("x^2-4*x+7", "a+b+c+d+e+f",
+                "a*x^2+b*x^2+c*x^2+d*x^2+e*x^2+f*x^2-4*a*x-4*b*x-4*c*x-4*d*x-4*e*x-4*f*x+7*a+7*b+7*c+7*d+7*e+7*f");
+
+        multiply_MultivariatePolynomial_helper("x^2+2*x*y+y^2", "0", "0");
+        multiply_MultivariatePolynomial_helper("x^2+2*x*y+y^2", "1", "x^2+2*x*y+y^2");
+        multiply_MultivariatePolynomial_helper("x^2+2*x*y+y^2", "-17", "-17*x^2-34*x*y-17*y^2");
+        multiply_MultivariatePolynomial_helper("x^2+2*x*y+y^2", "ooo", "x^2*ooo+2*x*y*ooo+y^2*ooo");
+        multiply_MultivariatePolynomial_helper("x^2+2*x*y+y^2", "a*b*c", "a*b*c*x^2+2*a*b*c*x*y+a*b*c*y^2");
+        multiply_MultivariatePolynomial_helper("x^2+2*x*y+y^2", "x^2-4*x+7",
+                "x^4+2*x^3*y+x^2*y^2-4*x^3-8*x^2*y-4*x*y^2+7*x^2+14*x*y+7*y^2");
+        multiply_MultivariatePolynomial_helper("x^2+2*x*y+y^2", "x^2+2*x*y+y^2", "x^4+4*x^3*y+6*x^2*y^2+4*x*y^3+y^4");
+        multiply_MultivariatePolynomial_helper("x^2+2*x*y+y^2", "a+b+c+d+e+f",
+                "a*x^2+b*x^2+c*x^2+d*x^2+e*x^2+f*x^2+2*a*x*y+2*b*x*y+2*c*x*y+2*d*x*y+2*e*x*y+2*f*x*y+a*y^2+b*y^2+" +
+                "c*y^2+d*y^2+e*y^2+f*y^2");
+
+        multiply_MultivariatePolynomial_helper("a+b+c+d+e+f", "0", "0");
+        multiply_MultivariatePolynomial_helper("a+b+c+d+e+f", "1", "a+b+c+d+e+f");
+        multiply_MultivariatePolynomial_helper("a+b+c+d+e+f", "-17", "-17*a-17*b-17*c-17*d-17*e-17*f");
+        multiply_MultivariatePolynomial_helper("a+b+c+d+e+f", "ooo", "a*ooo+b*ooo+c*ooo+d*ooo+e*ooo+f*ooo");
+        multiply_MultivariatePolynomial_helper("a+b+c+d+e+f", "a*b*c",
+                "a^2*b*c+a*b^2*c+a*b*c^2+a*b*c*d+a*b*c*e+a*b*c*f");
+        multiply_MultivariatePolynomial_helper("a+b+c+d+e+f", "x^2-4*x+7",
+                "a*x^2+b*x^2+c*x^2+d*x^2+e*x^2+f*x^2-4*a*x-4*b*x-4*c*x-4*d*x-4*e*x-4*f*x+7*a+7*b+7*c+7*d+7*e+7*f");
+        multiply_MultivariatePolynomial_helper("a+b+c+d+e+f", "x^2+2*x*y+y^2",
+                "a*x^2+b*x^2+c*x^2+d*x^2+e*x^2+f*x^2+2*a*x*y+2*b*x*y+2*c*x*y+2*d*x*y+2*e*x*y+2*f*x*y+a*y^2+b*y^2+" +
+                "c*y^2+d*y^2+e*y^2+f*y^2");
+        multiply_MultivariatePolynomial_helper("a+b+c+d+e+f", "a+b+c+d+e+f",
+                "a^2+2*a*b+b^2+2*a*c+2*b*c+c^2+2*a*d+2*b*d+2*c*d+d^2+2*a*e+2*b*e+2*c*e+2*d*e+e^2+2*a*f+2*b*f+2*c*f+" +
+                "2*d*f+2*e*f+f^2");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

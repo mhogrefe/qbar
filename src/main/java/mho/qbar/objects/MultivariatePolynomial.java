@@ -1,7 +1,6 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
-import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.NoRemoveIterable;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.Ordering;
@@ -444,12 +443,69 @@ public class MultivariatePolynomial implements
         return new MultivariatePolynomial(differenceTerms);
     }
 
+    /**
+     * Returns the product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code that} may be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code int} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull MultivariatePolynomial multiply(int that) {
+        if (this == ZERO || that == 0) return ZERO;
+        if (this == ONE && that == 1) return ONE;
+        if (that == -1 && terms.size() == 1) {
+            Pair<ExponentVector, BigInteger> term = terms.get(0);
+            if (term.a == ExponentVector.ONE && term.b.equals(IntegerUtils.NEGATIVE_ONE)) {
+                return ONE;
+            }
+        }
+        BigInteger bigThat = BigInteger.valueOf(that);
+        return new MultivariatePolynomial(toList(map(t -> new Pair<>(t.a, t.b.multiply(bigThat)), terms)));
+    }
+
+    /**
+     * Returns the product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code BigInteger} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
     public @NotNull MultivariatePolynomial multiply(@NotNull BigInteger that) {
         if (this == ZERO || that.equals(BigInteger.ZERO)) return ZERO;
         if (this == ONE && that.equals(BigInteger.ONE)) return ONE;
+        if (terms.size() == 1 && that.equals(IntegerUtils.NEGATIVE_ONE)) {
+            Pair<ExponentVector, BigInteger> term = terms.get(0);
+            if (term.a == ExponentVector.ONE && term.b.equals(IntegerUtils.NEGATIVE_ONE)) {
+                return ONE;
+            }
+        }
         return new MultivariatePolynomial(toList(map(t -> new Pair<>(t.a, t.b.multiply(that)), terms)));
     }
 
+    /**
+     * Returns the product of {@code this} and a single term, specified by an {@code ExponentVector} and its
+     * coefficient.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code c} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param ev the {@code ExponentVector} of the term {@code this} is multiplied by
+     * @return {@code this}×{@code c}×{@code ev}
+     */
     public @NotNull MultivariatePolynomial multiply(@NotNull ExponentVector ev, @NotNull BigInteger c) {
         if (this == ZERO || c.equals(BigInteger.ZERO)) return ZERO;
         if (this == ONE) return of(ev, c);
@@ -457,6 +513,18 @@ public class MultivariatePolynomial implements
         return new MultivariatePolynomial(toList(map(t -> new Pair<>(t.a.multiply(ev), t.b.multiply(c)), terms)));
     }
 
+    /**
+     * Returns the product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code MultivariatePolynomial} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
     public @NotNull MultivariatePolynomial multiply(@NotNull MultivariatePolynomial that) {
         if (this == ZERO || that == ZERO) return ZERO;
         if (this == ONE) return that;
@@ -475,6 +543,7 @@ public class MultivariatePolynomial implements
             List<Integer> lowestIndices = new ArrayList<>();
             for (int i = 0; i < inputTerms.size(); i++) {
                 Pair<ExponentVector, BigInteger> p = inputTerms.get(i);
+                if (p == null) continue;
                 if (lowestEV == null || Ordering.lt(p.a, lowestEV)) {
                     lowestEV = p.a;
                     lowestIndices.clear();
@@ -492,7 +561,9 @@ public class MultivariatePolynomial implements
                 Iterator<Pair<ExponentVector, BigInteger>> it = inputTermsIterators.get(index);
                 inputTerms.set(index, it.hasNext() ? it.next() : null);
             }
-            sumTerms.add(new Pair<>(lowestEV, coefficient));
+            if (!coefficient.equals(BigInteger.ZERO)) {
+                sumTerms.add(new Pair<>(lowestEV, coefficient));
+            }
         }
         if (sumTerms.size() == 0) return ZERO;
         if (sumTerms.size() == 1) {

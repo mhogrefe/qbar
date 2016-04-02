@@ -3,6 +3,7 @@ package mho.qbar.objects;
 import mho.qbar.testing.QBarDemos;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
+import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
@@ -146,6 +147,46 @@ public class MultivariatePolynomialDemos extends QBarDemos {
         );
         for (Pair<MultivariatePolynomial, MultivariatePolynomial> p : take(LIMIT, ps)) {
             System.out.println("(" + p.a + ") - (" + p.b + ") = " + p.a.subtract(p.b));
+        }
+    }
+
+    private void demoMultiply_int() {
+        Iterable<Pair<MultivariatePolynomial, Integer>> ps = P.pairs(
+                P.withScale(4).multivariatePolynomials(),
+                P.integers()
+        );
+        for (Pair<MultivariatePolynomial, Integer> p : take(LIMIT, ps)) {
+            System.out.println("(" + p.a + ") * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoMultiply_BigInteger() {
+        Iterable<Pair<MultivariatePolynomial, BigInteger>> ps = P.pairs(
+                P.withScale(4).multivariatePolynomials(),
+                P.bigIntegers()
+        );
+        for (Pair<MultivariatePolynomial, BigInteger> p : take(LIMIT, ps)) {
+            System.out.println("(" + p.a + ") * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoMultiply_ExponentVector_BigInteger() {
+        Iterable<Triple<MultivariatePolynomial, ExponentVector, BigInteger>> ts = P.triples(
+                P.withScale(4).multivariatePolynomials(),
+                P.withScale(4).exponentVectors(),
+                P.bigIntegers()
+        );
+        for (Triple<MultivariatePolynomial, ExponentVector, BigInteger> t : take(LIMIT, ts)) {
+            System.out.println("(" + t.a + ") * (" + t.b + ") * " + t.c + " = " + t.a.multiply(t.b, t.c));
+        }
+    }
+
+    private void demoMultiply_MultivariatePolynomial() {
+        Iterable<Pair<MultivariatePolynomial, MultivariatePolynomial>> ps = P.pairs(
+                P.withScale(4).multivariatePolynomials()
+        );
+        for (Pair<MultivariatePolynomial, MultivariatePolynomial> p : take(LIMIT, ps)) {
+            System.out.println("(" + p.a + ") * (" + p.b + ") = " + p.a.multiply(p.b));
         }
     }
 

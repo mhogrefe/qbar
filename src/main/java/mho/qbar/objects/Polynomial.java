@@ -582,7 +582,7 @@ public final class Polynomial implements
      *
      * <ul>
      *  <li>{@code this} may be any {@code Polynomial}.</li>
-     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code that} may be any {@code int}.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
