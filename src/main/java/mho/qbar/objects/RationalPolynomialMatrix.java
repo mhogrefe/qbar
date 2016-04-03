@@ -21,7 +21,7 @@ import static mho.wheels.testing.Testing.assertTrue;
  *
  * <p>This class is immutable.</p>
  */
-public class RationalPolynomialMatrix implements Comparable<RationalPolynomialMatrix> {
+public final class RationalPolynomialMatrix implements Comparable<RationalPolynomialMatrix> {
     /**
      * Used by {@link PolynomialMatrix#compareTo}
      */

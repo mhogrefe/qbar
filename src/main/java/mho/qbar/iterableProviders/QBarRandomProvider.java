@@ -3,7 +3,6 @@ package mho.qbar.iterableProviders;
 import mho.qbar.objects.*;
 import mho.wheels.iterables.RandomProvider;
 import mho.wheels.math.MathUtils;
-import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.Ordering;
 import org.jetbrains.annotations.NotNull;
 
@@ -899,7 +898,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                     secondaryScale);
         }
         QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
-                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(secondaryScale)).intValueExact()
+                MathUtils.ceilingRoot(2, BigInteger.valueOf(secondaryScale)).intValueExact()
         );
         return chooseLogarithmicOrder(
                 map(
@@ -940,7 +939,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                     secondaryScale);
         }
         QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
-                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(secondaryScale)).intValueExact()
+                MathUtils.ceilingRoot(2, BigInteger.valueOf(secondaryScale)).intValueExact()
         );
         return withElement(
                 Matrix.zero(0, 0),
@@ -1006,7 +1005,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                     secondaryScale);
         }
         QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
-                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(secondaryScale)).intValueExact()
+                MathUtils.ceilingRoot(2, BigInteger.valueOf(secondaryScale)).intValueExact()
         );
         return chooseLogarithmicOrder(
                 map(
@@ -1048,7 +1047,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                     secondaryScale);
         }
         QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
-                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(secondaryScale)).intValueExact()
+                MathUtils.ceilingRoot(2, BigInteger.valueOf(secondaryScale)).intValueExact()
         );
         return withElement(
                 RationalMatrix.zero(0, 0),
@@ -1124,7 +1123,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                     tertiaryScale);
         }
         QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
-                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(tertiaryScale)).intValueExact()
+                MathUtils.ceilingRoot(2, BigInteger.valueOf(tertiaryScale)).intValueExact()
         );
         return chooseLogarithmicOrder(
                 map(
@@ -1170,7 +1169,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                     tertiaryScale);
         }
         QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
-                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(tertiaryScale)).intValueExact()
+                MathUtils.ceilingRoot(2, BigInteger.valueOf(tertiaryScale)).intValueExact()
         );
         return withElement(
                 PolynomialMatrix.zero(0, 0),
@@ -1252,7 +1251,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                     tertiaryScale);
         }
         QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
-                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(tertiaryScale)).intValueExact()
+                MathUtils.ceilingRoot(2, BigInteger.valueOf(tertiaryScale)).intValueExact()
         );
         return chooseLogarithmicOrder(
                 map(
@@ -1302,7 +1301,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                     tertiaryScale);
         }
         QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
-                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(tertiaryScale)).intValueExact()
+                MathUtils.ceilingRoot(2, BigInteger.valueOf(tertiaryScale)).intValueExact()
         );
         return withElement(
                 RationalPolynomialMatrix.zero(0, 0),
@@ -1745,7 +1744,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
             throw new IllegalStateException("this must have a positive scale. Invalid scale: " + scale);
         }
         QBarRandomProvider variableCountProvider = (QBarRandomProvider) withScale(
-                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(scale)).intValueExact()
+                MathUtils.ceilingRoot(2, BigInteger.valueOf(scale)).intValueExact()
         );
         return map(
                 js -> ExponentVector.of(toList(js)),

@@ -21,7 +21,7 @@ import static mho.wheels.testing.Testing.assertTrue;
  *
  * <p>This class is immutable.</p>
  */
-public class Matrix implements Comparable<Matrix> {
+public final class Matrix implements Comparable<Matrix> {
     /**
      * Used by {@link mho.qbar.objects.Matrix#compareTo}
      */

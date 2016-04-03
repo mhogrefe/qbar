@@ -21,7 +21,7 @@ import static mho.wheels.testing.Testing.assertTrue;
  *
  * <p>This class is immutable.</p>
  */
-public class ExponentVector implements Comparable<ExponentVector> {
+public final class ExponentVector implements Comparable<ExponentVector> {
     /**
      * 1, the constant {@code ExponentVector}
      */

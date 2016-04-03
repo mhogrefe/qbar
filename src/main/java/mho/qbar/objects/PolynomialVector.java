@@ -20,7 +20,7 @@ import static mho.wheels.testing.Testing.assertTrue;
  *
  * <p>This class is immutable.</p>
  */
-public class PolynomialVector implements Comparable<PolynomialVector>, Iterable<Polynomial> {
+public final class PolynomialVector implements Comparable<PolynomialVector>, Iterable<Polynomial> {
     /**
      * []
      */

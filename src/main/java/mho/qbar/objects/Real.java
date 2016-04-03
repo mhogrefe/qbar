@@ -42,7 +42,7 @@ import static mho.wheels.testing.Testing.*;
  * <p>The above should make it clear that {@code Real}s are not user friendly. Make sure to read the documentation
  * carefully, and, whenever possible, use {@link Rational} or {@link Algebraic} instead.</p>
  */
-public class Real implements Iterable<Interval>, Comparable<Real> {
+public final class Real implements Iterable<Interval>, Comparable<Real> {
     public static final @NotNull Real ZERO = of(Rational.ZERO);
 
     public static final @NotNull Real ONE = of(Rational.ONE);

@@ -13,7 +13,7 @@ import static mho.wheels.testing.Testing.assertTrue;
  * <p>A variable in a polynomial. The names of the variables with indices 0, 1, 2, … are "a", "b", "c", …, "aa", "bb",
  * "cc", …, "aaa", "bbb", "ccc", ….</p>
  */
-public class Variable implements Comparable<Variable> {
+public final class Variable implements Comparable<Variable> {
     /**
      * The letters of the English alphabet.
      */

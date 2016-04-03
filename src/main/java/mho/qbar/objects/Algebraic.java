@@ -32,7 +32,7 @@ import static mho.wheels.testing.Testing.assertTrue;
  *
  * <p>This class is immutable.</p>
  */
-public class Algebraic implements Comparable<Algebraic> {
+public final class Algebraic implements Comparable<Algebraic> {
     /**
      * 0
      */

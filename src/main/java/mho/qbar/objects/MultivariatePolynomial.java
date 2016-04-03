@@ -21,7 +21,7 @@ import static mho.wheels.testing.Testing.assertTrue;
  *
  * <p>This class is immutable.</p>
  */
-public class MultivariatePolynomial implements
+public final class MultivariatePolynomial implements
         Comparable<MultivariatePolynomial>,
         Iterable<Pair<ExponentVector, BigInteger>> {
     /**

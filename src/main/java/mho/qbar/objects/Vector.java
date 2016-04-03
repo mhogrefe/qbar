@@ -22,7 +22,7 @@ import static mho.wheels.testing.Testing.assertTrue;
  *
  * <p>This class is immutable.</p>
  */
-public class Vector implements Comparable<Vector>, Iterable<BigInteger> {
+public final class Vector implements Comparable<Vector>, Iterable<BigInteger> {
     /**
      * []
      */

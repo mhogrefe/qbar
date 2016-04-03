@@ -20,7 +20,9 @@ import static mho.wheels.testing.Testing.assertTrue;
  *
  * <p>This class is immutable.</p>
  */
-public class RationalPolynomialVector implements Comparable<RationalPolynomialVector>, Iterable<RationalPolynomial> {
+public final class RationalPolynomialVector implements
+        Comparable<RationalPolynomialVector>,
+        Iterable<RationalPolynomial> {
     /**
      * []
      */
