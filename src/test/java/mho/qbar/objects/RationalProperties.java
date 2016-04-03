@@ -2167,11 +2167,11 @@ public class RationalProperties extends QBarTestProperties {
 
         for (Rational r : take(LIMIT, P.rationals())) {
             fixedPoint(s -> s.multiply(BigInteger.ONE), r);
-            assertTrue(r, r.multiply(BigInteger.ZERO) == ZERO);
+            assertEquals(r, r.multiply(BigInteger.ZERO), ZERO);
         }
 
         for (BigInteger i : take(LIMIT, P.nonzeroBigIntegers())) {
-            assertTrue(i, of(i).invert().multiply(i) == ONE);
+            assertEquals(i, of(i).invert().multiply(i), ONE);
         }
 
         Iterable<Triple<Rational, Rational, BigInteger>> ts = P.triples(P.rationals(), P.rationals(), P.bigIntegers());
@@ -2217,11 +2217,11 @@ public class RationalProperties extends QBarTestProperties {
 
         for (Rational r : take(LIMIT, P.rationals())) {
             fixedPoint(s -> s.multiply(1), r);
-            assertTrue(r, r.multiply(0) == ZERO);
+            assertEquals(r, r.multiply(0), ZERO);
         }
 
         for (int i : take(LIMIT, P.nonzeroIntegers())) {
-            assertTrue(i, of(i).invert().multiply(i) == ONE);
+            assertEquals(i, of(i).invert().multiply(i), ONE);
         }
 
         Iterable<Triple<Rational, Rational, Integer>> ts = P.triples(P.rationals(), P.rationals(), P.integers());

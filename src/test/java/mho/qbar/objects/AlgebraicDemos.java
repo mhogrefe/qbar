@@ -369,6 +369,30 @@ public class AlgebraicDemos extends QBarDemos {
         }
     }
 
+    private void demoMultiply_int() {
+        for (Pair<Algebraic, Integer> p : take(LIMIT, P.pairs(P.withScale(4).algebraics(), P.integers()))) {
+            System.out.println("(" + p.a + ") * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoMultiply_BigInteger() {
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, P.pairs(P.withScale(4).algebraics(), P.bigIntegers()))) {
+            System.out.println("(" + p.a + ") * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoMultiply_Rational() {
+        for (Pair<Algebraic, Rational> p : take(LIMIT, P.pairs(P.withScale(4).algebraics(), P.rationals()))) {
+            System.out.println("(" + p.a + ") * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoMultiply_Algebraic() {
+        for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.pairs(P.withScale(4).withSecondaryScale(4).algebraics()))) {
+            System.out.println("(" + p.a + ") * (" + p.b + ") = " + p.a.multiply(p.b));
+        }
+    }
+
     private void demoEquals_Algebraic() {
         for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.pairs(P.withScale(4).algebraics()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);

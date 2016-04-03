@@ -1413,6 +1413,149 @@ public class Algebraic implements Comparable<Algebraic> {
         );
     }
 
+    /**
+     * Returns the product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>{@code that} may be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code int} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull Algebraic multiply(int that) {
+        if (this == ZERO || that == 0) return ZERO;
+        if (that == 1) return this;
+        if (this == ONE) return of(that);
+        if (isRational()) {
+            return of(rational.get().multiply(that));
+        }
+        if (that < 0) {
+            return negate().multiply(-that);
+        }
+        Polynomial productMP = minimalPolynomial.positivePrimitiveStretch(Rational.of(that));
+        Interval productIsolatingInterval = productMP.powerOfTwoIsolatingInterval(rootIndex);
+        return new Algebraic(productMP, rootIndex, productIsolatingInterval, mpRootCount);
+    }
+
+    /**
+     * Returns the product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code BigInteger}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code BigInteger} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull Algebraic multiply(@NotNull BigInteger that) {
+        if (this == ZERO || that.equals(BigInteger.ZERO)) return ZERO;
+        if (that.equals(BigInteger.ONE)) return this;
+        if (this == ONE) return of(that);
+        if (isRational()) {
+            return of(rational.get().multiply(that));
+        }
+        if (that.signum() == -1) {
+            return negate().multiply(that.negate());
+        }
+        Polynomial productMP = minimalPolynomial.positivePrimitiveStretch(Rational.of(that));
+        Interval productIsolatingInterval = productMP.powerOfTwoIsolatingInterval(rootIndex);
+        return new Algebraic(productMP, rootIndex, productIsolatingInterval, mpRootCount);
+    }
+
+    /**
+     * Returns the product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code Rational} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull Algebraic multiply(@NotNull Rational that) {
+        if (this == ZERO || that == Rational.ZERO) return ZERO;
+        if (that == Rational.ONE) return this;
+        if (this == ONE) return of(that);
+        if (isRational()) {
+            return of(rational.get().multiply(that));
+        }
+        if (that.signum() == -1) {
+            return negate().multiply(that.negate());
+        }
+        Polynomial productMP = minimalPolynomial.positivePrimitiveStretch(that);
+        Interval productIsolatingInterval = productMP.powerOfTwoIsolatingInterval(rootIndex);
+        return new Algebraic(productMP, rootIndex, productIsolatingInterval, mpRootCount);
+    }
+
+    /**
+     * Returns the product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code Algebraic} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull Algebraic multiply(@NotNull Algebraic that) {
+        if (this == ZERO || that == ZERO) return ZERO;
+        if (this == ONE) return that;
+        if (that == ONE) return this;
+        if (isRational()) return that.multiply(rational.get());
+        if (that.isRational()) return multiply(that.rational.get());
+        if (degree() == that.degree()) {
+            //todo if (equals(that)) return pow(2);
+            if (equals(that.invert())) return ONE;
+        }
+        Polynomial productMP = minimalPolynomial.multiplyRoots(that.minimalPolynomial).squareFreePart();
+        int productMPRootCount = productMP.rootCount();
+        List<Polynomial> factors = factors = productMP.factor();
+        if (factors.size() == 1 && productMPRootCount == 1) {
+            Polynomial factor = factors.get(0);
+            if (factor.degree() == 1) {
+                return new Algebraic(Rational.of(factor.coefficient(0).negate(), factor.coefficient(1)));
+            } else {
+                return new Algebraic(factors.get(0), 0, productMP.powerOfTwoIsolatingInterval(0), 1);
+            }
+        }
+        List<Pair<Polynomial, Integer>> polyRootPairs = new ArrayList<>();
+        List<Real> realRoots = new ArrayList<>();
+        List<Interval> isolatingIntervals = new ArrayList<>();
+        List<Integer> rootCounts = new ArrayList<>();
+        for (Polynomial factor : factors) {
+            List<Interval> factorIsolatingIntervals = factor.powerOfTwoIsolatingIntervals();
+            int factorRootCount = factor.rootCount();
+            for (int i = 0; i < factorRootCount; i++) {
+                polyRootPairs.add(new Pair<>(factor, i));
+                realRoots.add(Real.root(factor::signum, factorIsolatingIntervals.get(i)));
+                isolatingIntervals.add(factorIsolatingIntervals.get(i));
+                rootCounts.add(factorRootCount);
+            }
+        }
+        int matchIndex = realValue().multiply(that.realValue()).match(realRoots);
+        Pair<Polynomial, Integer> pair = polyRootPairs.get(matchIndex);
+        productMP = pair.a;
+        if (productMP.degree() == 1) {
+            return of(Rational.of(productMP.coefficient(0).negate(), productMP.coefficient(1)));
+        }
+        int productRootIndex = pair.b;
+        return new Algebraic(
+                productMP,
+                productRootIndex,
+                isolatingIntervals.get(matchIndex),
+                rootCounts.get(matchIndex)
+        );
+    }
+
     public @NotNull Algebraic invert() {
         if (this == ZERO) {
             throw new ArithmeticException();

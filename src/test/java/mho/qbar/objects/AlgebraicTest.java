@@ -1730,6 +1730,269 @@ public class AlgebraicTest {
         subtract_Algebraic_helper("1+sqrt(2)", "sqrt(2)", "1");
     }
 
+    private static void multiply_int_helper(@NotNull String a, int b, @NotNull String output) {
+        Algebraic x = read(a).get().multiply(b);
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testMultiply_int() {
+        multiply_int_helper("0", 0, "0");
+        multiply_int_helper("0", 1, "0");
+        multiply_int_helper("0", -1, "0");
+        multiply_int_helper("0", 100, "0");
+
+        multiply_int_helper("1", 0, "0");
+        multiply_int_helper("1", 1, "1");
+        multiply_int_helper("1", -1, "-1");
+        multiply_int_helper("1", 100, "100");
+
+        multiply_int_helper("-1", 0, "0");
+        multiply_int_helper("-1", 1, "-1");
+        multiply_int_helper("-1", -1, "1");
+        multiply_int_helper("-1", 100, "-100");
+
+        multiply_int_helper("1/2", 0, "0");
+        multiply_int_helper("1/2", 1, "1/2");
+        multiply_int_helper("1/2", -1, "-1/2");
+        multiply_int_helper("1/2", 100, "50");
+
+        multiply_int_helper("-4/3", 0, "0");
+        multiply_int_helper("-4/3", 1, "-4/3");
+        multiply_int_helper("-4/3", -1, "4/3");
+        multiply_int_helper("-4/3", 100, "-400/3");
+
+        multiply_int_helper("sqrt(2)", 0, "0");
+        multiply_int_helper("sqrt(2)", 1, "sqrt(2)");
+        multiply_int_helper("sqrt(2)", -1, "-sqrt(2)");
+        multiply_int_helper("sqrt(2)", 100, "100*sqrt(2)");
+
+        multiply_int_helper("-sqrt(2)", 0, "0");
+        multiply_int_helper("-sqrt(2)", 1, "-sqrt(2)");
+        multiply_int_helper("-sqrt(2)", -1, "sqrt(2)");
+        multiply_int_helper("-sqrt(2)", 100, "-100*sqrt(2)");
+
+        multiply_int_helper("(1+sqrt(5))/2", 0, "0");
+        multiply_int_helper("(1+sqrt(5))/2", 1, "(1+sqrt(5))/2");
+        multiply_int_helper("(1+sqrt(5))/2", -1, "(-1-sqrt(5))/2");
+        multiply_int_helper("(1+sqrt(5))/2", 100, "50+50*sqrt(5)");
+
+        multiply_int_helper("root 0 of x^5-x-1", 0, "0");
+        multiply_int_helper("root 0 of x^5-x-1", 1, "root 0 of x^5-x-1");
+        multiply_int_helper("root 0 of x^5-x-1", -1, "root 0 of x^5-x+1");
+        multiply_int_helper("root 0 of x^5-x-1", 100, "root 0 of x^5-100000000*x-10000000000");
+    }
+
+    private static void multiply_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        Algebraic x = read(a).get().multiply(Readers.readBigInteger(b).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testMultiply_BigInteger() {
+        multiply_BigInteger_helper("0", "0", "0");
+        multiply_BigInteger_helper("0", "1", "0");
+        multiply_BigInteger_helper("0", "-1", "0");
+        multiply_BigInteger_helper("0", "100", "0");
+
+        multiply_BigInteger_helper("1", "0", "0");
+        multiply_BigInteger_helper("1", "1", "1");
+        multiply_BigInteger_helper("1", "-1", "-1");
+        multiply_BigInteger_helper("1", "100", "100");
+
+        multiply_BigInteger_helper("-1", "0", "0");
+        multiply_BigInteger_helper("-1", "1", "-1");
+        multiply_BigInteger_helper("-1", "-1", "1");
+        multiply_BigInteger_helper("-1", "100", "-100");
+
+        multiply_BigInteger_helper("1/2", "0", "0");
+        multiply_BigInteger_helper("1/2", "1", "1/2");
+        multiply_BigInteger_helper("1/2", "-1", "-1/2");
+        multiply_BigInteger_helper("1/2", "100", "50");
+
+        multiply_BigInteger_helper("-4/3", "0", "0");
+        multiply_BigInteger_helper("-4/3", "1", "-4/3");
+        multiply_BigInteger_helper("-4/3", "-1", "4/3");
+        multiply_BigInteger_helper("-4/3", "100", "-400/3");
+
+        multiply_BigInteger_helper("sqrt(2)", "0", "0");
+        multiply_BigInteger_helper("sqrt(2)", "1", "sqrt(2)");
+        multiply_BigInteger_helper("sqrt(2)", "-1", "-sqrt(2)");
+        multiply_BigInteger_helper("sqrt(2)", "100", "100*sqrt(2)");
+
+        multiply_BigInteger_helper("-sqrt(2)", "0", "0");
+        multiply_BigInteger_helper("-sqrt(2)", "1", "-sqrt(2)");
+        multiply_BigInteger_helper("-sqrt(2)", "-1", "sqrt(2)");
+        multiply_BigInteger_helper("-sqrt(2)", "100", "-100*sqrt(2)");
+
+        multiply_BigInteger_helper("(1+sqrt(5))/2", "0", "0");
+        multiply_BigInteger_helper("(1+sqrt(5))/2", "1", "(1+sqrt(5))/2");
+        multiply_BigInteger_helper("(1+sqrt(5))/2", "-1", "(-1-sqrt(5))/2");
+        multiply_BigInteger_helper("(1+sqrt(5))/2", "100", "50+50*sqrt(5)");
+
+        multiply_BigInteger_helper("root 0 of x^5-x-1", "0", "0");
+        multiply_BigInteger_helper("root 0 of x^5-x-1", "1", "root 0 of x^5-x-1");
+        multiply_BigInteger_helper("root 0 of x^5-x-1", "-1", "root 0 of x^5-x+1");
+        multiply_BigInteger_helper("root 0 of x^5-x-1", "100", "root 0 of x^5-100000000*x-10000000000");
+    }
+
+    private static void multiply_Rational_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        Algebraic x = read(a).get().multiply(Rational.read(b).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testMultiply_Rational() {
+        multiply_Rational_helper("0", "0", "0");
+        multiply_Rational_helper("0", "1", "0");
+        multiply_Rational_helper("0", "-1", "0");
+        multiply_Rational_helper("0", "100/3", "0");
+        multiply_Rational_helper("0", "1/100", "0");
+
+        multiply_Rational_helper("1", "0", "0");
+        multiply_Rational_helper("1", "1", "1");
+        multiply_Rational_helper("1", "-1", "-1");
+        multiply_Rational_helper("1", "100/3", "100/3");
+        multiply_Rational_helper("1", "1/100", "1/100");
+
+        multiply_Rational_helper("-1", "0", "0");
+        multiply_Rational_helper("-1", "1", "-1");
+        multiply_Rational_helper("-1", "-1", "1");
+        multiply_Rational_helper("-1", "100/3", "-100/3");
+        multiply_Rational_helper("-1", "1/100", "-1/100");
+
+        multiply_Rational_helper("1/2", "0", "0");
+        multiply_Rational_helper("1/2", "1", "1/2");
+        multiply_Rational_helper("1/2", "-1", "-1/2");
+        multiply_Rational_helper("1/2", "100/3", "50/3");
+        multiply_Rational_helper("1/2", "1/100", "1/200");
+
+        multiply_Rational_helper("-4/3", "0", "0");
+        multiply_Rational_helper("-4/3", "1", "-4/3");
+        multiply_Rational_helper("-4/3", "-1", "4/3");
+        multiply_Rational_helper("-4/3", "100/3", "-400/9");
+        multiply_Rational_helper("-4/3", "1/100", "-1/75");
+
+        multiply_Rational_helper("sqrt(2)", "0", "0");
+        multiply_Rational_helper("sqrt(2)", "1", "sqrt(2)");
+        multiply_Rational_helper("sqrt(2)", "-1", "-sqrt(2)");
+        multiply_Rational_helper("sqrt(2)", "100/3", "100*sqrt(2)/3");
+        multiply_Rational_helper("sqrt(2)", "1/100", "sqrt(2)/100");
+
+        multiply_Rational_helper("-sqrt(2)", "0", "0");
+        multiply_Rational_helper("-sqrt(2)", "1", "-sqrt(2)");
+        multiply_Rational_helper("-sqrt(2)", "-1", "sqrt(2)");
+        multiply_Rational_helper("-sqrt(2)", "100/3", "-100*sqrt(2)/3");
+        multiply_Rational_helper("-sqrt(2)", "1/100", "-sqrt(2)/100");
+
+        multiply_Rational_helper("(1+sqrt(5))/2", "0", "0");
+        multiply_Rational_helper("(1+sqrt(5))/2", "1", "(1+sqrt(5))/2");
+        multiply_Rational_helper("(1+sqrt(5))/2", "-1", "(-1-sqrt(5))/2");
+        multiply_Rational_helper("(1+sqrt(5))/2", "100/3", "(50+50*sqrt(5))/3");
+        multiply_Rational_helper("(1+sqrt(5))/2", "1/100", "(1+sqrt(5))/200");
+
+        multiply_Rational_helper("root 0 of x^5-x-1", "0", "0");
+        multiply_Rational_helper("root 0 of x^5-x-1", "1", "root 0 of x^5-x-1");
+        multiply_Rational_helper("root 0 of x^5-x-1", "-1", "root 0 of x^5-x+1");
+        multiply_Rational_helper("root 0 of x^5-x-1", "100/3", "root 0 of 243*x^5-300000000*x-10000000000");
+        multiply_Rational_helper("root 0 of x^5-x-1", "1/100", "root 0 of 10000000000*x^5-100*x-1");
+    }
+
+    private static void multiply_Algebraic_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        Algebraic x = read(a).get().multiply(read(b).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testMultiply_Algebraic() {
+        multiply_Algebraic_helper("0", "0", "0");
+        multiply_Algebraic_helper("0", "1", "0");
+        multiply_Algebraic_helper("0", "-1", "0");
+        multiply_Algebraic_helper("0", "1/2", "0");
+        multiply_Algebraic_helper("0", "-4/3", "0");
+        multiply_Algebraic_helper("0", "sqrt(2)", "0");
+        multiply_Algebraic_helper("0", "-sqrt(2)", "0");
+        multiply_Algebraic_helper("0", "(1+sqrt(5))/2", "0");
+        multiply_Algebraic_helper("0", "root 0 of x^5-x-1", "0");
+
+        multiply_Algebraic_helper("1", "0", "0");
+        multiply_Algebraic_helper("1", "1", "1");
+        multiply_Algebraic_helper("1", "-1", "-1");
+        multiply_Algebraic_helper("1", "1/2", "1/2");
+        multiply_Algebraic_helper("1", "-4/3", "-4/3");
+        multiply_Algebraic_helper("1", "sqrt(2)", "sqrt(2)");
+        multiply_Algebraic_helper("1", "-sqrt(2)", "-sqrt(2)");
+        multiply_Algebraic_helper("1", "(1+sqrt(5))/2", "(1+sqrt(5))/2");
+        multiply_Algebraic_helper("1", "root 0 of x^5-x-1", "root 0 of x^5-x-1");
+
+        multiply_Algebraic_helper("1/2", "0", "0");
+        multiply_Algebraic_helper("1/2", "1", "1/2");
+        multiply_Algebraic_helper("1/2", "-1", "-1/2");
+        multiply_Algebraic_helper("1/2", "1/2", "1/4");
+        multiply_Algebraic_helper("1/2", "-4/3", "-2/3");
+        multiply_Algebraic_helper("1/2", "sqrt(2)", "sqrt(2)/2");
+        multiply_Algebraic_helper("1/2", "-sqrt(2)", "-sqrt(2)/2");
+        multiply_Algebraic_helper("1/2", "(1+sqrt(5))/2", "(1+sqrt(5))/4");
+        multiply_Algebraic_helper("1/2", "root 0 of x^5-x-1", "root 0 of 32*x^5-2*x-1");
+
+        multiply_Algebraic_helper("-4/3", "0", "0");
+        multiply_Algebraic_helper("-4/3", "1", "-4/3");
+        multiply_Algebraic_helper("-4/3", "-1", "4/3");
+        multiply_Algebraic_helper("-4/3", "1/2", "-2/3");
+        multiply_Algebraic_helper("-4/3", "-4/3", "16/9");
+        multiply_Algebraic_helper("-4/3", "sqrt(2)", "-4*sqrt(2)/3");
+        multiply_Algebraic_helper("-4/3", "-sqrt(2)", "4*sqrt(2)/3");
+        multiply_Algebraic_helper("-4/3", "(1+sqrt(5))/2", "(-2-2*sqrt(5))/3");
+        multiply_Algebraic_helper("-4/3", "root 0 of x^5-x-1", "root 0 of 243*x^5-768*x+1024");
+
+        multiply_Algebraic_helper("sqrt(2)", "0", "0");
+        multiply_Algebraic_helper("sqrt(2)", "1", "sqrt(2)");
+        multiply_Algebraic_helper("sqrt(2)", "-1", "-sqrt(2)");
+        multiply_Algebraic_helper("sqrt(2)", "1/2", "sqrt(2)/2");
+        multiply_Algebraic_helper("sqrt(2)", "-4/3", "-4*sqrt(2)/3");
+        multiply_Algebraic_helper("sqrt(2)", "sqrt(2)", "2");
+        multiply_Algebraic_helper("sqrt(2)", "-sqrt(2)", "-2");
+        multiply_Algebraic_helper("sqrt(2)", "(1+sqrt(5))/2", "root 3 of x^4-6*x^2+4");
+        multiply_Algebraic_helper("sqrt(2)", "root 0 of x^5-x-1", "root 1 of x^10-8*x^6+16*x^2-32");
+
+        multiply_Algebraic_helper("-sqrt(2)", "0", "0");
+        multiply_Algebraic_helper("-sqrt(2)", "1", "-sqrt(2)");
+        multiply_Algebraic_helper("-sqrt(2)", "-1", "sqrt(2)");
+        multiply_Algebraic_helper("-sqrt(2)", "1/2", "-sqrt(2)/2");
+        multiply_Algebraic_helper("-sqrt(2)", "-4/3", "4*sqrt(2)/3");
+        multiply_Algebraic_helper("-sqrt(2)", "sqrt(2)", "-2");
+        multiply_Algebraic_helper("-sqrt(2)", "-sqrt(2)", "2");
+        multiply_Algebraic_helper("-sqrt(2)", "(1+sqrt(5))/2", "root 0 of x^4-6*x^2+4");
+        multiply_Algebraic_helper("-sqrt(2)", "root 0 of x^5-x-1", "root 0 of x^10-8*x^6+16*x^2-32");
+
+        multiply_Algebraic_helper("(1+sqrt(5))/2", "0", "0");
+        multiply_Algebraic_helper("(1+sqrt(5))/2", "1", "(1+sqrt(5))/2");
+        multiply_Algebraic_helper("(1+sqrt(5))/2", "-1", "(-1-sqrt(5))/2");
+        multiply_Algebraic_helper("(1+sqrt(5))/2", "1/2", "(1+sqrt(5))/4");
+        multiply_Algebraic_helper("(1+sqrt(5))/2", "-4/3", "(-2-2*sqrt(5))/3");
+        multiply_Algebraic_helper("(1+sqrt(5))/2", "sqrt(2)", "root 3 of x^4-6*x^2+4");
+        multiply_Algebraic_helper("(1+sqrt(5))/2", "-sqrt(2)", "root 0 of x^4-6*x^2+4");
+        multiply_Algebraic_helper("(1+sqrt(5))/2", "(1+sqrt(5))/2", "(3+sqrt(5))/2");
+        multiply_Algebraic_helper("(1+sqrt(5))/2", "root 0 of x^5-x-1", "root 1 of x^10-7*x^6-11*x^5+x^2+x-1");
+
+        multiply_Algebraic_helper("root 0 of x^5-x-1", "0", "0");
+        multiply_Algebraic_helper("root 0 of x^5-x-1", "1", "root 0 of x^5-x-1");
+        multiply_Algebraic_helper("root 0 of x^5-x-1", "-1", "root 0 of x^5-x+1");
+        multiply_Algebraic_helper("root 0 of x^5-x-1", "1/2", "root 0 of 32*x^5-2*x-1");
+        multiply_Algebraic_helper("root 0 of x^5-x-1", "-4/3", "root 0 of 243*x^5-768*x+1024");
+        multiply_Algebraic_helper("root 0 of x^5-x-1", "sqrt(2)", "root 1 of x^10-8*x^6+16*x^2-32");
+        multiply_Algebraic_helper("root 0 of x^5-x-1", "-sqrt(2)", "root 0 of x^10-8*x^6+16*x^2-32");
+        multiply_Algebraic_helper("root 0 of x^5-x-1", "(1+sqrt(5))/2", "root 1 of x^10-7*x^6-11*x^5+x^2+x-1");
+        multiply_Algebraic_helper("root 0 of x^5-x-1", "root 0 of x^5-x-1", "root 0 of x^5-2*x^3+x-1");
+
+        multiply_Algebraic_helper("sqrt(2)", "sqrt(3)", "sqrt(6)");
+        multiply_Algebraic_helper("sqrt(2)", "sqrt(2)/2", "1");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

@@ -220,6 +220,10 @@ public class Real implements Iterable<Interval>, Comparable<Real> {
         return new Real(zipWith(Interval::subtract, intervals, that.intervals));
     }
 
+    public @NotNull Real multiply(@NotNull Real that) {
+        return new Real(zipWith(Interval::multiply, intervals, that.intervals));
+    }
+
     public @NotNull Real shiftLeft(int bits) {
         return new Real(map(a -> a.shiftLeft(bits), intervals));
     }

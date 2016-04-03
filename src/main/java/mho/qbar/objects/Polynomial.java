@@ -2500,7 +2500,7 @@ public final class Polynomial implements
     }
 
     /**
-     * Returns the translation of {@code this} by {@code t}.
+     * Returns the translation of {@code this} by {@code t}. If {@code this} is irreducible, so is the result.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Polynomial}.</li>

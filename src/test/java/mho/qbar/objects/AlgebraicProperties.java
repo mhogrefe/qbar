@@ -85,6 +85,10 @@ public class AlgebraicProperties extends QBarTestProperties {
         propertiesSubtract_BigInteger();
         propertiesSubtract_Rational();
         propertiesSubtract_Algebraic();
+        propertiesMultiply_int();
+        propertiesMultiply_BigInteger();
+        propertiesMultiply_Rational();
+        propertiesMultiply_Algebraic();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -1360,6 +1364,159 @@ public class AlgebraicProperties extends QBarTestProperties {
             assertEquals(x, ZERO.subtract(x), x.negate());
             fixedPoint(y -> x.subtract(ZERO), x);
             assertEquals(x, x.subtract(x), ZERO);
+        }
+    }
+
+    private void propertiesMultiply_int() {
+        initialize("multiply(int)");
+        for (Pair<Algebraic, Integer> p : take(LIMIT, P.pairs(P.algebraics(), P.integers()))) {
+            Algebraic product = p.a.multiply(p.b);
+            product.validate();
+            assertEquals(p, product, p.a.multiply(of(p.b)));
+            assertEquals(p, product, of(p.b).multiply(p.a));
+        }
+
+        //todo
+//        for (Pair<Algebraic, BigInteger> p : take(LIMIT, P.pairs(P.algebraics(), P.nonzeroBigIntegers()))) {
+//            assertEquals(p, p.a.multiply(p.b).divide(p.b), p.a);
+//            inverse(r -> r.multiply(p.b), (Rational r) -> r.divide(p.b), p.a);
+//        }
+
+        for (int i : take(LIMIT, P.integers())) {
+            assertEquals(i, ONE.multiply(i), of(i));
+            fixedPoint(r -> r.multiply(i), ZERO);
+        }
+
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            fixedPoint(y -> y.multiply(1), x);
+            assertEquals(x, x.multiply(0), ZERO);
+        }
+
+        for (int i : take(LIMIT, P.nonzeroIntegers())) {
+            assertEquals(i, of(i).invert().multiply(i), ONE);
+        }
+
+        Iterable<Triple<Algebraic, Algebraic, Integer>> ts = P.triples(
+                P.withScale(1).withSecondaryScale(4).algebraics(),
+                P.withScale(1).withSecondaryScale(4).algebraics(),
+                P.integers()
+        );
+        for (Triple<Algebraic, Algebraic, Integer> t : take(SMALL_LIMIT, ts)) {
+            rightDistributive(Algebraic::add, Algebraic::multiply, new Triple<>(t.c, t.a, t.b));
+        }
+    }
+
+    private void propertiesMultiply_BigInteger() {
+        initialize("multiply(BigInteger)");
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, P.pairs(P.algebraics(), P.bigIntegers()))) {
+            Algebraic product = p.a.multiply(p.b);
+            product.validate();
+            assertEquals(p, product, p.a.multiply(of(p.b)));
+            assertEquals(p, product, of(p.b).multiply(p.a));
+        }
+
+        //todo
+//        for (Pair<Algebraic, BigInteger> p : take(LIMIT, P.pairs(P.algebraics(), P.nonzeroBigIntegers()))) {
+//            assertEquals(p, p.a.multiply(p.b).divide(p.b), p.a);
+//            inverse(r -> r.multiply(p.b), (Rational r) -> r.divide(p.b), p.a);
+//        }
+
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            assertEquals(i, ONE.multiply(i), of(i));
+            fixedPoint(x -> x.multiply(i), ZERO);
+        }
+
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            fixedPoint(y -> y.multiply(BigInteger.ONE), x);
+            assertEquals(x, x.multiply(BigInteger.ZERO), ZERO);
+        }
+
+        for (BigInteger i : take(LIMIT, P.nonzeroBigIntegers())) {
+            assertEquals(i, of(i).invert().multiply(i), ONE);
+        }
+
+        Iterable<Triple<Algebraic, Algebraic, BigInteger>> ts = P.triples(
+                P.withScale(1).withSecondaryScale(4).algebraics(),
+                P.withScale(1).withSecondaryScale(4).algebraics(),
+                P.bigIntegers()
+        );
+        for (Triple<Algebraic, Algebraic, BigInteger> t : take(SMALL_LIMIT, ts)) {
+            rightDistributive(Algebraic::add, Algebraic::multiply, new Triple<>(t.c, t.a, t.b));
+        }
+    }
+
+    private void propertiesMultiply_Rational() {
+        initialize("multiply(Rational)");
+        for (Pair<Algebraic, Rational> p : take(LIMIT, P.pairs(P.algebraics(), P.rationals()))) {
+            Algebraic product = p.a.multiply(p.b);
+            product.validate();
+            assertEquals(p, product, p.a.multiply(of(p.b)));
+            assertEquals(p, product, of(p.b).multiply(p.a));
+        }
+
+        //todo
+//        for (Pair<Algebraic, BigInteger> p : take(LIMIT, P.pairs(P.algebraics(), P.nonzeroBigIntegers()))) {
+//            assertEquals(p, p.a.multiply(p.b).divide(p.b), p.a);
+//            inverse(r -> r.multiply(p.b), (Rational r) -> r.divide(p.b), p.a);
+//        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertEquals(r, ONE.multiply(r), of(r));
+            fixedPoint(x -> x.multiply(r), ZERO);
+        }
+
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            fixedPoint(y -> y.multiply(Rational.ONE), x);
+            assertEquals(x, x.multiply(Rational.ZERO), ZERO);
+        }
+
+        for (Rational r : take(LIMIT, P.nonzeroRationals())) {
+            assertEquals(r, of(r).invert().multiply(r), ONE);
+        }
+
+        Iterable<Triple<Algebraic, Algebraic, Rational>> ts = P.triples(
+                P.withScale(1).withSecondaryScale(4).algebraics(),
+                P.withScale(1).withSecondaryScale(4).algebraics(),
+                P.rationals()
+        );
+        for (Triple<Algebraic, Algebraic, Rational> t : take(SMALL_LIMIT, ts)) {
+            rightDistributive(Algebraic::add, Algebraic::multiply, new Triple<>(t.c, t.a, t.b));
+        }
+    }
+
+    private void propertiesMultiply_Algebraic() {
+        initialize("multiply(Algebraic)");
+        Iterable<Pair<Algebraic, Algebraic>> ps = P.pairs(P.withScale(1).withSecondaryScale(4).algebraics());
+        for (Pair<Algebraic, Algebraic> p : take(SMALL_LIMIT, ps)) {
+            Algebraic product = p.a.multiply(p.b);
+            product.validate();
+            commutative(Algebraic::multiply, p);
+        }
+
+        //todo
+//        for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.pairs(P.algebraics(), P.nonzeroAlgebraics()))) {
+//            inverse(r -> r.multiply(p.b), (Rational r) -> r.divide(p.b), p.a);
+//            assertEquals(p, p.a.multiply(p.b), p.a.divide(p.b.invert()));
+//        }
+
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            fixedPoint(x::multiply, ZERO);
+            fixedPoint(y -> y.multiply(x), ZERO);
+            fixedPoint(ONE::multiply, x);
+            fixedPoint(y -> y.multiply(ONE), x);
+        }
+
+        for (Algebraic x : take(LIMIT, P.nonzeroAlgebraics())) {
+            assertTrue(x, x.multiply(x.invert()) == ONE);
+        }
+
+        Iterable<Triple<Algebraic, Algebraic, Algebraic>> ts = P.triples(
+                P.withScale(1).withSecondaryScale(4).algebraics()
+        );
+        for (Triple<Algebraic, Algebraic, Algebraic> t : take(SMALL_LIMIT, ts)) {
+            associative(Algebraic::multiply, t);
+            leftDistributive(Algebraic::add, Algebraic::multiply, t);
+            rightDistributive(Algebraic::add, Algebraic::multiply, t);
         }
     }
 
