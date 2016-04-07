@@ -174,6 +174,18 @@ public class QBarExhaustiveProviderDemos extends QBarDemos {
         }
     }
 
+    private void demoMonicPolynomials_int() {
+        for (int i : take(SMALL_LIMIT, P.rangeUpGeometric(-1))) {
+            System.out.println("monicPolynomials(" + i + ") = " + its(QEP.monicPolynomials(i)));
+        }
+    }
+
+    private void demoMonicPolynomialsAtLeast() {
+        for (int i : take(SMALL_LIMIT, P.rangeUpGeometric(-1))) {
+            System.out.println("monicPolynomialsAtLeast(" + i + ") = " + its(QEP.monicPolynomialsAtLeast(i)));
+        }
+    }
+
     private void demoSquareFreePolynomials_int() {
         for (int i : take(TINY_LIMIT, P.withScale(4).rangeUpGeometric(-1))) {
             System.out.println("squareFreePolynomials(" + i + ") = " + its(QEP.squareFreePolynomials(i)));

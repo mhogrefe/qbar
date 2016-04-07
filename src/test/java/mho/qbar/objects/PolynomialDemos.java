@@ -820,6 +820,26 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoPowerTable() {
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).monicPolynomialsAtLeast(1),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            System.out.println("powerTable(" + p.a + ", " + p.b + ") = " + p.a.powerTable(p.b));
+        }
+    }
+
+    private void demoRootPower() {
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairs(
+                P.withScale(4).monicPolynomialsAtLeast(1),
+                P.naturalIntegersGeometric()
+        );
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            System.out.println("rootPower(" + p.a + ", " + p.b + ") = " + p.a.rootPower(p.b));
+        }
+    }
+
     private void demoEquals_Polynomial() {
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.withScale(4).polynomials()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);

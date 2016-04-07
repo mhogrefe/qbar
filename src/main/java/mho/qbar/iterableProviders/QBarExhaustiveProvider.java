@@ -9,6 +9,7 @@ import mho.wheels.ordering.Ordering;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -709,7 +710,7 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
      * An {@code Iterable} that generates all {@code Polynomial}s with a minimum degree.
      *
      * <ul>
-     *  <li>{@code degree} must be at least -1.</li>
+     *  <li>{@code minDegree} must be at least -1.</li>
      *  <li>The result is a non-removable {@code Iterable} containing {@code Polynomial}s.</li>
      * </ul>
      *
@@ -844,6 +845,85 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
     @Override
     public @NotNull Iterable<Polynomial> positivePrimitivePolynomialsAtLeast(int minDegree) {
         return filterInfinite(p -> p.signum() == 1, primitivePolynomialsAtLeast(minDegree));
+    }
+
+    /**
+     * An {@code Iterable} that generates all monic {@code Polynomial}s with a given degree.
+     *
+     * <ul>
+     *  <li>{@code degree} must be at least -1.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing monic {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is 0 if {@code degree} is less than 1, infinite otherwise
+     *
+     * @param degree the degree of the generated {@code Polynomial}s
+     * @return all monic {@code Polynomial}s with degree {@code degree}
+     */
+    public @NotNull Iterable<Polynomial> monicPolynomials(int degree) {
+        if (degree == -1) {
+            return Collections.emptyList();
+        }
+        return map(
+                is -> {
+                    List<BigInteger> coefficients = new ArrayList<>();
+                    coefficients.addAll(is);
+                    coefficients.add(BigInteger.ONE);
+                    return Polynomial.of(coefficients);
+                },
+                lists(degree, bigIntegers())
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all monic {@code Polynomial}s.
+     *
+     * <ul>
+     *  <li>The result is a non-removable {@code Iterable} containing monic {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Polynomial> monicPolynomials() {
+        return map(
+                is -> {
+                    List<BigInteger> coefficients = new ArrayList<>();
+                    coefficients.addAll(is);
+                    coefficients.add(BigInteger.ONE);
+                    return Polynomial.of(coefficients);
+                },
+                lists(bigIntegers())
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all monic {@code Polynomial}s with a minimum degree.
+     *
+     * <ul>
+     *  <li>{@code minDgree} must be at least -1.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing monic {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDegree the minimum degree of the generated {@code Polynomial}s
+     * @return all monic {@code Polynomial}s with degree at least {@code minDegree}
+     */
+    @Override
+    public @NotNull Iterable<Polynomial> monicPolynomialsAtLeast(int minDegree) {
+        if (minDegree < -1) {
+            throw new IllegalArgumentException("minDegree must be at least -1. Invalid minDegree: " + minDegree);
+        }
+        return map(
+                is -> {
+                    List<BigInteger> coefficients = new ArrayList<>();
+                    coefficients.addAll(is);
+                    coefficients.add(BigInteger.ONE);
+                    return Polynomial.of(coefficients);
+                },
+                listsAtLeast(minDegree == -1 ? 0 : minDegree, bigIntegers())
+        );
     }
 
     /**

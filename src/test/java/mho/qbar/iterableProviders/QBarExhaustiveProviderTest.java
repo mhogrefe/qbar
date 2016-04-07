@@ -667,6 +667,53 @@ public class QBarExhaustiveProviderTest {
         positivePrimitivePolynomialsAtLeast_fail_helper(-2);
     }
 
+    private static void monicPolynomials_int_helper(int degree, @NotNull String output) {
+        simpleProviderHelper(QEP.monicPolynomials(degree), output);
+    }
+
+    private static void monicPolynomials_int_fail_helper(int degree) {
+        try {
+            QEP.monicPolynomials(degree);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testMonicPolynomials_int() {
+        monicPolynomials_int_helper(-1, "QBarExhaustiveProvider_monicPolynomials_int_i");
+        monicPolynomials_int_helper(0, "QBarExhaustiveProvider_monicPolynomials_int_ii");
+        monicPolynomials_int_helper(1, "QBarExhaustiveProvider_monicPolynomials_int_iii");
+        monicPolynomials_int_helper(2, "QBarExhaustiveProvider_monicPolynomials_int_iv");
+        monicPolynomials_int_helper(9, "QBarExhaustiveProvider_monicPolynomials_int_v");
+        monicPolynomials_int_fail_helper(-2);
+    }
+
+    @Test
+    public void testMonicPolynomials() {
+        simpleProviderHelper(QEP.monicPolynomials(), "QBarExhaustiveProvider_monicPolynomials");
+    }
+
+    private static void monicPolynomialsAtLeast_helper(int minDegree, @NotNull String output) {
+        simpleProviderHelper(QEP.monicPolynomialsAtLeast(minDegree), output);
+    }
+
+    private static void monicPolynomialsAtLeast_fail_helper(int minDegree) {
+        try {
+            QEP.monicPolynomialsAtLeast(minDegree);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testMonicPolynomialsAtLeast() {
+        monicPolynomialsAtLeast_helper(-1, "QBarExhaustiveProvider_monicPolynomialsAtLeast_i");
+        monicPolynomialsAtLeast_helper(0, "QBarExhaustiveProvider_monicPolynomialsAtLeast_ii");
+        monicPolynomialsAtLeast_helper(1, "QBarExhaustiveProvider_monicPolynomialsAtLeast_iii");
+        monicPolynomialsAtLeast_helper(2, "QBarExhaustiveProvider_monicPolynomialsAtLeast_iv");
+        monicPolynomialsAtLeast_helper(9, "QBarExhaustiveProvider_monicPolynomialsAtLeast_v");
+        monicPolynomialsAtLeast_fail_helper(-2);
+    }
+
     private static void squareFreePolynomials_int_helper(int degree, @NotNull String output) {
         simpleProviderHelper(QEP.squareFreePolynomials(degree), output);
     }

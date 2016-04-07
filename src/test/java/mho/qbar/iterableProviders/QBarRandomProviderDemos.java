@@ -637,6 +637,46 @@ public class QBarRandomProviderDemos extends QBarDemos {
         }
     }
 
+    private void demoMonicPolynomials_int() {
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairsSquareRootOrder(
+                filterInfinite(
+                        rp -> rp.getScale() > 0,
+                        P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                ),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("monicPolynomials(" + p.a + ", " + p.b + ") = " + its(p.a.monicPolynomials(p.b)));
+        }
+    }
+
+    private void demoMonicPolynomials() {
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() > 0 && rp.getSecondaryScale() > 0,
+                P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
+            System.out.println("monicPolynomials(" + rp + ") = " + its(rp.monicPolynomials()));
+        }
+    }
+
+    private void demoMonicPolynomialsAtLeast() {
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
+                p -> p.a.getSecondaryScale() > p.b,
+                P.pairsSquareRootOrder(
+                        filterInfinite(
+                                rp -> rp.getScale() > 0 && rp.getSecondaryScale() > 0,
+                                P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
+                        ),
+                        P.withScale(4).rangeUpGeometric(-1)
+                )
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("monicPolynomialsAtLeast(" + p.a + ", " + p.b + ") = " +
+                    its(p.a.monicPolynomialsAtLeast(p.b)));
+        }
+    }
+
     private void demoSquareFreePolynomials_int() {
         Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairsSquareRootOrder(
                 filterInfinite(

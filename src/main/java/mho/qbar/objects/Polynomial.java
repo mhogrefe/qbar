@@ -2784,6 +2784,93 @@ public final class Polynomial implements
     }
 
     /**
+     * Expresses powers, from x<sup>0</sup>, to x<sup>{@code maxPower}</sup>, of any root of {@code this} as
+     * polynomials in the root. The polynomials all have degrees less that the degree of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} must be monic and non-constant.</li>
+     *  <li>{@code maxPower} cannot be negative.</li>
+     *  <li>The result is nonempty and contains no nulls.</li>
+     * </ul>
+     *
+     * Length is {@code maxPower}+1
+     *
+     * @param maxPower the maximum power of a root of {@code this}
+     * @return powers of roots of {@code this}
+     */
+    public @NotNull List<Polynomial> powerTable(int maxPower) {
+        if (maxPower < 0) {
+            throw new IllegalArgumentException("maxPower cannot be negative. Invalid maxPower: " + maxPower);
+        }
+        if (!isMonic()) {
+            throw new UnsupportedOperationException("this must be monic. Invalid this: " + this);
+        }
+        int degree = degree();
+        if (degree < 1) {
+            throw new UnsupportedOperationException("this cannot be constant. Invalid this: " + this);
+        }
+        List<Polynomial> powers = new ArrayList<>();
+        for (int p = 0; p < degree; p++) {
+            powers.add(of(BigInteger.ONE, p));
+            if (p == maxPower) {
+                return powers;
+            }
+        }
+        Polynomial xDeg = of(toList(map(BigInteger::negate, init(coefficients))));
+        powers.add(xDeg);
+        Polynomial power = xDeg;
+        for (int p = degree + 1; p <= maxPower; p++) {
+            BigInteger highestCoefficient = power.coefficient(degree - 1);
+            List<BigInteger> newCoefficients = new ArrayList<>(degree);
+            newCoefficients.add(BigInteger.ZERO);
+            for (int i = 0; i < degree - 1; i++) {
+                newCoefficients.add(power.coefficient(i));
+            }
+            power = of(newCoefficients).add(xDeg.multiply(highestCoefficient));
+            powers.add(power);
+        }
+        return powers;
+    }
+
+    /**
+     * Expresses the {@code p}th power of any root of {@code this} as a polynomial in the root. The polynomial has a
+     * degree less that the degree of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} must be monic and non-constant.</li>
+     *  <li>{@code p} cannot be negative.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param p the power that a root of {@code this} is being raised to
+     * @return the {@code p}th power of a root of {@code this}
+     */
+    public @NotNull Polynomial rootPower(int p) {
+        if (p < 0) {
+            throw new IllegalArgumentException("p cannot be negative. Invalid p: " + p);
+        }
+        if (!isMonic()) {
+            throw new UnsupportedOperationException("this must be monic. Invalid this: " + this);
+        }
+        int degree = degree();
+        if (degree < 1) {
+            throw new UnsupportedOperationException("this cannot be constant. Invalid this: " + this);
+        }
+        if (p < degree) {
+            return of(BigInteger.ONE, p);
+        }
+        Polynomial power = ONE;
+        for (boolean bit : IntegerUtils.bigEndianBits(p)) {
+            power = power.pow(2);
+            if (bit) {
+                power = power.multiplyByPowerOfX(1);
+            }
+            power = power.remainderExact(this);
+        }
+        return power;
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>

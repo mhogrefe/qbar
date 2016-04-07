@@ -175,6 +175,10 @@ public class PolynomialProperties extends QBarTestProperties {
         propertiesInvertRoots();
         propertiesAddRoots();
         propertiesMultiplyRoots();
+        propertiesPowerTable();
+        compareImplementationsPowerTable();
+        propertiesRootPower();
+        compareImplementationsRootPower();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -4399,6 +4403,104 @@ public class PolynomialProperties extends QBarTestProperties {
             Polynomial productRootsP = product(map(Polynomial::fromRoot, productRs));
             assertEquals(p, a.multiplyRoots(b), productRootsP);
         }
+    }
+
+    private static @NotNull List<Polynomial> powerTable_simplest(@NotNull Polynomial p, int maxPower) {
+        return toList(map(p::rootPower, range(0, maxPower)));
+    }
+
+    private static @NotNull List<Polynomial> powerTable_alt(@NotNull Polynomial p, int maxPower) {
+        return toList(map(i -> of(BigInteger.ONE, i).remainderExact(p), range(0, maxPower)));
+    }
+
+    private void propertiesPowerTable() {
+        initialize("powerTable(int)");
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.monicPolynomialsAtLeast(1),
+                P.naturalIntegersGeometric()
+        );
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            List<Polynomial> powers = p.a.powerTable(p.b);
+            assertEquals(p, powerTable_simplest(p.a, p.b), powers);
+            assertEquals(p, powerTable_alt(p.a, p.b), powers);
+            assertEquals(p, powers.size(), p.b + 1);
+            assertTrue(p, all(q -> q.degree() < p.a.degree(), powers));
+        }
+
+        Iterable<Pair<Polynomial, Integer>> psFail = P.pairsLogarithmicOrder(
+                filterInfinite(p -> p.degree() < 1 || !p.isMonic(), P.polynomials()),
+                P.naturalIntegersGeometric()
+        );
+        for (Pair<Polynomial, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.powerTable(p.b);
+                fail(p);
+            } catch (UnsupportedOperationException ignored) {}
+        }
+
+        psFail = P.pairsLogarithmicOrder(P.monicPolynomialsAtLeast(1), P.negativeIntegers());
+        for (Pair<Polynomial, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.powerTable(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void compareImplementationsPowerTable() {
+        Map<String, Function<Pair<Polynomial, Integer>, List<Polynomial>>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> powerTable_simplest(p.a, p.b));
+        functions.put("alt", p -> powerTable_alt(p.a, p.b));
+        functions.put("standard", p -> p.a.powerTable(p.b));
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.monicPolynomialsAtLeast(1),
+                P.naturalIntegersGeometric()
+        );
+        compareImplementations("powerTable(int)", take(LIMIT, ps), functions);
+    }
+
+    private static @NotNull Polynomial rootPower_simplest(@NotNull Polynomial p, int power) {
+        return last(p.powerTable(power));
+    }
+
+    private void propertiesRootPower() {
+        initialize("rootPower(int)");
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairs(P.monicPolynomialsAtLeast(1), P.naturalIntegersGeometric());
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            Polynomial rootPower = p.a.rootPower(p.b);
+            assertEquals(p, rootPower_simplest(p.a, p.b), rootPower);
+            assertTrue(p, rootPower.degree() < p.a.degree());
+        }
+
+        Iterable<Pair<Polynomial, Integer>> psFail = P.pairsLogarithmicOrder(
+                filterInfinite(p -> p.degree() < 1 || !p.isMonic(), P.polynomials()),
+                P.naturalIntegersGeometric()
+        );
+        for (Pair<Polynomial, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.rootPower(p.b);
+                fail(p);
+            } catch (UnsupportedOperationException ignored) {}
+        }
+
+        psFail = P.pairsLogarithmicOrder(P.monicPolynomialsAtLeast(1), P.negativeIntegers());
+        for (Pair<Polynomial, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.rootPower(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void compareImplementationsRootPower() {
+        Map<String, Function<Pair<Polynomial, Integer>, Polynomial>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> rootPower_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.rootPower(p.b));
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.monicPolynomialsAtLeast(1),
+                P.naturalIntegersGeometric()
+        );
+        compareImplementations("rootPower(int)", take(LIMIT, ps), functions);
     }
 
     private void propertiesEquals() {

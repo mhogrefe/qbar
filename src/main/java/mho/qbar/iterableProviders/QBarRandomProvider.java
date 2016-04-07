@@ -7,6 +7,7 @@ import mho.wheels.ordering.Ordering;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -1557,6 +1558,106 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                     " secondaryScale: " + secondaryScale + ", minDegree: " + minDegree);
         }
         return filterInfinite(p -> p.signum() == 1, primitivePolynomialsAtLeast(minDegree));
+    }
+
+    /**
+     * An {@code Iterable} that generates all monic {@code Polynomial}s with a given degree. Each coefficient's bit
+     * size is chosen from a geometric distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale}.</li>
+     *  <li>{@code degree} cannot be negative.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing monic {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param degree the degree of the generated {@code Polynomial}s
+     * @return monic {@code Polynomial}s with degree at least {@code minDegree}
+     */
+    @Override
+    public @NotNull Iterable<Polynomial> monicPolynomials(int degree) {
+        if (degree < 0) {
+            throw new IllegalArgumentException("degree cannot be negative. Invalid degree: " + degree);
+        }
+        return map(
+                is -> {
+                    List<BigInteger> coefficients = new ArrayList<>();
+                    coefficients.addAll(is);
+                    coefficients.add(BigInteger.ONE);
+                    return Polynomial.of(coefficients);
+                },
+                lists(degree, bigIntegers())
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all monic {@code Polynomial}s. Each {@code Polynomial}'s degree is chosen
+     * from a geometric distribution with mean {@code secondaryScale}, and each coefficient's bit size is chosen from a
+     * geometric distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale} and a positive {@code secondaryScale}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing monic {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Polynomial> monicPolynomials() {
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale <= 0) {
+            throw new IllegalStateException("this must have a positive secondaryScale. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
+        return map(
+                is -> {
+                    List<BigInteger> coefficients = new ArrayList<>();
+                    coefficients.addAll(is);
+                    coefficients.add(BigInteger.ONE);
+                    return Polynomial.of(coefficients);
+                },
+                withScale(secondaryScale).lists(bigIntegers())
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all monic {@code Polynomial}s with a minimum degree. Each
+     * {@code Polynomial}'s degree is chosen from a geometric distribution with mean {@code secondaryScale}, and each
+     * coefficient's bit size is chosen from a geometric distribution with mean approximately {@code scale}. Does not
+     * support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} that is positive and greater
+     *  than or equal to {@code minDegree}.</li>
+     *  <li>{@code minDegree} must be at least –1.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing monic {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDegree the minimum degree of the generated {@code Polynomial}s
+     * @return monic {@code Polynomial}s with degree at least {@code minDegree}
+     */
+    @Override
+    public @NotNull Iterable<Polynomial> monicPolynomialsAtLeast(int minDegree) {
+        if (minDegree < -1) {
+            throw new IllegalArgumentException("minDegree must be at least -1. Invalid minDegree: " + minDegree);
+        }
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 0 || secondaryScale <= minDegree) {
+            throw new IllegalStateException("this must have a secondaryScale that is positive and greater than" +
+                    " minDegree. secondaryScale: " + secondaryScale + ", minDegree: " + minDegree);
+        }
+        return map(
+                is -> {
+                    List<BigInteger> coefficients = new ArrayList<>();
+                    coefficients.addAll(is);
+                    coefficients.add(BigInteger.ONE);
+                    return Polynomial.of(coefficients);
+                },
+                withScale(secondaryScale).listsAtLeast(minDegree == -1 ? 0 : minDegree, bigIntegers())
+        );
     }
 
     /**

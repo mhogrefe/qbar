@@ -3510,6 +3510,203 @@ public class QBarRandomProviderTest {
         positivePrimitivePolynomialsAtLeast_fail_helper(1, 1, -2);
     }
 
+    private static void monicPolynomials_int_helper(
+            int scale,
+            int degree,
+            @NotNull String output,
+            double meanDimension,
+            double meanCoefficientBitSize
+    ) {
+        polynomials_helper(
+                P.withScale(scale).monicPolynomials(degree),
+                output,
+                meanDimension,
+                meanCoefficientBitSize
+        );
+    }
+
+    private static void monicPolynomials_int_fail_helper(int scale, int degree) {
+        try {
+            P.withScale(scale).monicPolynomials(degree);
+            fail();
+        } catch (IllegalArgumentException | IllegalStateException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testMonicPolynomials_int() {
+        monicPolynomials_int_helper(
+                1,
+                0,
+                "QBarRandomProvider_monicPolynomials_int_i",
+                0.0,
+                1.000000000007918
+        );
+        monicPolynomials_int_helper(
+                5,
+                3,
+                "QBarRandomProvider_monicPolynomials_int_ii",
+                2.9999999999775233,
+                3.9137364999168973
+        );
+        monicPolynomials_int_helper(
+                10,
+                8,
+                "QBarRandomProvider_monicPolynomials_int_iii",
+                8.000000000063345,
+                8.930733111273517
+        );
+
+        monicPolynomials_int_fail_helper(0, -1);
+        monicPolynomials_int_fail_helper(1, -1);
+    }
+
+    private static void monicPolynomials_helper(
+            int scale,
+            int secondaryScale,
+            @NotNull String output,
+            double meanDegree,
+            double meanCoefficientBitSize
+    ) {
+        polynomials_helper(
+                P.withScale(scale).withSecondaryScale(secondaryScale).monicPolynomials(),
+                output,
+                meanDegree,
+                meanCoefficientBitSize
+        );
+    }
+
+    private static void monicPolynomials_fail_helper(int scale, int secondaryScale) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).monicPolynomials();
+            fail();
+        } catch (IllegalStateException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testMonicPolynomials() {
+        monicPolynomials_helper(
+                1,
+                1,
+                "QBarRandomProvider_monicPolynomials_i",
+                1.0006929999977097,
+                0.9168388153632843
+        );
+        monicPolynomials_helper(
+                5,
+                3,
+                "QBarRandomProvider_monicPolynomials_ii",
+                3.00101199999147,
+                3.9122941895036285
+        );
+        monicPolynomials_helper(
+                10,
+                8,
+                "QBarRandomProvider_monicPolynomials_iii",
+                7.983070000016452,
+                8.931442034672816
+        );
+
+        monicPolynomials_fail_helper(0, 1);
+        monicPolynomials_fail_helper(1, 0);
+    }
+
+    private static void monicPolynomialsAtLeast_helper(
+            int scale,
+            int secondaryScale,
+            int minDegree,
+            @NotNull String output,
+            double meanDegree,
+            double meanCoefficientBitSize
+    ) {
+        polynomials_helper(
+                P.withScale(scale).withSecondaryScale(secondaryScale).monicPolynomialsAtLeast(minDegree),
+                output,
+                meanDegree,
+                meanCoefficientBitSize
+        );
+    }
+
+    private static void monicPolynomialsAtLeast_fail_helper(int scale, int secondaryScale, int minDegree) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).monicPolynomialsAtLeast(minDegree);
+            fail();
+        } catch (IllegalStateException | IllegalArgumentException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testMonicPolynomialsAtLeast() {
+        monicPolynomialsAtLeast_helper(
+                1,
+                1,
+                -1,
+                "QBarRandomProvider_polynomialsAtLeast_i",
+                1.0006929999977097,
+                0.9168388153632843
+        );
+        monicPolynomialsAtLeast_helper(
+                5,
+                3,
+                -1,
+                "QBarRandomProvider_polynomialsAtLeast_ii",
+                3.00101199999147,
+                3.9122941895036285
+        );
+        monicPolynomialsAtLeast_helper(
+                5,
+                3,
+                0,
+                "QBarRandomProvider_polynomialsAtLeast_iii",
+                3.00101199999147,
+                3.9122941895036285
+        );
+        monicPolynomialsAtLeast_helper(
+                5,
+                3,
+                2,
+                "QBarRandomProvider_polynomialsAtLeast_iv",
+                3.0005879999687126,
+                3.914580056823708
+        );
+        monicPolynomialsAtLeast_helper(
+                10,
+                8,
+                -1,
+                "QBarRandomProvider_polynomialsAtLeast_v",
+                7.983070000016452,
+                8.931442034672816
+        );
+        monicPolynomialsAtLeast_helper(
+                10,
+                8,
+                2,
+                "QBarRandomProvider_polynomialsAtLeast_vi",
+                8.01187900001392,
+                8.93072132885421
+        );
+        monicPolynomialsAtLeast_helper(
+                10,
+                8,
+                7,
+                "QBarRandomProvider_polynomialsAtLeast_vii",
+                8.00086800006071,
+                8.930916996180777
+        );
+
+        monicPolynomialsAtLeast_fail_helper(0, 0, -1);
+        monicPolynomialsAtLeast_fail_helper(1, -1, -1);
+        monicPolynomialsAtLeast_fail_helper(1, 3, 3);
+        monicPolynomialsAtLeast_fail_helper(1, 1, -2);
+    }
+
     private static void squareFreePolynomials_int_helper(
             int scale,
             int degree,

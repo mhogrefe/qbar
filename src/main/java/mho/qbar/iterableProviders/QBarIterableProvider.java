@@ -1,6 +1,7 @@
 package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.*;
+import mho.qbar.objects.Vector;
 import mho.wheels.iterables.IterableProvider;
 import mho.wheels.iterables.RandomProvider;
 import mho.wheels.math.BinaryFraction;
@@ -13,9 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.*;
@@ -3297,6 +3296,25 @@ public strictfp abstract class QBarIterableProvider {
      * @param minDegree the minimum degree of the generated {@code Polynomial}s
      */
     public abstract @NotNull Iterable<Polynomial> positivePrimitivePolynomialsAtLeast(int minDegree);
+
+    /**
+     * Generates monic {@code Polynomial}s with a given degree.
+     *
+     * @param degree the degree of the generated {@code Polynomial}s
+     */
+    public abstract @NotNull Iterable<Polynomial> monicPolynomials(int degree);
+
+    /**
+     * Generates monic {@code Polynomial}s.
+     */
+    public abstract @NotNull Iterable<Polynomial> monicPolynomials();
+
+    /**
+     * Generates monic {@code Polynomial}s with a minimum degree.
+     *
+     * @param minDegree the minimum degree of the generated {@code Polynomial}s
+     */
+    public abstract @NotNull Iterable<Polynomial> monicPolynomialsAtLeast(int minDegree);
 
     /**
      * Generates square-free {@code Polynomial}s with a given degree.

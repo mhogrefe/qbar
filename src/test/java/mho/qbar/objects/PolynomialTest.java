@@ -4143,6 +4143,131 @@ public class PolynomialTest {
         multiplyRoots_helper("x^2+x+1", "2*x^3+1", "4*x^6+4*x^3+1");
     }
 
+    private static void powerTable_helper(@NotNull String p, int maxPower, @NotNull String output) {
+        aeq(read(p).get().powerTable(maxPower), output);
+    }
+
+    private static void powerTable_fail_helper(@NotNull String p, int maxPower) {
+        try {
+            read(p).get().powerTable(maxPower);
+        } catch (UnsupportedOperationException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testPowerTable() {
+        powerTable_helper("x^2-2", 0, "[1]");
+        powerTable_helper("x^2-2", 1, "[1, x]");
+        powerTable_helper("x^2-2", 2, "[1, x, 2]");
+        powerTable_helper("x^2-2", 10, "[1, x, 2, 2*x, 4, 4*x, 8, 8*x, 16, 16*x, 32]");
+
+        powerTable_helper("x", 10, "[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]");
+        powerTable_helper("x+1", 10, "[1, -1, 1, -1, 1, -1, 1, -1, 1, -1, 1]");
+        powerTable_helper("x-1", 10, "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]");
+        powerTable_helper("x^2+2", 10, "[1, x, -2, -2*x, 4, 4*x, -8, -8*x, 16, 16*x, -32]");
+        powerTable_helper("x^2-x-1", 10, "[1, x, x+1, 2*x+1, 3*x+2, 5*x+3, 8*x+5, 13*x+8, 21*x+13, 34*x+21, 55*x+34]");
+        powerTable_helper("x^2+x+1", 10, "[1, x, -x-1, 1, x, -x-1, 1, x, -x-1, 1, x]");
+        powerTable_helper("x^3-1", 10, "[1, x, x^2, 1, x, x^2, 1, x, x^2, 1, x]");
+        powerTable_helper("x^5-x-1", 20,
+                "[1, x, x^2, x^3, x^4, x+1, x^2+x, x^3+x^2, x^4+x^3, x^4+x+1, x^2+2*x+1, x^3+2*x^2+x, x^4+2*x^3+x^2," +
+                " 2*x^4+x^3+x+1, x^4+x^2+3*x+2, x^3+3*x^2+3*x+1, x^4+3*x^3+3*x^2+x, 3*x^4+3*x^3+x^2+x+1," +
+                " 3*x^4+x^3+x^2+4*x+3, x^4+x^3+4*x^2+6*x+3, x^4+4*x^3+6*x^2+4*x+1]");
+
+        powerTable_fail_helper("0", 10);
+        powerTable_fail_helper("1", 10);
+        powerTable_fail_helper("-1", 10);
+        powerTable_fail_helper("3", 10);
+        powerTable_fail_helper("2*x+1", 10);
+        powerTable_fail_helper("5*x^2", 10);
+        powerTable_fail_helper("x^2-2", -1);
+    }
+
+    private static void rootPower_helper(@NotNull String x, int p, @NotNull String output) {
+        aeq(read(x).get().rootPower(p), output);
+    }
+
+    private static void rootPower_fail_helper(@NotNull String x, int p) {
+        try {
+            read(x).get().rootPower(p);
+            fail();
+        } catch (UnsupportedOperationException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testRootPower() {
+        rootPower_helper("x", 0, "1");
+        rootPower_helper("x", 1, "0");
+        rootPower_helper("x", 2, "0");
+        rootPower_helper("x", 10, "0");
+        rootPower_helper("x", 100, "0");
+        rootPower_helper("x", 1000, "0");
+
+        rootPower_helper("x+1", 0, "1");
+        rootPower_helper("x+1", 1, "-1");
+        rootPower_helper("x+1", 2, "1");
+        rootPower_helper("x+1", 10, "1");
+        rootPower_helper("x+1", 100, "1");
+        rootPower_helper("x+1", 1000, "1");
+
+        rootPower_helper("x-1", 0, "1");
+        rootPower_helper("x-1", 1, "1");
+        rootPower_helper("x-1", 2, "1");
+        rootPower_helper("x-1", 10, "1");
+        rootPower_helper("x-1", 100, "1");
+        rootPower_helper("x-1", 1000, "1");
+
+        rootPower_helper("x^2-2", 0, "1");
+        rootPower_helper("x^2-2", 1, "x");
+        rootPower_helper("x^2-2", 2, "2");
+        rootPower_helper("x^2-2", 10, "32");
+        rootPower_helper("x^2-2", 100, "1125899906842624");
+        rootPower_helper("x^2-2", 1000,
+                "327339060789614187001318969682759915221664204604306478948329136809613379640467455488327009232590415" +
+                "7150886684127560071009217256545885393053328527589376");
+
+        rootPower_helper("x^2+2", 0, "1");
+        rootPower_helper("x^2+2", 1, "x");
+        rootPower_helper("x^2+2", 2, "-2");
+        rootPower_helper("x^2+2", 10, "-32");
+        rootPower_helper("x^2+2", 100, "1125899906842624");
+        rootPower_helper("x^2+2", 1000,
+                "327339060789614187001318969682759915221664204604306478948329136809613379640467455488327009232590415" +
+                "7150886684127560071009217256545885393053328527589376");
+
+        rootPower_helper("x^2-x-1", 0, "1");
+        rootPower_helper("x^2-x-1", 1, "x");
+        rootPower_helper("x^2-x-1", 2, "x+1");
+        rootPower_helper("x^2-x-1", 10, "55*x+34");
+        rootPower_helper("x^2-x-1", 100, "354224848179261915075*x+218922995834555169026");
+
+        rootPower_helper("x^2+x+1", 0, "1");
+        rootPower_helper("x^2+x+1", 1, "x");
+        rootPower_helper("x^2+x+1", 2, "-x-1");
+        rootPower_helper("x^2+x+1", 10, "x");
+        rootPower_helper("x^2+x+1", 100, "x");
+        rootPower_helper("x^2+x+1", 1000, "x");
+
+        rootPower_helper("x^3-1", 0, "1");
+        rootPower_helper("x^3-1", 1, "x");
+        rootPower_helper("x^3-1", 2, "x^2");
+        rootPower_helper("x^3-1", 10, "x");
+        rootPower_helper("x^3-1", 100, "x");
+        rootPower_helper("x^3-1", 1000, "x");
+
+        rootPower_helper("x^5-x-1", 0, "1");
+        rootPower_helper("x^5-x-1", 1, "x");
+        rootPower_helper("x^5-x-1", 2, "x^2");
+        rootPower_helper("x^5-x-1", 10, "x^2+2*x+1");
+        rootPower_helper("x^5-x-1", 100, "627401*x^4+735723*x^3+864339*x^2+1006897*x+540536");
+
+        rootPower_fail_helper("0", 10);
+        rootPower_fail_helper("1", 10);
+        rootPower_fail_helper("-1", 10);
+        rootPower_fail_helper("3", 10);
+        rootPower_fail_helper("2*x+1", 10);
+        rootPower_fail_helper("5*x^2", 10);
+        rootPower_fail_helper("x^2-2", -1);
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(
