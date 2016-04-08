@@ -1524,7 +1524,7 @@ public final class Rational implements Comparable<Rational> {
      *
      * <ul>
      *  <li>{@code this} cannot be zero.</li>
-     *  <li>The result is a non-zero {@code Rational}.</li>
+     *  <li>The result is a nonzero {@code Rational}.</li>
      * </ul>
      *
      * @return 1/{@code this}

@@ -89,6 +89,7 @@ public class AlgebraicProperties extends QBarTestProperties {
         propertiesMultiply_BigInteger();
         propertiesMultiply_Rational();
         propertiesMultiply_Algebraic();
+        propertiesInvert();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -1517,6 +1518,21 @@ public class AlgebraicProperties extends QBarTestProperties {
             associative(Algebraic::multiply, t);
             leftDistributive(Algebraic::add, Algebraic::multiply, t);
             rightDistributive(Algebraic::add, Algebraic::multiply, t);
+        }
+    }
+
+    private void propertiesInvert() {
+        initialize("invert()");
+        for (Algebraic x : take(LIMIT, P.nonzeroAlgebraics())) {
+            Algebraic inverse = x.invert();
+            inverse.validate();
+            involution(Algebraic::invert, x);
+            assertTrue(x, x.multiply(inverse) == ONE);
+            assertTrue(x, inverse != ZERO);
+        }
+
+        for (Algebraic x : take(LIMIT, filterInfinite(s -> s.abs() != ONE, P.nonzeroAlgebraics()))) {
+            assertTrue(x, !x.equals(x.invert()));
         }
     }
 

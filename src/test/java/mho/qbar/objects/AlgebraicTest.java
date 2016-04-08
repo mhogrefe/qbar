@@ -1993,6 +1993,32 @@ public class AlgebraicTest {
         multiply_Algebraic_helper("sqrt(2)", "sqrt(2)/2", "1");
     }
 
+    private static void invert_helper(@NotNull String input, @NotNull String output) {
+        Algebraic x = read(input).get().invert();
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void invert_fail_helper(@NotNull String input) {
+        try {
+            read(input).get().invert();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testInvert() {
+        invert_helper("1", "1");
+        invert_helper("1/2", "2");
+        invert_helper("-4/3", "-3/4");
+        invert_helper("sqrt(2)", "sqrt(2)/2");
+        invert_helper("-sqrt(2)", "-sqrt(2)/2");
+        invert_helper("(1+sqrt(5))/2", "(-1+sqrt(5))/2");
+        invert_helper("root 0 of x^5-x-1", "root 0 of x^5+x^4-1");
+
+        invert_fail_helper("0");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

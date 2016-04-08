@@ -1556,6 +1556,16 @@ public final class Algebraic implements Comparable<Algebraic> {
         );
     }
 
+    /**
+     * Returns the multiplicative inverse of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>The result is a nonzero {@code Algebraic}.</li>
+     * </ul>
+     *
+     * @return 1/{@code this}
+     */
     public @NotNull Algebraic invert() {
         if (this == ZERO) {
             throw new ArithmeticException();
@@ -1566,10 +1576,9 @@ public final class Algebraic implements Comparable<Algebraic> {
         } else {
             Polynomial inverseMP = minimalPolynomial.invertRoots();
             int negativeRootCount = minimalPolynomial.rootCount(Interval.lessThanOrEqualTo(Rational.ZERO));
-            int positiveRootCount = mpRootCount - negativeRootCount;
             int inverseRootIndex;
             if (signum() == 1) {
-                inverseRootIndex = 2 * negativeRootCount + positiveRootCount - rootIndex - 1;
+                inverseRootIndex = mpRootCount + negativeRootCount - rootIndex - 1;
             } else {
                 inverseRootIndex = negativeRootCount - rootIndex - 1;
             }

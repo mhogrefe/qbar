@@ -2796,7 +2796,7 @@ public final class Polynomial implements
      * Length is {@code maxPower}+1
      *
      * @param maxPower the maximum power of a root of {@code this}
-     * @return powers of roots of {@code this}
+     * @return x<sup>0</sup>, ..., x<sup>{@code maxPower}</sup> over the quotient ring ℤ[x]/{@code this}
      */
     public @NotNull List<Polynomial> powerTable(int maxPower) {
         if (maxPower < 0) {
@@ -2843,7 +2843,7 @@ public final class Polynomial implements
      * </ul>
      *
      * @param p the power that a root of {@code this} is being raised to
-     * @return the {@code p}th power of a root of {@code this}
+     * @return x<sup>{@code p}</sup> over the quotient ring ℤ[x]/{@code this}
      */
     public @NotNull Polynomial rootPower(int p) {
         if (p < 0) {

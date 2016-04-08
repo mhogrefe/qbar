@@ -393,6 +393,12 @@ public class AlgebraicDemos extends QBarDemos {
         }
     }
 
+    private void demoInvert() {
+        for (Algebraic x : take(LIMIT, P.withScale(4).nonzeroAlgebraics())) {
+            System.out.println("1/(" + x + ") = " + x.invert());
+        }
+    }
+
     private void demoEquals_Algebraic() {
         for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.pairs(P.withScale(4).algebraics()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);
