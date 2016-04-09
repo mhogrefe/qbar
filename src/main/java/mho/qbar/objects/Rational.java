@@ -1542,11 +1542,11 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * Returns the quotient of {@code a} and {@code b}.
+     * Returns the quotient of {@code this} and {@code that}.
      *
      * <ul>
      *  <li>{@code this} can be any {@code Rational}.</li>
-     *  <li>{@code that} cannot zero.</li>
+     *  <li>{@code that} cannot be zero.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *

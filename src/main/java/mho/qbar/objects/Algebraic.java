@@ -1518,7 +1518,7 @@ public final class Algebraic implements Comparable<Algebraic> {
         }
         Polynomial productMP = minimalPolynomial.multiplyRoots(that.minimalPolynomial).squareFreePart();
         int productMPRootCount = productMP.rootCount();
-        List<Polynomial> factors = factors = productMP.factor();
+        List<Polynomial> factors = productMP.factor();
         if (factors.size() == 1 && productMPRootCount == 1) {
             Polynomial factor = factors.get(0);
             if (factor.degree() == 1) {
@@ -1585,6 +1585,109 @@ public final class Algebraic implements Comparable<Algebraic> {
             Interval inverseIsolatingInterval = inverseMP.powerOfTwoIsolatingInterval(inverseRootIndex);
             return new Algebraic(inverseMP, inverseRootIndex, inverseIsolatingInterval, mpRootCount);
         }
+    }
+
+    /**
+     * Returns the quotient of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code int} {@code this} is divided by
+     * @return {@code this}/{@code that}
+     */
+    public @NotNull Algebraic divide(int that) {
+        if (that == 0) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        if (this == ZERO) return ZERO;
+        if (that == 1) return this;
+        if (isRational()) {
+            return of(rational.get().divide(that));
+        }
+        if (that < 0) {
+            return negate().divide(-that);
+        }
+        Polynomial productMP = minimalPolynomial.positivePrimitiveStretch(Rational.of(1, that));
+        Interval productIsolatingInterval = productMP.powerOfTwoIsolatingInterval(rootIndex);
+        return new Algebraic(productMP, rootIndex, productIsolatingInterval, mpRootCount);
+    }
+
+    /**
+     * Returns the quotient of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code BigInteger}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code BigInteger} {@code this} is divided by
+     * @return {@code this}/{@code that}
+     */
+    public @NotNull Algebraic divide(@NotNull BigInteger that) {
+        if (that.equals(BigInteger.ZERO)) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        if (this == ZERO) return ZERO;
+        if (that.equals(BigInteger.ONE)) return this;
+        if (isRational()) {
+            return of(rational.get().divide(that));
+        }
+        if (that.signum() == -1) {
+            return negate().divide(that.negate());
+        }
+        Polynomial productMP = minimalPolynomial.positivePrimitiveStretch(Rational.of(BigInteger.ONE, that));
+        Interval productIsolatingInterval = productMP.powerOfTwoIsolatingInterval(rootIndex);
+        return new Algebraic(productMP, rootIndex, productIsolatingInterval, mpRootCount);
+    }
+
+    /**
+     * Returns the quotient of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code Rational} {@code this} is divided by
+     * @return {@code this}/{@code that}
+     */
+    public @NotNull Algebraic divide(@NotNull Rational that) {
+        if (that == Rational.ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        if (this == ZERO) return ZERO;
+        if (that == Rational.ONE) return this;
+        if (isRational()) {
+            return of(rational.get().divide(that));
+        }
+        if (that.signum() == -1) {
+            return negate().divide(that.negate());
+        }
+        Polynomial productMP = minimalPolynomial.positivePrimitiveStretch(that.invert());
+        Interval productIsolatingInterval = productMP.powerOfTwoIsolatingInterval(rootIndex);
+        return new Algebraic(productMP, rootIndex, productIsolatingInterval, mpRootCount);
+    }
+
+    /**
+     * Returns the quotient of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code Algebraic} {@code this} is divided by
+     * @return {@code this}/{@code that}
+     */
+    public @NotNull Algebraic divide(@NotNull Algebraic that) {
+        return multiply(that.invert());
     }
 
     /**

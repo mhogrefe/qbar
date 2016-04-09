@@ -2019,6 +2019,282 @@ public class AlgebraicTest {
         invert_fail_helper("0");
     }
 
+    private static void divide_int_helper(@NotNull String a, int b, @NotNull String output) {
+        Algebraic x = read(a).get().divide(b);
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void divide_int_fail_helper(@NotNull String a, int b) {
+        try {
+            read(a).get().divide(b);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDivide_int() {
+        divide_int_helper("0", 1, "0");
+        divide_int_helper("0", -1, "0");
+        divide_int_helper("0", 100, "0");
+
+        divide_int_helper("1", 1, "1");
+        divide_int_helper("1", -1, "-1");
+        divide_int_helper("1", 100, "1/100");
+
+        divide_int_helper("-1", 1, "-1");
+        divide_int_helper("-1", -1, "1");
+        divide_int_helper("-1", 100, "-1/100");
+
+        divide_int_helper("1/2", 1, "1/2");
+        divide_int_helper("1/2", -1, "-1/2");
+        divide_int_helper("1/2", 100, "1/200");
+
+        divide_int_helper("-4/3", 1, "-4/3");
+        divide_int_helper("-4/3", -1, "4/3");
+        divide_int_helper("-4/3", 100, "-1/75");
+
+        divide_int_helper("sqrt(2)", 1, "sqrt(2)");
+        divide_int_helper("sqrt(2)", -1, "-sqrt(2)");
+        divide_int_helper("sqrt(2)", 100, "sqrt(2)/100");
+
+        divide_int_helper("-sqrt(2)", 1, "-sqrt(2)");
+        divide_int_helper("-sqrt(2)", -1, "sqrt(2)");
+        divide_int_helper("-sqrt(2)", 100, "-sqrt(2)/100");
+
+        divide_int_helper("(1+sqrt(5))/2", 1, "(1+sqrt(5))/2");
+        divide_int_helper("(1+sqrt(5))/2", -1, "(-1-sqrt(5))/2");
+        divide_int_helper("(1+sqrt(5))/2", 100, "(1+sqrt(5))/200");
+
+        divide_int_helper("root 0 of x^5-x-1", 1, "root 0 of x^5-x-1");
+        divide_int_helper("root 0 of x^5-x-1", -1, "root 0 of x^5-x+1");
+        divide_int_helper("root 0 of x^5-x-1", 100, "root 0 of 10000000000*x^5-100*x-1");
+
+        divide_int_fail_helper("0", 0);
+        divide_int_fail_helper("1", 0);
+        divide_int_fail_helper("-4/3", 0);
+        divide_int_fail_helper("sqrt(2)", 0);
+    }
+
+    private static void divide_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        Algebraic x = read(a).get().divide(Readers.readBigInteger(b).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void divide_BigInteger_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().divide(Readers.readBigInteger(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDivide_BigInteger() {
+        divide_BigInteger_helper("0", "1", "0");
+        divide_BigInteger_helper("0", "-1", "0");
+        divide_BigInteger_helper("0", "100", "0");
+
+        divide_BigInteger_helper("1", "1", "1");
+        divide_BigInteger_helper("1", "-1", "-1");
+        divide_BigInteger_helper("1", "100", "1/100");
+
+        divide_BigInteger_helper("-1", "1", "-1");
+        divide_BigInteger_helper("-1", "-1", "1");
+        divide_BigInteger_helper("-1", "100", "-1/100");
+
+        divide_BigInteger_helper("1/2", "1", "1/2");
+        divide_BigInteger_helper("1/2", "-1", "-1/2");
+        divide_BigInteger_helper("1/2", "100", "1/200");
+
+        divide_BigInteger_helper("-4/3", "1", "-4/3");
+        divide_BigInteger_helper("-4/3", "-1", "4/3");
+        divide_BigInteger_helper("-4/3", "100", "-1/75");
+
+        divide_BigInteger_helper("sqrt(2)", "1", "sqrt(2)");
+        divide_BigInteger_helper("sqrt(2)", "-1", "-sqrt(2)");
+        divide_BigInteger_helper("sqrt(2)", "100", "sqrt(2)/100");
+
+        divide_BigInteger_helper("-sqrt(2)", "1", "-sqrt(2)");
+        divide_BigInteger_helper("-sqrt(2)", "-1", "sqrt(2)");
+        divide_BigInteger_helper("-sqrt(2)", "100", "-sqrt(2)/100");
+
+        divide_BigInteger_helper("(1+sqrt(5))/2", "1", "(1+sqrt(5))/2");
+        divide_BigInteger_helper("(1+sqrt(5))/2", "-1", "(-1-sqrt(5))/2");
+        divide_BigInteger_helper("(1+sqrt(5))/2", "100", "(1+sqrt(5))/200");
+
+        divide_BigInteger_helper("root 0 of x^5-x-1", "1", "root 0 of x^5-x-1");
+        divide_BigInteger_helper("root 0 of x^5-x-1", "-1", "root 0 of x^5-x+1");
+        divide_BigInteger_helper("root 0 of x^5-x-1", "100", "root 0 of 10000000000*x^5-100*x-1");
+
+        divide_BigInteger_fail_helper("0", "0");
+        divide_BigInteger_fail_helper("1", "0");
+        divide_BigInteger_fail_helper("-4/3", "0");
+        divide_BigInteger_fail_helper("sqrt(2)", "0");
+    }
+
+    private static void divide_Rational_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        Algebraic x = read(a).get().divide(Rational.read(b).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void divide_Rational_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().divide(Rational.read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDivide_Rational() {
+        divide_Rational_helper("0", "1", "0");
+        divide_Rational_helper("0", "-1", "0");
+        divide_Rational_helper("0", "100/3", "0");
+        divide_Rational_helper("0", "1/100", "0");
+
+        divide_Rational_helper("1", "1", "1");
+        divide_Rational_helper("1", "-1", "-1");
+        divide_Rational_helper("1", "100/3", "3/100");
+        divide_Rational_helper("1", "1/100", "100");
+
+        divide_Rational_helper("-1", "1", "-1");
+        divide_Rational_helper("-1", "-1", "1");
+        divide_Rational_helper("-1", "100/3", "-3/100");
+        divide_Rational_helper("-1", "1/100", "-100");
+
+        divide_Rational_helper("1/2", "1", "1/2");
+        divide_Rational_helper("1/2", "-1", "-1/2");
+        divide_Rational_helper("1/2", "100/3", "3/200");
+        divide_Rational_helper("1/2", "1/100", "50");
+
+        divide_Rational_helper("-4/3", "1", "-4/3");
+        divide_Rational_helper("-4/3", "-1", "4/3");
+        divide_Rational_helper("-4/3", "100/3", "-1/25");
+        divide_Rational_helper("-4/3", "1/100", "-400/3");
+
+        divide_Rational_helper("sqrt(2)", "1", "sqrt(2)");
+        divide_Rational_helper("sqrt(2)", "-1", "-sqrt(2)");
+        divide_Rational_helper("sqrt(2)", "100/3", "3*sqrt(2)/100");
+        divide_Rational_helper("sqrt(2)", "1/100", "100*sqrt(2)");
+
+        divide_Rational_helper("-sqrt(2)", "1", "-sqrt(2)");
+        divide_Rational_helper("-sqrt(2)", "-1", "sqrt(2)");
+        divide_Rational_helper("-sqrt(2)", "100/3", "-3*sqrt(2)/100");
+        divide_Rational_helper("-sqrt(2)", "1/100", "-100*sqrt(2)");
+
+        divide_Rational_helper("(1+sqrt(5))/2", "1", "(1+sqrt(5))/2");
+        divide_Rational_helper("(1+sqrt(5))/2", "-1", "(-1-sqrt(5))/2");
+        divide_Rational_helper("(1+sqrt(5))/2", "100/3", "(3+3*sqrt(5))/200");
+        divide_Rational_helper("(1+sqrt(5))/2", "1/100", "50+50*sqrt(5)");
+
+        divide_Rational_helper("root 0 of x^5-x-1", "1", "root 0 of x^5-x-1");
+        divide_Rational_helper("root 0 of x^5-x-1", "-1", "root 0 of x^5-x+1");
+        divide_Rational_helper("root 0 of x^5-x-1", "100/3", "root 0 of 10000000000*x^5-8100*x-243");
+        divide_Rational_helper("root 0 of x^5-x-1", "1/100", "root 0 of x^5-100000000*x-10000000000");
+
+        divide_Rational_fail_helper("0", "0");
+        divide_Rational_fail_helper("1", "0");
+        divide_Rational_fail_helper("-4/3", "0");
+        divide_Rational_fail_helper("sqrt(2)", "0");
+    }
+
+    private static void divide_Algebraic_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        Algebraic x = read(a).get().divide(read(b).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void divide_Algebraic_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().divide(read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDivide_Algebraic() {
+        divide_Algebraic_helper("0", "1", "0");
+        divide_Algebraic_helper("0", "-1", "0");
+        divide_Algebraic_helper("0", "1/2", "0");
+        divide_Algebraic_helper("0", "-4/3", "0");
+        divide_Algebraic_helper("0", "sqrt(2)", "0");
+        divide_Algebraic_helper("0", "-sqrt(2)", "0");
+        divide_Algebraic_helper("0", "(1+sqrt(5))/2", "0");
+        divide_Algebraic_helper("0", "root 0 of x^5-x-1", "0");
+
+        divide_Algebraic_helper("1", "1", "1");
+        divide_Algebraic_helper("1", "-1", "-1");
+        divide_Algebraic_helper("1", "1/2", "2");
+        divide_Algebraic_helper("1", "-4/3", "-3/4");
+        divide_Algebraic_helper("1", "sqrt(2)", "sqrt(2)/2");
+        divide_Algebraic_helper("1", "-sqrt(2)", "-sqrt(2)/2");
+        divide_Algebraic_helper("1", "(1+sqrt(5))/2", "(-1+sqrt(5))/2");
+        divide_Algebraic_helper("1", "root 0 of x^5-x-1", "root 0 of x^5+x^4-1");
+
+        divide_Algebraic_helper("1/2", "1", "1/2");
+        divide_Algebraic_helper("1/2", "-1", "-1/2");
+        divide_Algebraic_helper("1/2", "1/2", "1");
+        divide_Algebraic_helper("1/2", "-4/3", "-3/8");
+        divide_Algebraic_helper("1/2", "sqrt(2)", "sqrt(2)/4");
+        divide_Algebraic_helper("1/2", "-sqrt(2)", "-sqrt(2)/4");
+        divide_Algebraic_helper("1/2", "(1+sqrt(5))/2", "(-1+sqrt(5))/4");
+        divide_Algebraic_helper("1/2", "root 0 of x^5-x-1", "root 0 of 32*x^5+16*x^4-1");
+
+        divide_Algebraic_helper("-4/3", "1", "-4/3");
+        divide_Algebraic_helper("-4/3", "-1", "4/3");
+        divide_Algebraic_helper("-4/3", "1/2", "-8/3");
+        divide_Algebraic_helper("-4/3", "-4/3", "1");
+        divide_Algebraic_helper("-4/3", "sqrt(2)", "-2*sqrt(2)/3");
+        divide_Algebraic_helper("-4/3", "-sqrt(2)", "2*sqrt(2)/3");
+        divide_Algebraic_helper("-4/3", "(1+sqrt(5))/2", "(2-2*sqrt(5))/3");
+        divide_Algebraic_helper("-4/3", "root 0 of x^5-x-1", "root 0 of 243*x^5-324*x^4+1024");
+
+        divide_Algebraic_helper("sqrt(2)", "1", "sqrt(2)");
+        divide_Algebraic_helper("sqrt(2)", "-1", "-sqrt(2)");
+        divide_Algebraic_helper("sqrt(2)", "1/2", "2*sqrt(2)");
+        divide_Algebraic_helper("sqrt(2)", "-4/3", "-3*sqrt(2)/4");
+        divide_Algebraic_helper("sqrt(2)", "sqrt(2)", "1");
+        divide_Algebraic_helper("sqrt(2)", "-sqrt(2)", "-1");
+        divide_Algebraic_helper("sqrt(2)", "(1+sqrt(5))/2", "root 2 of x^4-6*x^2+4");
+        divide_Algebraic_helper("sqrt(2)", "root 0 of x^5-x-1", "root 1 of x^10-2*x^8+16*x^4-32");
+
+        divide_Algebraic_helper("-sqrt(2)", "1", "-sqrt(2)");
+        divide_Algebraic_helper("-sqrt(2)", "-1", "sqrt(2)");
+        divide_Algebraic_helper("-sqrt(2)", "1/2", "-2*sqrt(2)");
+        divide_Algebraic_helper("-sqrt(2)", "-4/3", "3*sqrt(2)/4");
+        divide_Algebraic_helper("-sqrt(2)", "sqrt(2)", "-1");
+        divide_Algebraic_helper("-sqrt(2)", "-sqrt(2)", "1");
+        divide_Algebraic_helper("-sqrt(2)", "(1+sqrt(5))/2", "root 1 of x^4-6*x^2+4");
+        divide_Algebraic_helper("-sqrt(2)", "root 0 of x^5-x-1", "root 0 of x^10-2*x^8+16*x^4-32");
+
+        divide_Algebraic_helper("(1+sqrt(5))/2", "1", "(1+sqrt(5))/2");
+        divide_Algebraic_helper("(1+sqrt(5))/2", "-1", "(-1-sqrt(5))/2");
+        divide_Algebraic_helper("(1+sqrt(5))/2", "1/2", "1+sqrt(5)");
+        divide_Algebraic_helper("(1+sqrt(5))/2", "-4/3", "(-3-3*sqrt(5))/8");
+        divide_Algebraic_helper("(1+sqrt(5))/2", "sqrt(2)", "root 3 of 4*x^4-6*x^2+1");
+        divide_Algebraic_helper("(1+sqrt(5))/2", "-sqrt(2)", "root 0 of 4*x^4-6*x^2+1");
+        divide_Algebraic_helper("(1+sqrt(5))/2", "(1+sqrt(5))/2", "1");
+        divide_Algebraic_helper("(1+sqrt(5))/2", "root 0 of x^5-x-1", "root 1 of x^10+x^9-x^8-11*x^5+7*x^4-1");
+
+        divide_Algebraic_helper("root 0 of x^5-x-1", "1", "root 0 of x^5-x-1");
+        divide_Algebraic_helper("root 0 of x^5-x-1", "-1", "root 0 of x^5-x+1");
+        divide_Algebraic_helper("root 0 of x^5-x-1", "1/2", "root 0 of x^5-16*x-32");
+        divide_Algebraic_helper("root 0 of x^5-x-1", "-4/3", "root 0 of 1024*x^5-324*x+243");
+        divide_Algebraic_helper("root 0 of x^5-x-1", "sqrt(2)", "root 1 of 32*x^10-16*x^6+2*x^2-1");
+        divide_Algebraic_helper("root 0 of x^5-x-1", "-sqrt(2)", "root 0 of 32*x^10-16*x^6+2*x^2-1");
+        divide_Algebraic_helper("root 0 of x^5-x-1", "(1+sqrt(5))/2", "root 1 of x^10-7*x^6+11*x^5+x^2-x-1");
+        divide_Algebraic_helper("root 0 of x^5-x-1", "root 0 of x^5-x-1", "1");
+
+        divide_Algebraic_helper("sqrt(2)", "sqrt(3)", "sqrt(6)/3");
+        divide_Algebraic_helper("sqrt(6)", "sqrt(3)", "sqrt(2)");
+
+        divide_Algebraic_fail_helper("0", "0");
+        divide_Algebraic_fail_helper("1", "0");
+        divide_Algebraic_fail_helper("-4/3", "0");
+        divide_Algebraic_fail_helper("sqrt(2)", "0");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

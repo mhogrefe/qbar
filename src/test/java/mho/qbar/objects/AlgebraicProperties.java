@@ -90,6 +90,10 @@ public class AlgebraicProperties extends QBarTestProperties {
         propertiesMultiply_Rational();
         propertiesMultiply_Algebraic();
         propertiesInvert();
+        propertiesDivide_int();
+        propertiesDivide_BigInteger();
+        propertiesDivide_Rational();
+        propertiesDivide_Algebraic();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -1533,6 +1537,129 @@ public class AlgebraicProperties extends QBarTestProperties {
 
         for (Algebraic x : take(LIMIT, filterInfinite(s -> s.abs() != ONE, P.nonzeroAlgebraics()))) {
             assertTrue(x, !x.equals(x.invert()));
+        }
+    }
+
+    private void propertiesDivide_int() {
+        initialize("divide(int)");
+        for (Pair<Algebraic, Integer> p : take(LIMIT, P.pairs(P.algebraics(), P.nonzeroIntegers()))) {
+            Algebraic quotient = p.a.divide(p.b);
+            quotient.validate();
+            inverse(x -> x.divide(p.b), (Algebraic x) -> x.multiply(p.b), p.a);
+        }
+
+        for (Pair<Algebraic, Integer> p : take(LIMIT, P.pairs(P.nonzeroAlgebraics(), P.nonzeroIntegers()))) {
+            assertEquals(p, p.a.divide(p.b), of(p.b).divide(p.a).invert());
+        }
+
+        for (int i : take(LIMIT, P.nonzeroIntegers())) {
+            assertEquals(i, ONE.divide(i), of(i).invert());
+            assertEquals(i, of(i).divide(i), ONE);
+        }
+
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            fixedPoint(y -> y.divide(1), x);
+        }
+
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            try {
+                x.divide(0);
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesDivide_BigInteger() {
+        initialize("divide(BigInteger)");
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, P.pairs(P.algebraics(), P.nonzeroBigIntegers()))) {
+            Algebraic quotient = p.a.divide(p.b);
+            quotient.validate();
+            inverse(x -> x.divide(p.b), (Algebraic x) -> x.multiply(p.b), p.a);
+        }
+
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, P.pairs(P.nonzeroAlgebraics(), P.nonzeroBigIntegers()))) {
+            assertEquals(p, p.a.divide(p.b), of(p.b).divide(p.a).invert());
+        }
+
+        for (BigInteger i : take(LIMIT, P.nonzeroBigIntegers())) {
+            assertEquals(i, ONE.divide(i), of(i).invert());
+            assertEquals(i, of(i).divide(i), ONE);
+        }
+
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            fixedPoint(y -> y.divide(BigInteger.ONE), x);
+        }
+
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            try {
+                x.divide(BigInteger.ZERO);
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesDivide_Rational() {
+        initialize("divide(Rational)");
+        for (Pair<Algebraic, Rational> p : take(LIMIT, P.pairs(P.algebraics(), P.nonzeroRationals()))) {
+            Algebraic quotient = p.a.divide(p.b);
+            quotient.validate();
+            inverse(x -> x.divide(p.b), (Algebraic x) -> x.multiply(p.b), p.a);
+        }
+
+        for (Pair<Algebraic, Rational> p : take(LIMIT, P.pairs(P.nonzeroAlgebraics(), P.nonzeroRationals()))) {
+            assertEquals(p, p.a.divide(p.b), of(p.b).divide(p.a).invert());
+        }
+
+        for (Rational r : take(LIMIT, P.nonzeroRationals())) {
+            assertEquals(r, ONE.divide(r), of(r).invert());
+            assertEquals(r, of(r).divide(r), ONE);
+        }
+
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            fixedPoint(y -> y.divide(Rational.ONE), x);
+        }
+
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            try {
+                x.divide(Rational.ZERO);
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesDivide_Algebraic() {
+        initialize("divide(Algebraic)");
+        Iterable<Pair<Algebraic, Algebraic>> ps = P.pairs(
+                P.withScale(1).withSecondaryScale(4).algebraics(),
+                P.withScale(1).withSecondaryScale(4).nonzeroAlgebraics()
+        );
+        for (Pair<Algebraic, Algebraic> p : take(SMALL_LIMIT, ps)) {
+            Algebraic quotient = p.a.divide(p.b);
+            quotient.validate();
+            assertEquals(p, quotient, p.a.multiply(p.b.invert()));
+            inverse(x -> x.divide(p.b), (Algebraic x) -> x.multiply(p.b), p.a);
+        }
+
+        ps = P.pairs(P.withScale(1).withSecondaryScale(4).nonzeroAlgebraics());
+        for (Pair<Algebraic, Algebraic> p : take(SMALL_LIMIT, ps)) {
+            assertEquals(p, p.a.divide(p.b), p.b.divide(p.a).invert());
+        }
+
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            fixedPoint(y -> y.divide(ONE), x);
+        }
+
+        for (Algebraic x : take(LIMIT, P.nonzeroAlgebraics())) {
+            assertEquals(x, ONE.divide(x), x.invert());
+            assertTrue(x, x.divide(x) == ONE);
+            fixedPoint(y -> y.divide(x), ZERO);
+        }
+
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            try {
+                x.divide(ZERO);
+                fail(x);
+            } catch (ArithmeticException ignored) {}
         }
     }
 
