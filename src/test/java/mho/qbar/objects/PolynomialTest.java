@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.List;
 
 import static mho.qbar.objects.Polynomial.*;
@@ -3450,9 +3451,13 @@ public class PolynomialTest {
         rootCount_Interval_fail_helper("0", "[0, 1]");
     }
 
+    private static void rootCount_helper(@NotNull Polynomial input, int output) {
+        assertTrue(input.isSquareFree());
+        aeq(input.rootCount(), output);
+    }
+
     private static void rootCount_helper(@NotNull String input, int output) {
-        assertTrue(read(input).get().isSquareFree());
-        aeq(read(input).get().rootCount(), output);
+        rootCount_helper(read(input).get(), output);
     }
 
     private static void rootCount_fail_helper(@NotNull String input) {
@@ -3475,6 +3480,19 @@ public class PolynomialTest {
         rootCount_helper("x^2-x-1", 2);
         rootCount_helper("x^5-x+1", 1);
         rootCount_helper("-x^4+x", 2);
+
+        Polynomial wilkinsonsPolynomial = ONE;
+        for (int i = 1; i <= 20; i++) {
+            wilkinsonsPolynomial = wilkinsonsPolynomial.multiply(
+                    of(Arrays.asList(BigInteger.valueOf(-i), BigInteger.ONE))
+            );
+        }
+        rootCount_helper(wilkinsonsPolynomial, 20);
+
+        List<Rational> coefficients = toList(wilkinsonsPolynomial.toRationalPolynomial());
+        coefficients.set(19, coefficients.get(19).subtract(Rational.ONE.shiftRight(23)));
+        Polynomial perturbedWilkinsonsPolynomial = RationalPolynomial.of(coefficients).constantFactor().b;
+        rootCount_helper(perturbedWilkinsonsPolynomial, 10);
 
         rootCount_fail_helper("0");
     }
