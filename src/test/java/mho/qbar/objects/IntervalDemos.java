@@ -77,6 +77,12 @@ public class IntervalDemos extends QBarDemos {
         }
     }
 
+    private void demoContains_Algebraic() {
+        for (Pair<Interval, Algebraic> p : take(LIMIT, P.pairs(P.intervals(), P.withScale(4).algebraics()))) {
+            System.out.println(p.a + (p.a.contains(p.b) ? " contains " : " does not contain ") + p.b);
+        }
+    }
+
     private void demoContains_Interval() {
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
             System.out.println(p.a + (p.a.contains(p.b) ? " contains " : " does not contain ") + p.b);

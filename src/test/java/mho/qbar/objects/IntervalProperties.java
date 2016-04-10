@@ -43,6 +43,7 @@ public class IntervalProperties extends QBarTestProperties {
         propertiesBitLength();
         propertiesIsFinitelyBounded();
         propertiesContains_Rational();
+        propertiesContains_Algebraic();
         propertiesContains_Interval();
         propertiesDiameter();
         propertiesConvexHull_Interval();
@@ -202,6 +203,18 @@ public class IntervalProperties extends QBarTestProperties {
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.distinctPairs(P.rationals()))) {
             assertFalse(p, of(p.a).contains(p.b));
+        }
+    }
+
+    private void propertiesContains_Algebraic() {
+        initialize("contains(Algebraic)");
+        for (Pair<Interval, Algebraic> p : take(LIMIT, P.pairs(P.intervals(), P.algebraics()))) {
+            p.a.contains(p.b);
+        }
+
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            assertTrue(x, ALL.contains(x));
+            assertTrue(x, x.isolatingInterval().contains(x));
         }
     }
 

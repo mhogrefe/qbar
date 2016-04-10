@@ -171,6 +171,56 @@ public class IntervalTest {
         contains_Rational_helper("[-6, Infinity)", "-8", false);
     }
 
+    private static void contains_Algebraic_helper(@NotNull String a, @NotNull String x, boolean output) {
+        aeq(read(a).get().contains(Algebraic.read(x).get()), output);
+    }
+
+    @Test
+    public void testContains_Algebraic() {
+        contains_Algebraic_helper("[0, 0]", "0", true);
+        contains_Algebraic_helper("[0, 0]", "1", false);
+        contains_Algebraic_helper("[0, 0]", "sqrt(2)", false);
+
+        contains_Algebraic_helper("[1, 1]", "1", true);
+        contains_Algebraic_helper("[1, 1]", "0", false);
+        contains_Algebraic_helper("[1, 1]", "sqrt(2)", false);
+
+        contains_Algebraic_helper("(-Infinity, Infinity)", "1", true);
+        contains_Algebraic_helper("(-Infinity, Infinity)", "-4/3", true);
+        contains_Algebraic_helper("(-Infinity, Infinity)", "sqrt(2)", true);
+
+        contains_Algebraic_helper("[-2, 5/3]", "-2", true);
+        contains_Algebraic_helper("[-2, 5/3]", "-1", true);
+        contains_Algebraic_helper("[-2, 5/3]", "0", true);
+        contains_Algebraic_helper("[-2, 5/3]", "1", true);
+        contains_Algebraic_helper("[-2, 5/3]", "5/3", true);
+        contains_Algebraic_helper("[-2, 5/3]", "sqrt(2)", true);
+        contains_Algebraic_helper("[-2, 5/3]", "-sqrt(2)", true);
+        contains_Algebraic_helper("[-2, 5/3]", "-3", false);
+        contains_Algebraic_helper("[-2, 5/3]", "2", false);
+
+        contains_Algebraic_helper("[4, 4]", "4", true);
+        contains_Algebraic_helper("[4, 4]", "3", false);
+        contains_Algebraic_helper("[4, 4]", "5", false);
+        contains_Algebraic_helper("[4, 4]", "sqrt(2)", false);
+
+        contains_Algebraic_helper("(-Infinity, 3/2]", "0", true);
+        contains_Algebraic_helper("(-Infinity, 3/2]", "1", true);
+        contains_Algebraic_helper("(-Infinity, 3/2]", "-10", true);
+        contains_Algebraic_helper("(-Infinity, 3/2]", "3/2", true);
+        contains_Algebraic_helper("(-Infinity, 3/2]", "sqrt(2)", true);
+        contains_Algebraic_helper("(-Infinity, 3/2]", "(1+sqrt(5))/2", false);
+        contains_Algebraic_helper("(-Infinity, 3/2]", "2", false);
+
+        contains_Algebraic_helper("[-6, Infinity)", "0", true);
+        contains_Algebraic_helper("[-6, Infinity)", "1", true);
+        contains_Algebraic_helper("[-6, Infinity)", "-4", true);
+        contains_Algebraic_helper("[-6, Infinity)", "5", true);
+        contains_Algebraic_helper("[-6, Infinity)", "sqrt(2)", true);
+        contains_Algebraic_helper("[-6, Infinity)", "-8", false);
+        contains_Algebraic_helper("[-6, Infinity)", "-10*sqrt(2)", false);
+    }
+
     private static void contains_Interval_helper(@NotNull String a, @NotNull String b, boolean output) {
         aeq(read(a).get().contains(read(b).get()), output);
     }

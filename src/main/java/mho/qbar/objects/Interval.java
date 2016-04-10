@@ -208,6 +208,22 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
+     * Determines whether {@code this} contains an {@code Algebraic}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @param x the test {@code Algebraic}
+     * @return {@code x}∈{@code this}
+     */
+    public boolean contains(@NotNull Algebraic x) {
+        return (lower == null || ge(x, Algebraic.of(lower))) && (upper == null || le(x, Algebraic.of(upper)));
+    }
+
+    /**
      * Determines whether {@code this} contains (is a superset of) an {@code Interval}. Every {@code Interval} contains
      * itself.
      *
