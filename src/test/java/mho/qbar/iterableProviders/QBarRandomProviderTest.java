@@ -3648,7 +3648,7 @@ public class QBarRandomProviderTest {
                 1,
                 1,
                 -1,
-                "QBarRandomProvider_polynomialsAtLeast_i",
+                "QBarRandomProvider_monicPolynomialsAtLeast_i",
                 1.0006929999977097,
                 0.9168388153632843
         );
@@ -3656,7 +3656,7 @@ public class QBarRandomProviderTest {
                 5,
                 3,
                 -1,
-                "QBarRandomProvider_polynomialsAtLeast_ii",
+                "QBarRandomProvider_monicPolynomialsAtLeast_ii",
                 3.00101199999147,
                 3.9122941895036285
         );
@@ -3664,7 +3664,7 @@ public class QBarRandomProviderTest {
                 5,
                 3,
                 0,
-                "QBarRandomProvider_polynomialsAtLeast_iii",
+                "QBarRandomProvider_monicPolynomialsAtLeast_iii",
                 3.00101199999147,
                 3.9122941895036285
         );
@@ -3672,7 +3672,7 @@ public class QBarRandomProviderTest {
                 5,
                 3,
                 2,
-                "QBarRandomProvider_polynomialsAtLeast_iv",
+                "QBarRandomProvider_monicPolynomialsAtLeast_iv",
                 3.0005879999687126,
                 3.914580056823708
         );
@@ -3680,7 +3680,7 @@ public class QBarRandomProviderTest {
                 10,
                 8,
                 -1,
-                "QBarRandomProvider_polynomialsAtLeast_v",
+                "QBarRandomProvider_monicPolynomialsAtLeast_v",
                 7.983070000016452,
                 8.931442034672816
         );
@@ -3688,7 +3688,7 @@ public class QBarRandomProviderTest {
                 10,
                 8,
                 2,
-                "QBarRandomProvider_polynomialsAtLeast_vi",
+                "QBarRandomProvider_monicPolynomialsAtLeast_vi",
                 8.01187900001392,
                 8.93072132885421
         );
@@ -3696,7 +3696,7 @@ public class QBarRandomProviderTest {
                 10,
                 8,
                 7,
-                "QBarRandomProvider_polynomialsAtLeast_vii",
+                "QBarRandomProvider_monicPolynomialsAtLeast_vii",
                 8.00086800006071,
                 8.930916996180777
         );

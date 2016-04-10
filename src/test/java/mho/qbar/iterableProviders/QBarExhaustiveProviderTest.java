@@ -1,5 +1,6 @@
 package mho.qbar.iterableProviders;
 
+import mho.qbar.objects.Algebraic;
 import mho.qbar.objects.Interval;
 import mho.qbar.objects.Rational;
 import mho.qbar.objects.Variable;
@@ -1193,6 +1194,311 @@ public class QBarExhaustiveProviderTest {
     public void testNonNegativeAlgebraicsLessThanOne() {
         simpleProviderHelper(QEP.nonNegativeAlgebraicsLessThanOne(),
                 "QBarExhaustiveProvider_nonNegativeAlgebraicsLessThanOne");
+    }
+
+    private static void rangeUp_int_Algebraic_helper(int degree, @NotNull String a, @NotNull String output) {
+        simpleProviderHelper(QEP.rangeUp(degree, Algebraic.read(a).get()), output);
+    }
+
+    private static void rangeUp_int_Algebraic_fail_helper(int degree, @NotNull String a) {
+        try {
+            QEP.rangeUp(degree, Algebraic.read(a).get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testRangeUp_int_Algebraic() {
+        rangeUp_int_Algebraic_helper(1, "0", "QBarExhaustiveProvider_rangeUp_int_Algebraic_i");
+        rangeUp_int_Algebraic_helper(2, "0", "QBarExhaustiveProvider_rangeUp_int_Algebraic_ii");
+        rangeUp_int_Algebraic_helper(3, "0", "QBarExhaustiveProvider_rangeUp_int_Algebraic_iii");
+
+        rangeUp_int_Algebraic_helper(1, "1", "QBarExhaustiveProvider_rangeUp_int_Algebraic_iv");
+        rangeUp_int_Algebraic_helper(2, "1", "QBarExhaustiveProvider_rangeUp_int_Algebraic_v");
+        rangeUp_int_Algebraic_helper(3, "1", "QBarExhaustiveProvider_rangeUp_int_Algebraic_vi");
+
+        rangeUp_int_Algebraic_helper(1, "1/2", "QBarExhaustiveProvider_rangeUp_int_Algebraic_vii");
+        rangeUp_int_Algebraic_helper(2, "1/2", "QBarExhaustiveProvider_rangeUp_int_Algebraic_viii");
+        rangeUp_int_Algebraic_helper(3, "1/2", "QBarExhaustiveProvider_rangeUp_int_Algebraic_ix");
+
+        rangeUp_int_Algebraic_helper(1, "-4/3", "QBarExhaustiveProvider_rangeUp_int_Algebraic_x");
+        rangeUp_int_Algebraic_helper(2, "-4/3", "QBarExhaustiveProvider_rangeUp_int_Algebraic_xi");
+        rangeUp_int_Algebraic_helper(3, "-4/3", "QBarExhaustiveProvider_rangeUp_int_Algebraic_xii");
+
+        rangeUp_int_Algebraic_helper(1, "sqrt(2)", "QBarExhaustiveProvider_rangeUp_int_Algebraic_xiii");
+        rangeUp_int_Algebraic_helper(2, "sqrt(2)", "QBarExhaustiveProvider_rangeUp_int_Algebraic_xiv");
+        rangeUp_int_Algebraic_helper(3, "sqrt(2)", "QBarExhaustiveProvider_rangeUp_int_Algebraic_xv");
+
+        rangeUp_int_Algebraic_helper(1, "-sqrt(2)", "QBarExhaustiveProvider_rangeUp_int_Algebraic_xvi");
+        rangeUp_int_Algebraic_helper(2, "-sqrt(2)", "QBarExhaustiveProvider_rangeUp_int_Algebraic_xvii");
+        rangeUp_int_Algebraic_helper(3, "-sqrt(2)", "QBarExhaustiveProvider_rangeUp_int_Algebraic_xviii");
+
+        rangeUp_int_Algebraic_helper(1, "(1+sqrt(5))/2", "QBarExhaustiveProvider_rangeUp_int_Algebraic_xix");
+        rangeUp_int_Algebraic_helper(2, "(1+sqrt(5))/2", "QBarExhaustiveProvider_rangeUp_int_Algebraic_xx");
+        rangeUp_int_Algebraic_helper(3, "(1+sqrt(5))/2", "QBarExhaustiveProvider_rangeUp_int_Algebraic_xxi");
+
+        rangeUp_int_Algebraic_helper(1, "root 0 of x^5-x-1", "QBarExhaustiveProvider_rangeUp_int_Algebraic_xxii");
+        rangeUp_int_Algebraic_helper(2, "root 0 of x^5-x-1", "QBarExhaustiveProvider_rangeUp_int_Algebraic_xxiii");
+        rangeUp_int_Algebraic_helper(3, "root 0 of x^5-x-1", "QBarExhaustiveProvider_rangeUp_int_Algebraic_xxiv");
+
+        rangeUp_int_Algebraic_fail_helper(0, "1/2");
+        rangeUp_int_Algebraic_fail_helper(-1, "1/2");
+        rangeUp_int_Algebraic_fail_helper(0, "sqrt(2)");
+        rangeUp_int_Algebraic_fail_helper(-1, "sqrt(2)");
+    }
+
+    private static void rangeUp_Algebraic_helper(@NotNull String a, @NotNull String output) {
+        simpleProviderHelper(QEP.rangeUp(Algebraic.read(a).get()), output);
+    }
+
+    @Test
+    public void testRangeUp_Algebraic() {
+        rangeUp_Algebraic_helper("0", "QBarExhaustiveProvider_rangeUp_Algebraic_i");
+        rangeUp_Algebraic_helper("1", "QBarExhaustiveProvider_rangeUp_Algebraic_ii");
+        rangeUp_Algebraic_helper("1/2", "QBarExhaustiveProvider_rangeUp_Algebraic_iii");
+        rangeUp_Algebraic_helper("-4/3", "QBarExhaustiveProvider_rangeUp_Algebraic_iv");
+        rangeUp_Algebraic_helper("sqrt(2)", "QBarExhaustiveProvider_rangeUp_Algebraic_v");
+        rangeUp_Algebraic_helper("-sqrt(2)", "QBarExhaustiveProvider_rangeUp_Algebraic_vi");
+        rangeUp_Algebraic_helper("(1+sqrt(5))/2", "QBarExhaustiveProvider_rangeUp_Algebraic_vii");
+        rangeUp_Algebraic_helper("root 0 of x^5-x-1", "QBarExhaustiveProvider_rangeUp_Algebraic_viii");
+    }
+
+    private static void rangeDown_int_Algebraic_helper(int degree, @NotNull String a, @NotNull String output) {
+        simpleProviderHelper(QEP.rangeDown(degree, Algebraic.read(a).get()), output);
+    }
+
+    private static void rangeDown_int_Algebraic_fail_helper(int degree, @NotNull String a) {
+        try {
+            QEP.rangeDown(degree, Algebraic.read(a).get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testRangeDown_int_Algebraic() {
+        rangeDown_int_Algebraic_helper(1, "0", "QBarExhaustiveProvider_rangeDown_int_Algebraic_i");
+        rangeDown_int_Algebraic_helper(2, "0", "QBarExhaustiveProvider_rangeDown_int_Algebraic_ii");
+        rangeDown_int_Algebraic_helper(3, "0", "QBarExhaustiveProvider_rangeDown_int_Algebraic_iii");
+
+        rangeDown_int_Algebraic_helper(1, "1", "QBarExhaustiveProvider_rangeDown_int_Algebraic_iv");
+        rangeDown_int_Algebraic_helper(2, "1", "QBarExhaustiveProvider_rangeDown_int_Algebraic_v");
+        rangeDown_int_Algebraic_helper(3, "1", "QBarExhaustiveProvider_rangeDown_int_Algebraic_vi");
+
+        rangeDown_int_Algebraic_helper(1, "1/2", "QBarExhaustiveProvider_rangeDown_int_Algebraic_vii");
+        rangeDown_int_Algebraic_helper(2, "1/2", "QBarExhaustiveProvider_rangeDown_int_Algebraic_viii");
+        rangeDown_int_Algebraic_helper(3, "1/2", "QBarExhaustiveProvider_rangeDown_int_Algebraic_ix");
+
+        rangeDown_int_Algebraic_helper(1, "-4/3", "QBarExhaustiveProvider_rangeDown_int_Algebraic_x");
+        rangeDown_int_Algebraic_helper(2, "-4/3", "QBarExhaustiveProvider_rangeDown_int_Algebraic_xi");
+        rangeDown_int_Algebraic_helper(3, "-4/3", "QBarExhaustiveProvider_rangeDown_int_Algebraic_xii");
+
+        rangeDown_int_Algebraic_helper(1, "sqrt(2)", "QBarExhaustiveProvider_rangeDown_int_Algebraic_xiii");
+        rangeDown_int_Algebraic_helper(2, "sqrt(2)", "QBarExhaustiveProvider_rangeDown_int_Algebraic_xiv");
+        rangeDown_int_Algebraic_helper(3, "sqrt(2)", "QBarExhaustiveProvider_rangeDown_int_Algebraic_xv");
+
+        rangeDown_int_Algebraic_helper(1, "-sqrt(2)", "QBarExhaustiveProvider_rangeDown_int_Algebraic_xvi");
+        rangeDown_int_Algebraic_helper(2, "-sqrt(2)", "QBarExhaustiveProvider_rangeDown_int_Algebraic_xvii");
+        rangeDown_int_Algebraic_helper(3, "-sqrt(2)", "QBarExhaustiveProvider_rangeDown_int_Algebraic_xviii");
+
+        rangeDown_int_Algebraic_helper(1, "(1+sqrt(5))/2", "QBarExhaustiveProvider_rangeDown_int_Algebraic_xix");
+        rangeDown_int_Algebraic_helper(2, "(1+sqrt(5))/2", "QBarExhaustiveProvider_rangeDown_int_Algebraic_xx");
+        rangeDown_int_Algebraic_helper(3, "(1+sqrt(5))/2", "QBarExhaustiveProvider_rangeDown_int_Algebraic_xxi");
+
+        rangeDown_int_Algebraic_helper(1, "root 0 of x^5-x-1", "QBarExhaustiveProvider_rangeDown_int_Algebraic_xxii");
+        rangeDown_int_Algebraic_helper(2, "root 0 of x^5-x-1", "QBarExhaustiveProvider_rangeDown_int_Algebraic_xxiii");
+        rangeDown_int_Algebraic_helper(3, "root 0 of x^5-x-1", "QBarExhaustiveProvider_rangeDown_int_Algebraic_xxiv");
+
+        rangeDown_int_Algebraic_fail_helper(0, "1/2");
+        rangeDown_int_Algebraic_fail_helper(-1, "1/2");
+        rangeDown_int_Algebraic_fail_helper(0, "sqrt(2)");
+        rangeDown_int_Algebraic_fail_helper(-1, "sqrt(2)");
+    }
+
+    private static void rangeDown_Algebraic_helper(@NotNull String a, @NotNull String output) {
+        simpleProviderHelper(QEP.rangeDown(Algebraic.read(a).get()), output);
+    }
+
+    @Test
+    public void testRangeDown_Algebraic() {
+        rangeDown_Algebraic_helper("0", "QBarExhaustiveProvider_rangeDown_Algebraic_i");
+        rangeDown_Algebraic_helper("1", "QBarExhaustiveProvider_rangeDown_Algebraic_ii");
+        rangeDown_Algebraic_helper("1/2", "QBarExhaustiveProvider_rangeDown_Algebraic_iii");
+        rangeDown_Algebraic_helper("-4/3", "QBarExhaustiveProvider_rangeDown_Algebraic_iv");
+        rangeDown_Algebraic_helper("sqrt(2)", "QBarExhaustiveProvider_rangeDown_Algebraic_v");
+        rangeDown_Algebraic_helper("-sqrt(2)", "QBarExhaustiveProvider_rangeDown_Algebraic_vi");
+        rangeDown_Algebraic_helper("(1+sqrt(5))/2", "QBarExhaustiveProvider_rangeDown_Algebraic_vii");
+        rangeDown_Algebraic_helper("root 0 of x^5-x-1", "QBarExhaustiveProvider_rangeDown_Algebraic_viii");
+    }
+
+    private static void range_int_Algebraic_Algebraic_helper(
+            int degree,
+            @NotNull String a,
+            @NotNull String b,
+            @NotNull String output
+    ) {
+        simpleProviderHelper(QEP.range(degree, Algebraic.read(a).get(), Algebraic.read(b).get()), output);
+    }
+
+    private static void range_int_Algebraic_Algebraic_fail_helper(int degree, @NotNull String a, @NotNull String b) {
+        try {
+            QEP.range(degree, Algebraic.read(a).get(), Algebraic.read(b).get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testRange_int_Algebraic_Algebraic() {
+        range_int_Algebraic_Algebraic_helper(1, "0", "0", "QBarExhaustiveProvider_int_range_Algebraic_Algebraic_i");
+
+        range_int_Algebraic_Algebraic_helper(1, "1", "1", "QBarExhaustiveProvider_int_range_Algebraic_Algebraic_ii");
+
+        range_int_Algebraic_Algebraic_helper(
+                2,
+                "sqrt(2)",
+                "sqrt(2)",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_iii"
+        );
+
+        range_int_Algebraic_Algebraic_helper(1, "1", "2", "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_iv");
+        range_int_Algebraic_Algebraic_helper(2, "1", "2", "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_v");
+        range_int_Algebraic_Algebraic_helper(3, "1", "2", "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_vi");
+
+        range_int_Algebraic_Algebraic_helper(
+                1,
+                "-4/3",
+                "1/2",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_vii"
+        );
+        range_int_Algebraic_Algebraic_helper(
+                2,
+                "-4/3",
+                "1/2",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_viii"
+        );
+        range_int_Algebraic_Algebraic_helper(
+                3,
+                "-4/3",
+                "1/2",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_ix"
+        );
+
+        range_int_Algebraic_Algebraic_helper(
+                1,
+                "1",
+                "sqrt(2)",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_x"
+        );
+        range_int_Algebraic_Algebraic_helper(
+                2,
+                "1",
+                "sqrt(2)",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xi"
+        );
+        range_int_Algebraic_Algebraic_helper(
+                3,
+                "1",
+                "sqrt(2)",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xii"
+        );
+
+        range_int_Algebraic_Algebraic_helper(
+                1,
+                "sqrt(2)",
+                "sqrt(3)",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xiii"
+        );
+        range_int_Algebraic_Algebraic_helper(
+                2,
+                "sqrt(2)",
+                "sqrt(3)",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xiv"
+        );
+        range_int_Algebraic_Algebraic_helper(
+                3,
+                "sqrt(2)",
+                "sqrt(3)",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xv"
+        );
+
+        range_int_Algebraic_Algebraic_helper(
+                1,
+                "0",
+                "256",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xvi"
+        );
+        range_int_Algebraic_Algebraic_helper(
+                2,
+                "0",
+                "256",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xvii"
+        );
+        range_int_Algebraic_Algebraic_helper(
+                3,
+                "0",
+                "256",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xviii"
+        );
+
+        range_int_Algebraic_Algebraic_helper(
+                1,
+                "sqrt(2)",
+                "6369051672525773/4503599627370496",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xix"
+        );
+        range_int_Algebraic_Algebraic_helper(
+                2,
+                "sqrt(2)",
+                "6369051672525773/4503599627370496",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xx"
+        );
+        range_int_Algebraic_Algebraic_helper(
+                3,
+                "sqrt(2)",
+                "6369051672525773/4503599627370496",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xxi"
+        );
+
+        range_int_Algebraic_Algebraic_fail_helper(0, "0", "1");
+        range_int_Algebraic_Algebraic_fail_helper(-1, "0", "1");
+        range_int_Algebraic_Algebraic_fail_helper(1, "1", "0");
+        range_int_Algebraic_Algebraic_fail_helper(1, "6369051672525773/4503599627370496", "sqrt(2)");
+        range_int_Algebraic_Algebraic_fail_helper(2, "1", "1");
+        range_int_Algebraic_Algebraic_fail_helper(1, "sqrt(2)", "sqrt(2)");
+    }
+
+    private static void range_Algebraic_Algebraic_helper(
+            @NotNull String a,
+            @NotNull String b,
+            @NotNull String output
+    ) {
+        simpleProviderHelper(QEP.range(Algebraic.read(a).get(), Algebraic.read(b).get()), output);
+    }
+
+    private static void range_Algebraic_Algebraic_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            QEP.range(Algebraic.read(a).get(), Algebraic.read(b).get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testRange_Algebraic_Algebraic() {
+        range_Algebraic_Algebraic_helper("0", "0", "QBarExhaustiveProvider_range_Algebraic_Algebraic_i");
+        range_Algebraic_Algebraic_helper("1", "1", "QBarExhaustiveProvider_range_Algebraic_Algebraic_ii");
+        range_Algebraic_Algebraic_helper("sqrt(2)", "sqrt(2)", "QBarExhaustiveProvider_range_Algebraic_Algebraic_iii");
+        range_Algebraic_Algebraic_helper("1", "2", "QBarExhaustiveProvider_range_Algebraic_Algebraic_iv");
+        range_Algebraic_Algebraic_helper("-4/3", "1/2", "QBarExhaustiveProvider_range_Algebraic_Algebraic_v");
+        range_Algebraic_Algebraic_helper("1", "sqrt(2)", "QBarExhaustiveProvider_range_Algebraic_Algebraic_vi");
+        range_Algebraic_Algebraic_helper("sqrt(2)", "sqrt(3)", "QBarExhaustiveProvider_range_Algebraic_Algebraic_vii");
+        range_Algebraic_Algebraic_helper("0", "256", "QBarExhaustiveProvider_range_Algebraic_Algebraic_viii");
+        range_Algebraic_Algebraic_helper(
+                "sqrt(2)",
+                "6369051672525773/4503599627370496",
+                "QBarExhaustiveProvider_range_Algebraic_Algebraic_ix"
+        );
+
+        range_Algebraic_Algebraic_fail_helper("1", "0");
+        range_Algebraic_Algebraic_fail_helper("6369051672525773/4503599627370496", "sqrt(2)");
     }
 
     @Test

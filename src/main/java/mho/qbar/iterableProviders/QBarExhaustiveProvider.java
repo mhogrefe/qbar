@@ -1196,6 +1196,76 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
     }
 
     /**
+     * An {@code Iterable} that generates all {@code Algebraic}s not contained in a given {@code Interval} and with a
+     * given degree. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Algebraic}s.</li>
+     * </ul>
+     *
+     * Length is 0 if {@code a} is (–∞, ∞), infinite otherwise
+     *
+     * @param a an {@code Interval}
+     * @return {x|x∉{@code a}}
+     */
+    @Override
+    public @NotNull Iterable<Algebraic> algebraicsNotIn(int degree, @NotNull Interval a) {
+        List<Interval> complement = a.complement();
+        switch (complement.size()) {
+            case 0:
+                return Collections.emptyList();
+            case 1:
+                Algebraic boundary = Algebraic.of(a.getLower().isPresent() ? a.getLower().get() : a.getUpper().get());
+                return filterInfinite(r -> !r.equals(boundary), algebraicsIn(degree, complement.get(0)));
+            case 2:
+                Algebraic x = Algebraic.of(complement.get(0).getUpper().get());
+                Algebraic y = Algebraic.of(complement.get(1).getLower().get());
+                //noinspection RedundantCast
+                return choose(
+                        filterInfinite(r -> !r.equals(x), rangeDown(degree, x)),
+                        filterInfinite(r -> !r.equals(y), rangeUp(degree, y))
+                );
+            default: throw new IllegalStateException("unreachable");
+        }
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code Algebraic}s not contained in a given {@code Interval}. Does not
+     * support removal.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Algebraic}s.</li>
+     * </ul>
+     *
+     * Length is 0 if {@code a} is (–∞, ∞), infinite otherwise
+     *
+     * @param a an {@code Interval}
+     * @return {x|x∉{@code a}}
+     */
+    @Override
+    public @NotNull Iterable<Algebraic> algebraicsNotIn(@NotNull Interval a) {
+        List<Interval> complement = a.complement();
+        switch (complement.size()) {
+            case 0:
+                return Collections.emptyList();
+            case 1:
+                Algebraic boundary = Algebraic.of(a.getLower().isPresent() ? a.getLower().get() : a.getUpper().get());
+                return filterInfinite(r -> !r.equals(boundary), algebraicsIn(complement.get(0)));
+            case 2:
+                Algebraic x = Algebraic.of(complement.get(0).getUpper().get());
+                Algebraic y = Algebraic.of(complement.get(1).getLower().get());
+                //noinspection RedundantCast
+                return choose(
+                        filterInfinite(r -> !r.equals(x), rangeDown(x)),
+                        filterInfinite(r -> !r.equals(y), rangeUp(y))
+                );
+            default: throw new IllegalStateException("unreachable");
+        }
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}. This implementation is the same as in
      * {@link java.lang.Object#equals}, but repeated here for clarity.
      *

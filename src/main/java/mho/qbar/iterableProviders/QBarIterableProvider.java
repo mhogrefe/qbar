@@ -18,6 +18,7 @@ import java.util.*;
 import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.ordering.Ordering.*;
 
 /**
  * This class provides {@code Iterables} for testing.
@@ -3641,7 +3642,7 @@ public strictfp abstract class QBarIterableProvider {
             throw new IllegalArgumentException("degree must be positive. Invalid degree: " + degree);
         }
         return filterInfinite(
-                x -> x.signum() != -1 && Ordering.lt(x, Algebraic.ONE),
+                x -> x.signum() != -1 && lt(x, Algebraic.ONE),
                 map(
                         p -> Algebraic.of(p.a, p.b),
                         filterInfinite(
@@ -3662,6 +3663,255 @@ public strictfp abstract class QBarIterableProvider {
      * Generates {@code Algebraic}s in the interval [0, 1).
      */
     public abstract @NotNull Iterable<Algebraic> nonNegativeAlgebraicsLessThanOne();
+
+    /**
+     * Generates {@code Algebraic}s greater than or equal to a given value and with a given degree.
+     *
+     * <ul>
+     *  <li>{@code degree} must be positive.</li>
+     *  <li>{@code a} cannot be null.</li>
+     * </ul>
+     *
+     * @param degree the degree of the {@code Algebraic}s in the result
+     * @param a the inclusive lower bound of the generated {@code Algebraic}s
+     */
+    public @NotNull Iterable<Algebraic> rangeUp(int degree, @NotNull Algebraic a) {
+        if (a.isRational()) {
+            Rational r = a.rationalValueExact();
+            if (degree == 1) {
+                return withElement(a, map(x -> x.add(r), positiveAlgebraics(degree)));
+            } else {
+                return map(x -> x.add(r), positiveAlgebraics(degree));
+            }
+        } else {
+            BigInteger floor = a.floor();
+            Algebraic fractionalPart = a.subtract(floor);
+            return map(
+                    x -> x.add(floor),
+                    filterInfinite(x -> ge(x, fractionalPart), positiveAlgebraics(degree))
+            );
+        }
+    }
+
+    /**
+     * Generates {@code Algebraic}s greater than or equal to a given value.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     * </ul>
+     *
+     * @param a the inclusive lower bound of the generated {@code Algebraic}s
+     */
+    public @NotNull Iterable<Algebraic> rangeUp(@NotNull Algebraic a) {
+        if (a.isRational()) {
+            Rational r = a.rationalValueExact();
+            return withElement(a, map(x -> x.add(r), positiveAlgebraics()));
+        } else {
+            BigInteger floor = a.floor();
+            Algebraic fractionalPart = a.subtract(floor);
+            return map(x -> x.add(floor), filterInfinite(x -> ge(x, fractionalPart), positiveAlgebraics()));
+        }
+    }
+
+    /**
+     * Generates {@code Algebraic}s less than or equal to a given value and with a given degree.
+     *
+     * <ul>
+     *  <li>{@code degree} must be positive.</li>
+     *  <li>{@code a} cannot be null.</li>
+     * </ul>
+     *
+     * @param degree the degree of the {@code Algebraic}s in the result
+     * @param a the inclusive upper bound of the generated {@code Algebraic}s
+     */
+    public @NotNull Iterable<Algebraic> rangeDown(int degree, @NotNull Algebraic a) {
+        if (a.isRational()) {
+            Rational r = a.rationalValueExact();
+            if (degree == 1) {
+                return withElement(a, map(x -> x.add(r), negativeAlgebraics(degree)));
+            } else {
+                return map(x -> x.add(r), negativeAlgebraics(degree));
+            }
+        } else {
+            BigInteger ceiling = a.ceiling();
+            Algebraic fractionalPartComplement = a.subtract(ceiling).negate();
+            return map(
+                    x -> x.add(ceiling),
+                    filterInfinite(x -> le(x, fractionalPartComplement), negativeAlgebraics(degree))
+            );
+        }
+    }
+
+    /**
+     * Generates {@code Algebraic}s less than or equal to a given value.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     * </ul>
+     *
+     * @param a the inclusive upper bound of the generated {@code Algebraic}s
+     */
+    public @NotNull Iterable<Algebraic> rangeDown(@NotNull Algebraic a) {
+        if (a.isRational()) {
+            Rational r = a.rationalValueExact();
+            return withElement(a, map(x -> x.add(r), negativeAlgebraics()));
+        } else {
+            BigInteger ceiling = a.ceiling();
+            Algebraic fractionalPartComplement = a.subtract(ceiling).negate();
+            return map(
+                    x -> x.add(ceiling),
+                    filterInfinite(x -> le(x, fractionalPartComplement), negativeAlgebraics())
+            );
+        }
+    }
+
+    /**
+     * Generates {@code Algebraic}s between {@code a} and {@code b}, inclusive, and with a given degree.
+     *
+     * <ul>
+     *  <li>{@code degree} must be positive.</li>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>{@code b} cannot be null.</li>
+     *  <li>{@code a} must be less than or equal to {@code b}.</li>
+     * </ul>
+     *
+     * @param degree the degree of the {@code Algebraic}s in the result
+     * @param a the inclusive lower bound of the generated {@code Algebraic}s
+     * @param b the inclusive upper bound of the generated {@code Algebraic}s
+     */
+    public @NotNull Iterable<Algebraic> range(int degree, @NotNull Algebraic a, @NotNull Algebraic b) {
+        if (gt(a, b)) {
+            throw new IllegalArgumentException("a must be less than or equal to b. a: " + a + ", b: " + b);
+        }
+        if (a.equals(b)) {
+            if (a.degree() == degree) {
+                return repeat(a);
+            } else {
+                throw new IllegalArgumentException("If a and b are equal, degree must be equal to the degree of a." +
+                        " degree: " + degree + ", degree of a: " + a.degree());
+            }
+        }
+        boolean aRational = a.isRational();
+        boolean bRational = b.isRational();
+        Interval extension = Algebraic.intervalExtension(a, b);
+        Rational lower = extension.getLower().get();
+        Rational upper = extension.getUpper().get();
+        Rational extensionDiameter = upper.subtract(lower);
+        Iterable<Algebraic> xs = map(
+                x -> x.multiply(extensionDiameter).add(lower),
+                nonNegativeAlgebraicsLessThanOne(degree)
+        );
+        if (b.degree() == degree) {
+            return filterInfinite(
+                    x -> (aRational || ge(x, a)) && (bRational || le(x, b)),
+                    withElement(Algebraic.of(upper), xs)
+            );
+        } else {
+            return filterInfinite(x -> (aRational || ge(x, a)) && (bRational || le(x, b)), xs);
+        }
+    }
+
+    /**
+     * Generates {@code Algebraic}s between {@code a} and {@code b}, inclusive.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>{@code b} cannot be null.</li>
+     *  <li>{@code a} must be less than or equal to {@code b}.</li>
+     * </ul>
+     *
+     * @param a the inclusive lower bound of the generated {@code Algebraic}s
+     * @param b the inclusive upper bound of the generated {@code Algebraic}s
+     */
+    public @NotNull Iterable<Algebraic> range(@NotNull Algebraic a, @NotNull Algebraic b) {
+        if (gt(a, b)) {
+            throw new IllegalArgumentException("a must be greater than or equal to b. a: " + a + ", b: " + b);
+        }
+        if (a.equals(b)) {
+            return repeat(a);
+        }
+        boolean aRational = a.isRational();
+        boolean bRational = b.isRational();
+        Interval extension = Algebraic.intervalExtension(a, b);
+        Rational lower = extension.getLower().get();
+        Rational upper = extension.getUpper().get();
+        Rational extensionDiameter = upper.subtract(lower);
+        return filterInfinite(
+                x -> (aRational || ge(x, a)) && (bRational || le(x, b)),
+                withElement(
+                        Algebraic.of(upper),
+                        map(x -> x.multiply(extensionDiameter).add(lower), nonNegativeAlgebraicsLessThanOne())
+                )
+        );
+    }
+
+    /**
+     * Generates {@code Algebraic}s contained in a given {@code Interval} and with a given degree.
+     *
+     * <ul>
+     *  <li>{@code degree} must be positive.</li>
+     *  <li>{@code a} cannot be null.</li>
+     * </ul>
+     *
+     * @param degree the degree of the {@code Algebraic}s in the result
+     * @param a an {@code Interval}
+     */
+    public @NotNull Iterable<Algebraic> algebraicsIn(int degree, @NotNull Interval a) {
+        if (!a.getLower().isPresent() && !a.getUpper().isPresent()) {
+            return algebraics(degree);
+        } else if (!a.getLower().isPresent()) {
+            return rangeDown(degree, Algebraic.of(a.getUpper().get()));
+        } else if (!a.getUpper().isPresent()) {
+            return rangeUp(degree, Algebraic.of(a.getLower().get()));
+        } else {
+            return range(degree, Algebraic.of(a.getLower().get()), Algebraic.of(a.getUpper().get()));
+        }
+    }
+
+    /**
+     * Generates {@code Algebraic}s contained in a given {@code Interval}.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     * </ul>
+     *
+     * @param a an {@code Interval}
+     */
+    public @NotNull Iterable<Algebraic> algebraicsIn(@NotNull Interval a) {
+        if (!a.getLower().isPresent() && !a.getUpper().isPresent()) {
+            return algebraics();
+        } else if (!a.getLower().isPresent()) {
+            return rangeDown(Algebraic.of(a.getUpper().get()));
+        } else if (!a.getUpper().isPresent()) {
+            return rangeUp(Algebraic.of(a.getLower().get()));
+        } else {
+            return range(Algebraic.of(a.getLower().get()), Algebraic.of(a.getUpper().get()));
+        }
+    }
+
+    /**
+     * Generates {@code Algebraic}s not contained in a given {@code Interval} and with a given degree.
+     *
+     * <ul>
+     *  <li>{@code degree} must be positive.</li>
+     *  <li>{@code a} cannot be null.</li>
+     * </ul>
+     *
+     * @param a an {@code Interval}
+     */
+    public abstract @NotNull Iterable<Algebraic> algebraicsNotIn(int degree, @NotNull Interval a);
+
+    /**
+     * Generates {@code Algebraic}s not contained in a given {@code Interval}.
+     *
+     * <ul>
+     *  <li>{@code degree} must be positive.</li>
+     *  <li>{@code a} cannot be (–∞, ∞).</li>
+     * </ul>
+     *
+     * @param a an {@code Interval}
+     */
+    public abstract @NotNull Iterable<Algebraic> algebraicsNotIn(@NotNull Interval a);
 
     public @NotNull Iterable<QBarRandomProvider> qbarRandomProvidersFixedScales(
             int scale,
