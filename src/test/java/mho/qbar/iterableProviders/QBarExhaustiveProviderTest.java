@@ -1501,6 +1501,178 @@ public class QBarExhaustiveProviderTest {
         range_Algebraic_Algebraic_fail_helper("6369051672525773/4503599627370496", "sqrt(2)");
     }
 
+    private static void algebraicsIn_int_Algebraic_helper(int degree, @NotNull String a, @NotNull String output) {
+        simpleProviderHelper(QEP.algebraicsIn(degree, Interval.read(a).get()), output);
+    }
+
+    private static void algebraics_int_Algebraic_fail_helper(int degree, @NotNull String a) {
+        try {
+            QEP.algebraicsIn(degree, Interval.read(a).get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testAlgebraicsIn_int_Algebraic() {
+        algebraicsIn_int_Algebraic_helper(1, "[0, 0]", "QBarExhaustiveProvider_algebraicsIn_int_Algebraic_i");
+
+        algebraicsIn_int_Algebraic_helper(1, "[1, 1]", "QBarExhaustiveProvider_algebraicsIn_int_Algebraic_ii");
+
+        algebraicsIn_int_Algebraic_helper(
+                1,
+                "(-Infinity, Infinity)",
+                "QBarExhaustiveProvider_algebraicsIn_int_Algebraic_iii"
+        );
+        algebraicsIn_int_Algebraic_helper(
+                2,
+                "(-Infinity, Infinity)",
+                "QBarExhaustiveProvider_algebraicsIn_int_Algebraic_iv"
+        );
+        algebraicsIn_int_Algebraic_helper(
+                3,
+                "(-Infinity, Infinity)",
+                "QBarExhaustiveProvider_algebraicsIn_int_Algebraic_v"
+        );
+
+        algebraicsIn_int_Algebraic_helper(1, "[1, 4]", "QBarExhaustiveProvider_algebraicsIn_int_Algebraic_vi");
+        algebraicsIn_int_Algebraic_helper(2, "[1, 4]", "QBarExhaustiveProvider_algebraicsIn_int_Algebraic_vii");
+        algebraicsIn_int_Algebraic_helper(3, "[1, 4]", "QBarExhaustiveProvider_algebraicsIn_int_Algebraic_viii");
+
+        algebraicsIn_int_Algebraic_helper(
+                1,
+                "(-Infinity, 1/2]",
+                "QBarExhaustiveProvider_algebraicsIn_int_Algebraic_ix"
+        );
+        algebraicsIn_int_Algebraic_helper(
+                2,
+                "(-Infinity, 1/2]",
+                "QBarExhaustiveProvider_algebraicsIn_int_Algebraic_x"
+        );
+        algebraicsIn_int_Algebraic_helper(
+                3,
+                "(-Infinity, 1/2]",
+                "QBarExhaustiveProvider_algebraicsIn_int_Algebraic_xi"
+        );
+
+        algebraicsIn_int_Algebraic_helper(
+                1,
+                "[1/2, Infinity)",
+                "QBarExhaustiveProvider_algebraicsIn_int_Algebraic_xii"
+        );
+        algebraicsIn_int_Algebraic_helper(
+                2,
+                "[1/2, Infinity)",
+                "QBarExhaustiveProvider_algebraicsIn_int_Algebraic_xiii"
+        );
+        algebraicsIn_int_Algebraic_helper(
+                3,
+                "[1/2, Infinity)",
+                "QBarExhaustiveProvider_algebraicsIn_int_Algebraic_xiv"
+        );
+
+        algebraics_int_Algebraic_fail_helper(0, "[0, 1]");
+        algebraics_int_Algebraic_fail_helper(-1, "[0, 1]");
+        algebraics_int_Algebraic_fail_helper(2, "[1, 1]");
+    }
+
+    private static void algebraicsIn_Algebraic_helper(@NotNull String a, @NotNull String output) {
+        simpleProviderHelper(QEP.algebraicsIn(Interval.read(a).get()), output);
+    }
+
+    @Test
+    public void testAlgebraicsIn_Algebraic() {
+        algebraicsIn_Algebraic_helper("[0, 0]", "QBarExhaustiveProvider_algebraicsIn_Algebraic_i");
+        algebraicsIn_Algebraic_helper("[1, 1]", "QBarExhaustiveProvider_algebraicsIn_Algebraic_ii");
+        algebraicsIn_Algebraic_helper("(-Infinity, Infinity)", "QBarExhaustiveProvider_algebraicsIn_Algebraic_iii");
+        algebraicsIn_Algebraic_helper("[1, 4]", "QBarExhaustiveProvider_algebraicsIn_Algebraic_iv");
+        algebraicsIn_Algebraic_helper("(-Infinity, 1/2]", "QBarExhaustiveProvider_algebraicsIn_Algebraic_v");
+        algebraicsIn_Algebraic_helper("[1/2, Infinity)", "QBarExhaustiveProvider_algebraicsIn_Algebraic_vi");
+    }
+
+    private static void algebraicsNotIn_int_Algebraic_helper(int degree, @NotNull String a, @NotNull String output) {
+        simpleProviderHelper(QEP.algebraicsNotIn(degree, Interval.read(a).get()), output);
+    }
+
+    private static void algebraicsNotIn_int_Algebraic_fail_helper(int degree, @NotNull String a) {
+        try {
+            QEP.algebraicsNotIn(degree, Interval.read(a).get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testAlgebraicsNotIn_int_Algebraic() {
+        algebraicsNotIn_int_Algebraic_helper(1, "[0, 0]", "QBarExhaustiveProvider_algebraicsNotIn_int_Algebraic_i");
+        algebraicsNotIn_int_Algebraic_helper(2, "[0, 0]", "QBarExhaustiveProvider_algebraicsNotIn_int_Algebraic_ii");
+        algebraicsNotIn_int_Algebraic_helper(3, "[0, 0]", "QBarExhaustiveProvider_algebraicsNotIn_int_Algebraic_iii");
+
+        algebraicsNotIn_int_Algebraic_helper(1, "[1, 1]", "QBarExhaustiveProvider_algebraicsNotIn_int_Algebraic_iv");
+        algebraicsNotIn_int_Algebraic_helper(2, "[1, 1]", "QBarExhaustiveProvider_algebraicsNotIn_int_Algebraic_v");
+        algebraicsNotIn_int_Algebraic_helper(3, "[1, 1]", "QBarExhaustiveProvider_algebraicsNotIn_int_Algebraic_vi");
+
+        algebraicsNotIn_int_Algebraic_helper(1, "[1, 4]", "QBarExhaustiveProvider_algebraicsNotIn_int_Algebraic_vii");
+        algebraicsNotIn_int_Algebraic_helper(2, "[1, 4]", "QBarExhaustiveProvider_algebraicsNotIn_int_Algebraic_viii");
+        algebraicsNotIn_int_Algebraic_helper(3, "[1, 4]", "QBarExhaustiveProvider_algebraicsNotIn_int_Algebraic_ix");
+
+        algebraicsNotIn_int_Algebraic_helper(
+                1,
+                "(-Infinity, 1/2]",
+                "QBarExhaustiveProvider_algebraicsNotIn_int_Algebraic_x"
+        );
+        algebraicsNotIn_int_Algebraic_helper(
+                2,
+                "(-Infinity, 1/2]",
+                "QBarExhaustiveProvider_algebraicsNotIn_int_Algebraic_xi"
+        );
+        algebraicsNotIn_int_Algebraic_helper(
+                3,
+                "(-Infinity, 1/2]",
+                "QBarExhaustiveProvider_algebraicsNotIn_int_Algebraic_xii"
+        );
+
+        algebraicsNotIn_int_Algebraic_helper(
+                1,
+                "[1/2, Infinity)",
+                "QBarExhaustiveProvider_algebraicsNotIn_int_Algebraic_xiii"
+        );
+        algebraicsNotIn_int_Algebraic_helper(
+                2,
+                "[1/2, Infinity)",
+                "QBarExhaustiveProvider_algebraicsNotIn_int_Algebraic_xiv"
+        );
+        algebraicsNotIn_int_Algebraic_helper(
+                3,
+                "[1/2, Infinity)",
+                "QBarExhaustiveProvider_algebraicsNotIn_int_Algebraic_xv"
+        );
+
+        algebraicsNotIn_int_Algebraic_fail_helper(0, "[0, 1]");
+        algebraicsNotIn_int_Algebraic_fail_helper(-1, "[0, 1]");
+        algebraicsNotIn_int_Algebraic_fail_helper(1, "(-Infinity, Infinity)");
+    }
+
+    private static void algebraicsNotIn_Algebraic_helper(@NotNull String a, @NotNull String output) {
+        simpleProviderHelper(QEP.algebraicsNotIn(Interval.read(a).get()), output);
+    }
+
+    private static void algebraicsNotIn_Algebraic_fail_helper(@NotNull String a) {
+        try {
+            QEP.algebraicsNotIn(Interval.read(a).get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testAlgebraicsNotIn_Algebraic() {
+        algebraicsNotIn_Algebraic_helper("[0, 0]", "QBarExhaustiveProvider_algebraicsNotIn_Algebraic_i");
+        algebraicsNotIn_Algebraic_helper("[1, 1]", "QBarExhaustiveProvider_algebraicsNotIn_Algebraic_ii");
+        algebraicsNotIn_Algebraic_helper("[1, 4]", "QBarExhaustiveProvider_algebraicsNotIn_Algebraic_iii");
+        algebraicsNotIn_Algebraic_helper("(-Infinity, 1/2]", "QBarExhaustiveProvider_algebraicsNotIn_Algebraic_iv");
+        algebraicsNotIn_Algebraic_helper("[1/2, Infinity)", "QBarExhaustiveProvider_algebraicsNotIn_Algebraic_v");
+
+        algebraicsNotIn_Algebraic_fail_helper("(-Infinity, Infinity)");
+    }
+
     @Test
     public void testEquals() {
         //noinspection EqualsWithItself

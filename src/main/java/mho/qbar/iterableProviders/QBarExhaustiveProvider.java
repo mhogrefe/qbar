@@ -1200,11 +1200,12 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
      * given degree. Does not support removal.
      *
      * <ul>
-     *  <li>{@code a} cannot be null.</li>
+     *  <li>{@code degree} must be positive.</li>
+     *  <li>{@code a} cannot be (–∞, ∞).</li>
      *  <li>The result is a non-removable {@code Iterable} containing {@code Algebraic}s.</li>
      * </ul>
      *
-     * Length is 0 if {@code a} is (–∞, ∞), infinite otherwise
+     * Length is infinite
      *
      * @param a an {@code Interval}
      * @return {x|x∉{@code a}}
@@ -1214,7 +1215,7 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         List<Interval> complement = a.complement();
         switch (complement.size()) {
             case 0:
-                return Collections.emptyList();
+                throw new IllegalArgumentException("a cannot be (-Infinity, Infinity).");
             case 1:
                 Algebraic boundary = Algebraic.of(a.getLower().isPresent() ? a.getLower().get() : a.getUpper().get());
                 return filterInfinite(r -> !r.equals(boundary), algebraicsIn(degree, complement.get(0)));
@@ -1235,11 +1236,11 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
      * support removal.
      *
      * <ul>
-     *  <li>{@code a} cannot be null.</li>
+     *  <li>{@code a} cannot be (–∞, ∞).</li>
      *  <li>The result is a non-removable {@code Iterable} containing {@code Algebraic}s.</li>
      * </ul>
      *
-     * Length is 0 if {@code a} is (–∞, ∞), infinite otherwise
+     * Length is infinite
      *
      * @param a an {@code Interval}
      * @return {x|x∉{@code a}}
@@ -1249,7 +1250,7 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         List<Interval> complement = a.complement();
         switch (complement.size()) {
             case 0:
-                return Collections.emptyList();
+                throw new IllegalArgumentException("a cannot be (-Infinity, Infinity).");
             case 1:
                 Algebraic boundary = Algebraic.of(a.getLower().isPresent() ? a.getLower().get() : a.getUpper().get());
                 return filterInfinite(r -> !r.equals(boundary), algebraicsIn(complement.get(0)));

@@ -1,10 +1,12 @@
 package mho.qbar.iterableProviders;
 
+import mho.qbar.objects.Algebraic;
 import mho.qbar.objects.Interval;
 import mho.qbar.objects.Rational;
 import mho.qbar.objects.Variable;
 import mho.qbar.testing.QBarDemos;
 import mho.wheels.structures.Pair;
+import mho.wheels.structures.Triple;
 
 import java.util.List;
 
@@ -294,6 +296,92 @@ public class QBarExhaustiveProviderDemos extends QBarDemos {
         for (int i : take(TINY_LIMIT / 2, P.withScale(2).positiveIntegersGeometric())) {
             System.out.println("nonNegativeAlgebraicsLessThanOne(" + i + ") = " +
                     its(QEP.nonNegativeAlgebraicsLessThanOne(i)));
+        }
+    }
+
+    private void demoRangeUp_int_Algebraic() {
+        Iterable<Pair<Algebraic, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).algebraics(),
+                P.withScale(2).positiveIntegersGeometric()
+        );
+        for (Pair<Algebraic, Integer> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("rangeUp(" + p.b + ", " + p.a + ") = " + its(QEP.rangeUp(p.b, p.a)));
+        }
+    }
+
+    private void demoRangeUp_Algebraic() {
+        for (Algebraic x : take(MEDIUM_LIMIT, P.withScale(4).algebraics())) {
+            System.out.println("rangeUp(" + x + ") = " + its(QEP.rangeUp(x)));
+        }
+    }
+
+    private void demoRangeDown_int_Algebraic() {
+        Iterable<Pair<Algebraic, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).algebraics(),
+                P.withScale(2).positiveIntegersGeometric()
+        );
+        for (Pair<Algebraic, Integer> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("rangeDown(" + p.b + ", " + p.a + ") = " + its(QEP.rangeDown(p.b, p.a)));
+        }
+    }
+
+    private void demoRangeDown_Algebraic() {
+        for (Algebraic x : take(MEDIUM_LIMIT, P.withScale(4).algebraics())) {
+            System.out.println("rangeDown(" + x + ") = " + its(QEP.rangeDown(x)));
+        }
+    }
+
+    private void demoRange_int_Algebraic_Algebraic() {
+        Iterable<Triple<Integer, Algebraic, Algebraic>> ts = filterInfinite(
+                s -> s.a == s.b.degree() || !s.b.equals(s.c),
+                map(
+                        p -> new Triple<>(p.b, p.a.a, p.a.b),
+                        P.pairsLogarithmicOrder(
+                                P.bagPairs(P.withScale(4).algebraics()),
+                                P.withScale(2).positiveIntegersGeometric()
+                        )
+                )
+        );
+        for (Triple<Integer, Algebraic, Algebraic> t : take(SMALL_LIMIT, ts)) {
+            System.out.println("range(" + t.a + ", " + t.b + ", " + t.c + ") = " + its(QEP.range(t.a, t.b, t.c)));
+        }
+    }
+
+    private void demoRange_Algebraic_Algebraic() {
+        for (Pair<Algebraic, Algebraic> p : take(MEDIUM_LIMIT, P.bagPairs(P.withScale(4).algebraics()))) {
+            System.out.println("range(" + p.a + ", " + p.b + ") = " + its(QEP.range(p.a, p.b)));
+        }
+    }
+
+    private void demoAlgebraicsIn_int_Algebraic() {
+        Iterable<Pair<Interval, Integer>> ps = filterInfinite(
+                q -> q.b == 1 || !q.a.getLower().equals(q.a.getUpper()),
+                P.pairsLogarithmicOrder(P.intervals(), P.withScale(2).positiveIntegersGeometric())
+        );
+        for (Pair<Interval, Integer> p : take(SMALL_LIMIT, ps)) {
+            System.out.println("algebraicsIn(" + p.b + ", " + p.a + ") = " + its(QEP.algebraicsIn(p.b, p.a)));
+        }
+    }
+
+    private void demoAlgebraicsIn_Algebraic() {
+        for (Interval a : take(MEDIUM_LIMIT, P.intervals())) {
+            System.out.println("algebraicsIn(" + a + ") = " + its(QEP.algebraicsIn(a)));
+        }
+    }
+
+    private void demoAlgebraicsNotIn_int_Algebraic() {
+        Iterable<Pair<Interval, Integer>> ps = P.pairsLogarithmicOrder(
+                filterInfinite(a -> !a.equals(Interval.ALL), P.intervals()),
+                P.withScale(2).positiveIntegersGeometric()
+        );
+        for (Pair<Interval, Integer> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("algebraicsNotIn(" + p.b + ", " + p.a + ") = " + its(QEP.algebraicsNotIn(p.b, p.a)));
+        }
+    }
+
+    private void demoAlgebraicsNotIn_Algebraic() {
+        for (Interval a : take(MEDIUM_LIMIT, filterInfinite(b -> !b.equals(Interval.ALL), P.intervals()))) {
+            System.out.println("algebraicsNotIn(" + a + ") = " + its(QEP.algebraicsNotIn(a)));
         }
     }
 }

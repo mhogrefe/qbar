@@ -175,7 +175,7 @@ public class AlgebraicDemos extends QBarDemos {
     }
 
     private void demoIsBinaryFraction() {
-        for (Algebraic x : take(LIMIT, P.algebraics())) {
+        for (Algebraic x : take(LIMIT, P.withScale(4).algebraics())) {
             System.out.println(x + " is " + (x.isBinaryFraction() ? "a" : "not a") + " binary fraction");
         }
     }
@@ -187,25 +187,25 @@ public class AlgebraicDemos extends QBarDemos {
     }
 
     private void demoIsRational() {
-        for (Algebraic x : take(LIMIT, P.algebraics())) {
+        for (Algebraic x : take(LIMIT, P.withScale(4).algebraics())) {
             System.out.println(x + " is " + (x.isRational() ? "rational" : "irrational"));
         }
     }
 
     private void demoIsAlgebraicInteger() {
-        for (Algebraic x : take(LIMIT, P.algebraics())) {
+        for (Algebraic x : take(LIMIT, P.withScale(4).algebraics())) {
             System.out.println(x + " is " + (x.isAlgebraicInteger() ? "an" : "not an") + " algebraic integer");
         }
     }
 
     private void demoRationalValueExact() {
-        for (Algebraic x : take(LIMIT, P.algebraics(1))) {
+        for (Algebraic x : take(LIMIT, P.withScale(4).algebraics(1))) {
             System.out.println("rationalValueExact(" + x + ") = " + x.rationalValueExact());
         }
     }
 
     private void demoRealValue() {
-        for (Algebraic x : take(LIMIT, P.algebraics())) {
+        for (Algebraic x : take(LIMIT, P.withScale(4).algebraics())) {
             System.out.println("realValue(" + x + ") = " + x.realValue());
         }
     }
@@ -217,13 +217,13 @@ public class AlgebraicDemos extends QBarDemos {
     }
 
     private void demoIsEqualToFloat() {
-        for (Algebraic x : take(LIMIT, P.algebraics())) {
+        for (Algebraic x : take(LIMIT, P.withScale(4).algebraics())) {
             System.out.println(x + " is " + (x.isEqualToFloat() ? "" : "not ") + "equal to a float");
         }
     }
 
     private void demoIsEqualToDouble() {
-        for (Algebraic x : take(LIMIT, P.algebraics())) {
+        for (Algebraic x : take(LIMIT, P.withScale(4).algebraics())) {
             System.out.println(x + " is " + (x.isEqualToDouble() ? "" : "not ") + "equal to a double");
         }
     }
@@ -231,7 +231,7 @@ public class AlgebraicDemos extends QBarDemos {
     private void demoFloatValue_RoundingMode() {
         Iterable<Pair<Algebraic, RoundingMode>> ps = filterInfinite(
                 p -> p.b != RoundingMode.UNNECESSARY || p.a.isEqualToFloat(),
-                P.pairs(P.algebraics(), P.roundingModes())
+                P.pairs(P.withScale(4).algebraics(), P.roundingModes())
         );
         for (Pair<Algebraic, RoundingMode> p : take(LIMIT, ps)) {
             System.out.println("floatValue(" + p.a + ", " + p.b + ") = " + p.a.floatValue(p.b));
@@ -239,7 +239,7 @@ public class AlgebraicDemos extends QBarDemos {
     }
 
     private void demoFloatValue() {
-        for (Algebraic x : take(LIMIT, P.algebraics())) {
+        for (Algebraic x : take(LIMIT, P.withScale(4).algebraics())) {
             System.out.println("floatValue(" + x + ") = " + x.floatValue());
         }
     }
@@ -257,14 +257,14 @@ public class AlgebraicDemos extends QBarDemos {
     private void demoDoubleValue_RoundingMode() {
         Iterable<Pair<Algebraic, RoundingMode>> ps = filterInfinite(
                 p -> p.b != RoundingMode.UNNECESSARY || p.a.isEqualToDouble(),
-                P.pairs(P.algebraics(), P.roundingModes()));
+                P.pairs(P.withScale(4).algebraics(), P.roundingModes()));
         for (Pair<Algebraic, RoundingMode> p : take(LIMIT, ps)) {
             System.out.println("doubleValue(" + p.a + ", " + p.b + ") = " + p.a.doubleValue(p.b));
         }
     }
 
     private void demoDoubleValue() {
-        for (Algebraic x : take(LIMIT, P.algebraics())) {
+        for (Algebraic x : take(LIMIT, P.withScale(4).algebraics())) {
             System.out.println("doubleValue(" + x + ") = " + x.doubleValue());
         }
     }
