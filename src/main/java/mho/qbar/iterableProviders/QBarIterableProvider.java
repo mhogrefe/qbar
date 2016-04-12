@@ -3734,11 +3734,8 @@ public strictfp abstract class QBarIterableProvider {
             }
         } else {
             BigInteger ceiling = a.ceiling();
-            Algebraic fractionalPartComplement = a.subtract(ceiling).negate();
-            return map(
-                    x -> x.add(ceiling),
-                    filterInfinite(x -> le(x, fractionalPartComplement), negativeAlgebraics(degree))
-            );
+            Algebraic fractionalPart = a.subtract(ceiling);
+            return map(x -> x.add(ceiling), filterInfinite(x -> le(x, fractionalPart), negativeAlgebraics(degree)));
         }
     }
 
@@ -3757,11 +3754,8 @@ public strictfp abstract class QBarIterableProvider {
             return withElement(a, map(x -> x.add(r), negativeAlgebraics()));
         } else {
             BigInteger ceiling = a.ceiling();
-            Algebraic fractionalPartComplement = a.subtract(ceiling).negate();
-            return map(
-                    x -> x.add(ceiling),
-                    filterInfinite(x -> le(x, fractionalPartComplement), negativeAlgebraics())
-            );
+            Algebraic fractionalPart = a.subtract(ceiling);
+            return map(x -> x.add(ceiling), filterInfinite(x -> le(x, fractionalPart), negativeAlgebraics()));
         }
     }
 

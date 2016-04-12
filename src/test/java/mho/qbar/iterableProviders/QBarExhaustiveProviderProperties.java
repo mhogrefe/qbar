@@ -109,6 +109,10 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesNonzeroAlgebraics_int();
         propertiesAlgebraics_int();
         propertiesNonNegativeAlgebraicsLessThanOne_int();
+        propertiesRangeUp_int_Algebraic();
+        propertiesRangeUp_Algebraic();
+        propertiesRangeDown_int_Algebraic();
+        propertiesRangeDown_Algebraic();
     }
 
     private static <T> void test_helper(
@@ -936,7 +940,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         initialize("positiveAlgebraics(int)");
         for (int i : take(TINY_LIMIT, P.withScale(2).positiveIntegersGeometric())) {
             Iterable<Algebraic> xs = QEP.positiveAlgebraics(i);
-            simpleTest(i, xs, x -> x.signum() == 1);
+            simpleTest(i, xs, x -> x.degree() == i && x.signum() == 1);
         }
 
         for (int i : take(LIMIT, P.withElement(0, P.negativeIntegers()))) {
@@ -956,7 +960,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         initialize("negativeAlgebraics(int)");
         for (int i : take(TINY_LIMIT, P.withScale(2).positiveIntegersGeometric())) {
             Iterable<Algebraic> xs = QEP.negativeAlgebraics(i);
-            simpleTest(i, xs, x -> x.signum() == -1);
+            simpleTest(i, xs, x -> x.degree() == i && x.signum() == -1);
         }
 
         for (int i : take(LIMIT, P.withElement(0, P.negativeIntegers()))) {
@@ -976,7 +980,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         initialize("nonzeroAlgebraics(int)");
         for (int i : take(TINY_LIMIT, P.withScale(2).positiveIntegersGeometric())) {
             Iterable<Algebraic> xs = QEP.nonzeroAlgebraics(i);
-            simpleTest(i, xs, x -> x != Algebraic.ZERO);
+            simpleTest(i, xs, x -> x.degree() == i && x != Algebraic.ZERO);
         }
 
         for (int i : take(LIMIT, P.withElement(0, P.negativeIntegers()))) {
@@ -996,7 +1000,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         initialize("algebraics(int)");
         for (int i : take(TINY_LIMIT, P.withScale(2).positiveIntegersGeometric())) {
             Iterable<Algebraic> xs = QEP.nonzeroAlgebraics(i);
-            simpleTest(i, xs, x -> true);
+            simpleTest(i, xs, x -> x.degree() == i);
         }
 
         for (int i : take(LIMIT, P.withElement(0, P.negativeIntegers()))) {
@@ -1016,7 +1020,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         initialize("nonNegativeAlgebraicsLessThanOne(int)");
         for (int i : take(TINY_LIMIT / 2, P.withScale(2).positiveIntegersGeometric())) {
             Iterable<Algebraic> xs = QEP.nonNegativeAlgebraicsLessThanOne(i);
-            simpleTest(i, xs, x -> x.signum() != -1 && lt(x, Algebraic.ONE));
+            simpleTest(i, xs, x -> x.degree() == i && x.signum() != -1 && lt(x, Algebraic.ONE));
         }
 
         for (int i : take(LIMIT, P.withElement(0, P.negativeIntegers()))) {
@@ -1030,5 +1034,72 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
     private void propertiesNonNegativeAlgebraicsLessThanOne() {
         initializeConstant("nonNegativeAlgebraicsLessThanOne()");
         simpleTest(QEP, QEP.nonNegativeAlgebraicsLessThanOne(), x -> x.signum() != -1 && lt(x, Algebraic.ONE));
+    }
+
+    private void propertiesRangeUp_int_Algebraic() {
+        initialize("rangeUp(int, Algebraic)");
+        Iterable<Pair<Algebraic, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).algebraics(),
+                P.withScale(2).positiveIntegersGeometric()
+        );
+        for (Pair<Algebraic, Integer> p : take(MEDIUM_LIMIT, ps)) {
+            Iterable<Algebraic> xs = QEP.rangeUp(p.b, p.a);
+            simpleTest(p, xs, y -> y.degree() == p.b && ge(y, p.a));
+        }
+
+        for (Pair<Integer, Algebraic> p : take(LIMIT, P.pairs(P.rangeDown(0), P.algebraics()))) {
+            try {
+                QEP.rangeUp(p.a, p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesRangeUp_Algebraic() {
+        initialize("rangeUp(Algebraic)");
+        for (Algebraic x : take(MEDIUM_LIMIT, P.withScale(4).algebraics())) {
+            Iterable<Algebraic> xs = QEP.rangeUp(x);
+            simpleTest(x, xs, y -> ge(y, x));
+        }
+    }
+
+    private void propertiesRangeDown_int_Algebraic() {
+        initialize("rangeDown(int, Algebraic)");
+        Iterable<Pair<Algebraic, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).algebraics(),
+                P.withScale(2).positiveIntegersGeometric()
+        );
+        for (Pair<Algebraic, Integer> p : take(MEDIUM_LIMIT, ps)) {
+            Iterable<Algebraic> xs = QEP.rangeDown(p.b, p.a);
+            simpleTest(p, xs, y -> y.degree() == p.b && le(y, p.a));
+        }
+
+        for (Pair<Integer, Algebraic> p : take(LIMIT, P.pairs(P.rangeDown(0), P.algebraics()))) {
+            try {
+                QEP.rangeDown(p.a, p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesRangeDown_Algebraic() {
+        initialize("rangeDown(Algebraic)");
+        for (Algebraic x : take(MEDIUM_LIMIT, P.withScale(4).algebraics())) {
+            Iterable<Algebraic> xs = QEP.rangeDown(x);
+            simpleTest(x, xs, y -> le(y, x));
+        }
+    }
+
+    //todo
+    private void propertiesRange_Algebraic_Algebraic() {
+        initialize("range(Algebraic, Algebraic)");
+        for (Pair<Algebraic, Algebraic> p : take(MEDIUM_LIMIT, P.bagPairs(P.withScale(4).algebraics()))) {
+            Iterable<Algebraic> xs = QEP.range(p.a, p.b);
+            simpleTest(p, xs, x -> ge(x, p.a) && le(x, p.b));
+        }
+
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            aeqit(x, QEP.range(x, x), Collections.singletonList(x));
+        }
     }
 }
