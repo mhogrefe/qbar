@@ -3779,7 +3779,7 @@ public strictfp abstract class QBarIterableProvider {
         }
         if (a.equals(b)) {
             if (a.degree() == degree) {
-                return repeat(a);
+                return Collections.singletonList(a);
             } else {
                 throw new IllegalArgumentException("If a and b are equal, degree must be equal to the degree of a." +
                         " degree: " + degree + ", degree of a: " + a.degree());
@@ -3822,7 +3822,7 @@ public strictfp abstract class QBarIterableProvider {
             throw new IllegalArgumentException("a must be greater than or equal to b. a: " + a + ", b: " + b);
         }
         if (a.equals(b)) {
-            return repeat(a);
+            return Collections.singletonList(a);
         }
         boolean aRational = a.isRational();
         boolean bRational = b.isRational();

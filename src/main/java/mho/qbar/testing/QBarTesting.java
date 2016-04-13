@@ -176,7 +176,7 @@ public class QBarTesting {
                     System.out.println();
                 }
             }
-            //fail("No match for " + b);
+            fail("No match for " + b);
         }
     }
 
@@ -204,7 +204,7 @@ public class QBarTesting {
                     System.out.println();
                 }
             }
-            //fail("No match for " + b);
+            fail("No match for " + b);
         }
     }
 
@@ -247,7 +247,7 @@ public class QBarTesting {
                     }
                 }
             }
-            //fail("No match for " + b);
+            fail("No match for " + b);
         }
     }
 

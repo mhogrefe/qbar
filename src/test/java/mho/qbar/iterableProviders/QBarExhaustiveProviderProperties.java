@@ -3,6 +3,7 @@ package mho.qbar.iterableProviders;
 import mho.qbar.objects.*;
 import mho.qbar.testing.QBarTestProperties;
 import mho.wheels.structures.Pair;
+import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -113,6 +114,8 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesRangeUp_Algebraic();
         propertiesRangeDown_int_Algebraic();
         propertiesRangeDown_Algebraic();
+        propertiesRange_int_Algebraic_Algebraic();
+        propertiesRange_Algebraic_Algebraic();
     }
 
     private static <T> void test_helper(
@@ -1090,16 +1093,80 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         }
     }
 
-    //todo
+    private void propertiesRange_int_Algebraic_Algebraic() {
+        initialize("range(int, Algebraic, Algebraic)");
+        Iterable<Triple<Integer, Algebraic, Algebraic>> ts = filterInfinite(
+                s -> s.a == s.b.degree() || !s.b.equals(s.c),
+                map(
+                        p -> new Triple<>(p.b, p.a.a, p.a.b),
+                        P.pairsLogarithmicOrder(
+                                P.bagPairs(P.withScale(4).algebraics()),
+                                P.withScale(2).positiveIntegersGeometric()
+                        )
+                )
+        );
+        for (Triple<Integer, Algebraic, Algebraic> t : take(SMALL_LIMIT, ts)) {
+            Iterable<Algebraic> xs = QEP.range(t.a, t.b, t.c);
+            simpleTest(t, xs, x -> x.degree() == t.a && ge(x, t.b) && le(x, t.c));
+        }
+
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            aeqit(x, QEP.range(x.degree(), x, x), Collections.singletonList(x));
+        }
+
+        Iterable<Triple<Integer, Algebraic, Algebraic>> tsFail = filterInfinite(
+                s -> s.a == s.b.degree() || !s.b.equals(s.c),
+                map(
+                        p -> new Triple<>(p.b, p.a.a, p.a.b),
+                        P.pairsLogarithmicOrder(P.bagPairs(P.algebraics()), P.withScale(-32).rangeDownGeometric(0))
+                )
+        );
+        for (Triple<Integer, Algebraic, Algebraic> t : take(SMALL_LIMIT, tsFail)) {
+            try {
+                QEP.range(t.a, t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        Iterable<Pair<Integer, Algebraic>> psFail = filterInfinite(
+                q -> q.a != q.b.degree(),
+                P.pairs(P.positiveIntegersGeometric(), P.algebraics())
+        );
+        for (Pair<Integer, Algebraic> p : take(LIMIT, psFail)) {
+            try {
+                QEP.range(p.a, p.b, p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        tsFail = map(
+                p -> new Triple<>(p.a, p.b.a, p.b.b),
+                P.pairs(P.positiveIntegersGeometric(), P.subsetPairs(P.algebraics()))
+        );
+        for (Triple<Integer, Algebraic, Algebraic> t : take(LIMIT, tsFail)) {
+            try {
+                QEP.range(t.a, t.c, t.b);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
     private void propertiesRange_Algebraic_Algebraic() {
         initialize("range(Algebraic, Algebraic)");
-        for (Pair<Algebraic, Algebraic> p : take(MEDIUM_LIMIT, P.bagPairs(P.withScale(4).algebraics()))) {
+        for (Pair<Algebraic, Algebraic> p : take(SMALL_LIMIT, P.bagPairs(P.withScale(4).algebraics()))) {
             Iterable<Algebraic> xs = QEP.range(p.a, p.b);
             simpleTest(p, xs, x -> ge(x, p.a) && le(x, p.b));
         }
 
         for (Algebraic x : take(LIMIT, P.algebraics())) {
             aeqit(x, QEP.range(x, x), Collections.singletonList(x));
+        }
+
+        for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.subsetPairs(P.algebraics()))) {
+            try {
+                QEP.range(p.b, p.a);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 }
