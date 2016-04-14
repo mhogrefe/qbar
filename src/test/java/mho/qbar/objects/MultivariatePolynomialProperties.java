@@ -53,6 +53,8 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         propertiesMultiply_ExponentVector_BigInteger();
         propertiesMultiply_MultivariatePolynomial();
         compareImplementationsMultiply_MultivariatePolynomial();
+        propertiesShiftLeft();
+        compareImplementationsShiftLeft();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -534,6 +536,53 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         functions.put("standard", p -> p.a.multiply(p.b));
         Iterable<Pair<MultivariatePolynomial, MultivariatePolynomial>> ps = P.pairs(P.multivariatePolynomials());
         compareImplementations("multiply(MultivariatePolynomial)", take(LIMIT, ps), functions);
+    }
+
+    private static @NotNull MultivariatePolynomial shiftLeft_simplest(@NotNull MultivariatePolynomial p, int bits) {
+        return p.multiply(BigInteger.ONE.shiftLeft(bits));
+    }
+
+    private void propertiesShiftLeft() {
+        initialize("shiftLeft(int)");
+        Iterable<Pair<MultivariatePolynomial, Integer>> ps = P.pairs(
+                P.multivariatePolynomials(),
+                P.naturalIntegersGeometric()
+        );
+        for (Pair<MultivariatePolynomial, Integer> p : take(LIMIT, ps)) {
+            MultivariatePolynomial shifted = p.a.shiftLeft(p.b);
+            shifted.validate();
+            assertEquals(p, shifted.degree(), p.a.degree());
+            assertEquals(p, shifted, shiftLeft_simplest(p.a, p.b));
+            aeqit(p.toString(), map(t -> t.b.signum(), p.a), map(t -> t.b.signum(), shifted));
+            assertEquals(p, p.a.degree(), shifted.degree());
+            assertEquals(p, p.a.negate().shiftLeft(p.b), shifted.negate());
+        }
+
+        for (MultivariatePolynomial p : take(LIMIT, P.multivariatePolynomials())) {
+            fixedPoint(q -> q.shiftLeft(0), p);
+        }
+
+        Iterable<Pair<MultivariatePolynomial, Integer>> psFail = P.pairs(
+                P.multivariatePolynomials(),
+                P.negativeIntegers()
+        );
+        for (Pair<MultivariatePolynomial, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.shiftLeft(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void compareImplementationsShiftLeft() {
+        Map<String, Function<Pair<MultivariatePolynomial, Integer>, MultivariatePolynomial>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> shiftLeft_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.shiftLeft(p.b));
+        compareImplementations(
+                "shiftLeft(int)",
+                take(LIMIT, P.pairs(P.multivariatePolynomials(), P.naturalIntegersGeometric())),
+                functions
+        );
     }
 
     private void propertiesEquals() {

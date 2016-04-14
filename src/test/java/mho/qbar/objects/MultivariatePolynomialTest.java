@@ -726,6 +726,74 @@ public class MultivariatePolynomialTest {
                 "2*d*f+2*e*f+f^2");
     }
 
+    private static void shiftLeft_helper(@NotNull String p, int bits, @NotNull String output) {
+        MultivariatePolynomial q = read(p).get().shiftLeft(bits);
+        q.validate();
+        aeq(q, output);
+    }
+
+    private static void shiftLeft_fail_helper(@NotNull String p, int bits) {
+        try {
+            read(p).get().shiftLeft(bits);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testShiftLeft() {
+        shiftLeft_helper("0", 0, "0");
+        shiftLeft_helper("0", 1, "0");
+        shiftLeft_helper("0", 2, "0");
+        shiftLeft_helper("0", 3, "0");
+        shiftLeft_helper("0", 4, "0");
+
+        shiftLeft_helper("1", 0, "1");
+        shiftLeft_helper("1", 1, "2");
+        shiftLeft_helper("1", 2, "4");
+        shiftLeft_helper("1", 3, "8");
+        shiftLeft_helper("1", 4, "16");
+
+        shiftLeft_helper("-17", 0, "-17");
+        shiftLeft_helper("-17", 1, "-34");
+        shiftLeft_helper("-17", 2, "-68");
+        shiftLeft_helper("-17", 3, "-136");
+        shiftLeft_helper("-17", 4, "-272");
+
+        shiftLeft_helper("ooo", 0, "ooo");
+        shiftLeft_helper("ooo", 1, "2*ooo");
+        shiftLeft_helper("ooo", 2, "4*ooo");
+        shiftLeft_helper("ooo", 3, "8*ooo");
+        shiftLeft_helper("ooo", 4, "16*ooo");
+
+        shiftLeft_helper("a*b*c", 0, "a*b*c");
+        shiftLeft_helper("a*b*c", 1, "2*a*b*c");
+        shiftLeft_helper("a*b*c", 2, "4*a*b*c");
+        shiftLeft_helper("a*b*c", 3, "8*a*b*c");
+        shiftLeft_helper("a*b*c", 4, "16*a*b*c");
+
+        shiftLeft_helper("x^2-4*x+7", 0, "x^2-4*x+7");
+        shiftLeft_helper("x^2-4*x+7", 1, "2*x^2-8*x+14");
+        shiftLeft_helper("x^2-4*x+7", 2, "4*x^2-16*x+28");
+        shiftLeft_helper("x^2-4*x+7", 3, "8*x^2-32*x+56");
+        shiftLeft_helper("x^2-4*x+7", 4, "16*x^2-64*x+112");
+
+        shiftLeft_helper("x^2+2*x*y+y^2", 0, "x^2+2*x*y+y^2");
+        shiftLeft_helper("x^2+2*x*y+y^2", 1, "2*x^2+4*x*y+2*y^2");
+        shiftLeft_helper("x^2+2*x*y+y^2", 2, "4*x^2+8*x*y+4*y^2");
+        shiftLeft_helper("x^2+2*x*y+y^2", 3, "8*x^2+16*x*y+8*y^2");
+        shiftLeft_helper("x^2+2*x*y+y^2", 4, "16*x^2+32*x*y+16*y^2");
+
+        shiftLeft_helper("a+b+c+d+e+f", 0, "a+b+c+d+e+f");
+        shiftLeft_helper("a+b+c+d+e+f", 1, "2*a+2*b+2*c+2*d+2*e+2*f");
+        shiftLeft_helper("a+b+c+d+e+f", 2, "4*a+4*b+4*c+4*d+4*e+4*f");
+        shiftLeft_helper("a+b+c+d+e+f", 3, "8*a+8*b+8*c+8*d+8*e+8*f");
+        shiftLeft_helper("a+b+c+d+e+f", 4, "16*a+16*b+16*c+16*d+16*e+16*f");
+
+        shiftLeft_fail_helper("0", -1);
+        shiftLeft_fail_helper("1", -1);
+        shiftLeft_fail_helper("a*b*c", -1);
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

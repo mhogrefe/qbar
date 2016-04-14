@@ -173,6 +173,7 @@ public class AlgebraicTest {
         of_float_helper(-Float.MIN_NORMAL, "-23509887/2000000000000000000000000000000000000000000000");
         of_float_helper(Float.MAX_VALUE, "340282350000000000000000000000000000000");
         of_float_helper(-Float.MAX_VALUE, "-340282350000000000000000000000000000000");
+
         of_float_empty_helper(Float.POSITIVE_INFINITY);
         of_float_empty_helper(Float.NEGATIVE_INFINITY);
         of_float_empty_helper(Float.NaN);
@@ -233,6 +234,7 @@ public class AlgebraicTest {
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "0000000000000");
+
         of_double_empty_helper(Double.POSITIVE_INFINITY);
         of_double_empty_helper(Double.NEGATIVE_INFINITY);
         of_double_empty_helper(Double.NaN);
@@ -269,6 +271,7 @@ public class AlgebraicTest {
         ofExact_float_helper(-Float.MIN_NORMAL, Rational.SMALLEST_NORMAL_FLOAT.negate());
         ofExact_float_helper(Float.MAX_VALUE, Rational.LARGEST_FLOAT);
         ofExact_float_helper(-Float.MAX_VALUE, Rational.LARGEST_FLOAT.negate());
+
         ofExact_float_empty_helper(Float.POSITIVE_INFINITY);
         ofExact_float_empty_helper(Float.NEGATIVE_INFINITY);
         ofExact_float_empty_helper(Float.NaN);
@@ -2464,6 +2467,7 @@ public class AlgebraicTest {
         read_int_String_fail_helper(10, "root 0 of 1");
         read_int_String_fail_helper(10, "root 0 of x^2-2");
         read_int_String_fail_helper(10, "root 0 of x-2");
+
         read_int_String_bad_maxExponent_fail_helper(1, "sqrt(2)");
         read_int_String_bad_maxExponent_fail_helper(0, "sqrt(2)");
         read_int_String_bad_maxExponent_fail_helper(-1, "sqrt(2)");
@@ -2531,6 +2535,7 @@ public class AlgebraicTest {
         findIn_int_String_fail_helper(2, "");
         findIn_int_String_fail_helper(2, "o");
         findIn_int_String_fail_helper(2, "hello");
+
         findIn_int_String_bad_maxExponent_fail_helper(1, "sqrt(2)");
         findIn_int_String_bad_maxExponent_fail_helper(0, "sqrt(2)");
         findIn_int_String_bad_maxExponent_fail_helper(-1, "sqrt(2)");

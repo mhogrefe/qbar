@@ -190,6 +190,16 @@ public class MultivariatePolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoShiftLeft() {
+        Iterable<Pair<MultivariatePolynomial, Integer>> ps = P.pairs(
+                P.withScale(4).multivariatePolynomials(),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Pair<MultivariatePolynomial, Integer> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " << " + p.b + " = " + p.a.shiftLeft(p.b));
+        }
+    }
+
     private void demoEquals_MultivariatePolynomial() {
         Iterable<Pair<MultivariatePolynomial, MultivariatePolynomial>> ps = P.pairs(
                 P.withScale(4).multivariatePolynomials()

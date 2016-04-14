@@ -532,6 +532,29 @@ public final class MultivariatePolynomial implements
         return sum(toList(map(t -> multiply(t.a, t.b), that.terms)));
     }
 
+    /**
+     * Returns the left shift of {@code this} by {@code bits}; {@code this}×2<sup>{@code bits}</sup>. Negative
+     * {@code bits} are not allowed, even if {@code this} is divisible by a power of 2.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code bits} cannot be negative.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param bits the number of bits to left-shift by
+     * @return {@code this}≪{@code bits}
+     */
+    public @NotNull MultivariatePolynomial shiftLeft(int bits) {
+        if (bits < 0) {
+            throw new ArithmeticException("bits cannot be negative. Invalid bits: " + bits);
+        }
+        if (this == ZERO || bits == 0) return this;
+        List<Pair<ExponentVector, BigInteger>> shiftedTerms =
+                toList(map(t -> new Pair<>(t.a, t.b.shiftLeft(bits)), terms));
+        return new MultivariatePolynomial(shiftedTerms);
+    }
+
     public static @NotNull MultivariatePolynomial sum(@NotNull List<MultivariatePolynomial> xs) {
         List<Pair<ExponentVector, BigInteger>> sumTerms = new ArrayList<>();
         List<Iterator<Pair<ExponentVector, BigInteger>>> inputTermsIterators =
