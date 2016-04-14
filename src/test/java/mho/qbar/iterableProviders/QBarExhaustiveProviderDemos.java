@@ -353,7 +353,7 @@ public class QBarExhaustiveProviderDemos extends QBarDemos {
         }
     }
 
-    private void demoAlgebraicsIn_int_Algebraic() {
+    private void demoAlgebraicsIn_int_Interval() {
         Iterable<Pair<Interval, Integer>> ps = filterInfinite(
                 q -> q.b == 1 || !q.a.getLower().equals(q.a.getUpper()),
                 P.pairsLogarithmicOrder(P.intervals(), P.withScale(2).positiveIntegersGeometric())
@@ -363,13 +363,13 @@ public class QBarExhaustiveProviderDemos extends QBarDemos {
         }
     }
 
-    private void demoAlgebraicsIn_Algebraic() {
+    private void demoAlgebraicsIn_Interval() {
         for (Interval a : take(MEDIUM_LIMIT, P.intervals())) {
             System.out.println("algebraicsIn(" + a + ") = " + its(QEP.algebraicsIn(a)));
         }
     }
 
-    private void demoAlgebraicsNotIn_int_Algebraic() {
+    private void demoAlgebraicsNotIn_int_Interval() {
         Iterable<Pair<Interval, Integer>> ps = P.pairsLogarithmicOrder(
                 filterInfinite(a -> !a.equals(Interval.ALL), P.intervals()),
                 P.withScale(2).positiveIntegersGeometric()
@@ -379,7 +379,7 @@ public class QBarExhaustiveProviderDemos extends QBarDemos {
         }
     }
 
-    private void demoAlgebraicsNotIn_Algebraic() {
+    private void demoAlgebraicsNotIn_Interval() {
         for (Interval a : take(MEDIUM_LIMIT, filterInfinite(b -> !b.equals(Interval.ALL), P.intervals()))) {
             System.out.println("algebraicsNotIn(" + a + ") = " + its(QEP.algebraicsNotIn(a)));
         }
