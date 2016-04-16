@@ -14,6 +14,7 @@ import java.util.List;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.ge;
+import static mho.wheels.ordering.Ordering.gt;
 import static mho.wheels.ordering.Ordering.le;
 import static org.junit.Assert.assertTrue;
 
@@ -2166,6 +2167,75 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
             Algebraic fractionalPart = a.subtract(ceiling);
             return map(x -> x.add(ceiling), filterInfinite(x -> le(x, fractionalPart), negativeAlgebraics()));
         }
+    }
+
+    @Override
+    public @NotNull Iterable<Algebraic> range(int degree, @NotNull Algebraic a, @NotNull Algebraic b) {
+        if (gt(a, b)) {
+            throw new IllegalArgumentException("a must be less than or equal to b. a: " + a + ", b: " + b);
+        }
+        int scale = getScale();
+        if (scale < 2) {
+            throw new IllegalStateException("this must have a scale of at least 2. Invalid scale: " + scale);
+        }
+        if (a.equals(b)) {
+            if (a.degree() == degree) {
+                return Collections.singletonList(a);
+            } else {
+                throw new IllegalArgumentException("If a and b are equal, degree must be equal to the degree of a." +
+                        " degree: " + degree + ", degree of a: " + a.degree());
+            }
+        }
+        boolean aRational = a.isRational();
+        boolean bRational = b.isRational();
+        Interval extension = Algebraic.intervalExtension(a, b);
+        Rational lower = extension.getLower().get();
+        Rational upper = extension.getUpper().get();
+        Rational extensionDiameter = upper.subtract(lower);
+        Iterable<Algebraic> xs = map(
+                x -> x.multiply(extensionDiameter).add(lower),
+                nonNegativeAlgebraicsLessThanOne(degree)
+        );
+        if (b.degree() == degree) {
+            return filterInfinite(
+                    x -> (aRational || ge(x, a)) && (bRational || le(x, b)),
+                    withElement(Algebraic.of(upper), xs)
+            );
+        } else {
+            return filterInfinite(x -> (aRational || ge(x, a)) && (bRational || le(x, b)), xs);
+        }
+    }
+
+    @Override
+    public @NotNull Iterable<Algebraic> range(@NotNull Algebraic a, @NotNull Algebraic b) {
+        if (gt(a, b)) {
+            throw new IllegalArgumentException("a must be greater than or equal to b. a: " + a + ", b: " + b);
+        }
+        int scale = getScale();
+        if (scale < 2) {
+            throw new IllegalStateException("this must have a scale of at least 2. Invalid scale: " + scale);
+        }
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 4) {
+            throw new IllegalStateException("this must have a secondary scale of at least 4. Invalid secondary scale: "
+                    + scale);
+        }
+        if (a.equals(b)) {
+            return Collections.singletonList(a);
+        }
+        boolean aRational = a.isRational();
+        boolean bRational = b.isRational();
+        Interval extension = Algebraic.intervalExtension(a, b);
+        Rational lower = extension.getLower().get();
+        Rational upper = extension.getUpper().get();
+        Rational extensionDiameter = upper.subtract(lower);
+        return filterInfinite(
+                x -> (aRational || ge(x, a)) && (bRational || le(x, b)),
+                withElement(
+                        Algebraic.of(upper),
+                        map(x -> x.multiply(extensionDiameter).add(lower), nonNegativeAlgebraicsLessThanOne())
+                )
+        );
     }
 
     /**

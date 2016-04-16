@@ -3726,37 +3726,7 @@ public strictfp abstract class QBarIterableProvider {
      * @param a the inclusive lower bound of the generated {@code Algebraic}s
      * @param b the inclusive upper bound of the generated {@code Algebraic}s
      */
-    public @NotNull Iterable<Algebraic> range(int degree, @NotNull Algebraic a, @NotNull Algebraic b) {
-        if (gt(a, b)) {
-            throw new IllegalArgumentException("a must be less than or equal to b. a: " + a + ", b: " + b);
-        }
-        if (a.equals(b)) {
-            if (a.degree() == degree) {
-                return Collections.singletonList(a);
-            } else {
-                throw new IllegalArgumentException("If a and b are equal, degree must be equal to the degree of a." +
-                        " degree: " + degree + ", degree of a: " + a.degree());
-            }
-        }
-        boolean aRational = a.isRational();
-        boolean bRational = b.isRational();
-        Interval extension = Algebraic.intervalExtension(a, b);
-        Rational lower = extension.getLower().get();
-        Rational upper = extension.getUpper().get();
-        Rational extensionDiameter = upper.subtract(lower);
-        Iterable<Algebraic> xs = map(
-                x -> x.multiply(extensionDiameter).add(lower),
-                nonNegativeAlgebraicsLessThanOne(degree)
-        );
-        if (b.degree() == degree) {
-            return filterInfinite(
-                    x -> (aRational || ge(x, a)) && (bRational || le(x, b)),
-                    withElement(Algebraic.of(upper), xs)
-            );
-        } else {
-            return filterInfinite(x -> (aRational || ge(x, a)) && (bRational || le(x, b)), xs);
-        }
-    }
+    public abstract @NotNull Iterable<Algebraic> range(int degree, @NotNull Algebraic a, @NotNull Algebraic b);
 
     /**
      * Generates {@code Algebraic}s between {@code a} and {@code b}, inclusive.
@@ -3770,27 +3740,7 @@ public strictfp abstract class QBarIterableProvider {
      * @param a the inclusive lower bound of the generated {@code Algebraic}s
      * @param b the inclusive upper bound of the generated {@code Algebraic}s
      */
-    public @NotNull Iterable<Algebraic> range(@NotNull Algebraic a, @NotNull Algebraic b) {
-        if (gt(a, b)) {
-            throw new IllegalArgumentException("a must be greater than or equal to b. a: " + a + ", b: " + b);
-        }
-        if (a.equals(b)) {
-            return Collections.singletonList(a);
-        }
-        boolean aRational = a.isRational();
-        boolean bRational = b.isRational();
-        Interval extension = Algebraic.intervalExtension(a, b);
-        Rational lower = extension.getLower().get();
-        Rational upper = extension.getUpper().get();
-        Rational extensionDiameter = upper.subtract(lower);
-        return filterInfinite(
-                x -> (aRational || ge(x, a)) && (bRational || le(x, b)),
-                withElement(
-                        Algebraic.of(upper),
-                        map(x -> x.multiply(extensionDiameter).add(lower), nonNegativeAlgebraicsLessThanOne())
-                )
-        );
-    }
+    public abstract @NotNull Iterable<Algebraic> range(@NotNull Algebraic a, @NotNull Algebraic b);
 
     /**
      * Generates {@code Algebraic}s contained in a given {@code Interval} and with a given degree.

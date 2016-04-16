@@ -6572,6 +6572,493 @@ public class QBarRandomProviderTest {
         rangeDown_Algebraic_fail_helper(2, 3, "sqrt(2)");
     }
 
+    private static void range_int_Algebraic_Algebraic_helper(
+            int scale,
+            int degree,
+            @NotNull String a,
+            @NotNull String b,
+            @NotNull String output,
+            double meanDegree,
+            double meanCoefficientBitSize,
+            double meanValue
+    ) {
+        algebraics_helper(
+                P.withScale(scale).range(degree, Algebraic.readStrict(a).get(), Algebraic.readStrict(b).get()),
+                output,
+                meanDegree,
+                meanCoefficientBitSize,
+                meanValue
+        );
+        P.reset();
+    }
+
+    private static void range_int_Algebraic_Algebraic_fail_helper(
+            int scale,
+            int degree,
+            @NotNull String a,
+            @NotNull String b
+    ) {
+        try {
+            P.withScale(scale).range(degree, Algebraic.readStrict(a).get(), Algebraic.readStrict(b).get());
+            fail();
+        } catch (IllegalStateException | IllegalArgumentException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testRange_int_Algebraic_Algebraic() {
+        range_int_Algebraic_Algebraic_helper(
+                2,
+                1,
+                "0",
+                "0",
+                "QBarRandomProvider_range_int_Algebraic_Algebraic_i",
+                1.0,
+                0.5,
+                0.0
+        );
+        range_int_Algebraic_Algebraic_helper(
+                2,
+                1,
+                "1",
+                "1",
+                "QBarRandomProvider_range_int_Algebraic_Algebraic_ii",
+                1.0,
+                0.5,
+                1.0
+        );
+        range_int_Algebraic_Algebraic_helper(
+                3,
+                2,
+                "sqrt(2)",
+                "sqrt(2)",
+                "QBarRandomProvider_range_int_Algebraic_Algebraic_iii",
+                2.0,
+                0.6666666666666666,
+                1.4142135623730951
+        );
+        range_int_Algebraic_Algebraic_helper(
+                2,
+                1,
+                "1",
+                "2",
+                "QBarRandomProvider_range_int_Algebraic_Algebraic_iv",
+                0.9999999999999062,
+                1.7716500000005564,
+                1.5714904365556832
+        );
+        range_int_Algebraic_Algebraic_helper(
+                3,
+                2,
+                "1",
+                "2",
+                "QBarRandomProvider_range_int_Algebraic_Algebraic_v",
+                1.9999999999998124,
+                6.464100000001767,
+                1.2636062267064716
+        );
+        range_int_Algebraic_Algebraic_helper(
+                5,
+                3,
+                "1",
+                "2",
+                "QBarRandomProvider_range_int_Algebraic_Algebraic_vi",
+                3.0000000000004805,
+                10.745325000000308,
+                1.2333289111213646
+        );
+        range_int_Algebraic_Algebraic_helper(
+                2,
+                1,
+                "-4/3",
+                "1/2",
+                "QBarRandomProvider_range_int_Algebraic_Algebraic_vii",
+                0.9999999999999062,
+                2.6329000000004843,
+                -0.2856008663144127
+        );
+        range_int_Algebraic_Algebraic_helper(
+                3,
+                2,
+                "-4/3",
+                "1/2",
+                "QBarRandomProvider_range_int_Algebraic_Algebraic_viii",
+                1.9999999999998124,
+                11.052333333334872,
+                -0.8500552510381606
+        );
+        range_int_Algebraic_Algebraic_helper(
+                5,
+                3,
+                "-4/3",
+                "1/2",
+                "QBarRandomProvider_range_int_Algebraic_Algebraic_ix",
+                3.0000000000004805,
+                18.012824999999765,
+                -0.905563662944164
+        );
+        range_int_Algebraic_Algebraic_helper(
+                2,
+                1,
+                "1",
+                "sqrt(2)",
+                "QBarRandomProvider_range_int_Algebraic_Algebraic_x",
+                0.9999999999999062,
+                3.010250000000132,
+                1.0624788662940414
+        );
+        range_int_Algebraic_Algebraic_helper(
+                3,
+                2,
+                "1",
+                "sqrt(2)",
+                "QBarRandomProvider_range_int_Algebraic_Algebraic_xi",
+                1.9999999999998124,
+                8.034600000001536,
+                1.117936264881995
+        );
+        range_int_Algebraic_Algebraic_helper(
+                5,
+                3,
+                "1",
+                "sqrt(2)",
+                "QBarRandomProvider_range_int_Algebraic_Algebraic_xii",
+                3.0000000000004805,
+                13.112225000000253,
+                1.1009430656713397
+        );
+        range_int_Algebraic_Algebraic_helper(
+                2,
+                1,
+                "sqrt(2)",
+                "sqrt(3)",
+                "QBarRandomProvider_range_int_Algebraic_Algebraic_xiii",
+                0.9999999999999062,
+                5.082900000000749,
+                1.514070630423939
+        );
+        range_int_Algebraic_Algebraic_helper(
+                3,
+                2,
+                "sqrt(2)",
+                "sqrt(3)",
+                "QBarRandomProvider_range_int_Algebraic_Algebraic_xiv",
+                1.9999999999998124,
+                9.999966666668053,
+                1.529534444697405
+        );
+        range_int_Algebraic_Algebraic_helper(
+                5,
+                3,
+                "sqrt(2)",
+                "sqrt(3)",
+                "QBarRandomProvider_range_int_Algebraic_Algebraic_xv",
+                3.0000000000004805,
+                16.432500000000115,
+                1.5308866474552778
+        );
+        range_int_Algebraic_Algebraic_helper(
+                2,
+                1,
+                "0",
+                "256",
+                "QBarRandomProvider_range_int_Algebraic_Algebraic_xvi",
+                0.9999999999999062,
+                3.929049999999635,
+                146.30155175827122
+        );
+        range_int_Algebraic_Algebraic_helper(
+                3,
+                2,
+                "0",
+                "256",
+                "QBarRandomProvider_range_int_Algebraic_Algebraic_xvii",
+                1.9999999999998124,
+                10.698566666667713,
+                67.48319403685356
+        );
+        range_int_Algebraic_Algebraic_helper(
+                5,
+                3,
+                "0",
+                "256",
+                "QBarRandomProvider_range_int_Algebraic_Algebraic_xviii",
+                3.0000000000004805,
+                15.777650000001412,
+                59.732201247069284
+        );
+        range_int_Algebraic_Algebraic_helper(
+                2,
+                1,
+                "sqrt(2)",
+                "6369051672525773/4503599627370496",
+                "QBarRandomProvider_range_int_Algebraic_Algebraic_xix",
+                0.9999999999999062,
+                53.53240000001064,
+                1.4142135623732863
+        );
+        range_int_Algebraic_Algebraic_helper(
+                3,
+                2,
+                "sqrt(2)",
+                "6369051672525773/4503599627370496",
+                "QBarRandomProvider_range_int_Algebraic_Algebraic_xx",
+                1.9999999999998124,
+                110.2035666666688,
+                1.4142135623732863
+        );
+        range_int_Algebraic_Algebraic_helper(
+                5,
+                3,
+                "sqrt(2)",
+                "6369051672525773/4503599627370496",
+                "QBarRandomProvider_range_int_Algebraic_Algebraic_xxi",
+                3.0000000000004805,
+                166.45632500001085,
+                1.4142135623732863
+        );
+
+        range_int_Algebraic_Algebraic_fail_helper(1, 1, "0", "0");
+        range_int_Algebraic_Algebraic_fail_helper(1, 1, "0", "1");
+        range_int_Algebraic_Algebraic_fail_helper(2, 0, "0", "0");
+        range_int_Algebraic_Algebraic_fail_helper(2, 0, "0", "1");
+        range_int_Algebraic_Algebraic_fail_helper(2, 1, "sqrt(2)", "sqrt(2)");
+        range_int_Algebraic_Algebraic_fail_helper(2, 2, "1", "1");
+        range_int_Algebraic_Algebraic_fail_helper(2, 1, "1", "0");
+        range_int_Algebraic_Algebraic_fail_helper(2, 1, "6369051672525773/4503599627370496", "sqrt(2)");
+    }
+
+    private static void range_Algebraic_Algebraic_helper(
+            int scale,
+            int secondaryScale,
+            @NotNull String a,
+            @NotNull String b,
+            @NotNull String output,
+            double meanDegree,
+            double meanCoefficientBitSize,
+            double meanValue
+    ) {
+        algebraics_helper(
+                P.withScale(scale).withSecondaryScale(secondaryScale)
+                        .range(Algebraic.readStrict(a).get(), Algebraic.readStrict(b).get()),
+                output,
+                meanDegree,
+                meanCoefficientBitSize,
+                meanValue
+        );
+        P.reset();
+    }
+
+    private static void range_Algebraic_Algebraic_fail_helper(
+            int scale,
+            int secondaryScale,
+            @NotNull String a,
+            @NotNull String b
+    ) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale)
+                    .range(Algebraic.readStrict(a).get(), Algebraic.readStrict(b).get());
+            fail();
+        } catch (IllegalStateException | IllegalArgumentException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testRange_Algebraic_Algebraic() {
+        range_Algebraic_Algebraic_helper(
+                2,
+                4,
+                "0",
+                "0",
+                "QBarRandomProvider_range_Algebraic_Algebraic_i",
+                1.0,
+                0.5,
+                0.0
+        );
+        range_Algebraic_Algebraic_helper(
+                5,
+                6,
+                "0",
+                "0",
+                "QBarRandomProvider_range_Algebraic_Algebraic_ii",
+                1.0,
+                0.5,
+                0.0
+        );
+        range_Algebraic_Algebraic_helper(
+                2,
+                4,
+                "1",
+                "1",
+                "QBarRandomProvider_range_Algebraic_Algebraic_iii",
+                1.0,
+                0.5,
+                1.0
+        );
+        range_Algebraic_Algebraic_helper(
+                5,
+                6,
+                "1",
+                "1",
+                "QBarRandomProvider_range_Algebraic_Algebraic_iv",
+                1.0,
+                0.5,
+                1.0
+        );
+        range_Algebraic_Algebraic_helper(
+                2,
+                4,
+                "sqrt(2)",
+                "sqrt(2)",
+                "QBarRandomProvider_range_Algebraic_Algebraic_v",
+                2.0,
+                0.6666666666666666,
+                1.4142135623730951
+        );
+        range_Algebraic_Algebraic_helper(
+                5,
+                6,
+                "sqrt(2)",
+                "sqrt(2)",
+                "QBarRandomProvider_range_Algebraic_Algebraic_vi",
+                2.0,
+                0.6666666666666666,
+                1.4142135623730951
+        );
+        range_Algebraic_Algebraic_helper(
+                2,
+                4,
+                "1",
+                "2",
+                "QBarRandomProvider_range_Algebraic_Algebraic_vii",
+                1.489099999999876,
+                3.1445100638773686,
+                1.6347287727960884
+        );
+        range_Algebraic_Algebraic_helper(
+                5,
+                6,
+                "1",
+                "2",
+                "QBarRandomProvider_range_Algebraic_Algebraic_viii",
+                2.588900000000133,
+                10.358967928892671,
+                1.3651357582742665
+        );
+        range_Algebraic_Algebraic_helper(
+                2,
+                4,
+                "-4/3",
+                "1/2",
+                "QBarRandomProvider_range_Algebraic_Algebraic_ix",
+                1.489099999999876,
+                6.948053513316408,
+                -0.16966391654034724
+        );
+        range_Algebraic_Algebraic_helper(
+                5,
+                6,
+                "-4/3",
+                "1/2",
+                "QBarRandomProvider_range_Algebraic_Algebraic_x",
+                2.588900000000133,
+                20.455459890217735,
+                -0.6639177764971208
+        );
+        range_Algebraic_Algebraic_helper(
+                2,
+                4,
+                "1",
+                "sqrt(2)",
+                "QBarRandomProvider_range_Algebraic_Algebraic_xi",
+                1.966899999999836,
+                6.640972058377491,
+                1.1153223254680313
+        );
+        range_Algebraic_Algebraic_helper(
+                5,
+                6,
+                "1",
+                "sqrt(2)",
+                "QBarRandomProvider_range_Algebraic_Algebraic_xii",
+                2.9583000000001802,
+                15.061996311547738,
+                1.0897817689953515
+        );
+        range_Algebraic_Algebraic_helper(
+                2,
+                4,
+                "sqrt(2)",
+                "sqrt(3)",
+                "QBarRandomProvider_range_Algebraic_Algebraic_xiii",
+                2.4251000000000182,
+                13.350500715312839,
+                1.538251090003969
+        );
+        range_Algebraic_Algebraic_helper(
+                5,
+                6,
+                "sqrt(2)",
+                "sqrt(3)",
+                "QBarRandomProvider_range_Algebraic_Algebraic_xiv",
+                3.460500000000252,
+                24.696894966928625,
+                1.529109887409632
+        );
+        range_Algebraic_Algebraic_helper(
+                2,
+                4,
+                "0",
+                "256",
+                "QBarRandomProvider_range_Algebraic_Algebraic_xv",
+                1.489099999999876,
+                7.831344662729657,
+                162.49056583581194
+        );
+        range_Algebraic_Algebraic_helper(
+                5,
+                6,
+                "0",
+                "256",
+                "QBarRandomProvider_range_Algebraic_Algebraic_xvi",
+                2.588900000000133,
+                18.526094346457267,
+                93.47475411821799
+        );
+        range_Algebraic_Algebraic_helper(
+                2,
+                4,
+                "sqrt(2)",
+                "6369051672525773/4503599627370496",
+                "QBarRandomProvider_range_Algebraic_Algebraic_xvii",
+                1.4997999999998755,
+                108.51020081602859,
+                1.4142135623732863
+        );
+        range_Algebraic_Algebraic_helper(
+                5,
+                6,
+                "sqrt(2)",
+                "6369051672525773/4503599627370496",
+                "QBarRandomProvider_range_Algebraic_Algebraic_xviii",
+                2.5786000000001814,
+                232.16358352426488,
+                1.4142135623732863
+        );
+
+        range_Algebraic_Algebraic_fail_helper(1, 4, "0", "1");
+        range_Algebraic_Algebraic_fail_helper(2, 3, "0", "1");
+        range_Algebraic_Algebraic_fail_helper(1, 4, "0", "0");
+        range_Algebraic_Algebraic_fail_helper(2, 3, "0", "0");
+        range_Algebraic_Algebraic_fail_helper(2, 4, "1", "0");
+        range_Algebraic_Algebraic_fail_helper(2, 4, "1/2", "1/3");
+        range_Algebraic_Algebraic_fail_helper(2, 4, "6369051672525773/4503599627370496", "sqrt(2)");
+    }
+
     private static double meanOfIntegers(@NotNull List<Integer> xs) {
         int size = xs.size();
         return sumDouble(map(i -> (double) i / size, xs));
