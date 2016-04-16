@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.ordering.Ordering.ge;
 import static mho.wheels.ordering.Ordering.le;
 
 /**
@@ -1193,6 +1194,64 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
                         i -> nonNegativeAlgebraicsLessThanOne(i.intValueExact())
                 )
         );
+    }
+
+    @Override
+    public @NotNull Iterable<Algebraic> rangeUp(int degree, @NotNull Algebraic a) {
+        if (a.isRational()) {
+            Rational r = a.rationalValueExact();
+            if (degree == 1) {
+                return withElement(a, map(x -> x.add(r), positiveAlgebraics(degree)));
+            } else {
+                return map(x -> x.add(r), positiveAlgebraics(degree));
+            }
+        } else {
+            BigInteger floor = a.floor();
+            Algebraic fractionalPart = a.subtract(floor);
+            return map(
+                    x -> x.add(floor),
+                    filterInfinite(x -> ge(x, fractionalPart), positiveAlgebraics(degree))
+            );
+        }
+    }
+
+    @Override
+    public @NotNull Iterable<Algebraic> rangeUp(@NotNull Algebraic a) {
+        if (a.isRational()) {
+            Rational r = a.rationalValueExact();
+            return withElement(a, map(x -> x.add(r), positiveAlgebraics()));
+        } else {
+            BigInteger floor = a.floor();
+            Algebraic fractionalPart = a.subtract(floor);
+            return map(x -> x.add(floor), filterInfinite(x -> ge(x, fractionalPart), positiveAlgebraics()));
+        }
+    }
+
+    @Override
+    public @NotNull Iterable<Algebraic> rangeDown(int degree, @NotNull Algebraic a) {
+        if (a.isRational()) {
+            Rational r = a.rationalValueExact();
+            if (degree == 1) {
+                return withElement(a, map(x -> x.add(r), negativeAlgebraics(degree)));
+            } else {
+                return map(x -> x.add(r), negativeAlgebraics(degree));
+            }
+        } else {
+            BigInteger ceiling = a.ceiling();
+            Algebraic fractionalPart = a.subtract(ceiling);
+            return map(x -> x.add(ceiling), filterInfinite(x -> le(x, fractionalPart), negativeAlgebraics(degree)));
+        }
+    }
+
+    public @NotNull Iterable<Algebraic> rangeDown(@NotNull Algebraic a) {
+        if (a.isRational()) {
+            Rational r = a.rationalValueExact();
+            return withElement(a, map(x -> x.add(r), negativeAlgebraics()));
+        } else {
+            BigInteger ceiling = a.ceiling();
+            Algebraic fractionalPart = a.subtract(ceiling);
+            return map(x -> x.add(ceiling), filterInfinite(x -> le(x, fractionalPart), negativeAlgebraics()));
+        }
     }
 
     /**

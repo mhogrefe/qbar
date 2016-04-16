@@ -32506,3 +32506,2803 @@ QBarRandomProvider_nonNegativeAlgebraicsLessThanOne_ii map 10
 28: 1/6
 26: 3/4
 24: 1/12
+
+QBarRandomProvider_rangeUp_int_Algebraic_i list 21
+5/13
+1/31
+11
+0
+0
+1736/3
+0
+0
+0
+1/29162
+0
+1/2
+14
+1/2
+0
+0
+1
+1/2
+1
+0
+...
+
+QBarRandomProvider_rangeUp_int_Algebraic_i map 10
+5055: 0
+708: 1
+231: 3
+226: 1/3
+225: 1/2
+209: 2
+84: 1/5
+84: 6
+82: 7
+80: 1/7
+
+QBarRandomProvider_rangeUp_int_Algebraic_ii list 21
+(53+sqrt(34121))/4
+(-9+sqrt(105))/6
+-151+sqrt(23738)
+1+sqrt(2562)
+(3+sqrt(793))/56
+(14003-sqrt(196083833))/44
+sqrt(57)/38
+3-sqrt(2)
+(82+3*sqrt(745))/19
+(-1+sqrt(34))/6
+(7+sqrt(89))/4
+(115+sqrt(138209))/34
+(187+sqrt(34989))/2
+(15+sqrt(201))/6
+(1+sqrt(4261))/2130
+(2+sqrt(235))/21
+(3+sqrt(649))/640
+(1+sqrt(11761))/210
+(-7+sqrt(473262761))/15574
+(19+sqrt(301))/10
+...
+
+QBarRandomProvider_rangeUp_int_Algebraic_ii map 10
+68: sqrt(2)
+66: sqrt(2)/2
+55: (1+sqrt(5))/2
+54: sqrt(3)
+49: (-1+sqrt(5))/2
+49: sqrt(3)/3
+30: (3+sqrt(5))/2
+27: (3-sqrt(5))/2
+27: sqrt(6)/3
+24: (1+sqrt(13))/2
+
+QBarRandomProvider_rangeUp_int_Algebraic_iii list 21
+root 2 of 38*x^3-16989*x^2+46*x+30
+root 1 of 2*x^3-7350*x^2-2*x+47
+root 0 of 102910*x^3+26*x^2-97*x-41
+root 0 of 2*x^3-344*x^2+1856865*x-46834
+root 1 of 3*x^3+13*x^2-12*x+1
+root 0 of 680*x^3-15*x^2-10*x-6
+root 0 of 3347*x^3+2*x^2+x-1
+root 0 of 206*x^3-111*x^2-x-4843
+root 0 of 86*x^3-3*x^2-x-4
+root 0 of 3*x^3-21*x^2-280
+root 0 of 230*x^3+4*x^2+2*x-11
+root 0 of 7*x^3+3*x^2+14*x-134
+root 0 of x^3-111*x^2+38*x-30
+root 0 of 72*x^3-2*x^2+9*x-8470
+root 2 of 63*x^3-2203*x^2+x+90
+root 0 of 63*x^3+24*x^2-2
+root 0 of 186*x^3+26*x^2-x-3
+root 0 of 3*x^3+9*x^2+168913*x-117
+root 0 of 114*x^3-5*x^2-4*x-26
+root 0 of x^3-3*x^2+2*x-166
+...
+
+QBarRandomProvider_rangeUp_int_Algebraic_iii map 10
+5: root 0 of x^3-3
+5: root 0 of x^3-x-3
+4: root 0 of 2*x^3-x^2-3
+4: root 0 of 3*x^3-1
+4: root 0 of 3*x^3-x^2-1
+4: root 0 of x^3-7
+4: root 0 of x^3-x-1
+4: root 0 of x^3-x^2-1
+3: root 0 of x^3+2*x-1
+3: root 0 of x^3-2
+
+QBarRandomProvider_rangeUp_int_Algebraic_iv list 21
+18/13
+32/31
+12
+1
+1
+1739/3
+1
+1
+1
+29163/29162
+1
+3/2
+15
+3/2
+1
+1
+2
+3/2
+2
+1
+...
+
+QBarRandomProvider_rangeUp_int_Algebraic_iv map 10
+5055: 1
+708: 2
+231: 4
+226: 4/3
+225: 3/2
+209: 3
+84: 6/5
+84: 7
+82: 8
+80: 8/7
+
+QBarRandomProvider_rangeUp_int_Algebraic_v list 21
+(57+sqrt(34121))/4
+(-3+sqrt(105))/6
+-150+sqrt(23738)
+2+sqrt(2562)
+(59+sqrt(793))/56
+(14047-sqrt(196083833))/44
+(38+sqrt(57))/38
+4-sqrt(2)
+(101+3*sqrt(745))/19
+(5+sqrt(34))/6
+(11+sqrt(89))/4
+(149+sqrt(138209))/34
+(189+sqrt(34989))/2
+(21+sqrt(201))/6
+(2131+sqrt(4261))/2130
+(23+sqrt(235))/21
+(643+sqrt(649))/640
+(211+sqrt(11761))/210
+(15567+sqrt(473262761))/15574
+(29+sqrt(301))/10
+...
+
+QBarRandomProvider_rangeUp_int_Algebraic_v map 10
+68: 1+sqrt(2)
+66: (2+sqrt(2))/2
+55: (3+sqrt(5))/2
+54: 1+sqrt(3)
+49: (1+sqrt(5))/2
+49: (3+sqrt(3))/3
+30: (5+sqrt(5))/2
+27: (3+sqrt(6))/3
+27: (5-sqrt(5))/2
+24: (3+sqrt(13))/2
+
+QBarRandomProvider_rangeUp_int_Algebraic_vi list 21
+root 2 of 38*x^3-17103*x^2+34138*x-17043
+root 1 of 2*x^3-7356*x^2+14704*x-7303
+root 0 of 102910*x^3-308704*x^2+308581*x-102828
+root 0 of 2*x^3-350*x^2+1857559*x-1904045
+root 1 of 3*x^3+4*x^2-29*x+23
+root 0 of 680*x^3-2055*x^2+2060*x-691
+root 0 of 3347*x^3-10039*x^2+10038*x-3347
+root 0 of 206*x^3-729*x^2+839*x-5159
+root 0 of 86*x^3-261*x^2+263*x-92
+root 0 of 3*x^3-30*x^2+51*x-304
+root 0 of 230*x^3-686*x^2+684*x-239
+root 0 of 7*x^3-18*x^2+29*x-152
+root 0 of x^3-114*x^2+263*x-180
+root 0 of 72*x^3-218*x^2+229*x-8553
+root 2 of 63*x^3-2392*x^2+4596*x-2177
+root 0 of 63*x^3-165*x^2+141*x-41
+root 0 of 186*x^3-532*x^2+505*x-162
+root 0 of 3*x^3+168904*x-169024
+root 0 of 114*x^3-347*x^2+348*x-141
+root 0 of x^3-6*x^2+11*x-172
+...
+
+QBarRandomProvider_rangeUp_int_Algebraic_vi map 10
+5: root 0 of x^3-3*x^2+2*x-3
+5: root 0 of x^3-3*x^2+3*x-4
+4: root 0 of 2*x^3-7*x^2+8*x-6
+4: root 0 of 3*x^3-10*x^2+11*x-5
+4: root 0 of 3*x^3-9*x^2+9*x-4
+4: root 0 of x^3-3*x^2+2*x-1
+4: root 0 of x^3-3*x^2+3*x-8
+4: root 0 of x^3-4*x^2+5*x-3
+3: root 0 of x^3-3*x^2+3*x-3
+3: root 0 of x^3-3*x^2+5*x-4
+
+QBarRandomProvider_rangeUp_int_Algebraic_vii list 21
+23/26
+33/62
+23/2
+1/2
+1/2
+3475/6
+1/2
+1/2
+1/2
+7291/14581
+1/2
+1
+29/2
+1
+1/2
+1/2
+3/2
+1
+3/2
+1/2
+...
+
+QBarRandomProvider_rangeUp_int_Algebraic_vii map 10
+5055: 1/2
+708: 3/2
+231: 7/2
+226: 5/6
+225: 1
+209: 5/2
+84: 13/2
+84: 7/10
+82: 15/2
+80: 9/14
+
+QBarRandomProvider_rangeUp_int_Algebraic_viii list 21
+(55+sqrt(34121))/4
+(-6+sqrt(105))/6
+(-301+2*sqrt(23738))/2
+(3+2*sqrt(2562))/2
+(31+sqrt(793))/56
+(14025-sqrt(196083833))/44
+(19+sqrt(57))/38
+(7-2*sqrt(2))/2
+(183+6*sqrt(745))/38
+(2+sqrt(34))/6
+(9+sqrt(89))/4
+(132+sqrt(138209))/34
+(188+sqrt(34989))/2
+(18+sqrt(201))/6
+(1066+sqrt(4261))/2130
+(25+2*sqrt(235))/42
+(323+sqrt(649))/640
+(106+sqrt(11761))/210
+root 1 of 31148*x^2-31120*x-53003
+(24+sqrt(301))/10
+...
+
+QBarRandomProvider_rangeUp_int_Algebraic_viii map 10
+68: (1+2*sqrt(2))/2
+66: (1+sqrt(2))/2
+55: (2+sqrt(5))/2
+54: (1+2*sqrt(3))/2
+49: (3+2*sqrt(3))/6
+49: sqrt(5)/2
+30: (4+sqrt(5))/2
+27: (3+2*sqrt(6))/6
+27: (4-sqrt(5))/2
+24: (2+sqrt(13))/2
+
+QBarRandomProvider_rangeUp_int_Algebraic_ix list 21
+root 2 of 76*x^3-34092*x^2+34127*x-8490
+root 1 of 8*x^3-29412*x^2+29398*x-7159
+root 0 of 411640*x^3-617356*x^2+308238*x-51399
+root 0 of 8*x^3-1388*x^2+7428842*x-3901411
+root 1 of 24*x^3+68*x^2-182*x+79
+root 0 of 2720*x^3-4140*x^2+2060*x-359
+root 0 of 26776*x^3-40148*x^2+20074*x-3355
+root 0 of 412*x^3-840*x^2+529*x-9792
+root 0 of 172*x^3-264*x^2+133*x-30
+root 0 of 24*x^3-204*x^2+186*x-2285
+root 0 of 920*x^3-1364*x^2+682*x-159
+root 0 of 56*x^3-60*x^2+130*x-1129
+root 0 of 8*x^3-900*x^2+1198*x-615
+root 0 of 72*x^3-110*x^2+65*x-8484
+root 2 of 504*x^3-18380*x^2+18010*x-3753
+root 0 of 504*x^3-564*x^2+186*x-31
+root 0 of 744*x^3-1012*x^2+450*x-77
+root 0 of 24*x^3+36*x^2+1351250*x-676573
+root 0 of 228*x^3-352*x^2+173*x-79
+root 0 of 8*x^3-36*x^2+46*x-1343
+...
+
+QBarRandomProvider_rangeUp_int_Algebraic_ix map 10
+5: root 0 of 8*x^3-12*x^2+6*x-25
+5: root 0 of 8*x^3-12*x^2-2*x-21
+4: root 0 of 24*x^3-36*x^2+18*x-11
+4: root 0 of 24*x^3-44*x^2+26*x-13
+4: root 0 of 4*x^3-8*x^2+5*x-7
+4: root 0 of 8*x^3-12*x^2+6*x-57
+4: root 0 of 8*x^3-12*x^2-2*x-5
+4: root 0 of 8*x^3-20*x^2+14*x-11
+3: root 0 of 8*x^3-12*x^2+22*x-17
+3: root 0 of 8*x^3-12*x^2+6*x-17
+
+QBarRandomProvider_rangeUp_int_Algebraic_x list 21
+-37/39
+-121/93
+29/3
+-4/3
+-4/3
+1732/3
+-4/3
+-4/3
+-4/3
+-116645/87486
+-4/3
+-5/6
+38/3
+-5/6
+-4/3
+-4/3
+-1/3
+-5/6
+-1/3
+-4/3
+...
+
+QBarRandomProvider_rangeUp_int_Algebraic_x map 10
+5055: -4/3
+708: -1/3
+231: 5/3
+226: -1
+225: -5/6
+209: 2/3
+84: -17/15
+84: 14/3
+82: 17/3
+80: -25/21
+
+QBarRandomProvider_rangeUp_int_Algebraic_xi list 21
+(143+3*sqrt(34121))/12
+(-17+sqrt(105))/6
+(-457+3*sqrt(23738))/3
+(-1+3*sqrt(2562))/3
+(-215+3*sqrt(793))/168
+root 0 of 198*x^2-125499*x-167666
+(-152+3*sqrt(57))/114
+(5-3*sqrt(2))/3
+(170+9*sqrt(745))/57
+(-9+sqrt(34))/6
+(5+3*sqrt(89))/12
+(209+3*sqrt(138209))/102
+(553+3*sqrt(34989))/6
+(7+sqrt(201))/6
+(-2839+sqrt(4261))/2130
+(-26+sqrt(235))/21
+(-2551+3*sqrt(649))/1920
+(-279+sqrt(11761))/210
+root 1 of 70083*x^2+186951*x-12070
+(17+3*sqrt(301))/30
+...
+
+QBarRandomProvider_rangeUp_int_Algebraic_xi map 10
+68: (-4+3*sqrt(2))/3
+66: (-8+3*sqrt(2))/6
+55: (-5+3*sqrt(5))/6
+54: (-4+3*sqrt(3))/3
+49: (-11+3*sqrt(5))/6
+49: (-4+sqrt(3))/3
+30: (1+3*sqrt(5))/6
+27: (-4+sqrt(6))/3
+27: (1-3*sqrt(5))/6
+24: (-5+3*sqrt(13))/6
+
+QBarRandomProvider_rangeUp_int_Algebraic_xii list 21
+root 2 of 1026*x^3-454599*x^2-1216494*x-810574
+root 1 of 54*x^3-198234*x^2-528966*x-351475
+root 0 of 2778570*x^3+11114982*x^2+14818293*x+6582889
+root 0 of 54*x^3-9072*x^2+50110875*x+65566238
+root 1 of 27*x^3+225*x^2+348*x+137
+root 0 of 18360*x^3+73035*x^2+96570*x+42278
+root 0 of 90369*x^3+361530*x^2+482139*x+214313
+root 0 of 5562*x^3+19251*x^2+21645*x-122941
+root 0 of 2322*x^3+9207*x^2+12141*x+5216
+root 0 of 27*x^3-81*x^2-360*x-2792
+root 0 of 6210*x^3+24948*x^2+33462*x+14687
+root 0 of 189*x^3+837*x^2+1602*x-2522
+root 0 of 27*x^3-2889*x^2-6822*x-4706
+root 0 of 648*x^3+2574*x^2+3489*x-74618
+root 2 of 567*x^3-17559*x^2-49839*x-33082
+root 0 of 63*x^3+276*x^2+400*x+190
+root 0 of 1674*x^3+6930*x^2+9543*x+4345
+root 0 of 27*x^3+189*x^2+1520577*x+2026111
+root 0 of 342*x^3+1353*x^2+1772*x+690
+root 0 of 27*x^3+27*x^2-18*x-4490
+...
+
+QBarRandomProvider_rangeUp_int_Algebraic_xii map 10
+5: root 0 of 27*x^3+108*x^2+117*x-53
+5: root 0 of 27*x^3+108*x^2+144*x-17
+4: root 0 of 27*x^3+108*x^2+117*x+1
+4: root 0 of 27*x^3+108*x^2+144*x+55
+4: root 0 of 27*x^3+108*x^2+144*x-125
+4: root 0 of 27*x^3+81*x^2+72*x-11
+4: root 0 of 54*x^3+189*x^2+216*x-1
+4: root 0 of 9*x^3+33*x^2+40*x+13
+3: root 0 of 27*x^3+108*x^2+144*x+10
+3: root 0 of 27*x^3+108*x^2+198*x+109
+
+QBarRandomProvider_rangeUp_int_Algebraic_xiii list 21
+2
+12
+3/2
+11/2
+3
+2
+3/2
+56
+2
+215/3
+32/9
+2
+6
+12/5
+8/5
+4
+5
+129
+1717/2
+22/9
+...
+
+QBarRandomProvider_rangeUp_int_Algebraic_xiii map 10
+1971: 2
+690: 4
+673: 3
+671: 3/2
+246: 8
+240: 5/3
+229: 5/2
+229: 7
+227: 6
+221: 5
+
+QBarRandomProvider_rangeUp_int_Algebraic_xiv list 21
+(57+sqrt(34121))/4
+-150+sqrt(23738)
+2+sqrt(2562)
+(59+sqrt(793))/56
+4-sqrt(2)
+(101+3*sqrt(745))/19
+(5+sqrt(34))/6
+(11+sqrt(89))/4
+(149+sqrt(138209))/34
+(189+sqrt(34989))/2
+(21+sqrt(201))/6
+(23+sqrt(235))/21
+(211+sqrt(11761))/210
+(15567+sqrt(473262761))/15574
+(29+sqrt(301))/10
+(3+sqrt(77))/2
+(505+sqrt(233333))/22
+(1294+4*sqrt(102873))/11
+(2+sqrt(2))/2
+(7+sqrt(37))/6
+...
+
+QBarRandomProvider_rangeUp_int_Algebraic_xiv map 10
+116: 1+sqrt(2)
+106: (2+sqrt(2))/2
+85: (3+sqrt(5))/2
+85: 1+sqrt(3)
+81: (1+sqrt(5))/2
+81: (3+sqrt(3))/3
+42: (3+sqrt(6))/3
+41: (3+sqrt(13))/2
+39: (5+sqrt(5))/2
+34: (5+sqrt(13))/2
+
+QBarRandomProvider_rangeUp_int_Algebraic_xv list 21
+root 2 of 38*x^3-17103*x^2+34138*x-17043
+root 0 of 206*x^3-729*x^2+839*x-5159
+root 0 of 3*x^3-30*x^2+51*x-304
+root 0 of 7*x^3-18*x^2+29*x-152
+root 0 of x^3-114*x^2+263*x-180
+root 0 of 72*x^3-218*x^2+229*x-8553
+root 2 of 63*x^3-2392*x^2+4596*x-2177
+root 0 of 114*x^3-347*x^2+348*x-141
+root 0 of x^3-6*x^2+11*x-172
+root 0 of 66*x^3-226*x^2+251*x-95
+root 0 of 1146*x^3-7428*x^2+11439*x-5159
+root 1 of x^3-130*x^2+257*x+4729
+root 0 of 4*x^3-12*x^2+16*x-11
+root 0 of 138*x^3-414*x^2+421*x-297
+root 0 of 42*x^3-125*x^2+122*x-42
+root 0 of 2*x^3-6*x^2+3*x-4
+root 0 of 613*x^3-1845*x^2+1828*x-641
+root 0 of x^3-3*x^2+3*x-84
+root 0 of x^3-3*x^2+31*x-91
+root 0 of 26*x^3-76*x^2+83*x-54
+...
+
+QBarRandomProvider_rangeUp_int_Algebraic_xv map 10
+9: root 0 of 3*x^3-9*x^2+9*x-4
+8: root 0 of x^3-3*x^2+3*x-4
+7: root 0 of x^3-3*x^2+2*x-3
+7: root 0 of x^3-4*x^2+5*x-3
+6: root 0 of x^3-3*x^2+3*x-8
+5: root 0 of x^3-3*x^2+2*x-1
+5: root 0 of x^3-3*x^2+3*x-3
+4: root 0 of 2*x^3-5*x^2+4*x-2
+4: root 0 of 2*x^3-6*x^2+3*x-4
+4: root 0 of 6*x^3-18*x^2+18*x-7
+
+QBarRandomProvider_rangeUp_int_Algebraic_xvi list 21
+-1
+9
+5/2
+0
+-1
+53
+-1
+206/3
+5/9
+-1
+3
+-3/5
+-7/5
+1
+2
+126
+1711/2
+-5/9
+9
+16
+...
+
+QBarRandomProvider_rangeUp_int_Algebraic_xvi map 10
+2187: -1
+763: 1
+730: 0
+266: -4/3
+264: 5
+250: 3
+250: 4
+249: 2
+241: -1/2
+108: 8
+
+QBarRandomProvider_rangeUp_int_Algebraic_xvii list 21
+(45+sqrt(34121))/4
+-153+sqrt(23738)
+-1+sqrt(2562)
+1-sqrt(2)
+(44+3*sqrt(745))/19
+(-13+sqrt(34))/6
+(-1+sqrt(89))/4
+(47+sqrt(138209))/34
+(183+sqrt(34989))/2
+(3+sqrt(201))/6
+(-40+sqrt(235))/21
+(-31155+sqrt(473262761))/15574
+(-1+sqrt(301))/10
+(-3+sqrt(77))/2
+(439+sqrt(233333))/22
+(1261+4*sqrt(102873))/11
+(-4+sqrt(2))/2
+(-11+sqrt(37))/6
+23+sqrt(622)
+(-29+sqrt(141))/14
+...
+
+QBarRandomProvider_rangeUp_int_Algebraic_xvii map 10
+124: -2+sqrt(2)
+111: (-4+sqrt(2))/2
+94: (-3+sqrt(5))/2
+90: -2+sqrt(3)
+89: (-5+sqrt(5))/2
+44: (-6+sqrt(6))/3
+42: (-3+sqrt(13))/2
+41: (-1+sqrt(5))/2
+36: (-1+sqrt(13))/2
+35: -2+sqrt(7)
+
+QBarRandomProvider_rangeUp_int_Algebraic_xviii list 21
+root 2 of 38*x^3-16761*x^2-67454*x-67530
+root 0 of 206*x^3+1125*x^2+2027*x-3641
+root 0 of 3*x^3-3*x^2-48*x-340
+root 0 of 7*x^3+45*x^2+110*x-38
+root 0 of x^3-105*x^2-394*x-390
+root 0 of 72*x^3+430*x^2+865*x-7884
+root 2 of 63*x^3-1825*x^2-8055*x-8216
+root 0 of 114*x^3+679*x^2+1344*x+858
+root 0 of x^3+3*x^2+2*x-166
+root 0 of 66*x^3+368*x^2+677*x+406
+root 0 of 1146*x^3+2886*x^2-2187*x-6752
+root 1 of x^3-121*x^2-496*x+4357
+root 0 of 138*x^3+828*x^2+1663*x+966
+root 0 of 2*x^3+12*x^2+21*x+5
+root 0 of x^3+6*x^2+12*x-75
+root 0 of x^3+6*x^2+40*x+2
+root 0 of 26*x^3+158*x^2+329*x+213
+root 1 of 9*x^3-7*x^2-136*x-147
+root 0 of 21*x^3+129*x^2+265*x-30551
+root 0 of x^3+5*x^2+8*x-6
+...
+
+QBarRandomProvider_rangeUp_int_Algebraic_xviii map 10
+9: root 0 of 3*x^3+18*x^2+36*x+23
+9: root 0 of x^3+6*x^2+12*x+5
+7: root 0 of x^3+5*x^2+8*x+3
+7: root 0 of x^3+6*x^2+11*x+3
+7: root 0 of x^3+6*x^2+12*x+1
+7: root 0 of x^3+6*x^2+12*x+6
+5: root 0 of 2*x^3+11*x^2+20*x+9
+5: root 0 of 2*x^3+12*x^2+24*x+15
+5: root 0 of x^3+6*x^2+11*x+5
+5: root 0 of x^3+6*x^2+13*x+9
+
+QBarRandomProvider_rangeUp_int_Algebraic_xix list 21
+2
+12
+11/2
+3
+2
+56
+2
+215/3
+32/9
+2
+6
+12/5
+4
+5
+129
+1717/2
+22/9
+12
+19
+8
+...
+
+QBarRandomProvider_rangeUp_int_Algebraic_xix map 10
+2205: 2
+769: 4
+737: 3
+268: 5/3
+266: 8
+253: 7
+252: 5
+252: 6
+244: 5/2
+109: 11
+
+QBarRandomProvider_rangeUp_int_Algebraic_xx list 21
+(57+sqrt(34121))/4
+-150+sqrt(23738)
+2+sqrt(2562)
+4-sqrt(2)
+(101+3*sqrt(745))/19
+(5+sqrt(34))/6
+(11+sqrt(89))/4
+(149+sqrt(138209))/34
+(189+sqrt(34989))/2
+(21+sqrt(201))/6
+(23+sqrt(235))/21
+(15567+sqrt(473262761))/15574
+(29+sqrt(301))/10
+(3+sqrt(77))/2
+(505+sqrt(233333))/22
+(1294+4*sqrt(102873))/11
+(2+sqrt(2))/2
+(7+sqrt(37))/6
+26+sqrt(622)
+(13+sqrt(141))/14
+...
+
+QBarRandomProvider_rangeUp_int_Algebraic_xx map 10
+127: 1+sqrt(2)
+113: (2+sqrt(2))/2
+96: (3+sqrt(5))/2
+91: (1+sqrt(5))/2
+90: 1+sqrt(3)
+45: (3+sqrt(6))/3
+42: (3+sqrt(13))/2
+41: (5+sqrt(5))/2
+36: (5+sqrt(13))/2
+35: 1+sqrt(7)
+
+QBarRandomProvider_rangeUp_int_Algebraic_xxi list 21
+root 2 of 38*x^3-17103*x^2+34138*x-17043
+root 0 of 206*x^3-729*x^2+839*x-5159
+root 0 of 3*x^3-30*x^2+51*x-304
+root 0 of 7*x^3-18*x^2+29*x-152
+root 0 of x^3-114*x^2+263*x-180
+root 0 of 72*x^3-218*x^2+229*x-8553
+root 2 of 63*x^3-2392*x^2+4596*x-2177
+root 0 of 114*x^3-347*x^2+348*x-141
+root 0 of x^3-6*x^2+11*x-172
+root 0 of 66*x^3-226*x^2+251*x-95
+root 0 of 1146*x^3-7428*x^2+11439*x-5159
+root 1 of x^3-130*x^2+257*x+4729
+root 0 of 138*x^3-414*x^2+421*x-297
+root 0 of 2*x^3-6*x^2+3*x-4
+root 0 of x^3-3*x^2+3*x-84
+root 0 of x^3-3*x^2+31*x-91
+root 0 of 26*x^3-76*x^2+83*x-54
+root 1 of 9*x^3-88*x^2+149*x-45
+root 0 of 21*x^3-60*x^2+58*x-30752
+root 0 of x^3-4*x^2+5*x-12
+...
+
+QBarRandomProvider_rangeUp_int_Algebraic_xxi map 10
+9: root 0 of 3*x^3-9*x^2+9*x-4
+9: root 0 of x^3-3*x^2+3*x-4
+7: root 0 of x^3-3*x^2+2*x-3
+7: root 0 of x^3-3*x^2+3*x-3
+7: root 0 of x^3-3*x^2+3*x-8
+7: root 0 of x^3-4*x^2+5*x-3
+5: root 0 of 2*x^3-6*x^2+6*x-3
+5: root 0 of 2*x^3-7*x^2+8*x-6
+5: root 0 of x^3-3*x^2+2*x-1
+5: root 0 of x^3-3*x^2+4*x-3
+
+QBarRandomProvider_rangeUp_int_Algebraic_xxii list 21
+18/13
+2
+12
+3/2
+11/2
+3
+2
+3/2
+56
+2
+215/3
+32/9
+2
+4/3
+6
+4/3
+12/5
+8/5
+4
+4/3
+...
+
+QBarRandomProvider_rangeUp_int_Algebraic_xxii map 10
+1676: 2
+586: 4
+581: 3
+581: 3/2
+551: 4/3
+209: 6/5
+207: 5/3
+206: 8
+203: 5/4
+200: 5/2
+
+QBarRandomProvider_rangeUp_int_Algebraic_xxiii list 21
+(57+sqrt(34121))/4
+(-3+sqrt(105))/6
+-150+sqrt(23738)
+2+sqrt(2562)
+(59+sqrt(793))/56
+(38+sqrt(57))/38
+4-sqrt(2)
+(101+3*sqrt(745))/19
+(5+sqrt(34))/6
+(11+sqrt(89))/4
+(149+sqrt(138209))/34
+(189+sqrt(34989))/2
+(21+sqrt(201))/6
+(23+sqrt(235))/21
+(211+sqrt(11761))/210
+(15567+sqrt(473262761))/15574
+(29+sqrt(301))/10
+(3+sqrt(77))/2
+(505+sqrt(233333))/22
+(22+sqrt(133))/27
+...
+
+QBarRandomProvider_rangeUp_int_Algebraic_xxiii map 10
+99: 1+sqrt(2)
+87: (2+sqrt(2))/2
+71: (3+sqrt(5))/2
+69: 1+sqrt(3)
+68: (1+sqrt(5))/2
+66: (3+sqrt(3))/3
+37: (3+sqrt(13))/2
+36: (3+sqrt(6))/3
+34: (-1+sqrt(13))/2
+34: (5+sqrt(5))/2
+
+QBarRandomProvider_rangeUp_int_Algebraic_xxiv list 21
+root 2 of 38*x^3-17103*x^2+34138*x-17043
+root 0 of 680*x^3-2055*x^2+2060*x-691
+root 0 of 206*x^3-729*x^2+839*x-5159
+root 0 of 86*x^3-261*x^2+263*x-92
+root 0 of 3*x^3-30*x^2+51*x-304
+root 0 of 230*x^3-686*x^2+684*x-239
+root 0 of 7*x^3-18*x^2+29*x-152
+root 0 of x^3-114*x^2+263*x-180
+root 0 of 72*x^3-218*x^2+229*x-8553
+root 2 of 63*x^3-2392*x^2+4596*x-2177
+root 0 of 63*x^3-165*x^2+141*x-41
+root 0 of 186*x^3-532*x^2+505*x-162
+root 0 of 114*x^3-347*x^2+348*x-141
+root 0 of x^3-6*x^2+11*x-172
+root 0 of 66*x^3-226*x^2+251*x-95
+root 2 of x^3+23*x^2-48*x+23
+root 0 of 1146*x^3-7428*x^2+11439*x-5159
+root 1 of x^3-130*x^2+257*x+4729
+root 0 of 4*x^3-12*x^2+16*x-11
+root 0 of 138*x^3-414*x^2+421*x-297
+...
+
+QBarRandomProvider_rangeUp_int_Algebraic_xxiv map 10
+7: root 0 of 3*x^3-9*x^2+9*x-4
+7: root 0 of x^3-3*x^2+2*x-3
+6: root 0 of x^3-3*x^2+3*x-8
+6: root 0 of x^3-4*x^2+5*x-3
+5: root 0 of x^3-3*x^2+2*x-1
+5: root 0 of x^3-3*x^2+3*x-4
+4: root 0 of 2*x^3-6*x^2+3*x-4
+4: root 0 of 3*x^3-9*x^2+8*x-3
+4: root 0 of 6*x^3-18*x^2+18*x-7
+4: root 0 of x^3-3*x^2+3*x-3
+
+QBarRandomProvider_rangeUp_Algebraic_i list 21
+6+sqrt(38)
+0
+1
+0
+root 0 of 18*x^3+3*x-1736
+0
+1/9
+0
+(-1+sqrt(636721))/22740
+0
+root 1 of 26*x^4-x-29
+0
+0
+0
+0
+0
+0
+root 0 of 5*x^3+3*x^2-x-174
+0
+0
+...
+
+QBarRandomProvider_rangeUp_Algebraic_i map 10
+5026: 0
+334: 1
+122: 1/2
+109: 3
+106: 2
+96: 1/3
+49: 1/4
+45: 1/6
+45: 7
+43: 2/3
+
+QBarRandomProvider_rangeUp_Algebraic_ii list 21
+root 1 of 2*x^3-7350*x^2-2*x+47
+1/27
+0
+(-37+sqrt(1501))/2
+sqrt(15)/15
+23/9
+root 0 of x^4-206*x^3+111*x^2+x+4843
+root 0 of 102910*x^3+26*x^2-97*x-41
+0
+0
+root 0 of 3*x^3-21*x^2-280
+root 0 of 230*x^3+4*x^2+2*x-11
+root 0 of 30*x^5+x^4-x^3+2*x^2-2
+(11617+sqrt(134954713))/12
+(19+sqrt(326))/21
+0
+1/2
+0
+0
+(-13+sqrt(173))/4
+...
+
+QBarRandomProvider_rangeUp_Algebraic_ii map 10
+2011: 0
+108: 1
+47: 1/2
+40: 1/3
+40: 3
+36: 2
+30: 7
+22: 1/5
+21: 4
+20: 1/4
+
+QBarRandomProvider_rangeUp_Algebraic_iii list 21
+7+sqrt(38)
+1
+2
+1
+root 0 of 18*x^3-54*x^2+57*x-1757
+1
+10/9
+1
+(22739+sqrt(636721))/22740
+1
+root 1 of 26*x^4-104*x^3+156*x^2-105*x-2
+1
+1
+1
+1
+1
+1
+root 0 of 5*x^3-12*x^2+8*x-175
+1
+1
+...
+
+QBarRandomProvider_rangeUp_Algebraic_iii map 10
+5026: 1
+334: 2
+122: 3/2
+109: 4
+106: 3
+96: 4/3
+49: 5/4
+45: 7/6
+45: 8
+43: 5/3
+
+QBarRandomProvider_rangeUp_Algebraic_iv list 21
+root 1 of 2*x^3-7356*x^2+14704*x-7303
+28/27
+1
+(-35+sqrt(1501))/2
+(15+sqrt(15))/15
+32/9
+root 0 of x^4-210*x^3+735*x^2-843*x+5160
+root 0 of 102910*x^3-308704*x^2+308581*x-102828
+1
+1
+root 0 of 3*x^3-30*x^2+51*x-304
+root 0 of 230*x^3-686*x^2+684*x-239
+root 0 of 30*x^5-149*x^4+295*x^3-289*x^2+139*x-28
+(11629+sqrt(134954713))/12
+(40+sqrt(326))/21
+1
+3/2
+1
+1
+(-9+sqrt(173))/4
+...
+
+QBarRandomProvider_rangeUp_Algebraic_iv map 10
+2011: 1
+108: 2
+47: 3/2
+40: 4
+40: 4/3
+36: 3
+30: 8
+22: 6/5
+21: 5
+20: 5/4
+
+QBarRandomProvider_rangeUp_Algebraic_v list 21
+(13+2*sqrt(38))/2
+1/2
+3/2
+1/2
+root 0 of 72*x^3-108*x^2+66*x-6959
+1/2
+11/18
+1/2
+(11369+sqrt(636721))/22740
+1/2
+root 1 of 208*x^4-416*x^3+312*x^2-112*x-215
+1/2
+1/2
+1/2
+1/2
+1/2
+1/2
+root 0 of 40*x^3-36*x^2-2*x-1387
+1/2
+1/2
+...
+
+QBarRandomProvider_rangeUp_Algebraic_v map 10
+5026: 1/2
+334: 3/2
+122: 1
+109: 7/2
+106: 5/2
+96: 5/6
+49: 3/4
+45: 15/2
+45: 2/3
+43: 7/6
+
+QBarRandomProvider_rangeUp_Algebraic_vi list 21
+root 1 of 8*x^3-29412*x^2+29398*x-7159
+29/54
+1/2
+(-36+sqrt(1501))/2
+(15+2*sqrt(15))/30
+55/18
+root 0 of 16*x^4-3328*x^3+6744*x^2-4240*x+78337
+root 0 of 411640*x^3-617356*x^2+308238*x-51399
+1/2
+1/2
+root 0 of 24*x^3-204*x^2+186*x-2285
+root 0 of 920*x^3-1364*x^2+682*x-159
+root 0 of 240*x^5-592*x^4+576*x^3-260*x^2+49*x-18
+(11623+sqrt(134954713))/12
+(59+2*sqrt(326))/42
+1/2
+1
+1/2
+1/2
+(-11+sqrt(173))/4
+...
+
+QBarRandomProvider_rangeUp_Algebraic_vi map 10
+2011: 1/2
+108: 3/2
+47: 1
+40: 5/6
+40: 7/2
+36: 5/2
+30: 15/2
+22: 7/10
+21: 9/2
+20: 3/4
+
+QBarRandomProvider_rangeUp_Algebraic_vii list 21
+(14+3*sqrt(38))/3
+-4/3
+-1/3
+-4/3
+root 0 of 54*x^3+216*x^2+297*x-5068
+-4/3
+-11/9
+-4/3
+(-30321+sqrt(636721))/22740
+-4/3
+root 1 of 2106*x^4+11232*x^3+22464*x^2+19887*x+4199
+-4/3
+-4/3
+-4/3
+-4/3
+-4/3
+-4/3
+root 0 of 135*x^3+621*x^2+909*x-4270
+-4/3
+-4/3
+...
+
+QBarRandomProvider_rangeUp_Algebraic_vii map 10
+5026: -4/3
+334: -1/3
+122: -5/6
+109: 5/3
+106: 2/3
+96: -1
+49: -13/12
+45: -7/6
+45: 17/3
+43: -2/3
+
+QBarRandomProvider_rangeUp_Algebraic_viii list 21
+root 1 of 54*x^3-198234*x^2-528966*x-351475
+-35/27
+-4/3
+(-119+3*sqrt(1501))/6
+(-20+sqrt(15))/15
+11/9
+root 0 of 81*x^4-16254*x^3-56889*x^2-64167*x+369079
+root 0 of 2778570*x^3+11114982*x^2+14818293*x+6582889
+-4/3
+-4/3
+root 0 of 27*x^3-81*x^2-360*x-2792
+root 0 of 6210*x^3+24948*x^2+33462*x+14687
+root 0 of 2430*x^5+16281*x^4+43551*x^3+58302*x^2+39168*x+10430
+(11601+sqrt(134954713))/12
+(-9+sqrt(326))/21
+-4/3
+-5/6
+-4/3
+-4/3
+(-55+3*sqrt(173))/12
+...
+
+QBarRandomProvider_rangeUp_Algebraic_viii map 10
+2011: -4/3
+108: -1/3
+47: -5/6
+40: -1
+40: 5/3
+36: 2/3
+30: 17/3
+22: -17/15
+21: 8/3
+20: -13/12
+
+QBarRandomProvider_rangeUp_Algebraic_ix list 21
+root 1 of x^4-9*x^3+14*x^2-11*x+6
+2
+-86+sqrt(7666)
+17/4
+root 1 of x^4-14*x^3+36*x^2-29*x+3
+4
+5
+129
+13/6
+5/3
+3/2
+root 0 of 59*x^5-296*x^4+596*x^3-601*x^2+303*x-63
+2
+root 1 of 5*x^10-55*x^9+269*x^8-771*x^7+1435*x^6-1799*x^5+1531*x^4-959*x^3+568*x^2-307*x+84
+2
+(41+sqrt(901))/10
+root 2 of 3*x^3-10*x^2-2*x+7
+704/5
+root 0 of 19*x^3-45*x^2+34*x-16
+root 0 of x^3-3*x^2+2*x-1
+...
+
+QBarRandomProvider_rangeUp_Algebraic_ix map 10
+950: 2
+326: 3
+313: 3/2
+308: 4
+120: 7
+110: 5/3
+107: 8
+106: 5
+103: 5/2
+100: 6
+
+QBarRandomProvider_rangeUp_Algebraic_x list 21
+root 0 of 85*x^5-1256647*x^4+5025505*x^3-7537482*x^2+5024612*x-1256074
+2
+root 2 of x^11-12*x^10+65*x^9-209*x^8+453*x^7-2713*x^6+12846*x^5-30760*x^4+40505*x^3-30328*x^2+12254*x-1916
+(-524+sqrt(523839))/49
+root 1 of 406*x^4-986*x^3+527*x^2-39*x-1620
+(127+sqrt(616839))/127
+root 0 of 124*x^3-372*x^2+379*x-283
+456104
+root 0 of 3*x^7-21*x^6+47*x^5-127*x^4+354*x^3-566*x^2+448*x-14658496
+root 0 of 51*x^3-153*x^2+155*x-71
+(21905+sqrt(479741401))/2
+root 0 of 5*x^4-1084*x^3+3221*x^2-3211*x+1169
+27+sqrt(687)
+root 0 of 6*x^5-69*x^4+215*x^3-282*x^2+166*x-37
+28860
+(143+sqrt(19202))/43
+2
+(30735+3*sqrt(104946365))/2
+877
+112+4*sqrt(770)
+...
+
+QBarRandomProvider_rangeUp_Algebraic_x map 10
+222: 2
+97: 3
+89: 4
+79: 3/2
+45: 5
+40: 5/2
+35: 5/3
+35: 6
+35: 7
+24: 8
+
+QBarRandomProvider_rangeUp_Algebraic_xi list 21
+root 1 of x^4+3*x^3-13*x^2-62*x-63
+-1
+5/4
+root 1 of x^4-2*x^3-36*x^2-83*x-57
+1
+2
+126
+-5/6
+-4/3
+-1
+root 1 of 5*x^10+95*x^9+809*x^8+4065*x^7+13342*x^6+29890*x^5+46366*x^4+49390*x^3+34786*x^2+14657*x+2763
+-1
+(11+sqrt(901))/10
+root 2 of 3*x^3+17*x^2+19*x-8
+689/5
+root 0 of x^3+6*x^2+11*x+5
+root 0 of 4*x^3+22*x^2+39*x+19
+-13/10
+0
+75/4
+...
+
+QBarRandomProvider_rangeUp_Algebraic_xi map 10
+1039: -1
+362: 0
+360: 1
+131: 4
+123: 5
+120: 2
+119: -4/3
+118: -1/2
+109: 3
+56: 10
+
+QBarRandomProvider_rangeUp_Algebraic_xii list 21
+root 0 of 85*x^5-1255372*x^4-10046609*x^3-30143925*x^2-40195096*x-20098693
+-1
+root 2 of x^11+21*x^10+200*x^9+1141*x^8+4347*x^7+9698*x^6-1023*x^5-86470*x^4-283687*x^3-451942*x^2-370324*x-124814
+(-671+sqrt(523839))/49
+root 1 of 406*x^4+3886*x^3+13577*x^2+20349*x+9270
+(-254+sqrt(616839))/127
+root 0 of 124*x^3+744*x^2+1495*x+854
+456101
+root 0 of 3*x^7+42*x^6+236*x^5+578*x^4+225*x^3-1754*x^2-3380*x-14660302
+root 0 of 51*x^3+306*x^2+614*x+394
+(21899+sqrt(479741401))/2
+24+sqrt(687)
+root 0 of 6*x^5+21*x^4-73*x^3-453*x^2-743*x-403
+28857
+(14+sqrt(19202))/43
+-1
+(30729+3*sqrt(104946365))/2
+874
+109+4*sqrt(770)
+root 2 of 30*x^5+299*x^4+1205*x^3+2277*x^2+1811*x+360
+...
+
+QBarRandomProvider_rangeUp_Algebraic_xii map 10
+233: -1
+100: 0
+99: 1
+47: 2
+44: -1/2
+38: 3
+37: 4
+35: -4/3
+27: 5
+20: 7
+
+QBarRandomProvider_rangeUp_Algebraic_xiii list 21
+root 1 of x^4-9*x^3+14*x^2-11*x+6
+2
+17/4
+root 1 of x^4-14*x^3+36*x^2-29*x+3
+4
+5
+129
+13/6
+5/3
+2
+root 1 of 5*x^10-55*x^9+269*x^8-771*x^7+1435*x^6-1799*x^5+1531*x^4-959*x^3+568*x^2-307*x+84
+2
+(41+sqrt(901))/10
+root 2 of 3*x^3-10*x^2-2*x+7
+704/5
+root 0 of x^3-3*x^2+2*x-1
+root 0 of 4*x^3-14*x^2+15*x-8
+17/10
+3
+87/4
+...
+
+QBarRandomProvider_rangeUp_Algebraic_xiii map 10
+1056: 2
+373: 3
+364: 4
+133: 7
+123: 8
+121: 5
+119: 5/2
+119: 5/3
+112: 6
+57: 13
+
+QBarRandomProvider_rangeUp_Algebraic_xiv list 21
+root 0 of 85*x^5-1256647*x^4+5025505*x^3-7537482*x^2+5024612*x-1256074
+2
+root 2 of x^11-12*x^10+65*x^9-209*x^8+453*x^7-2713*x^6+12846*x^5-30760*x^4+40505*x^3-30328*x^2+12254*x-1916
+(-524+sqrt(523839))/49
+root 1 of 406*x^4-986*x^3+527*x^2-39*x-1620
+(127+sqrt(616839))/127
+root 0 of 124*x^3-372*x^2+379*x-283
+456104
+root 0 of 3*x^7-21*x^6+47*x^5-127*x^4+354*x^3-566*x^2+448*x-14658496
+root 0 of 51*x^3-153*x^2+155*x-71
+(21905+sqrt(479741401))/2
+27+sqrt(687)
+root 0 of 6*x^5-69*x^4+215*x^3-282*x^2+166*x-37
+28860
+(143+sqrt(19202))/43
+2
+(30735+3*sqrt(104946365))/2
+877
+112+4*sqrt(770)
+root 2 of 30*x^5-151*x^4+317*x^3-522*x^2+542*x-186
+...
+
+QBarRandomProvider_rangeUp_Algebraic_xiv map 10
+236: 2
+102: 3
+99: 4
+47: 5
+44: 5/2
+38: 6
+37: 7
+36: 5/3
+27: 8
+20: 10
+
+QBarRandomProvider_rangeUp_Algebraic_xv list 21
+root 1 of x^4-9*x^3+14*x^2-11*x+6
+2
+-86+sqrt(7666)
+17/4
+root 1 of x^4-14*x^3+36*x^2-29*x+3
+4
+4/3
+5
+129
+13/6
+5/3
+3/2
+9/7
+root 0 of 59*x^5-296*x^4+596*x^3-601*x^2+303*x-63
+2
+root 1 of 5*x^10-55*x^9+269*x^8-771*x^7+1435*x^6-1799*x^5+1531*x^4-959*x^3+568*x^2-307*x+84
+2
+(41+sqrt(901))/10
+root 2 of 3*x^3-10*x^2-2*x+7
+704/5
+...
+
+QBarRandomProvider_rangeUp_Algebraic_xv map 10
+820: 2
+271: 3
+264: 4
+263: 3/2
+263: 4/3
+99: 5/3
+98: 7
+95: 6/5
+90: 5/2
+90: 8
+
+QBarRandomProvider_rangeUp_Algebraic_xvi list 21
+root 0 of 85*x^5-1256647*x^4+5025505*x^3-7537482*x^2+5024612*x-1256074
+2
+root 2 of x^11-12*x^10+65*x^9-209*x^8+453*x^7-2713*x^6+12846*x^5-30760*x^4+40505*x^3-30328*x^2+12254*x-1916
+(19+sqrt(41))/20
+(-524+sqrt(523839))/49
+root 1 of 406*x^4-986*x^3+527*x^2-39*x-1620
+(127+sqrt(616839))/127
+root 0 of 737*x^3-2181*x^2+2148*x-710
+root 0 of 124*x^3-372*x^2+379*x-283
+456104
+39/28
+root 0 of 3*x^7-21*x^6+47*x^5-127*x^4+354*x^3-566*x^2+448*x-14658496
+root 0 of 51*x^3-153*x^2+155*x-71
+57/46
+(21905+sqrt(479741401))/2
+root 0 of 5*x^4-1084*x^3+3221*x^2-3211*x+1169
+27+sqrt(687)
+root 0 of 6*x^5-69*x^4+215*x^3-282*x^2+166*x-37
+28860
+(143+sqrt(19202))/43
+...
+
+QBarRandomProvider_rangeUp_Algebraic_xvi map 10
+190: 2
+87: 3
+77: 4
+76: 4/3
+71: 3/2
+39: 5
+39: 5/2
+33: 6/5
+31: 6
+31: 7
+
+QBarRandomProvider_rangeDown_int_Algebraic_i list 21
+-5/13
+-1/31
+-11
+0
+0
+-1736/3
+0
+0
+0
+-1/29162
+0
+-1/2
+-14
+-1/2
+0
+0
+-1
+-1/2
+-1
+0
+...
+
+QBarRandomProvider_rangeDown_int_Algebraic_i map 10
+5055: 0
+708: -1
+231: -3
+226: -1/3
+225: -1/2
+209: -2
+84: -1/5
+84: -6
+82: -7
+80: -1/7
+
+QBarRandomProvider_rangeDown_int_Algebraic_ii list 21
+(-53-sqrt(34121))/4
+(9-sqrt(105))/6
+151-sqrt(23738)
+-1-sqrt(2562)
+(-3-sqrt(793))/56
+(-14003+sqrt(196083833))/44
+-sqrt(57)/38
+-3+sqrt(2)
+(-82-3*sqrt(745))/19
+(1-sqrt(34))/6
+(-7-sqrt(89))/4
+(-115-sqrt(138209))/34
+(-187-sqrt(34989))/2
+(-15-sqrt(201))/6
+(-1-sqrt(4261))/2130
+(-2-sqrt(235))/21
+(-3-sqrt(649))/640
+(-1-sqrt(11761))/210
+(7-sqrt(473262761))/15574
+(-19-sqrt(301))/10
+...
+
+QBarRandomProvider_rangeDown_int_Algebraic_ii map 10
+68: -sqrt(2)
+66: -sqrt(2)/2
+55: (-1-sqrt(5))/2
+54: -sqrt(3)
+49: (1-sqrt(5))/2
+49: -sqrt(3)/3
+30: (-3-sqrt(5))/2
+27: (-3+sqrt(5))/2
+27: -sqrt(6)/3
+24: (-1-sqrt(13))/2
+
+QBarRandomProvider_rangeDown_int_Algebraic_iii list 21
+root 0 of 38*x^3+16989*x^2+46*x-30
+root 1 of 2*x^3+7350*x^2-2*x-47
+root 0 of 102910*x^3-26*x^2-97*x+41
+root 0 of 2*x^3+344*x^2+1856865*x+46834
+root 1 of 3*x^3-13*x^2-12*x-1
+root 0 of 680*x^3+15*x^2-10*x+6
+root 0 of 3347*x^3-2*x^2+x+1
+root 0 of 206*x^3+111*x^2-x+4843
+root 0 of 86*x^3+3*x^2-x+4
+root 0 of 3*x^3+21*x^2+280
+root 0 of 230*x^3-4*x^2+2*x+11
+root 0 of 7*x^3-3*x^2+14*x+134
+root 0 of x^3+111*x^2+38*x+30
+root 0 of 72*x^3+2*x^2+9*x+8470
+root 0 of 63*x^3+2203*x^2+x-90
+root 0 of 63*x^3-24*x^2+2
+root 0 of 186*x^3-26*x^2-x+3
+root 0 of 3*x^3-9*x^2+168913*x+117
+root 0 of 114*x^3+5*x^2-4*x+26
+root 0 of x^3+3*x^2+2*x+166
+...
+
+QBarRandomProvider_rangeDown_int_Algebraic_iii map 10
+5: root 0 of x^3+3
+5: root 0 of x^3-x+3
+4: root 0 of 2*x^3+x^2+3
+4: root 0 of 3*x^3+1
+4: root 0 of 3*x^3+x^2+1
+4: root 0 of x^3+7
+4: root 0 of x^3+x^2+1
+4: root 0 of x^3-x+1
+3: root 0 of x^3+2
+3: root 0 of x^3+2*x+1
+
+QBarRandomProvider_rangeDown_int_Algebraic_iv list 21
+8/13
+30/31
+-10
+1
+1
+-1733/3
+1
+1
+1
+29161/29162
+1
+1/2
+-13
+1/2
+1
+1
+0
+1/2
+0
+1
+...
+
+QBarRandomProvider_rangeDown_int_Algebraic_iv map 10
+5055: 1
+708: 0
+231: -2
+226: 2/3
+225: 1/2
+209: -1
+84: -5
+84: 4/5
+82: -6
+80: 6/7
+
+QBarRandomProvider_rangeDown_int_Algebraic_v list 21
+(-49-sqrt(34121))/4
+(15-sqrt(105))/6
+152-sqrt(23738)
+-sqrt(2562)
+(53-sqrt(793))/56
+(-13959+sqrt(196083833))/44
+(38-sqrt(57))/38
+-2+sqrt(2)
+(-63-3*sqrt(745))/19
+(7-sqrt(34))/6
+(-3-sqrt(89))/4
+(-81-sqrt(138209))/34
+(-185-sqrt(34989))/2
+(-9-sqrt(201))/6
+(2129-sqrt(4261))/2130
+(19-sqrt(235))/21
+(637-sqrt(649))/640
+(209-sqrt(11761))/210
+(15581-sqrt(473262761))/15574
+(-9-sqrt(301))/10
+...
+
+QBarRandomProvider_rangeDown_int_Algebraic_v map 10
+68: 1-sqrt(2)
+66: (2-sqrt(2))/2
+55: (1-sqrt(5))/2
+54: 1-sqrt(3)
+49: (3-sqrt(3))/3
+49: (3-sqrt(5))/2
+30: (-1-sqrt(5))/2
+27: (-1+sqrt(5))/2
+27: (3-sqrt(6))/3
+24: (1-sqrt(13))/2
+
+QBarRandomProvider_rangeDown_int_Algebraic_vi list 21
+root 0 of 38*x^3+16875*x^2-33818*x+16875
+root 1 of 2*x^3+7344*x^2-14696*x+7303
+root 0 of 102910*x^3-308756*x^2+308685*x-102798
+root 0 of 2*x^3+338*x^2+1856183*x-1809689
+root 1 of 3*x^3-22*x^2+23*x-5
+root 0 of 680*x^3-2025*x^2+2000*x-649
+root 0 of 3347*x^3-10043*x^2+10046*x-3349
+root 0 of 206*x^3-507*x^2+395*x+4749
+root 0 of 86*x^3-255*x^2+251*x-78
+root 0 of 3*x^3+12*x^2-33*x+298
+root 0 of 230*x^3-694*x^2+700*x-225
+root 0 of 7*x^3-24*x^2+41*x+110
+root 0 of x^3+108*x^2-181*x+102
+root 0 of 72*x^3-214*x^2+221*x+8391
+root 0 of 63*x^3+2014*x^2-4216*x+2049
+root 0 of 63*x^3-213*x^2+237*x-85
+root 0 of 186*x^3-584*x^2+609*x-208
+root 0 of 3*x^3-18*x^2+168940*x-168808
+root 0 of 114*x^3-337*x^2+328*x-79
+root 0 of x^3-x+166
+...
+
+QBarRandomProvider_rangeDown_int_Algebraic_vi map 10
+5: root 0 of x^3-3*x^2+2*x+3
+5: root 0 of x^3-3*x^2+3*x+2
+4: root 0 of 2*x^3-5*x^2+4*x+2
+4: root 0 of 3*x^3-8*x^2+7*x-1
+4: root 0 of 3*x^3-9*x^2+9*x-2
+4: root 0 of x^3-2*x^2+x+1
+4: root 0 of x^3-3*x^2+2*x+1
+4: root 0 of x^3-3*x^2+3*x+6
+3: root 0 of x^3-3*x^2+3*x+1
+3: root 0 of x^3-3*x^2+5*x-2
+
+QBarRandomProvider_rangeDown_int_Algebraic_vii list 21
+3/26
+29/62
+-21/2
+1/2
+1/2
+-3469/6
+1/2
+1/2
+1/2
+7290/14581
+1/2
+0
+-27/2
+0
+1/2
+1/2
+-1/2
+0
+-1/2
+1/2
+...
+
+QBarRandomProvider_rangeDown_int_Algebraic_vii map 10
+5055: 1/2
+708: -1/2
+231: -5/2
+226: 1/6
+225: 0
+209: -3/2
+84: -11/2
+84: 3/10
+82: -13/2
+80: 5/14
+
+QBarRandomProvider_rangeDown_int_Algebraic_viii list 21
+(-51-sqrt(34121))/4
+(12-sqrt(105))/6
+(303-2*sqrt(23738))/2
+(-1-2*sqrt(2562))/2
+(25-sqrt(793))/56
+(-13981+sqrt(196083833))/44
+(19-sqrt(57))/38
+(-5+2*sqrt(2))/2
+(-145-6*sqrt(745))/38
+(4-sqrt(34))/6
+(-5-sqrt(89))/4
+(-98-sqrt(138209))/34
+(-186-sqrt(34989))/2
+(-12-sqrt(201))/6
+(1064-sqrt(4261))/2130
+(17-2*sqrt(235))/42
+(317-sqrt(649))/640
+(104-sqrt(11761))/210
+root 0 of 31148*x^2-31176*x-52975
+(-14-sqrt(301))/10
+...
+
+QBarRandomProvider_rangeDown_int_Algebraic_viii map 10
+68: (1-2*sqrt(2))/2
+66: (1-sqrt(2))/2
+55: -sqrt(5)/2
+54: (1-2*sqrt(3))/2
+49: (2-sqrt(5))/2
+49: (3-2*sqrt(3))/6
+30: (-2-sqrt(5))/2
+27: (-2+sqrt(5))/2
+27: (3-2*sqrt(6))/6
+24: -sqrt(13)/2
+
+QBarRandomProvider_rangeDown_int_Algebraic_ix list 21
+root 0 of 76*x^3+33864*x^2-33829*x+8379
+root 1 of 8*x^3+29388*x^2-29402*x+7165
+root 0 of 411640*x^3-617564*x^2+308446*x-51123
+root 0 of 8*x^3+1364*x^2+7426090*x-3526051
+root 1 of 24*x^3-140*x^2+26*x+11
+root 0 of 2720*x^3-4020*x^2+1940*x-281
+root 0 of 26776*x^3-40180*x^2+20106*x-3347
+root 0 of 412*x^3-396*x^2+85*x+9691
+root 0 of 172*x^3-252*x^2+121*x-11
+root 0 of 24*x^3+132*x^2-150*x+2279
+root 0 of 920*x^3-1396*x^2+714*x-79
+root 0 of 56*x^3-108*x^2+178*x+1003
+root 0 of 8*x^3+876*x^2-578*x+309
+root 0 of 72*x^3-106*x^2+61*x+8457
+root 0 of 504*x^3+16868*x^2-17238*x+3619
+root 0 of 504*x^3-948*x^2+570*x-95
+root 0 of 744*x^3-1220*x^2+658*x-105
+root 0 of 24*x^3-108*x^2+1351394*x-674737
+root 0 of 228*x^3-332*x^2+153*x+30
+root 0 of 8*x^3+12*x^2-2*x+1325
+...
+
+QBarRandomProvider_rangeDown_int_Algebraic_ix map 10
+5: root 0 of 8*x^3-12*x^2+6*x+23
+5: root 0 of 8*x^3-12*x^2-2*x+27
+4: root 0 of 24*x^3-28*x^2+10*x+7
+4: root 0 of 24*x^3-36*x^2+18*x+5
+4: root 0 of 4*x^3-4*x^2+x+6
+4: root 0 of 8*x^3-12*x^2+6*x+55
+4: root 0 of 8*x^3-12*x^2-2*x+11
+4: root 0 of 8*x^3-4*x^2-2*x+9
+3: root 0 of 8*x^3-12*x^2+22*x-1
+3: root 0 of 8*x^3-12*x^2+6*x+15
+
+QBarRandomProvider_rangeDown_int_Algebraic_x list 21
+-67/39
+-127/93
+-37/3
+-4/3
+-4/3
+-580
+-4/3
+-4/3
+-4/3
+-116651/87486
+-4/3
+-11/6
+-46/3
+-11/6
+-4/3
+-4/3
+-7/3
+-11/6
+-7/3
+-4/3
+...
+
+QBarRandomProvider_rangeDown_int_Algebraic_x map 10
+5055: -4/3
+708: -7/3
+231: -13/3
+226: -5/3
+225: -11/6
+209: -10/3
+84: -22/3
+84: -23/15
+82: -25/3
+80: -31/21
+
+QBarRandomProvider_rangeDown_int_Algebraic_xi list 21
+(-175-3*sqrt(34121))/12
+(1-sqrt(105))/6
+(449-3*sqrt(23738))/3
+(-7-3*sqrt(2562))/3
+(-233-3*sqrt(793))/168
+root 1 of 198*x^2+126555*x+168406
+(-152-3*sqrt(57))/114
+(-13+3*sqrt(2))/3
+(-322-9*sqrt(745))/57
+(-7-sqrt(34))/6
+(-37-3*sqrt(89))/12
+(-481-3*sqrt(138209))/102
+(-569-3*sqrt(34989))/6
+(-23-sqrt(201))/6
+(-2841-sqrt(4261))/2130
+(-30-sqrt(235))/21
+(-2569-3*sqrt(649))/1920
+(-281-sqrt(11761))/210
+root 0 of 70083*x^2+186825*x-12238
+(-97-3*sqrt(301))/30
+...
+
+QBarRandomProvider_rangeDown_int_Algebraic_xi map 10
+68: (-4-3*sqrt(2))/3
+66: (-8-3*sqrt(2))/6
+55: (-11-3*sqrt(5))/6
+54: (-4-3*sqrt(3))/3
+49: (-4-sqrt(3))/3
+49: (-5-3*sqrt(5))/6
+30: (-17-3*sqrt(5))/6
+27: (-17+3*sqrt(5))/6
+27: (-4-sqrt(6))/3
+24: (-11-3*sqrt(13))/6
+
+QBarRandomProvider_rangeDown_int_Algebraic_xii list 21
+root 0 of 1026*x^3+462807*x^2+1229922*x+818750
+root 1 of 54*x^3+198666*x^2+529434*x+351587
+root 0 of 2778570*x^3+11113578*x^2+14814549*x+6582607
+root 0 of 54*x^3+9504*x^2+50160411*x+68128298
+root 1 of 9*x^3-3*x^2-92*x-99
+root 0 of 18360*x^3+73845*x^2+98730*x+44042
+root 0 of 90369*x^3+361422*x^2+481851*x+214175
+root 0 of 5562*x^3+25245*x^2+37629*x+149237
+root 0 of 2322*x^3+9369*x^2+12573*x+5720
+root 0 of 27*x^3+297*x^2+648*x+2920
+root 0 of 6210*x^3+24732*x^2+32886*x+14897
+root 0 of 189*x^3+675*x^2+1170*x+4426
+root 0 of 27*x^3+3105*x^2+9162*x+7570
+root 0 of 648*x^3+2610*x^2+3585*x+77906
+root 0 of 567*x^3+22095*x^2+55905*x+35794
+root 0 of 189*x^3+684*x^2+816*x+326
+root 0 of 558*x^3+2154*x^2+2765*x+1189
+root 0 of 27*x^3+27*x^2+1520145*x+2027929
+root 0 of 1026*x^3+4149*x^2+5556*x+2698
+root 0 of 27*x^3+189*x^2+414*x+4762
+...
+
+QBarRandomProvider_rangeDown_int_Algebraic_xii map 10
+5: root 0 of 27*x^3+108*x^2+117*x+109
+5: root 0 of 27*x^3+108*x^2+144*x+145
+4: root 0 of 27*x^3+108*x^2+117*x+55
+4: root 0 of 27*x^3+108*x^2+144*x+253
+4: root 0 of 27*x^3+108*x^2+144*x+73
+4: root 0 of 27*x^3+117*x^2+168*x+89
+4: root 0 of 27*x^3+135*x^2+216*x+139
+4: root 0 of 54*x^3+243*x^2+360*x+257
+3: root 0 of 27*x^3+108*x^2+144*x+118
+3: root 0 of 27*x^3+108*x^2+198*x+163
+
+QBarRandomProvider_rangeDown_int_Algebraic_xiii list 21
+1
+-9
+-5/2
+0
+1
+-53
+1
+-206/3
+-5/9
+1
+-3
+3/5
+7/5
+-1
+-2
+-126
+-1711/2
+5/9
+-9
+-16
+...
+
+QBarRandomProvider_rangeDown_int_Algebraic_xiii map 10
+2187: 1
+763: -1
+730: 0
+266: 4/3
+264: -5
+250: -3
+250: -4
+249: -2
+241: 1/2
+108: -8
+
+QBarRandomProvider_rangeDown_int_Algebraic_xiv list 21
+(-45-sqrt(34121))/4
+153-sqrt(23738)
+1-sqrt(2562)
+-1+sqrt(2)
+(-44-3*sqrt(745))/19
+(13-sqrt(34))/6
+(1-sqrt(89))/4
+(-47-sqrt(138209))/34
+(-183-sqrt(34989))/2
+(-3-sqrt(201))/6
+(40-sqrt(235))/21
+(31155-sqrt(473262761))/15574
+(1-sqrt(301))/10
+(3-sqrt(77))/2
+(-439-sqrt(233333))/22
+(-1261-4*sqrt(102873))/11
+(4-sqrt(2))/2
+(11-sqrt(37))/6
+-23-sqrt(622)
+(29-sqrt(141))/14
+...
+
+QBarRandomProvider_rangeDown_int_Algebraic_xiv map 10
+124: 2-sqrt(2)
+111: (4-sqrt(2))/2
+94: (3-sqrt(5))/2
+90: 2-sqrt(3)
+89: (5-sqrt(5))/2
+44: (6-sqrt(6))/3
+42: (3-sqrt(13))/2
+41: (1-sqrt(5))/2
+36: (1-sqrt(13))/2
+35: 2-sqrt(7)
+
+QBarRandomProvider_rangeDown_int_Algebraic_xv list 21
+root 0 of 38*x^3+16761*x^2-67454*x+67530
+root 0 of 206*x^3-1125*x^2+2027*x+3641
+root 0 of 3*x^3+3*x^2-48*x+340
+root 0 of 7*x^3-45*x^2+110*x+38
+root 0 of x^3+105*x^2-394*x+390
+root 0 of 72*x^3-430*x^2+865*x+7884
+root 0 of 63*x^3+1825*x^2-8055*x+8216
+root 0 of 114*x^3-679*x^2+1344*x-858
+root 0 of x^3-3*x^2+2*x+166
+root 0 of 66*x^3-368*x^2+677*x-406
+root 0 of 1146*x^3-2886*x^2-2187*x+6752
+root 1 of x^3+121*x^2-496*x-4357
+root 0 of 138*x^3-828*x^2+1663*x-966
+root 0 of 2*x^3-12*x^2+21*x-5
+root 0 of x^3-6*x^2+12*x+75
+root 0 of x^3-6*x^2+40*x-2
+root 0 of 26*x^3-158*x^2+329*x-213
+root 1 of 9*x^3+7*x^2-136*x+147
+root 0 of 21*x^3-129*x^2+265*x+30551
+root 0 of x^3-5*x^2+8*x+6
+...
+
+QBarRandomProvider_rangeDown_int_Algebraic_xv map 10
+9: root 0 of 3*x^3-18*x^2+36*x-23
+9: root 0 of x^3-6*x^2+12*x-5
+7: root 0 of x^3-5*x^2+8*x-3
+7: root 0 of x^3-6*x^2+11*x-3
+7: root 0 of x^3-6*x^2+12*x-1
+7: root 0 of x^3-6*x^2+12*x-6
+5: root 0 of 2*x^3-11*x^2+20*x-9
+5: root 0 of 2*x^3-12*x^2+24*x-15
+5: root 0 of x^3-6*x^2+11*x-5
+5: root 0 of x^3-6*x^2+13*x-9
+
+QBarRandomProvider_rangeDown_int_Algebraic_xvi list 21
+-2
+-12
+-3/2
+-11/2
+-3
+-2
+-3/2
+-56
+-2
+-215/3
+-32/9
+-2
+-6
+-12/5
+-8/5
+-4
+-5
+-129
+-1717/2
+-22/9
+...
+
+QBarRandomProvider_rangeDown_int_Algebraic_xvi map 10
+1971: -2
+690: -4
+673: -3
+671: -3/2
+246: -8
+240: -5/3
+229: -5/2
+229: -7
+227: -6
+221: -5
+
+QBarRandomProvider_rangeDown_int_Algebraic_xvii list 21
+(-57-sqrt(34121))/4
+150-sqrt(23738)
+-2-sqrt(2562)
+(-59-sqrt(793))/56
+-4+sqrt(2)
+(-101-3*sqrt(745))/19
+(-5-sqrt(34))/6
+(-11-sqrt(89))/4
+(-149-sqrt(138209))/34
+(-189-sqrt(34989))/2
+(-21-sqrt(201))/6
+(-23-sqrt(235))/21
+(-211-sqrt(11761))/210
+(-15567-sqrt(473262761))/15574
+(-29-sqrt(301))/10
+(-3-sqrt(77))/2
+(-505-sqrt(233333))/22
+(-1294-4*sqrt(102873))/11
+(-2-sqrt(2))/2
+(-7-sqrt(37))/6
+...
+
+QBarRandomProvider_rangeDown_int_Algebraic_xvii map 10
+116: -1-sqrt(2)
+106: (-2-sqrt(2))/2
+85: (-3-sqrt(5))/2
+85: -1-sqrt(3)
+81: (-1-sqrt(5))/2
+81: (-3-sqrt(3))/3
+42: (-3-sqrt(6))/3
+41: (-3-sqrt(13))/2
+39: (-5-sqrt(5))/2
+34: (-5-sqrt(13))/2
+
+QBarRandomProvider_rangeDown_int_Algebraic_xviii list 21
+root 0 of 38*x^3+17103*x^2+34138*x+17043
+root 0 of 206*x^3+729*x^2+839*x+5159
+root 0 of 3*x^3+30*x^2+51*x+304
+root 0 of 7*x^3+18*x^2+29*x+152
+root 0 of x^3+114*x^2+263*x+180
+root 0 of 72*x^3+218*x^2+229*x+8553
+root 0 of 63*x^3+2392*x^2+4596*x+2177
+root 0 of 114*x^3+347*x^2+348*x+141
+root 0 of x^3+6*x^2+11*x+172
+root 0 of 66*x^3+226*x^2+251*x+95
+root 0 of 1146*x^3+7428*x^2+11439*x+5159
+root 1 of x^3+130*x^2+257*x-4729
+root 0 of 4*x^3+12*x^2+16*x+11
+root 0 of 138*x^3+414*x^2+421*x+297
+root 0 of 42*x^3+125*x^2+122*x+42
+root 0 of 2*x^3+6*x^2+3*x+4
+root 0 of 613*x^3+1845*x^2+1828*x+641
+root 0 of x^3+3*x^2+3*x+84
+root 0 of x^3+3*x^2+31*x+91
+root 0 of 26*x^3+76*x^2+83*x+54
+...
+
+QBarRandomProvider_rangeDown_int_Algebraic_xviii map 10
+9: root 0 of 3*x^3+9*x^2+9*x+4
+8: root 0 of x^3+3*x^2+3*x+4
+7: root 0 of x^3+3*x^2+2*x+3
+7: root 0 of x^3+4*x^2+5*x+3
+6: root 0 of x^3+3*x^2+3*x+8
+5: root 0 of x^3+3*x^2+2*x+1
+5: root 0 of x^3+3*x^2+3*x+3
+4: root 0 of 2*x^3+5*x^2+4*x+2
+4: root 0 of 2*x^3+6*x^2+3*x+4
+4: root 0 of 6*x^3+18*x^2+18*x+7
+
+QBarRandomProvider_rangeDown_int_Algebraic_xix list 21
+21/13
+1
+-9
+3/2
+-5/2
+0
+1
+3/2
+-53
+1
+-206/3
+-5/9
+1
+-3
+3/5
+7/5
+-1
+-2
+-126
+-1711/2
+...
+
+QBarRandomProvider_rangeDown_int_Algebraic_xix map 10
+1945: 1
+685: -1
+665: 3/2
+663: 0
+244: -5
+239: 4/3
+227: 1/2
+225: -3
+223: -4
+221: -2
+
+QBarRandomProvider_rangeDown_int_Algebraic_xx list 21
+(-45-sqrt(34121))/4
+153-sqrt(23738)
+1-sqrt(2562)
+(109-sqrt(793))/56
+-1+sqrt(2)
+(-44-3*sqrt(745))/19
+(13-sqrt(34))/6
+(1-sqrt(89))/4
+(-47-sqrt(138209))/34
+(-183-sqrt(34989))/2
+(-3-sqrt(201))/6
+(40-sqrt(235))/21
+(419-sqrt(11761))/210
+(31155-sqrt(473262761))/15574
+(1-sqrt(301))/10
+(3-sqrt(77))/2
+(-439-sqrt(233333))/22
+(-1261-4*sqrt(102873))/11
+(4-sqrt(2))/2
+(11-sqrt(37))/6
+...
+
+QBarRandomProvider_rangeDown_int_Algebraic_xx map 10
+113: 2-sqrt(2)
+105: (4-sqrt(2))/2
+83: (3-sqrt(5))/2
+82: 2-sqrt(3)
+78: (6-sqrt(3))/3
+77: (5-sqrt(5))/2
+41: (3-sqrt(13))/2
+41: (6-sqrt(6))/3
+39: (1-sqrt(5))/2
+33: (1-sqrt(13))/2
+
+QBarRandomProvider_rangeDown_int_Algebraic_xxi list 21
+root 0 of 38*x^3+16761*x^2-67454*x+67530
+root 0 of 206*x^3-1125*x^2+2027*x+3641
+root 0 of 86*x^3-513*x^2+1019*x-670
+root 0 of 3*x^3+3*x^2-48*x+340
+root 0 of 7*x^3-45*x^2+110*x+38
+root 0 of x^3+105*x^2-394*x+390
+root 0 of 72*x^3-430*x^2+865*x+7884
+root 0 of 63*x^3+1825*x^2-8055*x+8216
+root 0 of 114*x^3-679*x^2+1344*x-858
+root 0 of x^3-3*x^2+2*x+166
+root 0 of 66*x^3-368*x^2+677*x-406
+root 0 of 1146*x^3-2886*x^2-2187*x+6752
+root 1 of x^3+121*x^2-496*x-4357
+root 0 of 4*x^3-24*x^2+52*x-37
+root 0 of 138*x^3-828*x^2+1663*x-966
+root 0 of 42*x^3-253*x^2+506*x-333
+root 0 of 2*x^3-12*x^2+21*x-5
+root 0 of 613*x^3-3672*x^2+7309*x-4789
+root 0 of x^3-6*x^2+12*x+75
+root 0 of x^3-6*x^2+40*x-2
+...
+
+QBarRandomProvider_rangeDown_int_Algebraic_xxi map 10
+8: root 0 of 3*x^3-18*x^2+36*x-23
+8: root 0 of x^3-6*x^2+12*x-5
+7: root 0 of x^3-5*x^2+8*x-3
+7: root 0 of x^3-6*x^2+11*x-3
+6: root 0 of x^3-6*x^2+12*x-1
+5: root 0 of x^3-6*x^2+11*x-5
+5: root 0 of x^3-6*x^2+12*x-6
+4: root 0 of 2*x^3-12*x^2+21*x-5
+4: root 0 of 2*x^3-13*x^2+28*x-19
+4: root 0 of 6*x^3-36*x^2+72*x-47
+
+QBarRandomProvider_rangeDown_int_Algebraic_xxii list 21
+1
+-9
+-5/2
+0
+1
+-53
+1
+-206/3
+-5/9
+1
+-3
+3/5
+-1
+-2
+-126
+-1711/2
+5/9
+-9
+-16
+-5
+...
+
+QBarRandomProvider_rangeDown_int_Algebraic_xxii map 10
+2310: 1
+808: -1
+776: 0
+282: -5
+264: -3
+263: -2
+263: -4
+258: 1/2
+114: -8
+97: -9
+
+QBarRandomProvider_rangeDown_int_Algebraic_xxiii list 21
+(-45-sqrt(34121))/4
+153-sqrt(23738)
+1-sqrt(2562)
+-1+sqrt(2)
+(-44-3*sqrt(745))/19
+(1-sqrt(89))/4
+(-47-sqrt(138209))/34
+(-183-sqrt(34989))/2
+(-3-sqrt(201))/6
+(31155-sqrt(473262761))/15574
+(1-sqrt(301))/10
+(3-sqrt(77))/2
+(-439-sqrt(233333))/22
+(-1261-4*sqrt(102873))/11
+(11-sqrt(37))/6
+-23-sqrt(622)
+-13312-sqrt(177262619)
+(10-sqrt(20845))/5
+(-694-sqrt(509806))/10
+(8-sqrt(14))/4
+...
+
+QBarRandomProvider_rangeDown_int_Algebraic_xxiii map 10
+136: 2-sqrt(2)
+108: (3-sqrt(5))/2
+101: 2-sqrt(3)
+47: (3-sqrt(13))/2
+44: (1-sqrt(5))/2
+40: (1-sqrt(13))/2
+40: 2-sqrt(7)
+38: (4-sqrt(6))/2
+38: (5-sqrt(13))/2
+34: 1-sqrt(2)
+
+QBarRandomProvider_rangeDown_int_Algebraic_xxiv list 21
+root 0 of 38*x^3+16761*x^2-67454*x+67530
+root 0 of 206*x^3-1125*x^2+2027*x+3641
+root 0 of 3*x^3+3*x^2-48*x+340
+root 0 of 7*x^3-45*x^2+110*x+38
+root 0 of x^3+105*x^2-394*x+390
+root 0 of 72*x^3-430*x^2+865*x+7884
+root 0 of 63*x^3+1825*x^2-8055*x+8216
+root 0 of x^3-3*x^2+2*x+166
+root 0 of 1146*x^3-2886*x^2-2187*x+6752
+root 1 of x^3+121*x^2-496*x-4357
+root 0 of 138*x^3-828*x^2+1663*x-966
+root 0 of 2*x^3-12*x^2+21*x-5
+root 0 of x^3-6*x^2+12*x+75
+root 0 of x^3-6*x^2+40*x-2
+root 0 of 21*x^3-129*x^2+265*x+30551
+root 0 of x^3-5*x^2+8*x+6
+root 0 of x^3-13*x^2+40*x+1352
+root 0 of 2*x^3+26*x^2-139*x+157
+root 0 of 23*x^3+332379*x^2-1329793*x+4766841
+root 0 of 19*x^3-113*x^2+162*x+353135
+...
+
+QBarRandomProvider_rangeDown_int_Algebraic_xxiv map 10
+10: root 0 of x^3-6*x^2+12*x-5
+8: root 0 of x^3-5*x^2+8*x-3
+8: root 0 of x^3-6*x^2+11*x-3
+7: root 0 of x^3-6*x^2+12*x-1
+7: root 0 of x^3-6*x^2+12*x-6
+6: root 0 of x^3-6*x^2+11*x-5
+5: root 0 of 2*x^3-11*x^2+20*x-9
+4: root 0 of 2*x^3-12*x^2+21*x-5
+4: root 0 of 3*x^3-18*x^2+35*x-21
+4: root 0 of x^3-5*x^2+8*x-1
+
+QBarRandomProvider_rangeDown_Algebraic_i list 21
+-6-sqrt(38)
+0
+-1
+0
+root 0 of 18*x^3+3*x+1736
+0
+-1/9
+0
+(1-sqrt(636721))/22740
+0
+root 0 of 26*x^4+x-29
+0
+0
+0
+0
+0
+0
+root 0 of 5*x^3-3*x^2-x+174
+0
+0
+...
+
+QBarRandomProvider_rangeDown_Algebraic_i map 10
+5026: 0
+334: -1
+122: -1/2
+109: -3
+106: -2
+96: -1/3
+49: -1/4
+45: -1/6
+45: -7
+43: -2/3
+
+QBarRandomProvider_rangeDown_Algebraic_ii list 21
+root 1 of 2*x^3+7350*x^2-2*x-47
+-1/27
+0
+(37-sqrt(1501))/2
+-sqrt(15)/15
+-23/9
+root 1 of x^4+206*x^3+111*x^2-x+4843
+root 0 of 102910*x^3-26*x^2-97*x+41
+0
+0
+root 0 of 3*x^3+21*x^2+280
+root 0 of 230*x^3-4*x^2+2*x+11
+root 0 of 30*x^5-x^4-x^3-2*x^2+2
+(-11617-sqrt(134954713))/12
+(-19-sqrt(326))/21
+0
+-1/2
+0
+0
+(13-sqrt(173))/4
+...
+
+QBarRandomProvider_rangeDown_Algebraic_ii map 10
+2011: 0
+108: -1
+47: -1/2
+40: -1/3
+40: -3
+36: -2
+30: -7
+22: -1/5
+21: -4
+20: -1/4
+
+QBarRandomProvider_rangeDown_Algebraic_iii list 21
+-5-sqrt(38)
+1
+0
+1
+root 0 of 18*x^3-54*x^2+57*x+1715
+1
+8/9
+1
+(22741-sqrt(636721))/22740
+1
+root 0 of 26*x^4-104*x^3+156*x^2-103*x-4
+1
+1
+1
+1
+1
+1
+root 0 of 5*x^3-18*x^2+20*x+167
+1
+1
+...
+
+QBarRandomProvider_rangeDown_Algebraic_iii map 10
+5026: 1
+334: 0
+122: 1/2
+109: -2
+106: -1
+96: 2/3
+49: 3/4
+45: -6
+45: 5/6
+43: 1/3
+
+QBarRandomProvider_rangeDown_Algebraic_iv list 21
+root 1 of 2*x^3+7344*x^2-14696*x+7303
+26/27
+1
+(39-sqrt(1501))/2
+(15-sqrt(15))/15
+-14/9
+root 1 of x^4+202*x^3-501*x^2+391*x+4750
+root 0 of 102910*x^3-308756*x^2+308685*x-102798
+1
+1
+root 0 of 3*x^3+12*x^2-33*x+298
+root 0 of 230*x^3-694*x^2+700*x-225
+root 0 of 30*x^5-151*x^4+303*x^3-305*x^2+155*x-30
+(-11605-sqrt(134954713))/12
+(2-sqrt(326))/21
+1
+1/2
+1
+1
+(17-sqrt(173))/4
+...
+
+QBarRandomProvider_rangeDown_Algebraic_iv map 10
+2011: 1
+108: 0
+47: 1/2
+40: -2
+40: 2/3
+36: -1
+30: -6
+22: 4/5
+21: -3
+20: 3/4
+
+QBarRandomProvider_rangeDown_Algebraic_v list 21
+(-11-2*sqrt(38))/2
+1/2
+-1/2
+1/2
+root 0 of 72*x^3-108*x^2+66*x+6929
+1/2
+7/18
+1/2
+(11371-sqrt(636721))/22740
+1/2
+root 0 of 208*x^4-416*x^3+312*x^2-96*x-223
+1/2
+1/2
+1/2
+1/2
+1/2
+1/2
+root 0 of 40*x^3-84*x^2+46*x+1385
+1/2
+1/2
+...
+
+QBarRandomProvider_rangeDown_Algebraic_v map 10
+5026: 1/2
+334: -1/2
+122: 0
+109: -5/2
+106: -3/2
+96: 1/6
+49: 1/4
+45: -13/2
+45: 1/3
+43: -1/6
+
+QBarRandomProvider_rangeDown_Algebraic_vi list 21
+root 1 of 8*x^3+29388*x^2-29402*x+7165
+25/54
+1/2
+(38-sqrt(1501))/2
+(15-2*sqrt(15))/30
+-37/18
+root 1 of 16*x^4+3264*x^3-3144*x^2+672*x+77529
+root 0 of 411640*x^3-617564*x^2+308446*x-51123
+1/2
+1/2
+root 0 of 24*x^3+132*x^2-150*x+2279
+root 0 of 920*x^3-1396*x^2+714*x-79
+root 0 of 240*x^5-608*x^4+608*x^3-316*x^2+89*x+5
+(-11611-sqrt(134954713))/12
+(-17-2*sqrt(326))/42
+1/2
+0
+1/2
+1/2
+(15-sqrt(173))/4
+...
+
+QBarRandomProvider_rangeDown_Algebraic_vi map 10
+2011: 1/2
+108: -1/2
+47: 0
+40: -5/2
+40: 1/6
+36: -3/2
+30: -13/2
+22: 3/10
+21: -7/2
+20: 1/4
+
+QBarRandomProvider_rangeDown_Algebraic_vii list 21
+(-22-3*sqrt(38))/3
+-4/3
+-7/3
+-4/3
+root 0 of 54*x^3+216*x^2+297*x+5348
+-4/3
+-13/9
+-4/3
+(-30319-sqrt(636721))/22740
+-4/3
+root 0 of 2106*x^4+11232*x^3+22464*x^2+20049*x+4415
+-4/3
+-4/3
+-4/3
+-4/3
+-4/3
+-4/3
+root 0 of 135*x^3+459*x^2+477*x+4838
+-4/3
+-4/3
+...
+
+QBarRandomProvider_rangeDown_Algebraic_vii map 10
+5026: -4/3
+334: -7/3
+122: -11/6
+109: -13/3
+106: -10/3
+96: -5/3
+49: -19/12
+45: -25/3
+45: -3/2
+43: -2
+
+QBarRandomProvider_rangeDown_Algebraic_viii list 21
+root 1 of 54*x^3+198666*x^2+529434*x+351587
+-37/27
+-4/3
+(103-3*sqrt(1501))/6
+(-20-sqrt(15))/15
+-35/9
+root 1 of 81*x^4+17118*x^3+76599*x^2+113655*x+447967
+root 0 of 2778570*x^3+11113578*x^2+14814549*x+6582607
+-4/3
+-4/3
+root 0 of 27*x^3+297*x^2+648*x+2920
+root 0 of 6210*x^3+24732*x^2+32886*x+14897
+root 0 of 810*x^5+5373*x^4+14229*x^3+18750*x^2+12256*x+3222
+(-11633-sqrt(134954713))/12
+(-47-sqrt(326))/21
+-4/3
+-11/6
+-4/3
+-4/3
+(23-3*sqrt(173))/12
+...
+
+QBarRandomProvider_rangeDown_Algebraic_viii map 10
+2011: -4/3
+108: -7/3
+47: -11/6
+40: -13/3
+40: -5/3
+36: -10/3
+30: -25/3
+22: -23/15
+21: -16/3
+20: -19/12
+
+QBarRandomProvider_rangeDown_Algebraic_ix list 21
+root 0 of x^4-3*x^3-13*x^2+62*x-63
+1
+-5/4
+root 0 of x^4+2*x^3-36*x^2+83*x-57
+-1
+-2
+-126
+5/6
+4/3
+1
+root 0 of 5*x^10-95*x^9+809*x^8-4065*x^7+13342*x^6-29890*x^5+46366*x^4-49390*x^3+34786*x^2-14657*x+2763
+1
+(-11-sqrt(901))/10
+root 0 of 3*x^3-17*x^2+19*x+8
+-689/5
+root 0 of x^3-6*x^2+11*x-5
+root 0 of 4*x^3-22*x^2+39*x-19
+13/10
+0
+-75/4
+...
+
+QBarRandomProvider_rangeDown_Algebraic_ix map 10
+1039: 1
+362: 0
+360: -1
+131: -4
+123: -5
+120: -2
+119: 4/3
+118: 1/2
+109: -3
+56: -10
+
+QBarRandomProvider_rangeDown_Algebraic_x list 21
+root 0 of 85*x^5+1255372*x^4-10046609*x^3+30143925*x^2-40195096*x+20098693
+1
+root 0 of x^11-21*x^10+200*x^9-1141*x^8+4347*x^7-9698*x^6-1023*x^5+86470*x^4-283687*x^3+451942*x^2-370324*x+124814
+(671-sqrt(523839))/49
+root 0 of 406*x^4-3886*x^3+13577*x^2-20349*x+9270
+(254-sqrt(616839))/127
+root 0 of 124*x^3-744*x^2+1495*x-854
+-456101
+root 0 of 3*x^7-42*x^6+236*x^5-578*x^4+225*x^3+1754*x^2-3380*x+14660302
+root 0 of 51*x^3-306*x^2+614*x-394
+(-21899-sqrt(479741401))/2
+-24-sqrt(687)
+root 0 of 6*x^5-21*x^4-73*x^3+453*x^2-743*x+403
+-28857
+(-14-sqrt(19202))/43
+1
+(-30729-3*sqrt(104946365))/2
+-874
+-109-4*sqrt(770)
+root 0 of 30*x^5-299*x^4+1205*x^3-2277*x^2+1811*x-360
+...
+
+QBarRandomProvider_rangeDown_Algebraic_x map 10
+233: 1
+100: 0
+99: -1
+47: -2
+44: 1/2
+38: -3
+37: -4
+35: 4/3
+27: -5
+20: -7
+
+QBarRandomProvider_rangeDown_Algebraic_xi list 21
+root 0 of x^4+9*x^3+14*x^2+11*x+6
+-2
+86-sqrt(7666)
+-17/4
+root 0 of x^4+14*x^3+36*x^2+29*x+3
+-4
+-5
+-129
+-13/6
+-5/3
+-3/2
+root 0 of 59*x^5+296*x^4+596*x^3+601*x^2+303*x+63
+-2
+root 0 of 5*x^10+55*x^9+269*x^8+771*x^7+1435*x^6+1799*x^5+1531*x^4+959*x^3+568*x^2+307*x+84
+-2
+(-41-sqrt(901))/10
+root 0 of 3*x^3+10*x^2-2*x-7
+-704/5
+root 0 of 19*x^3+45*x^2+34*x+16
+root 0 of x^3+3*x^2+2*x+1
+...
+
+QBarRandomProvider_rangeDown_Algebraic_xi map 10
+950: -2
+326: -3
+313: -3/2
+308: -4
+120: -7
+110: -5/3
+107: -8
+106: -5
+103: -5/2
+100: -6
+
+QBarRandomProvider_rangeDown_Algebraic_xii list 21
+root 0 of 85*x^5+1256647*x^4+5025505*x^3+7537482*x^2+5024612*x+1256074
+-2
+root 0 of x^11+12*x^10+65*x^9+209*x^8+453*x^7+2713*x^6+12846*x^5+30760*x^4+40505*x^3+30328*x^2+12254*x+1916
+(524-sqrt(523839))/49
+root 0 of 406*x^4+986*x^3+527*x^2+39*x-1620
+(-127-sqrt(616839))/127
+root 0 of 124*x^3+372*x^2+379*x+283
+-456104
+root 0 of 3*x^7+21*x^6+47*x^5+127*x^4+354*x^3+566*x^2+448*x+14658496
+root 0 of 51*x^3+153*x^2+155*x+71
+(-21905-sqrt(479741401))/2
+root 1 of 5*x^4+1084*x^3+3221*x^2+3211*x+1169
+-27-sqrt(687)
+root 0 of 6*x^5+69*x^4+215*x^3+282*x^2+166*x+37
+-28860
+(-143-sqrt(19202))/43
+-2
+(-30735-3*sqrt(104946365))/2
+-877
+-112-4*sqrt(770)
+...
+
+QBarRandomProvider_rangeDown_Algebraic_xii map 10
+222: -2
+97: -3
+89: -4
+79: -3/2
+45: -5
+40: -5/2
+35: -5/3
+35: -6
+35: -7
+24: -8
+
+QBarRandomProvider_rangeDown_Algebraic_xiii list 21
+root 0 of x^4-3*x^3-13*x^2+62*x-63
+1
+89-sqrt(7666)
+-5/4
+root 0 of x^4+2*x^3-36*x^2+83*x-57
+-1
+-2
+-126
+5/6
+4/3
+3/2
+root 0 of 59*x^5-589*x^4+2354*x^3-4709*x^2+4716*x-1890
+1
+root 0 of 5*x^10-95*x^9+809*x^8-4065*x^7+13342*x^6-29890*x^5+46366*x^4-49390*x^3+34786*x^2-14657*x+2763
+1
+(-11-sqrt(901))/10
+root 0 of 3*x^3-17*x^2+19*x+8
+-689/5
+root 0 of 19*x^3-126*x^2+277*x-194
+root 0 of x^3-6*x^2+11*x-5
+...
+
+QBarRandomProvider_rangeDown_Algebraic_xiii map 10
+937: 1
+321: 0
+306: 3/2
+303: -1
+118: -4
+110: 4/3
+106: -5
+104: -2
+102: 1/2
+99: -3
+
+QBarRandomProvider_rangeDown_Algebraic_xiv list 21
+root 0 of 85*x^5+1255372*x^4-10046609*x^3+30143925*x^2-40195096*x+20098693
+1
+root 0 of x^11-21*x^10+200*x^9-1141*x^8+4347*x^7-9698*x^6-1023*x^5+86470*x^4-283687*x^3+451942*x^2-370324*x+124814
+(671-sqrt(523839))/49
+root 0 of 406*x^4-3886*x^3+13577*x^2-20349*x+9270
+(254-sqrt(616839))/127
+root 0 of 124*x^3-744*x^2+1495*x-854
+-456101
+45/28
+root 0 of 3*x^7-42*x^6+236*x^5-578*x^4+225*x^3+1754*x^2-3380*x+14660302
+root 0 of 51*x^3-306*x^2+614*x-394
+(-21899-sqrt(479741401))/2
+root 1 of 5*x^4+1024*x^3-6265*x^2+12613*x-8338
+-24-sqrt(687)
+root 0 of 6*x^5-21*x^4-73*x^3+453*x^2-743*x+403
+-28857
+(-14-sqrt(19202))/43
+1
+(-30729-3*sqrt(104946365))/2
+-874
+...
+
+QBarRandomProvider_rangeDown_Algebraic_xiv map 10
+217: 1
+97: 0
+88: -1
+77: 3/2
+45: -2
+40: 1/2
+35: -3
+35: -4
+34: 4/3
+23: -5
+
+QBarRandomProvider_rangeDown_Algebraic_xv list 21
+root 0 of x^4-3*x^3-13*x^2+62*x-63
+1
+-5/4
+root 0 of x^4+2*x^3-36*x^2+83*x-57
+-1
+-2
+-126
+5/6
+1
+root 0 of 5*x^10-95*x^9+809*x^8-4065*x^7+13342*x^6-29890*x^5+46366*x^4-49390*x^3+34786*x^2-14657*x+2763
+1
+(-11-sqrt(901))/10
+root 0 of 3*x^3-17*x^2+19*x+8
+-689/5
+root 0 of x^3-6*x^2+11*x-5
+root 0 of 4*x^3-22*x^2+39*x-19
+0
+-75/4
+1/2
+-1/3
+...
+
+QBarRandomProvider_rangeDown_Algebraic_xv map 10
+1180: 1
+401: 0
+398: -1
+143: -4
+135: -5
+131: -2
+129: 1/2
+124: -3
+62: -10
+59: 2-sqrt(3)
+
+QBarRandomProvider_rangeDown_Algebraic_xvi list 21
+root 0 of 85*x^5+1255372*x^4-10046609*x^3+30143925*x^2-40195096*x+20098693
+1
+root 0 of x^11-21*x^10+200*x^9-1141*x^8+4347*x^7-9698*x^6-1023*x^5+86470*x^4-283687*x^3+451942*x^2-370324*x+124814
+(671-sqrt(523839))/49
+root 0 of 406*x^4-3886*x^3+13577*x^2-20349*x+9270
+(254-sqrt(616839))/127
+root 0 of 124*x^3-744*x^2+1495*x-854
+-456101
+root 0 of 3*x^7-42*x^6+236*x^5-578*x^4+225*x^3+1754*x^2-3380*x+14660302
+(-21899-sqrt(479741401))/2
+-24-sqrt(687)
+root 0 of 6*x^5-21*x^4-73*x^3+453*x^2-743*x+403
+-28857
+(-14-sqrt(19202))/43
+1
+(-30729-3*sqrt(104946365))/2
+-874
+-109-4*sqrt(770)
+root 0 of 30*x^5-299*x^4+1205*x^3-2277*x^2+1811*x-360
+(13-sqrt(237877))/6
+...
+
+QBarRandomProvider_rangeDown_Algebraic_xvi map 10
+250: 1
+109: 0
+104: -1
+49: 1/2
+48: -2
+43: -3
+43: -4
+28: -5
+23: -8
+22: -7

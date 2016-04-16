@@ -3675,23 +3675,7 @@ public strictfp abstract class QBarIterableProvider {
      * @param degree the degree of the {@code Algebraic}s in the result
      * @param a the inclusive lower bound of the generated {@code Algebraic}s
      */
-    public @NotNull Iterable<Algebraic> rangeUp(int degree, @NotNull Algebraic a) {
-        if (a.isRational()) {
-            Rational r = a.rationalValueExact();
-            if (degree == 1) {
-                return withElement(a, map(x -> x.add(r), positiveAlgebraics(degree)));
-            } else {
-                return map(x -> x.add(r), positiveAlgebraics(degree));
-            }
-        } else {
-            BigInteger floor = a.floor();
-            Algebraic fractionalPart = a.subtract(floor);
-            return map(
-                    x -> x.add(floor),
-                    filterInfinite(x -> ge(x, fractionalPart), positiveAlgebraics(degree))
-            );
-        }
-    }
+    public abstract @NotNull Iterable<Algebraic> rangeUp(int degree, @NotNull Algebraic a);
 
     /**
      * Generates {@code Algebraic}s greater than or equal to a given value.
@@ -3702,16 +3686,7 @@ public strictfp abstract class QBarIterableProvider {
      *
      * @param a the inclusive lower bound of the generated {@code Algebraic}s
      */
-    public @NotNull Iterable<Algebraic> rangeUp(@NotNull Algebraic a) {
-        if (a.isRational()) {
-            Rational r = a.rationalValueExact();
-            return withElement(a, map(x -> x.add(r), positiveAlgebraics()));
-        } else {
-            BigInteger floor = a.floor();
-            Algebraic fractionalPart = a.subtract(floor);
-            return map(x -> x.add(floor), filterInfinite(x -> ge(x, fractionalPart), positiveAlgebraics()));
-        }
-    }
+    public abstract @NotNull Iterable<Algebraic> rangeUp(@NotNull Algebraic a);
 
     /**
      * Generates {@code Algebraic}s less than or equal to a given value and with a given degree.
@@ -3724,20 +3699,7 @@ public strictfp abstract class QBarIterableProvider {
      * @param degree the degree of the {@code Algebraic}s in the result
      * @param a the inclusive upper bound of the generated {@code Algebraic}s
      */
-    public @NotNull Iterable<Algebraic> rangeDown(int degree, @NotNull Algebraic a) {
-        if (a.isRational()) {
-            Rational r = a.rationalValueExact();
-            if (degree == 1) {
-                return withElement(a, map(x -> x.add(r), negativeAlgebraics(degree)));
-            } else {
-                return map(x -> x.add(r), negativeAlgebraics(degree));
-            }
-        } else {
-            BigInteger ceiling = a.ceiling();
-            Algebraic fractionalPart = a.subtract(ceiling);
-            return map(x -> x.add(ceiling), filterInfinite(x -> le(x, fractionalPart), negativeAlgebraics(degree)));
-        }
-    }
+    public abstract @NotNull Iterable<Algebraic> rangeDown(int degree, @NotNull Algebraic a);
 
     /**
      * Generates {@code Algebraic}s less than or equal to a given value.
@@ -3748,16 +3710,7 @@ public strictfp abstract class QBarIterableProvider {
      *
      * @param a the inclusive upper bound of the generated {@code Algebraic}s
      */
-    public @NotNull Iterable<Algebraic> rangeDown(@NotNull Algebraic a) {
-        if (a.isRational()) {
-            Rational r = a.rationalValueExact();
-            return withElement(a, map(x -> x.add(r), negativeAlgebraics()));
-        } else {
-            BigInteger ceiling = a.ceiling();
-            Algebraic fractionalPart = a.subtract(ceiling);
-            return map(x -> x.add(ceiling), filterInfinite(x -> le(x, fractionalPart), negativeAlgebraics()));
-        }
-    }
+    public abstract @NotNull Iterable<Algebraic> rangeDown(@NotNull Algebraic a);
 
     /**
      * Generates {@code Algebraic}s between {@code a} and {@code b}, inclusive, and with a given degree.
