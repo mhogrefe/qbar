@@ -99,10 +99,8 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         propertiesCoefficientMatrix();
         propertiesHashCode();
         propertiesCompareTo();
-        propertiesRead_String();
-        propertiesRead_int_String();
-        propertiesFindIn_String();
-        propertiesFindIn_int_String();
+        propertiesReadStrict_String();
+        propertiesReadStrict_int_String();
         propertiesToString();
     }
 
@@ -2051,25 +2049,25 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         }
     }
 
-    private void propertiesRead_String() {
-        initialize("read(String)");
+    private void propertiesReadStrict_String() {
+        initialize("readStrict(String)");
         QBarTesting.propertiesReadHelper(
                 LIMIT,
                 P,
                 RATIONAL_POLYNOMIAL_CHARS,
                 P.rationalPolynomials(),
-                RationalPolynomial::read,
+                RationalPolynomial::readStrict,
                 RationalPolynomial::validate,
                 false
         );
     }
 
-    private void propertiesRead_int_String() {
-        initialize("read(int, String)");
+    private void propertiesReadStrict_int_String() {
+        initialize("readStrict(int, String)");
 
         Iterable<Pair<String, Integer>> ps = P.pairsLogarithmicOrder(P.strings(), P.positiveIntegersGeometric());
         for (Pair<String, Integer> p : take(LIMIT, ps)) {
-            read(p.b, p.a);
+            readStrict(p.b, p.a);
         }
 
         Iterable<Pair<RationalPolynomial, Integer>> ps2 = filterInfinite(
@@ -2077,7 +2075,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
                 P.pairsLogarithmicOrder(P.rationalPolynomials(), P.positiveIntegersGeometric())
         );
         for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps2)) {
-            Optional<RationalPolynomial> op = read(p.b, p.a.toString());
+            Optional<RationalPolynomial> op = readStrict(p.b, p.a.toString());
             RationalPolynomial q = op.get();
             q.validate();
             assertEquals(p, q, p.a);
@@ -2088,83 +2086,19 @@ public class RationalPolynomialProperties extends QBarTestProperties {
                 P.pairsLogarithmicOrder(P.rationalPolynomials(), P.positiveIntegersGeometric())
         );
         for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps2)) {
-            Optional<RationalPolynomial> op = read(p.b, p.a.toString());
+            Optional<RationalPolynomial> op = readStrict(p.b, p.a.toString());
             assertFalse(p, op.isPresent());
-        }
-    }
-
-    private static @NotNull Optional<String> badString(@NotNull String s) {
-        boolean seenX = false;
-        boolean seenXCaret = false;
-        int exponentDigitCount = 0;
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
-            if (c == 'x') {
-                seenX = true;
-            } else if (seenX && c == '^') {
-                seenXCaret = true;
-            } else if (seenXCaret && c >= '0' && c <= '9') {
-                exponentDigitCount++;
-                if (exponentDigitCount > 3) return Optional.of("");
-            } else {
-                seenX = false;
-                seenXCaret = false;
-                exponentDigitCount = 0;
-            }
-        }
-        return Optional.empty();
-    }
-
-    private void propertiesFindIn_String() {
-        initialize("findIn(String)");
-        propertiesFindInHelper(
-                LIMIT,
-                P.getWheelsProvider(),
-                P.rationalPolynomials(),
-                s -> badString(s).isPresent() ? Optional.empty() : read(s),
-                s -> badString(s).isPresent() ? Optional.empty() : findIn(s),
-                RationalPolynomial::validate
-        );
-    }
-
-    private void propertiesFindIn_int_String() {
-        initialize("findIn(int, String)");
-        Iterable<Pair<String, Integer>> ps = P.pairsLogarithmicOrder(
-                filterInfinite(
-                        s -> !Readers.genericFindIn(RationalPolynomialProperties::badString).apply(s).isPresent(),
-                        P.strings()
-                ),
-                P.positiveIntegersGeometric()
-        );
-        for (Pair<String, Integer> p : take(LIMIT, ps)) {
-            findIn(p.b, p.a);
-        }
-
-        Iterable<Pair<Integer, String>> ps2 = P.dependentPairsInfiniteLogarithmicOrder(
-                P.positiveIntegersGeometric(),
-                i -> P.stringsWithSubstrings(
-                        map(Object::toString, filterInfinite(p -> p.degree() <= i, P.rationalPolynomials()))
-                )
-        );
-        for (Pair<Integer, String> p : take(LIMIT, ps2)) {
-            Optional<Pair<RationalPolynomial, Integer>> op = findIn(p.a, p.b);
-            Pair<RationalPolynomial, Integer> q = op.get();
-            assertNotNull(p, q.a);
-            assertNotNull(p, q.b);
-            q.a.validate();
-            assertTrue(p, q.b >= 0 && q.b < p.b.length());
-            String before = take(q.b, p.b);
-            assertFalse(p, findIn(before).isPresent());
-            String during = q.a.toString();
-            assertTrue(p, p.b.substring(q.b).startsWith(during));
-            String after = drop(q.b + during.length(), p.b);
-            assertTrue(p, after.isEmpty() || !read(during + head(after)).isPresent());
         }
     }
 
     private void propertiesToString() {
         initialize("toString()");
-        propertiesToStringHelper(LIMIT, RATIONAL_POLYNOMIAL_CHARS, P.rationalPolynomials(), RationalPolynomial::read);
+        propertiesToStringHelper(
+                LIMIT,
+                RATIONAL_POLYNOMIAL_CHARS,
+                P.rationalPolynomials(),
+                RationalPolynomial::readStrict
+        );
 
         for (Rational r : take(LIMIT, P.rationals())) {
             homomorphic(

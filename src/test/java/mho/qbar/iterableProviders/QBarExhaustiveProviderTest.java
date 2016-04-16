@@ -50,7 +50,7 @@ public class QBarExhaustiveProviderTest {
     }
 
     private static void rangeUp_Rational_helper(@NotNull String a, @NotNull String output) {
-        simpleProviderHelper(QEP.rangeUp(Rational.read(a).get()), output);
+        simpleProviderHelper(QEP.rangeUp(Rational.readStrict(a).get()), output);
     }
 
     @Test
@@ -64,7 +64,7 @@ public class QBarExhaustiveProviderTest {
     }
 
     private static void rangeDown_Rational_helper(@NotNull String a, @NotNull String output) {
-        simpleProviderHelper(QEP.rangeDown(Rational.read(a).get()), output);
+        simpleProviderHelper(QEP.rangeDown(Rational.readStrict(a).get()), output);
     }
 
     @Test
@@ -78,7 +78,7 @@ public class QBarExhaustiveProviderTest {
     }
 
     private static void range_Rational_Rational_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        simpleProviderHelper(QEP.range(Rational.read(a).get(), Rational.read(b).get()), output);
+        simpleProviderHelper(QEP.range(Rational.readStrict(a).get(), Rational.readStrict(b).get()), output);
     }
 
     @Test
@@ -104,7 +104,7 @@ public class QBarExhaustiveProviderTest {
     }
 
     private static void rationalsIn_helper(@NotNull String a, @NotNull String output) {
-        simpleProviderHelper(QEP.rationalsIn(Interval.read(a).get()), output);
+        simpleProviderHelper(QEP.rationalsIn(Interval.readStrict(a).get()), output);
     }
 
     @Test
@@ -118,7 +118,7 @@ public class QBarExhaustiveProviderTest {
     }
 
     private static void rationalsNotIn_helper(@NotNull String a, @NotNull String output) {
-        simpleProviderHelper(QEP.rationalsNotIn(Interval.read(a).get()), output);
+        simpleProviderHelper(QEP.rationalsNotIn(Interval.readStrict(a).get()), output);
     }
 
     @Test
@@ -1197,12 +1197,12 @@ public class QBarExhaustiveProviderTest {
     }
 
     private static void rangeUp_int_Algebraic_helper(int degree, @NotNull String a, @NotNull String output) {
-        simpleProviderHelper(QEP.rangeUp(degree, Algebraic.read(a).get()), output);
+        simpleProviderHelper(QEP.rangeUp(degree, Algebraic.readStrict(a).get()), output);
     }
 
     private static void rangeUp_int_Algebraic_fail_helper(int degree, @NotNull String a) {
         try {
-            QEP.rangeUp(degree, Algebraic.read(a).get());
+            QEP.rangeUp(degree, Algebraic.readStrict(a).get());
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -1248,7 +1248,7 @@ public class QBarExhaustiveProviderTest {
     }
 
     private static void rangeUp_Algebraic_helper(@NotNull String a, @NotNull String output) {
-        simpleProviderHelper(QEP.rangeUp(Algebraic.read(a).get()), output);
+        simpleProviderHelper(QEP.rangeUp(Algebraic.readStrict(a).get()), output);
     }
 
     @Test
@@ -1264,12 +1264,12 @@ public class QBarExhaustiveProviderTest {
     }
 
     private static void rangeDown_int_Algebraic_helper(int degree, @NotNull String a, @NotNull String output) {
-        simpleProviderHelper(QEP.rangeDown(degree, Algebraic.read(a).get()), output);
+        simpleProviderHelper(QEP.rangeDown(degree, Algebraic.readStrict(a).get()), output);
     }
 
     private static void rangeDown_int_Algebraic_fail_helper(int degree, @NotNull String a) {
         try {
-            QEP.rangeDown(degree, Algebraic.read(a).get());
+            QEP.rangeDown(degree, Algebraic.readStrict(a).get());
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -1315,7 +1315,7 @@ public class QBarExhaustiveProviderTest {
     }
 
     private static void rangeDown_Algebraic_helper(@NotNull String a, @NotNull String output) {
-        simpleProviderHelper(QEP.rangeDown(Algebraic.read(a).get()), output);
+        simpleProviderHelper(QEP.rangeDown(Algebraic.readStrict(a).get()), output);
     }
 
     @Test
@@ -1336,12 +1336,12 @@ public class QBarExhaustiveProviderTest {
             @NotNull String b,
             @NotNull String output
     ) {
-        simpleProviderHelper(QEP.range(degree, Algebraic.read(a).get(), Algebraic.read(b).get()), output);
+        simpleProviderHelper(QEP.range(degree, Algebraic.readStrict(a).get(), Algebraic.readStrict(b).get()), output);
     }
 
     private static void range_int_Algebraic_Algebraic_fail_helper(int degree, @NotNull String a, @NotNull String b) {
         try {
-            QEP.range(degree, Algebraic.read(a).get(), Algebraic.read(b).get());
+            QEP.range(degree, Algebraic.readStrict(a).get(), Algebraic.readStrict(b).get());
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -1471,12 +1471,12 @@ public class QBarExhaustiveProviderTest {
             @NotNull String b,
             @NotNull String output
     ) {
-        simpleProviderHelper(QEP.range(Algebraic.read(a).get(), Algebraic.read(b).get()), output);
+        simpleProviderHelper(QEP.range(Algebraic.readStrict(a).get(), Algebraic.readStrict(b).get()), output);
     }
 
     private static void range_Algebraic_Algebraic_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            QEP.range(Algebraic.read(a).get(), Algebraic.read(b).get());
+            QEP.range(Algebraic.readStrict(a).get(), Algebraic.readStrict(b).get());
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -1502,12 +1502,12 @@ public class QBarExhaustiveProviderTest {
     }
 
     private static void algebraicsIn_int_Interval_helper(int degree, @NotNull String a, @NotNull String output) {
-        simpleProviderHelper(QEP.algebraicsIn(degree, Interval.read(a).get()), output);
+        simpleProviderHelper(QEP.algebraicsIn(degree, Interval.readStrict(a).get()), output);
     }
 
     private static void algebraics_int_Interval_fail_helper(int degree, @NotNull String a) {
         try {
-            QEP.algebraicsIn(degree, Interval.read(a).get());
+            QEP.algebraicsIn(degree, Interval.readStrict(a).get());
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -1576,7 +1576,7 @@ public class QBarExhaustiveProviderTest {
     }
 
     private static void algebraicsIn_Interval_helper(@NotNull String a, @NotNull String output) {
-        simpleProviderHelper(QEP.algebraicsIn(Interval.read(a).get()), output);
+        simpleProviderHelper(QEP.algebraicsIn(Interval.readStrict(a).get()), output);
     }
 
     @Test
@@ -1590,12 +1590,12 @@ public class QBarExhaustiveProviderTest {
     }
 
     private static void algebraicsNotIn_int_Interval_helper(int degree, @NotNull String a, @NotNull String output) {
-        simpleProviderHelper(QEP.algebraicsNotIn(degree, Interval.read(a).get()), output);
+        simpleProviderHelper(QEP.algebraicsNotIn(degree, Interval.readStrict(a).get()), output);
     }
 
     private static void algebraicsNotIn_int_Interval_fail_helper(int degree, @NotNull String a) {
         try {
-            QEP.algebraicsNotIn(degree, Interval.read(a).get());
+            QEP.algebraicsNotIn(degree, Interval.readStrict(a).get());
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -1652,12 +1652,12 @@ public class QBarExhaustiveProviderTest {
     }
 
     private static void algebraicsNotIn_Interval_helper(@NotNull String a, @NotNull String output) {
-        simpleProviderHelper(QEP.algebraicsNotIn(Interval.read(a).get()), output);
+        simpleProviderHelper(QEP.algebraicsNotIn(Interval.readStrict(a).get()), output);
     }
 
     private static void algebraicsNotIn_Interval_fail_helper(@NotNull String a) {
         try {
-            QEP.algebraicsNotIn(Interval.read(a).get());
+            QEP.algebraicsNotIn(Interval.readStrict(a).get());
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -1694,10 +1694,10 @@ public class QBarExhaustiveProviderTest {
     }
 
     private static @NotNull List<Variable> readVariableList(@NotNull String s) {
-        return Readers.readList(Variable::read).apply(s).get();
+        return Readers.readListStrict(Variable::readStrict).apply(s).get();
     }
 
     private static @NotNull List<Variable> readVariableListWithNulls(@NotNull String s) {
-        return Readers.readListWithNulls(Variable::read).apply(s).get();
+        return Readers.readListWithNullsStrict(Variable::readStrict).apply(s).get();
     }
 }

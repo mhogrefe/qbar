@@ -156,7 +156,7 @@ public class RationalTest {
     }
 
     private static void getNumerator_helper(@NotNull String x, @NotNull String output) {
-        aeq(read(x).get().getNumerator(), output);
+        aeq(readStrict(x).get().getNumerator(), output);
     }
 
     @Test
@@ -170,7 +170,7 @@ public class RationalTest {
     }
 
     private static void getDenominator_helper(@NotNull String x, @NotNull String output) {
-        aeq(read(x).get().getDenominator(), output);
+        aeq(readStrict(x).get().getDenominator(), output);
     }
 
     @Test
@@ -434,7 +434,7 @@ public class RationalTest {
     }
 
     private static void of_BigDecimal_helper(@NotNull String input, @NotNull String output) {
-        aeq(of(Readers.readBigDecimal(input).get()), output);
+        aeq(of(Readers.readBigDecimalStrict(input).get()), output);
     }
 
     @Test
@@ -456,7 +456,7 @@ public class RationalTest {
     }
 
     private static void isInteger_helper(@NotNull String input, boolean output) {
-        isInteger_helper(read(input).get(), output);
+        isInteger_helper(readStrict(input).get(), output);
     }
 
     @Test
@@ -477,12 +477,12 @@ public class RationalTest {
             @NotNull String roundingMode,
             int output
     ) {
-        aeq(read(r).get().bigIntegerValue(Readers.readRoundingMode(roundingMode).get()), output);
+        aeq(readStrict(r).get().bigIntegerValue(Readers.readRoundingModeStrict(roundingMode).get()), output);
     }
 
     private static void bigIntegerValue_RoundingMode_fail_helper(@NotNull String r, @NotNull String roundingMode) {
         try {
-            read(r).get().bigIntegerValue(Readers.readRoundingMode(roundingMode).get());
+            readStrict(r).get().bigIntegerValue(Readers.readRoundingModeStrict(roundingMode).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -588,7 +588,7 @@ public class RationalTest {
 
     private static void bigIntegerValue_helper(@NotNull String r, int output
     ) {
-        aeq(read(r).get().bigIntegerValue(), output);
+        aeq(readStrict(r).get().bigIntegerValue(), output);
     }
 
     @Test
@@ -607,7 +607,7 @@ public class RationalTest {
     }
 
     private static void floor_helper(@NotNull String input, int output) {
-        aeq(read(input).get().floor(), output);
+        aeq(readStrict(input).get().floor(), output);
     }
 
     @Test
@@ -624,7 +624,7 @@ public class RationalTest {
     }
 
     private static void ceiling_helper(@NotNull String input, int output) {
-        aeq(read(input).get().ceiling(), output);
+        aeq(readStrict(input).get().ceiling(), output);
     }
 
     @Test
@@ -641,12 +641,12 @@ public class RationalTest {
     }
 
     private static void bigIntegerValueExact_helper(@NotNull String r, int output) {
-        aeq(read(r).get().bigIntegerValueExact(), output);
+        aeq(readStrict(r).get().bigIntegerValueExact(), output);
     }
 
     private static void bigIntegerValueExact_fail_helper(@NotNull String r) {
         try {
-            read(r).get().bigIntegerValueExact();
+            readStrict(r).get().bigIntegerValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -667,12 +667,12 @@ public class RationalTest {
     }
 
     private static void byteValueExact_helper(@NotNull String r) {
-        aeq(read(r).get().byteValueExact(), r);
+        aeq(readStrict(r).get().byteValueExact(), r);
     }
 
     private static void byteValueExact_fail_helper(@NotNull String r) {
         try {
-            read(r).get().byteValueExact();
+            readStrict(r).get().byteValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -690,12 +690,12 @@ public class RationalTest {
     }
 
     private static void shortValueExact_helper(@NotNull String r) {
-        aeq(read(r).get().shortValueExact(), r);
+        aeq(readStrict(r).get().shortValueExact(), r);
     }
 
     private static void shortValueExact_fail_helper(@NotNull String r) {
         try {
-            read(r).get().shortValueExact();
+            readStrict(r).get().shortValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -713,12 +713,12 @@ public class RationalTest {
     }
 
     private static void intValueExact_helper(@NotNull String r) {
-        aeq(read(r).get().intValueExact(), r);
+        aeq(readStrict(r).get().intValueExact(), r);
     }
 
     private static void intValueExact_fail_helper(@NotNull String r) {
         try {
-            read(r).get().intValueExact();
+            readStrict(r).get().intValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -736,12 +736,12 @@ public class RationalTest {
     }
 
     private static void longValueExact_helper(@NotNull String r) {
-        aeq(read(r).get().longValueExact(), r);
+        aeq(readStrict(r).get().longValueExact(), r);
     }
 
     private static void longValueExact_fail_helper(@NotNull String r) {
         try {
-            read(r).get().longValueExact();
+            readStrict(r).get().longValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -759,12 +759,12 @@ public class RationalTest {
     }
 
     private static void isPowerOfTwo_helper(@NotNull String input, boolean output) {
-        aeq(read(input).get().isPowerOfTwo(), output);
+        aeq(readStrict(input).get().isPowerOfTwo(), output);
     }
 
     private static void isPowerOfTwo_fail_helper(@NotNull String r) {
         try {
-            read(r).get().isPowerOfTwo();
+            readStrict(r).get().isPowerOfTwo();
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -784,12 +784,12 @@ public class RationalTest {
     }
 
     private static void roundUpToPowerOfTwo_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().roundUpToPowerOfTwo(), output);
+        aeq(readStrict(input).get().roundUpToPowerOfTwo(), output);
     }
 
     private static void roundUpToPowerOfTwo_fail_helper(@NotNull String input) {
         try {
-            read(input).get().roundUpToPowerOfTwo();
+            readStrict(input).get().roundUpToPowerOfTwo();
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -809,7 +809,7 @@ public class RationalTest {
     }
 
     private static void isBinaryFraction_helper(@NotNull String input, boolean output) {
-        aeq(read(input).get().isBinaryFraction(), output);
+        aeq(readStrict(input).get().isBinaryFraction(), output);
     }
 
     @Test
@@ -832,12 +832,12 @@ public class RationalTest {
     }
 
     private static void binaryFractionValueExact_helper(@NotNull String r, @NotNull String output) {
-        aeq(read(r).get().binaryFractionValueExact(), output);
+        aeq(readStrict(r).get().binaryFractionValueExact(), output);
     }
 
     private static void binaryFractionValueExact_fail_helper(@NotNull String r) {
         try {
-            read(r).get().binaryFractionValueExact();
+            readStrict(r).get().binaryFractionValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -862,12 +862,12 @@ public class RationalTest {
     }
 
     private static void binaryExponent_helper(@NotNull String input, int output) {
-        aeq(read(input).get().binaryExponent(), output);
+        aeq(readStrict(input).get().binaryExponent(), output);
     }
 
     private static void binaryExponent_fail_helper(@NotNull String input) {
         try {
-            read(input).get().binaryExponent();
+            readStrict(input).get().binaryExponent();
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -893,7 +893,7 @@ public class RationalTest {
     }
 
     private static void isEqualToFloat_helper(@NotNull String r, boolean output) {
-        isEqualToFloat_helper(read(r).get(), output);
+        isEqualToFloat_helper(readStrict(r).get(), output);
     }
 
     @Test
@@ -936,7 +936,7 @@ public class RationalTest {
     }
 
     private static void isEqualToDouble_helper(@NotNull String r, boolean output) {
-        isEqualToDouble_helper(read(r).get(), output);
+        isEqualToDouble_helper(readStrict(r).get(), output);
     }
 
     @Test
@@ -979,22 +979,22 @@ public class RationalTest {
             @NotNull String roundingMode,
             float output
     ) {
-        aeq(r.floatValue(Readers.readRoundingMode(roundingMode).get()), output);
+        aeq(r.floatValue(Readers.readRoundingModeStrict(roundingMode).get()), output);
     }
 
     private static void floatValue_RoundingMode_helper(@NotNull String r, @NotNull String roundingMode, float output) {
-        floatValue_RoundingMode_helper(read(r).get(), roundingMode, output);
+        floatValue_RoundingMode_helper(readStrict(r).get(), roundingMode, output);
     }
 
     private static void floatValue_RoundingMode_fail_helper(@NotNull Rational r, @NotNull String roundingMode) {
         try {
-            r.floatValue(Readers.readRoundingMode(roundingMode).get());
+            r.floatValue(Readers.readRoundingModeStrict(roundingMode).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
 
     private static void floatValue_RoundingMode_fail_helper(@NotNull String r, @NotNull String roundingMode) {
-        floatValue_RoundingMode_fail_helper(read(r).get(), roundingMode);
+        floatValue_RoundingMode_fail_helper(readStrict(r).get(), roundingMode);
     }
 
     @Test
@@ -1275,7 +1275,7 @@ public class RationalTest {
     }
 
     private static void floatValue_helper(@NotNull String r, float output) {
-        floatValue_helper(read(r).get(), output);
+        floatValue_helper(readStrict(r).get(), output);
     }
 
     @Test
@@ -1317,7 +1317,7 @@ public class RationalTest {
     }
 
     private static void floatValueExact_helper(@NotNull String r, float output) {
-        floatValueExact_helper(read(r).get(), output);
+        floatValueExact_helper(readStrict(r).get(), output);
     }
 
     private static void floatValueExact_fail_helper(@NotNull Rational r) {
@@ -1328,7 +1328,7 @@ public class RationalTest {
     }
 
     private static void floatValueExact_fail_helper(@NotNull String r) {
-        floatValueExact_fail_helper(read(r).get());
+        floatValueExact_fail_helper(readStrict(r).get());
     }
 
     @Test
@@ -1370,7 +1370,7 @@ public class RationalTest {
             @NotNull String roundingMode,
             double output
     ) {
-        aeq(r.doubleValue(Readers.readRoundingMode(roundingMode).get()), output);
+        aeq(r.doubleValue(Readers.readRoundingModeStrict(roundingMode).get()), output);
     }
 
     private static void doubleValue_RoundingMode_helper(
@@ -1378,18 +1378,18 @@ public class RationalTest {
             @NotNull String roundingMode,
             double output
     ) {
-        doubleValue_RoundingMode_helper(read(r).get(), roundingMode, output);
+        doubleValue_RoundingMode_helper(readStrict(r).get(), roundingMode, output);
     }
 
     private static void doubleValue_RoundingMode_fail_helper(@NotNull Rational r, @NotNull String roundingMode) {
         try {
-            r.doubleValue(Readers.readRoundingMode(roundingMode).get());
+            r.doubleValue(Readers.readRoundingModeStrict(roundingMode).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
 
     private static void doubleValue_RoundingMode_fail_helper(@NotNull String r, @NotNull String roundingMode) {
-        doubleValue_RoundingMode_fail_helper(read(r).get(), roundingMode);
+        doubleValue_RoundingMode_fail_helper(readStrict(r).get(), roundingMode);
     }
 
     @Test
@@ -1670,7 +1670,7 @@ public class RationalTest {
     }
 
     private static void doubleValue_helper(@NotNull String r, double output) {
-        doubleValue_helper(read(r).get(), output);
+        doubleValue_helper(readStrict(r).get(), output);
     }
 
     @Test
@@ -1712,7 +1712,7 @@ public class RationalTest {
     }
 
     private static void doubleValueExact_helper(@NotNull String r, double output) {
-        doubleValueExact_helper(read(r).get(), output);
+        doubleValueExact_helper(readStrict(r).get(), output);
     }
 
     private static void doubleValueExact_fail_helper(@NotNull Rational r) {
@@ -1723,7 +1723,7 @@ public class RationalTest {
     }
 
     private static void doubleValueExact_fail_helper(@NotNull String r) {
-        doubleValueExact_fail_helper(read(r).get());
+        doubleValueExact_fail_helper(readStrict(r).get());
     }
 
     @Test
@@ -1761,12 +1761,12 @@ public class RationalTest {
     }
 
     private static void hasTerminatingBaseExpansion_helper(@NotNull String r, @NotNull String base, boolean output) {
-        aeq(read(r).get().hasTerminatingBaseExpansion(Readers.readBigInteger(base).get()), output);
+        aeq(readStrict(r).get().hasTerminatingBaseExpansion(Readers.readBigIntegerStrict(base).get()), output);
     }
 
     private static void hasTerminatingBaseExpansion_fail_helper(@NotNull String r, @NotNull String base) {
         try {
-            read(r).get().hasTerminatingBaseExpansion(Readers.readBigInteger(base).get());
+            readStrict(r).get().hasTerminatingBaseExpansion(Readers.readBigIntegerStrict(base).get());
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -1850,7 +1850,11 @@ public class RationalTest {
             @NotNull String roundingMode,
             @NotNull String output
     ) {
-        aeq(read(r).get().bigDecimalValueByPrecision(precision, Readers.readRoundingMode(roundingMode).get()), output);
+        aeq(
+                readStrict(r).get()
+                        .bigDecimalValueByPrecision(precision, Readers.readRoundingModeStrict(roundingMode).get()),
+                output
+        );
     }
 
     private static void bigDecimalValueByPrecision_int_RoundingMode_fail_helper(
@@ -1859,7 +1863,8 @@ public class RationalTest {
             @NotNull String roundingMode
     ) {
         try {
-            read(r).get().bigDecimalValueByPrecision(precision, Readers.readRoundingMode(roundingMode).get());
+            readStrict(r).get()
+                    .bigDecimalValueByPrecision(precision, Readers.readRoundingModeStrict(roundingMode).get());
             fail();
         } catch (ArithmeticException | IllegalArgumentException ignored) {}
     }
@@ -2215,7 +2220,10 @@ public class RationalTest {
             @NotNull String roundingMode,
             @NotNull String output
     ) {
-        aeq(read(r).get().bigDecimalValueByScale(scale, Readers.readRoundingMode(roundingMode).get()), output);
+        aeq(
+                readStrict(r).get().bigDecimalValueByScale(scale, Readers.readRoundingModeStrict(roundingMode).get()),
+                output
+        );
     }
 
     private static void bigDecimalValueByScale_int_RoundingMode_fail_helper(
@@ -2224,7 +2232,7 @@ public class RationalTest {
             @NotNull String roundingMode
     ) {
         try {
-            read(r).get().bigDecimalValueByScale(scale, Readers.readRoundingMode(roundingMode).get());
+            readStrict(r).get().bigDecimalValueByScale(scale, Readers.readRoundingModeStrict(roundingMode).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -2471,12 +2479,12 @@ public class RationalTest {
             int precision,
             @NotNull String output
     ) {
-        aeq(read(r).get().bigDecimalValueByPrecision(precision), output);
+        aeq(readStrict(r).get().bigDecimalValueByPrecision(precision), output);
     }
 
     private static void bigDecimalValueByPrecision_int_fail_helper(@NotNull String r, int precision) {
         try {
-            read(r).get().bigDecimalValueByPrecision(precision);
+            readStrict(r).get().bigDecimalValueByPrecision(precision);
             fail();
         } catch (ArithmeticException | IllegalArgumentException ignored) {}
     }
@@ -2532,7 +2540,7 @@ public class RationalTest {
     }
 
     private static void bigDecimalValueByScale_int_helper(@NotNull String r, int scale, @NotNull String output) {
-        aeq(read(r).get().bigDecimalValueByScale(scale), output);
+        aeq(readStrict(r).get().bigDecimalValueByScale(scale), output);
     }
 
     @Test
@@ -2575,12 +2583,12 @@ public class RationalTest {
     }
 
     private static void bigDecimalValueExact_helper(@NotNull String input, @NotNull String output) {
-        bigDecimalValueExact_helper(read(input).get(), output);
+        bigDecimalValueExact_helper(readStrict(input).get(), output);
     }
 
     private static void bigDecimalValueExact_fail_helper(@NotNull String input) {
         try {
-            read(input).get().bigDecimalValueExact();
+            readStrict(input).get().bigDecimalValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -2617,7 +2625,7 @@ public class RationalTest {
     }
 
     private static void bitLength_helper(@NotNull String x, int output) {
-        aeq(read(x).get().bitLength(), output);
+        aeq(readStrict(x).get().bitLength(), output);
     }
 
     @Test
@@ -2631,7 +2639,7 @@ public class RationalTest {
     }
 
     private static void add_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().add(read(b).get()), output);
+        aeq(readStrict(a).get().add(readStrict(b).get()), output);
     }
 
     @Test
@@ -2661,7 +2669,7 @@ public class RationalTest {
     }
 
     private static void negate_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().negate(), read(output).get());
+        aeq(readStrict(input).get().negate(), readStrict(output).get());
     }
 
     @Test
@@ -2676,7 +2684,7 @@ public class RationalTest {
     }
 
     private static void abs_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().abs(), read(output).get());
+        aeq(readStrict(input).get().abs(), readStrict(output).get());
     }
 
     @Test
@@ -2691,7 +2699,7 @@ public class RationalTest {
     }
 
     private static void signum_helper(@NotNull String input, int output) {
-        aeq(read(input).get().signum(), output);
+        aeq(readStrict(input).get().signum(), output);
     }
 
     @Test
@@ -2706,7 +2714,7 @@ public class RationalTest {
     }
 
     private static void subtract_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().subtract(read(b).get()), output);
+        aeq(readStrict(a).get().subtract(readStrict(b).get()), output);
     }
 
     @Test
@@ -2736,7 +2744,7 @@ public class RationalTest {
     }
 
     private static void multiply_Rational_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().multiply(read(b).get()), output);
+        aeq(readStrict(a).get().multiply(readStrict(b).get()), output);
     }
 
     @Test
@@ -2766,7 +2774,7 @@ public class RationalTest {
     }
 
     private static void multiply_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().multiply(Readers.readBigInteger(b).get()), output);
+        aeq(readStrict(a).get().multiply(Readers.readBigIntegerStrict(b).get()), output);
     }
 
     @Test
@@ -2786,7 +2794,7 @@ public class RationalTest {
     }
 
     private static void multiply_int_helper(@NotNull String a, int b, @NotNull String output) {
-        aeq(read(a).get().multiply(b), output);
+        aeq(readStrict(a).get().multiply(b), output);
     }
 
     @Test
@@ -2806,12 +2814,12 @@ public class RationalTest {
     }
 
     private static void invert_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().invert(), output);
+        aeq(readStrict(input).get().invert(), output);
     }
 
     private static void invert_fail_helper(@NotNull String input) {
         try {
-            read(input).get().invert();
+            readStrict(input).get().invert();
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -2828,12 +2836,12 @@ public class RationalTest {
     }
 
     private static void divide_Rational_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().divide(read(b).get()), output);
+        aeq(readStrict(a).get().divide(readStrict(b).get()), output);
     }
 
     private static void divide_Rational_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().divide(read(b).get());
+            readStrict(a).get().divide(readStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -2866,12 +2874,12 @@ public class RationalTest {
     }
 
     private static void divide_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().divide(Readers.readBigInteger(b).get()), output);
+        aeq(readStrict(a).get().divide(Readers.readBigIntegerStrict(b).get()), output);
     }
 
     private static void divide_BigInteger_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().divide(Readers.readBigInteger(b).get());
+            readStrict(a).get().divide(Readers.readBigIntegerStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -2894,12 +2902,12 @@ public class RationalTest {
     }
 
     private static void divide_int_helper(@NotNull String a, int b, @NotNull String output) {
-        aeq(read(a).get().divide(b), output);
+        aeq(readStrict(a).get().divide(b), output);
     }
 
     private static void divide_int_fail_helper(@NotNull String a, int b) {
         try {
-            read(a).get().divide(b);
+            readStrict(a).get().divide(b);
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -2922,7 +2930,7 @@ public class RationalTest {
     }
 
     private static void shiftLeft_helper(@NotNull String r, int bits, @NotNull String output) {
-        aeq(read(r).get().shiftLeft(bits), output);
+        aeq(readStrict(r).get().shiftLeft(bits), output);
     }
 
     @Test
@@ -2981,7 +2989,7 @@ public class RationalTest {
     }
 
     private static void shiftRight_helper(@NotNull String r, int bits, @NotNull String output) {
-        aeq(read(r).get().shiftRight(bits), output);
+        aeq(readStrict(r).get().shiftRight(bits), output);
     }
 
     @Test
@@ -3151,12 +3159,12 @@ public class RationalTest {
     }
 
     private static void pow_helper(@NotNull String r, int p, @NotNull String output) {
-        aeq(read(r).get().pow(p), output);
+        aeq(readStrict(r).get().pow(p), output);
     }
 
     private static void pow_fail_helper(@NotNull String r, int p) {
         try {
-            read(r).get().pow(p);
+            readStrict(r).get().pow(p);
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -3214,7 +3222,7 @@ public class RationalTest {
     }
 
     private static void fractionalPart_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().fractionalPart(), output);
+        aeq(readStrict(input).get().fractionalPart(), output);
     }
 
     @Test
@@ -3238,8 +3246,8 @@ public class RationalTest {
     ) {
         aeq(
                 r.roundToDenominator(
-                        Readers.readBigInteger(denominator).get(),
-                        Readers.readRoundingMode(roundingMode).get()
+                        Readers.readBigIntegerStrict(denominator).get(),
+                        Readers.readRoundingModeStrict(roundingMode).get()
                 ),
                 output
         );
@@ -3251,7 +3259,7 @@ public class RationalTest {
             @NotNull String roundingMode,
             @NotNull String output
     ) {
-        roundToDenominator_helper(read(r).get(), denominator, roundingMode, output);
+        roundToDenominator_helper(readStrict(r).get(), denominator, roundingMode, output);
     }
 
     private static void roundToDenominator_fail_helper(
@@ -3261,8 +3269,8 @@ public class RationalTest {
     ) {
         try {
             r.roundToDenominator(
-                    Readers.readBigInteger(denominator).get(),
-                    Readers.readRoundingMode(roundingMode).get()
+                    Readers.readBigIntegerStrict(denominator).get(),
+                    Readers.readRoundingModeStrict(roundingMode).get()
             );
             fail();
         } catch (ArithmeticException ignored) {}
@@ -3293,7 +3301,7 @@ public class RationalTest {
     }
 
     private static void continuedFraction_helper(@NotNull String input, @NotNull String output) {
-        continuedFraction_helper(read(input).get(), output);
+        continuedFraction_helper(readStrict(input).get(), output);
     }
 
     @Test
@@ -3347,7 +3355,7 @@ public class RationalTest {
     }
 
     private static void convergentsHelper(@NotNull String x, @NotNull String output) {
-        aeqit(read(x).get().convergents(), output);
+        aeqit(readStrict(x).get().convergents(), output);
     }
 
     private static void convergentsHelper(double x, @NotNull String output) {
@@ -3425,7 +3433,7 @@ public class RationalTest {
             @NotNull String repeating
     ) {
         Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>> result =
-                r.positionalNotation(Readers.readBigInteger(base).get());
+                r.positionalNotation(Readers.readBigIntegerStrict(base).get());
         aeq(result.a, beforeDecimalPoint);
         aeq(result.b, nonrepeating);
         aeq(result.c, repeating);
@@ -3438,12 +3446,12 @@ public class RationalTest {
             @NotNull String nonrepeating,
             @NotNull String repeating
     ) {
-        positionalNotation_helper(read(r).get(), base, beforeDecimalPoint, nonrepeating, repeating);
+        positionalNotation_helper(readStrict(r).get(), base, beforeDecimalPoint, nonrepeating, repeating);
     }
 
     private static void positionalNotation_fail_helper(@NotNull String r, @NotNull String base) {
         try {
-            read(r).get().positionalNotation(Readers.readBigInteger(base).get());
+            readStrict(r).get().positionalNotation(Readers.readBigIntegerStrict(base).get());
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -3556,7 +3564,7 @@ public class RationalTest {
     ) {
         aeq(
                 fromPositionalNotation(
-                        Readers.readBigInteger(base).get(),
+                        Readers.readBigIntegerStrict(base).get(),
                         readBigIntegerList(beforeDecimalPoint),
                         readBigIntegerList(nonrepeating),
                         readBigIntegerList(repeating)
@@ -3573,7 +3581,7 @@ public class RationalTest {
     ) {
         try {
             fromPositionalNotation(
-                    Readers.readBigInteger(base).get(),
+                    Readers.readBigIntegerStrict(base).get(),
                     readBigIntegerList(beforeDecimalPoint),
                     readBigIntegerList(nonrepeating),
                     readBigIntegerList(repeating)
@@ -3709,7 +3717,7 @@ public class RationalTest {
             @NotNull String beforeDecimal,
             @NotNull String afterDecimal
     ) {
-        Pair<List<BigInteger>, Iterable<BigInteger>> digits = r.digits(Readers.readBigInteger(base).get());
+        Pair<List<BigInteger>, Iterable<BigInteger>> digits = r.digits(Readers.readBigIntegerStrict(base).get());
         aeq(digits.a, beforeDecimal);
         aeqitLimit(TINY_LIMIT, digits.b, afterDecimal);
     }
@@ -3720,12 +3728,12 @@ public class RationalTest {
             @NotNull String beforeDecimal,
             @NotNull String afterDecimal
     ) {
-        digitsHelper(read(r).get(), base, beforeDecimal, afterDecimal);
+        digitsHelper(readStrict(r).get(), base, beforeDecimal, afterDecimal);
     }
 
     private static void digitsFail(@NotNull String r, @NotNull String base) {
         try {
-            read(r).get().digits(Readers.readBigInteger(base).get());
+            readStrict(r).get().digits(Readers.readBigIntegerStrict(base).get());
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -3880,9 +3888,9 @@ public class RationalTest {
             int offset
     ) {
         Pair<List<BigInteger>, Integer> cld = commonLeadingDigits(
-                Readers.readBigInteger(base).get(),
-                read(a).get(),
-                read(b).get()
+                Readers.readBigIntegerStrict(base).get(),
+                readStrict(a).get(),
+                readStrict(b).get()
         );
         aeq(cld.a, digits);
         aeq(cld.b, offset);
@@ -3890,7 +3898,7 @@ public class RationalTest {
 
     private static void commonLeadingDigits_fail_helper(@NotNull String base, @NotNull String a, @NotNull String b) {
         try {
-            commonLeadingDigits(Readers.readBigInteger(base).get(), read(a).get(), read(b).get());
+            commonLeadingDigits(Readers.readBigIntegerStrict(base).get(), readStrict(a).get(), readStrict(b).get());
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -3922,7 +3930,7 @@ public class RationalTest {
             @NotNull String base,
             @NotNull String output
     ) {
-        aeq(r.toStringBase(Readers.readBigInteger(base).get()), output);
+        aeq(r.toStringBase(Readers.readBigIntegerStrict(base).get()), output);
     }
 
     private static void toStringBase_BigInteger_helper(
@@ -3930,12 +3938,12 @@ public class RationalTest {
             @NotNull String base,
             @NotNull String output
     ) {
-        toStringBase_BigInteger_helper(read(r).get(), base, output);
+        toStringBase_BigInteger_helper(readStrict(r).get(), base, output);
     }
 
     private static void toStringBase_BigInteger_fail_helper(@NotNull String r, @NotNull String base) {
         try {
-            read(r).get().toStringBase(Readers.readBigInteger(base).get());
+            readStrict(r).get().toStringBase(Readers.readBigIntegerStrict(base).get());
             fail();
         } catch (IllegalArgumentException | ArithmeticException ignored) {}
     }
@@ -3985,7 +3993,7 @@ public class RationalTest {
             int scale,
             @NotNull String output
     ) {
-        aeq(r.toStringBase(Readers.readBigInteger(base).get(), scale), output);
+        aeq(r.toStringBase(Readers.readBigIntegerStrict(base).get(), scale), output);
     }
 
     private static void toStringBase_BigInteger_int_helper(
@@ -3994,12 +4002,12 @@ public class RationalTest {
             int scale,
             @NotNull String output
     ) {
-        toStringBase_BigInteger_int_helper(read(r).get(), base, scale, output);
+        toStringBase_BigInteger_int_helper(readStrict(r).get(), base, scale, output);
     }
 
     private static void toStringBase_BigInteger_int_fail_helper(@NotNull String r, @NotNull String base, int scale) {
         try {
-            read(r).get().toStringBase(Readers.readBigInteger(base).get(), scale);
+            readStrict(r).get().toStringBase(Readers.readBigIntegerStrict(base).get(), scale);
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -4082,12 +4090,12 @@ public class RationalTest {
     }
 
     private static void fromStringBase_helper(@NotNull String s, @NotNull String base, @NotNull Object output) {
-        aeq(fromStringBase(s, Readers.readBigInteger(base).get()), output);
+        aeq(fromStringBase(s, Readers.readBigIntegerStrict(base).get()), output);
     }
 
     private static void fromStringBase_fail_helper(@NotNull String s, @NotNull String base) {
         try {
-            fromStringBase(s, Readers.readBigInteger(base).get());
+            fromStringBase(s, Readers.readBigIntegerStrict(base).get());
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -4202,7 +4210,7 @@ public class RationalTest {
     }
 
     private static void hashCode_helper(@NotNull String input, int hashCode) {
-        aeq(read(input).get().hashCode(), hashCode);
+        aeq(readStrict(input).get().hashCode(), hashCode);
     }
 
     @Test
@@ -4220,83 +4228,57 @@ public class RationalTest {
         testCompareToHelper(readRationalList("[-4, -5/12, 0, 5/12, 1, 4]"));
     }
 
-    private static void read_helper(@NotNull String input) {
-        aeq(read(input).get(), input);
+    private static void readStrict_helper(@NotNull String input) {
+        aeq(readStrict(input).get(), input);
     }
 
-    private static void read_fail_helper(@NotNull String input) {
-        assertFalse(read(input).isPresent());
-    }
-
-    @Test
-    public void testRead() {
-        read_helper("0");
-        read_helper("1");
-        read_helper("3");
-        read_helper("-3");
-        read_helper("5/12");
-        read_helper("-5/12");
-        read_fail_helper("2/0");
-        read_fail_helper("");
-        read_fail_helper(" ");
-        read_fail_helper("1 ");
-        read_fail_helper("01");
-        read_fail_helper("-");
-        read_fail_helper("-0");
-        read_fail_helper("--5");
-        read_fail_helper("0.1");
-        read_fail_helper("/1");
-        read_fail_helper("/");
-        read_fail_helper("2//3");
-        read_fail_helper("2/");
-        read_fail_helper("2 /3");
-        read_fail_helper("2/ 3");
-        read_fail_helper("2 / 3");
-        read_fail_helper("a");
-        read_fail_helper("2-3");
-        read_fail_helper("0x12");
-        read_fail_helper("12/3a");
-        read_fail_helper("12/6");
-        read_fail_helper("12/-6");
-        read_fail_helper("6/8");
-        read_fail_helper("4/1");
-    }
-
-    private static void findIn_helper(@NotNull String input, @NotNull String output, int index) {
-        Pair<Rational, Integer> result = findIn(input).get();
-        aeq(result.a, output);
-        aeq(result.b, index);
-    }
-
-    private static void findIn_fail_helper(@NotNull String input) {
-        assertFalse(findIn(input).isPresent());
+    private static void readStrict_fail_helper(@NotNull String input) {
+        assertFalse(readStrict(input).isPresent());
     }
 
     @Test
-    public void testFindIn() {
-        findIn_helper("abcd1234xyz", "1234", 4);
-        findIn_helper("0123", "0", 0);
-        findIn_helper("1-23", "1", 0);
-        findIn_helper("a-23", "-23", 1);
-        findIn_helper("---34--4", "-34", 2);
-        findIn_helper(" 20.1 ", "20", 1);
-        findIn_helper("ads4/3d", "4/3", 3);
-        findIn_helper("101/101", "101/10", 0);
-        findIn_helper("5/0", "5", 0);
-        findIn_fail_helper("");
-        findIn_fail_helper("hello");
-        findIn_fail_helper("vdfsvfbf");
+    public void testReadStrict() {
+        readStrict_helper("0");
+        readStrict_helper("1");
+        readStrict_helper("3");
+        readStrict_helper("-3");
+        readStrict_helper("5/12");
+        readStrict_helper("-5/12");
+        readStrict_fail_helper("2/0");
+        readStrict_fail_helper("");
+        readStrict_fail_helper(" ");
+        readStrict_fail_helper("1 ");
+        readStrict_fail_helper("01");
+        readStrict_fail_helper("-");
+        readStrict_fail_helper("-0");
+        readStrict_fail_helper("--5");
+        readStrict_fail_helper("0.1");
+        readStrict_fail_helper("/1");
+        readStrict_fail_helper("/");
+        readStrict_fail_helper("2//3");
+        readStrict_fail_helper("2/");
+        readStrict_fail_helper("2 /3");
+        readStrict_fail_helper("2/ 3");
+        readStrict_fail_helper("2 / 3");
+        readStrict_fail_helper("a");
+        readStrict_fail_helper("2-3");
+        readStrict_fail_helper("0x12");
+        readStrict_fail_helper("12/3a");
+        readStrict_fail_helper("12/6");
+        readStrict_fail_helper("12/-6");
+        readStrict_fail_helper("6/8");
+        readStrict_fail_helper("4/1");
     }
 
     private static @NotNull List<BigInteger> readBigIntegerList(@NotNull String s) {
-        return Readers.readList(Readers::readBigInteger).apply(s).get();
+        return Readers.readListStrict(Readers::readBigIntegerStrict).apply(s).get();
     }
 
     private static @NotNull List<Rational> readRationalList(@NotNull String s) {
-        return Readers.readList(Rational::read).apply(s).get();
+        return Readers.readListStrict(Rational::readStrict).apply(s).get();
     }
 
     private static @NotNull List<Rational> readRationalListWithNulls(@NotNull String s) {
-        return Readers.readListWithNulls(Rational::read).apply(s).get();
+        return Readers.readListWithNullsStrict(Rational::readStrict).apply(s).get();
     }
 }

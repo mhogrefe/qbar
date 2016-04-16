@@ -25,8 +25,7 @@ public class MonomialOrderProperties extends QBarTestProperties {
     @Override
     protected void testBothModes() {
         propertiesCompare();
-        propertiesRead();
-        propertiesFindIn();
+        propertiesReadStrict();
     }
 
     private void propertiesCompare() {
@@ -64,28 +63,16 @@ public class MonomialOrderProperties extends QBarTestProperties {
         }
     }
 
-    private void propertiesRead() {
-        initialize("read(String)");
+    private void propertiesReadStrict() {
+        initialize("readStrict(String)");
         QBarTesting.propertiesReadHelper(
             LIMIT,
             P,
             MONOMIAL_ORDER_CHARS,
             P.monomialOrders(),
-            MonomialOrder::read,
+            MonomialOrder::readStrict,
             o -> {},
             false
-        );
-    }
-
-    private void propertiesFindIn() {
-        initialize("findIn(String)");
-        propertiesFindInHelper(
-                LIMIT,
-                P.getWheelsProvider(),
-                P.monomialOrders(),
-                MonomialOrder::read,
-                MonomialOrder::findIn,
-                o -> {}
         );
     }
 }

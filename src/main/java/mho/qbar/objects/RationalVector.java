@@ -722,34 +722,11 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * @return the {@code RationalVector} represented by {@code s}, or an empty {@code Optional} if {@code s} is
      * invalid
      */
-    public static @NotNull Optional<RationalVector> read(@NotNull String s) {
-        Optional<List<Rational>> ors = Readers.readList(Rational::read).apply(s);
+    public static @NotNull Optional<RationalVector> readStrict(@NotNull String s) {
+        Optional<List<Rational>> ors = Readers.readListStrict(Rational::readStrict).apply(s);
         if (!ors.isPresent()) return Optional.empty();
         if (ors.get().isEmpty()) return Optional.of(ZERO_DIMENSIONAL);
         return Optional.of(new RationalVector(ors.get()));
-    }
-
-    /**
-     * Finds the first occurrence of a {@code RationalVector} in a {@code String}. Returns the {@code RationalVector}
-     * and the index at which it was found. Returns an empty {@code Optional} if no {@code RationalVector} is found.
-     * Only {@code String}s which could have been emitted by {@link RationalVector#toString} are recognized. The
-     * longest possible {@code RationalVector} is parsed.
-     *
-     * <ul>
-     *  <li>{@code s} must be non-null.</li>
-     *  <li>The result is non-null. If it is non-empty, then neither of the {@code Pair}'s components is null, and the
-     *  second component is non-negative.</li>
-     * </ul>
-     *
-     * @param s the input {@code String}
-     * @return the first {@code RationalVector} found in {@code s}, and the index at which it was found
-     */
-    public static @NotNull Optional<Pair<RationalVector, Integer>> findIn(@NotNull String s) {
-        Optional<Pair<List<Rational>, Integer>> op = Readers.findListIn(Rational::read, "-/0123456789", s);
-        if (!op.isPresent()) return Optional.empty();
-        Pair<List<Rational>, Integer> p = op.get();
-        if (p.a.isEmpty()) return Optional.of(new Pair<>(ZERO_DIMENSIONAL, p.b));
-        return Optional.of(new Pair<>(new RationalVector(p.a), p.b));
     }
 
     /**

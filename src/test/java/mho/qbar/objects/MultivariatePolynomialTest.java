@@ -23,7 +23,7 @@ public class MultivariatePolynomialTest {
     }
 
     private static void iterator_helper(@NotNull String x, @NotNull String output) {
-        aeq(toList(read(x).get()), output);
+        aeq(toList(readStrict(x).get()), output);
     }
 
     @Test
@@ -39,7 +39,7 @@ public class MultivariatePolynomialTest {
     }
 
     private static void coefficient_helper(@NotNull String p, @NotNull String ev, @NotNull String output) {
-        aeq(read(p).get().coefficient(ExponentVector.read(ev).get()), output);
+        aeq(readStrict(p).get().coefficient(ExponentVector.readStrict(ev).get()), output);
     }
 
     @Test
@@ -108,7 +108,7 @@ public class MultivariatePolynomialTest {
             @NotNull String c,
             @NotNull String output
     ) {
-        MultivariatePolynomial p = of(ExponentVector.read(ev).get(), Readers.readBigInteger(c).get());
+        MultivariatePolynomial p = of(ExponentVector.readStrict(ev).get(), Readers.readBigIntegerStrict(c).get());
         p.validate();
         aeq(p, output);
     }
@@ -133,7 +133,7 @@ public class MultivariatePolynomialTest {
     }
 
     private static void of_BigInteger_helper(@NotNull String input) {
-        MultivariatePolynomial p = of(Readers.readBigInteger(input).get());
+        MultivariatePolynomial p = of(Readers.readBigIntegerStrict(input).get());
         p.validate();
         aeq(p, input);
     }
@@ -163,7 +163,7 @@ public class MultivariatePolynomialTest {
     }
 
     private static void of_Polynomial_Variable_helper(@NotNull String p, @NotNull String v, @NotNull String output) {
-        MultivariatePolynomial q = of(Polynomial.read(p).get(), Variable.read(v).get());
+        MultivariatePolynomial q = of(Polynomial.readStrict(p).get(), Variable.readStrict(v).get());
         q.validate();
         aeq(q, output);
     }
@@ -184,12 +184,12 @@ public class MultivariatePolynomialTest {
     }
 
     private static void toPolynomial_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().toPolynomial(), output);
+        aeq(readStrict(input).get().toPolynomial(), output);
     }
 
     private static void toPolynomial_fail_helper(@NotNull String input) {
         try {
-            read(input).get().toPolynomial();
+            readStrict(input).get().toPolynomial();
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -209,7 +209,7 @@ public class MultivariatePolynomialTest {
     }
 
     private static void variables_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().variables(), output);
+        aeq(readStrict(input).get().variables(), output);
     }
 
     @Test
@@ -225,7 +225,7 @@ public class MultivariatePolynomialTest {
     }
 
     private static void variableCount_helper(@NotNull String input, int output) {
-        aeq(read(input).get().variableCount(), output);
+        aeq(readStrict(input).get().variableCount(), output);
     }
 
     @Test
@@ -241,7 +241,7 @@ public class MultivariatePolynomialTest {
     }
 
     private static void termCount_helper(@NotNull String input, int output) {
-        aeq(read(input).get().termCount(), output);
+        aeq(readStrict(input).get().termCount(), output);
     }
 
     @Test
@@ -257,7 +257,7 @@ public class MultivariatePolynomialTest {
     }
 
     private static void maxCoefficientBitLength_helper(@NotNull String input, int output) {
-        aeq(read(input).get().maxCoefficientBitLength(), output);
+        aeq(readStrict(input).get().maxCoefficientBitLength(), output);
     }
 
     @Test
@@ -273,7 +273,7 @@ public class MultivariatePolynomialTest {
     }
 
     private static void degree_helper(@NotNull String input, int output) {
-        aeq(read(input).get().degree(), output);
+        aeq(readStrict(input).get().degree(), output);
     }
 
     @Test
@@ -289,7 +289,7 @@ public class MultivariatePolynomialTest {
     }
 
     private static void add_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        MultivariatePolynomial p = read(a).get().add(read(b).get());
+        MultivariatePolynomial p = readStrict(a).get().add(readStrict(b).get());
         p.validate();
         aeq(p, output);
     }
@@ -373,7 +373,7 @@ public class MultivariatePolynomialTest {
     }
 
     private static void negate_helper(@NotNull String input, @NotNull String output) {
-        MultivariatePolynomial p = read(input).get().negate();
+        MultivariatePolynomial p = readStrict(input).get().negate();
         p.validate();
         aeq(p, output);
     }
@@ -391,7 +391,7 @@ public class MultivariatePolynomialTest {
     }
 
     private static void subtract_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        MultivariatePolynomial p = read(a).get().subtract(read(b).get());
+        MultivariatePolynomial p = readStrict(a).get().subtract(readStrict(b).get());
         p.validate();
         aeq(p, output);
     }
@@ -474,7 +474,7 @@ public class MultivariatePolynomialTest {
     }
 
     private static void multiply_int_helper(@NotNull String a, int b, @NotNull String output) {
-        MultivariatePolynomial p = read(a).get().multiply(b);
+        MultivariatePolynomial p = readStrict(a).get().multiply(b);
         p.validate();
         aeq(p, output);
     }
@@ -523,7 +523,7 @@ public class MultivariatePolynomialTest {
     }
 
     private static void multiply_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        MultivariatePolynomial p = read(a).get().multiply(Readers.readBigInteger(b).get());
+        MultivariatePolynomial p = readStrict(a).get().multiply(Readers.readBigIntegerStrict(b).get());
         p.validate();
         aeq(p, output);
     }
@@ -577,8 +577,8 @@ public class MultivariatePolynomialTest {
             @NotNull String c,
             @NotNull String output
     ) {
-        MultivariatePolynomial q = read(p).get()
-                .multiply(ExponentVector.read(ev).get(), Readers.readBigInteger(c).get());
+        MultivariatePolynomial q = readStrict(p).get()
+                .multiply(ExponentVector.readStrict(ev).get(), Readers.readBigIntegerStrict(c).get());
         q.validate();
         aeq(q, output);
     }
@@ -634,7 +634,7 @@ public class MultivariatePolynomialTest {
             @NotNull String b,
             @NotNull String output
     ) {
-        MultivariatePolynomial p = read(a).get().multiply(read(b).get());
+        MultivariatePolynomial p = readStrict(a).get().multiply(readStrict(b).get());
         p.validate();
         aeq(p, output);
     }
@@ -727,14 +727,14 @@ public class MultivariatePolynomialTest {
     }
 
     private static void shiftLeft_helper(@NotNull String p, int bits, @NotNull String output) {
-        MultivariatePolynomial q = read(p).get().shiftLeft(bits);
+        MultivariatePolynomial q = readStrict(p).get().shiftLeft(bits);
         q.validate();
         aeq(q, output);
     }
 
     private static void shiftLeft_fail_helper(@NotNull String p, int bits) {
         try {
-            read(p).get().shiftLeft(bits);
+            readStrict(p).get().shiftLeft(bits);
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -803,7 +803,7 @@ public class MultivariatePolynomialTest {
     }
 
     private static void hashCode_helper(@NotNull String input, int hashCode) {
-        aeq(read(input).get().hashCode(), hashCode);
+        aeq(readStrict(input).get().hashCode(), hashCode);
     }
 
     @Test
@@ -825,86 +825,60 @@ public class MultivariatePolynomialTest {
         );
     }
 
-    private static void read_helper(@NotNull String input) {
-        MultivariatePolynomial p = read(input).get();
+    private static void readStrict_helper(@NotNull String input) {
+        MultivariatePolynomial p = readStrict(input).get();
         p.validate();
         aeq(p, input);
     }
 
-    private static void read_fail_helper(@NotNull String input) {
-        assertFalse(read(input).isPresent());
+    private static void readStrict_fail_helper(@NotNull String input) {
+        assertFalse(readStrict(input).isPresent());
     }
 
     @Test
-    public void testRead() {
-        read_helper("0");
-        read_helper("1");
-        read_helper("-17");
-        read_helper("ooo");
-        read_helper("-ooo");
-        read_helper("a*b*c");
-        read_helper("x^2-4*x+7");
-        read_helper("a+b+c+d+e+f");
-        read_fail_helper("");
-        read_fail_helper("hello");
-        read_fail_helper(" ");
-        read_fail_helper("00");
-        read_fail_helper("-0");
-        read_fail_helper("1/2");
-        read_fail_helper("1*x");
-        read_fail_helper("x*2");
-        read_fail_helper("0*x");
-        read_fail_helper("-1*x");
-        read_fail_helper("a*a");
-        read_fail_helper("a^1");
-        read_fail_helper("a^0");
-        read_fail_helper("a^-1");
-        read_fail_helper("b*a");
-        read_fail_helper("-4*x+x^2+7");
-        read_fail_helper("b+a+c+d+e+f");
-        read_fail_helper("a+a");
-        read_fail_helper("a+0");
-        read_fail_helper("a+-1");
-        read_fail_helper("*x");
-        read_fail_helper("+x");
-        read_fail_helper("+1");
-        read_fail_helper("+0");
-    }
-
-    private static void findIn_helper(@NotNull String input, @NotNull String output, int index) {
-        Pair<MultivariatePolynomial, Integer> result = findIn(input).get();
-        result.a.validate();
-        aeq(result.a, output);
-        aeq(result.b, index);
-    }
-
-    private static void findIn_fail_helper(@NotNull String input) {
-        assertFalse(findIn(input).isPresent());
-    }
-
-    @Test
-    public void testFindIn() {
-        findIn_helper("foobar", "f", 0);
-        findIn_helper("oobar", "oo", 0);
-        findIn_helper("3*x^2", "3*x^2", 0);
-        findIn_helper("03*x^2", "0", 0);
-        findIn_helper("^3*x^2", "3*x^2", 1);
-
-        findIn_fail_helper("");
-        findIn_fail_helper("*");
-        findIn_fail_helper("^");
-        findIn_fail_helper("-");
-        findIn_fail_helper("+");
+    public void testReadStrict() {
+        readStrict_helper("0");
+        readStrict_helper("1");
+        readStrict_helper("-17");
+        readStrict_helper("ooo");
+        readStrict_helper("-ooo");
+        readStrict_helper("a*b*c");
+        readStrict_helper("x^2-4*x+7");
+        readStrict_helper("a+b+c+d+e+f");
+        readStrict_fail_helper("");
+        readStrict_fail_helper("hello");
+        readStrict_fail_helper(" ");
+        readStrict_fail_helper("00");
+        readStrict_fail_helper("-0");
+        readStrict_fail_helper("1/2");
+        readStrict_fail_helper("1*x");
+        readStrict_fail_helper("x*2");
+        readStrict_fail_helper("0*x");
+        readStrict_fail_helper("-1*x");
+        readStrict_fail_helper("a*a");
+        readStrict_fail_helper("a^1");
+        readStrict_fail_helper("a^0");
+        readStrict_fail_helper("a^-1");
+        readStrict_fail_helper("b*a");
+        readStrict_fail_helper("-4*x+x^2+7");
+        readStrict_fail_helper("b+a+c+d+e+f");
+        readStrict_fail_helper("a+a");
+        readStrict_fail_helper("a+0");
+        readStrict_fail_helper("a+-1");
+        readStrict_fail_helper("*x");
+        readStrict_fail_helper("+x");
+        readStrict_fail_helper("+1");
+        readStrict_fail_helper("+0");
     }
 
     private static @NotNull List<Pair<ExponentVector, BigInteger>> readExponentVectorBigIntegerPairList(
             @NotNull String s
     ) {
-        return Readers.readList(
+        return Readers.readListStrict(
                 u -> Pair.read(
                         u,
-                        t -> NullableOptional.fromOptional(ExponentVector.read(t)),
-                        t -> NullableOptional.fromOptional(Readers.readBigInteger(t))
+                        t -> NullableOptional.fromOptional(ExponentVector.readStrict(t)),
+                        t -> NullableOptional.fromOptional(Readers.readBigIntegerStrict(t))
                 )
         ).apply(s).get();
     }
@@ -912,15 +886,15 @@ public class MultivariatePolynomialTest {
     private static @NotNull List<Pair<ExponentVector, BigInteger>> readExponentVectorBigIntegerPairListWithNulls(
             @NotNull String s
     ) {
-        return Readers.readListWithNulls(
+        return Readers.readListWithNullsStrict(
                 u -> Pair.read(
-                        u, Readers.readWithNulls(ExponentVector::read),
-                        Readers.readWithNulls(Readers::readBigInteger)
+                        u, Readers.readWithNullsStrict(ExponentVector::readStrict),
+                        Readers.readWithNullsStrict(Readers::readBigIntegerStrict)
                 )
         ).apply(s).get();
     }
 
     private static @NotNull List<MultivariatePolynomial> readMultivariatePolynomialList(@NotNull String s) {
-        return Readers.readList(MultivariatePolynomial::read).apply(s).get();
+        return Readers.readListStrict(MultivariatePolynomial::readStrict).apply(s).get();
     }
 }

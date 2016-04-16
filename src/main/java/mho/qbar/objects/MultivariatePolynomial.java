@@ -678,7 +678,7 @@ public final class MultivariatePolynomial implements
      * @return the {@code MultivariatePolynomial} represented by {@code s}, or an empty {@code Optional} if {@code s}
      * is invalid
      */
-    public static @NotNull Optional<MultivariatePolynomial> read(@NotNull String s) {
+    public static @NotNull Optional<MultivariatePolynomial> readStrict(@NotNull String s) {
         if (s.equals("0")) return Optional.of(ZERO);
         if (s.equals("1")) return Optional.of(ONE);
         if (s.isEmpty() || head(s) == '+') return Optional.empty();
@@ -713,13 +713,13 @@ public final class MultivariatePolynomial implements
             if (monomialString.isEmpty()) return Optional.empty();
             char head = head(monomialString);
             if (all(c -> c < 'a' || c > 'z', monomialString)) {
-                Optional<BigInteger> oConstant = Readers.readBigInteger(monomialString);
+                Optional<BigInteger> oConstant = Readers.readBigIntegerStrict(monomialString);
                 if (!oConstant.isPresent()) return Optional.empty();
                 BigInteger constant = oConstant.get();
                 if (constant.equals(BigInteger.ZERO)) return Optional.empty();
                 terms.add(new Pair<>(ExponentVector.ONE, constant));
             } else if (head >= 'a' && head <= 'z') {
-                Optional<ExponentVector> oExponentVector = ExponentVector.read(monomialString);
+                Optional<ExponentVector> oExponentVector = ExponentVector.readStrict(monomialString);
                 if (!oExponentVector.isPresent()) return Optional.empty();
                 terms.add(new Pair<>(oExponentVector.get(), BigInteger.ONE));
             } else {
@@ -727,7 +727,7 @@ public final class MultivariatePolynomial implements
                     if (monomialString.length() == 1) return Optional.empty();
                     char second = monomialString.charAt(1);
                     if (second >= 'a' && second <= 'z') {
-                        Optional<ExponentVector> oExponentVector = ExponentVector.read(tail(monomialString));
+                        Optional<ExponentVector> oExponentVector = ExponentVector.readStrict(tail(monomialString));
                         if (!oExponentVector.isPresent()) return Optional.empty();
                         terms.add(new Pair<>(oExponentVector.get(), IntegerUtils.NEGATIVE_ONE));
                         continue;
@@ -735,7 +735,7 @@ public final class MultivariatePolynomial implements
                 }
                 int starIndex = monomialString.indexOf('*');
                 if (starIndex == -1) return Optional.empty();
-                Optional<BigInteger> oFactor = Readers.readBigInteger(monomialString.substring(0, starIndex));
+                Optional<BigInteger> oFactor = Readers.readBigIntegerStrict(monomialString.substring(0, starIndex));
                 if (!oFactor.isPresent()) return Optional.empty();
                 BigInteger factor = oFactor.get();
                 if (factor.equals(BigInteger.ZERO) || factor.equals(BigInteger.ONE) ||
@@ -743,7 +743,7 @@ public final class MultivariatePolynomial implements
                     return Optional.empty();
                 }
                 Optional<ExponentVector> oExponentVector =
-                        ExponentVector.read(monomialString.substring(starIndex + 1));
+                        ExponentVector.readStrict(monomialString.substring(starIndex + 1));
                 if (!oExponentVector.isPresent()) return Optional.empty();
                 ExponentVector exponentVector = oExponentVector.get();
                 terms.add(new Pair<>(exponentVector, factor));
@@ -752,27 +752,6 @@ public final class MultivariatePolynomial implements
         //noinspection RedundantCast
         if (!increasing((Iterable<ExponentVector>) map(t -> t.a, terms))) return Optional.empty();
         return Optional.of(new MultivariatePolynomial(terms));
-    }
-
-    /**
-     * Finds the first occurrence of a {@code MultivariatePolynomial} in a {@code String}. Returns the
-     * {@code MultivariatePolynomial} and the index at which it was found. Returns an empty {@code Optional} if no
-     * {@code MultivariatePolynomial} is found. Only {@code String}s which could have been emitted by
-     * {@link MultivariatePolynomial#toString} are recognized. The longest possible {@code MultivariatePolynomial} is
-     * parsed.
-     *
-     * <ul>
-     *  <li>{@code s} must be non-null.</li>
-     *  <li>The result is non-null. If it is non-empty, then neither of the {@code Pair}'s components is null, and the
-     *  second component is non-negative.</li>
-     * </ul>
-     *
-     * @param s the input {@code String}
-     * @return the first {@code MultivariatePolynomial} found in {@code s}, and the index at which it was found
-     */
-    public static @NotNull Optional<Pair<MultivariatePolynomial, Integer>> findIn(@NotNull String s) {
-        return Readers.genericFindIn(MultivariatePolynomial::read, "*+-0123456789^abcdefghijklmnopqrstuvwxyz")
-                .apply(s);
     }
 
     /**

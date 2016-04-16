@@ -2357,7 +2357,7 @@ public final class Rational implements Comparable<Rational> {
                     return toList(
                             map(
                                     u -> {
-                                        Optional<BigInteger> oi = Readers.readBigInteger(u);
+                                        Optional<BigInteger> oi = Readers.readBigIntegerStrict(u);
                                         if (!oi.isPresent()) {
                                             throw new IllegalArgumentException("Improperly-formatted digit " + u +
                                                     " in String " + sFinal);
@@ -2484,39 +2484,20 @@ public final class Rational implements Comparable<Rational> {
      * @param s a {@code String} representation of a {@code Rational}
      * @return the {@code Rational} represented by {@code s}, or an empty {@code Optional} if {@code s} is invalid
      */
-    public static @NotNull Optional<Rational> read(@NotNull String s) {
+    public static @NotNull Optional<Rational> readStrict(@NotNull String s) {
         if (s.isEmpty()) return Optional.empty();
         int slashIndex = s.indexOf("/");
         if (slashIndex == -1) {
-            Optional<BigInteger> n = Readers.readBigInteger(s);
+            Optional<BigInteger> n = Readers.readBigIntegerStrict(s);
             return n.map(Rational::of);
         } else {
-            Optional<BigInteger> numerator = Readers.readBigInteger(s.substring(0, slashIndex));
+            Optional<BigInteger> numerator = Readers.readBigIntegerStrict(s.substring(0, slashIndex));
             if (!numerator.isPresent()) return Optional.empty();
-            Optional<BigInteger> denominator = Readers.readBigInteger(s.substring(slashIndex + 1));
+            Optional<BigInteger> denominator = Readers.readBigIntegerStrict(s.substring(slashIndex + 1));
             if (!denominator.isPresent() || denominator.get().equals(BigInteger.ZERO)) return Optional.empty();
             Rational candidate = of(numerator.get(), denominator.get());
             return candidate.toString().equals(s) ? Optional.of(candidate) : Optional.<Rational>empty();
         }
-    }
-
-    /**
-     * Finds the first occurrence of a {@code Rational} in a {@code String}. Returns the {@code Rational} and the index
-     * at which it was found. Returns an empty {@code Optional} if no {@code Rational} is found. Only {@code String}s
-     * which could have been emitted by {@link Rational#toString} are recognized. The longest possible {@code Rational}
-     * is parsed.
-     *
-     * <ul>
-     *  <li>{@code s} must be non-null.</li>
-     *  <li>The result is non-null. If it is non-empty, then neither of the {@code Pair}'s components is null, and the
-     *  second component is non-negative.</li>
-     * </ul>
-     *
-     * @param s the input {@code String}
-     * @return the first {@code Rational} found in {@code s}, and the index at which it was found
-     */
-    public static @NotNull Optional<Pair<Rational, Integer>> findIn(@NotNull String s) {
-        return Readers.genericFindIn(Rational::read, "-/0123456789").apply(s);
     }
 
     /**

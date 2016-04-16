@@ -2943,7 +2943,7 @@ public final class Polynomial implements
      * @param s a string representation of a {@code Polynomial}.
      * @return the wrapped {@code Polynomial} represented by {@code s}, or {@code empty} if {@code s} is invalid.
      */
-    private static @NotNull Optional<Polynomial> genericRead(
+    private static @NotNull Optional<Polynomial> genericReadStrict(
             @NotNull String s,
             @NotNull Function<String, Optional<Integer>> exponentHandler
     ) {
@@ -2980,7 +2980,7 @@ public final class Polynomial implements
             monomialString = monomialStrings.get(i);
             int xIndex = monomialString.indexOf('x');
             if (xIndex == -1) {
-                Optional<BigInteger> constant = Readers.readBigInteger(monomialString);
+                Optional<BigInteger> constant = Readers.readBigIntegerStrict(monomialString);
                 if (!constant.isPresent()) return Optional.empty();
                 monomials.add(new Pair<>(constant.get(), 0));
             } else {
@@ -2997,7 +2997,7 @@ public final class Polynomial implements
                     default:
                         if (monomialString.charAt(xIndex - 1) != '*') return Optional.empty();
                         String coefficientString = monomialString.substring(0, xIndex - 1);
-                        Optional<BigInteger> oCoefficient = Readers.readBigInteger(coefficientString);
+                        Optional<BigInteger> oCoefficient = Readers.readBigIntegerStrict(coefficientString);
                         if (!oCoefficient.isPresent()) return Optional.empty();
                         coefficient = oCoefficient.get();
                         // no 1*x, -1*x, 1*x^2, -1*x^2, ... allowed
@@ -3040,7 +3040,7 @@ public final class Polynomial implements
      * Creates a {@code Polynomial} from a {@code String}. Valid input takes the form of a {@code String} that could
      * have been returned by {@link mho.qbar.objects.Polynomial#toString}. Caution: It's easy to run out of time and
      * memory reading something like {@code "x^1000000000"}. If such an input is possible, consider using
-     * {@link Polynomial#read(int, String)} instead.
+     * {@link Polynomial#readStrict(int, String)} instead.
      *
      * <ul>
      *  <li>{@code s} cannot be null.</li>
@@ -3050,8 +3050,8 @@ public final class Polynomial implements
      * @param s a string representation of a {@code Polynomial}.
      * @return the wrapped {@code Polynomial} represented by {@code s}, or {@code empty} if {@code s} is invalid.
      */
-    public static @NotNull Optional<Polynomial> read(@NotNull String s) {
-        return genericRead(s, Readers::readInteger);
+    public static @NotNull Optional<Polynomial> readStrict(@NotNull String s) {
+        return genericReadStrict(s, Readers::readIntegerStrict);
     }
 
     /**
@@ -3070,61 +3070,17 @@ public final class Polynomial implements
      * @return the wrapped {@code Polynomial} (with degree no greater than {@code maxExponent}) represented by
      * {@code s}, or {@code empty} if {@code s} is invalid.
      */
-    public static @NotNull Optional<Polynomial> read(int maxExponent, @NotNull String s) {
+    public static @NotNull Optional<Polynomial> readStrict(int maxExponent, @NotNull String s) {
         if (maxExponent < 1) {
             throw new IllegalArgumentException("maxExponent must be positive. Invalid maxExponent: " + maxExponent);
         }
-        return genericRead(
+        return genericReadStrict(
                 s,
                 powerString -> {
-                    Optional<Integer> oPower = Readers.readInteger(powerString);
+                    Optional<Integer> oPower = Readers.readIntegerStrict(powerString);
                     return !oPower.isPresent() || oPower.get() > maxExponent ? Optional.<Integer>empty() : oPower;
                 }
         );
-    }
-
-    /**
-     * Finds the first occurrence of a {@code Polynomial} in a {@code String}. Returns the {@code Polynomial} and the
-     * index at which it was found. Returns an empty {@code Optional} if no {@code Polynomial} is found. Only
-     * {@code String}s which could have been emitted by {@link mho.qbar.objects.Polynomial#toString} are recognized.
-     * The longest possible {@code Polynomial} is parsed. Caution: It's easy to run out of time and memory finding
-     * something like {@code "x^1000000000"}. If such an input is possible, consider using
-     * {@link Polynomial#findIn(int, String)} instead.
-     *
-     * <ul>
-     *  <li>{@code s} must be non-null.</li>
-     *  <li>The result is non-null. If it is non-empty, then neither of the {@code Pair}'s components is null, and the
-     *  second component is non-negative.</li>
-     * </ul>
-     *
-     * @param s the input {@code String}
-     * @return the first {@code Polynomial} found in {@code s}, and the index at which it was found
-     */
-    public static @NotNull Optional<Pair<Polynomial, Integer>> findIn(@NotNull String s) {
-        return Readers.genericFindIn(Polynomial::read, "*+-0123456789^x").apply(s);
-    }
-
-    /**
-     * Finds the first occurrence of a {@code Polynomial} in a {@code String}. Returns the {@code Polynomial} and the
-     * index at which it was found. Returns an empty {@code Optional} if no {@code Polynomial} is found. Only
-     * {@code String}s which could have been emitted by {@link mho.qbar.objects.Polynomial#toString} are recognized.
-     * The longest possible {@code Polynomial} is parsed. The input {@code Polynomial} cannot have a degree greater
-     * than {@code maxExponent}.
-     *
-     * <ul>
-     *  <li>{@code maxExponent} must be positive.</li>
-     *  <li>{@code s} must be non-null.</li>
-     *  <li>The result is non-null. If it is non-empty, then neither of the {@code Pair}'s components is null, and the
-     *  second component is non-negative.</li>
-     * </ul>
-     *
-     * @param maxExponent the largest accepted exponent
-     * @param s the input {@code String}
-     * @return the first {@code Polynomial} found in {@code s} (with degree no greater than {@code maxExponent}), and
-     * the index at which it was found
-     */
-    public static @NotNull Optional<Pair<Polynomial, Integer>> findIn(int maxExponent, @NotNull String s) {
-        return Readers.genericFindIn(t -> read(maxExponent, t), "*+-0123456789^x").apply(s);
     }
 
     /**

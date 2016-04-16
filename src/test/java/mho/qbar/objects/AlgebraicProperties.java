@@ -97,8 +97,7 @@ public class AlgebraicProperties extends QBarTestProperties {
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
-        propertiesRead();
-        propertiesFindIn();
+        propertiesReadStrict();
         propertiesToString();
     }
 
@@ -1678,33 +1677,21 @@ public class AlgebraicProperties extends QBarTestProperties {
         QBarTesting.propertiesCompareToHelper(LIMIT, P, QBarIterableProvider::algebraics);
     }
 
-    private void propertiesRead() {
-        initialize("read(String)");
+    private void propertiesReadStrict() {
+        initialize("readStrict(String)");
         QBarTesting.propertiesReadHelper(
                 LIMIT,
                 P,
                 ALGEBRAIC_CHARS,
                 P.algebraics(),
-                Algebraic::read,
+                Algebraic::readStrict,
                 Algebraic::validate,
                 false
         );
     }
 
-    private void propertiesFindIn() {
-        initialize("findIn(String)");
-        propertiesFindInHelper(
-                LIMIT,
-                P.getWheelsProvider(),
-                P.algebraics(),
-                Algebraic::read,
-                Algebraic::findIn,
-                Algebraic::validate
-        );
-    }
-
     private void propertiesToString() {
         initialize("toString()");
-        propertiesToStringHelper(LIMIT, ALGEBRAIC_CHARS, P.algebraics(), Algebraic::read);
+        propertiesToStringHelper(LIMIT, ALGEBRAIC_CHARS, P.algebraics(), Algebraic::readStrict);
     }
 }

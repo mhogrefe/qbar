@@ -132,7 +132,7 @@ public enum MonomialOrder implements Comparator<ExponentVector> {
      * @return the {@code MonomialOrder} represented by {@code s}, or {@code Optional.empty} if {@code s} does not
      * represent a {@code MonomialOrder}
      */
-    public static @NotNull Optional<MonomialOrder> read(@NotNull String s) {
+    public static @NotNull Optional<MonomialOrder> readStrict(@NotNull String s) {
         switch (s) {
             case "LEX":
                 return Optional.of(MonomialOrder.LEX);
@@ -143,22 +143,5 @@ public enum MonomialOrder implements Comparator<ExponentVector> {
             default:
                 return Optional.empty();
         }
-    }
-
-    /**
-     * Finds the first occurrence of an {@code MonomialOrder} in a {@code String}. Returns the {@code MonomialOrder}
-     * and the index at which it was found. Returns an empty {@code Optional} if no {@code MonomialOrder} is found.
-     *
-     * <ul>
-     *  <li>{@code s} must be non-null.</li>
-     *  <li>The result is non-null. If it is non-empty, then neither of the {@code Pair}'s components is null, and the
-     *  second component is non-negative.</li>
-     * </ul>
-     *
-     * @param s the input {@code String}
-     * @return the first {@code MonomialOrder} found in {@code s}, and the index at which it was found
-     */
-    public static @NotNull Optional<Pair<MonomialOrder, Integer>> findIn(@NotNull String s) {
-        return Readers.genericFindIn(Arrays.asList(MonomialOrder.values())).apply(s);
     }
 }

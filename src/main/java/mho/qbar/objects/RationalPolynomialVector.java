@@ -672,36 +672,11 @@ public final class RationalPolynomialVector implements
      * @return the {@code RationalPolynomialVector} represented by {@code s}, or an empty {@code Optional} if {@code s}
      * is invalid
      */
-    public static @NotNull Optional<RationalPolynomialVector> read(@NotNull String s) {
-        Optional<List<RationalPolynomial>> ops = Readers.readList(RationalPolynomial::read).apply(s);
+    public static @NotNull Optional<RationalPolynomialVector> readStrict(@NotNull String s) {
+        Optional<List<RationalPolynomial>> ops = Readers.readListStrict(RationalPolynomial::readStrict).apply(s);
         if (!ops.isPresent()) return Optional.empty();
         if (ops.get().isEmpty()) return Optional.of(ZERO_DIMENSIONAL);
         return Optional.of(new RationalPolynomialVector(ops.get()));
-    }
-
-    /**
-     * Finds the first occurrence of a {@code RationalPolynomialVector} in a {@code String}. Returns the
-     * {@code RationalPolynomialVector} and the index at which it was found. Returns an empty {@code Optional} if no
-     * {@code RationalPolynomialVector} is found. Only {@code String}s which could have been emitted by
-     * {@link RationalPolynomialVector#toString} are recognized. The longest possible {@code RationalPolynomialVector}
-     * is parsed.
-     *
-     * <ul>
-     *  <li>{@code s} must be non-null.</li>
-     *  <li>The result is non-null. If it is non-empty, then neither of the {@code Pair}'s components is null, and the
-     *  second component is non-negative.</li>
-     * </ul>
-     *
-     * @param s the input {@code String}
-     * @return the first {@code RationalPolynomialVector} found in {@code s}, and the index at which it was found
-     */
-    public static @NotNull Optional<Pair<RationalPolynomialVector, Integer>> findIn(@NotNull String s) {
-        Optional<Pair<List<RationalPolynomial>, Integer>> op =
-                Readers.findListIn(RationalPolynomial::read, "*+-/0123456789^x", s);
-        if (!op.isPresent()) return Optional.empty();
-        Pair<List<RationalPolynomial>, Integer> p = op.get();
-        if (p.a.isEmpty()) return Optional.of(new Pair<>(ZERO_DIMENSIONAL, p.b));
-        return Optional.of(new Pair<>(new RationalPolynomialVector(p.a), p.b));
     }
 
     /**

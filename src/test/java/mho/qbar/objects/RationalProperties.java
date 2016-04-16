@@ -147,8 +147,7 @@ public class RationalProperties extends QBarTestProperties {
         propertiesHashCode();
         propertiesCompareTo();
         compareImplementationsCompareTo();
-        propertiesRead();
-        propertiesFindIn();
+        propertiesReadStrict();
         propertiesToString();
     }
 
@@ -3582,40 +3581,28 @@ public class RationalProperties extends QBarTestProperties {
         compareImplementations("compareTo(Rational)", take(LIMIT, P.pairs(P.rationals())), functions);
     }
 
-    private void propertiesRead() {
-        initialize("read(String)");
-        propertiesReadHelper(LIMIT, P, RATIONAL_CHARS, P.rationals(), Rational::read, Rational::validate, true);
+    private void propertiesReadStrict() {
+        initialize("readStrict(String)");
+        propertiesReadHelper(LIMIT, P, RATIONAL_CHARS, P.rationals(), Rational::readStrict, Rational::validate, true);
         Pair<Iterable<String>, Iterable<String>> slashPartition = partition(
                 s -> s.contains("/"),
-                filterInfinite(s -> read(s).isPresent(), P.strings(RATIONAL_CHARS))
+                filterInfinite(s -> readStrict(s).isPresent(), P.strings(RATIONAL_CHARS))
         );
         for (String s : take(LIMIT, slashPartition.a)) {
             int slashIndex = s.indexOf('/');
             String left = s.substring(0, slashIndex);
             String right = s.substring(slashIndex + 1);
-            assertTrue(s, Readers.readBigInteger(left).isPresent());
-            assertTrue(s, Readers.readBigInteger(right).isPresent());
+            assertTrue(s, Readers.readBigIntegerStrict(left).isPresent());
+            assertTrue(s, Readers.readBigIntegerStrict(right).isPresent());
         }
 
         for (String s : take(LIMIT, slashPartition.b)) {
-            assertTrue(s, Readers.readBigInteger(s).isPresent());
+            assertTrue(s, Readers.readBigIntegerStrict(s).isPresent());
         }
-    }
-
-    private void propertiesFindIn() {
-        initialize("findIn(String)");
-        propertiesFindInHelper(
-                LIMIT,
-                P.getWheelsProvider(),
-                P.rationals(),
-                Rational::read,
-                Rational::findIn,
-                Rational::validate
-        );
     }
 
     private void propertiesToString() {
         initialize("toString()");
-        propertiesToStringHelper(LIMIT, RATIONAL_CHARS, P.rationals(), Rational::read);
+        propertiesToStringHelper(LIMIT, RATIONAL_CHARS, P.rationals(), Rational::readStrict);
     }
 }

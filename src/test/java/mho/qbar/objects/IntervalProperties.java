@@ -95,8 +95,7 @@ public class IntervalProperties extends QBarTestProperties {
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
-        propertiesRead();
-        propertiesFindIn();
+        propertiesReadStrict();
         propertiesToString();
     }
 
@@ -1901,25 +1900,13 @@ public class IntervalProperties extends QBarTestProperties {
         propertiesCompareToHelper(LIMIT, P, QBarIterableProvider::intervals);
     }
 
-    private void propertiesRead() {
-        initialize("read(String)");
-        propertiesReadHelper(LIMIT, P, INTERVAL_CHARS, P.intervals(), Interval::read, Interval::validate, false);
-    }
-
-    private void propertiesFindIn() {
-        initialize("findIn(String)");
-        propertiesFindInHelper(
-                LIMIT,
-                P.getWheelsProvider(),
-                P.intervals(),
-                Interval::read,
-                Interval::findIn,
-                Interval::validate
-        );
+    private void propertiesReadStrict() {
+        initialize("readStrict(String)");
+        propertiesReadHelper(LIMIT, P, INTERVAL_CHARS, P.intervals(), Interval::readStrict, Interval::validate, false);
     }
 
     private void propertiesToString() {
         initialize("toString()");
-        propertiesToStringHelper(LIMIT, INTERVAL_CHARS, P.intervals(), Interval::read);
+        propertiesToStringHelper(LIMIT, INTERVAL_CHARS, P.intervals(), Interval::readStrict);
     }
 }

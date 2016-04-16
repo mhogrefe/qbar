@@ -35,8 +35,7 @@ public class ExponentVectorProperties extends QBarTestProperties {
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
-        propertiesRead();
-        propertiesFindIn();
+        propertiesReadStrict();
         propertiesToString();
     }
 
@@ -239,33 +238,21 @@ public class ExponentVectorProperties extends QBarTestProperties {
         QBarTesting.propertiesCompareToHelper(LIMIT, P, QBarIterableProvider::exponentVectors);
     }
 
-    private void propertiesRead() {
-        initialize("read(String)");
+    private void propertiesReadStrict() {
+        initialize("readStrict(String)");
         QBarTesting.propertiesReadHelper(
                 LIMIT,
                 P,
                 EXPONENT_VECTOR_CHARS,
                 P.exponentVectors(),
-                ExponentVector::read,
+                ExponentVector::readStrict,
                 ExponentVector::validate,
                 false
         );
     }
 
-    private void propertiesFindIn() {
-        initialize("findIn(String)");
-        propertiesFindInHelper(
-                LIMIT,
-                P.getWheelsProvider(),
-                P.exponentVectors(),
-                ExponentVector::read,
-                ExponentVector::findIn,
-                ExponentVector::validate
-        );
-    }
-
     private void propertiesToString() {
         initialize("toString()");
-        propertiesToStringHelper(LIMIT, EXPONENT_VECTOR_CHARS, P.exponentVectors(), ExponentVector::read);
+        propertiesToStringHelper(LIMIT, EXPONENT_VECTOR_CHARS, P.exponentVectors(), ExponentVector::readStrict);
     }
 }

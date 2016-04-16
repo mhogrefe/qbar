@@ -58,8 +58,7 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
-        propertiesRead();
-        propertiesFindIn();
+        propertiesReadStrict();
         propertiesToString();
     }
 
@@ -575,7 +574,8 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
     }
 
     private void compareImplementationsShiftLeft() {
-        Map<String, Function<Pair<MultivariatePolynomial, Integer>, MultivariatePolynomial>> functions = new LinkedHashMap<>();
+        Map<String, Function<Pair<MultivariatePolynomial, Integer>, MultivariatePolynomial>> functions =
+                new LinkedHashMap<>();
         functions.put("simplest", p -> shiftLeft_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.shiftLeft(p.b));
         compareImplementations(
@@ -608,28 +608,16 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         }
     }
 
-    private void propertiesRead() {
-        initialize("read(String)");
+    private void propertiesReadStrict() {
+        initialize("readStrict(String)");
         QBarTesting.propertiesReadHelper(
                 LIMIT,
                 P,
                 MULTIVARIATE_POLYNOMIAL_CHARS,
                 P.multivariatePolynomials(),
-                MultivariatePolynomial::read,
+                MultivariatePolynomial::readStrict,
                 MultivariatePolynomial::validate,
                 false
-        );
-    }
-
-    private void propertiesFindIn() {
-        initialize("findIn(String)");
-        propertiesFindInHelper(
-                LIMIT,
-                P.getWheelsProvider(),
-                P.multivariatePolynomials(),
-                MultivariatePolynomial::read,
-                MultivariatePolynomial::findIn,
-                MultivariatePolynomial::validate
         );
     }
 
@@ -639,7 +627,7 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
                 LIMIT,
                 MULTIVARIATE_POLYNOMIAL_CHARS,
                 P.multivariatePolynomials(),
-                MultivariatePolynomial::read
+                MultivariatePolynomial::readStrict
         );
     }
 }

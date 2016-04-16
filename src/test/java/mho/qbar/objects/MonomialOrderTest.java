@@ -30,46 +30,26 @@ public class MonomialOrderTest {
         compare_helper(GREVLEX, "[1, ooo, b, a, z^2, y^2, x*y, x^2, x*y^2, x^2*y, x^3, x^2*z^2, x*y^2*z, a*b*c*d]");
     }
 
-    private static void read_helper(@NotNull String input) {
-        aeq(read(input).get(), input);
+    private static void readStrict_helper(@NotNull String input) {
+        aeq(readStrict(input).get(), input);
     }
 
-    private static void read_fail_helper(@NotNull String input) {
-        assertFalse(read(input).isPresent());
-    }
-
-    @Test
-    public void testRead() {
-        read_helper("LEX");
-        read_helper("GRLEX");
-        read_helper("GREVLEX");
-        read_fail_helper("");
-        read_fail_helper("1");
-        read_fail_helper(" ");
-        read_fail_helper("ab");
-    }
-
-    private static void findIn_helper(@NotNull String input, @NotNull String output, int index) {
-        Pair<MonomialOrder, Integer> result = findIn(input).get();
-        aeq(result.a, output);
-        aeq(result.b, index);
-    }
-
-    private static void findIn_fail_helper(@NotNull String input) {
-        assertFalse(findIn(input).isPresent());
+    private static void readStrict_fail_helper(@NotNull String input) {
+        assertFalse(readStrict(input).isPresent());
     }
 
     @Test
-    public void testFindIn() {
-        findIn_helper("ROLEX", "LEX", 2);
-        findIn_helper("09rfj0woGREVLEXMOIHU)O", "GREVLEX", 8);
-        findIn_helper("GR LEX", "LEX", 3);
-        findIn_fail_helper("");
-        findIn_fail_helper("abc");
-        findIn_fail_helper("grlex");
+    public void testReadStrict() {
+        readStrict_helper("LEX");
+        readStrict_helper("GRLEX");
+        readStrict_helper("GREVLEX");
+        readStrict_fail_helper("");
+        readStrict_fail_helper("1");
+        readStrict_fail_helper(" ");
+        readStrict_fail_helper("ab");
     }
 
     private static @NotNull List<ExponentVector> readExponentVectorList(@NotNull String s) {
-        return Readers.readList(ExponentVector::read).apply(s).get();
+        return Readers.readListStrict(ExponentVector::readStrict).apply(s).get();
     }
 }

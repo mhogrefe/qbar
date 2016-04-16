@@ -304,7 +304,7 @@ public final class ExponentVector implements Comparable<ExponentVector> {
      * @return the {@code ExponentVector} represented by {@code s}, or an empty {@code Optional} if {@code s} is
      * invalid
      */
-    public static @NotNull Optional<ExponentVector> read(@NotNull String s) {
+    public static @NotNull Optional<ExponentVector> readStrict(@NotNull String s) {
         if (s.equals("1")) return Optional.of(ONE);
         if (s.isEmpty() || last(s) == '*') return Optional.empty();
         String[] termStrings = s.split("\\*");
@@ -313,15 +313,15 @@ public final class ExponentVector implements Comparable<ExponentVector> {
         for (String termString : termStrings) {
             int caretIndex = termString.indexOf('^');
             if (caretIndex == -1) {
-                Optional<Variable> variable = Variable.read(termString);
+                Optional<Variable> variable = Variable.readStrict(termString);
                 if (!variable.isPresent()) return Optional.empty();
                 terms.add(new Pair<>(variable.get(), 1));
             } else {
-                Optional<Integer> oExponent = Readers.readInteger(termString.substring(caretIndex + 1));
+                Optional<Integer> oExponent = Readers.readIntegerStrict(termString.substring(caretIndex + 1));
                 if (!oExponent.isPresent()) return Optional.empty();
                 int exponent = oExponent.get();
                 if (exponent < 2) return Optional.empty();
-                Optional<Variable> variable = Variable.read(termString.substring(0, caretIndex));
+                Optional<Variable> variable = Variable.readStrict(termString.substring(0, caretIndex));
                 if (!variable.isPresent()) return Optional.empty();
                 terms.add(new Pair<>(variable.get(), exponent));
             }
@@ -329,25 +329,6 @@ public final class ExponentVector implements Comparable<ExponentVector> {
         //noinspection RedundantCast
         if (!increasing((Iterable<Variable>) map(t -> t.a, terms))) return Optional.empty();
         return Optional.of(fromTerms(terms));
-    }
-
-    /**
-     * Finds the first occurrence of an {@code ExponentVector} in a {@code String}. Returns the {@code ExponentVector}
-     * and the index at which it was found. Returns an empty {@code Optional} if no {@code ExponentVector} is found.
-     * Only {@code String}s which could have been emitted by {@link ExponentVector#toString} are recognized. The
-     * longest possible {@code ExponentVector} is parsed.
-     *
-     * <ul>
-     *  <li>{@code s} must be non-null.</li>
-     *  <li>The result is non-null. If it is non-empty, then neither of the {@code Pair}'s components is null, and the
-     *  second component is non-negative.</li>
-     * </ul>
-     *
-     * @param s the input {@code String}
-     * @return the first {@code ExponentVector} found in {@code s}, and the index at which it was found
-     */
-    public static @NotNull Optional<Pair<ExponentVector, Integer>> findIn(@NotNull String s) {
-        return Readers.genericFindIn(ExponentVector::read, "*0123456789^abcdefghijklmnopqrstuvwxyz").apply(s);
     }
 
     /**

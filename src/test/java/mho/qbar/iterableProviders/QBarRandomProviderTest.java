@@ -238,13 +238,13 @@ public class QBarRandomProviderTest {
             double sampleMean,
             double bitSizeMean
     ) {
-        rationals_helper(P.withScale(scale).rangeUp(Rational.read(a).get()), output, sampleMean, bitSizeMean);
+        rationals_helper(P.withScale(scale).rangeUp(Rational.readStrict(a).get()), output, sampleMean, bitSizeMean);
         P.reset();
     }
 
     private static void rangeUp_Rational_fail_helper(int scale, @NotNull String a) {
         try {
-            P.withScale(scale).rangeUp(Rational.read(a).get());
+            P.withScale(scale).rangeUp(Rational.readStrict(a).get());
             fail();
         } catch (IllegalStateException ignored) {}
         finally {
@@ -343,13 +343,13 @@ public class QBarRandomProviderTest {
             double sampleMean,
             double bitSizeMean
     ) {
-        rationals_helper(P.withScale(scale).rangeDown(Rational.read(a).get()), output, sampleMean, bitSizeMean);
+        rationals_helper(P.withScale(scale).rangeDown(Rational.readStrict(a).get()), output, sampleMean, bitSizeMean);
         P.reset();
     }
 
     private static void rangeDown_Rational_fail_helper(int scale, @NotNull String a) {
         try {
-            P.withScale(scale).rangeDown(Rational.read(a).get());
+            P.withScale(scale).rangeDown(Rational.readStrict(a).get());
             fail();
         } catch (IllegalStateException ignored) {}
         finally {
@@ -456,7 +456,7 @@ public class QBarRandomProviderTest {
             double bitSizeMean
     ) {
         rationals_helper(
-                P.withScale(scale).range(Rational.read(a).get(), Rational.read(b).get()),
+                P.withScale(scale).range(Rational.readStrict(a).get(), Rational.readStrict(b).get()),
                 output,
                 sampleMean,
                 bitSizeMean
@@ -466,7 +466,7 @@ public class QBarRandomProviderTest {
 
     private static void range_Rational_Rational_fail_helper(int scale, @NotNull String a, @NotNull String b) {
         try {
-            P.withScale(scale).range(Rational.read(a).get(), Rational.read(b).get());
+            P.withScale(scale).range(Rational.readStrict(a).get(), Rational.readStrict(b).get());
             fail();
         } catch (IllegalStateException | IllegalArgumentException ignored) {}
         finally {
@@ -642,13 +642,18 @@ public class QBarRandomProviderTest {
             double sampleMean,
             double bitSizeMean
     ) {
-        rationals_helper(P.withScale(scale).rationalsIn(Interval.read(a).get()), output, sampleMean, bitSizeMean);
+        rationals_helper(
+                P.withScale(scale).rationalsIn(Interval.readStrict(a).get()),
+                output,
+                sampleMean,
+                bitSizeMean
+        );
         P.reset();
     }
 
     private static void rationalsIn_fail_helper(int scale, @NotNull String a) {
         try {
-            P.withScale(scale).rationalsIn(Interval.read(a).get());
+            P.withScale(scale).rationalsIn(Interval.readStrict(a).get());
             fail();
         } catch (IllegalStateException ignored) {}
         finally {
@@ -742,7 +747,7 @@ public class QBarRandomProviderTest {
             double bitSizeMean
     ) {
         rationals_helper(
-                P.withScale(scale).rationalsNotIn(Interval.read(a).get()),
+                P.withScale(scale).rationalsNotIn(Interval.readStrict(a).get()),
                 output,
                 sampleMean,
                 bitSizeMean
@@ -752,7 +757,7 @@ public class QBarRandomProviderTest {
 
     private static void rationalsNotIn_fail_helper(int scale, @NotNull String a) {
         try {
-            P.withScale(scale).rationalsNotIn(Interval.read(a).get());
+            P.withScale(scale).rationalsNotIn(Interval.readStrict(a).get());
             fail();
         } catch (IllegalStateException | IllegalArgumentException ignored) {}
         finally {
@@ -5705,7 +5710,7 @@ public class QBarRandomProviderTest {
             double meanValue
     ) {
         algebraics_helper(
-                P.withScale(scale).rangeUp(degree, Algebraic.read(a).get()),
+                P.withScale(scale).rangeUp(degree, Algebraic.readStrict(a).get()),
                 output,
                 meanDegree,
                 meanCoefficientBitSize,
@@ -5716,7 +5721,7 @@ public class QBarRandomProviderTest {
 
     private static void rangeUp_int_Algebraic_fail_helper(int scale, int degree, @NotNull String a) {
         try {
-            P.withScale(scale).rangeUp(degree, Algebraic.read(a).get());
+            P.withScale(scale).rangeUp(degree, Algebraic.readStrict(a).get());
             fail();
         } catch (IllegalStateException | IllegalArgumentException ignored) {}
         finally {
@@ -5959,7 +5964,7 @@ public class QBarRandomProviderTest {
             double meanValue
     ) {
         algebraics_helper(
-                P.withScale(scale).withSecondaryScale(secondaryScale).rangeUp(Algebraic.read(a).get()),
+                P.withScale(scale).withSecondaryScale(secondaryScale).rangeUp(Algebraic.readStrict(a).get()),
                 output,
                 meanDegree,
                 meanCoefficientBitSize,
@@ -5970,7 +5975,7 @@ public class QBarRandomProviderTest {
 
     private static void rangeUp_Algebraic_fail_helper(int scale, int secondaryScale, @NotNull String a) {
         try {
-            P.withScale(scale).withSecondaryScale(secondaryScale).rangeUp(Algebraic.read(a).get());
+            P.withScale(scale).withSecondaryScale(secondaryScale).rangeUp(Algebraic.readStrict(a).get());
             fail();
         } catch (IllegalStateException ignored) {}
         finally {
@@ -6141,7 +6146,7 @@ public class QBarRandomProviderTest {
             double meanValue
     ) {
         algebraics_helper(
-                P.withScale(scale).rangeDown(degree, Algebraic.read(a).get()),
+                P.withScale(scale).rangeDown(degree, Algebraic.readStrict(a).get()),
                 output,
                 meanDegree,
                 meanCoefficientBitSize,
@@ -6152,7 +6157,7 @@ public class QBarRandomProviderTest {
 
     private static void rangeDown_int_Algebraic_fail_helper(int scale, int degree, @NotNull String a) {
         try {
-            P.withScale(scale).rangeDown(degree, Algebraic.read(a).get());
+            P.withScale(scale).rangeDown(degree, Algebraic.readStrict(a).get());
             fail();
         } catch (IllegalStateException | IllegalArgumentException ignored) {}
         finally {
@@ -6395,7 +6400,7 @@ public class QBarRandomProviderTest {
             double meanValue
     ) {
         algebraics_helper(
-                P.withScale(scale).withSecondaryScale(secondaryScale).rangeDown(Algebraic.read(a).get()),
+                P.withScale(scale).withSecondaryScale(secondaryScale).rangeDown(Algebraic.readStrict(a).get()),
                 output,
                 meanDegree,
                 meanCoefficientBitSize,
@@ -6406,7 +6411,7 @@ public class QBarRandomProviderTest {
 
     private static void rangeDown_Algebraic_fail_helper(int scale, int secondaryScale, @NotNull String a) {
         try {
-            P.withScale(scale).withSecondaryScale(secondaryScale).rangeDown(Algebraic.read(a).get());
+            P.withScale(scale).withSecondaryScale(secondaryScale).rangeDown(Algebraic.readStrict(a).get());
             fail();
         } catch (IllegalStateException ignored) {}
         finally {
@@ -6583,10 +6588,10 @@ public class QBarRandomProviderTest {
     }
 
     private static @NotNull List<Variable> readVariableList(@NotNull String s) {
-        return Readers.readList(Variable::read).apply(s).get();
+        return Readers.readListStrict(Variable::readStrict).apply(s).get();
     }
 
     private static @NotNull List<Variable> readVariableListWithNulls(@NotNull String s) {
-        return Readers.readListWithNulls(Variable::read).apply(s).get();
+        return Readers.readListWithNullsStrict(Variable::readStrict).apply(s).get();
     }
 }

@@ -15,7 +15,7 @@ import static org.junit.Assert.fail;
 
 public class RationalMatrixTest {
     private static void rows_helper(@NotNull String input, @NotNull String output) {
-        aeq(toList(read(input).get().rows()), output);
+        aeq(toList(readStrict(input).get().rows()), output);
     }
 
     @Test
@@ -31,7 +31,7 @@ public class RationalMatrixTest {
     }
 
     private static void columns_helper(@NotNull String input, @NotNull String output) {
-        aeq(toList(read(input).get().columns()), output);
+        aeq(toList(readStrict(input).get().columns()), output);
     }
 
     @Test
@@ -47,12 +47,12 @@ public class RationalMatrixTest {
     }
 
     private static void row_helper(@NotNull String input, int i, @NotNull String output) {
-        aeq(read(input).get().row(i), output);
+        aeq(readStrict(input).get().row(i), output);
     }
 
     private static void row_fail_helper(@NotNull String input, int i) {
         try {
-            read(input).get().row(i);
+            readStrict(input).get().row(i);
             fail();
         } catch (IndexOutOfBoundsException ignored) {}
     }
@@ -75,12 +75,12 @@ public class RationalMatrixTest {
     }
 
     private static void column_helper(@NotNull String input, int j, @NotNull String output) {
-        aeq(read(input).get().column(j), output);
+        aeq(readStrict(input).get().column(j), output);
     }
 
     private static void column_fail_helper(@NotNull String input, int j) {
         try {
-            read(input).get().column(j);
+            readStrict(input).get().column(j);
             fail();
         } catch (IndexOutOfBoundsException ignored) {}
     }
@@ -104,7 +104,7 @@ public class RationalMatrixTest {
     }
 
     private static void onlyHasIntegralElements_helper(@NotNull String input, boolean output) {
-        aeq(read(input).get().onlyHasIntegralElements(), output);
+        aeq(readStrict(input).get().onlyHasIntegralElements(), output);
     }
 
     @Test
@@ -120,12 +120,12 @@ public class RationalMatrixTest {
     }
 
     private static void toMatrix_helper(@NotNull String input) {
-        aeq(read(input).get().toMatrix(), input);
+        aeq(readStrict(input).get().toMatrix(), input);
     }
 
     private static void toMatrix_fail_helper(@NotNull String input) {
         try {
-            read(input).get().toMatrix();
+            readStrict(input).get().toMatrix();
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -143,12 +143,12 @@ public class RationalMatrixTest {
     }
 
     private static void get_helper(@NotNull String input, int i, int j, @NotNull String output) {
-        aeq(read(input).get().get(i, j), output);
+        aeq(readStrict(input).get().get(i, j), output);
     }
 
     private static void get_fail_helper(@NotNull String input, int i, int j) {
         try {
-            read(input).get().get(i, j);
+            readStrict(input).get().get(i, j);
             fail();
         } catch (IndexOutOfBoundsException ignored) {}
     }
@@ -209,7 +209,7 @@ public class RationalMatrixTest {
     }
 
     private static void maxElementBitLength_helper(@NotNull String input, int output) {
-        aeq(read(input).get().maxElementBitLength(), output);
+        aeq(readStrict(input).get().maxElementBitLength(), output);
     }
 
     @Test
@@ -225,7 +225,7 @@ public class RationalMatrixTest {
     }
 
     private static void height_helper(@NotNull String input, int output) {
-        aeq(read(input).get().height(), output);
+        aeq(readStrict(input).get().height(), output);
     }
 
     @Test
@@ -241,7 +241,7 @@ public class RationalMatrixTest {
     }
 
     private static void width_helper(@NotNull String input, int output) {
-        aeq(read(input).get().width(), output);
+        aeq(readStrict(input).get().width(), output);
     }
 
     @Test
@@ -257,7 +257,7 @@ public class RationalMatrixTest {
     }
 
     private static void isSquare_helper(@NotNull String input, boolean output) {
-        aeq(read(input).get().isSquare(), output);
+        aeq(readStrict(input).get().isSquare(), output);
     }
 
     @Test
@@ -274,7 +274,7 @@ public class RationalMatrixTest {
     }
 
     private static void isZero_helper(@NotNull String input, boolean output) {
-        aeq(read(input).get().isZero(), output);
+        aeq(readStrict(input).get().isZero(), output);
     }
 
     @Test
@@ -319,7 +319,7 @@ public class RationalMatrixTest {
     }
 
     private static void isIdentity_helper(@NotNull String input, boolean output) {
-        aeq(read(input).get().isIdentity(), output);
+        aeq(readStrict(input).get().isIdentity(), output);
     }
 
     @Test
@@ -361,12 +361,12 @@ public class RationalMatrixTest {
     }
 
     private static void trace_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().trace(), output);
+        aeq(readStrict(input).get().trace(), output);
     }
 
     private static void trace_fail_helper(@NotNull String input) {
         try {
-            read(input).get().trace();
+            readStrict(input).get().trace();
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -390,7 +390,7 @@ public class RationalMatrixTest {
             @NotNull String columnIndices,
             @NotNull String output
     ) {
-        aeq(read(m).get().submatrix(readIntegerList(rowIndices), readIntegerList(columnIndices)), output);
+        aeq(readStrict(m).get().submatrix(readIntegerList(rowIndices), readIntegerList(columnIndices)), output);
     }
 
     private static void submatrix_fail_helper(
@@ -399,7 +399,8 @@ public class RationalMatrixTest {
             @NotNull String columnIndices
     ) {
         try {
-            read(m).get().submatrix(readIntegerListWithNulls(rowIndices), readIntegerListWithNulls(columnIndices));
+            readStrict(m).get()
+                    .submatrix(readIntegerListWithNulls(rowIndices), readIntegerListWithNulls(columnIndices));
             fail();
         } catch (IllegalArgumentException | NullPointerException ignored) {}
     }
@@ -430,7 +431,7 @@ public class RationalMatrixTest {
     }
 
     private static void transpose_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().transpose(), output);
+        aeq(readStrict(input).get().transpose(), output);
     }
 
     @Test
@@ -446,12 +447,12 @@ public class RationalMatrixTest {
     }
 
     private static void concat_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().concat(read(b).get()), output);
+        aeq(readStrict(a).get().concat(readStrict(b).get()), output);
     }
 
     private static void concat_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().concat(read(b).get());
+            readStrict(a).get().concat(readStrict(b).get());
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -474,12 +475,12 @@ public class RationalMatrixTest {
     }
 
     private static void augment_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().augment(read(b).get()), output);
+        aeq(readStrict(a).get().augment(readStrict(b).get()), output);
     }
 
     private static void augment_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().augment(read(b).get());
+            readStrict(a).get().augment(readStrict(b).get());
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -502,12 +503,12 @@ public class RationalMatrixTest {
     }
 
     private static void add_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().add(read(b).get()), output);
+        aeq(readStrict(a).get().add(readStrict(b).get()), output);
     }
 
     private static void add_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().add(read(b).get());
+            readStrict(a).get().add(readStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -527,7 +528,7 @@ public class RationalMatrixTest {
     }
 
     private static void negate_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().negate(), output);
+        aeq(readStrict(input).get().negate(), output);
     }
 
     @Test
@@ -543,12 +544,12 @@ public class RationalMatrixTest {
     }
 
     private static void subtract_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().subtract(read(b).get()), output);
+        aeq(readStrict(a).get().subtract(readStrict(b).get()), output);
     }
 
     private static void subtract_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().subtract(read(b).get());
+            readStrict(a).get().subtract(readStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -568,7 +569,7 @@ public class RationalMatrixTest {
     }
 
     private static void multiply_Rational_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().multiply(Rational.read(b).get()), output);
+        aeq(readStrict(a).get().multiply(Rational.readStrict(b).get()), output);
     }
 
     @Test
@@ -595,7 +596,7 @@ public class RationalMatrixTest {
     }
 
     private static void multiply_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().multiply(Readers.readBigInteger(b).get()), output);
+        aeq(readStrict(a).get().multiply(Readers.readBigIntegerStrict(b).get()), output);
     }
 
     @Test
@@ -622,7 +623,7 @@ public class RationalMatrixTest {
     }
 
     private static void multiply_int_helper(@NotNull String a, int b, @NotNull String output) {
-        aeq(read(a).get().multiply(b), output);
+        aeq(readStrict(a).get().multiply(b), output);
     }
 
     @Test
@@ -649,12 +650,12 @@ public class RationalMatrixTest {
     }
 
     private static void divide_Rational_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().divide(Rational.read(b).get()), output);
+        aeq(readStrict(a).get().divide(Rational.readStrict(b).get()), output);
     }
 
     private static void divide_Rational_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().divide(Rational.read(b).get());
+            readStrict(a).get().divide(Rational.readStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -684,12 +685,12 @@ public class RationalMatrixTest {
     }
 
     private static void divide_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().divide(Readers.readBigInteger(b).get()), output);
+        aeq(readStrict(a).get().divide(Readers.readBigIntegerStrict(b).get()), output);
     }
 
     private static void divide_BigInteger_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().divide(Readers.readBigInteger(b).get());
+            readStrict(a).get().divide(Readers.readBigIntegerStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -719,12 +720,12 @@ public class RationalMatrixTest {
     }
 
     private static void divide_int_helper(@NotNull String a, int b, @NotNull String output) {
-        aeq(read(a).get().divide(b), output);
+        aeq(readStrict(a).get().divide(b), output);
     }
 
     private static void divide_int_fail_helper(@NotNull String a, int b) {
         try {
-            read(a).get().divide(b);
+            readStrict(a).get().divide(b);
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -754,12 +755,12 @@ public class RationalMatrixTest {
     }
 
     private static void multiply_RationalVector_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().multiply(RationalVector.read(b).get()), output);
+        aeq(readStrict(a).get().multiply(RationalVector.readStrict(b).get()), output);
     }
 
     private static void multiply_RationalVector_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().multiply(RationalVector.read(b).get());
+            readStrict(a).get().multiply(RationalVector.readStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -782,12 +783,12 @@ public class RationalMatrixTest {
     }
 
     private static void multiply_RationalMatrix_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().multiply(read(b).get()), output);
+        aeq(readStrict(a).get().multiply(readStrict(b).get()), output);
     }
 
     private static void multiply_RationalMatrix_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().multiply(read(b).get());
+            readStrict(a).get().multiply(readStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -814,7 +815,7 @@ public class RationalMatrixTest {
     }
 
     private static void shiftLeft_helper(@NotNull String a, int bits, @NotNull String output) {
-        aeq(read(a).get().shiftLeft(bits), output);
+        aeq(readStrict(a).get().shiftLeft(bits), output);
     }
 
     @Test
@@ -871,7 +872,7 @@ public class RationalMatrixTest {
     }
 
     private static void shiftRight_helper(@NotNull String a, int bits, @NotNull String output) {
-        aeq(read(a).get().shiftRight(bits), output);
+        aeq(readStrict(a).get().shiftRight(bits), output);
     }
 
     @Test
@@ -928,7 +929,7 @@ public class RationalMatrixTest {
     }
 
     private static void isInRowEchelonForm_helper(@NotNull String input, boolean output) {
-        aeq(read(input).get().isInRowEchelonForm(), output);
+        aeq(readStrict(input).get().isInRowEchelonForm(), output);
     }
 
     @Test
@@ -954,7 +955,7 @@ public class RationalMatrixTest {
     }
 
     private static void rowEchelonForm_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().rowEchelonForm(), output);
+        aeq(readStrict(input).get().rowEchelonForm(), output);
     }
 
     @Test
@@ -973,7 +974,7 @@ public class RationalMatrixTest {
     }
 
     private static void rank_helper(@NotNull String input, int output) {
-        aeq(read(input).get().rank(), output);
+        aeq(readStrict(input).get().rank(), output);
     }
 
     @Test
@@ -993,12 +994,12 @@ public class RationalMatrixTest {
     }
 
     private static void isInvertible_helper(@NotNull String input, boolean output) {
-        aeq(read(input).get().isInvertible(), output);
+        aeq(readStrict(input).get().isInvertible(), output);
     }
 
     private static void isInvertible_fail_helper(@NotNull String input) {
         try {
-            read(input).get().isInvertible();
+            readStrict(input).get().isInvertible();
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -1019,7 +1020,7 @@ public class RationalMatrixTest {
     }
 
     private static void isInReducedRowEchelonForm_helper(@NotNull String input, boolean output) {
-        aeq(read(input).get().isInReducedRowEchelonForm(), output);
+        aeq(readStrict(input).get().isInReducedRowEchelonForm(), output);
     }
 
     @Test
@@ -1050,7 +1051,7 @@ public class RationalMatrixTest {
     }
 
     private static void reducedRowEchelonForm_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().reducedRowEchelonForm(), output);
+        aeq(readStrict(input).get().reducedRowEchelonForm(), output);
     }
 
     @Test
@@ -1069,12 +1070,12 @@ public class RationalMatrixTest {
     }
 
     private static void solveLinearSystem_helper(@NotNull String m, @NotNull String v, @NotNull String output) {
-        aeq(read(m).get().solveLinearSystem(RationalVector.read(v).get()), output);
+        aeq(readStrict(m).get().solveLinearSystem(RationalVector.readStrict(v).get()), output);
     }
 
     private static void solveLinearSystem_fail_helper(@NotNull String m, @NotNull String v) {
         try {
-            read(m).get().solveLinearSystem(RationalVector.read(v).get());
+            readStrict(m).get().solveLinearSystem(RationalVector.readStrict(v).get());
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -1100,12 +1101,12 @@ public class RationalMatrixTest {
     }
 
     private static void invert_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().invert(), output);
+        aeq(readStrict(input).get().invert(), output);
     }
 
     private static void invert_fail_helper(@NotNull String input) {
         try {
-            read(input).get().invert();
+            readStrict(input).get().invert();
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -1127,12 +1128,12 @@ public class RationalMatrixTest {
     }
 
     private static void determinant_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().determinant(), output);
+        aeq(readStrict(input).get().determinant(), output);
     }
 
     private static void determinant_fail_helper(@NotNull String input) {
         try {
-            read(input).get().determinant();
+            readStrict(input).get().determinant();
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -1154,12 +1155,12 @@ public class RationalMatrixTest {
     }
 
     private static void characteristicPolynomial_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().characteristicPolynomial(), output);
+        aeq(readStrict(input).get().characteristicPolynomial(), output);
     }
 
     private static void characteristicPolynomial_fail_helper(@NotNull String input) {
         try {
-            read(input).get().characteristicPolynomial();
+            readStrict(input).get().characteristicPolynomial();
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -1182,7 +1183,7 @@ public class RationalMatrixTest {
     }
 
     private static void kroneckerMultiply_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().kroneckerMultiply(read(b).get()), output);
+        aeq(readStrict(a).get().kroneckerMultiply(readStrict(b).get()), output);
     }
 
     @Test
@@ -1206,12 +1207,12 @@ public class RationalMatrixTest {
     }
 
     private static void kroneckerAdd_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().kroneckerAdd(read(b).get()), output);
+        aeq(readStrict(a).get().kroneckerAdd(readStrict(b).get()), output);
     }
 
     private static void kroneckerAdd_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().kroneckerAdd(read(b).get());
+            readStrict(a).get().kroneckerAdd(readStrict(b).get());
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -1244,7 +1245,7 @@ public class RationalMatrixTest {
     }
 
     private static void hashCode_helper(@NotNull String input, int hashCode) {
-        aeq(read(input).get().hashCode(), hashCode);
+        aeq(readStrict(input).get().hashCode(), hashCode);
     }
 
     @Test
@@ -1265,82 +1266,60 @@ public class RationalMatrixTest {
                 " [[1, 9, -13], [20, 5, -6]], [[], [], []]]"));
     }
 
-    private static void read_helper(@NotNull String input) {
-        aeq(read(input).get(), input);
+    private static void readStrict_helper(@NotNull String input) {
+        aeq(readStrict(input).get(), input);
     }
 
-    private static void read_fail_helper(@NotNull String input) {
-        assertFalse(read(input).isPresent());
-    }
-
-    @Test
-    public void testRead() {
-        read_helper("[]#0");
-        read_helper("[]#1");
-        read_helper("[]#3");
-        read_helper("[[]]");
-        read_helper("[[], [], []]");
-        read_helper("[[-2/3]]");
-        read_helper("[[-2/3, -8], [0, 5/7]]");
-        read_helper("[[1, 9, -13], [20, 5, -6]]");
-        read_fail_helper("");
-        read_fail_helper("[]");
-        read_fail_helper("[]#");
-        read_fail_helper("[]#-1");
-        read_fail_helper("[[]]#1");
-        read_fail_helper("[[4]]#1");
-        read_fail_helper("[2]");
-        read_fail_helper("[[ ]]");
-        read_fail_helper("[[],]");
-        read_fail_helper("[[1/0]]");
-        read_fail_helper("[[2/4]]");
-        read_fail_helper("[[1/3], null]");
-        read_fail_helper("[[1/3], [2/3, 5/3]]");
-        read_fail_helper("[[]]]");
-        read_fail_helper("[[[]]");
-        read_fail_helper("hello");
-        read_fail_helper("vdfvfmsl;dfbv");
-    }
-
-    private static void findIn_helper(@NotNull String input, @NotNull String output, int index) {
-        Pair<RationalMatrix, Integer> result = findIn(input).get();
-        aeq(result.a, output);
-        aeq(result.b, index);
-    }
-
-    private static void findIn_fail_helper(@NotNull String input) {
-        assertFalse(findIn(input).isPresent());
+    private static void readStrict_fail_helper(@NotNull String input) {
+        assertFalse(readStrict(input).isPresent());
     }
 
     @Test
-    public void testFindIn() {
-        findIn_helper("fr24rev[[]]evfre", "[[]]", 7);
-        findIn_helper("]]][[[1, 9, -13], [20, 5, -6]][[]]dsvdf", "[[1, 9, -13], [20, 5, -6]]", 4);
-        findIn_helper("]]][[[1, 9, -13], [20, 5/5, -6]][[]]dsvdf", "[[]]", 32);
-        findIn_helper("]]][[[1, 9, -13], [20, 2/4, -6]][[]]dsvdf", "[[]]", 32);
-        findIn_helper("]]][[][]#02[]dsvdf", "[]#0", 6);
-        findIn_fail_helper("");
-        findIn_fail_helper("]]][[[1, 9, -13], [20, 5/5, -6]]dsvdf");
-        findIn_fail_helper("hello");
+    public void testReadStrict() {
+        readStrict_helper("[]#0");
+        readStrict_helper("[]#1");
+        readStrict_helper("[]#3");
+        readStrict_helper("[[]]");
+        readStrict_helper("[[], [], []]");
+        readStrict_helper("[[-2/3]]");
+        readStrict_helper("[[-2/3, -8], [0, 5/7]]");
+        readStrict_helper("[[1, 9, -13], [20, 5, -6]]");
+        readStrict_fail_helper("");
+        readStrict_fail_helper("[]");
+        readStrict_fail_helper("[]#");
+        readStrict_fail_helper("[]#-1");
+        readStrict_fail_helper("[[]]#1");
+        readStrict_fail_helper("[[4]]#1");
+        readStrict_fail_helper("[2]");
+        readStrict_fail_helper("[[ ]]");
+        readStrict_fail_helper("[[],]");
+        readStrict_fail_helper("[[1/0]]");
+        readStrict_fail_helper("[[2/4]]");
+        readStrict_fail_helper("[[1/3], null]");
+        readStrict_fail_helper("[[1/3], [2/3, 5/3]]");
+        readStrict_fail_helper("[[]]]");
+        readStrict_fail_helper("[[[]]");
+        readStrict_fail_helper("hello");
+        readStrict_fail_helper("vdfvfmsl;dfbv");
     }
 
     private static @NotNull List<Integer> readIntegerList(@NotNull String s) {
-        return Readers.readList(Readers::readInteger).apply(s).get();
+        return Readers.readListStrict(Readers::readIntegerStrict).apply(s).get();
     }
 
     private static @NotNull List<Integer> readIntegerListWithNulls(@NotNull String s) {
-        return Readers.readListWithNulls(Readers::readInteger).apply(s).get();
+        return Readers.readListWithNullsStrict(Readers::readIntegerStrict).apply(s).get();
     }
 
     private static @NotNull List<RationalVector> readRationalVectorList(@NotNull String s) {
-        return Readers.readList(RationalVector::read).apply(s).get();
+        return Readers.readListStrict(RationalVector::readStrict).apply(s).get();
     }
 
     private static @NotNull List<RationalVector> readRationalVectorListWithNulls(@NotNull String s) {
-        return Readers.readListWithNulls(RationalVector::read).apply(s).get();
+        return Readers.readListWithNullsStrict(RationalVector::readStrict).apply(s).get();
     }
 
     private static @NotNull List<RationalMatrix> readRationalMatrixList(@NotNull String s) {
-        return Readers.readList(RationalMatrix::read).apply(s).get();
+        return Readers.readListStrict(RationalMatrix::readStrict).apply(s).get();
     }
 }

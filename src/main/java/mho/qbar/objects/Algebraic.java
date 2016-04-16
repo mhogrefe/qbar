@@ -66,12 +66,12 @@ public final class Algebraic implements Comparable<Algebraic> {
     /**
      * the square root of 2
      */
-    public static final @NotNull Algebraic SQRT_TWO = of(Polynomial.read("x^2-2").get(), 1);
+    public static final @NotNull Algebraic SQRT_TWO = of(Polynomial.readStrict("x^2-2").get(), 1);
 
     /**
      * φ, the golden ratio
      */
-    public static final @NotNull Algebraic PHI = of(Polynomial.read("x^2-x-1").get(), 1);
+    public static final @NotNull Algebraic PHI = of(Polynomial.readStrict("x^2-x-1").get(), 1);
 
     /**
      * The minimal polynomial of {@code this}; the unique primitive, irreducible polynomial of minimal degree with
@@ -1787,7 +1787,7 @@ public final class Algebraic implements Comparable<Algebraic> {
             s = s.substring(5);
             int ofIndex = s.indexOf(" of ");
             if (ofIndex == -1) return Optional.empty();
-            Optional<Integer> oRootIndex = Readers.readInteger(s.substring(0, ofIndex));
+            Optional<Integer> oRootIndex = Readers.readIntegerStrict(s.substring(0, ofIndex));
             if (!oRootIndex.isPresent()) return Optional.empty();
             int rootIndex = oRootIndex.get();
             if (rootIndex < 0) return Optional.empty();
@@ -1813,7 +1813,7 @@ public final class Algebraic implements Comparable<Algebraic> {
                     numeratorParens = true;
                     if (s.charAt(slashIndex - 1) != ')') return Optional.empty();
                 }
-                Optional<BigInteger> oDenominator = Readers.readBigInteger(s.substring(slashIndex + 1));
+                Optional<BigInteger> oDenominator = Readers.readBigIntegerStrict(s.substring(slashIndex + 1));
                 if (!oDenominator.isPresent()) return Optional.empty();
                 denominator = oDenominator.get();
                 if (denominator.signum() != 1 || denominator.equals(BigInteger.ONE)) return Optional.empty();
@@ -1829,13 +1829,13 @@ public final class Algebraic implements Comparable<Algebraic> {
             int minusIndex = s.indexOf('-', 1);
             BigInteger constant;
             if (plusIndex != -1) {
-                Optional<BigInteger> oConstant = Readers.readBigInteger(s.substring(0, plusIndex));
+                Optional<BigInteger> oConstant = Readers.readBigIntegerStrict(s.substring(0, plusIndex));
                 if (!oConstant.isPresent()) return Optional.empty();
                 constant = oConstant.get();
                 if (constant.equals(BigInteger.ZERO)) return Optional.empty();
                 s = s.substring(plusIndex + 1);
             } else if (minusIndex != -1) {
-                Optional<BigInteger> oConstant = Readers.readBigInteger(s.substring(0, minusIndex));
+                Optional<BigInteger> oConstant = Readers.readBigIntegerStrict(s.substring(0, minusIndex));
                 if (!oConstant.isPresent()) return Optional.empty();
                 constant = oConstant.get();
                 if (constant.equals(BigInteger.ZERO)) return Optional.empty();
@@ -1855,7 +1855,7 @@ public final class Algebraic implements Comparable<Algebraic> {
                     beforeRadical = BigInteger.ONE;
                 }
             } else {
-                Optional<BigInteger> oBeforeRadical = Readers.readBigInteger(s.substring(0, starIndex));
+                Optional<BigInteger> oBeforeRadical = Readers.readBigIntegerStrict(s.substring(0, starIndex));
                 if (!oBeforeRadical.isPresent()) return Optional.empty();
                 beforeRadical = oBeforeRadical.get();
                 if (beforeRadical.equals(BigInteger.ZERO)) return Optional.empty();
@@ -1864,7 +1864,7 @@ public final class Algebraic implements Comparable<Algebraic> {
             }
             if (!s.startsWith("sqrt(")) return Optional.empty();
             if (last(s) != ')') return Optional.empty();
-            Optional<BigInteger> oUnderRadical = Readers.readBigInteger(s.substring(5, s.length() - 1));
+            Optional<BigInteger> oUnderRadical = Readers.readBigIntegerStrict(s.substring(5, s.length() - 1));
             if (!oUnderRadical.isPresent()) return Optional.empty();
             BigInteger underRadical = oUnderRadical.get();
             if (underRadical.signum() != 1) return Optional.empty();
@@ -1872,7 +1872,7 @@ public final class Algebraic implements Comparable<Algebraic> {
             if (!ox.isPresent()) return Optional.empty();
             return ox;
         } else {
-            Optional<Rational> or = Rational.read(s);
+            Optional<Rational> or = Rational.readStrict(s);
             if (!or.isPresent()) return Optional.empty();
             return Optional.of(of(or.get()));
         }
@@ -1921,7 +1921,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      * Creates an {@code Algebraic} from a {@code String}. Valid input takes the form of a {@code String} that could
      * have been returned by {@link Algebraic#toString}. Caution: It's easy to run out of time and memory reading
      * something like {@code "x^1000000000"}. If such an input is possible, consider using
-     * {@link Algebraic#read(int, String)} instead.
+     * {@link Algebraic#readStrict(int, String)} instead.
      *
      * <ul>
      *  <li>{@code s} cannot be null.</li>
@@ -1931,8 +1931,8 @@ public final class Algebraic implements Comparable<Algebraic> {
      * @param s a string representation of an {@code Algebraic}.
      * @return the wrapped {@code Algebraic} represented by {@code s}, or {@code empty} if {@code s} is invalid.
      */
-    public static @NotNull Optional<Algebraic> read(@NotNull String s) {
-        return genericRead(s, Polynomial::read);
+    public static @NotNull Optional<Algebraic> readStrict(@NotNull String s) {
+        return genericRead(s, Polynomial::readStrict);
     }
 
     /**
@@ -1951,54 +1951,11 @@ public final class Algebraic implements Comparable<Algebraic> {
      * @return the wrapped {@code Algebraic} (with degree no greater than {@code maxDegree}) represented by {@code s},
      * or {@code empty} if {@code s} is invalid.
      */
-    public static @NotNull Optional<Algebraic> read(int maxDegree, @NotNull String s) {
+    public static @NotNull Optional<Algebraic> readStrict(int maxDegree, @NotNull String s) {
         if (maxDegree < 2) {
             throw new IllegalArgumentException("maxDegree must be at least 2. Invalid maxDegree: " + maxDegree);
         }
-        return genericRead(s, t -> Polynomial.read(maxDegree, t));
-    }
-
-    /**
-     * Finds the first occurrence of an {@code Algebraic} in a {@code String}. Returns the {@code Algebraic} and the
-     * index at which it was found. Returns an empty {@code Optional} if no {@code Algebraic} is found. Only
-     * {@code String}s which could have been emitted by {@link Algebraic#toString} are recognized. The longest possible
-     * {@code Algebraic} is parsed. Caution: It's easy to run out of time and memory finding something like
-     * {@code "x^1000000000"}. If such an input is possible, consider using {@link Algebraic#findIn(int, String)}
-     * instead.
-     *
-     * <ul>
-     *  <li>{@code s} must be non-null.</li>
-     *  <li>The result is non-null. If it is non-empty, then neither of the {@code Pair}'s components is null, and the
-     *  second component is non-negative.</li>
-     * </ul>
-     *
-     * @param s the input {@code String}
-     * @return the first {@code Algebraic} found in {@code s}, and the index at which it was found
-     */
-    public static @NotNull Optional<Pair<Algebraic, Integer>> findIn(@NotNull String s) {
-        return Readers.genericFindIn(Algebraic::read, " ()*+-/0123456789^foqrstx").apply(s);
-    }
-
-    /**
-     * Finds the first occurrence of an {@code Algebraic} in a {@code String}. Returns the {@code Algebraic} and the
-     * index at which it was found. Returns an empty {@code Optional} if no {@code Algebraic} is found. Only
-     * {@code String}s which could have been emitted by {@link Algebraic#toString} are recognized. The longest possible
-     * {@code Algebraic} is parsed. The input {@code Algebraic} cannot have a degree greater than {@code maxDegree}.
-     *
-     * <ul>
-     *  <li>{@code maxDegree} must be at least 2.</li>
-     *  <li>{@code s} must be non-null.</li>
-     *  <li>The result is non-null. If it is non-empty, then neither of the {@code Pair}'s components is null, and the
-     *  second component is non-negative.</li>
-     * </ul>
-     *
-     * @param maxDegree the largest accepted degree
-     * @param s the input {@code String}
-     * @return the first {@code Algebraic} found in {@code s} (with degree no greater than {@code maxDegree}), and the
-     * index at which it was found
-     */
-    public static @NotNull Optional<Pair<Algebraic, Integer>> findIn(int maxDegree, @NotNull String s) {
-        return Readers.genericFindIn(t -> read(maxDegree, t), " ()*+-/0123456789^foqrstx").apply(s);
+        return genericRead(s, t -> Polynomial.readStrict(maxDegree, t));
     }
 
     /**

@@ -75,8 +75,7 @@ public class RationalPolynomialMatrixProperties extends QBarTestProperties {
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
-        propertiesRead();
-        propertiesFindIn();
+        propertiesReadStrict();
         propertiesToString();
     }
 
@@ -1597,28 +1596,16 @@ public class RationalPolynomialMatrixProperties extends QBarTestProperties {
         }
     }
 
-    private void propertiesRead() {
-        initialize("read(String)");
+    private void propertiesReadStrict() {
+        initialize("readStrict(String)");
         QBarTesting.propertiesReadHelper(
                 LIMIT,
                 P,
                 RATIONAL_POLYNOMIAL_MATRIX_CHARS,
                 P.rationalPolynomialMatrices(),
-                RationalPolynomialMatrix::read,
+                RationalPolynomialMatrix::readStrict,
                 RationalPolynomialMatrix::validate,
                 false
-        );
-    }
-
-    private void propertiesFindIn() {
-        initialize("findIn(String)");
-        propertiesFindInHelper(
-                LIMIT,
-                P.getWheelsProvider(),
-                P.rationalPolynomialMatrices(),
-                RationalPolynomialMatrix::read,
-                RationalPolynomialMatrix::findIn,
-                RationalPolynomialMatrix::validate
         );
     }
 
@@ -1628,7 +1615,7 @@ public class RationalPolynomialMatrixProperties extends QBarTestProperties {
                 LIMIT,
                 RATIONAL_POLYNOMIAL_MATRIX_CHARS,
                 P.rationalPolynomialMatrices(),
-                RationalPolynomialMatrix::read
+                RationalPolynomialMatrix::readStrict
         );
     }
 }

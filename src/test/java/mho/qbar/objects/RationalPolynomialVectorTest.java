@@ -22,7 +22,7 @@ public class RationalPolynomialVectorTest {
     }
 
     private static void iterator_helper(@NotNull String input) {
-        aeq(toList(read(input).get()), input);
+        aeq(toList(readStrict(input).get()), input);
     }
 
     @Test
@@ -33,7 +33,7 @@ public class RationalPolynomialVectorTest {
     }
 
     private static void onlyHasIntegralCoordinates_helper(@NotNull String input, boolean output) {
-        aeq(read(input).get().onlyHasIntegralCoordinates(), output);
+        aeq(readStrict(input).get().onlyHasIntegralCoordinates(), output);
     }
 
     @Test
@@ -46,12 +46,12 @@ public class RationalPolynomialVectorTest {
     }
 
     private static void toPolynomialVector_helper(@NotNull String input) {
-        aeq(read(input).get().toPolynomialVector(), input);
+        aeq(readStrict(input).get().toPolynomialVector(), input);
     }
 
     private static void toPolynomialVector_fail_helper(@NotNull String input) {
         try {
-            read(input).get().toPolynomialVector();
+            readStrict(input).get().toPolynomialVector();
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -66,12 +66,12 @@ public class RationalPolynomialVectorTest {
     }
 
     private static void get_helper(@NotNull String input, int i, @NotNull String output) {
-        aeq(read(input).get().get(i), output);
+        aeq(readStrict(input).get().get(i), output);
     }
 
     private static void get_fail_helper(@NotNull String input, int i) {
         try {
-            read(input).get().get(i);
+            readStrict(input).get().get(i);
             fail();
         } catch (IndexOutOfBoundsException ignored) {}
     }
@@ -106,7 +106,7 @@ public class RationalPolynomialVectorTest {
     }
 
     private static void of_RationalPolynomial_helper(@NotNull String input, @NotNull String output) {
-        aeq(of(RationalPolynomial.read(input).get()), output);
+        aeq(of(RationalPolynomial.readStrict(input).get()), output);
     }
 
     @Test
@@ -117,7 +117,7 @@ public class RationalPolynomialVectorTest {
     }
 
     private static void of_RationalVector_helper(@NotNull String input) {
-        aeq(of(RationalVector.read(input).get()), input);
+        aeq(of(RationalVector.readStrict(input).get()), input);
     }
 
     @Test
@@ -128,7 +128,7 @@ public class RationalPolynomialVectorTest {
     }
 
     private static void maxCoordinateBitLength_helper(@NotNull String input, int output) {
-        aeq(read(input).get().maxCoordinateBitLength(), output);
+        aeq(readStrict(input).get().maxCoordinateBitLength(), output);
     }
 
     @Test
@@ -139,7 +139,7 @@ public class RationalPolynomialVectorTest {
     }
 
     private static void dimension_helper(@NotNull String input, int output) {
-        aeq(read(input).get().dimension(), output);
+        aeq(readStrict(input).get().dimension(), output);
     }
 
     @Test
@@ -150,7 +150,7 @@ public class RationalPolynomialVectorTest {
     }
 
     private static void testIsZero(@NotNull String input, boolean output) {
-        aeq(read(input).get().isZero(), output);
+        aeq(readStrict(input).get().isZero(), output);
     }
 
     @Test
@@ -207,12 +207,12 @@ public class RationalPolynomialVectorTest {
     }
 
     private static void add_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().add(read(b).get()), output);
+        aeq(readStrict(a).get().add(readStrict(b).get()), output);
     }
 
     private static void add_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().add(read(b).get());
+            readStrict(a).get().add(readStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -230,7 +230,7 @@ public class RationalPolynomialVectorTest {
     }
 
     private static void negate_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().negate(), output);
+        aeq(readStrict(input).get().negate(), output);
     }
 
     @Test
@@ -241,12 +241,12 @@ public class RationalPolynomialVectorTest {
     }
 
     private static void subtract_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().subtract(read(b).get()), output);
+        aeq(readStrict(a).get().subtract(readStrict(b).get()), output);
     }
 
     private static void subtract_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().subtract(read(b).get());
+            readStrict(a).get().subtract(readStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -269,7 +269,7 @@ public class RationalPolynomialVectorTest {
             @NotNull String b,
             @NotNull String output
     ) {
-        aeq(read(a).get().multiply(RationalPolynomial.read(b).get()), output);
+        aeq(readStrict(a).get().multiply(RationalPolynomial.readStrict(b).get()), output);
     }
 
     @Test
@@ -292,7 +292,7 @@ public class RationalPolynomialVectorTest {
     }
 
     private static void multiply_Rational_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().multiply(Rational.read(b).get()), output);
+        aeq(readStrict(a).get().multiply(Rational.readStrict(b).get()), output);
     }
 
     @Test
@@ -311,7 +311,7 @@ public class RationalPolynomialVectorTest {
     }
 
     private static void multiply_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().multiply(Readers.readBigInteger(b).get()), output);
+        aeq(readStrict(a).get().multiply(Readers.readBigIntegerStrict(b).get()), output);
     }
 
     @Test
@@ -330,7 +330,7 @@ public class RationalPolynomialVectorTest {
     }
 
     private static void multiply_int_helper(@NotNull String a, int b, @NotNull String output) {
-        aeq(read(a).get().multiply(b), output);
+        aeq(readStrict(a).get().multiply(b), output);
     }
 
     @Test
@@ -349,12 +349,12 @@ public class RationalPolynomialVectorTest {
     }
 
     private static void divide_Rational_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().divide(Rational.read(b).get()), output);
+        aeq(readStrict(a).get().divide(Rational.readStrict(b).get()), output);
     }
 
     private static void divide_Rational_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().divide(Rational.read(b).get());
+            readStrict(a).get().divide(Rational.readStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -375,12 +375,12 @@ public class RationalPolynomialVectorTest {
     }
 
     private static void divide_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().divide(Readers.readBigInteger(b).get()), output);
+        aeq(readStrict(a).get().divide(Readers.readBigIntegerStrict(b).get()), output);
     }
 
     private static void divide_BigInteger_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().divide(Readers.readBigInteger(b).get());
+            readStrict(a).get().divide(Readers.readBigIntegerStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -401,12 +401,12 @@ public class RationalPolynomialVectorTest {
     }
 
     private static void divide_int_helper(@NotNull String a, int b, @NotNull String output) {
-        aeq(read(a).get().divide(b), output);
+        aeq(readStrict(a).get().divide(b), output);
     }
 
     private static void divide_int_fail_helper(@NotNull String a, int b) {
         try {
-            read(a).get().divide(b);
+            readStrict(a).get().divide(b);
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -427,7 +427,7 @@ public class RationalPolynomialVectorTest {
     }
 
     private static void shiftLeft_helper(@NotNull String a, int bits, @NotNull String output) {
-        aeq(read(a).get().shiftLeft(bits), output);
+        aeq(readStrict(a).get().shiftLeft(bits), output);
     }
 
     @Test
@@ -464,7 +464,7 @@ public class RationalPolynomialVectorTest {
     }
 
     private static void shiftRight_helper(@NotNull String a, int bits, @NotNull String output) {
-        aeq(read(a).get().shiftRight(bits), output);
+        aeq(readStrict(a).get().shiftRight(bits), output);
     }
 
     @Test
@@ -582,12 +582,12 @@ public class RationalPolynomialVectorTest {
     }
 
     private static void dot_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().dot(read(b).get()), output);
+        aeq(readStrict(a).get().dot(readStrict(b).get()), output);
     }
 
     private static void dot_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().dot(read(b).get());
+            readStrict(a).get().dot(readStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -605,7 +605,7 @@ public class RationalPolynomialVectorTest {
     }
 
     private static void squaredLength_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().squaredLength(), output);
+        aeq(readStrict(input).get().squaredLength(), output);
     }
 
     @Test
@@ -627,7 +627,7 @@ public class RationalPolynomialVectorTest {
     }
 
     private static void hashCode_helper(@NotNull String input, int hashCode) {
-        aeq(read(input).get().hashCode(), hashCode);
+        aeq(readStrict(input).get().hashCode(), hashCode);
     }
 
     @Test
@@ -645,65 +645,43 @@ public class RationalPolynomialVectorTest {
         );
     }
 
-    private static void read_helper(@NotNull String input) {
-        aeq(read(input).get(), input);
+    private static void readStrict_helper(@NotNull String input) {
+        aeq(readStrict(input).get(), input);
     }
 
-    private static void read_fail_helper(@NotNull String input) {
-        assertFalse(read(input).isPresent());
-    }
-
-    @Test
-    public void testRead() {
-        read_helper("[]");
-        read_helper("[x]");
-        read_helper("[5/3, -1/4*x+3, 23*x^5]");
-        read_fail_helper("");
-        read_fail_helper("[ 1]");
-        read_fail_helper("[1/3*x, 2/4]");
-        read_fail_helper("hello");
-        read_fail_helper("][");
-        read_fail_helper("1, 3");
-        read_fail_helper("vfbdb ds");
-    }
-
-    private static void findIn_helper(@NotNull String input, @NotNull String output, int index) {
-        Pair<RationalPolynomialVector, Integer> result = findIn(input).get();
-        aeq(result.a, output);
-        aeq(result.b, index);
-    }
-
-    private static void findIn_fail_helper(@NotNull String input) {
-        assertFalse(findIn(input).isPresent());
+    private static void readStrict_fail_helper(@NotNull String input) {
+        assertFalse(readStrict(input).isPresent());
     }
 
     @Test
-    public void testFindIn() {
-        findIn_helper("fr24rev[]evfre", "[]", 7);
-        findIn_helper("]]][[x, 45][]dsvdf", "[x, 45]", 4);
-        findIn_helper("]]][[4,  45][]dsvdf", "[]", 12);
-        findIn_helper("]]][[3/4, 45][]dsvdf", "[3/4, 45]", 4);
-        findIn_fail_helper("");
-        findIn_fail_helper("]]][[x,  45]dsvdf");
-        findIn_fail_helper("]]][[3/4*x,  45]dsvdf");
-        findIn_fail_helper("hello");
+    public void testReadStrict() {
+        readStrict_helper("[]");
+        readStrict_helper("[x]");
+        readStrict_helper("[5/3, -1/4*x+3, 23*x^5]");
+        readStrict_fail_helper("");
+        readStrict_fail_helper("[ 1]");
+        readStrict_fail_helper("[1/3*x, 2/4]");
+        readStrict_fail_helper("hello");
+        readStrict_fail_helper("][");
+        readStrict_fail_helper("1, 3");
+        readStrict_fail_helper("vfbdb ds");
     }
 
     private static @NotNull List<RationalPolynomial> readRationalPolynomialList(@NotNull String s) {
-        return Readers.readList(RationalPolynomial::read).apply(s).get();
+        return Readers.readListStrict(RationalPolynomial::readStrict).apply(s).get();
     }
 
     private static @NotNull List<RationalPolynomial> readRationalPolynomialListWithNulls(@NotNull String s) {
-        return Readers.readListWithNulls(RationalPolynomial::read).apply(s).get();
+        return Readers.readListWithNullsStrict(RationalPolynomial::readStrict).apply(s).get();
     }
 
     private static @NotNull List<RationalPolynomialVector> readRationalPolynomialVectorList(@NotNull String s) {
-        return Readers.readList(RationalPolynomialVector::read).apply(s).get();
+        return Readers.readListStrict(RationalPolynomialVector::readStrict).apply(s).get();
     }
 
     private static @NotNull List<RationalPolynomialVector> readRationalPolynomialVectorListWithNulls(
             @NotNull String s
     ) {
-        return Readers.readListWithNulls(RationalPolynomialVector::read).apply(s).get();
+        return Readers.readListWithNullsStrict(RationalPolynomialVector::readStrict).apply(s).get();
     }
 }

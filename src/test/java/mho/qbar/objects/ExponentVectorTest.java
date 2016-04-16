@@ -20,7 +20,7 @@ public class ExponentVectorTest {
     }
 
     private static void getExponents_helper(@NotNull String x, @NotNull String output) {
-        aeq(read(x).get().getExponents(), output);
+        aeq(readStrict(x).get().getExponents(), output);
     }
 
     @Test
@@ -34,7 +34,7 @@ public class ExponentVectorTest {
     }
 
     private static void exponent_helper(@NotNull String ev, @NotNull String v, int output) {
-        aeq(read(ev).get().exponent(Variable.read(v).get()), output);
+        aeq(readStrict(ev).get().exponent(Variable.readStrict(v).get()), output);
     }
 
     @Test
@@ -54,7 +54,7 @@ public class ExponentVectorTest {
     }
 
     private static void size_helper(@NotNull String ev, int output) {
-        aeq(read(ev).get().size(), output);
+        aeq(readStrict(ev).get().size(), output);
     }
 
     @Test
@@ -67,7 +67,7 @@ public class ExponentVectorTest {
     }
 
     private static void terms_helper(@NotNull String input, @NotNull String output) {
-        aeqit(read(input).get().terms(), output);
+        aeqit(readStrict(input).get().terms(), output);
     }
 
     @Test
@@ -134,7 +134,7 @@ public class ExponentVectorTest {
     }
 
     private static void degree_helper(@NotNull String ev, int output) {
-        aeq(read(ev).get().degree(), output);
+        aeq(readStrict(ev).get().degree(), output);
     }
 
     @Test
@@ -147,7 +147,7 @@ public class ExponentVectorTest {
     }
 
     private static void variables_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().variables(), output);
+        aeq(readStrict(input).get().variables(), output);
     }
 
     @Test
@@ -162,7 +162,7 @@ public class ExponentVectorTest {
     }
 
     private static void multiply_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().multiply(read(b).get()), output);
+        aeq(readStrict(a).get().multiply(readStrict(b).get()), output);
     }
 
     @Test
@@ -207,7 +207,7 @@ public class ExponentVectorTest {
     }
 
     private static void hashCode_helper(@NotNull String input, int hashCode) {
-        aeq(read(input).get().hashCode(), hashCode);
+        aeq(readStrict(input).get().hashCode(), hashCode);
     }
 
     @Test
@@ -228,82 +228,65 @@ public class ExponentVectorTest {
         );
     }
 
-    private static void read_helper(@NotNull String input) {
-        aeq(read(input).get(), input);
+    private static void readStrict_helper(@NotNull String input) {
+        aeq(readStrict(input).get(), input);
     }
 
-    private static void read_fail_helper(@NotNull String input) {
-        assertFalse(read(input).isPresent());
-    }
-
-    @Test
-    public void testRead() {
-        read_helper("1");
-        read_helper("a");
-        read_helper("a^2");
-        read_helper("a^3");
-        read_helper("x^2*y*z^3");
-        read_helper("ooo");
-        read_fail_helper("");
-        read_fail_helper(" ");
-        read_fail_helper("ab");
-        read_fail_helper("3*a");
-        read_fail_helper("a^0");
-        read_fail_helper("a^1");
-        read_fail_helper("a^-1");
-        read_fail_helper("b*a");
-        read_fail_helper("a*a");
-        read_fail_helper("123");
-        read_fail_helper("aa*");
-        read_fail_helper("*aa");
-    }
-
-    private static void findIn_helper(@NotNull String input, @NotNull String output, int index) {
-        Pair<ExponentVector, Integer> result = findIn(input).get();
-        aeq(result.a, output);
-        aeq(result.b, index);
-    }
-
-    private static void findIn_fail_helper(@NotNull String input) {
-        assertFalse(findIn(input).isPresent());
+    private static void readStrict_fail_helper(@NotNull String input) {
+        assertFalse(readStrict(input).isPresent());
     }
 
     @Test
-    public void testFindIn() {
-        findIn_helper("hello", "h", 0);
-        findIn_helper("b*a*b", "b", 0);
-        findIn_helper("3*a*b", "a*b", 2);
-        findIn_helper("2*a^2a", "a^2", 2);
-        findIn_helper("123", "1", 0);
-        findIn_fail_helper("");
-        findIn_fail_helper("234");
+    public void testReadStrict() {
+        readStrict_helper("1");
+        readStrict_helper("a");
+        readStrict_helper("a^2");
+        readStrict_helper("a^3");
+        readStrict_helper("x^2*y*z^3");
+        readStrict_helper("ooo");
+        readStrict_fail_helper("");
+        readStrict_fail_helper(" ");
+        readStrict_fail_helper("ab");
+        readStrict_fail_helper("3*a");
+        readStrict_fail_helper("a^0");
+        readStrict_fail_helper("a^1");
+        readStrict_fail_helper("a^-1");
+        readStrict_fail_helper("b*a");
+        readStrict_fail_helper("a*a");
+        readStrict_fail_helper("123");
+        readStrict_fail_helper("aa*");
+        readStrict_fail_helper("*aa");
     }
 
     private static @NotNull List<Integer> readIntegerList(@NotNull String s) {
-        return Readers.readList(Readers::readInteger).apply(s).get();
+        return Readers.readListStrict(Readers::readIntegerStrict).apply(s).get();
     }
 
     private static @NotNull List<Integer> readIntegerListWithNulls(@NotNull String s) {
-        return Readers.readListWithNulls(Readers::readInteger).apply(s).get();
+        return Readers.readListWithNullsStrict(Readers::readIntegerStrict).apply(s).get();
     }
 
     private static @NotNull List<Pair<Variable, Integer>> readVariableIntegerPairList(@NotNull String s) {
-        return Readers.readList(
+        return Readers.readListStrict(
                 u -> Pair.read(
                         u,
-                        t -> NullableOptional.fromOptional(Variable.read(t)),
-                        t -> NullableOptional.fromOptional(Readers.readInteger(t))
+                        t -> NullableOptional.fromOptional(Variable.readStrict(t)),
+                        t -> NullableOptional.fromOptional(Readers.readIntegerStrict(t))
                 )
         ).apply(s).get();
     }
 
     private static @NotNull List<Pair<Variable, Integer>> readVariableIntegerPairListWithNulls(@NotNull String s) {
-        return Readers.readListWithNulls(
-                u -> Pair.read(u, Readers.readWithNulls(Variable::read), Readers.readWithNulls(Readers::readInteger))
+        return Readers.readListWithNullsStrict(
+                u -> Pair.read(
+                        u,
+                        Readers.readWithNullsStrict(Variable::readStrict),
+                        Readers.readWithNullsStrict(Readers::readIntegerStrict)
+                )
         ).apply(s).get();
     }
 
     private static @NotNull List<ExponentVector> readExponentVectorList(@NotNull String s) {
-        return Readers.readList(ExponentVector::read).apply(s).get();
+        return Readers.readListStrict(ExponentVector::readStrict).apply(s).get();
     }
 }

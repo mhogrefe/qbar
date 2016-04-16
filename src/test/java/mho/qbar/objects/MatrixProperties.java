@@ -87,8 +87,7 @@ public class MatrixProperties extends QBarTestProperties {
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
-        propertiesRead();
-        propertiesFindIn();
+        propertiesReadStrict();
         propertiesToString();
     }
 
@@ -1873,25 +1872,21 @@ public class MatrixProperties extends QBarTestProperties {
         }
     }
 
-    private void propertiesRead() {
-        initialize("read(String)");
-        QBarTesting.propertiesReadHelper(LIMIT, P, MATRIX_CHARS, P.matrices(), Matrix::read, Matrix::validate, false);
-    }
-
-    private void propertiesFindIn() {
-        initialize("findIn(String)");
-        propertiesFindInHelper(
+    private void propertiesReadStrict() {
+        initialize("readStrict(String)");
+        QBarTesting.propertiesReadHelper(
                 LIMIT,
-                P.getWheelsProvider(),
+                P,
+                MATRIX_CHARS,
                 P.matrices(),
-                Matrix::read,
-                Matrix::findIn,
-                Matrix::validate
+                Matrix::readStrict,
+                Matrix::validate,
+                false
         );
     }
 
     private void propertiesToString() {
         initialize("toString()");
-        propertiesToStringHelper(LIMIT, MATRIX_CHARS, P.matrices(), Matrix::read);
+        propertiesToStringHelper(LIMIT, MATRIX_CHARS, P.matrices(), Matrix::readStrict);
     }
 }

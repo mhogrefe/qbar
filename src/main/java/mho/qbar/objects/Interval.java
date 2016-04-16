@@ -1,6 +1,5 @@
 package mho.qbar.objects;
 
-import mho.wheels.io.Readers;
 import mho.wheels.numberUtils.FloatingPointUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.ordering.comparators.WithNullComparator;
@@ -1457,17 +1456,17 @@ public final class Interval implements Comparable<Interval> {
      * Creates an {@code Interval} from a {@code String}. Valid strings are in one of these four forms:
      * {@code "(-Infinity, Infinity)"}, {@code "(-Infinity, " + q + "]"},
      * {@code "[" + p + ", Infinity)"}, or {@code "[" + p + ", " + q + "]"}, where {@code p} and {@code q} are valid
-     * inputs to {@link mho.qbar.objects.Rational#read}, and {@code p}≤{@code q}
+     * inputs to {@link mho.qbar.objects.Rational#readStrict}, and {@code p}≤{@code q}
      *
      * <ul>
      *  <li>{@code s} cannot be null.</li>
      *  <li>The result may be any {@code Optional<Interval>}.</li>
      * </ul>
      *
-     * @param s a string representation of a {@code Rational}.
+     * @param s a string representation of an {@code Interval}.
      * @return the wrapped {@code Rational} represented by {@code s}, or {@code empty} if {@code s} is invalid.
      */
-    public static @NotNull Optional<Interval> read(@NotNull String s) {
+    public static @NotNull Optional<Interval> readStrict(@NotNull String s) {
         if (s.isEmpty()) return Optional.empty();
         char left = s.charAt(0);
         if (left != '[' && left != '(') return Optional.empty();
@@ -1481,7 +1480,7 @@ public final class Interval implements Comparable<Interval> {
         if (left == '(') {
             if (!leftString.equals("-Infinity")) return Optional.empty();
         } else {
-            Optional<Rational> optLower = Rational.read(leftString);
+            Optional<Rational> optLower = Rational.readStrict(leftString);
             if (!optLower.isPresent()) return Optional.empty();
             lower = optLower.get();
         }
@@ -1489,31 +1488,12 @@ public final class Interval implements Comparable<Interval> {
         if (right == ')') {
             if (!rightString.equals("Infinity")) return Optional.empty();
         } else {
-            Optional<Rational> optUpper = Rational.read(rightString);
+            Optional<Rational> optUpper = Rational.readStrict(rightString);
             if (!optUpper.isPresent()) return Optional.empty();
             upper = optUpper.get();
         }
         if (lower != null && upper != null && gt(lower, upper)) return Optional.empty();
         return Optional.of(new Interval(lower, upper));
-    }
-
-    /**
-     * Finds the first occurrence of an {@code Interval} in a {@code String}. Returns the {@code Interval} and the
-     * index at which it was found. Returns an empty {@code Optional} if no {@code Interval} is found. Only
-     * {@code String}s which could have been emitted by {@link mho.qbar.objects.Interval#toString} are recognized. The
-     * longest possible {@code Interval} is parsed.
-     *
-     * <ul>
-     *  <li>{@code s} must be non-null.</li>
-     *  <li>The result is non-null. If it is non-empty, then neither of the {@code Pair}'s components is null, and the
-     *  second component is non-negative.</li>
-     * </ul>
-     *
-     * @param s the input {@code String}
-     * @return the first {@code Interval} found in {@code s}, and the index at which it was found
-     */
-    public static @NotNull Optional<Pair<Interval, Integer>> findIn(@NotNull String s) {
-        return Readers.genericFindIn(Interval::read, " (),-/0123456789I[]finty").apply(s);
     }
 
     /**

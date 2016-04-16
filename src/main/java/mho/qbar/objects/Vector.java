@@ -607,34 +607,11 @@ public final class Vector implements Comparable<Vector>, Iterable<BigInteger> {
      * @param s a string representation of a {@code Vector}
      * @return the {@code Vector} represented by {@code s}, or an empty {@code Optional} if {@code s} is invalid
      */
-    public static @NotNull Optional<Vector> read(@NotNull String s) {
-        Optional<List<BigInteger>> ois = Readers.readList(Readers::readBigInteger).apply(s);
+    public static @NotNull Optional<Vector> readStrict(@NotNull String s) {
+        Optional<List<BigInteger>> ois = Readers.readListStrict(Readers::readBigIntegerStrict).apply(s);
         if (!ois.isPresent()) return Optional.empty();
         if (ois.get().isEmpty()) return Optional.of(ZERO_DIMENSIONAL);
         return Optional.of(new Vector(ois.get()));
-    }
-
-    /**
-     * Finds the first occurrence of a {@code Vector} in a {@code String}. Returns the {@code Vector} and the index at
-     * which it was found. Returns an empty {@code Optional} if no {@code Vector} is found. Only {@code String}s which
-     * could have been emitted by {@link Vector#toString} are recognized. The longest possible {@code Vector} is
-     * parsed.
-     *
-     * <ul>
-     *  <li>{@code s} must be non-null.</li>
-     *  <li>The result is non-null. If it is non-empty, then neither of the {@code Pair}'s components is null, and the
-     *  second component is non-negative.</li>
-     * </ul>
-     *
-     * @param s the input {@code String}
-     * @return the first {@code Vector} found in {@code s}, and the index at which it was found
-     */
-    public static @NotNull Optional<Pair<Vector, Integer>> findIn(@NotNull String s) {
-        Optional<Pair<List<BigInteger>, Integer>> op = Readers.findListIn(Readers::readBigInteger, "-0123456789", s);
-        if (!op.isPresent()) return Optional.empty();
-        Pair<List<BigInteger>, Integer> p = op.get();
-        if (p.a.isEmpty()) return Optional.of(new Pair<>(ZERO_DIMENSIONAL, p.b));
-        return Optional.of(new Pair<>(new Vector(p.a), p.b));
     }
 
     /**
