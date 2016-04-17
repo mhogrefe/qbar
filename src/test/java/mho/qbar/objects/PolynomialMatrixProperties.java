@@ -1313,7 +1313,8 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
                 P.polynomialMatrices(),
                 PolynomialMatrix::readStrict,
                 PolynomialMatrix::validate,
-                false
+                false,
+                true
         );
     }
 

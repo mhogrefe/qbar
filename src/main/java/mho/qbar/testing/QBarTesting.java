@@ -368,7 +368,8 @@ public class QBarTesting {
             @NotNull Iterable<T> xs,
             @NotNull Function<String, Optional<T>> read,
             @NotNull Consumer<T> validate,
-            boolean denseInUsedCharString
+            boolean denseInUsedCharString,
+            boolean strict
     ) {
         for (String s : take(limit, P.strings())) {
             read.apply(s);

@@ -617,7 +617,8 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
                 P.multivariatePolynomials(),
                 MultivariatePolynomial::readStrict,
                 MultivariatePolynomial::validate,
-                false
+                false,
+                true
         );
     }
 

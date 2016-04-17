@@ -72,7 +72,8 @@ public class VariableProperties extends QBarTestProperties {
             P.variables(),
             Variable::readStrict,
             Variable::validate,
-            false
+            false,
+            true
         );
     }
 

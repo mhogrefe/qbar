@@ -898,7 +898,8 @@ public class PolynomialVectorProperties extends QBarTestProperties {
                 P.polynomialVectors(),
                 PolynomialVector::readStrict,
                 PolynomialVector::validate,
-                false
+                false,
+                true
         );
     }
 

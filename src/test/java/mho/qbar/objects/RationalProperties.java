@@ -3583,7 +3583,17 @@ public class RationalProperties extends QBarTestProperties {
 
     private void propertiesReadStrict() {
         initialize("readStrict(String)");
-        propertiesReadHelper(LIMIT, P, RATIONAL_CHARS, P.rationals(), Rational::readStrict, Rational::validate, true);
+        propertiesReadHelper(
+                LIMIT,
+                P,
+                RATIONAL_CHARS,
+                P.rationals(),
+                Rational::readStrict,
+                Rational::validate,
+                true,
+                true
+        );
+
         Pair<Iterable<String>, Iterable<String>> slashPartition = partition(
                 s -> s.contains("/"),
                 filterInfinite(s -> readStrict(s).isPresent(), P.strings(RATIONAL_CHARS))

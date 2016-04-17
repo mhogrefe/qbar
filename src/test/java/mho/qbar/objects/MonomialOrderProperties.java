@@ -72,7 +72,8 @@ public class MonomialOrderProperties extends QBarTestProperties {
             P.monomialOrders(),
             MonomialOrder::readStrict,
             o -> {},
-            false
+            false,
+            true
         );
     }
 }

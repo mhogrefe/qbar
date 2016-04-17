@@ -1605,7 +1605,8 @@ public class RationalPolynomialMatrixProperties extends QBarTestProperties {
                 P.rationalPolynomialMatrices(),
                 RationalPolynomialMatrix::readStrict,
                 RationalPolynomialMatrix::validate,
-                false
+                false,
+                true
         );
     }
 

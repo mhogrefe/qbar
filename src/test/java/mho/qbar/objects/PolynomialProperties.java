@@ -4555,7 +4555,8 @@ public class PolynomialProperties extends QBarTestProperties {
                 P.polynomials(),
                 Polynomial::readStrict,
                 Polynomial::validate,
-                false
+                false,
+                true
         );
     }
 

@@ -1881,7 +1881,8 @@ public class MatrixProperties extends QBarTestProperties {
                 P.matrices(),
                 Matrix::readStrict,
                 Matrix::validate,
-                false
+                false,
+                true
         );
     }
 

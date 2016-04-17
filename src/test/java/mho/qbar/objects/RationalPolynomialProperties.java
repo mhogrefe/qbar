@@ -2058,7 +2058,8 @@ public class RationalPolynomialProperties extends QBarTestProperties {
                 P.rationalPolynomials(),
                 RationalPolynomial::readStrict,
                 RationalPolynomial::validate,
-                false
+                false,
+                true
         );
     }
 

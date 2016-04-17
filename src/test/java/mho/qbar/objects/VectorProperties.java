@@ -931,7 +931,8 @@ public class VectorProperties extends QBarTestProperties {
                 P.vectors(),
                 Vector::readStrict,
                 Vector::validate,
-                false
+                false,
+                true
         );
     }
 

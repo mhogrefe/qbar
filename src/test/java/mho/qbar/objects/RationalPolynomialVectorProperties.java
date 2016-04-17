@@ -1249,7 +1249,8 @@ public class RationalPolynomialVectorProperties extends QBarTestProperties {
                 P.rationalPolynomialVectors(),
                 RationalPolynomialVector::readStrict,
                 RationalPolynomialVector::validate,
-                false
+                false,
+                true
         );
     }
 

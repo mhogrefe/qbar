@@ -1686,7 +1686,8 @@ public class AlgebraicProperties extends QBarTestProperties {
                 P.algebraics(),
                 Algebraic::readStrict,
                 Algebraic::validate,
-                false
+                false,
+                true
         );
     }
 

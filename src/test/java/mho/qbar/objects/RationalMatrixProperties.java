@@ -1896,7 +1896,8 @@ public class RationalMatrixProperties extends QBarTestProperties {
                 P.rationalMatrices(),
                 RationalMatrix::readStrict,
                 RationalMatrix::validate,
-                false
+                false,
+                true
         );
     }
 

@@ -247,7 +247,8 @@ public class ExponentVectorProperties extends QBarTestProperties {
                 P.exponentVectors(),
                 ExponentVector::readStrict,
                 ExponentVector::validate,
-                false
+                false,
+                true
         );
     }
 

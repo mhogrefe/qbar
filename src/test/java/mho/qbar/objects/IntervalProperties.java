@@ -1902,7 +1902,16 @@ public class IntervalProperties extends QBarTestProperties {
 
     private void propertiesReadStrict() {
         initialize("readStrict(String)");
-        propertiesReadHelper(LIMIT, P, INTERVAL_CHARS, P.intervals(), Interval::readStrict, Interval::validate, false);
+        propertiesReadHelper(
+                LIMIT,
+                P,
+                INTERVAL_CHARS,
+                P.intervals(),
+                Interval::readStrict,
+                Interval::validate,
+                false,
+                true
+        );
     }
 
     private void propertiesToString() {
