@@ -7059,6 +7059,296 @@ public class QBarRandomProviderTest {
         range_Algebraic_Algebraic_fail_helper(2, 4, "6369051672525773/4503599627370496", "sqrt(2)");
     }
 
+    private static void algebraicsIn_int_Interval_helper(
+            int scale,
+            int degree,
+            @NotNull String a,
+            @NotNull String output,
+            double meanDegree,
+            double meanCoefficientBitSize,
+            double meanValue
+    ) {
+        algebraics_helper(
+                P.withScale(scale).algebraicsIn(degree, Interval.readStrict(a).get()),
+                output,
+                meanDegree,
+                meanCoefficientBitSize,
+                meanValue
+        );
+        P.reset();
+    }
+
+    private static void algebraicsIn_int_Interval_fail_helper(int scale, int degree, @NotNull String a) {
+        try {
+            P.withScale(scale).algebraicsIn(degree, Interval.readStrict(a).get());
+            fail();
+        } catch (IllegalStateException | IllegalArgumentException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testAlgebraicsIn_int_Interval() {
+        algebraicsIn_int_Interval_helper(
+                2,
+                1,
+                "[0, 0]",
+                "QBarRandomProvider_algebraicsIn_int_Interval_i",
+                1.0,
+                0.5,
+                0.0
+        );
+        algebraicsIn_int_Interval_helper(
+                2,
+                1,
+                "[1, 1]",
+                "QBarRandomProvider_algebraicsIn_int_Interval_ii",
+                1.0,
+                0.5,
+                1.0
+        );
+        algebraicsIn_int_Interval_helper(
+                2,
+                1,
+                "(-Infinity, Infinity)",
+                "QBarRandomProvider_algebraicsIn_int_Interval_iii",
+                0.9999999999999062,
+                2.2974500000003526,
+                39.69600603361856
+        );
+        algebraicsIn_int_Interval_helper(
+                3,
+                2,
+                "(-Infinity, Infinity)",
+                "QBarRandomProvider_algebraicsIn_int_Interval_iv",
+                1.9999999999998124,
+                3.7552333333344534,
+                52184.05751035433
+        );
+        algebraicsIn_int_Interval_helper(
+                5,
+                3,
+                "(-Infinity, Infinity)",
+                "QBarRandomProvider_algebraicsIn_int_Interval_v",
+                3.0000000000004805,
+                5.427124999999181,
+                -3.996771507650188E9
+        );
+        algebraicsIn_int_Interval_helper(
+                2,
+                1,
+                "[1, 4]",
+                "QBarRandomProvider_algebraicsIn_int_Interval_vi",
+                0.9999999999999062,
+                1.9656500000003794,
+                2.7144713096673136
+        );
+        algebraicsIn_int_Interval_helper(
+                3,
+                2,
+                "[1, 4]",
+                "QBarRandomProvider_algebraicsIn_int_Interval_vii",
+                1.9999999999998124,
+                6.610233333335171,
+                1.7908186801193844
+        );
+        algebraicsIn_int_Interval_helper(
+                5,
+                3,
+                "[1, 4]",
+                "QBarRandomProvider_algebraicsIn_int_Interval_viii",
+                3.0000000000004805,
+                11.086425000000498,
+                1.6999867333640908
+        );
+        algebraicsIn_int_Interval_helper(
+                2,
+                1,
+                "(-Infinity, 1/2]",
+                "QBarRandomProvider_algebraicsIn_int_Interval_ix",
+                0.9999999999999062,
+                2.2382500000001997,
+                -83.73177467162557
+        );
+        algebraicsIn_int_Interval_helper(
+                3,
+                2,
+                "(-Infinity, 1/2]",
+                "QBarRandomProvider_algebraicsIn_int_Interval_x",
+                1.9999999999998124,
+                6.572900000001334,
+                -5709397.569194325
+        );
+        algebraicsIn_int_Interval_helper(
+                5,
+                3,
+                "(-Infinity, 1/2]",
+                "QBarRandomProvider_algebraicsIn_int_Interval_xi",
+                3.0000000000004805,
+                10.9421249999999,
+                -8.644705105388954E8
+        );
+        algebraicsIn_int_Interval_helper(
+                2,
+                1,
+                "[1/2, Infinity)",
+                "QBarRandomProvider_algebraicsIn_int_Interval_xii",
+                0.9999999999999062,
+                2.4287000000003247,
+                84.73177467163964
+        );
+        algebraicsIn_int_Interval_helper(
+                3,
+                2,
+                "[1/2, Infinity)",
+                "QBarRandomProvider_algebraicsIn_int_Interval_xiii",
+                1.9999999999998124,
+                6.690066666667999,
+                5709398.569194343
+        );
+        algebraicsIn_int_Interval_helper(
+                5,
+                3,
+                "[1/2, Infinity)",
+                "QBarRandomProvider_algebraicsIn_int_Interval_xiv",
+                3.0000000000004805,
+                11.05069999999989,
+                8.644705115388935E8
+        );
+
+        algebraicsIn_int_Interval_fail_helper(1, 1, "[0, 0]");
+        algebraicsIn_int_Interval_fail_helper(1, 1, "[1, 2]");
+        algebraicsIn_int_Interval_fail_helper(2, 0, "[1, 2]");
+        algebraicsIn_int_Interval_fail_helper(1, 1, "(-Infinity, 1/2]");
+        algebraicsIn_int_Interval_fail_helper(2, 0, "(-Infinity, 1/2]");
+        algebraicsIn_int_Interval_fail_helper(1, 1, "[1/2, Infinity)");
+        algebraicsIn_int_Interval_fail_helper(2, 0, "[1/2, Infinity)");
+        algebraicsIn_int_Interval_fail_helper(1, 1, "(-Infinity, Infinity)");
+        algebraicsIn_int_Interval_fail_helper(2, 0, "(-Infinity, Infinity)");
+        algebraicsIn_int_Interval_fail_helper(2, 2, "[1, 1]");
+    }
+
+    private static void algebraicsIn_Interval_helper(
+            int scale,
+            int secondaryScale,
+            @NotNull String a,
+            @NotNull String output,
+            double meanDegree,
+            double meanCoefficientBitSize,
+            double meanValue
+    ) {
+        algebraics_helper(
+                P.withScale(scale).withSecondaryScale(secondaryScale).algebraicsIn(Interval.readStrict(a).get()),
+                output,
+                meanDegree,
+                meanCoefficientBitSize,
+                meanValue
+        );
+        P.reset();
+    }
+
+    private static void algebraicsIn_Interval_fail_helper(int scale, int secondaryScale, @NotNull String a) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).algebraicsIn(Interval.readStrict(a).get());
+            fail();
+        } catch (IllegalStateException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testAlgebraicsIn_Interval() {
+        algebraicsIn_Interval_helper(2, 4, "[0, 0]", "QBarRandomProvider_algebraicsIn_Interval_i", 1.0, 0.5, 0.0);
+        algebraicsIn_Interval_helper(5, 6, "[0, 0]", "QBarRandomProvider_algebraicsIn_Interval_ii", 1.0, 0.5, 0.0);
+        algebraicsIn_Interval_helper(2, 4, "[1, 1]", "QBarRandomProvider_algebraicsIn_Interval_iii", 1.0, 0.5, 1.0);
+        algebraicsIn_Interval_helper(5, 6, "[1, 1]", "QBarRandomProvider_algebraicsIn_Interval_iv", 1.0, 0.5, 1.0);
+        algebraicsIn_Interval_helper(
+                2,
+                4,
+                "(-Infinity, Infinity)",
+                "QBarRandomProvider_algebraicsIn_Interval_v",
+                1.989399999999832,
+                2.3949287482440096,
+                -164.1120230067727
+        );
+        algebraicsIn_Interval_helper(
+                5,
+                6,
+                "(-Infinity, Infinity)",
+                "QBarRandomProvider_algebraicsIn_Interval_vi",
+                3.0044000000002047,
+                5.37798421736037,
+                1.0692235994147452E15
+        );
+        algebraicsIn_Interval_helper(
+                2,
+                4,
+                "[1, 4]",
+                "QBarRandomProvider_algebraicsIn_Interval_vii",
+                1.489099999999876,
+                3.594271021653457,
+                2.9041863183884464
+        );
+        algebraicsIn_Interval_helper(
+                5,
+                6,
+                "[1, 4]",
+                "QBarRandomProvider_algebraicsIn_Interval_viii",
+                2.588900000000133,
+                11.268856752766192,
+                2.0954072748228487
+        );
+        algebraicsIn_Interval_helper(
+                2,
+                4,
+                "(-Infinity, 1/2]",
+                "QBarRandomProvider_algebraicsIn_Interval_ix",
+                1.4891999999998753,
+                3.8475012052058495,
+                -3190.8033213967096
+        );
+        algebraicsIn_Interval_helper(
+                5,
+                6,
+                "(-Infinity, 1/2]",
+                "QBarRandomProvider_algebraicsIn_Interval_x",
+                2.6172000000001407,
+                11.991512772310747,
+                -4.154123022551839E8
+        );
+        algebraicsIn_Interval_helper(
+                2,
+                4,
+                "[1/2, Infinity)",
+                "QBarRandomProvider_algebraicsIn_Interval_xi",
+                1.4891999999998753,
+                3.9683834163580003,
+                3191.8033213969998
+        );
+        algebraicsIn_Interval_helper(
+                5,
+                6,
+                "[1/2, Infinity)",
+                "QBarRandomProvider_algebraicsIn_Interval_xii",
+                2.6172000000001407,
+                12.08664160123919,
+                4.1541230325520384E8
+        );
+
+        algebraicsIn_Interval_fail_helper(1, 4, "[0, 0]");
+        algebraicsIn_Interval_fail_helper(2, 3, "[0, 0]");
+        algebraicsIn_Interval_fail_helper(1, 4, "[1, 2]");
+        algebraicsIn_Interval_fail_helper(2, 3, "[1, 2]");
+        algebraicsIn_Interval_fail_helper(1, 4, "(-Infinity, 1/2]");
+        algebraicsIn_Interval_fail_helper(2, 3, "(-Infinity, 1/2]");
+        algebraicsIn_Interval_fail_helper(1, 4, "[1/2, Infinity)");
+        algebraicsIn_Interval_fail_helper(2, 3, "[1/2, Infinity)");
+        algebraicsIn_Interval_fail_helper(1, 4, "(-Infinity, Infinity)");
+        algebraicsIn_Interval_fail_helper(2, 3, "(-Infinity, Infinity)");
+    }
+
     private static double meanOfIntegers(@NotNull List<Integer> xs) {
         int size = xs.size();
         return sumDouble(map(i -> (double) i / size, xs));

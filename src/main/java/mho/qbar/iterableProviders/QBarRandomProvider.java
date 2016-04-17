@@ -2238,6 +2238,40 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         );
     }
 
+    @Override
+    public @NotNull Iterable<Algebraic> algebraicsIn(int degree, @NotNull Interval a) {
+        int scale = getScale();
+        if (scale < 2) {
+            throw new IllegalStateException("this must have a scale of at least 2. Invalid scale: " + scale);
+        }
+        if (!a.getLower().isPresent() && !a.getUpper().isPresent()) {
+            return algebraics(degree);
+        } else if (!a.getLower().isPresent()) {
+            return rangeDown(degree, Algebraic.of(a.getUpper().get()));
+        } else if (!a.getUpper().isPresent()) {
+            return rangeUp(degree, Algebraic.of(a.getLower().get()));
+        } else {
+            return range(degree, Algebraic.of(a.getLower().get()), Algebraic.of(a.getUpper().get()));
+        }
+    }
+
+    @Override
+    public @NotNull Iterable<Algebraic> algebraicsIn(@NotNull Interval a) {
+        int scale = getScale();
+        if (scale < 2) {
+            throw new IllegalStateException("this must have a scale of at least 2. Invalid scale: " + scale);
+        }
+        if (!a.getLower().isPresent() && !a.getUpper().isPresent()) {
+            return algebraics();
+        } else if (!a.getLower().isPresent()) {
+            return rangeDown(Algebraic.of(a.getUpper().get()));
+        } else if (!a.getUpper().isPresent()) {
+            return rangeUp(Algebraic.of(a.getLower().get()));
+        } else {
+            return range(Algebraic.of(a.getLower().get()), Algebraic.of(a.getUpper().get()));
+        }
+    }
+
     /**
      * An {@code Iterable} that generates all {@code Algebraic}s not contained in a given {@code Interval} and with a
      * given degree. Does not support removal.

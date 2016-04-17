@@ -1312,6 +1312,32 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         );
     }
 
+    @Override
+    public @NotNull Iterable<Algebraic> algebraicsIn(int degree, @NotNull Interval a) {
+        if (!a.getLower().isPresent() && !a.getUpper().isPresent()) {
+            return algebraics(degree);
+        } else if (!a.getLower().isPresent()) {
+            return rangeDown(degree, Algebraic.of(a.getUpper().get()));
+        } else if (!a.getUpper().isPresent()) {
+            return rangeUp(degree, Algebraic.of(a.getLower().get()));
+        } else {
+            return range(degree, Algebraic.of(a.getLower().get()), Algebraic.of(a.getUpper().get()));
+        }
+    }
+
+    @Override
+    public @NotNull Iterable<Algebraic> algebraicsIn(@NotNull Interval a) {
+        if (!a.getLower().isPresent() && !a.getUpper().isPresent()) {
+            return algebraics();
+        } else if (!a.getLower().isPresent()) {
+            return rangeDown(Algebraic.of(a.getUpper().get()));
+        } else if (!a.getUpper().isPresent()) {
+            return rangeUp(Algebraic.of(a.getLower().get()));
+        } else {
+            return range(Algebraic.of(a.getLower().get()), Algebraic.of(a.getUpper().get()));
+        }
+    }
+
     /**
      * An {@code Iterable} that generates all {@code Algebraic}s not contained in a given {@code Interval} and with a
      * given degree. Does not support removal.

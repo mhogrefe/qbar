@@ -3753,17 +3753,7 @@ public strictfp abstract class QBarIterableProvider {
      * @param degree the degree of the {@code Algebraic}s in the result
      * @param a an {@code Interval}
      */
-    public @NotNull Iterable<Algebraic> algebraicsIn(int degree, @NotNull Interval a) {
-        if (!a.getLower().isPresent() && !a.getUpper().isPresent()) {
-            return algebraics(degree);
-        } else if (!a.getLower().isPresent()) {
-            return rangeDown(degree, Algebraic.of(a.getUpper().get()));
-        } else if (!a.getUpper().isPresent()) {
-            return rangeUp(degree, Algebraic.of(a.getLower().get()));
-        } else {
-            return range(degree, Algebraic.of(a.getLower().get()), Algebraic.of(a.getUpper().get()));
-        }
-    }
+    public abstract @NotNull Iterable<Algebraic> algebraicsIn(int degree, @NotNull Interval a);
 
     /**
      * Generates {@code Algebraic}s contained in a given {@code Interval}.
@@ -3774,17 +3764,7 @@ public strictfp abstract class QBarIterableProvider {
      *
      * @param a an {@code Interval}
      */
-    public @NotNull Iterable<Algebraic> algebraicsIn(@NotNull Interval a) {
-        if (!a.getLower().isPresent() && !a.getUpper().isPresent()) {
-            return algebraics();
-        } else if (!a.getLower().isPresent()) {
-            return rangeDown(Algebraic.of(a.getUpper().get()));
-        } else if (!a.getUpper().isPresent()) {
-            return rangeUp(Algebraic.of(a.getLower().get()));
-        } else {
-            return range(Algebraic.of(a.getLower().get()), Algebraic.of(a.getUpper().get()));
-        }
-    }
+    public abstract @NotNull Iterable<Algebraic> algebraicsIn(@NotNull Interval a);
 
     /**
      * Generates {@code Algebraic}s not contained in a given {@code Interval} and with a given degree.
