@@ -126,6 +126,17 @@ public class MultivariatePolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoCoefficientsOfVariable() {
+        Iterable<Pair<MultivariatePolynomial, Variable>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).multivariatePolynomials(),
+                P.withScale(4).variables()
+        );
+        for (Pair<MultivariatePolynomial, Variable> p : take(LIMIT, ps)) {
+            System.out.println("coefficientsOfVariable(" + p.a + ", " + p.b + ") = " +
+                    p.a.coefficientsOfVariable(p.b));
+        }
+    }
+
     private void demoAdd() {
         Iterable<Pair<MultivariatePolynomial, MultivariatePolynomial>> ps = P.pairs(
                 P.withScale(4).multivariatePolynomials()

@@ -319,6 +319,49 @@ public final class MultivariatePolynomial implements
     }
 
     /**
+     * Expresses {@code this} as c<sub>0</sub>{@code v}<sup>0</sup>+c<sub>1</sub>{@code v}<sup>1</sup>+...+
+     * c<sub>n</sub>{@code v}<sup>n</sup> and returns the coefficients c<sub>0</sub>, c<sub>1</sub>, ...,
+     * c<sub>n</sub>.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code v} cannot be null.</li>
+     *  <li>The result contains no nulls.</li>
+     * </ul>
+     *
+     * @param v a {@code Variable}
+     * @return {@code this} as coefficients of powers of {@code v}
+     */
+    public @NotNull List<MultivariatePolynomial> coefficientsOfVariable(@NotNull Variable v) {
+        if (this == ZERO) return Collections.emptyList();
+        if (this.degree() == 0) return Collections.singletonList(this);
+        Map<Integer, List<Pair<ExponentVector, BigInteger>>> coefficientMap = new HashMap<>();
+        for (Pair<ExponentVector, BigInteger> term : terms) {
+            int vPower = term.a.exponent(v);
+            List<Pair<ExponentVector, BigInteger>> vPowerTerms = coefficientMap.get(vPower);
+            if (vPowerTerms == null) {
+                vPowerTerms = new ArrayList<>();
+                coefficientMap.put(vPower, vPowerTerms);
+            }
+            vPowerTerms.add(new Pair<>(term.a.removeVariable(v), term.b));
+        }
+        int maxPower = 0;
+        for (int power : coefficientMap.keySet()) {
+            if (power > maxPower) maxPower = power;
+        }
+        List<MultivariatePolynomial> coefficients = new ArrayList<>();
+        for (int i = 0; i <= maxPower; i++) {
+            List<Pair<ExponentVector, BigInteger>> powerTerms = coefficientMap.get(i);
+            if (powerTerms == null) {
+                coefficients.add(ZERO);
+            } else {
+                coefficients.add(of(powerTerms));
+            }
+        }
+        return coefficients;
+    }
+
+    /**
      * Returns the sum of {@code this} and {@code that}.
      *
      * <ul>

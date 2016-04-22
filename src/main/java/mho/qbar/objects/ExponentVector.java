@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.NoRemoveIterator;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -220,6 +221,51 @@ public final class ExponentVector implements Comparable<ExponentVector> {
             }
         }
         return variables;
+    }
+
+    /**
+     * Removes a variable from {@code this}. Equivalently, substitutes the variable with 1.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code ExponentVector}.</li>
+     *  <li>{@code v} may be any {@code Variable}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param v a {@code Variable}
+     * @return {@code this} without {@code v}, or {@code this} at {@code v}=1
+     */
+    public @NotNull ExponentVector removeVariable(@NotNull Variable v) {
+        if (this == ONE || exponent(v) == 0) return this;
+        List<Integer> removedExponents = toList(exponents);
+        removedExponents.set(v.getIndex(), 0);
+        return of(removedExponents);
+    }
+
+    /**
+     * Removes variables from {@code this}. Equivalently, substitutes the variables with 1.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code ExponentVector}.</li>
+     *  <li>{@code vs} cannot contain nulls.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param vs some {@code Variable}s
+     * @return {@code this} without {@code vs}, or {@code this} with each v in {@code vs} set to 1
+     */
+    public @NotNull ExponentVector removeVariables(@NotNull List<Variable> vs) {
+        if (any(v -> v == null, vs)) {
+            throw new NullPointerException();
+        }
+        if (this == ONE) return this;
+        vs = toList(filter(v -> exponent(v) != 0, vs));
+        if (vs.isEmpty()) return this;
+        List<Integer> removedExponents = toList(exponents);
+        for (Variable v : vs) {
+            removedExponents.set(v.getIndex(), 0);
+        }
+        return of(removedExponents);
     }
 
     /**

@@ -31,6 +31,8 @@ public class ExponentVectorProperties extends QBarTestProperties {
         propertiesFromTerms();
         propertiesDegree();
         propertiesVariables();
+        propertiesRemoveVariable();
+        propertiesRemoveVariables();
         propertiesMultiply();
         propertiesEquals();
         propertiesHashCode();
@@ -202,6 +204,62 @@ public class ExponentVectorProperties extends QBarTestProperties {
             for (Variable v : variables) {
                 assertTrue(ev, s.contains(v.toString()));
             }
+        }
+    }
+
+    private void propertiesRemoveVariable() {
+        initialize("removeVariable(Variable)");
+        Iterable<Pair<ExponentVector, Variable>> ps = P.pairsLogarithmicOrder(P.exponentVectors(), P.variables());
+        for (Pair<ExponentVector, Variable> p : take(LIMIT, ps)) {
+            ExponentVector removed = p.a.removeVariable(p.b);
+            removed.validate();
+        }
+
+        for (Variable v : take(LIMIT, P.variables())) {
+            fixedPoint(e -> e.removeVariable(v), ONE);
+        }
+    }
+
+    private static @NotNull ExponentVector removeVariables_simplest(
+            @NotNull ExponentVector ev,
+            @NotNull List<Variable> vs
+    ) {
+        ExponentVector removed = ev;
+        for (Variable v : vs) {
+            removed = removed.removeVariable(v);
+        }
+        return removed;
+    }
+
+    private void propertiesRemoveVariables() {
+        initialize("removeVariables(List<Variable>)");
+        Iterable<Pair<ExponentVector, List<Variable>>> ps = P.pairsLogarithmicOrder(
+                P.exponentVectors(),
+                P.lists(P.variables())
+        );
+        for (Pair<ExponentVector, List<Variable>> p : take(LIMIT, ps)) {
+            ExponentVector removed = p.a.removeVariables(p.b);
+            removed.validate();
+            assertEquals(p, removeVariables_simplest(p.a, p.b), removed);
+        }
+
+        for (List<Variable> vs : take(LIMIT, P.lists(P.variables()))) {
+            fixedPoint(e -> e.removeVariables(vs), ONE);
+        }
+
+        for (ExponentVector ev : take(LIMIT, P.exponentVectors())) {
+            assertEquals(ev, ev.removeVariables(ev.variables()), ONE);
+        }
+
+        Iterable<Pair<ExponentVector, List<Variable>>> psFail = P.pairs(
+                P.exponentVectors(),
+                P.listsWithElement(null, P.variables())
+        );
+        for (Pair<ExponentVector, List<Variable>> p : take(LIMIT, psFail)) {
+            try {
+                p.a.removeVariables(p.b);
+                fail(p);
+            } catch (NullPointerException ignored) {}
         }
     }
 

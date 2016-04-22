@@ -43,6 +43,7 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         propertiesTermCount();
         propertiesMaxCoefficientBitLength();
         propertiesDegree();
+        propertiesCoefficientsOfVariable();
         propertiesAdd();
         compareImplementationsAdd();
         propertiesNegate();
@@ -252,6 +253,68 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         for (MultivariatePolynomial p : take(LIMIT, P.multivariatePolynomials())) {
             int degree = p.degree();
             assertTrue(p, degree >= -1);
+        }
+    }
+
+    private void propertiesCoefficientsOfVariable() {
+        initialize("coefficientsOfVariable(Variable)");
+        Iterable<Pair<MultivariatePolynomial, Variable>> ps = P.pairsLogarithmicOrder(
+                P.multivariatePolynomials(),
+                P.variables()
+        );
+        for (Pair<MultivariatePolynomial, Variable> p : take(LIMIT, ps)) {
+            List<MultivariatePolynomial> coefficients = p.a.coefficientsOfVariable(p.b);
+            coefficients.forEach(MultivariatePolynomial::validate);
+            inverse(
+                    q -> q.coefficientsOfVariable(p.b),
+                    (List<MultivariatePolynomial> cs) -> sum(
+                            toList(
+                                    zipWith(
+                                            (c, i) -> c.multiply(
+                                                    i == 0 ?
+                                                            ExponentVector.ONE :
+                                                            ExponentVector.fromTerms(
+                                                                    Collections.singletonList(new Pair<>(p.b, i))
+                                                            ),
+                                                    BigInteger.ONE
+                                            ),
+                                            cs,
+                                            rangeUp(0)
+                                    )
+                            )
+                    ),
+                    p.a
+            );
+        }
+
+        Iterable<Pair<Variable, MultivariatePolynomial>> ps2 = P.dependentPairsInfiniteLogarithmicOrder(
+                P.variables(),
+                v -> P.multivariatePolynomials(Collections.singletonList(v))
+        );
+        for (Pair<Variable, MultivariatePolynomial> p : take(LIMIT, ps2)) {
+            List<MultivariatePolynomial> coefficients = p.b.coefficientsOfVariable(p.a);
+            for (MultivariatePolynomial coefficient : coefficients) {
+                if (coefficient.degree() > 0) {
+                    fail(p);
+                }
+            }
+            assertEquals(
+                    p,
+                    toList(map(c -> c.coefficient(ExponentVector.ONE), coefficients)),
+                    toList(p.b.toPolynomial())
+            );
+        }
+
+        for (Variable v : take(LIMIT, P.variables())) {
+            assertEquals(v, ZERO.coefficientsOfVariable(v), Collections.emptyList());
+        }
+
+        ps = filterInfinite(
+                r -> !r.a.variables().contains(r.b),
+                P.pairs(filterInfinite(q -> q != ZERO, P.multivariatePolynomials()), P.variables())
+        );
+        for (Pair<MultivariatePolynomial, Variable> p : take(LIMIT, ps)) {
+            assertEquals(p, p.a.coefficientsOfVariable(p.b), Collections.singletonList(p.a));
         }
     }
 

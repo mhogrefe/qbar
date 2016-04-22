@@ -81,6 +81,26 @@ public class ExponentVectorDemos extends QBarDemos {
         }
     }
 
+    private void demoRemoveVariable() {
+        Iterable<Pair<ExponentVector, Variable>> ps = P.pairsLogarithmicOrder(
+                P.exponentVectors(),
+                P.withScale(4).variables()
+        );
+        for (Pair<ExponentVector, Variable> p : take(LIMIT, ps)) {
+            System.out.println("removeVariable(" + p.a + ", " + p.b + ") = " + p.a.removeVariable(p.b));
+        }
+    }
+
+    private void demoRemoveVariables() {
+        Iterable<Pair<ExponentVector, List<Variable>>> ps = P.pairsLogarithmicOrder(
+                P.exponentVectors(),
+                P.withScale(4).lists(P.withScale(4).variables())
+        );
+        for (Pair<ExponentVector, List<Variable>> p : take(LIMIT, ps)) {
+            System.out.println("removeVariables(" + p.a + ", " + p.b + ") = " + p.a.removeVariables(p.b));
+        }
+    }
+
     private void demoMultiply() {
         for (Pair<ExponentVector, ExponentVector> p : take(LIMIT, P.pairs(P.exponentVectors()))) {
             System.out.println("(" + p.a + ") * (" + p.b + ") = " + p.a.multiply(p.b));

@@ -161,6 +161,58 @@ public class ExponentVectorTest {
         variables_helper("x^2*y*z^3", "[x, y, z]");
     }
 
+    private static void removeVariable_helper(@NotNull String ev, @NotNull String v, @NotNull String output) {
+        aeq(readStrict(ev).get().removeVariable(Variable.readStrict(v).get()), output);
+    }
+
+    @Test
+    public void testRemoveVariable() {
+        removeVariable_helper("1", "a", "1");
+        removeVariable_helper("1", "ooo", "1");
+        removeVariable_helper("a", "a", "1");
+        removeVariable_helper("a", "b", "a");
+        removeVariable_helper("a", "ooo", "a");
+        removeVariable_helper("a^2", "a", "1");
+        removeVariable_helper("a^2", "b", "a^2");
+        removeVariable_helper("a^2", "ooo", "a^2");
+        removeVariable_helper("x^2*y*z^3", "a", "x^2*y*z^3");
+        removeVariable_helper("x^2*y*z^3", "x", "y*z^3");
+        removeVariable_helper("x^2*y*z^3", "y", "x^2*z^3");
+        removeVariable_helper("x^2*y*z^3", "z", "x^2*y");
+    }
+
+    private static void removeVariables_helper(@NotNull String ev, @NotNull String vs, @NotNull String output) {
+        aeq(readStrict(ev).get().removeVariables(readVariableList(vs)), output);
+    }
+
+    private static void removeVariables_fail_helper(@NotNull String ev, @NotNull String vs) {
+        try {
+            readStrict(ev).get().removeVariables(readVariableListWithNulls(vs));
+            fail();
+        } catch (NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testRemoveVariables() {
+        removeVariables_helper("1", "[]", "1");
+        removeVariables_helper("1", "[a]", "1");
+        removeVariables_helper("1", "[a, z]", "1");
+        removeVariables_helper("a", "[]", "a");
+        removeVariables_helper("a", "[b, z]", "a");
+        removeVariables_helper("a", "[a, z]", "1");
+        removeVariables_helper("x^2*y*z^3", "[]", "x^2*y*z^3");
+        removeVariables_helper("x^2*y*z^3", "[x]", "y*z^3");
+        removeVariables_helper("x^2*y*z^3", "[y]", "x^2*z^3");
+        removeVariables_helper("x^2*y*z^3", "[z]", "x^2*y");
+        removeVariables_helper("x^2*y*z^3", "[x, y]", "z^3");
+        removeVariables_helper("x^2*y*z^3", "[x, z]", "y");
+        removeVariables_helper("x^2*y*z^3", "[y, z]", "x^2");
+        removeVariables_helper("x^2*y*z^3", "[x, y, z]", "1");
+
+        removeVariables_fail_helper("1", "[a, null, b]");
+        removeVariables_fail_helper("a", "[a, null, b]");
+    }
+
     private static void multiply_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
         aeq(readStrict(a).get().multiply(readStrict(b).get()), output);
     }
@@ -264,6 +316,14 @@ public class ExponentVectorTest {
 
     private static @NotNull List<Integer> readIntegerListWithNulls(@NotNull String s) {
         return Readers.readListWithNullsStrict(Readers::readIntegerStrict).apply(s).get();
+    }
+
+    private static @NotNull List<Variable> readVariableList(@NotNull String s) {
+        return Readers.readListStrict(Variable::readStrict).apply(s).get();
+    }
+
+    private static @NotNull List<Variable> readVariableListWithNulls(@NotNull String s) {
+        return Readers.readListWithNullsStrict(Variable::readStrict).apply(s).get();
     }
 
     private static @NotNull List<Pair<Variable, Integer>> readVariableIntegerPairList(@NotNull String s) {

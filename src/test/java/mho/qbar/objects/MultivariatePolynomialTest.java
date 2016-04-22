@@ -288,6 +288,30 @@ public class MultivariatePolynomialTest {
         degree_helper("a+b+c+d+e+f", 1);
     }
 
+    private void coefficientsOfVariable_helper(@NotNull String p, @NotNull String v, @NotNull String output) {
+        List<MultivariatePolynomial> ps = readStrict(p).get().coefficientsOfVariable(Variable.readStrict(v).get());
+        ps.forEach(MultivariatePolynomial::validate);
+        aeq(ps, output);
+    }
+
+    @Test
+    public void testCoefficientsOfVariable() {
+        coefficientsOfVariable_helper("0", "a", "[]");
+        coefficientsOfVariable_helper("1", "a", "[1]");
+        coefficientsOfVariable_helper("-17", "a", "[-17]");
+        coefficientsOfVariable_helper("ooo", "a", "[ooo]");
+        coefficientsOfVariable_helper("ooo", "ooo", "[0, 1]");
+        coefficientsOfVariable_helper("a*b*c", "z", "[a*b*c]");
+        coefficientsOfVariable_helper("a*b*c", "a", "[0, b*c]");
+        coefficientsOfVariable_helper("a*b*c", "b", "[0, a*c]");
+        coefficientsOfVariable_helper("a*b*c", "c", "[0, a*b]");
+        coefficientsOfVariable_helper("x^2-4*x+7", "a", "[x^2-4*x+7]");
+        coefficientsOfVariable_helper("x^2-4*x+7", "x", "[7, -4, 1]");
+        coefficientsOfVariable_helper("x^2+2*x*y+y^2", "a", "[x^2+2*x*y+y^2]");
+        coefficientsOfVariable_helper("x^2+2*x*y+y^2", "x", "[y^2, 2*y, 1]");
+        coefficientsOfVariable_helper("x^2+2*x*y+y^2", "y", "[x^2, 2*x, 1]");
+    }
+
     private static void add_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
         MultivariatePolynomial p = readStrict(a).get().add(readStrict(b).get());
         p.validate();
