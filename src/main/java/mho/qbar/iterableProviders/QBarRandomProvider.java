@@ -2180,7 +2180,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         }
         if (a.equals(b)) {
             if (a.degree() == degree) {
-                return Collections.singletonList(a);
+                return repeat(a);
             } else {
                 throw new IllegalArgumentException("If a and b are equal, degree must be equal to the degree of a." +
                         " degree: " + degree + ", degree of a: " + a.degree());
@@ -2221,7 +2221,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                     + scale);
         }
         if (a.equals(b)) {
-            return Collections.singletonList(a);
+            return repeat(a);
         }
         boolean aRational = a.isRational();
         boolean bRational = b.isRational();

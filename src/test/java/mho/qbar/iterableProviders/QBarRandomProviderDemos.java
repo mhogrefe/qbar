@@ -6,12 +6,14 @@ import mho.qbar.objects.Rational;
 import mho.qbar.objects.Variable;
 import mho.qbar.testing.QBarDemos;
 import mho.wheels.structures.Pair;
+import mho.wheels.structures.Quadruple;
 import mho.wheels.structures.Triple;
 
 import java.util.List;
 
 import static mho.wheels.iterables.IterableUtils.filterInfinite;
 import static mho.wheels.iterables.IterableUtils.take;
+import static mho.wheels.ordering.Ordering.*;
 import static mho.wheels.ordering.Ordering.le;
 import static mho.wheels.testing.Testing.*;
 
@@ -1114,6 +1116,42 @@ public class QBarRandomProviderDemos extends QBarDemos {
         );
         for (Pair<QBarRandomProvider, Algebraic> p : take(MEDIUM_LIMIT, ps)) {
             System.out.println("rangeDown(" + p.a + ", " + p.b + ") = " + its(p.a.rangeDown(p.b)));
+        }
+    }
+
+    private void demoRange_int_Algebraic_Algebraic() {
+        Iterable<Quadruple<QBarRandomProvider, Integer, Algebraic, Algebraic>> qs = filterInfinite(
+                q -> q.b == q.c.degree() && q.c.equals(q.d) || lt(q.c, q.d),
+                P.quadruples(
+                        filterInfinite(
+                                rp -> rp.getScale() >= 2,
+                                P.withScale(1).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                        ),
+                        P.withScale(4).positiveIntegersGeometric(),
+                        P.withScale(1).withSecondaryScale(4).algebraics(),
+                        P.withScale(1).withSecondaryScale(4).algebraics()
+                )
+        );
+        for (Quadruple<QBarRandomProvider, Integer, Algebraic, Algebraic> q : take(SMALL_LIMIT, qs)) {
+            System.out.println("range(" + q.a + ", " + q.b + ", " + q.c + ", " + q.d + ") = " +
+                    its(q.a.range(q.b, q.c, q.d)));
+        }
+    }
+
+    private void demoRange_Algebraic_Algebraic() {
+        Iterable<Triple<QBarRandomProvider, Algebraic, Algebraic>> ts = filterInfinite(
+                t -> le(t.b, t.c),
+                P.triples(
+                        filterInfinite(
+                                rp -> rp.getScale() >= 2 && rp.getSecondaryScale() >= 4,
+                                P.withScale(1).qbarRandomProvidersDefaultTertiaryScale()
+                        ),
+                        P.withScale(1).withSecondaryScale(4).algebraics(),
+                        P.withScale(1).withSecondaryScale(4).algebraics()
+                )
+        );
+        for (Triple<QBarRandomProvider, Algebraic, Algebraic> t : take(MEDIUM_LIMIT, ts)) {
+            System.out.println("range(" + t.a + ", " + t.b + ", " + t.c + ") = " + its(t.a.range(t.b, t.c)));
         }
     }
 }

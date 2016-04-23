@@ -35307,23 +35307,83 @@ QBarRandomProvider_rangeDown_Algebraic_xvi map 10
 23: -8
 22: -7
 
-QBarRandomProvider_range_int_Algebraic_Algebraic_i list 1
+QBarRandomProvider_range_int_Algebraic_Algebraic_i list 21
 0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+...
 
 QBarRandomProvider_range_int_Algebraic_Algebraic_i map 1
-1: 0
+10000: 0
 
-QBarRandomProvider_range_int_Algebraic_Algebraic_ii list 1
+QBarRandomProvider_range_int_Algebraic_Algebraic_ii list 21
 1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+...
 
 QBarRandomProvider_range_int_Algebraic_Algebraic_ii map 1
-1: 1
+10000: 1
 
-QBarRandomProvider_range_int_Algebraic_Algebraic_iii list 1
+QBarRandomProvider_range_int_Algebraic_Algebraic_iii list 21
 sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+...
 
 QBarRandomProvider_range_int_Algebraic_Algebraic_iii map 1
-1: sqrt(2)
+10000: sqrt(2)
 
 QBarRandomProvider_range_int_Algebraic_Algebraic_iv list 21
 4/3
@@ -35955,41 +36015,161 @@ QBarRandomProvider_range_int_Algebraic_Algebraic_xxi map 10
 7: root 0 of 182687704666362864775460604089535377456991567872*x^3-775078288853942772135420825185874967173173084160*x^2+1096126227998177166408994374799125703629362692096*x-516718859235961837604467166364851951737951701679
 7: root 0 of 2192252455996354377305527249074424529483898814464*x^3-9300939466247313265625049902230499606078077009920*x^2+13153514735978125996907932497589463407556078600192*x-6200626310831542051253605996378159730338695162423
 
-QBarRandomProvider_range_Algebraic_Algebraic_i list 1
+QBarRandomProvider_range_Algebraic_Algebraic_i list 21
 0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+...
 
 QBarRandomProvider_range_Algebraic_Algebraic_i map 1
-1: 0
+10000: 0
 
-QBarRandomProvider_range_Algebraic_Algebraic_ii list 1
+QBarRandomProvider_range_Algebraic_Algebraic_ii list 21
 0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+...
 
 QBarRandomProvider_range_Algebraic_Algebraic_ii map 1
-1: 0
+10000: 0
 
-QBarRandomProvider_range_Algebraic_Algebraic_iii list 1
+QBarRandomProvider_range_Algebraic_Algebraic_iii list 21
 1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+...
 
 QBarRandomProvider_range_Algebraic_Algebraic_iii map 1
-1: 1
+10000: 1
 
-QBarRandomProvider_range_Algebraic_Algebraic_iv list 1
+QBarRandomProvider_range_Algebraic_Algebraic_iv list 21
 1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+...
 
 QBarRandomProvider_range_Algebraic_Algebraic_iv map 1
-1: 1
+10000: 1
 
-QBarRandomProvider_range_Algebraic_Algebraic_v list 1
+QBarRandomProvider_range_Algebraic_Algebraic_v list 21
 sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+...
 
 QBarRandomProvider_range_Algebraic_Algebraic_v map 1
-1: sqrt(2)
+10000: sqrt(2)
 
-QBarRandomProvider_range_Algebraic_Algebraic_vi list 1
+QBarRandomProvider_range_Algebraic_Algebraic_vi list 21
 sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+sqrt(2)
+...
 
 QBarRandomProvider_range_Algebraic_Algebraic_vi map 1
-1: sqrt(2)
+10000: sqrt(2)
 
 QBarRandomProvider_range_Algebraic_Algebraic_vii list 21
 (-29+sqrt(1045))/2

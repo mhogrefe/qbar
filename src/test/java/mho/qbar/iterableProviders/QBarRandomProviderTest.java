@@ -6612,8 +6612,8 @@ public class QBarRandomProviderTest {
                 "0",
                 "0",
                 "QBarRandomProvider_range_int_Algebraic_Algebraic_i",
-                1.0,
-                0.5,
+                0.9999999999999062,
+                0.4999999999999531,
                 0.0
         );
         range_int_Algebraic_Algebraic_helper(
@@ -6622,9 +6622,9 @@ public class QBarRandomProviderTest {
                 "1",
                 "1",
                 "QBarRandomProvider_range_int_Algebraic_Algebraic_ii",
-                1.0,
-                0.5,
-                1.0
+                0.9999999999999062,
+                0.4999999999999531,
+                0.9999999999999062
         );
         range_int_Algebraic_Algebraic_helper(
                 3,
@@ -6632,9 +6632,9 @@ public class QBarRandomProviderTest {
                 "sqrt(2)",
                 "sqrt(2)",
                 "QBarRandomProvider_range_int_Algebraic_Algebraic_iii",
-                2.0,
-                0.6666666666666666,
-                1.4142135623730951
+                1.9999999999998124,
+                0.666666666666603,
+                1.4142135623732863
         );
         range_int_Algebraic_Algebraic_helper(
                 2,
@@ -6872,8 +6872,8 @@ public class QBarRandomProviderTest {
                 "0",
                 "0",
                 "QBarRandomProvider_range_Algebraic_Algebraic_i",
-                1.0,
-                0.5,
+                0.9999999999999062,
+                0.4999999999999531,
                 0.0
         );
         range_Algebraic_Algebraic_helper(
@@ -6882,8 +6882,8 @@ public class QBarRandomProviderTest {
                 "0",
                 "0",
                 "QBarRandomProvider_range_Algebraic_Algebraic_ii",
-                1.0,
-                0.5,
+                0.9999999999999062,
+                0.4999999999999531,
                 0.0
         );
         range_Algebraic_Algebraic_helper(
@@ -6892,9 +6892,9 @@ public class QBarRandomProviderTest {
                 "1",
                 "1",
                 "QBarRandomProvider_range_Algebraic_Algebraic_iii",
-                1.0,
-                0.5,
-                1.0
+                0.9999999999999062,
+                0.4999999999999531,
+                0.9999999999999062
         );
         range_Algebraic_Algebraic_helper(
                 5,
@@ -6902,9 +6902,9 @@ public class QBarRandomProviderTest {
                 "1",
                 "1",
                 "QBarRandomProvider_range_Algebraic_Algebraic_iv",
-                1.0,
-                0.5,
-                1.0
+                0.9999999999999062,
+                0.4999999999999531,
+                0.9999999999999062
         );
         range_Algebraic_Algebraic_helper(
                 2,
@@ -6912,9 +6912,9 @@ public class QBarRandomProviderTest {
                 "sqrt(2)",
                 "sqrt(2)",
                 "QBarRandomProvider_range_Algebraic_Algebraic_v",
-                2.0,
-                0.6666666666666666,
-                1.4142135623730951
+                1.9999999999998124,
+                0.666666666666603,
+                1.4142135623732863
         );
         range_Algebraic_Algebraic_helper(
                 5,
@@ -6922,9 +6922,9 @@ public class QBarRandomProviderTest {
                 "sqrt(2)",
                 "sqrt(2)",
                 "QBarRandomProvider_range_Algebraic_Algebraic_vi",
-                2.0,
-                0.6666666666666666,
-                1.4142135623730951
+                1.9999999999998124,
+                0.666666666666603,
+                1.4142135623732863
         );
         range_Algebraic_Algebraic_helper(
                 2,
