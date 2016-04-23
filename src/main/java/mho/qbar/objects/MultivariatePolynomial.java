@@ -640,6 +640,97 @@ public final class MultivariatePolynomial implements
     }
 
     /**
+     * Returns the Sylvester matrix of {@code this} and {@code that}, expanded in terms of powers of
+     * {@code variableToEliminate}.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero and must have no more than two variables.</li>
+     *  <li>{@code that} cannot be zero and must have no more than two variables.</li>
+     *  <li>{@code variableToEliminate} cannot be null.</li>
+     *  <li>Apart from {@code variableToEliminate}, {@code this} and {@code that} must have no more than one other
+     *  variable.</li>
+     *  <li>The result is a Sylvester matrix.</li>
+     * </ul>
+     *
+     * @param that a {@code MultivariatePolynomial}
+     * @return S<sub>{@code this},{@code that}</sub> expanded with respect to {@code variableToEliminate}
+     */
+    //todo finish testing
+    public @NotNull PolynomialMatrix sylvesterMatrix(
+            @NotNull MultivariatePolynomial that,
+            Variable variableToEliminate
+    ) {
+        if (this == ZERO) {
+            throw new ArithmeticException("this cannot be zero.");
+        }
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        List<Variable> thisVariables = variables();
+        thisVariables.remove(variableToEliminate);
+        if (thisVariables.size() > 1) {
+            throw new ArithmeticException();
+        }
+        List<Variable> thatVariables = that.variables();
+        thatVariables.remove(variableToEliminate);
+        if (thatVariables.size() > 1) {
+            throw new ArithmeticException();
+        }
+
+        List<Polynomial> thisCoefficients =
+                reverse(map(MultivariatePolynomial::toPolynomial, coefficientsOfVariable(variableToEliminate)));
+        List<Polynomial> thatCoefficients =
+                reverse(map(MultivariatePolynomial::toPolynomial, that.coefficientsOfVariable(variableToEliminate)));
+        int thisDegree = thisCoefficients.size() - 1;
+        int thatDegree = thatCoefficients.size() - 1;
+        List<PolynomialVector> rows = new ArrayList<>();
+        for (int i = 0; i < thatDegree; i++) {
+            List<Polynomial> row = new ArrayList<>();
+            for (int j = 0; j < i; j++) {
+                row.add(Polynomial.ZERO);
+            }
+            row.addAll(thisCoefficients);
+            for (int j = 0; j < thatDegree - i - 1; j++) {
+                row.add(Polynomial.ZERO);
+            }
+            rows.add(PolynomialVector.of(row));
+        }
+        for (int i = 0; i < thisDegree; i++) {
+            List<Polynomial> row = new ArrayList<>();
+            for (int j = 0; j < i; j++) {
+                row.add(Polynomial.ZERO);
+            }
+            row.addAll(thatCoefficients);
+            for (int j = 0; j < thisDegree - i - 1; j++) {
+                row.add(Polynomial.ZERO);
+            }
+            rows.add(PolynomialVector.of(row));
+        }
+        return PolynomialMatrix.fromRows(rows);
+    }
+
+    /**
+     * Returns the resultant of {@code this} and {@code that} with respect to {@code variableToEliminate}.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero and must have no more than two variables.</li>
+     *  <li>{@code that} cannot be zero and must have no more than two variables.</li>
+     *  <li>{@code variableToEliminate} cannot be null.</li>
+     *  <li>Apart from {@code variableToEliminate}, {@code this} and {@code that} must have no more than one other
+     *  variable.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that a {@code Polynomial}
+     * @return Res({@code this},{@code that}) with respect to {@code variableToEliminate}
+     */
+    //todo finish testing
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Polynomial resultant(@NotNull MultivariatePolynomial that, @NotNull Variable variableToEliminate) {
+        return sylvesterMatrix(that, variableToEliminate).determinant();
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>

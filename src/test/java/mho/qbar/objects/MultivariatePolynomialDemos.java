@@ -1,5 +1,6 @@
 package mho.qbar.objects;
 
+import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.testing.QBarDemos;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
@@ -208,6 +209,39 @@ public class MultivariatePolynomialDemos extends QBarDemos {
         );
         for (Pair<MultivariatePolynomial, Integer> p : take(LIMIT, ps)) {
             System.out.println(p.a + " << " + p.b + " = " + p.a.shiftLeft(p.b));
+        }
+    }
+
+    private void demoResultant() {
+        Iterable<Triple<MultivariatePolynomial, MultivariatePolynomial, Variable>> ts;
+        if (P instanceof QBarExhaustiveProvider) {
+            ts = nub(
+                    map(
+                            q -> new Triple<>(q.b.a, q.b.b, q.a.a),
+                            P.dependentPairsInfiniteLogarithmicOrder(
+                                    P.subsetPairs(P.variables()),
+                                    p -> P.pairs(
+                                            filterInfinite(r -> r != ZERO, P.multivariatePolynomials(Pair.toList(p)))
+                                    )
+                            )
+                    )
+            );
+        } else {
+            ts = map(
+                    q -> new Triple<>(q.b.a, q.b.b, q.a.a),
+                    P.dependentPairsInfinite(
+                            P.subsetPairs(P.withScale(4).variables()),
+                            p -> P.pairs(
+                                    filterInfinite(
+                                            r -> r != ZERO,
+                                            P.withScale(4).withSecondaryScale(4).multivariatePolynomials(Pair.toList(p))
+                                    )
+                            )
+                    )
+            );
+        }
+        for (Triple<MultivariatePolynomial, MultivariatePolynomial, Variable> t : take(LIMIT, ts)) {
+            System.out.println("resultant(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.resultant(t.b, t.c));
         }
     }
 
