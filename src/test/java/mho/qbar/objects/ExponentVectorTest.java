@@ -1,12 +1,15 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.structures.NullableOptional;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
+import java.math.BigInteger;
 import java.util.List;
+import java.util.Map;
 
 import static mho.qbar.objects.ExponentVector.*;
 import static mho.wheels.testing.Testing.*;
@@ -250,6 +253,159 @@ public class ExponentVectorTest {
         multiply_helper("ooo", "ooo", "ooo^2");
     }
 
+    private static void product_helper(@NotNull String input, @NotNull String output) {
+        ExponentVector ev = product(readExponentVectorList(input));
+        ev.validate();
+        aeq(ev, output);
+    }
+
+    private static void product_fail_helper(@NotNull String input) {
+        try {
+            product(readExponentVectorListWithNulls(input));
+            fail();
+        } catch (NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testProduct() {
+        product_helper("[]", "1");
+        product_helper("[a]", "a");
+        product_helper("[a, b, c]", "a*b*c");
+        product_helper("[a, a^2, ooo, x^2*y*z^3, x]", "a^3*x^3*y*z^3*ooo");
+
+        product_fail_helper("[a, a^2, ooo, null, x]");
+    }
+
+    private static void pow_helper(@NotNull String p, int exponent, @NotNull String output) {
+        aeq(readStrict(p).get().pow(exponent), output);
+    }
+
+    private static void pow_fail_helper(@NotNull String p, int exponent) {
+        try {
+            readStrict(p).get().pow(exponent);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testPow() {
+        pow_helper("1", 0, "1");
+        pow_helper("1", 1, "1");
+        pow_helper("1", 2, "1");
+        pow_helper("1", 3, "1");
+
+        pow_helper("a", 0, "1");
+        pow_helper("a", 1, "a");
+        pow_helper("a", 2, "a^2");
+        pow_helper("a", 3, "a^3");
+
+        pow_helper("a^2", 0, "1");
+        pow_helper("a^2", 1, "a^2");
+        pow_helper("a^2", 2, "a^4");
+        pow_helper("a^2", 3, "a^6");
+
+        pow_helper("x^2*y*z^3", 0, "1");
+        pow_helper("x^2*y*z^3", 1, "x^2*y*z^3");
+        pow_helper("x^2*y*z^3", 2, "x^4*y^2*z^6");
+        pow_helper("x^2*y*z^3", 3, "x^6*y^3*z^9");
+
+        pow_helper("ooo", 0, "1");
+        pow_helper("ooo", 1, "ooo");
+        pow_helper("ooo", 2, "ooo^2");
+        pow_helper("ooo", 3, "ooo^3");
+
+        pow_fail_helper("1", -1);
+        pow_fail_helper("x^2*y*z^3", -1);
+    }
+
+    private static void apply_BigInteger_helper(@NotNull String ev, @NotNull String xs, @NotNull String output) {
+        aeq(readStrict(ev).get().applyBigInteger(readVariableBigIntegerMap(xs)), output);
+    }
+
+    private static void apply_BigInteger_fail_helper(@NotNull String ev, @NotNull String xs) {
+        try {
+            readStrict(ev).get().applyBigInteger(readVariableBigIntegerMapWithNulls(xs));
+            fail();
+        } catch (IllegalArgumentException | NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testApplyBigInteger() {
+        apply_BigInteger_helper("1", "[]", "1");
+        apply_BigInteger_helper("1", "[(a, 0)]", "1");
+        apply_BigInteger_helper("1", "[(x, -2), (y, 4)]", "1");
+        apply_BigInteger_helper("a", "[(a, 0)]", "0");
+        apply_BigInteger_helper("a", "[(a, -5)]", "-5");
+        apply_BigInteger_helper("a", "[(a, -5), (b, 2)]", "-5");
+        apply_BigInteger_helper("x^2*y*z^3", "[(x, -5), (y, 2), (z, 3)]", "1350");
+        apply_BigInteger_helper("x^2*y*z^3", "[(x, -5), (y, 0), (z, 3), (ooo, 3)]", "0");
+
+        apply_BigInteger_fail_helper("a", "[]");
+        apply_BigInteger_fail_helper("a", "[(b, 2)]");
+        apply_BigInteger_fail_helper("x^2*y*z^3", "[(x, -5), (y, 2)]");
+        apply_BigInteger_fail_helper("x^2*y*z^3", "[(x, -5), (y, 2), (z, null)]");
+        apply_BigInteger_fail_helper("x^2*y*z^3", "[(x, -5), (y, 2), (null, 1)]");
+    }
+
+    private static void apply_Rational_helper(@NotNull String ev, @NotNull String xs, @NotNull String output) {
+        aeq(readStrict(ev).get().applyRational(readVariableRationalMap(xs)), output);
+    }
+
+    private static void apply_Rational_fail_helper(@NotNull String ev, @NotNull String xs) {
+        try {
+            readStrict(ev).get().applyRational(readVariableRationalMapWithNulls(xs));
+            fail();
+        } catch (IllegalArgumentException | NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testApplyRational() {
+        apply_Rational_helper("1", "[]", "1");
+        apply_Rational_helper("1", "[(a, 0)]", "1");
+        apply_Rational_helper("1", "[(x, -1/2), (y, 4/5)]", "1");
+        apply_Rational_helper("a", "[(a, 0)]", "0");
+        apply_Rational_helper("a", "[(a, -5/3)]", "-5/3");
+        apply_Rational_helper("a", "[(a, -5/3), (b, 2/7)]", "-5/3");
+        apply_Rational_helper("x^2*y*z^3", "[(x, -5/3), (y, 1/2), (z, 3)]", "75/2");
+        apply_Rational_helper("x^2*y*z^3", "[(x, -5/3), (y, 0), (z, 3), (ooo, 3)]", "0");
+
+        apply_Rational_fail_helper("a", "[]");
+        apply_Rational_fail_helper("a", "[(b, 1/2)]");
+        apply_Rational_fail_helper("x^2*y*z^3", "[(x, -5/3), (y, 1/2)]");
+        apply_Rational_fail_helper("x^2*y*z^3", "[(x, -5/3), (y, 1/2), (z, null)]");
+        apply_Rational_fail_helper("x^2*y*z^3", "[(x, -5/3), (y, 1/2), (null, 1)]");
+    }
+
+    private static void substitute_helper(@NotNull String ev, @NotNull String xs, @NotNull String output) {
+        aeq(readStrict(ev).get().substitute(readVariableExponentVectorMap(xs)), output);
+    }
+
+    private static void substitute_fail_helper(@NotNull String ev, @NotNull String xs) {
+        try {
+            readStrict(ev).get().substitute(readVariableExponentVectorMapWithNulls(xs));
+            fail();
+        } catch (IllegalArgumentException | NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testSubstitute() {
+        substitute_helper("1", "[]", "1");
+        substitute_helper("1", "[(a, b)]", "1");
+        substitute_helper("a", "[(a, 1)]", "1");
+        substitute_helper("a", "[(a, a)]", "a");
+        substitute_helper("a", "[(a, b)]", "b");
+        substitute_helper("a", "[(a, x*z)]", "x*z");
+        substitute_helper("a", "[(a, x*z), (b, a)]", "x*z");
+        substitute_helper("x^2*y*z^3", "[]", "x^2*y*z^3");
+        substitute_helper("x^2*y*z^3", "[(x, 1)]", "y*z^3");
+        substitute_helper("x^2*y*z^3", "[(x, y), (y, z), (z, x)]", "x^3*y^2*z");
+        substitute_helper("x^2*y*z^3", "[(x, xx), (y, yy), (z, zz)]", "xx^2*yy*zz^3");
+        substitute_helper("x^2*y*z^3", "[(x, a*b), (y, a^2), (z, a^3*b^5)]", "a^13*b^17");
+
+        substitute_fail_helper("x^2*y*z^3", "[(x, y), (y, z), (z, null)]");
+        substitute_fail_helper("x^2*y*z^3", "[(x, y), (y, z), (null, x)]");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(
@@ -346,7 +502,83 @@ public class ExponentVectorTest {
         ).apply(s).get();
     }
 
+    private static @NotNull Map<Variable, BigInteger> readVariableBigIntegerMap(@NotNull String s) {
+        return IterableUtils.toMap(
+                Readers.readListStrict(
+                        u -> Pair.read(
+                                u,
+                                t -> NullableOptional.fromOptional(Variable.readStrict(t)),
+                                t -> NullableOptional.fromOptional(Readers.readBigIntegerStrict(t))
+                        )
+                ).apply(s).get()
+        );
+    }
+
+    private static @NotNull Map<Variable, BigInteger> readVariableBigIntegerMapWithNulls(@NotNull String s) {
+        return IterableUtils.toMap(
+                Readers.readListStrict(
+                        u -> Pair.read(
+                                u,
+                                Readers.readWithNullsStrict(Variable::readStrict),
+                                Readers.readWithNullsStrict(Readers::readBigIntegerStrict)
+                        )
+                ).apply(s).get()
+        );
+    }
+
+    private static @NotNull Map<Variable, Rational> readVariableRationalMap(@NotNull String s) {
+        return IterableUtils.toMap(
+                Readers.readListStrict(
+                        u -> Pair.read(
+                                u,
+                                t -> NullableOptional.fromOptional(Variable.readStrict(t)),
+                                t -> NullableOptional.fromOptional(Rational.readStrict(t))
+                        )
+                ).apply(s).get()
+        );
+    }
+
+    private static @NotNull Map<Variable, Rational> readVariableRationalMapWithNulls(@NotNull String s) {
+        return IterableUtils.toMap(
+                Readers.readListStrict(
+                        u -> Pair.read(
+                                u,
+                                Readers.readWithNullsStrict(Variable::readStrict),
+                                Readers.readWithNullsStrict(Rational::readStrict)
+                        )
+                ).apply(s).get()
+        );
+    }
+
+    private static @NotNull Map<Variable, ExponentVector> readVariableExponentVectorMap(@NotNull String s) {
+        return IterableUtils.toMap(
+                Readers.readListStrict(
+                        u -> Pair.read(
+                                u,
+                                t -> NullableOptional.fromOptional(Variable.readStrict(t)),
+                                t -> NullableOptional.fromOptional(ExponentVector.readStrict(t))
+                        )
+                ).apply(s).get()
+        );
+    }
+
+    private static @NotNull Map<Variable, ExponentVector> readVariableExponentVectorMapWithNulls(@NotNull String s) {
+        return IterableUtils.toMap(
+                Readers.readListStrict(
+                        u -> Pair.read(
+                                u,
+                                Readers.readWithNullsStrict(Variable::readStrict),
+                                Readers.readWithNullsStrict(ExponentVector::readStrict)
+                        )
+                ).apply(s).get()
+        );
+    }
+
     private static @NotNull List<ExponentVector> readExponentVectorList(@NotNull String s) {
         return Readers.readListStrict(ExponentVector::readStrict).apply(s).get();
+    }
+
+    private static @NotNull List<ExponentVector> readExponentVectorListWithNulls(@NotNull String s) {
+        return Readers.readListWithNullsStrict(ExponentVector::readStrict).apply(s).get();
     }
 }

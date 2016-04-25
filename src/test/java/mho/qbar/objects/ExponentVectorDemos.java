@@ -1,12 +1,13 @@
 package mho.qbar.objects;
 
+import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.testing.QBarDemos;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
-import java.util.List;
+import java.math.BigInteger;
+import java.util.*;
 
 import static mho.qbar.objects.ExponentVector.*;
 import static mho.wheels.iterables.IterableUtils.*;
@@ -106,6 +107,115 @@ public class ExponentVectorDemos extends QBarDemos {
             System.out.println("(" + p.a + ") * (" + p.b + ") = " + p.a.multiply(p.b));
         }
     }
+
+    private void demoProduct() {
+        for (List<ExponentVector> ps : take(LIMIT, P.withScale(4).lists(P.withScale(4).exponentVectors()))) {
+            String listString = tail(init(ps.toString()));
+            System.out.println("Π(" + listString + ") = " + product(ps));
+        }
+    }
+
+    private void demoPow() {
+        Iterable<Pair<ExponentVector, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).exponentVectors(),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Pair<ExponentVector, Integer> p : take(LIMIT, ps)) {
+            System.out.println("(" + p.a + ") ^ " + p.b + " = " + p.a.pow(p.b));
+        }
+    }
+
+    private void demoApplyBigInteger() {
+        Iterable<Pair<ExponentVector, Map<Variable, BigInteger>>> ps;
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = cons(
+                    new Pair<>(ONE, new TreeMap<>()),
+                    P.dependentPairsInfiniteSquareRootOrder(
+                            filterInfinite(f -> f != ONE, P.exponentVectors()),
+                            ev -> {
+                                List<Variable> us = toList(ev.variables());
+                                return map(
+                                        qs -> toSortedMap(zip(qs.a, qs.b)),
+                                        P.dependentPairsInfiniteLogarithmicOrder(
+                                                nub(map(vs -> sort(nub(concat(vs, us))), P.subsets(P.variables()))),
+                                                ws -> P.lists(ws.size(), P.bigIntegers())
+                                        )
+                                );
+                            }
+                    )
+            );
+        } else {
+            ps = P.withElement(
+                    new Pair<>(ONE, new TreeMap<>()),
+                    P.dependentPairsInfinite(
+                            filterInfinite(f -> f != ONE, P.withScale(4).exponentVectors()),
+                            ev -> {
+                                List<Variable> us = toList(ev.variables());
+                                return map(
+                                        qs -> toSortedMap(zip(qs.a, qs.b)),
+                                        P.dependentPairsInfinite(
+                                                map(
+                                                        vs -> sort(nub(concat(vs, us))),
+                                                        P.withScale(4).subsets(P.variables())
+                                                ),
+                                                ws -> P.lists(ws.size(), P.withScale(4).bigIntegers())
+                                        )
+                                );
+                            }
+                    )
+            );
+        }
+        for (Pair<ExponentVector, Map<Variable, BigInteger>> p : take(LIMIT, ps)) {
+            System.out.println("applyBigInteger(" + p.a + ", " + p.b + ") = " + p.a.applyBigInteger(p.b));
+        }
+    }
+
+    private void demoApplyRational() {
+        Iterable<Pair<ExponentVector, Map<Variable, Rational>>> ps;
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = cons(
+                    new Pair<>(ONE, new TreeMap<>()),
+                    P.dependentPairsInfiniteSquareRootOrder(
+                            filterInfinite(f -> f != ONE, P.exponentVectors()),
+                            ev -> {
+                                List<Variable> us = toList(ev.variables());
+                                return map(
+                                        qs -> toSortedMap(zip(qs.a, qs.b)),
+                                        P.dependentPairsInfiniteLogarithmicOrder(
+                                                nub(map(vs -> sort(nub(concat(vs, us))), P.subsets(P.variables()))),
+                                                ws -> P.lists(ws.size(), P.rationals())
+                                        )
+                                );
+                            }
+                    )
+            );
+        } else {
+            ps = P.withElement(
+                    new Pair<>(ONE, new TreeMap<>()),
+                    P.dependentPairsInfinite(
+                            filterInfinite(f -> f != ONE, P.withScale(4).exponentVectors()),
+                            ev -> {
+                                List<Variable> us = toList(ev.variables());
+                                return map(
+                                        qs -> toSortedMap(zip(qs.a, qs.b)),
+                                        P.dependentPairsInfinite(
+                                                map(
+                                                        vs -> sort(nub(concat(vs, us))),
+                                                        P.withScale(4).subsets(P.variables())
+                                                ),
+                                                ws -> P.lists(ws.size(), P.withScale(4).rationals())
+                                        )
+                                );
+                            }
+                    )
+            );
+        }
+        for (Pair<ExponentVector, Map<Variable, Rational>> p : take(LIMIT, ps)) {
+            System.out.println("applyRational(" + p.a + ", " + p.b + ") = " + p.a.applyRational(p.b));
+        }
+    }
+
+    //continue demos and props
 
     private void demoEquals_ExponentVector() {
         for (Pair<ExponentVector, ExponentVector> p : take(LIMIT, P.pairs(P.exponentVectors()))) {

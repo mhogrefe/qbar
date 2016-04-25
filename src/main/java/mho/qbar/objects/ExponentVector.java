@@ -3,9 +3,11 @@ package mho.qbar.objects;
 import mho.wheels.io.Readers;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.NoRemoveIterator;
+import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigInteger;
 import java.util.*;
 
 import static mho.wheels.iterables.IterableUtils.*;
@@ -284,6 +286,145 @@ public final class ExponentVector implements Comparable<ExponentVector> {
         if (this == ONE) return that;
         if (that == ONE) return this;
         return new ExponentVector(toList(zipWithPadded((e, f) -> e + f, 0, 0, exponents, that.exponents)));
+    }
+
+    /**
+     * Returns the product of all the {@code ExponentVector}s in {@code xs}. If {@code xs} is empty, 1 is returned.
+     *
+     * <ul>
+     *  <li>{@code xs} may not contain any nulls.</li>
+     *  <li>The result may be any {@code ExponentVector}.</li>
+     * </ul>
+     *
+     * @param xs a {@code List} of {@code ExponentVector}s.
+     * @return Πxs
+     */
+    public static @NotNull ExponentVector product(@NotNull List<ExponentVector> xs) {
+        return of(toList(map(IterableUtils::sumInteger, transpose(map(x -> x.exponents, xs)))));
+    }
+
+    /**
+     * Returns {@code this} raised to the power of {@code p}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code ExponentVector}.</li>
+     *  <li>{@code p} cannot be negative.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param p the power that {@code this} is raised to
+     * @return {@code this}<sup>{@code p}</sup>
+     */
+    public @NotNull ExponentVector pow(int p) {
+        if (p < 0) {
+            throw new ArithmeticException("p cannot be negative. Invalid p: " + p);
+        }
+        if (p == 0) return ONE;
+        if (p == 1) return this;
+        ExponentVector powerPower = null; // p^2^i
+        List<ExponentVector> factors = new ArrayList<>();
+        for (boolean bit : IntegerUtils.bits(p)) {
+            powerPower = powerPower == null ? this : powerPower.multiply(powerPower);
+            if (bit) factors.add(powerPower);
+        }
+        return product(factors);
+    }
+
+    /**
+     * Evaluates {@code this} by substituting a {@code BigInteger} for each variable. Every variable in {@code this}
+     * must have an associated {@code BigInteger}. Unused variables are allowed.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code ExponentVector}.</li>
+     *  <li>{@code xs} may not have any null keys or values.</li>
+     *  <li>Every {@code Variable} in {@code this} must be a key in {@code xs}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param xs the values to substitute for each variable in {@code this}
+     * @return {@code this}({@code xs})
+     */
+    public @NotNull BigInteger applyBigInteger(@NotNull Map<Variable, BigInteger> xs) {
+        for (Map.Entry<Variable, BigInteger> entry : xs.entrySet()) {
+            if (entry.getKey() == null || entry.getValue() == null) {
+                throw new NullPointerException();
+            }
+        }
+        BigInteger result = BigInteger.ONE;
+        for (Pair<Variable, Integer> term : terms()) {
+            BigInteger value = xs.get(term.a);
+            if (value == null) {
+                throw new IllegalArgumentException("Each variable in " + this + " must be a key in " + xs + ", but " +
+                        term.a + " is not a key.");
+            }
+            result = result.multiply(value.pow(term.b));
+        }
+        return result;
+    }
+
+    /**
+     * Evaluates {@code this} by substituting a {@code Rational} for each variable. Every variable in {@code this} must
+     * have an associated {@code Rational}. Unused variables are allowed.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code ExponentVector}.</li>
+     *  <li>{@code xs} may not have any null keys or values.</li>
+     *  <li>Every {@code Variable} in {@code this} must be a key in {@code xs}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param xs the values to substitute for each variable in {@code this}
+     * @return {@code this}({@code xs})
+     */
+    public @NotNull Rational applyRational(@NotNull Map<Variable, Rational> xs) {
+        for (Map.Entry<Variable, Rational> entry : xs.entrySet()) {
+            if (entry.getKey() == null || entry.getValue() == null) {
+                throw new NullPointerException();
+            }
+        }
+        Rational result = Rational.ONE;
+        for (Pair<Variable, Integer> term : terms()) {
+            Rational value = xs.get(term.a);
+            if (value == null) {
+                throw new IllegalArgumentException("Each variable in " + this + " must be a key in " + xs + ", but " +
+                        term.a + " is not a key.");
+            }
+            result = result.multiply(value.pow(term.b));
+        }
+        return result;
+    }
+
+    /**
+     * Substitutes variables in {@code this} with {@code ExponentVector}s specified by {@code evs}. Not every variable
+     * in {@code this} needs to have an associated {@code ExponentVector}. Unused variables are also allowed.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code ExponentVector}.</li>
+     *  <li>{@code evs} may not have any null keys or values.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Length is 1 if {@code this}=0 or {@code that}=0, deg({@code this})×deg({@code that})+1 otherwise
+     *
+     * @param evs the {@code ExponentVector}s to substitute for variables in {@code this}
+     * @return {@code this}({@code evs})
+     */
+    public @NotNull ExponentVector substitute(@NotNull Map<Variable, ExponentVector> evs) {
+        for (Map.Entry<Variable, ExponentVector> entry : evs.entrySet()) {
+            if (entry.getKey() == null || entry.getValue() == null) {
+                throw new NullPointerException();
+            }
+        }
+        List<ExponentVector> factors = new ArrayList<>();
+        for (Pair<Variable, Integer> term : terms()) {
+            ExponentVector value = evs.get(term.a);
+            if (value == null) {
+                factors.add(fromTerms(Collections.singletonList(term)));
+            } else {
+                factors.add(value.pow(term.b));
+            }
+        }
+        return product(factors);
     }
 
     /**
