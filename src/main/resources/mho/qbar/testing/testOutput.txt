@@ -36591,17 +36591,57 @@ QBarRandomProvider_range_Algebraic_Algebraic_xviii map 10
 26: 50952413380206183/36028797018963968
 23: 89166723415360817/63050394783186944
 
-QBarRandomProvider_algebraicsIn_int_Interval_i list 1
+QBarRandomProvider_algebraicsIn_int_Interval_i list 21
 0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+...
 
 QBarRandomProvider_algebraicsIn_int_Interval_i map 1
-1: 0
+10000: 0
 
-QBarRandomProvider_algebraicsIn_int_Interval_ii list 1
+QBarRandomProvider_algebraicsIn_int_Interval_ii list 21
 1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+...
 
 QBarRandomProvider_algebraicsIn_int_Interval_ii map 1
-1: 1
+10000: 1
 
 QBarRandomProvider_algebraicsIn_int_Interval_iii list 21
 5/13
@@ -37023,29 +37063,109 @@ QBarRandomProvider_algebraicsIn_int_Interval_xiv map 10
 3: root 0 of 8*x^3-12*x^2+22*x-17
 3: root 0 of 8*x^3-12*x^2+6*x-17
 
-QBarRandomProvider_algebraicsIn_Interval_i list 1
+QBarRandomProvider_algebraicsIn_Interval_i list 21
 0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+...
 
 QBarRandomProvider_algebraicsIn_Interval_i map 1
-1: 0
+10000: 0
 
-QBarRandomProvider_algebraicsIn_Interval_ii list 1
+QBarRandomProvider_algebraicsIn_Interval_ii list 21
 0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+...
 
 QBarRandomProvider_algebraicsIn_Interval_ii map 1
-1: 0
+10000: 0
 
-QBarRandomProvider_algebraicsIn_Interval_iii list 1
+QBarRandomProvider_algebraicsIn_Interval_iii list 21
 1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+...
 
 QBarRandomProvider_algebraicsIn_Interval_iii map 1
-1: 1
+10000: 1
 
-QBarRandomProvider_algebraicsIn_Interval_iv list 1
+QBarRandomProvider_algebraicsIn_Interval_iv list 21
 1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+...
 
 QBarRandomProvider_algebraicsIn_Interval_iv map 1
-1: 1
+10000: 1
 
 QBarRandomProvider_algebraicsIn_Interval_v list 21
 root 1 of x^4-5*x^3-7*x^2-6*x+1
