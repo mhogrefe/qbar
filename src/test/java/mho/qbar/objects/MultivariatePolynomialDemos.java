@@ -234,7 +234,8 @@ public class MultivariatePolynomialDemos extends QBarDemos {
                             p -> P.pairs(
                                     filterInfinite(
                                             r -> r != ZERO,
-                                            P.withScale(4).withSecondaryScale(4).multivariatePolynomials(Pair.toList(p))
+                                            P.withScale(4).withSecondaryScale(4)
+                                                    .multivariatePolynomials(Pair.toList(p))
                                     )
                             )
                     )

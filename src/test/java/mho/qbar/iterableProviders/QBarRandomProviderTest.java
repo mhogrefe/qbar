@@ -7257,10 +7257,42 @@ public class QBarRandomProviderTest {
 
     @Test
     public void testAlgebraicsIn_Interval() {
-        algebraicsIn_Interval_helper(2, 4, "[0, 0]", "QBarRandomProvider_algebraicsIn_Interval_i", 0.9999999999999062, 0.4999999999999531, 0.0);
-        algebraicsIn_Interval_helper(5, 6, "[0, 0]", "QBarRandomProvider_algebraicsIn_Interval_ii", 0.9999999999999062, 0.4999999999999531, 0.0);
-        algebraicsIn_Interval_helper(2, 4, "[1, 1]", "QBarRandomProvider_algebraicsIn_Interval_iii", 0.9999999999999062, 0.4999999999999531, 0.9999999999999062);
-        algebraicsIn_Interval_helper(5, 6, "[1, 1]", "QBarRandomProvider_algebraicsIn_Interval_iv", 0.9999999999999062, 0.4999999999999531, 0.9999999999999062);
+        algebraicsIn_Interval_helper(
+                2,
+                4,
+                "[0, 0]",
+                "QBarRandomProvider_algebraicsIn_Interval_i",
+                0.9999999999999062,
+                0.4999999999999531,
+                0.0
+        );
+        algebraicsIn_Interval_helper(
+                5,
+                6,
+                "[0, 0]",
+                "QBarRandomProvider_algebraicsIn_Interval_ii",
+                0.9999999999999062,
+                0.4999999999999531,
+                0.0
+        );
+        algebraicsIn_Interval_helper(
+                2,
+                4,
+                "[1, 1]",
+                "QBarRandomProvider_algebraicsIn_Interval_iii",
+                0.9999999999999062,
+                0.4999999999999531,
+                0.9999999999999062
+        );
+        algebraicsIn_Interval_helper(
+                5,
+                6,
+                "[1, 1]",
+                "QBarRandomProvider_algebraicsIn_Interval_iv",
+                0.9999999999999062,
+                0.4999999999999531,
+                0.9999999999999062
+        );
         algebraicsIn_Interval_helper(
                 2,
                 4,
