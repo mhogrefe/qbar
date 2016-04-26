@@ -1099,14 +1099,11 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
 
     private void propertiesRange_int_Algebraic_Algebraic() {
         initialize("range(int, Algebraic, Algebraic)");
-        Iterable<Triple<Integer, Algebraic, Algebraic>> ts = filterInfinite(
-                s -> s.a == s.b.degree() || !s.b.equals(s.c),
-                map(
-                        p -> new Triple<>(p.b, p.a.a, p.a.b),
-                        P.pairsLogarithmicOrder(
-                                P.bagPairs(P.withScale(4).algebraics()),
-                                P.withScale(2).positiveIntegersGeometric()
-                        )
+        Iterable<Triple<Integer, Algebraic, Algebraic>> ts = map(
+                p -> new Triple<>(p.b, p.a.a, p.a.b),
+                P.pairsLogarithmicOrder(
+                        P.bagPairs(P.withScale(4).algebraics()),
+                        P.withScale(2).positiveIntegersGeometric()
                 )
         );
         for (Triple<Integer, Algebraic, Algebraic> t : take(SMALL_LIMIT, ts)) {
@@ -1118,28 +1115,22 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
             aeqit(x, QEP.range(x.degree(), x, x), Collections.singletonList(x));
         }
 
-        Iterable<Triple<Integer, Algebraic, Algebraic>> tsFail = filterInfinite(
-                s -> s.a == s.b.degree() || !s.b.equals(s.c),
-                map(
-                        p -> new Triple<>(p.b, p.a.a, p.a.b),
-                        P.pairsLogarithmicOrder(P.bagPairs(P.algebraics()), P.withScale(-32).rangeDownGeometric(0))
-                )
-        );
-        for (Triple<Integer, Algebraic, Algebraic> t : take(SMALL_LIMIT, tsFail)) {
-            try {
-                QEP.range(t.a, t.b, t.c);
-                fail(t);
-            } catch (IllegalArgumentException ignored) {}
-        }
-
         Iterable<Pair<Integer, Algebraic>> psFail = filterInfinite(
                 q -> q.a != q.b.degree(),
                 P.pairs(P.positiveIntegersGeometric(), P.algebraics())
         );
         for (Pair<Integer, Algebraic> p : take(LIMIT, psFail)) {
+            assertTrue(p, isEmpty(QEP.range(p.a, p.b, p.b)));
+        }
+
+        Iterable<Triple<Integer, Algebraic, Algebraic>> tsFail = map(
+                p -> new Triple<>(p.b, p.a.a, p.a.b),
+                P.pairsLogarithmicOrder(P.bagPairs(P.algebraics()), P.withScale(-32).rangeDownGeometric(0))
+        );
+        for (Triple<Integer, Algebraic, Algebraic> t : take(SMALL_LIMIT, tsFail)) {
             try {
-                QEP.range(p.a, p.b, p.b);
-                fail(p);
+                QEP.range(t.a, t.b, t.c);
+                fail(t);
             } catch (IllegalArgumentException ignored) {}
         }
 
@@ -1176,25 +1167,22 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
 
     private void propertiesAlgebraicsIn_int_Interval() {
         initialize("algebraicsIn(int, Interval)");
-        Iterable<Pair<Interval, Integer>> ps = filterInfinite(
-                q -> q.b == 1 || !q.a.getLower().equals(q.a.getUpper()),
-                P.pairsLogarithmicOrder(P.intervals(), P.withScale(2).positiveIntegersGeometric())
+        Iterable<Pair<Interval, Integer>> ps = P.pairsLogarithmicOrder(
+                P.intervals(),
+                P.withScale(2).positiveIntegersGeometric()
         );
         for (Pair<Interval, Integer> p : take(SMALL_LIMIT, ps)) {
             Iterable<Algebraic> xs = QEP.algebraicsIn(p.b, p.a);
             simpleTest(p, xs, x -> x.degree() == p.b && p.a.contains(x));
         }
 
+        for (Pair<Integer, Rational> p : take(LIMIT, P.pairs(P.rangeUpGeometric(2), P.rationals()))) {
+            assertTrue(p, isEmpty(QEP.algebraicsIn(p.a, Interval.of(p.b))));
+        }
+
         for (Pair<Integer, Interval> p : take(LIMIT, P.pairs(P.withScale(-32).rangeDownGeometric(0), P.intervals()))) {
             try {
                 QEP.algebraicsIn(p.a, p.b);
-                fail(p);
-            } catch (IllegalArgumentException ignored) {}
-        }
-
-        for (Pair<Integer, Rational> p : take(LIMIT, P.pairs(P.rangeUpGeometric(2), P.rationals()))) {
-            try {
-                QEP.algebraicsIn(p.a, Interval.of(p.b));
                 fail(p);
             } catch (IllegalArgumentException ignored) {}
         }
@@ -1211,12 +1199,16 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
     private void propertiesAlgebraicsNotIn_int_Interval() {
         initialize("algebraicsNotIn(int, Interval)");
         Iterable<Pair<Interval, Integer>> ps = P.pairsLogarithmicOrder(
-                filterInfinite(a -> !a.equals(Interval.ALL), P.intervals()),
+                P.intervals(),
                 P.withScale(2).positiveIntegersGeometric()
         );
         for (Pair<Interval, Integer> p : take(MEDIUM_LIMIT, ps)) {
             Iterable<Algebraic> xs = QEP.algebraicsNotIn(p.b, p.a);
             simpleTest(p, xs, x -> x.degree() == p.b && !p.a.contains(x));
+        }
+
+        for (int i : take(LIMIT, P.positiveIntegersGeometric())) {
+            assertTrue(i, isEmpty(QEP.algebraicsNotIn(i, Interval.ALL)));
         }
 
         for (Pair<Integer, Interval> p : take(LIMIT, P.pairs(P.withScale(-32).rangeDownGeometric(0), P.intervals()))) {
@@ -1225,18 +1217,11 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
                 fail(p);
             } catch (IllegalArgumentException ignored) {}
         }
-
-        for (int i : take(LIMIT, P.positiveIntegersGeometric())) {
-            try {
-                QEP.algebraicsNotIn(i, Interval.ALL);
-                fail(i);
-            } catch (IllegalArgumentException ignored) {}
-        }
     }
 
     private void propertiesAlgebraicsNotIn_Interval() {
         initialize("algebraicsNotIn(Interval)");
-        for (Interval a : take(SMALL_LIMIT, filterInfinite(b -> !b.equals(Interval.ALL), P.intervals()))) {
+        for (Interval a : take(SMALL_LIMIT, P.intervals())) {
             Iterable<Algebraic> xs = QEP.algebraicsNotIn(a);
             simpleTest(a, xs, x -> !a.contains(x));
         }

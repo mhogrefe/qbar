@@ -1197,6 +1197,21 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         );
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code Algebraic}s greater than or equal to {@code a}, and with a given
+     * degree. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code degree} must be positive.</li>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Algebraic}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param a the inclusive lower bound of the generated elements
+     * @return {@code Algebraic}s greater than or equal to {@code a} and with degree {@code degree}
+     */
     @Override
     public @NotNull Iterable<Algebraic> rangeUp(int degree, @NotNull Algebraic a) {
         if (a.isRational()) {
@@ -1216,6 +1231,20 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         }
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code Algebraic}s greater than or equal to {@code a}. Does not support
+     * removal.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Algebraic}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param a the inclusive lower bound of the generated elements
+     * @return {@code Algebraic}s greater than or equal to {@code a}
+     */
     @Override
     public @NotNull Iterable<Algebraic> rangeUp(@NotNull Algebraic a) {
         if (a.isRational()) {
@@ -1228,6 +1257,21 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         }
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code Algebraic}s less than or equal to {@code a}, and with a given
+     * degree. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code degree} must be positive.</li>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Algebraic}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param a the inclusive upper bound of the generated elements
+     * @return {@code Algebraic}s less than or equal to {@code a} and with degree {@code degree}
+     */
     @Override
     public @NotNull Iterable<Algebraic> rangeDown(int degree, @NotNull Algebraic a) {
         if (a.isRational()) {
@@ -1244,6 +1288,20 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         }
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code Algebraic}s less than or equal to {@code a}. Does not support
+     * removal.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Algebraic}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param a the inclusive upper bound of the generated elements
+     * @return {@code Algebraic}s less than or equal to {@code a}
+     */
     @Override
     public @NotNull Iterable<Algebraic> rangeDown(@NotNull Algebraic a) {
         if (a.isRational()) {
@@ -1256,17 +1314,38 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         }
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code Algebraic}s between {@code a} and {@code b}, inclusive, and with a
+     * given degree. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code degree} must be positive.</li>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>{@code b} cannot be null.</li>
+     *  <li>{@code a} must be less than or equal to {@code b}.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Algebraic}s.</li>
+     * </ul>
+     *
+     * Length is 0 if {@code a}={@code b} and {@code degree}≠deg({@code a}), 1 if {@code a}={@code b} and
+     * {@code degree}=deg({@code a}), and infinite otherwise
+     *
+     * @param a the inclusive lower bound of the generated elements
+     * @param b the inclusive upper bound of the generated elements
+     * @return {@code Algebraic}s between {@code a} and {@code b}, inclusive
+     */
     @Override
     public @NotNull Iterable<Algebraic> range(int degree, @NotNull Algebraic a, @NotNull Algebraic b) {
         if (gt(a, b)) {
             throw new IllegalArgumentException("a must be less than or equal to b. a: " + a + ", b: " + b);
         }
         if (a.equals(b)) {
+            if (degree < 1) {
+                throw new IllegalArgumentException("degree must be positive. Invalid degree: " + degree);
+            }
             if (a.degree() == degree) {
                 return Collections.singletonList(a);
             } else {
-                throw new IllegalArgumentException("If a and b are equal, degree must be equal to the degree of a." +
-                        " degree: " + degree + ", degree of a: " + a.degree());
+                return Collections.emptyList();
             }
         }
         boolean aRational = a.isRational();
@@ -1289,6 +1368,23 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         }
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code Algebraic}s between {@code a} and {@code b}, inclusive. Does not
+     * support removal.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>{@code b} cannot be null.</li>
+     *  <li>{@code a} must be less than or equal to {@code b}.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Algebraic}s.</li>
+     * </ul>
+     *
+     * Length is 1 if {@code a}={@code b}, and infinite otherwise
+     *
+     * @param a the inclusive lower bound of the generated elements
+     * @param b the inclusive upper bound of the generated elements
+     * @return {@code Algebraic}s between {@code a} and {@code b}, inclusive
+     */
     @Override
     public @NotNull Iterable<Algebraic> range(@NotNull Algebraic a, @NotNull Algebraic b) {
         if (gt(a, b)) {
@@ -1312,6 +1408,20 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         );
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code Algebraic}s contained in a given {@code Interval} and with a given
+     * degree. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Algebraic}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param a an {@code Interval}
+     * @return {x|x∈{@code a} and deg(x)={@code degree}}
+     */
     @Override
     public @NotNull Iterable<Algebraic> algebraicsIn(int degree, @NotNull Interval a) {
         if (!a.getLower().isPresent() && !a.getUpper().isPresent()) {
@@ -1325,6 +1435,20 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         }
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code Algebraic}s contained in a given {@code Interval}. Does not
+     * support removal.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Algebraic}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param a an {@code Interval}
+     * @return {x|x∈{@code a}}
+     */
     @Override
     public @NotNull Iterable<Algebraic> algebraicsIn(@NotNull Interval a) {
         if (!a.getLower().isPresent() && !a.getUpper().isPresent()) {
@@ -1344,21 +1468,24 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
      *
      * <ul>
      *  <li>{@code degree} must be positive.</li>
-     *  <li>{@code a} cannot be (–∞, ∞).</li>
+     *  <li>{@code a} cannot be null.</li>
      *  <li>The result is a non-removable {@code Iterable} containing {@code Algebraic}s.</li>
      * </ul>
      *
      * Length is infinite
      *
      * @param a an {@code Interval}
-     * @return {x|x∉{@code a}}
+     * @return {x|x∉{@code a} and deg(x)={@code degree}}
      */
     @Override
     public @NotNull Iterable<Algebraic> algebraicsNotIn(int degree, @NotNull Interval a) {
         List<Interval> complement = a.complement();
         switch (complement.size()) {
             case 0:
-                throw new IllegalArgumentException("a cannot be (-Infinity, Infinity).");
+                if (degree < 1) {
+                    throw new IllegalArgumentException("degree must be positive. Invalid degree: " + degree);
+                }
+                return Collections.emptyList();
             case 1:
                 Algebraic boundary = Algebraic.of(a.getLower().isPresent() ? a.getLower().get() : a.getUpper().get());
                 return filterInfinite(r -> !r.equals(boundary), algebraicsIn(degree, complement.get(0)));
@@ -1379,7 +1506,7 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
      * support removal.
      *
      * <ul>
-     *  <li>{@code a} cannot be (–∞, ∞).</li>
+     *  <li>{@code a} cannot be null.</li>
      *  <li>The result is a non-removable {@code Iterable} containing {@code Algebraic}s.</li>
      * </ul>
      *
@@ -1393,7 +1520,7 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         List<Interval> complement = a.complement();
         switch (complement.size()) {
             case 0:
-                throw new IllegalArgumentException("a cannot be (-Infinity, Infinity).");
+                return Collections.emptyList();
             case 1:
                 Algebraic boundary = Algebraic.of(a.getLower().isPresent() ? a.getLower().get() : a.getUpper().get());
                 return filterInfinite(r -> !r.equals(boundary), algebraicsIn(complement.get(0)));

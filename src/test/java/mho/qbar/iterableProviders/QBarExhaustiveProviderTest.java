@@ -1349,121 +1349,135 @@ public class QBarExhaustiveProviderTest {
     @Test
     public void testRange_int_Algebraic_Algebraic() {
         range_int_Algebraic_Algebraic_helper(1, "0", "0", "QBarExhaustiveProvider_int_range_Algebraic_Algebraic_i");
+        range_int_Algebraic_Algebraic_helper(2, "0", "0", "QBarExhaustiveProvider_int_range_Algebraic_Algebraic_ii");
+        range_int_Algebraic_Algebraic_helper(3, "0", "0", "QBarExhaustiveProvider_int_range_Algebraic_Algebraic_iii");
 
-        range_int_Algebraic_Algebraic_helper(1, "1", "1", "QBarExhaustiveProvider_int_range_Algebraic_Algebraic_ii");
-
-        range_int_Algebraic_Algebraic_helper(
-                2,
-                "sqrt(2)",
-                "sqrt(2)",
-                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_iii"
-        );
-
-        range_int_Algebraic_Algebraic_helper(1, "1", "2", "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_iv");
-        range_int_Algebraic_Algebraic_helper(2, "1", "2", "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_v");
-        range_int_Algebraic_Algebraic_helper(3, "1", "2", "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_vi");
+        range_int_Algebraic_Algebraic_helper(1, "1", "1", "QBarExhaustiveProvider_int_range_Algebraic_Algebraic_iv");
+        range_int_Algebraic_Algebraic_helper(2, "1", "1", "QBarExhaustiveProvider_int_range_Algebraic_Algebraic_v");
+        range_int_Algebraic_Algebraic_helper(3, "1", "1", "QBarExhaustiveProvider_int_range_Algebraic_Algebraic_vi");
 
         range_int_Algebraic_Algebraic_helper(
                 1,
-                "-4/3",
-                "1/2",
+                "sqrt(2)",
+                "sqrt(2)",
                 "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_vii"
         );
         range_int_Algebraic_Algebraic_helper(
-                2,
-                "-4/3",
-                "1/2",
+                1,
+                "sqrt(2)",
+                "sqrt(2)",
                 "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_viii"
         );
         range_int_Algebraic_Algebraic_helper(
-                3,
-                "-4/3",
-                "1/2",
+                1,
+                "sqrt(2)",
+                "sqrt(2)",
                 "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_ix"
         );
 
-        range_int_Algebraic_Algebraic_helper(
-                1,
-                "1",
-                "sqrt(2)",
-                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_x"
-        );
-        range_int_Algebraic_Algebraic_helper(
-                2,
-                "1",
-                "sqrt(2)",
-                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xi"
-        );
-        range_int_Algebraic_Algebraic_helper(
-                3,
-                "1",
-                "sqrt(2)",
-                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xii"
-        );
+        range_int_Algebraic_Algebraic_helper(1, "1", "2", "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_x");
+        range_int_Algebraic_Algebraic_helper(2, "1", "2", "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xi");
+        range_int_Algebraic_Algebraic_helper(3, "1", "2", "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xii");
 
         range_int_Algebraic_Algebraic_helper(
                 1,
-                "sqrt(2)",
-                "sqrt(3)",
+                "-4/3",
+                "1/2",
                 "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xiii"
         );
         range_int_Algebraic_Algebraic_helper(
                 2,
-                "sqrt(2)",
-                "sqrt(3)",
+                "-4/3",
+                "1/2",
                 "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xiv"
         );
         range_int_Algebraic_Algebraic_helper(
                 3,
-                "sqrt(2)",
-                "sqrt(3)",
+                "-4/3",
+                "1/2",
                 "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xv"
         );
 
         range_int_Algebraic_Algebraic_helper(
                 1,
-                "0",
-                "256",
+                "1",
+                "sqrt(2)",
                 "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xvi"
         );
         range_int_Algebraic_Algebraic_helper(
                 2,
-                "0",
-                "256",
+                "1",
+                "sqrt(2)",
                 "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xvii"
         );
         range_int_Algebraic_Algebraic_helper(
                 3,
-                "0",
-                "256",
+                "1",
+                "sqrt(2)",
                 "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xviii"
         );
 
         range_int_Algebraic_Algebraic_helper(
                 1,
                 "sqrt(2)",
-                "6369051672525773/4503599627370496",
+                "sqrt(3)",
                 "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xix"
         );
         range_int_Algebraic_Algebraic_helper(
                 2,
                 "sqrt(2)",
-                "6369051672525773/4503599627370496",
+                "sqrt(3)",
                 "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xx"
         );
         range_int_Algebraic_Algebraic_helper(
                 3,
                 "sqrt(2)",
-                "6369051672525773/4503599627370496",
+                "sqrt(3)",
                 "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xxi"
+        );
+
+        range_int_Algebraic_Algebraic_helper(
+                1,
+                "0",
+                "256",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xxii"
+        );
+        range_int_Algebraic_Algebraic_helper(
+                2,
+                "0",
+                "256",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xxiii"
+        );
+        range_int_Algebraic_Algebraic_helper(
+                3,
+                "0",
+                "256",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xxiv"
+        );
+
+        range_int_Algebraic_Algebraic_helper(
+                1,
+                "sqrt(2)",
+                "6369051672525773/4503599627370496",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xxv"
+        );
+        range_int_Algebraic_Algebraic_helper(
+                2,
+                "sqrt(2)",
+                "6369051672525773/4503599627370496",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xxvi"
+        );
+        range_int_Algebraic_Algebraic_helper(
+                3,
+                "sqrt(2)",
+                "6369051672525773/4503599627370496",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xxvii"
         );
 
         range_int_Algebraic_Algebraic_fail_helper(0, "0", "1");
         range_int_Algebraic_Algebraic_fail_helper(-1, "0", "1");
         range_int_Algebraic_Algebraic_fail_helper(1, "1", "0");
         range_int_Algebraic_Algebraic_fail_helper(1, "6369051672525773/4503599627370496", "sqrt(2)");
-        range_int_Algebraic_Algebraic_fail_helper(2, "1", "1");
-        range_int_Algebraic_Algebraic_fail_helper(1, "sqrt(2)", "sqrt(2)");
     }
 
     private static void range_Algebraic_Algebraic_helper(
@@ -1515,64 +1529,67 @@ public class QBarExhaustiveProviderTest {
     @Test
     public void testAlgebraicsIn_int_Interval() {
         algebraicsIn_int_Interval_helper(1, "[0, 0]", "QBarExhaustiveProvider_algebraicsIn_int_Interval_i");
+        algebraicsIn_int_Interval_helper(2, "[0, 0]", "QBarExhaustiveProvider_algebraicsIn_int_Interval_ii");
+        algebraicsIn_int_Interval_helper(3, "[0, 0]", "QBarExhaustiveProvider_algebraicsIn_int_Interval_iii");
 
-        algebraicsIn_int_Interval_helper(1, "[1, 1]", "QBarExhaustiveProvider_algebraicsIn_int_Interval_ii");
+        algebraicsIn_int_Interval_helper(1, "[1, 1]", "QBarExhaustiveProvider_algebraicsIn_int_Interval_iv");
+        algebraicsIn_int_Interval_helper(2, "[1, 1]", "QBarExhaustiveProvider_algebraicsIn_int_Interval_v");
+        algebraicsIn_int_Interval_helper(3, "[1, 1]", "QBarExhaustiveProvider_algebraicsIn_int_Interval_vi");
 
         algebraicsIn_int_Interval_helper(
                 1,
                 "(-Infinity, Infinity)",
-                "QBarExhaustiveProvider_algebraicsIn_int_Interval_iii"
+                "QBarExhaustiveProvider_algebraicsIn_int_Interval_vii"
         );
         algebraicsIn_int_Interval_helper(
                 2,
                 "(-Infinity, Infinity)",
-                "QBarExhaustiveProvider_algebraicsIn_int_Interval_iv"
+                "QBarExhaustiveProvider_algebraicsIn_int_Interval_viii"
         );
         algebraicsIn_int_Interval_helper(
                 3,
                 "(-Infinity, Infinity)",
-                "QBarExhaustiveProvider_algebraicsIn_int_Interval_v"
-        );
-
-        algebraicsIn_int_Interval_helper(1, "[1, 4]", "QBarExhaustiveProvider_algebraicsIn_int_Interval_vi");
-        algebraicsIn_int_Interval_helper(2, "[1, 4]", "QBarExhaustiveProvider_algebraicsIn_int_Interval_vii");
-        algebraicsIn_int_Interval_helper(3, "[1, 4]", "QBarExhaustiveProvider_algebraicsIn_int_Interval_viii");
-
-        algebraicsIn_int_Interval_helper(
-                1,
-                "(-Infinity, 1/2]",
                 "QBarExhaustiveProvider_algebraicsIn_int_Interval_ix"
         );
-        algebraicsIn_int_Interval_helper(
-                2,
-                "(-Infinity, 1/2]",
-                "QBarExhaustiveProvider_algebraicsIn_int_Interval_x"
-        );
-        algebraicsIn_int_Interval_helper(
-                3,
-                "(-Infinity, 1/2]",
-                "QBarExhaustiveProvider_algebraicsIn_int_Interval_xi"
-        );
+
+        algebraicsIn_int_Interval_helper(1, "[1, 4]", "QBarExhaustiveProvider_algebraicsIn_int_Interval_x");
+        algebraicsIn_int_Interval_helper(2, "[1, 4]", "QBarExhaustiveProvider_algebraicsIn_int_Interval_xi");
+        algebraicsIn_int_Interval_helper(3, "[1, 4]", "QBarExhaustiveProvider_algebraicsIn_int_Interval_xii");
 
         algebraicsIn_int_Interval_helper(
                 1,
-                "[1/2, Infinity)",
-                "QBarExhaustiveProvider_algebraicsIn_int_Interval_xii"
-        );
-        algebraicsIn_int_Interval_helper(
-                2,
-                "[1/2, Infinity)",
+                "(-Infinity, 1/2]",
                 "QBarExhaustiveProvider_algebraicsIn_int_Interval_xiii"
         );
         algebraicsIn_int_Interval_helper(
+                2,
+                "(-Infinity, 1/2]",
+                "QBarExhaustiveProvider_algebraicsIn_int_Interval_xiv"
+        );
+        algebraicsIn_int_Interval_helper(
+                3,
+                "(-Infinity, 1/2]",
+                "QBarExhaustiveProvider_algebraicsIn_int_Interval_xv"
+        );
+
+        algebraicsIn_int_Interval_helper(
+                1,
+                "[1/2, Infinity)",
+                "QBarExhaustiveProvider_algebraicsIn_int_Interval_xvi"
+        );
+        algebraicsIn_int_Interval_helper(
+                2,
+                "[1/2, Infinity)",
+                "QBarExhaustiveProvider_algebraicsIn_int_Interval_xvii"
+        );
+        algebraicsIn_int_Interval_helper(
                 3,
                 "[1/2, Infinity)",
-                "QBarExhaustiveProvider_algebraicsIn_int_Interval_xiv"
+                "QBarExhaustiveProvider_algebraicsIn_int_Interval_xviii"
         );
 
         algebraics_int_Interval_fail_helper(0, "[0, 1]");
         algebraics_int_Interval_fail_helper(-1, "[0, 1]");
-        algebraics_int_Interval_fail_helper(2, "[1, 1]");
     }
 
     private static void algebraicsIn_Interval_helper(@NotNull String a, @NotNull String output) {
@@ -1610,67 +1627,77 @@ public class QBarExhaustiveProviderTest {
         algebraicsNotIn_int_Interval_helper(2, "[1, 1]", "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_v");
         algebraicsNotIn_int_Interval_helper(3, "[1, 1]", "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_vi");
 
-        algebraicsNotIn_int_Interval_helper(1, "[1, 4]", "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_vii");
-        algebraicsNotIn_int_Interval_helper(2, "[1, 4]", "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_viii");
-        algebraicsNotIn_int_Interval_helper(3, "[1, 4]", "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_ix");
-
         algebraicsNotIn_int_Interval_helper(
                 1,
-                "(-Infinity, 1/2]",
-                "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_x"
+                "(-Infinity, Infinity)",
+                "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_vii"
         );
         algebraicsNotIn_int_Interval_helper(
                 2,
-                "(-Infinity, 1/2]",
-                "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_xi"
+                "(-Infinity, Infinity)",
+                "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_viii"
         );
         algebraicsNotIn_int_Interval_helper(
                 3,
-                "(-Infinity, 1/2]",
-                "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_xii"
+                "(-Infinity, Infinity)",
+                "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_ix"
         );
+
+        algebraicsNotIn_int_Interval_helper(1, "[1, 4]", "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_x");
+        algebraicsNotIn_int_Interval_helper(2, "[1, 4]", "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_xi");
+        algebraicsNotIn_int_Interval_helper(3, "[1, 4]", "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_xii");
 
         algebraicsNotIn_int_Interval_helper(
                 1,
-                "[1/2, Infinity)",
+                "(-Infinity, 1/2]",
                 "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_xiii"
         );
         algebraicsNotIn_int_Interval_helper(
                 2,
-                "[1/2, Infinity)",
+                "(-Infinity, 1/2]",
                 "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_xiv"
         );
         algebraicsNotIn_int_Interval_helper(
                 3,
-                "[1/2, Infinity)",
+                "(-Infinity, 1/2]",
                 "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_xv"
+        );
+
+        algebraicsNotIn_int_Interval_helper(
+                1,
+                "[1/2, Infinity)",
+                "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_xvi"
+        );
+        algebraicsNotIn_int_Interval_helper(
+                2,
+                "[1/2, Infinity)",
+                "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_xvii"
+        );
+        algebraicsNotIn_int_Interval_helper(
+                3,
+                "[1/2, Infinity)",
+                "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_xviii"
         );
 
         algebraicsNotIn_int_Interval_fail_helper(0, "[0, 1]");
         algebraicsNotIn_int_Interval_fail_helper(-1, "[0, 1]");
-        algebraicsNotIn_int_Interval_fail_helper(1, "(-Infinity, Infinity)");
     }
 
     private static void algebraicsNotIn_Interval_helper(@NotNull String a, @NotNull String output) {
         simpleProviderHelper(QEP.algebraicsNotIn(Interval.readStrict(a).get()), output);
     }
 
-    private static void algebraicsNotIn_Interval_fail_helper(@NotNull String a) {
-        try {
-            QEP.algebraicsNotIn(Interval.readStrict(a).get());
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-    }
-
     @Test
     public void testAlgebraicsNotIn_Interval() {
         algebraicsNotIn_Interval_helper("[0, 0]", "QBarExhaustiveProvider_algebraicsNotIn_Interval_i");
         algebraicsNotIn_Interval_helper("[1, 1]", "QBarExhaustiveProvider_algebraicsNotIn_Interval_ii");
-        algebraicsNotIn_Interval_helper("[1, 4]", "QBarExhaustiveProvider_algebraicsNotIn_Interval_iii");
-        algebraicsNotIn_Interval_helper("(-Infinity, 1/2]", "QBarExhaustiveProvider_algebraicsNotIn_Interval_iv");
-        algebraicsNotIn_Interval_helper("[1/2, Infinity)", "QBarExhaustiveProvider_algebraicsNotIn_Interval_v");
-
-        algebraicsNotIn_Interval_fail_helper("(-Infinity, Infinity)");
+        algebraicsNotIn_Interval_helper(
+                "(-Infinity, Infinity)",
+                "QBarExhaustiveProvider_algebraicsNotIn_Interval_iii"
+        );
+        algebraicsNotIn_Interval_helper("[1, 4]", "QBarExhaustiveProvider_algebraicsNotIn_Interval_iv");
+        algebraicsNotIn_Interval_helper("(-Infinity, 1/2]", "QBarExhaustiveProvider_algebraicsNotIn_Interval_v");
+        algebraicsNotIn_Interval_helper("[1/2, Infinity)", "QBarExhaustiveProvider_algebraicsNotIn_Interval_vi");
     }
 
     @Test

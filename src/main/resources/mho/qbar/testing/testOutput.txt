@@ -15756,13 +15756,24 @@ root 0 of x^3-6*x^2+11*x-4
 QBarExhaustiveProvider_int_range_Algebraic_Algebraic_i list 1
 0
 
-QBarExhaustiveProvider_int_range_Algebraic_Algebraic_ii list 1
+QBarExhaustiveProvider_int_range_Algebraic_Algebraic_ii list 0
+
+QBarExhaustiveProvider_int_range_Algebraic_Algebraic_iii list 0
+
+QBarExhaustiveProvider_int_range_Algebraic_Algebraic_iv list 1
 1
 
-QBarExhaustiveProvider_range_int_Algebraic_Algebraic_iii list 1
-sqrt(2)
+QBarExhaustiveProvider_int_range_Algebraic_Algebraic_v list 0
 
-QBarExhaustiveProvider_range_int_Algebraic_Algebraic_iv list 51
+QBarExhaustiveProvider_int_range_Algebraic_Algebraic_vi list 0
+
+QBarExhaustiveProvider_range_int_Algebraic_Algebraic_vii list 0
+
+QBarExhaustiveProvider_range_int_Algebraic_Algebraic_viii list 0
+
+QBarExhaustiveProvider_range_int_Algebraic_Algebraic_ix list 0
+
+QBarExhaustiveProvider_range_int_Algebraic_Algebraic_x list 51
 2
 1
 3/2
@@ -15815,7 +15826,7 @@ QBarExhaustiveProvider_range_int_Algebraic_Algebraic_iv list 51
 19/12
 ...
 
-QBarExhaustiveProvider_range_int_Algebraic_Algebraic_v list 51
+QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xi list 51
 (1+sqrt(5))/2
 (2+sqrt(2))/2
 sqrt(2)
@@ -15868,7 +15879,7 @@ sqrt(10)/2
 (4+sqrt(2))/4
 ...
 
-QBarExhaustiveProvider_range_int_Algebraic_Algebraic_vi list 51
+QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xii list 51
 root 0 of x^3-2*x^2+x-1
 root 0 of x^3-3*x^2+4*x-3
 root 0 of x^3-2*x^2+2*x-2
@@ -15921,7 +15932,7 @@ root 1 of x^3-5*x^2+6*x-1
 root 1 of x^3-6*x^2+8*x-2
 ...
 
-QBarExhaustiveProvider_range_int_Algebraic_Algebraic_vii list 51
+QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xiii list 51
 1/2
 -4/3
 -5/12
@@ -15974,7 +15985,7 @@ QBarExhaustiveProvider_range_int_Algebraic_Algebraic_vii list 51
 -19/72
 ...
 
-QBarExhaustiveProvider_range_int_Algebraic_Algebraic_viii list 51
+QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xiv list 51
 (-27+11*sqrt(5))/12
 (-16+11*sqrt(2))/12
 (-19+11*sqrt(2))/6
@@ -16027,7 +16038,7 @@ QBarExhaustiveProvider_range_int_Algebraic_Algebraic_viii list 51
 (-32+11*sqrt(2))/24
 ...
 
-QBarExhaustiveProvider_range_int_Algebraic_Algebraic_ix list 51
+QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xv list 51
 root 0 of 216*x^3+1260*x^2+2208*x-115
 root 0 of 216*x^3+864*x^2+1878*x+149
 root 0 of 216*x^3+1260*x^2+2934*x+853
@@ -16080,7 +16091,7 @@ root 1 of 216*x^3+72*x^2-1686*x-533
 root 1 of 216*x^3-324*x^2-2742*x-1237
 ...
 
-QBarExhaustiveProvider_range_int_Algebraic_Algebraic_x list 51
+QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xvi list 51
 1
 5/4
 7/6
@@ -16133,7 +16144,7 @@ QBarExhaustiveProvider_range_int_Algebraic_Algebraic_x list 51
 17/15
 ...
 
-QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xi list 51
+QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xvii list 51
 (3+sqrt(5))/4
 (4+sqrt(2))/4
 (1+sqrt(2))/2
@@ -16186,7 +16197,7 @@ sqrt(7)/2
 (13+2*sqrt(2))/14
 ...
 
-QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xii list 51
+QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xviii list 51
 root 0 of 8*x^3-20*x^2+16*x-5
 root 0 of 8*x^3-24*x^2+26*x-11
 root 0 of 8*x^3-20*x^2+18*x-7
@@ -16239,7 +16250,7 @@ root 0 of 16*x^3-36*x^2+26*x-7
 root 2 of 8*x^3-8*x^2-8*x+7
 ...
 
-QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xiii list 51
+QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xix list 51
 25/16
 3/2
 47/32
@@ -16292,7 +16303,7 @@ QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xiii list 51
 197/128
 ...
 
-QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xiv list 51
+QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xx list 51
 (19+3*sqrt(5))/16
 (22+3*sqrt(2))/16
 (8+3*sqrt(2))/8
@@ -16345,7 +16356,7 @@ QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xiv list 51
 (44+3*sqrt(2))/32
 ...
 
-QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xv list 51
+QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xxi list 51
 root 0 of 512*x^3-1920*x^2+2376*x-995
 root 0 of 512*x^3-2112*x^2+2976*x-1457
 root 0 of 256*x^3-960*x^2+1224*x-547
@@ -16398,7 +16409,7 @@ root 1 of 512*x^3-2496*x^2+3888*x-1931
 root 1 of 256*x^3-1344*x^2+2208*x-1147
 ...
 
-QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xvi list 51
+QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xxii list 51
 256
 0
 128
@@ -16451,7 +16462,7 @@ QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xvi list 51
 448/3
 ...
 
-QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xvii list 51
+QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xxiii list 51
 -128+128*sqrt(5)
 128*sqrt(2)
 -256+256*sqrt(2)
@@ -16504,7 +16515,7 @@ QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xvii list 51
 64*sqrt(2)
 ...
 
-QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xviii list 51
+QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xxiv list 51
 root 0 of x^3+256*x^2-16777216
 root 0 of x^3+65536*x-16777216
 root 0 of x^3+256*x^2+65536*x-16777216
@@ -16557,7 +16568,7 @@ root 1 of x^3-512*x^2-65536*x+16777216
 root 1 of x^3-768*x^2-65536*x+16777216
 ...
 
-QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xix list 51
+QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xxv list 51
 6369051672525773/4503599627370496
 25476206690103091/18014398509481984
 9553577508788659/6755399441055744
@@ -16610,7 +16621,7 @@ QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xix list 51
 114642930105463913/81064793292668928
 ...
 
-QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xx list 51
+QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xxvi list 51
 root 1 of 81129638414606681695789005144064*x^2-229469269912724017771608474124288*x+162259276829213347360735361835479
 root 1 of 162259276829213363391578010288128*x^2-458938539825448053557615457730560*x+324518553658426720197677413774049
 root 1 of 40564819207303340847894502572032*x^2-114734634956362004382204609691648*x+81129638414606667311316008391967
@@ -16663,7 +16674,7 @@ root 1 of 567907468902246771870523036008448*x^2-16062848893890681784444548473159
 root 1 of 649037107316853453566312041152512*x^2-1835754159301792214230461830922240*x+1298074214633706880790709655096199
 ...
 
-QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xxi list 51
+QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xxvii list 51
 root 0 of 730750818665451459101842416358141509827966271488*x^3-3100313155415771007412044886136818172903687192576*x^2+4384504911992708436166707586472458021311212421120*x-2066875436943847188158591836246022231906409816601
 root 0 of 730750818665451459101842416358141509827966271488*x^3-3100313155415771088541683300743499868692692336640*x^2+4384504911992708665635977499196493807318196027392*x-2066875436943847350417868665459395068848461755171
 root 0 of 365375409332725729550921208179070754913983135744*x^3-1550156577707885503706022443068409086451843596288*x^2+2192252455996354218083353793236233514255233581056*x-1033437718471923594079295918123017485004877434073
@@ -17046,10 +17057,18 @@ root 1 of 20282409603651670423947251286016*x^2-57367317478180997687502677475328*
 QBarExhaustiveProvider_algebraicsIn_int_Interval_i list 1
 0
 
-QBarExhaustiveProvider_algebraicsIn_int_Interval_ii list 1
+QBarExhaustiveProvider_algebraicsIn_int_Interval_ii list 0
+
+QBarExhaustiveProvider_algebraicsIn_int_Interval_iii list 0
+
+QBarExhaustiveProvider_algebraicsIn_int_Interval_iv list 1
 1
 
-QBarExhaustiveProvider_algebraicsIn_int_Interval_iii list 51
+QBarExhaustiveProvider_algebraicsIn_int_Interval_v list 0
+
+QBarExhaustiveProvider_algebraicsIn_int_Interval_vi list 0
+
+QBarExhaustiveProvider_algebraicsIn_int_Interval_vii list 51
 0
 1
 2
@@ -17102,7 +17121,7 @@ QBarExhaustiveProvider_algebraicsIn_int_Interval_iii list 51
 4/5
 ...
 
-QBarExhaustiveProvider_algebraicsIn_int_Interval_iv list 51
+QBarExhaustiveProvider_algebraicsIn_int_Interval_viii list 51
 (-1+sqrt(5))/2
 (-1-sqrt(5))/2
 sqrt(2)
@@ -17155,7 +17174,7 @@ sqrt(3)
 (-3-sqrt(21))/2
 ...
 
-QBarExhaustiveProvider_algebraicsIn_int_Interval_v list 51
+QBarExhaustiveProvider_algebraicsIn_int_Interval_ix list 51
 root 0 of x^3+x-1
 root 0 of x^3-x^2-1
 root 0 of x^3-2
@@ -17208,7 +17227,7 @@ root 0 of 2*x^3-2*x^2-1
 root 0 of x^3-x^2-x+2
 ...
 
-QBarExhaustiveProvider_algebraicsIn_int_Interval_vi list 51
+QBarExhaustiveProvider_algebraicsIn_int_Interval_x list 51
 4
 1
 5/2
@@ -17261,7 +17280,7 @@ QBarExhaustiveProvider_algebraicsIn_int_Interval_vi list 51
 11/4
 ...
 
-QBarExhaustiveProvider_algebraicsIn_int_Interval_vii list 51
+QBarExhaustiveProvider_algebraicsIn_int_Interval_xi list 51
 (-1+3*sqrt(5))/2
 (2+3*sqrt(2))/2
 -2+3*sqrt(2)
@@ -17314,7 +17333,7 @@ sqrt(10)
 (4+3*sqrt(2))/4
 ...
 
-QBarExhaustiveProvider_algebraicsIn_int_Interval_viii list 51
+QBarExhaustiveProvider_algebraicsIn_int_Interval_xii list 51
 root 0 of x^3-3*x-25
 root 0 of x^3-3*x^2+12*x-37
 root 0 of x^3+6*x-34
@@ -17367,7 +17386,7 @@ root 1 of x^3-9*x^2+6*x+29
 root 1 of x^3-12*x^2+12*x+26
 ...
 
-QBarExhaustiveProvider_algebraicsIn_int_Interval_ix list 51
+QBarExhaustiveProvider_algebraicsIn_int_Interval_xiii list 51
 1/2
 -1/2
 -3/2
@@ -17420,7 +17439,7 @@ QBarExhaustiveProvider_algebraicsIn_int_Interval_ix list 51
 -5
 ...
 
-QBarExhaustiveProvider_algebraicsIn_int_Interval_x list 51
+QBarExhaustiveProvider_algebraicsIn_int_Interval_xiv list 51
 (2-sqrt(5))/2
 (1-2*sqrt(2))/2
 -sqrt(5)/2
@@ -17473,7 +17492,7 @@ QBarExhaustiveProvider_algebraicsIn_int_Interval_x list 51
 (5-2*sqrt(13))/6
 ...
 
-QBarExhaustiveProvider_algebraicsIn_int_Interval_xi list 51
+QBarExhaustiveProvider_algebraicsIn_int_Interval_xv list 51
 root 0 of 8*x^3-12*x^2+14*x+3
 root 0 of 8*x^3-4*x^2-2*x+9
 root 0 of 8*x^3-12*x^2+6*x+15
@@ -17526,7 +17545,7 @@ root 0 of 8*x^3-4*x^2-2*x+25
 root 0 of 8*x^3-4*x^2+6*x+21
 ...
 
-QBarExhaustiveProvider_algebraicsIn_int_Interval_xii list 51
+QBarExhaustiveProvider_algebraicsIn_int_Interval_xvi list 51
 1/2
 3/2
 5/2
@@ -17579,7 +17598,7 @@ QBarExhaustiveProvider_algebraicsIn_int_Interval_xii list 51
 6
 ...
 
-QBarExhaustiveProvider_algebraicsIn_int_Interval_xiii list 51
+QBarExhaustiveProvider_algebraicsIn_int_Interval_xvii list 51
 sqrt(5)/2
 (1+2*sqrt(2))/2
 (2+sqrt(5))/2
@@ -17632,7 +17651,7 @@ sqrt(7)/2
 (1+2*sqrt(13))/6
 ...
 
-QBarExhaustiveProvider_algebraicsIn_int_Interval_xiv list 51
+QBarExhaustiveProvider_algebraicsIn_int_Interval_xviii list 51
 root 0 of 8*x^3-12*x^2+14*x-13
 root 0 of 8*x^3-20*x^2+14*x-11
 root 0 of 8*x^3-12*x^2+6*x-17
@@ -18221,7 +18240,13 @@ root 0 of 2*x^3-2*x^2-1
 root 0 of x^3-x^2-x+2
 ...
 
-QBarExhaustiveProvider_algebraicsNotIn_int_Interval_vii list 51
+QBarExhaustiveProvider_algebraicsNotIn_int_Interval_vii list 0
+
+QBarExhaustiveProvider_algebraicsNotIn_int_Interval_viii list 0
+
+QBarExhaustiveProvider_algebraicsNotIn_int_Interval_ix list 0
+
+QBarExhaustiveProvider_algebraicsNotIn_int_Interval_x list 51
 0
 5
 -1
@@ -18274,7 +18299,7 @@ QBarExhaustiveProvider_algebraicsNotIn_int_Interval_vii list 51
 25/6
 ...
 
-QBarExhaustiveProvider_algebraicsNotIn_int_Interval_viii list 51
+QBarExhaustiveProvider_algebraicsNotIn_int_Interval_xi list 51
 (3-sqrt(5))/2
 (7+sqrt(5))/2
 1-sqrt(2)
@@ -18327,7 +18352,7 @@ sqrt(2)/2
 (10+sqrt(2))/2
 ...
 
-QBarExhaustiveProvider_algebraicsNotIn_int_Interval_ix list 51
+QBarExhaustiveProvider_algebraicsNotIn_int_Interval_xii list 51
 root 0 of x^3-3*x^2+4*x-1
 root 0 of x^3-12*x^2+49*x-69
 root 0 of x^3-2*x^2+x+1
@@ -18380,7 +18405,7 @@ root 0 of 2*x^3-6*x^2+7*x-2
 root 0 of 2*x^3-24*x^2+97*x-133
 ...
 
-QBarExhaustiveProvider_algebraicsNotIn_int_Interval_x list 51
+QBarExhaustiveProvider_algebraicsNotIn_int_Interval_xiii list 51
 3/2
 5/2
 1
@@ -18433,7 +18458,7 @@ QBarExhaustiveProvider_algebraicsNotIn_int_Interval_x list 51
 23/6
 ...
 
-QBarExhaustiveProvider_algebraicsNotIn_int_Interval_xi list 51
+QBarExhaustiveProvider_algebraicsNotIn_int_Interval_xiv list 51
 sqrt(5)/2
 (1+2*sqrt(2))/2
 (2+sqrt(5))/2
@@ -18486,7 +18511,7 @@ sqrt(7)/2
 (1+2*sqrt(13))/6
 ...
 
-QBarExhaustiveProvider_algebraicsNotIn_int_Interval_xii list 51
+QBarExhaustiveProvider_algebraicsNotIn_int_Interval_xv list 51
 root 0 of 8*x^3-12*x^2+14*x-13
 root 0 of 8*x^3-20*x^2+14*x-11
 root 0 of 8*x^3-12*x^2+6*x-17
@@ -18539,7 +18564,7 @@ root 0 of 8*x^3-20*x^2+14*x-27
 root 0 of 8*x^3-20*x^2+22*x-31
 ...
 
-QBarExhaustiveProvider_algebraicsNotIn_int_Interval_xiii list 51
+QBarExhaustiveProvider_algebraicsNotIn_int_Interval_xvi list 51
 -1/2
 -3/2
 0
@@ -18592,7 +18617,7 @@ QBarExhaustiveProvider_algebraicsNotIn_int_Interval_xiii list 51
 -17/6
 ...
 
-QBarExhaustiveProvider_algebraicsNotIn_int_Interval_xiv list 51
+QBarExhaustiveProvider_algebraicsNotIn_int_Interval_xvii list 51
 (2-sqrt(5))/2
 (1-2*sqrt(2))/2
 -sqrt(5)/2
@@ -18645,7 +18670,7 @@ QBarExhaustiveProvider_algebraicsNotIn_int_Interval_xiv list 51
 (5-2*sqrt(13))/6
 ...
 
-QBarExhaustiveProvider_algebraicsNotIn_int_Interval_xv list 51
+QBarExhaustiveProvider_algebraicsNotIn_int_Interval_xviii list 51
 root 0 of 8*x^3-12*x^2+14*x+3
 root 0 of 8*x^3-4*x^2-2*x+9
 root 0 of 8*x^3-12*x^2+6*x+15
@@ -18804,7 +18829,9 @@ root 0 of x^5+x^3-1
 -6
 ...
 
-QBarExhaustiveProvider_algebraicsNotIn_Interval_iii list 51
+QBarExhaustiveProvider_algebraicsNotIn_Interval_iii list 0
+
+QBarExhaustiveProvider_algebraicsNotIn_Interval_iv list 51
 0
 5
 (3-sqrt(5))/2
@@ -18857,7 +18884,7 @@ root 1 of x^4-17*x^3+108*x^2-306*x+329
 10
 ...
 
-QBarExhaustiveProvider_algebraicsNotIn_Interval_iv list 51
+QBarExhaustiveProvider_algebraicsNotIn_Interval_v list 51
 3/2
 sqrt(5)/2
 5/2
@@ -18910,7 +18937,7 @@ root 0 of 32*x^5-80*x^4+112*x^3-88*x^2+34*x-37
 (4+sqrt(5))/2
 ...
 
-QBarExhaustiveProvider_algebraicsNotIn_Interval_v list 51
+QBarExhaustiveProvider_algebraicsNotIn_Interval_vi list 51
 -1/2
 (2-sqrt(5))/2
 -3/2

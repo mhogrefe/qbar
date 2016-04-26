@@ -332,14 +332,11 @@ public class QBarExhaustiveProviderDemos extends QBarDemos {
     }
 
     private void demoRange_int_Algebraic_Algebraic() {
-        Iterable<Triple<Integer, Algebraic, Algebraic>> ts = filterInfinite(
-                s -> s.a == s.b.degree() || !s.b.equals(s.c),
-                map(
-                        p -> new Triple<>(p.b, p.a.a, p.a.b),
-                        P.pairsLogarithmicOrder(
-                                P.bagPairs(P.withScale(4).algebraics()),
-                                P.withScale(2).positiveIntegersGeometric()
-                        )
+        Iterable<Triple<Integer, Algebraic, Algebraic>> ts = map(
+                p -> new Triple<>(p.b, p.a.a, p.a.b),
+                P.pairsLogarithmicOrder(
+                        P.bagPairs(P.withScale(4).algebraics()),
+                        P.withScale(2).positiveIntegersGeometric()
                 )
         );
         for (Triple<Integer, Algebraic, Algebraic> t : take(SMALL_LIMIT, ts)) {
@@ -354,9 +351,9 @@ public class QBarExhaustiveProviderDemos extends QBarDemos {
     }
 
     private void demoAlgebraicsIn_int_Interval() {
-        Iterable<Pair<Interval, Integer>> ps = filterInfinite(
-                q -> q.b == 1 || !q.a.getLower().equals(q.a.getUpper()),
-                P.pairsLogarithmicOrder(P.intervals(), P.withScale(2).positiveIntegersGeometric())
+        Iterable<Pair<Interval, Integer>> ps = P.pairsLogarithmicOrder(
+                P.intervals(),
+                P.withScale(2).positiveIntegersGeometric()
         );
         for (Pair<Interval, Integer> p : take(SMALL_LIMIT, ps)) {
             System.out.println("algebraicsIn(" + p.b + ", " + p.a + ") = " + its(QEP.algebraicsIn(p.b, p.a)));
@@ -371,7 +368,7 @@ public class QBarExhaustiveProviderDemos extends QBarDemos {
 
     private void demoAlgebraicsNotIn_int_Interval() {
         Iterable<Pair<Interval, Integer>> ps = P.pairsLogarithmicOrder(
-                filterInfinite(a -> !a.equals(Interval.ALL), P.intervals()),
+                P.intervals(),
                 P.withScale(2).positiveIntegersGeometric()
         );
         for (Pair<Interval, Integer> p : take(MEDIUM_LIMIT, ps)) {
@@ -380,7 +377,7 @@ public class QBarExhaustiveProviderDemos extends QBarDemos {
     }
 
     private void demoAlgebraicsNotIn_Interval() {
-        for (Interval a : take(MEDIUM_LIMIT, filterInfinite(b -> !b.equals(Interval.ALL), P.intervals()))) {
+        for (Interval a : take(MEDIUM_LIMIT, P.intervals())) {
             System.out.println("algebraicsNotIn(" + a + ") = " + its(QEP.algebraicsNotIn(a)));
         }
     }
