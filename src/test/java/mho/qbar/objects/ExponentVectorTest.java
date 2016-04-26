@@ -192,7 +192,7 @@ public class ExponentVectorTest {
         try {
             readStrict(ev).get().removeVariables(readVariableListWithNulls(vs));
             fail();
-        } catch (NullPointerException ignored) {}
+        } catch (NullPointerException | IllegalArgumentException ignored) {}
     }
 
     @Test

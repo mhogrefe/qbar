@@ -3,12 +3,14 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
+import mho.wheels.iterables.IterableUtils;
+import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
 
 import static mho.qbar.objects.ExponentVector.*;
 import static mho.wheels.iterables.IterableUtils.*;
@@ -33,7 +35,12 @@ public class ExponentVectorProperties extends QBarTestProperties {
         propertiesVariables();
         propertiesRemoveVariable();
         propertiesRemoveVariables();
+        compareImplementationsRemoveVariables();
         propertiesMultiply();
+        propertiesProduct();
+        compareImplementationsProduct();
+        propertiesPow();
+        compareImplementationsPow();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -220,15 +227,21 @@ public class ExponentVectorProperties extends QBarTestProperties {
         }
     }
 
-    private static @NotNull ExponentVector removeVariables_simplest(
+    private static @NotNull ExponentVector removeVariables_alt(
             @NotNull ExponentVector ev,
             @NotNull List<Variable> vs
     ) {
-        ExponentVector removed = ev;
-        for (Variable v : vs) {
-            removed = removed.removeVariable(v);
+        if (any(v -> v == null, vs)) {
+            throw new NullPointerException();
         }
-        return removed;
+        if (ev == ONE) return ev;
+        vs = toList(filter(v -> ev.exponent(v) != 0, vs));
+        if (vs.isEmpty()) return ev;
+        List<Integer> removedExponents = ev.getExponents();
+        for (Variable v : vs) {
+            removedExponents.set(v.getIndex(), 0);
+        }
+        return of(removedExponents);
     }
 
     private void propertiesRemoveVariables() {
@@ -240,7 +253,7 @@ public class ExponentVectorProperties extends QBarTestProperties {
         for (Pair<ExponentVector, List<Variable>> p : take(LIMIT, ps)) {
             ExponentVector removed = p.a.removeVariables(p.b);
             removed.validate();
-            assertEquals(p, removeVariables_simplest(p.a, p.b), removed);
+            assertEquals(p, removeVariables_alt(p.a, p.b), removed);
         }
 
         for (List<Variable> vs : take(LIMIT, P.lists(P.variables()))) {
@@ -259,8 +272,19 @@ public class ExponentVectorProperties extends QBarTestProperties {
             try {
                 p.a.removeVariables(p.b);
                 fail(p);
-            } catch (NullPointerException ignored) {}
+            } catch (NullPointerException | IllegalArgumentException ignored) {}
         }
+    }
+
+    private void compareImplementationsRemoveVariables() {
+        Map<String, Function<Pair<ExponentVector, List<Variable>>, ExponentVector>> functions = new LinkedHashMap<>();
+        functions.put("alt", p -> removeVariables_alt(p.a, p.b));
+        functions.put("standard", p -> p.a.removeVariables(p.b));
+        Iterable<Pair<ExponentVector, List<Variable>>> ps = P.pairsLogarithmicOrder(
+                P.exponentVectors(),
+                P.lists(P.variables())
+        );
+        compareImplementations("removeVariables(List<Variable>)", take(LIMIT, ps), functions);
     }
 
     private void propertiesMultiply() {
@@ -280,6 +304,130 @@ public class ExponentVectorProperties extends QBarTestProperties {
             associative(ExponentVector::multiply, t);
         }
     }
+
+    private static @NotNull ExponentVector product_simplest(@NotNull Iterable<ExponentVector> xs) {
+        if (any(x -> x == null, xs)) {
+            throw new NullPointerException();
+        }
+        return foldl(ExponentVector::multiply, ONE, xs);
+    }
+
+    private static @NotNull ExponentVector product_alt(@NotNull Iterable<ExponentVector> xs) {
+        return of(toList(map(IterableUtils::sumInteger, transpose(map(ExponentVector::getExponents, xs)))));
+    }
+
+    private void propertiesProduct() {
+        initialize("product(List<ExponentVector>)");
+        propertiesFoldHelper(
+                LIMIT,
+                P.getWheelsProvider(),
+                P.exponentVectors(),
+                ExponentVector::multiply,
+                ExponentVector::product,
+                ExponentVector::validate,
+                true,
+                true
+        );
+
+        for (List<ExponentVector> evs : take(LIMIT, P.withScale(1).lists(P.exponentVectors()))) {
+            ExponentVector product = product(evs);
+            assertEquals(evs, product, product_simplest(evs));
+            assertEquals(evs, product, product_alt(evs));
+        }
+    }
+
+    private void compareImplementationsProduct() {
+        Map<String, Function<List<ExponentVector>, ExponentVector>> functions = new LinkedHashMap<>();
+        functions.put("simplest", ExponentVectorProperties::product_simplest);
+        functions.put("alt", ExponentVectorProperties::product_alt);
+        functions.put("standard", ExponentVector::product);
+        compareImplementations("product(List<ExponentVector>)", take(LIMIT, P.lists(P.exponentVectors())), functions);
+    }
+
+    private static @NotNull ExponentVector pow_simplest(@NotNull ExponentVector ev, int p) {
+        return product(toList(replicate(p, ev)));
+    }
+
+    private static @NotNull ExponentVector pow_alt(@NotNull ExponentVector ev, int p) {
+        if (p < 0) {
+            throw new ArithmeticException("p cannot be negative. Invalid p: " + p);
+        }
+        if (p == 0 || ev == ONE) return ONE;
+        if (p == 1) return ev;
+        ExponentVector powerPower = null; // p^2^i
+        List<ExponentVector> factors = new ArrayList<>();
+        for (boolean bit : IntegerUtils.bits(p)) {
+            powerPower = powerPower == null ? ev : powerPower.multiply(powerPower);
+            if (bit) factors.add(powerPower);
+        }
+        return product(factors);
+    }
+
+    private void propertiesPow() {
+        initialize("pow(int)");
+        Iterable<Pair<ExponentVector, Integer>> ps = P.pairsLogarithmicOrder(
+                P.exponentVectors(),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Pair<ExponentVector, Integer> p : take(LIMIT, ps)) {
+            ExponentVector ev = p.a.pow(p.b);
+            ev.validate();
+            assertEquals(p, ev, pow_simplest(p.a, p.b));
+            assertEquals(p, ev, pow_alt(p.a, p.b));
+        }
+
+        for (ExponentVector ev : take(LIMIT, P.exponentVectors())) {
+            assertTrue(ev, ev.pow(0) == ONE);
+            fixedPoint(f -> f.pow(1), ev);
+            assertEquals(ev, ev.pow(2), ev.multiply(ev));
+        }
+
+        Iterable<Triple<ExponentVector, Integer, Integer>> ts2 = P.triples(
+                P.exponentVectors(),
+                P.withScale(4).naturalIntegersGeometric(),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Triple<ExponentVector, Integer, Integer> t : take(LIMIT, ts2)) {
+            ExponentVector expression1 = t.a.pow(t.b).multiply(t.a.pow(t.c));
+            ExponentVector expression2 = t.a.pow(t.b + t.c);
+            assertEquals(t, expression1, expression2);
+            ExponentVector expression5 = t.a.pow(t.b).pow(t.c);
+            ExponentVector expression6 = t.a.pow(t.b * t.c);
+            assertEquals(t, expression5, expression6);
+        }
+
+        Iterable<Triple<ExponentVector, ExponentVector, Integer>> ts3 = P.triples(
+                P.exponentVectors(),
+                P.exponentVectors(),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Triple<ExponentVector, ExponentVector, Integer> t : take(LIMIT, ts3)) {
+            ExponentVector expression1 = t.a.multiply(t.b).pow(t.c);
+            ExponentVector expression2 = t.a.pow(t.c).multiply(t.b.pow(t.c));
+            assertEquals(t, expression1, expression2);
+        }
+
+        for (Pair<ExponentVector, Integer> p : take(LIMIT, P.pairs(P.exponentVectors(), P.negativeIntegers()))) {
+            try {
+                p.a.pow(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void compareImplementationsPow() {
+        Map<String, Function<Pair<ExponentVector, Integer>, ExponentVector>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> pow_simplest(p.a, p.b));
+        functions.put("alt", p -> pow_alt(p.a, p.b));
+        functions.put("standard", p -> p.a.pow(p.b));
+        Iterable<Pair<ExponentVector, Integer>> ps = P.pairsLogarithmicOrder(
+                P.exponentVectors(),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        compareImplementations("pow(int)", take(LIMIT, ps), functions);
+    }
+
+    //todo continue props
 
     private void propertiesEquals() {
         initialize("equals(Object)");

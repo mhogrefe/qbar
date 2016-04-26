@@ -215,7 +215,24 @@ public class ExponentVectorDemos extends QBarDemos {
         }
     }
 
-    //continue demos and props
+    private void demoSubstitute() {
+        Iterable<Pair<ExponentVector, Map<Variable, ExponentVector>>> ps = P.pairsSquareRootOrder(
+                P.withScale(4).exponentVectors(),
+                P.withElement(
+                        new TreeMap<>(),
+                        map(
+                                p -> toMap(zip(p.a, p.b)),
+                                P.dependentPairsInfiniteLogarithmicOrder(
+                                        P.withScale(4).subsetsAtLeast(1, P.variables()),
+                                        vs -> P.lists(vs.size(), P.withScale(4).exponentVectors())
+                                )
+                        )
+                )
+        );
+        for (Pair<ExponentVector, Map<Variable, ExponentVector>> p : take(LIMIT, ps)) {
+            System.out.println("substitute(" + p.a + ", " + p.b + ") = " + p.a.substitute(p.b));
+        }
+    }
 
     private void demoEquals_ExponentVector() {
         for (Pair<ExponentVector, ExponentVector> p : take(LIMIT, P.pairs(P.exponentVectors()))) {

@@ -1,9 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
-import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.NoRemoveIterator;
-import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
@@ -257,17 +255,11 @@ public final class ExponentVector implements Comparable<ExponentVector> {
      * @return {@code this} without {@code vs}, or {@code this} with each v in {@code vs} set to 1
      */
     public @NotNull ExponentVector removeVariables(@NotNull List<Variable> vs) {
-        if (any(v -> v == null, vs)) {
-            throw new NullPointerException();
-        }
-        if (this == ONE) return this;
-        vs = toList(filter(v -> exponent(v) != 0, vs));
-        if (vs.isEmpty()) return this;
-        List<Integer> removedExponents = toList(exponents);
+        ExponentVector removed = this;
         for (Variable v : vs) {
-            removedExponents.set(v.getIndex(), 0);
+            removed = removed.removeVariable(v);
         }
-        return of(removedExponents);
+        return removed;
     }
 
     /**
@@ -300,7 +292,21 @@ public final class ExponentVector implements Comparable<ExponentVector> {
      * @return Πxs
      */
     public static @NotNull ExponentVector product(@NotNull List<ExponentVector> xs) {
-        return of(toList(map(IterableUtils::sumInteger, transpose(map(x -> x.exponents, xs)))));
+        int largestSize = 0;
+        for (ExponentVector ev : xs) {
+            int size = ev.size();
+            if (size > largestSize) {
+                largestSize = size;
+            }
+        }
+        List<Integer> productExponents = toList(replicate(largestSize, 0));
+        for (ExponentVector ev : xs) {
+            List<Integer> exponents = ev.getExponents();
+            for (int i = 0; i < exponents.size(); i++) {
+                productExponents.set(i, productExponents.get(i) + exponents.get(i));
+            }
+        }
+        return of(productExponents);
     }
 
     /**
@@ -319,15 +325,9 @@ public final class ExponentVector implements Comparable<ExponentVector> {
         if (p < 0) {
             throw new ArithmeticException("p cannot be negative. Invalid p: " + p);
         }
-        if (p == 0) return ONE;
+        if (p == 0 || this == ONE) return ONE;
         if (p == 1) return this;
-        ExponentVector powerPower = null; // p^2^i
-        List<ExponentVector> factors = new ArrayList<>();
-        for (boolean bit : IntegerUtils.bits(p)) {
-            powerPower = powerPower == null ? this : powerPower.multiply(powerPower);
-            if (bit) factors.add(powerPower);
-        }
-        return product(factors);
+        return new ExponentVector(toList(map(e -> e * p, exponents)));
     }
 
     /**
