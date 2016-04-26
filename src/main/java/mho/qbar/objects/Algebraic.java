@@ -1568,7 +1568,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      */
     public @NotNull Algebraic invert() {
         if (this == ZERO) {
-            throw new ArithmeticException();
+            throw new ArithmeticException("that cannot be zero.");
         }
         if (this == ONE) return ONE;
         if (rational.isPresent()) {
@@ -1976,16 +1976,19 @@ public final class Algebraic implements Comparable<Algebraic> {
                 BigInteger a = minimalPolynomial.coefficient(2);
                 BigInteger b = minimalPolynomial.coefficient(1);
                 BigInteger c = minimalPolynomial.coefficient(0);
-                BigInteger discriminant = b.pow(2).subtract(a.multiply(c).shiftLeft(2));
-                if (discriminant.bitLength() < 32) {
-                    BigInteger beforeRadical = MathUtils.largestPerfectPowerFactor(2, discriminant);
-                    BigInteger underRadical = discriminant.divide(beforeRadical.pow(2));
+                BigInteger bigDiscriminant = b.pow(2).subtract(a.multiply(c).shiftLeft(2));
+                if (bigDiscriminant.bitLength() < 32) {
+                    int discriminant = bigDiscriminant.intValueExact();
+                    int beforeRadical = MathUtils.largestPerfectPowerFactor(2, discriminant);
+                    int underRadical = discriminant / (beforeRadical * beforeRadical);
                     BigInteger denominator = a.shiftLeft(1);
-                    BigInteger gcd = MathUtils.gcd(Arrays.asList(beforeRadical, denominator, b));
-                    beforeRadical = beforeRadical.divide(gcd);
-                    BigInteger constant = b.divide(gcd).negate();
-                    denominator = denominator.divide(gcd);
-                    boolean nonTrivialBeforeRadical = !beforeRadical.equals(BigInteger.ONE);
+                    int gcd = MathUtils.gcd(Arrays.asList(BigInteger.valueOf(beforeRadical), denominator, b))
+                            .intValueExact();
+                    beforeRadical /= gcd;
+                    BigInteger bigGcd = BigInteger.valueOf(gcd);
+                    BigInteger constant = b.divide(bigGcd).negate();
+                    denominator = denominator.divide(bigGcd);
+                    boolean nonTrivialBeforeRadical = beforeRadical != 1;
                     boolean nonTrivialConstant = !constant.equals(BigInteger.ZERO);
                     boolean nonTrivialDenominator = !denominator.equals(BigInteger.ONE);
 
