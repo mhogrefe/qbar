@@ -1950,9 +1950,9 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     /**
-     * An {@code Iterable} that generates all positive {@code Algebraic}s. A larger {@code scale} corresponds to an
-     * {@code Algebraic} whose minimal polynomial has larger coefficients, and the {@code secondaryScale} is twice the
-     * mean of the {@code Algebraic}s' degrees. Does not support removal.
+     * An {@code Iterable} that generates all positive {@code Algebraic}s. A larger {@code scale} corresponds to a
+     * {@code Algebraic}s whose minimal polynomials have larger coefficients, and the {@code secondaryScale} is twice
+     * the mean of the {@code Algebraic}s' degrees. Does not support removal.
      *
      * <ul>
      *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} of at least 4.</li>
@@ -1982,9 +1982,9 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     /**
-     * An {@code Iterable} that generates all negative {@code Algebraic}s. A larger {@code scale} corresponds to an
-     * {@code Algebraic} whose minimal polynomial has larger coefficients, and the {@code secondaryScale} is twice the
-     * mean of the {@code Algebraic}s' degrees. Does not support removal.
+     * An {@code Iterable} that generates all negative {@code Algebraic}s. A larger {@code scale} corresponds to a
+     * {@code Algebraic}s whose minimal polynomials have larger coefficients, and the {@code secondaryScale} is twice
+     * the mean of the {@code Algebraic}s' degrees. Does not support removal.
      *
      * <ul>
      *  <li>{@code this} must have a negative {@code scale} and a {@code secondaryScale} of at least 4.</li>
@@ -2014,9 +2014,9 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     /**
-     * An {@code Iterable} that generates all nonzero {@code Algebraic}s. A larger {@code scale} corresponds to an
-     * {@code Algebraic} whose minimal polynomial has larger coefficients, and the {@code secondaryScale} is twice the
-     * mean of the {@code Algebraic}s' degrees. Does not support removal.
+     * An {@code Iterable} that generates all nonzero {@code Algebraic}s. A larger {@code scale} corresponds to a
+     * {@code Algebraic}s whose minimal polynomials have larger coefficients, and the {@code secondaryScale} is twice
+     * the mean of the {@code Algebraic}s' degrees. Does not support removal.
      *
      * <ul>
      *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} of at least 4.</li>
@@ -2031,9 +2031,9 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     /**
-     * An {@code Iterable} that generates all {@code Algebraic}s. A larger {@code scale} corresponds to an
-     * {@code Algebraic} whose minimal polynomial has larger coefficients, and the {@code secondaryScale} is twice the
-     * mean of the {@code Algebraic}s' degrees. Does not support removal.
+     * An {@code Iterable} that generates all {@code Algebraic}s. A larger {@code scale} corresponds to a
+     * {@code Algebraic}s whose minimal polynomials have larger coefficients, and the {@code secondaryScale} is twice
+     * the mean of the {@code Algebraic}s' degrees. Does not support removal.
      *
      * <ul>
      *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} of at least 4.</li>
@@ -2064,7 +2064,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
 
     /**
      * An {@code Iterable} that generates all {@code Algebraic}s in the interval [0, 1). A larger {@code scale}
-     * corresponds to an {@code Algebraic} whose minimal polynomial has larger coefficients, and the
+     * corresponds to a {@code Algebraic}s whose minimal polynomials have larger coefficients, and the
      * {@code secondaryScale} is twice the mean of the {@code Algebraic}s' degrees. Does not support removal.
      *
      * <ul>
@@ -2095,6 +2095,23 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         );
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code Algebraic}s greater than or equal to {@code a}, and with a given
+     * degree. A larger {@code scale} corresponds to {@code Algebraic}s whose minimal polynomials have larger
+     * coefficients. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 2.</li>
+     *  <li>{@code degree} must be positive.</li>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Algebraic}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param a the inclusive lower bound of the generated elements
+     * @return {@code Algebraic}s greater than or equal to {@code a} and with degree {@code degree}
+     */
     @Override
     public @NotNull Iterable<Algebraic> rangeUp(int degree, @NotNull Algebraic a) {
         int scale = getScale();
@@ -2118,6 +2135,22 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         }
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code Algebraic}s greater than or equal to {@code a}. A larger
+     * {@code scale} corresponds to {@code Algebraic}s whose minimal polynomials have larger coefficients, and a larger
+     * {@code secondaryScale} corresponds to {@code Algebraic}s with higher degrees. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 2 and a {@code secondaryScale} of at least 4.</li>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Algebraic}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param a the inclusive lower bound of the generated elements
+     * @return {@code Algebraic}s greater than or equal to {@code a}
+     */
     @Override
     public @NotNull Iterable<Algebraic> rangeUp(@NotNull Algebraic a) {
         int scale = getScale();
@@ -2134,6 +2167,23 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         }
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code Algebraic}s less than or equal to {@code a}, and with a given
+     * degree. A larger {@code scale} corresponds to {@code Algebraic}s whose minimal polynomials have larger
+     * coefficients. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 2.</li>
+     *  <li>{@code degree} must be positive.</li>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Algebraic}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param a the inclusive upper bound of the generated elements
+     * @return {@code Algebraic}s less than or equal to {@code a} and with degree {@code degree}
+     */
     @Override
     public @NotNull Iterable<Algebraic> rangeDown(int degree, @NotNull Algebraic a) {
         int scale = getScale();
@@ -2154,6 +2204,22 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         }
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code Algebraic}s less than or equal to {@code a}. A larger
+     * {@code scale} corresponds to {@code Algebraic}s whose minimal polynomials have larger coefficients, and a larger
+     * {@code secondaryScale} corresponds to {@code Algebraic}s with higher degrees. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 2 and a {@code secondaryScale} of at least 4.</li>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Algebraic}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param a the inclusive upper bound of the generated elements
+     * @return {@code Algebraic}s less than or equal to {@code a}
+     */
     public @NotNull Iterable<Algebraic> rangeDown(@NotNull Algebraic a) {
         int scale = getScale();
         if (scale < 2) {
@@ -2169,6 +2235,27 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         }
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code Algebraic}s between {@code a} and {@code b}, inclusive, and with a
+     * given degree. A larger {@code scale} corresponds to {@code Algebraic}s whose minimal polynomials have larger
+     * coefficients. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 2.</li>
+     *  <li>{@code degree} must be positive.</li>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>{@code b} cannot be null.</li>
+     *  <li>{@code a} must be less than or equal to {@code b}.</li>
+     *  <li>If {@code a} and {@code b} are equal, {@code degree} must be equal to the degree of {@code a}.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Algebraic}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param a the inclusive lower bound of the generated elements
+     * @param b the inclusive upper bound of the generated elements
+     * @return {@code Algebraic}s between {@code a} and {@code b}, inclusive, and with degree {@code degree}
+     */
     @Override
     public @NotNull Iterable<Algebraic> range(int degree, @NotNull Algebraic a, @NotNull Algebraic b) {
         if (gt(a, b)) {
@@ -2206,6 +2293,25 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         }
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code Algebraic}s between {@code a} and {@code b}, inclusive. A larger
+     * {@code scale} corresponds to {@code Algebraic}s whose minimal polynomials have larger coefficients, and a larger
+     * {@code secondaryScale} corresponds to {@code Algebraic}s with higher degrees. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 2 and a {@code secondaryScale} of at least 4.</li>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>{@code b} cannot be null.</li>
+     *  <li>{@code a} must be less than or equal to {@code b}.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Algebraic}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param a the inclusive lower bound of the generated elements
+     * @param b the inclusive upper bound of the generated elements
+     * @return {@code Algebraic}s between {@code a} and {@code b}, inclusive
+     */
     @Override
     public @NotNull Iterable<Algebraic> range(@NotNull Algebraic a, @NotNull Algebraic b) {
         if (gt(a, b)) {
@@ -2238,6 +2344,24 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         );
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code Algebraic}s contained in a given {@code Interval} and with a given
+     * degree. A larger {@code scale} corresponds to {@code Algebraic}s whose minimal polynomials have larger
+     * coefficients. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 2.</li>
+     *  <li>{@code degree} must be positive.</li>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>If {@code a} has diameter 0, {@code degree} must be 1.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Algebraic}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param a an {@code Interval}
+     * @return {x|x∈{@code a} and deg(x)={@code degree}}
+     */
     @Override
     public @NotNull Iterable<Algebraic> algebraicsIn(int degree, @NotNull Interval a) {
         int scale = getScale();
@@ -2255,6 +2379,23 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         }
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code Algebraic}s contained in a given {@code Interval}. A larger
+     * {@code scale} corresponds to {@code Algebraic}s whose minimal polynomials have larger coefficients, and a larger
+     * {@code secondaryScale} corresponds to {@code Algebraic}s with higher degrees. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 2.</li>
+     *  <li>{@code degree} must be positive.</li>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Algebraic}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param a an {@code Interval}
+     * @return {x|x∈{@code a} and deg(x)={@code degree}}
+     */
     @Override
     public @NotNull Iterable<Algebraic> algebraicsIn(@NotNull Interval a) {
         int scale = getScale();
@@ -2273,11 +2414,12 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     /**
-     * An {@code Iterable} that generates all {@code Algebraic}s not contained in a given {@code Interval} and with a
-     * given degree. Does not support removal.
+     * An {@code Iterable} that generates all {@code Algebraic}s not contained in a given {@code Interval}. A larger
+     * {@code scale} corresponds to {@code Algebraic}s whose minimal polynomials have larger coefficients. Does not
+     * support removal.
      *
      * <ul>
-     *  <li>{@code degree} must be positive.</li>
+     *  <li>{@code this} must have a {@code scale} of at least 2.</li>
      *  <li>{@code a} cannot be (–∞, ∞).</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Algebraic}s.</li>
      * </ul>
@@ -2285,7 +2427,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * Length is infinite
      *
      * @param a an {@code Interval}
-     * @return {r|r∉{@code a}}
+     * @return {r|r∉{@code a} and deg(x)={@code degree}
      */
     @Override
     public @NotNull Iterable<Algebraic> algebraicsNotIn(int degree, @NotNull Interval a) {
@@ -2309,10 +2451,12 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     /**
-     * An {@code Iterable} that generates all {@code Algebraic}s not contained in a given {@code Interval}. Does not
-     * support removal.
+     * An {@code Iterable} that generates all {@code Algebraic}s not contained in a given {@code Interval}. A larger
+     * {@code scale} corresponds to {@code Algebraic}s whose minimal polynomials have larger coefficients, and a larger
+     * {@code secondaryScale} corresponds to {@code Algebraic}s with higher degrees. Does not support removal.
      *
      * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 2 and a {@code secondaryScale} of at least 4.</li>
      *  <li>{@code a} cannot be (–∞, ∞).</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Algebraic}s.</li>
      * </ul>

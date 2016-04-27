@@ -1331,7 +1331,7 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
      *
      * @param a the inclusive lower bound of the generated elements
      * @param b the inclusive upper bound of the generated elements
-     * @return {@code Algebraic}s between {@code a} and {@code b}, inclusive
+     * @return {@code Algebraic}s between {@code a} and {@code b}, inclusive, and with degree {@code degree}
      */
     @Override
     public @NotNull Iterable<Algebraic> range(int degree, @NotNull Algebraic a, @NotNull Algebraic b) {
@@ -1413,6 +1413,7 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
      * degree. Does not support removal.
      *
      * <ul>
+     *  <li>{@code degree} must be positive.</li>
      *  <li>{@code a} cannot be null.</li>
      *  <li>The result is a non-removable {@code Iterable} containing {@code Algebraic}s.</li>
      * </ul>
