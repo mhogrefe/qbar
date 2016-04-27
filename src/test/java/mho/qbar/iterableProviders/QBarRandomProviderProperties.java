@@ -3,6 +3,7 @@ package mho.qbar.iterableProviders;
 import mho.qbar.objects.*;
 import mho.qbar.testing.QBarTestProperties;
 import mho.wheels.structures.Pair;
+import mho.wheels.structures.Quadruple;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
@@ -104,6 +105,16 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         propertiesAlgebraics();
         propertiesNonNegativeAlgebraicsLessThanOne_int();
         propertiesNonNegativeAlgebraicsLessThanOne();
+        propertiesRangeUp_int_Algebraic();
+        propertiesRangeUp_Algebraic();
+        propertiesRangeDown_int_Algebraic();
+        propertiesRangeDown_Algebraic();
+        propertiesRange_int_Algebraic_Algebraic();
+        propertiesRange_Algebraic_Algebraic();
+        propertiesAlgebraicsIn_int_Interval();
+        propertiesAlgebraicsIn_Interval();
+        propertiesAlgebraicsNotIn_int_Interval();
+        propertiesAlgebraicsNotIn_Interval();
     }
 
     private static <T> void simpleTestWithNulls(
@@ -3685,6 +3696,560 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
                 rp.nonNegativeAlgebraicsLessThanOne();
                 fail(rp);
             } catch (IllegalStateException ignored) {}
+        }
+    }
+
+    private void propertiesRangeUp_int_Algebraic() {
+        initialize("rangeUp(int, Algebraic)");
+        Iterable<Triple<QBarRandomProvider, Integer, Algebraic>> ts = P.triples(
+                filterInfinite(
+                        rp -> rp.getScale() >= 2,
+                        P.withScale(1).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                ),
+                P.withScale(4).positiveIntegersGeometric(),
+                P.withScale(1).withSecondaryScale(4).algebraics()
+        );
+        for (Triple<QBarRandomProvider, Integer, Algebraic> t : take(SMALL_LIMIT, ts)) {
+            Iterable<Algebraic> xs = t.a.rangeUp(t.b, t.c);
+            simpleTest(t.a, xs, x -> x.degree() == t.b && ge(x, t.c));
+        }
+
+        Iterable<Triple<QBarRandomProvider, Integer, Algebraic>> tsFail = P.triples(
+                filterInfinite(
+                        rp -> rp.getScale() >= 2,
+                        P.withScale(1).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                ),
+                P.rangeDown(0),
+                P.algebraics()
+        );
+        for (Triple<QBarRandomProvider, Integer, Algebraic> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.rangeUp(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        tsFail = P.triples(
+                filterInfinite(
+                        rp -> rp.getScale() < 2,
+                        P.withScale(1).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                ),
+                P.positiveIntegers(),
+                P.algebraics()
+        );
+        for (Triple<QBarRandomProvider, Integer, Algebraic> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.rangeUp(t.b, t.c);
+                fail(t);
+            } catch (IllegalStateException ignored) {}
+        }
+    }
+
+    private void propertiesRangeUp_Algebraic() {
+        initialize("rangeUp(Algebraic)");
+        Iterable<Pair<QBarRandomProvider, Algebraic>> ps = P.pairs(
+                filterInfinite(
+                        rp -> rp.getScale() >= 2 && rp.getSecondaryScale() >= 4,
+                        P.withScale(1).qbarRandomProvidersDefaultTertiaryScale()
+                ),
+                P.withScale(1).withSecondaryScale(4).algebraics()
+        );
+        for (Pair<QBarRandomProvider, Algebraic> p : take(MEDIUM_LIMIT, ps)) {
+            Iterable<Algebraic> xs = p.a.rangeUp(p.b);
+            simpleTest(p.a, xs, x -> ge(x, p.b));
+        }
+
+        Iterable<Pair<QBarRandomProvider, Algebraic>> psFail = P.pairs(
+                filterInfinite(
+                        rp -> rp.getScale() < 2 && rp.getSecondaryScale() >= 4,
+                        P.qbarRandomProvidersDefaultTertiaryScale()
+                ),
+                P.algebraics()
+        );
+        for (Pair<QBarRandomProvider, Algebraic> p : take(LIMIT, psFail)) {
+            try {
+                p.a.rangeUp(p.b);
+                fail(p);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        psFail = P.pairs(
+                filterInfinite(
+                        rp -> rp.getScale() >= 2 && rp.getSecondaryScale() < 4,
+                        P.qbarRandomProvidersDefaultTertiaryScale()
+                ),
+                P.algebraics()
+        );
+        for (Pair<QBarRandomProvider, Algebraic> p : take(LIMIT, psFail)) {
+            try {
+                p.a.rangeUp(p.b);
+                fail(p);
+            } catch (IllegalStateException ignored) {}
+        }
+    }
+
+    private void propertiesRangeDown_int_Algebraic() {
+        initialize("rangeDown(int, Algebraic)");
+        Iterable<Triple<QBarRandomProvider, Integer, Algebraic>> ts = P.triples(
+                filterInfinite(
+                        rp -> rp.getScale() >= 2,
+                        P.withScale(1).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                ),
+                P.withScale(4).positiveIntegersGeometric(),
+                P.withScale(1).withSecondaryScale(4).algebraics()
+        );
+        for (Triple<QBarRandomProvider, Integer, Algebraic> t : take(SMALL_LIMIT, ts)) {
+            Iterable<Algebraic> xs = t.a.rangeDown(t.b, t.c);
+            simpleTest(t.a, xs, x -> x.degree() == t.b && le(x, t.c));
+        }
+
+        Iterable<Triple<QBarRandomProvider, Integer, Algebraic>> tsFail = P.triples(
+                filterInfinite(
+                        rp -> rp.getScale() >= 2,
+                        P.withScale(1).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                ),
+                P.rangeDown(0),
+                P.algebraics()
+        );
+        for (Triple<QBarRandomProvider, Integer, Algebraic> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.rangeDown(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        tsFail = P.triples(
+                filterInfinite(
+                        rp -> rp.getScale() < 2,
+                        P.withScale(1).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                ),
+                P.positiveIntegers(),
+                P.algebraics()
+        );
+        for (Triple<QBarRandomProvider, Integer, Algebraic> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.rangeDown(t.b, t.c);
+                fail(t);
+            } catch (IllegalStateException ignored) {}
+        }
+    }
+
+    private void propertiesRangeDown_Algebraic() {
+        initialize("rangeDown(Algebraic)");
+        Iterable<Pair<QBarRandomProvider, Algebraic>> ps = P.pairs(
+                filterInfinite(
+                        rp -> rp.getScale() >= 2 && rp.getSecondaryScale() >= 4,
+                        P.withScale(1).qbarRandomProvidersDefaultTertiaryScale()
+                ),
+                P.withScale(1).withSecondaryScale(4).algebraics()
+        );
+        for (Pair<QBarRandomProvider, Algebraic> p : take(MEDIUM_LIMIT, ps)) {
+            Iterable<Algebraic> xs = p.a.rangeDown(p.b);
+            simpleTest(p.a, xs, x -> le(x, p.b));
+        }
+
+        Iterable<Pair<QBarRandomProvider, Algebraic>> psFail = P.pairs(
+                filterInfinite(
+                        rp -> rp.getScale() < 2 && rp.getSecondaryScale() >= 4,
+                        P.qbarRandomProvidersDefaultTertiaryScale()
+                ),
+                P.algebraics()
+        );
+        for (Pair<QBarRandomProvider, Algebraic> p : take(LIMIT, psFail)) {
+            try {
+                p.a.rangeDown(p.b);
+                fail(p);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        psFail = P.pairs(
+                filterInfinite(
+                        rp -> rp.getScale() >= 2 && rp.getSecondaryScale() < 4,
+                        P.qbarRandomProvidersDefaultTertiaryScale()
+                ),
+                P.algebraics()
+        );
+        for (Pair<QBarRandomProvider, Algebraic> p : take(LIMIT, psFail)) {
+            try {
+                p.a.rangeDown(p.b);
+                fail(p);
+            } catch (IllegalStateException ignored) {}
+        }
+    }
+
+    private void propertiesRange_int_Algebraic_Algebraic() {
+        initialize("range(int, Algebraic, Algebraic)");
+        Iterable<Quadruple<QBarRandomProvider, Integer, Algebraic, Algebraic>> qs = filterInfinite(
+                q -> q.b == q.c.degree() && q.c.equals(q.d) || lt(q.c, q.d),
+                P.quadruples(
+                        filterInfinite(
+                                rp -> rp.getScale() >= 2,
+                                P.withScale(1).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                        ),
+                        P.withScale(4).positiveIntegersGeometric(),
+                        P.withScale(1).withSecondaryScale(4).algebraics(),
+                        P.withScale(1).withSecondaryScale(4).algebraics()
+                )
+        );
+        for (Quadruple<QBarRandomProvider, Integer, Algebraic, Algebraic> q : take(SMALL_LIMIT, qs)) {
+            Iterable<Algebraic> xs = q.a.range(q.b, q.c, q.d);
+            simpleTest(q.a, xs, x -> x.degree() == q.b && ge(x, q.c) && le(x, q.d));
+        }
+
+        Iterable<Quadruple<QBarRandomProvider, Integer, Algebraic, Algebraic>> qsFail = filterInfinite(
+                q -> q.b == q.c.degree() && q.c.equals(q.d) || lt(q.c, q.d),
+                P.quadruples(
+                        filterInfinite(
+                                rp -> rp.getScale() >= 2,
+                                P.withScale(1).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                        ),
+                        P.rangeDown(0),
+                        P.algebraics(),
+                        P.algebraics()
+                )
+        );
+        for (Quadruple<QBarRandomProvider, Integer, Algebraic, Algebraic> q : take(LIMIT, qsFail)) {
+            try {
+                q.a.range(q.b, q.c, q.d);
+                fail(q);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        qsFail = filterInfinite(
+                q -> q.b == q.c.degree() && q.c.equals(q.d) || lt(q.c, q.d),
+                P.quadruples(
+                        filterInfinite(
+                                rp -> rp.getScale() < 2,
+                                P.withScale(1).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                        ),
+                        P.withScale(4).positiveIntegersGeometric(),
+                        P.withScale(1).withSecondaryScale(4).algebraics(),
+                        P.withScale(1).withSecondaryScale(4).algebraics()
+                )
+        );
+        for (Quadruple<QBarRandomProvider, Integer, Algebraic, Algebraic> q : take(LIMIT, qsFail)) {
+            try {
+                q.a.range(q.b, q.c, q.d);
+                fail(q);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        Iterable<Triple<QBarRandomProvider, Integer, Algebraic>> tsFail = filterInfinite(
+                t -> t.b != t.c.degree(),
+                P.triples(
+                        filterInfinite(
+                                rp -> rp.getScale() >= 2,
+                                P.withScale(1).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                        ),
+                        P.withScale(4).positiveIntegersGeometric(),
+                        P.withScale(1).withSecondaryScale(4).algebraics()
+                )
+        );
+        for (Triple<QBarRandomProvider, Integer, Algebraic> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.range(t.b, t.c, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesRange_Algebraic_Algebraic() {
+        initialize("range(Algebraic, Algebraic)");
+        Iterable<Triple<QBarRandomProvider, Algebraic, Algebraic>> ts = filterInfinite(
+                t -> le(t.b, t.c),
+                P.triples(
+                        filterInfinite(
+                                rp -> rp.getScale() >= 2 && rp.getSecondaryScale() >= 4,
+                                P.withScale(1).qbarRandomProvidersDefaultTertiaryScale()
+                        ),
+                        P.withScale(1).withSecondaryScale(4).algebraics(),
+                        P.withScale(1).withSecondaryScale(4).algebraics()
+                )
+        );
+        for (Triple<QBarRandomProvider, Algebraic, Algebraic> t : take(MEDIUM_LIMIT, ts)) {
+            Iterable<Algebraic> xs = t.a.range(t.b, t.c);
+            simpleTest(t.a, xs, x -> ge(x, t.b) && le(x, t.c));
+        }
+
+        Iterable<Triple<QBarRandomProvider, Algebraic, Algebraic>> tsFail = filterInfinite(
+                t -> gt(t.b, t.c),
+                P.triples(
+                        filterInfinite(
+                                rp -> rp.getScale() >= 2 && rp.getSecondaryScale() >= 4,
+                                P.withScale(1).qbarRandomProvidersDefaultTertiaryScale()
+                        ),
+                        P.algebraics(),
+                        P.algebraics()
+                )
+        );
+        for (Triple<QBarRandomProvider, Algebraic, Algebraic> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.range(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        tsFail = filterInfinite(
+                t -> le(t.b, t.c),
+                P.triples(
+                        filterInfinite(
+                                rp -> rp.getScale() < 2 && rp.getSecondaryScale() >= 4,
+                                P.withScale(1).qbarRandomProvidersDefaultTertiaryScale()
+                        ),
+                        P.withScale(1).withSecondaryScale(4).algebraics(),
+                        P.withScale(1).withSecondaryScale(4).algebraics()
+                )
+        );
+        for (Triple<QBarRandomProvider, Algebraic, Algebraic> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.range(t.b, t.c);
+                fail(t);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        tsFail = filterInfinite(
+                t -> le(t.b, t.c),
+                P.triples(
+                        filterInfinite(
+                                rp -> rp.getScale() >= 2 && rp.getSecondaryScale() < 4,
+                                P.withScale(1).qbarRandomProvidersDefaultTertiaryScale()
+                        ),
+                        P.withScale(1).withSecondaryScale(4).algebraics(),
+                        P.withScale(1).withSecondaryScale(4).algebraics()
+                )
+        );
+        for (Triple<QBarRandomProvider, Algebraic, Algebraic> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.range(t.b, t.c);
+                fail(t);
+            } catch (IllegalStateException ignored) {}
+        }
+    }
+
+    private void propertiesAlgebraicsIn_int_Interval() {
+        initialize("algebraicsIn(int, Interval)");
+        Iterable<Triple<QBarRandomProvider, Integer, Interval>> ts = filterInfinite(
+                t -> t.b == 1 || !t.c.isFinitelyBounded() || !t.c.getLower().get().equals(t.c.getUpper().get()),
+                        P.triples(
+                        filterInfinite(
+                                rp -> rp.getScale() >= 2,
+                                P.withScale(1).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                        ),
+                        P.withScale(4).positiveIntegersGeometric(),
+                        P.withScale(6).intervals()
+                )
+        );
+        for (Triple<QBarRandomProvider, Integer, Interval> t : take(SMALL_LIMIT, ts)) {
+            Iterable<Algebraic> xs = t.a.algebraicsIn(t.b, t.c);
+            simpleTest(t.a, xs, x -> x.degree() == t.b && t.c.contains(x));
+        }
+
+        Iterable<Triple<QBarRandomProvider, Integer, Interval>> tsFail = filterInfinite(
+                t -> t.b == 1 || !t.c.isFinitelyBounded() || !t.c.getLower().get().equals(t.c.getUpper().get()),
+                        P.triples(
+                        filterInfinite(
+                                rp -> rp.getScale() >= 2,
+                                P.withScale(1).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                        ),
+                        P.withScale(4).rangeDown(0),
+                        P.intervals()
+                )
+        );
+        for (Triple<QBarRandomProvider, Integer, Interval> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.algebraicsIn(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        tsFail = filterInfinite(
+                t -> t.b == 1 || !t.c.isFinitelyBounded() || !t.c.getLower().get().equals(t.c.getUpper().get()),
+                        P.triples(
+                        filterInfinite(
+                                rp -> rp.getScale() < 2,
+                                P.withScale(1).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                        ),
+                        P.positiveIntegers(),
+                        P.intervals()
+                )
+        );
+        for (Triple<QBarRandomProvider, Integer, Interval> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.algebraicsIn(t.b, t.c);
+                fail(t);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        Iterable<Triple<QBarRandomProvider, Integer, Rational>> tsFail2 = P.triples(
+                filterInfinite(
+                        rp -> rp.getScale() >= 2,
+                        P.withScale(1).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                ),
+                P.rangeUp(2),
+                P.rationals()
+        );
+        for (Triple<QBarRandomProvider, Integer, Rational> t : take(LIMIT, tsFail2)) {
+            try {
+                t.a.algebraicsIn(t.b, Interval.of(t.c));
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesAlgebraicsIn_Interval() {
+        initialize("algebraicsIn(Interval)");
+        Iterable<Pair<QBarRandomProvider, Interval>> ps = P.pairs(
+                filterInfinite(
+                        rp -> rp.getScale() >= 2 && rp.getSecondaryScale() >= 4,
+                        P.withScale(1).qbarRandomProvidersDefaultTertiaryScale()
+                ),
+                P.withScale(6).intervals()
+        );
+        for (Pair<QBarRandomProvider, Interval> p : take(MEDIUM_LIMIT, ps)) {
+            Iterable<Algebraic> xs = p.a.algebraicsIn(p.b);
+            simpleTest(p.a, xs, p.b::contains);
+        }
+
+        Iterable<Pair<QBarRandomProvider, Interval>> psFail = P.pairs(
+                filterInfinite(
+                        rp -> rp.getScale() < 2 && rp.getSecondaryScale() >= 4,
+                        P.withScale(1).qbarRandomProvidersDefaultTertiaryScale()
+                ),
+                P.intervals()
+        );
+        for (Pair<QBarRandomProvider, Interval> p : take(LIMIT, psFail)) {
+            try {
+                p.a.algebraicsIn(p.b);
+                fail(p);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        psFail = P.pairs(
+                filterInfinite(
+                        rp -> rp.getScale() >= 2 && rp.getSecondaryScale() < 4,
+                        P.withScale(1).qbarRandomProvidersDefaultTertiaryScale()
+                ),
+                P.intervals()
+        );
+        for (Pair<QBarRandomProvider, Interval> p : take(LIMIT, psFail)) {
+            try {
+                p.a.algebraicsIn(p.b);
+                fail(p);
+            } catch (IllegalStateException ignored) {}
+        }
+    }
+
+    private void propertiesAlgebraicsNotIn_int_Interval() {
+        initialize("algebraicsNotIn(int, Interval)");
+        Iterable<Triple<QBarRandomProvider, Integer, Interval>> ts = P.triples(
+                filterInfinite(
+                        rp -> rp.getScale() >= 2,
+                        P.withScale(1).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                ),
+                P.withScale(4).positiveIntegersGeometric(),
+                filterInfinite(a -> !a.equals(Interval.ALL), P.withScale(6).intervals())
+        );
+        for (Triple<QBarRandomProvider, Integer, Interval> t : take(SMALL_LIMIT, ts)) {
+            Iterable<Algebraic> xs = t.a.algebraicsNotIn(t.b, t.c);
+            simpleTest(t.a, xs, x -> x.degree() == t.b && !t.c.contains(x));
+        }
+
+        Iterable<Triple<QBarRandomProvider, Integer, Interval>> tsFail = P.triples(
+                filterInfinite(
+                        rp -> rp.getScale() >= 2,
+                        P.withScale(1).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                ),
+                P.rangeDown(0),
+                filterInfinite(a -> !a.equals(Interval.ALL), P.withScale(6).intervals())
+        );
+        for (Triple<QBarRandomProvider, Integer, Interval> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.algebraicsNotIn(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        tsFail = P.triples(
+                filterInfinite(
+                        rp -> rp.getScale() < 2,
+                        P.withScale(1).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                ),
+                P.positiveIntegers(),
+                filterInfinite(a -> !a.equals(Interval.ALL), P.withScale(6).intervals())
+        );
+        for (Triple<QBarRandomProvider, Integer, Interval> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.algebraicsNotIn(t.b, t.c);
+                fail(t);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        Iterable<Pair<QBarRandomProvider, Integer>> psFail = P.pairs(
+                filterInfinite(
+                        rp -> rp.getScale() >= 2,
+                        P.withScale(1).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                ),
+                P.positiveIntegers()
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.algebraicsNotIn(p.b, Interval.ALL);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesAlgebraicsNotIn_Interval() {
+        initialize("algebraicsNotIn(Interval)");
+        Iterable<Pair<QBarRandomProvider, Interval>> ps = P.pairs(
+                filterInfinite(
+                        rp -> rp.getScale() >= 2 && rp.getSecondaryScale() >= 4,
+                        P.withScale(1).qbarRandomProvidersDefaultTertiaryScale()
+                ),
+                filterInfinite(a -> !a.equals(Interval.ALL), P.withScale(6).intervals())
+        );
+        for (Pair<QBarRandomProvider, Interval> p : take(MEDIUM_LIMIT, ps)) {
+            Iterable<Algebraic> xs = p.a.algebraicsNotIn(p.b);
+            simpleTest(p.a, xs, x -> !p.b.contains(x));
+        }
+
+        Iterable<Pair<QBarRandomProvider, Interval>> psFail = P.pairs(
+                filterInfinite(
+                        rp -> rp.getScale() < 2 && rp.getSecondaryScale() >= 4,
+                        P.withScale(1).qbarRandomProvidersDefaultTertiaryScale()
+                ),
+                filterInfinite(a -> !a.equals(Interval.ALL), P.withScale(6).intervals())
+        );
+        for (Pair<QBarRandomProvider, Interval> p : take(LIMIT, psFail)) {
+            try {
+                p.a.algebraicsNotIn(p.b);
+                fail(p);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        psFail = P.pairs(
+                filterInfinite(
+                        rp -> rp.getScale() >= 2 && rp.getSecondaryScale() < 4,
+                        P.withScale(1).qbarRandomProvidersDefaultTertiaryScale()
+                ),
+                filterInfinite(a -> !a.equals(Interval.ALL), P.withScale(6).intervals())
+        );
+        for (Pair<QBarRandomProvider, Interval> p : take(LIMIT, psFail)) {
+            try {
+                p.a.algebraicsNotIn(p.b);
+                fail(p);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        Iterable<QBarRandomProvider> rpsFail = filterInfinite(
+                rp -> rp.getScale() >= 2 && rp.getSecondaryScale() >= 4,
+                P.withScale(1).qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.algebraicsNotIn(Interval.ALL);
+                fail(rp);
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 }
