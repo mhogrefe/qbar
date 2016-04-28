@@ -329,7 +329,7 @@ public class AlgebraicProperties extends QBarTestProperties {
         for (Pair<Algebraic, RoundingMode> p : take(LIMIT, ps)) {
             BigInteger rounded = p.a.bigIntegerValue(p.b);
             assertTrue(p, rounded.equals(BigInteger.ZERO) || rounded.signum() == p.a.signum());
-            //todo assertTrue(p, lt(p.a.subtract(of(rounded)).abs(), ONE));
+            assertTrue(p, lt(p.a.subtract(of(rounded)).abs(), ONE));
         }
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
@@ -339,14 +339,14 @@ public class AlgebraicProperties extends QBarTestProperties {
         for (Algebraic x : take(LIMIT, P.algebraics())) {
             assertEquals(x, x.bigIntegerValue(RoundingMode.FLOOR), x.floor());
             assertEquals(x, x.bigIntegerValue(RoundingMode.CEILING), x.ceiling());
-            //todo
-//            assertTrue(x, le(of(x.bigIntegerValue(RoundingMode.DOWN)).abs(), x.abs()));
-//            assertTrue(x, ge(of(x.bigIntegerValue(RoundingMode.UP)).abs(), x.abs()));
-//            assertTrue(x, le(x.subtract(of(x.bigIntegerValue(RoundingMode.HALF_DOWN))).abs(), ONE_HALF));
-//            assertTrue(x, le(x.subtract(of(x.bigIntegerValue(RoundingMode.HALF_UP))).abs(), ONE_HALF));
-//            assertTrue(x, le(x.subtract(of(x.bigIntegerValue(RoundingMode.HALF_EVEN))).abs(), ONE_HALF));
+            assertTrue(x, le(of(x.bigIntegerValue(RoundingMode.DOWN)).abs(), x.abs()));
+            assertTrue(x, ge(of(x.bigIntegerValue(RoundingMode.UP)).abs(), x.abs()));
+            assertTrue(x, le(x.subtract(of(x.bigIntegerValue(RoundingMode.HALF_DOWN))).abs(), ONE_HALF));
+            assertTrue(x, le(x.subtract(of(x.bigIntegerValue(RoundingMode.HALF_UP))).abs(), ONE_HALF));
+            assertTrue(x, le(x.subtract(of(x.bigIntegerValue(RoundingMode.HALF_EVEN))).abs(), ONE_HALF));
         }
 
+        //todo
 //        for (Algebraic x : take(LIMIT, filterInfinite(s -> lt(s.abs().fractionalPart(), ONE_HALF), P.algebraics()))) {
 //            assertEquals(r, r.bigIntegerValue(RoundingMode.HALF_DOWN), r.bigIntegerValue(RoundingMode.DOWN));
 //            assertEquals(r, r.bigIntegerValue(RoundingMode.HALF_UP), r.bigIntegerValue(RoundingMode.DOWN));
@@ -383,7 +383,7 @@ public class AlgebraicProperties extends QBarTestProperties {
         for (Algebraic x : take(LIMIT, P.algebraics())) {
             BigInteger rounded = x.bigIntegerValue();
             assertTrue(x, rounded.equals(BigInteger.ZERO) || rounded.signum() == x.signum());
-            //todo assertTrue(x, le(x.subtract(of(x.bigIntegerValue())).abs(), ONE_HALF));
+            assertTrue(x, le(x.subtract(of(x.bigIntegerValue())).abs(), ONE_HALF));
         }
 
 //        for (Rational r : take(LIMIT, filterInfinite(s -> lt(s.abs().fractionalPart(), ONE_HALF), P.rationals()))) {
@@ -409,7 +409,7 @@ public class AlgebraicProperties extends QBarTestProperties {
         for (Algebraic x : take(LIMIT, P.algebraics())) {
             BigInteger floor = x.floor();
             assertTrue(x, le(of(floor), x));
-            //todo assertTrue(x, le(x.subtract(of(floor)), ONE));
+            assertTrue(x, le(x.subtract(of(floor)), ONE));
         }
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
@@ -422,7 +422,7 @@ public class AlgebraicProperties extends QBarTestProperties {
         for (Algebraic x : take(LIMIT, P.algebraics())) {
             BigInteger ceiling = x.ceiling();
             assertTrue(x, ge(of(ceiling), x));
-            //todo assertTrue(x, le(of(ceiling).subtract(x), ONE));
+            assertTrue(x, le(of(ceiling).subtract(x), ONE));
         }
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
@@ -819,9 +819,9 @@ public class AlgebraicProperties extends QBarTestProperties {
         initialize("floatValue(RoundingMode)");
         Iterable<Pair<Algebraic, RoundingMode>> ps = filterInfinite(
                 p -> p.b != RoundingMode.UNNECESSARY || p.a.isEqualToFloat(),
-                P.pairs(P.algebraics(), P.roundingModes())
+                P.pairs(P.withScale(1).algebraics(), P.roundingModes())
         );
-        for (Pair<Algebraic, RoundingMode> p : take(LIMIT, ps)) {
+        for (Pair<Algebraic, RoundingMode> p : take(SMALL_LIMIT, ps)) {
             float rounded = p.a.floatValue(p.b);
             assertTrue(p, !Float.isNaN(rounded));
             assertTrue(p, rounded == 0.0f || Math.signum(rounded) == p.a.signum());
@@ -831,7 +831,7 @@ public class AlgebraicProperties extends QBarTestProperties {
                 f -> ofExact(f).get(),
                 filter(f -> Float.isFinite(f) && !isNegativeZero(f), P.floats())
         );
-        for (Algebraic x : take(LIMIT, xs)) {
+        for (Algebraic x : take(SMALL_LIMIT, xs)) {
             float rounded = x.floatValue(RoundingMode.UNNECESSARY);
             assertEquals(x, x, ofExact(rounded).get());
             assertTrue(x, Float.isFinite(rounded));
@@ -839,126 +839,131 @@ public class AlgebraicProperties extends QBarTestProperties {
             inverse(s -> s.floatValue(RoundingMode.UNNECESSARY), (Float f) -> ofExact(f).get(), x);
         }
 
-        //todo
-//        Algebraic largestFloat = of(Rational.LARGEST_FLOAT);
-//        xs = filterInfinite(
-//                x -> !x.equals(largestFloat),
-//                P.rationalsIn(Interval.of(LARGEST_FLOAT.negate(), LARGEST_FLOAT))
-//        );
-//        for (Rational r : take(LIMIT, rs)) {
-//            float rounded = r.floatValue(RoundingMode.FLOOR);
-//            float successor = successor(rounded);
-//            assertTrue(r, le(ofExact(rounded).get(), r));
-//            assertTrue(r, gt(ofExact(successor).get(), r));
-//            assertTrue(r, rounded < 0 || Float.isFinite(rounded));
-//            assertTrue(r, !isNegativeZero(rounded));
-//        }
-//
-//        rs = filterInfinite(
-//                r -> !r.equals(LARGEST_FLOAT.negate()),
-//                P.rationalsIn(Interval.of(LARGEST_FLOAT.negate(), LARGEST_FLOAT))
-//        );
-//        for (Rational r : take(LIMIT, rs)) {
-//            float rounded = r.floatValue(RoundingMode.CEILING);
-//            float predecessor = predecessor(rounded);
-//            assertTrue(r, ge(ofExact(rounded).get(), r));
-//            assertTrue(r, lt(ofExact(predecessor).get(), r));
-//            assertTrue(r, rounded > 0 || Float.isFinite(rounded));
-//        }
-//
-//        rs = P.rationalsIn(Interval.of(LARGEST_FLOAT.negate(), LARGEST_FLOAT));
-//        for (Rational r : take(LIMIT, rs)) {
-//            float rounded = r.floatValue(RoundingMode.DOWN);
-//            assertTrue(r, le(ofExact(rounded).get().abs(), r.abs()));
-//            assertTrue(r, Float.isFinite(rounded));
-//        }
-//
-//        rs = filterInfinite(r -> r != ZERO, P.rationalsIn(Interval.of(LARGEST_FLOAT.negate(), LARGEST_FLOAT)));
-//        for (Rational r : take(LIMIT, rs)) {
-//            float rounded = r.floatValue(RoundingMode.DOWN);
-//            float successor = successor(rounded);
-//            float predecessor = predecessor(rounded);
-//            float down = r.signum() == -1 ? successor : predecessor;
-//            assertTrue(r, lt(ofExact(down).get().abs(), r.abs()));
-//        }
-//
-//        rs = filterInfinite(
-//                r -> !r.abs().equals(LARGEST_FLOAT),
-//                P.rationalsIn(Interval.of(LARGEST_FLOAT.negate(), LARGEST_FLOAT))
-//        );
-//        for (Rational r : take(LIMIT, rs)) {
-//            assertTrue(r, !isNegativeZero(r.floatValue(RoundingMode.UP)));
-//        }
-//
-//        rs = filterInfinite(r -> !r.equals(SMALLEST_FLOAT), P.rationalsIn(Interval.of(ZERO, SMALLEST_FLOAT)));
-//        for (Rational r : take(LIMIT, rs)) {
-//            aeqf(r, r.floatValue(RoundingMode.FLOOR), 0.0f);
-//            aeqf(r, r.floatValue(RoundingMode.DOWN), 0.0f);
-//            float rounded = r.floatValue(RoundingMode.UP);
-//            float successor = successor(rounded);
-//            float predecessor = predecessor(rounded);
-//            float up = r.signum() == -1 ? predecessor : successor;
-//            assertTrue(r, gt(ofExact(up).get().abs(), r.abs()));
-//        }
-//
-//        rs = filterInfinite(
-//                r -> !r.equals(LARGEST_FLOAT.negate()),
-//                P.rationalsIn(Interval.lessThanOrEqualTo(LARGEST_FLOAT.negate()))
-//        );
-//        for (Rational r : take(LIMIT, rs)) {
-//            float floor = r.floatValue(RoundingMode.FLOOR);
-//            aeqf(r, floor, Float.NEGATIVE_INFINITY);
-//
-//            float up = r.floatValue(RoundingMode.UP);
-//            aeqf(r, up, Float.NEGATIVE_INFINITY);
-//
-//            float halfUp = r.floatValue(RoundingMode.HALF_UP);
-//            aeqf(r, halfUp, Float.NEGATIVE_INFINITY);
-//
-//            float halfEven = r.floatValue(RoundingMode.HALF_EVEN);
-//            aeqf(r, halfEven, Float.NEGATIVE_INFINITY);
-//        }
-//
-//        rs = P.rationalsIn(Interval.greaterThanOrEqualTo(LARGEST_FLOAT));
-//        for (Rational r : take(LIMIT, rs)) {
-//            aeqf(r, r.floatValue(RoundingMode.FLOOR), Float.MAX_VALUE);
-//            aeqf(r, r.floatValue(RoundingMode.DOWN), Float.MAX_VALUE);
-//            aeqf(r, r.floatValue(RoundingMode.HALF_DOWN), Float.MAX_VALUE);
-//        }
-//
-//        rs = filterInfinite(
-//                r -> r != ZERO && !r.equals(SMALLEST_FLOAT.negate()),
-//                P.rationalsIn(Interval.of(SMALLEST_FLOAT.negate(), ZERO))
-//        );
-//        for (Rational r : take(LIMIT, rs)) {
-//            aeqf(r, r.floatValue(RoundingMode.CEILING), -0.0f);
-//            aeqf(r, r.floatValue(RoundingMode.DOWN), -0.0f);
-//        }
-//
-//        rs = filterInfinite(
-//                r -> !r.equals(LARGEST_FLOAT),
-//                P.rationalsIn(Interval.greaterThanOrEqualTo(LARGEST_FLOAT))
-//        );
-//        for (Rational r : take(LIMIT, rs)) {
-//            float ceiling = r.floatValue(RoundingMode.CEILING);
-//            aeqf(r, ceiling, Float.POSITIVE_INFINITY);
-//
-//            float up = r.floatValue(RoundingMode.UP);
-//            aeqf(r, up, Float.POSITIVE_INFINITY);
-//
-//            float halfUp = r.floatValue(RoundingMode.HALF_UP);
-//            aeqf(r, halfUp, Float.POSITIVE_INFINITY);
-//
-//            float halfEven = r.floatValue(RoundingMode.HALF_EVEN);
-//            aeqf(r, halfEven, Float.POSITIVE_INFINITY);
-//        }
-//
-//        rs = P.rationalsIn(Interval.lessThanOrEqualTo(LARGEST_FLOAT.negate()));
-//        for (Rational r : take(LIMIT, rs)) {
-//            aeqf(r, r.floatValue(RoundingMode.CEILING), -Float.MAX_VALUE);
-//            aeqf(r, r.floatValue(RoundingMode.DOWN), -Float.MAX_VALUE);
-//            aeqf(r, r.floatValue(RoundingMode.HALF_DOWN), -Float.MAX_VALUE);
-//        }
+        Algebraic largestFloat = of(Rational.LARGEST_FLOAT);
+        xs = filterInfinite(
+                x -> !x.equals(largestFloat),
+                P.withScale(2).algebraicsIn(Interval.of(Rational.LARGEST_FLOAT.negate(), Rational.LARGEST_FLOAT))
+        );
+        for (Algebraic x : take(SMALL_LIMIT, xs)) {
+            float rounded = x.floatValue(RoundingMode.FLOOR);
+            float successor = successor(rounded);
+            assertTrue(x, le(ofExact(rounded).get(), x));
+            assertTrue(x, gt(ofExact(successor).get(), x));
+            assertTrue(x, rounded < 0 || Float.isFinite(rounded));
+            assertTrue(x, !isNegativeZero(rounded));
+        }
+
+        xs = filterInfinite(
+                x -> !x.equals(of(Rational.LARGEST_FLOAT.negate())),
+                P.withScale(2).algebraicsIn(Interval.of(Rational.LARGEST_FLOAT.negate(), Rational.LARGEST_FLOAT))
+        );
+        for (Algebraic x : take(SMALL_LIMIT, xs)) {
+            float rounded = x.floatValue(RoundingMode.CEILING);
+            float predecessor = predecessor(rounded);
+            assertTrue(x, ge(ofExact(rounded).get(), x));
+            assertTrue(x, lt(ofExact(predecessor).get(), x));
+            assertTrue(x, rounded > 0 || Float.isFinite(rounded));
+        }
+
+        xs = P.withScale(2).algebraicsIn(Interval.of(Rational.LARGEST_FLOAT.negate(), Rational.LARGEST_FLOAT));
+        for (Algebraic x : take(SMALL_LIMIT, xs)) {
+            float rounded = x.floatValue(RoundingMode.DOWN);
+            assertTrue(x, le(ofExact(rounded).get().abs(), x.abs()));
+            assertTrue(x, Float.isFinite(rounded));
+        }
+
+        xs = filterInfinite(
+                r -> r != ZERO,
+                P.withScale(2).algebraicsIn(Interval.of(Rational.LARGEST_FLOAT.negate(), Rational.LARGEST_FLOAT))
+        );
+        for (Algebraic x : take(SMALL_LIMIT, xs)) {
+            float rounded = x.floatValue(RoundingMode.DOWN);
+            float successor = successor(rounded);
+            float predecessor = predecessor(rounded);
+            float down = x.signum() == -1 ? successor : predecessor;
+            assertTrue(x, lt(ofExact(down).get().abs(), x.abs()));
+        }
+
+        xs = filterInfinite(
+                x -> !x.abs().equals(of(Rational.LARGEST_FLOAT)),
+                P.withScale(2).algebraicsIn(Interval.of(Rational.LARGEST_FLOAT.negate(), Rational.LARGEST_FLOAT))
+        );
+        for (Algebraic x : take(SMALL_LIMIT, xs)) {
+            assertTrue(x, !isNegativeZero(x.floatValue(RoundingMode.UP)));
+        }
+
+        xs = filterInfinite(
+                r -> !r.equals(of(Rational.SMALLEST_FLOAT)),
+                P.withScale(2).algebraicsIn(Interval.of(Rational.ZERO, Rational.SMALLEST_FLOAT))
+        );
+        for (Algebraic x : take(SMALL_LIMIT, xs)) {
+            aeqf(x, x.floatValue(RoundingMode.FLOOR), 0.0f);
+            aeqf(x, x.floatValue(RoundingMode.DOWN), 0.0f);
+            float rounded = x.floatValue(RoundingMode.UP);
+            float successor = successor(rounded);
+            float predecessor = predecessor(rounded);
+            float up = x.signum() == -1 ? predecessor : successor;
+            assertTrue(x, gt(ofExact(up).get().abs(), x.abs()));
+        }
+
+        xs = filterInfinite(
+                x -> !x.equals(of(Rational.LARGEST_FLOAT.negate())),
+                P.withScale(2).algebraicsIn(Interval.lessThanOrEqualTo(Rational.LARGEST_FLOAT.negate()))
+        );
+        for (Algebraic x : take(SMALL_LIMIT, xs)) {
+            float floor = x.floatValue(RoundingMode.FLOOR);
+            aeqf(x, floor, Float.NEGATIVE_INFINITY);
+
+            float up = x.floatValue(RoundingMode.UP);
+            aeqf(x, up, Float.NEGATIVE_INFINITY);
+
+            float halfUp = x.floatValue(RoundingMode.HALF_UP);
+            aeqf(x, halfUp, Float.NEGATIVE_INFINITY);
+
+            float halfEven = x.floatValue(RoundingMode.HALF_EVEN);
+            aeqf(x, halfEven, Float.NEGATIVE_INFINITY);
+        }
+
+        xs = P.withScale(2).algebraicsIn(Interval.greaterThanOrEqualTo(Rational.LARGEST_FLOAT));
+        for (Algebraic x : take(SMALL_LIMIT, xs)) {
+            aeqf(x, x.floatValue(RoundingMode.FLOOR), Float.MAX_VALUE);
+            aeqf(x, x.floatValue(RoundingMode.DOWN), Float.MAX_VALUE);
+            aeqf(x, x.floatValue(RoundingMode.HALF_DOWN), Float.MAX_VALUE);
+        }
+
+        xs = filterInfinite(
+                x -> x != ZERO && !x.equals(of(Rational.SMALLEST_FLOAT.negate())),
+                P.withScale(2).algebraicsIn(Interval.of(Rational.SMALLEST_FLOAT.negate(), Rational.ZERO))
+        );
+        for (Algebraic x : take(SMALL_LIMIT, xs)) {
+            aeqf(x, x.floatValue(RoundingMode.CEILING), -0.0f);
+            aeqf(x, x.floatValue(RoundingMode.DOWN), -0.0f);
+        }
+
+        xs = filterInfinite(
+                x -> !x.equals(of(Rational.LARGEST_FLOAT)),
+                P.withScale(2).algebraicsIn(Interval.greaterThanOrEqualTo(Rational.LARGEST_FLOAT))
+        );
+        for (Algebraic x : take(SMALL_LIMIT, xs)) {
+            float ceiling = x.floatValue(RoundingMode.CEILING);
+            aeqf(x, ceiling, Float.POSITIVE_INFINITY);
+
+            float up = x.floatValue(RoundingMode.UP);
+            aeqf(x, up, Float.POSITIVE_INFINITY);
+
+            float halfUp = x.floatValue(RoundingMode.HALF_UP);
+            aeqf(x, halfUp, Float.POSITIVE_INFINITY);
+
+            float halfEven = x.floatValue(RoundingMode.HALF_EVEN);
+            aeqf(x, halfEven, Float.POSITIVE_INFINITY);
+        }
+
+        xs = P.withScale(2).algebraicsIn(Interval.lessThanOrEqualTo(Rational.LARGEST_FLOAT.negate()));
+        for (Algebraic x : take(SMALL_LIMIT, xs)) {
+            aeqf(x, x.floatValue(RoundingMode.CEILING), -Float.MAX_VALUE);
+            aeqf(x, x.floatValue(RoundingMode.DOWN), -Float.MAX_VALUE);
+            aeqf(x, x.floatValue(RoundingMode.HALF_DOWN), -Float.MAX_VALUE);
+        }
 
         Iterable<Algebraic> midpoints = map(
                 f -> {
@@ -968,7 +973,7 @@ public class AlgebraicProperties extends QBarTestProperties {
                 },
                 filter(f -> Float.isFinite(f) && !isNegativeZero(f) && f != Float.MAX_VALUE, P.floats())
         );
-        for (Algebraic x : take(LIMIT, midpoints)) {
+        for (Algebraic x : take(SMALL_LIMIT, midpoints)) {
             float down = x.floatValue(RoundingMode.DOWN);
             float up = x.floatValue(RoundingMode.UP);
             aeqf(x, x.floatValue(RoundingMode.HALF_DOWN), down);
@@ -977,51 +982,53 @@ public class AlgebraicProperties extends QBarTestProperties {
             assertTrue(x, ((Float.floatToIntBits(down) & 1) == 0 ? down : up) == halfEven);
         }
 
-        //todo
-//        Iterable<Rational> notMidpoints = filterInfinite(
-//                r -> !floatEquidistant(r),
-//                P.rationalsIn(Interval.of(LARGEST_FLOAT.negate(), LARGEST_FLOAT))
-//        );
-//        for (Rational r : take(LIMIT, notMidpoints)) {
-//            float below = r.floatValue(RoundingMode.FLOOR);
-//            float above = r.floatValue(RoundingMode.CEILING);
-//            Rational belowDistance = r.subtract(ofExact(below).get());
-//            Rational aboveDistance = ofExact(above).get().subtract(r);
-//            float closest = lt(belowDistance, aboveDistance) ? below : above;
-//            aeqf(r, r.floatValue(RoundingMode.HALF_DOWN), closest);
-//            aeqf(r, r.floatValue(RoundingMode.HALF_UP), closest);
-//            aeqf(r, r.floatValue(RoundingMode.HALF_EVEN), closest);
-//        }
-//
-//        rs = P.rationalsIn(Interval.of(ZERO, SMALLEST_FLOAT.shiftRight(1)));
-//        for (Rational r : take(LIMIT, rs)) {
-//            aeqf(r, r.floatValue(RoundingMode.HALF_DOWN), 0.0f);
-//            aeqf(r, r.floatValue(RoundingMode.HALF_EVEN), 0.0f);
-//        }
-//
-//        rs = filterInfinite(r -> r != ZERO, P.rationalsIn(Interval.of(SMALLEST_FLOAT.shiftRight(1).negate(), ZERO)));
-//        for (Rational r : take(LIMIT, rs)) {
-//            aeqf(r, r.floatValue(RoundingMode.HALF_DOWN), -0.0f);
-//            aeqf(r, r.floatValue(RoundingMode.HALF_EVEN), -0.0f);
-//        }
-//
-//        rs = filterInfinite(
-//                r -> !r.equals(SMALLEST_FLOAT.shiftRight(1)),
-//                P.rationalsIn(Interval.of(ZERO, SMALLEST_FLOAT.shiftRight(1)))
-//        );
-//        for (Rational r : take(LIMIT, rs)) {
-//            aeqf(r, r.floatValue(RoundingMode.HALF_UP), 0.0f);
-//        }
-//
-//        rs = filterInfinite(
-//                r -> r != ZERO && !r.equals(SMALLEST_FLOAT.shiftRight(1).negate()),
-//                P.rationalsIn(Interval.of(SMALLEST_FLOAT.shiftRight(1).negate(), ZERO))
-//        );
-//        for (Rational r : take(LIMIT, rs)) {
-//            aeqf(r, r.floatValue(RoundingMode.HALF_UP), -0.0f);
-//        }
+        Iterable<Algebraic> notMidpoints = filterInfinite(
+                x -> !floatEquidistant(x),
+                P.withScale(2).algebraicsIn(Interval.of(Rational.LARGEST_FLOAT.negate(), Rational.LARGEST_FLOAT))
+        );
+        for (Algebraic x : take(SMALL_LIMIT, notMidpoints)) {
+            float below = x.floatValue(RoundingMode.FLOOR);
+            float above = x.floatValue(RoundingMode.CEILING);
+            Algebraic belowDistance = x.subtract(ofExact(below).get());
+            Algebraic aboveDistance = ofExact(above).get().subtract(x);
+            float closest = lt(belowDistance, aboveDistance) ? below : above;
+            aeqf(x, x.floatValue(RoundingMode.HALF_DOWN), closest);
+            aeqf(x, x.floatValue(RoundingMode.HALF_UP), closest);
+            aeqf(x, x.floatValue(RoundingMode.HALF_EVEN), closest);
+        }
 
-        for (Algebraic x : take(LIMIT, P.algebraics())) {
+        xs = P.withScale(2).algebraicsIn(Interval.of(Rational.ZERO, Rational.SMALLEST_FLOAT.shiftRight(1)));
+        for (Algebraic x : take(SMALL_LIMIT, xs)) {
+            aeqf(x, x.floatValue(RoundingMode.HALF_DOWN), 0.0f);
+            aeqf(x, x.floatValue(RoundingMode.HALF_EVEN), 0.0f);
+        }
+
+        xs = filterInfinite(
+                r -> r != ZERO,
+                P.withScale(2).algebraicsIn(Interval.of(Rational.SMALLEST_FLOAT.shiftRight(1).negate(), Rational.ZERO))
+        );
+        for (Algebraic x : take(SMALL_LIMIT, xs)) {
+            aeqf(x, x.floatValue(RoundingMode.HALF_DOWN), -0.0f);
+            aeqf(x, x.floatValue(RoundingMode.HALF_EVEN), -0.0f);
+        }
+
+        xs = filterInfinite(
+                x -> !x.equals(of(Rational.SMALLEST_FLOAT.shiftRight(1))),
+                P.withScale(2).algebraicsIn(Interval.of(Rational.ZERO, Rational.SMALLEST_FLOAT.shiftRight(1)))
+        );
+        for (Algebraic x : take(SMALL_LIMIT, xs)) {
+            aeqf(x, x.floatValue(RoundingMode.HALF_UP), 0.0f);
+        }
+
+        xs = filterInfinite(
+                x -> x != ZERO && !x.equals(of(Rational.SMALLEST_FLOAT.shiftRight(1).negate())),
+                P.withScale(2).algebraicsIn(Interval.of(Rational.SMALLEST_FLOAT.shiftRight(1).negate(), Rational.ZERO))
+        );
+        for (Algebraic x : take(SMALL_LIMIT, xs)) {
+            aeqf(x, x.floatValue(RoundingMode.HALF_UP), -0.0f);
+        }
+
+        for (Algebraic x : take(SMALL_LIMIT, P.withScale(2).algebraics())) {
             float floor = x.floatValue(RoundingMode.FLOOR);
             assertFalse(x, isNegativeZero(floor));
             assertFalse(x, floor == Float.POSITIVE_INFINITY);
@@ -1035,7 +1042,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             assertTrue(x, Float.isFinite(halfDown));
         }
 
-        for (Algebraic x : take(LIMIT, filterInfinite(s -> !s.isEqualToFloat(), P.algebraics()))) {
+        for (Algebraic x : take(LIMIT, filterInfinite(s -> !s.isEqualToFloat(), P.withScale(2).algebraics()))) {
             try {
                 x.floatValue(RoundingMode.UNNECESSARY);
                 fail(x);
@@ -1045,31 +1052,30 @@ public class AlgebraicProperties extends QBarTestProperties {
 
     private void propertiesFloatValue() {
         initialize("floatValue()");
-        for (Algebraic x : take(LIMIT, P.algebraics())) {
+        for (Algebraic x : take(SMALL_LIMIT, P.withScale(2).algebraics())) {
             float rounded = x.floatValue();
             aeqf(x, rounded, x.floatValue(RoundingMode.HALF_EVEN));
             assertTrue(x, !Float.isNaN(rounded));
             assertTrue(x, rounded == 0.0f || Math.signum(rounded) == x.signum());
         }
 
-        //todo
-//        Iterable<Rational> rs = filterInfinite(
-//                r -> !r.equals(LARGEST_FLOAT.negate()),
-//                P.rationalsIn(Interval.lessThanOrEqualTo(LARGEST_FLOAT.negate()))
-//        );
-//        for (Rational r : take(LIMIT, rs)) {
-//            float rounded = r.floatValue();
-//            aeqf(r, rounded, Float.NEGATIVE_INFINITY);
-//        }
-//
-//        rs = filterInfinite(
-//                r -> !r.equals(LARGEST_FLOAT),
-//                P.rationalsIn(Interval.greaterThanOrEqualTo(LARGEST_FLOAT)
-//        ));
-//        for (Rational r : take(LIMIT, rs)) {
-//            float rounded = r.floatValue();
-//            aeqf(r, rounded, Float.POSITIVE_INFINITY);
-//        }
+        Iterable<Algebraic> xs = filterInfinite(
+                x -> !x.equals(of(Rational.LARGEST_FLOAT.negate())),
+                P.withScale(2).algebraicsIn(Interval.lessThanOrEqualTo(Rational.LARGEST_FLOAT.negate()))
+        );
+        for (Algebraic x : take(SMALL_LIMIT, xs)) {
+            float rounded = x.floatValue();
+            aeqf(x, rounded, Float.NEGATIVE_INFINITY);
+        }
+
+        xs = filterInfinite(
+                x -> !x.equals(of(Rational.LARGEST_FLOAT)),
+                P.withScale(2).algebraicsIn(Interval.greaterThanOrEqualTo(Rational.LARGEST_FLOAT)
+        ));
+        for (Algebraic x : take(SMALL_LIMIT, xs)) {
+            float rounded = x.floatValue();
+            aeqf(x, rounded, Float.POSITIVE_INFINITY);
+        }
 
         Iterable<Algebraic> midpoints = map(
                 f -> {
@@ -1079,40 +1085,43 @@ public class AlgebraicProperties extends QBarTestProperties {
                 },
                 filter(f -> Float.isFinite(f) && f != Float.MAX_VALUE, P.floats())
         );
-        for (Algebraic x : take(LIMIT, midpoints)) {
+        for (Algebraic x : take(SMALL_LIMIT, midpoints)) {
             float down = x.floatValue(RoundingMode.DOWN);
             float up = x.floatValue(RoundingMode.UP);
             float rounded = x.floatValue();
             assertTrue(x, ((Float.floatToIntBits(down) & 1) == 0 ? down : up) == rounded);
         }
 
-        //todo
-//        Iterable<Rational> notMidpoints = filterInfinite(
-//                r -> !floatEquidistant(r),
-//                P.rationalsIn(Interval.of(LARGEST_FLOAT.negate(), LARGEST_FLOAT))
-//        );
-//        for (Rational r : take(LIMIT, notMidpoints)) {
-//            float below = r.floatValue(RoundingMode.FLOOR);
-//            float above = r.floatValue(RoundingMode.CEILING);
-//            Rational belowDistance = r.subtract(ofExact(below).get());
-//            Rational aboveDistance = ofExact(above).get().subtract(r);
-//            float closest = lt(belowDistance, aboveDistance) ? below : above;
-//            aeqf(r, r.floatValue(), closest);
-//        }
-//
-//        for (Rational r : take(LIMIT, P.rationalsIn(Interval.of(ZERO, SMALLEST_FLOAT.shiftRight(1))))) {
-//            aeqf(r, r.floatValue(), 0.0f);
-//        }
-//
-//        rs = filterInfinite(r -> r != ZERO, P.rationalsIn(Interval.of(SMALLEST_FLOAT.shiftRight(1).negate(), ZERO)));
-//        for (Rational r : take(LIMIT, rs)) {
-//            aeqf(r, r.floatValue(), -0.0f);
-//        }
+        Iterable<Algebraic> notMidpoints = filterInfinite(
+                x -> !floatEquidistant(x),
+                P.withScale(2).algebraicsIn(Interval.of(Rational.LARGEST_FLOAT.negate(), Rational.LARGEST_FLOAT))
+        );
+        for (Algebraic x : take(SMALL_LIMIT, notMidpoints)) {
+            float below = x.floatValue(RoundingMode.FLOOR);
+            float above = x.floatValue(RoundingMode.CEILING);
+            Algebraic belowDistance = x.subtract(ofExact(below).get());
+            Algebraic aboveDistance = ofExact(above).get().subtract(x);
+            float closest = lt(belowDistance, aboveDistance) ? below : above;
+            aeqf(x, x.floatValue(), closest);
+        }
+
+        xs = P.withScale(2).algebraicsIn(Interval.of(Rational.ZERO, Rational.SMALLEST_FLOAT.shiftRight(1)));
+        for (Algebraic x : take(SMALL_LIMIT, xs)) {
+            aeqf(x, x.floatValue(), 0.0f);
+        }
+
+        xs = filterInfinite(
+                x -> x != ZERO,
+                P.withScale(2).algebraicsIn(Interval.of(Rational.SMALLEST_FLOAT.shiftRight(1).negate(), Rational.ZERO))
+        );
+        for (Algebraic x : take(SMALL_LIMIT, xs)) {
+            aeqf(x, x.floatValue(), -0.0f);
+        }
     }
 
     private void propertiesFloatValueExact() {
         initialize("floatValueExact()");
-        for (Algebraic x : take(LIMIT, filterInfinite(Algebraic::isEqualToFloat, P.algebraics()))) {
+        for (Algebraic x : take(SMALL_LIMIT, filterInfinite(Algebraic::isEqualToFloat, P.withScale(2).algebraics()))) {
             float f = x.floatValueExact();
             assertTrue(x, !Float.isNaN(f));
             assertTrue(x, f == 0.0f || Math.signum(f) == x.signum());
@@ -1129,7 +1138,7 @@ public class AlgebraicProperties extends QBarTestProperties {
                 f -> ofExact(f).get(),
                 filter(f -> Float.isFinite(f) && !isNegativeZero(f), P.floats())
         );
-        for (Algebraic x : take(LIMIT, xs)) {
+        for (Algebraic x : take(SMALL_LIMIT, xs)) {
             float f = x.floatValueExact();
             assertEquals(x, x, ofExact(f).get());
             assertTrue(x, Float.isFinite(f));
@@ -1224,7 +1233,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             Algebraic negative = x.negate();
             negative.validate();
             involution(Algebraic::negate, x);
-            //todo assertTrue(x, x.add(negative) == ZERO);
+            assertTrue(x, x.add(negative) == ZERO);
         }
 
         for (Algebraic x : take(LIMIT, P.nonzeroAlgebraics())) {
@@ -1380,11 +1389,10 @@ public class AlgebraicProperties extends QBarTestProperties {
             assertEquals(p, product, of(p.b).multiply(p.a));
         }
 
-        //todo
-//        for (Pair<Algebraic, BigInteger> p : take(LIMIT, P.pairs(P.algebraics(), P.nonzeroBigIntegers()))) {
-//            assertEquals(p, p.a.multiply(p.b).divide(p.b), p.a);
-//            inverse(r -> r.multiply(p.b), (Rational r) -> r.divide(p.b), p.a);
-//        }
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, P.pairs(P.algebraics(), P.nonzeroBigIntegers()))) {
+            assertEquals(p, p.a.multiply(p.b).divide(p.b), p.a);
+            inverse(x -> x.multiply(p.b), (Algebraic x) -> x.divide(p.b), p.a);
+        }
 
         for (int i : take(LIMIT, P.integers())) {
             assertEquals(i, ONE.multiply(i), of(i));
@@ -1419,11 +1427,10 @@ public class AlgebraicProperties extends QBarTestProperties {
             assertEquals(p, product, of(p.b).multiply(p.a));
         }
 
-        //todo
-//        for (Pair<Algebraic, BigInteger> p : take(LIMIT, P.pairs(P.algebraics(), P.nonzeroBigIntegers()))) {
-//            assertEquals(p, p.a.multiply(p.b).divide(p.b), p.a);
-//            inverse(r -> r.multiply(p.b), (Rational r) -> r.divide(p.b), p.a);
-//        }
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, P.pairs(P.algebraics(), P.nonzeroBigIntegers()))) {
+            assertEquals(p, p.a.multiply(p.b).divide(p.b), p.a);
+            inverse(x -> x.multiply(p.b), (Algebraic x) -> x.divide(p.b), p.a);
+        }
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
             assertEquals(i, ONE.multiply(i), of(i));
@@ -1458,11 +1465,10 @@ public class AlgebraicProperties extends QBarTestProperties {
             assertEquals(p, product, of(p.b).multiply(p.a));
         }
 
-        //todo
-//        for (Pair<Algebraic, BigInteger> p : take(LIMIT, P.pairs(P.algebraics(), P.nonzeroBigIntegers()))) {
-//            assertEquals(p, p.a.multiply(p.b).divide(p.b), p.a);
-//            inverse(r -> r.multiply(p.b), (Rational r) -> r.divide(p.b), p.a);
-//        }
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, P.pairs(P.algebraics(), P.nonzeroBigIntegers()))) {
+            assertEquals(p, p.a.multiply(p.b).divide(p.b), p.a);
+            inverse(x -> x.multiply(p.b), (Algebraic x) -> x.divide(p.b), p.a);
+        }
 
         for (Rational r : take(LIMIT, P.rationals())) {
             assertEquals(r, ONE.multiply(r), of(r));
@@ -1497,11 +1503,14 @@ public class AlgebraicProperties extends QBarTestProperties {
             commutative(Algebraic::multiply, p);
         }
 
-        //todo
-//        for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.pairs(P.algebraics(), P.nonzeroAlgebraics()))) {
-//            inverse(r -> r.multiply(p.b), (Rational r) -> r.divide(p.b), p.a);
-//            assertEquals(p, p.a.multiply(p.b), p.a.divide(p.b.invert()));
-//        }
+        ps = P.pairs(
+                P.withScale(1).withSecondaryScale(4).algebraics(),
+                P.withScale(1).withSecondaryScale(4).nonzeroAlgebraics()
+        );
+        for (Pair<Algebraic, Algebraic> p : take(TINY_LIMIT, ps)) {
+            inverse(x -> x.multiply(p.b), (Algebraic x) -> x.divide(p.b), p.a);
+            assertEquals(p, p.a.multiply(p.b), p.a.divide(p.b.invert()));
+        }
 
         for (Algebraic x : take(LIMIT, P.algebraics())) {
             fixedPoint(x::multiply, ZERO);
@@ -1517,7 +1526,7 @@ public class AlgebraicProperties extends QBarTestProperties {
         Iterable<Triple<Algebraic, Algebraic, Algebraic>> ts = P.triples(
                 P.withScale(1).withSecondaryScale(4).algebraics()
         );
-        for (Triple<Algebraic, Algebraic, Algebraic> t : take(SMALL_LIMIT, ts)) {
+        for (Triple<Algebraic, Algebraic, Algebraic> t : take(TINY_LIMIT, ts)) {
             associative(Algebraic::multiply, t);
             leftDistributive(Algebraic::add, Algebraic::multiply, t);
             rightDistributive(Algebraic::add, Algebraic::multiply, t);

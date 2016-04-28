@@ -212,7 +212,7 @@ public final class Algebraic implements Comparable<Algebraic> {
         List<Integer> rootCounts = new ArrayList<>();
         for (Polynomial factor : factors) {
             List<Interval> factorIsolatingIntervals = factor.powerOfTwoIsolatingIntervals();
-            int factorRootCount = factor.rootCount();
+            int factorRootCount = factorIsolatingIntervals.size();
             for (int i = 0; i < factorRootCount; i++) {
                 polyRootPairs.add(new Pair<>(factor, i));
                 realRoots.add(Real.root(factor::signum, factorIsolatingIntervals.get(i)));
