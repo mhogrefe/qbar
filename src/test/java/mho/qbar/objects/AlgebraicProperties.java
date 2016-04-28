@@ -1504,8 +1504,8 @@ public class AlgebraicProperties extends QBarTestProperties {
         }
 
         ps = P.pairs(
-                P.withScale(1).withSecondaryScale(4).algebraics(),
-                P.withScale(1).withSecondaryScale(4).nonzeroAlgebraics()
+                filterInfinite(x -> x.degree() < 5, P.withScale(1).withSecondaryScale(4).algebraics()),
+                filterInfinite(x -> x.degree() < 5, P.withScale(1).withSecondaryScale(4).nonzeroAlgebraics())
         );
         for (Pair<Algebraic, Algebraic> p : take(TINY_LIMIT, ps)) {
             inverse(x -> x.multiply(p.b), (Algebraic x) -> x.divide(p.b), p.a);
@@ -1524,7 +1524,7 @@ public class AlgebraicProperties extends QBarTestProperties {
         }
 
         Iterable<Triple<Algebraic, Algebraic, Algebraic>> ts = P.triples(
-                P.withScale(1).withSecondaryScale(4).algebraics()
+                filterInfinite(x -> x.degree() < 5, P.withScale(1).withSecondaryScale(4).algebraics())
         );
         for (Triple<Algebraic, Algebraic, Algebraic> t : take(TINY_LIMIT, ts)) {
             associative(Algebraic::multiply, t);

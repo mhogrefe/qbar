@@ -63,7 +63,7 @@ public final class Polynomial implements
      * A thread-safe cache of some of the results of {@link Polynomial#factor()}
      */
     private static final ResultCache<Polynomial, List<Polynomial>> FACTOR_CACHE =
-            new ResultCache<>(Polynomial::factorRaw, p -> p.degree() > 6);
+            new ResultCache<>(Polynomial::factorRaw, p -> p.degree() > 6, Function.identity());
 
     /**
      * A {@code Comparator} that compares two {@code Polynomial}s by their degrees, then lexicographically by their

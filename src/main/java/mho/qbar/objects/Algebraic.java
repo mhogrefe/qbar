@@ -1,5 +1,6 @@
 package mho.qbar.objects;
 
+import mho.wheels.concurrency.ResultCache;
 import mho.wheels.io.Readers;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.math.MathUtils;
@@ -72,6 +73,24 @@ public final class Algebraic implements Comparable<Algebraic> {
      * φ, the golden ratio
      */
     public static final @NotNull Algebraic PHI = of(Polynomial.readStrict("x^2-x-1").get(), 1);
+
+    /**
+     * A thread-safe cache of some of the results of {@link Algebraic#add(Algebraic)}
+     */
+    private static final ResultCache<Pair<Algebraic, Algebraic>, Algebraic> SUM_CACHE = new ResultCache<>(
+            p -> p.a.addRaw(p.b),
+            p -> p.a.degree() > 2 && p.b.degree() > 2,
+            p -> gt(p.a, p.b) ? new Pair<>(p.b, p.a) : p
+    );
+
+    /**
+     * A thread-safe cache of some of the results of {@link Algebraic#multiply(Algebraic)}
+     */
+    private static final ResultCache<Pair<Algebraic, Algebraic>, Algebraic> PRODUCT_CACHE = new ResultCache<>(
+            p -> p.a.multiplyRaw(p.b),
+            p -> p.a.degree() > 2 && p.b.degree() > 2,
+            p -> gt(p.a, p.b) ? new Pair<>(p.b, p.a) : p
+    );
 
     /**
      * The minimal polynomial of {@code this}; the unique primitive, irreducible polynomial of minimal degree with
@@ -1255,6 +1274,13 @@ public final class Algebraic implements Comparable<Algebraic> {
         if (that == ZERO) return this;
         if (isRational()) return that.add(rational.get());
         if (that.isRational()) return add(that.rational.get());
+        return SUM_CACHE.get(new Pair<>(this, that));
+    }
+
+    /**
+     * The no-cache version of {@link Algebraic#add(Algebraic)}.
+     */
+    public @NotNull Algebraic addRaw(@NotNull Algebraic that) {
         if (degree() == that.degree()) {
             //todo if (equals(that)) return shiftLeft(1);
             if (equals(that.negate())) return ZERO;
@@ -1363,54 +1389,7 @@ public final class Algebraic implements Comparable<Algebraic> {
         if (that == ZERO) return this;
         if (isRational()) return that.subtract(rational.get()).negate();
         if (that.isRational()) return subtract(that.rational.get());
-        if (degree() == that.degree()) {
-            if (equals(that)) return ZERO;
-            //todo if (equals(that).negate()) return shiftLeft(1);
-        }
-        Polynomial differenceMP = minimalPolynomial.addRoots(that.minimalPolynomial.reflect()).squareFreePart();
-        int differenceMPRootCount = differenceMP.rootCount();
-        List<Polynomial> factors;
-        if (MathUtils.gcd(degree(), that.degree()) == 1) {
-            factors = new ArrayList<>();
-            factors.add(differenceMP);
-        } else {
-            factors = differenceMP.factor();
-        }
-        if (factors.size() == 1 && differenceMPRootCount == 1) {
-            Polynomial factor = factors.get(0);
-            if (factor.degree() == 1) {
-                return new Algebraic(Rational.of(factor.coefficient(0).negate(), factor.coefficient(1)));
-            } else {
-                return new Algebraic(factors.get(0), 0, differenceMP.powerOfTwoIsolatingInterval(0), 1);
-            }
-        }
-        List<Pair<Polynomial, Integer>> polyRootPairs = new ArrayList<>();
-        List<Real> realRoots = new ArrayList<>();
-        List<Interval> isolatingIntervals = new ArrayList<>();
-        List<Integer> rootCounts = new ArrayList<>();
-        for (Polynomial factor : factors) {
-            List<Interval> factorIsolatingIntervals = factor.powerOfTwoIsolatingIntervals();
-            int factorRootCount = factor.rootCount();
-            for (int i = 0; i < factorRootCount; i++) {
-                polyRootPairs.add(new Pair<>(factor, i));
-                realRoots.add(Real.root(factor::signum, factorIsolatingIntervals.get(i)));
-                isolatingIntervals.add(factorIsolatingIntervals.get(i));
-                rootCounts.add(factorRootCount);
-            }
-        }
-        int matchIndex = realValue().subtract(that.realValue()).match(realRoots);
-        Pair<Polynomial, Integer> pair = polyRootPairs.get(matchIndex);
-        differenceMP = pair.a;
-        if (differenceMP.degree() == 1) {
-            return of(Rational.of(differenceMP.coefficient(0).negate(), differenceMP.coefficient(1)));
-        }
-        int differenceRootIndex = pair.b;
-        return new Algebraic(
-                differenceMP,
-                differenceRootIndex,
-                isolatingIntervals.get(matchIndex),
-                rootCounts.get(matchIndex)
-        );
+        return add(that.negate());
     }
 
     /**
@@ -1512,6 +1491,13 @@ public final class Algebraic implements Comparable<Algebraic> {
         if (that == ONE) return this;
         if (isRational()) return that.multiply(rational.get());
         if (that.isRational()) return multiply(that.rational.get());
+        return PRODUCT_CACHE.get(new Pair<>(this, that));
+    }
+
+    /**
+     * The no-cache version of {@link Algebraic#add(Algebraic)}.
+     */
+    public @NotNull Algebraic multiplyRaw(@NotNull Algebraic that) {
         if (degree() == that.degree()) {
             //todo if (equals(that)) return pow(2);
             if (equals(that.invert())) return ONE;

@@ -255,6 +255,9 @@ public final class ExponentVector implements Comparable<ExponentVector> {
      * @return {@code this} without {@code vs}, or {@code this} with each v in {@code vs} set to 1
      */
     public @NotNull ExponentVector removeVariables(@NotNull List<Variable> vs) {
+        if (any(v -> v == null, vs)) {
+            throw new NullPointerException();
+        }
         ExponentVector removed = this;
         for (Variable v : vs) {
             removed = removed.removeVariable(v);
