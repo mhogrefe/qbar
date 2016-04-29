@@ -1049,18 +1049,18 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
     }
 
     /**
-     * An {@code Iterable} that generates all {@code ExponentVector}s.
+     * An {@code Iterable} that generates all {@code Monomial}s.
      *
      * <ul>
-     *  <li>The result is a non-removable {@code Iterable} containing {@code ExponentVector}s.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Monomial}s.</li>
      * </ul>
      *
      * Length is infinite
      */
     @Override
-    public @NotNull Iterable<ExponentVector> exponentVectors() {
+    public @NotNull Iterable<Monomial> monomials() {
         return map(
-                js -> ExponentVector.of(toList(js)),
+                js -> Monomial.of(toList(js)),
                 filterInfinite(
                         is -> is.isEmpty() || last(is) != 0,
                         map(i -> toList(map(p -> p.b - 1, countAdjacent(IntegerUtils.bits(i)))), naturalIntegers())
@@ -1084,7 +1084,7 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
                 map(
                         p -> MultivariatePolynomial.of(toList(zip(p.a, p.b))),
                         dependentPairsInfinite(
-                                subsetsAtLeast(1, exponentVectors()),
+                                subsetsAtLeast(1, monomials()),
                                 evs -> lists(evs.size(), nonzeroBigIntegers())
                         )
                 )
@@ -1114,7 +1114,7 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
                 map(
                         p -> MultivariatePolynomial.of(toList(zip(p.a, p.b))),
                         dependentPairsInfinite(
-                                subsetsAtLeast(1, exponentVectors(variables)),
+                                subsetsAtLeast(1, monomials(variables)),
                                 evs -> lists(evs.size(), nonzeroBigIntegers())
                         )
                 )

@@ -972,33 +972,33 @@ public class QBarExhaustiveProviderTest {
     }
 
     @Test
-    public void testExponentVectors() {
-        simpleProviderHelper(QEP.exponentVectors(), "QBarExhaustiveProvider_exponentVectors");
+    public void testMonomials() {
+        simpleProviderHelper(QEP.monomials(), "QBarExhaustiveProvider_monomials");
     }
 
-    private static void exponentVectors_List_Variable_helper(@NotNull String variables, @NotNull String output) {
-        simpleProviderHelper(QEP.exponentVectors(readVariableList(variables)), output);
+    private static void monomials_List_Variable_helper(@NotNull String variables, @NotNull String output) {
+        simpleProviderHelper(QEP.monomials(readVariableList(variables)), output);
     }
 
-    private static void exponentVectors_List_Variable_fail_helper(@NotNull String variables) {
+    private static void monomials_List_Variable_fail_helper(@NotNull String variables) {
         try {
-            QEP.exponentVectors(readVariableListWithNulls(variables));
+            QEP.monomials(readVariableListWithNulls(variables));
             fail();
         } catch (IllegalArgumentException | NullPointerException ignored) {}
     }
 
     @Test
-    public void testExponentVectors_List_Variable() {
-        exponentVectors_List_Variable_helper("[]", "QBarExhaustiveProvider_exponentVectors_List_Variable_i");
-        exponentVectors_List_Variable_helper("[a]", "QBarExhaustiveProvider_exponentVectors_List_Variable_ii");
-        exponentVectors_List_Variable_helper("[x]", "QBarExhaustiveProvider_exponentVectors_List_Variable_iii");
-        exponentVectors_List_Variable_helper("[ooo]", "QBarExhaustiveProvider_exponentVectors_List_Variable_iv");
-        exponentVectors_List_Variable_helper("[x, y]", "QBarExhaustiveProvider_exponentVectors_List_Variable_v");
-        exponentVectors_List_Variable_helper("[x, y, z]", "QBarExhaustiveProvider_exponentVectors_List_Variable_vi");
+    public void testMonomials_List_Variable() {
+        monomials_List_Variable_helper("[]", "QBarExhaustiveProvider_monomials_List_Variable_i");
+        monomials_List_Variable_helper("[a]", "QBarExhaustiveProvider_monomials_List_Variable_ii");
+        monomials_List_Variable_helper("[x]", "QBarExhaustiveProvider_monomials_List_Variable_iii");
+        monomials_List_Variable_helper("[ooo]", "QBarExhaustiveProvider_monomials_List_Variable_iv");
+        monomials_List_Variable_helper("[x, y]", "QBarExhaustiveProvider_monomials_List_Variable_v");
+        monomials_List_Variable_helper("[x, y, z]", "QBarExhaustiveProvider_monomials_List_Variable_vi");
 
-        exponentVectors_List_Variable_fail_helper("[a, a]");
-        exponentVectors_List_Variable_fail_helper("[b, a]");
-        exponentVectors_List_Variable_fail_helper("[a, null]");
+        monomials_List_Variable_fail_helper("[a, a]");
+        monomials_List_Variable_fail_helper("[b, a]");
+        monomials_List_Variable_fail_helper("[a, null]");
     }
 
     @Test

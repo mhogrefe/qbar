@@ -901,17 +901,17 @@ public class QBarRandomProviderDemos extends QBarDemos {
         }
     }
 
-    private void demoExponentVectors() {
+    private void demoMonomials() {
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 rp -> rp.getScale() > 0,
                 P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
         );
         for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
-            System.out.println("exponentVectors(" + rp + ") = " + its(rp.exponentVectors()));
+            System.out.println("monomials(" + rp + ") = " + its(rp.monomials()));
         }
     }
 
-    private void demoExponentVectors_List_Variable() {
+    private void demoMonomials_List_Variable() {
         Iterable<Pair<QBarRandomProvider, List<Variable>>> ps = P.pairs(
                 filterInfinite(
                         rp -> rp.getScale() > 0,
@@ -920,7 +920,7 @@ public class QBarRandomProviderDemos extends QBarDemos {
                 P.subsets(P.variables())
         );
         for (Pair<QBarRandomProvider, List<Variable>> p : take(SMALL_LIMIT, ps)) {
-            System.out.println("exponentVectors(" + p.a + ", " + p.b + ") = " + its(p.a.exponentVectors(p.b)));
+            System.out.println("monomials(" + p.a + ", " + p.b + ") = " + its(p.a.monomials(p.b)));
         }
     }
 

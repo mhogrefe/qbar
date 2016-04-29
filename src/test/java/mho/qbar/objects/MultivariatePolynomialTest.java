@@ -39,7 +39,7 @@ public class MultivariatePolynomialTest {
     }
 
     private static void coefficient_helper(@NotNull String p, @NotNull String ev, @NotNull String output) {
-        aeq(readStrict(p).get().coefficient(ExponentVector.readStrict(ev).get()), output);
+        aeq(readStrict(p).get().coefficient(Monomial.readStrict(ev).get()), output);
     }
 
     @Test
@@ -65,71 +65,67 @@ public class MultivariatePolynomialTest {
         coefficient_helper("a+b+c+d+e+f", "g", "0");
     }
 
-    private static void of_List_Pair_ExponentVector_BigInteger_helper(@NotNull String input, @NotNull String output) {
-        MultivariatePolynomial p = of(readExponentVectorBigIntegerPairList(input));
+    private static void of_List_Pair_Monomial_BigInteger_helper(@NotNull String input, @NotNull String output) {
+        MultivariatePolynomial p = of(readMonomialBigIntegerPairList(input));
         p.validate();
         aeq(p, output);
     }
 
-    private static void of_List_Pair_ExponentVector_BigInteger_fail_helper(@NotNull String input) {
+    private static void of_List_Pair_Monomial_BigInteger_fail_helper(@NotNull String input) {
         try {
-            of(readExponentVectorBigIntegerPairListWithNulls(input));
+            of(readMonomialBigIntegerPairListWithNulls(input));
             fail();
         } catch (NullPointerException ignored) {}
     }
 
     @Test
-    public void testOf_List_Pair_ExponentVector_BigInteger() {
-        of_List_Pair_ExponentVector_BigInteger_helper("[]", "0");
-        of_List_Pair_ExponentVector_BigInteger_helper("[(a*b^2, 0)]", "0");
-        of_List_Pair_ExponentVector_BigInteger_helper("[(1, 1)]", "1");
-        of_List_Pair_ExponentVector_BigInteger_helper("[(1, 1), (x, 0)]", "1");
-        of_List_Pair_ExponentVector_BigInteger_helper("[(ooo, 1)]", "ooo");
-        of_List_Pair_ExponentVector_BigInteger_helper("[(1, -17)]", "-17");
-        of_List_Pair_ExponentVector_BigInteger_helper("[(1, -10), (1, -7)]", "-17");
-        of_List_Pair_ExponentVector_BigInteger_helper("[(a*b*c, 1)]", "a*b*c");
-        of_List_Pair_ExponentVector_BigInteger_helper("[(1, 7), (x, -4), (x^2, 1)]", "x^2-4*x+7");
-        of_List_Pair_ExponentVector_BigInteger_helper("[(x, -4), (1, 7), (x^2, 1)]", "x^2-4*x+7");
-        of_List_Pair_ExponentVector_BigInteger_helper("[(y^2, 1), (x*y, 2), (x^2, 1)]", "x^2+2*x*y+y^2");
-        of_List_Pair_ExponentVector_BigInteger_helper("[(x*y, 1), (x*y, 1), (y^2, 1), (x^2, 1), (z, 0)]",
+    public void testOf_List_Pair_Monomial_BigInteger() {
+        of_List_Pair_Monomial_BigInteger_helper("[]", "0");
+        of_List_Pair_Monomial_BigInteger_helper("[(a*b^2, 0)]", "0");
+        of_List_Pair_Monomial_BigInteger_helper("[(1, 1)]", "1");
+        of_List_Pair_Monomial_BigInteger_helper("[(1, 1), (x, 0)]", "1");
+        of_List_Pair_Monomial_BigInteger_helper("[(ooo, 1)]", "ooo");
+        of_List_Pair_Monomial_BigInteger_helper("[(1, -17)]", "-17");
+        of_List_Pair_Monomial_BigInteger_helper("[(1, -10), (1, -7)]", "-17");
+        of_List_Pair_Monomial_BigInteger_helper("[(a*b*c, 1)]", "a*b*c");
+        of_List_Pair_Monomial_BigInteger_helper("[(1, 7), (x, -4), (x^2, 1)]", "x^2-4*x+7");
+        of_List_Pair_Monomial_BigInteger_helper("[(x, -4), (1, 7), (x^2, 1)]", "x^2-4*x+7");
+        of_List_Pair_Monomial_BigInteger_helper("[(y^2, 1), (x*y, 2), (x^2, 1)]", "x^2+2*x*y+y^2");
+        of_List_Pair_Monomial_BigInteger_helper("[(x*y, 1), (x*y, 1), (y^2, 1), (x^2, 1), (z, 0)]",
                 "x^2+2*x*y+y^2");
-        of_List_Pair_ExponentVector_BigInteger_helper("[(f, 1), (e, 1), (d, 1), (c, 1), (b, 1), (a, 1)]",
+        of_List_Pair_Monomial_BigInteger_helper("[(f, 1), (e, 1), (d, 1), (c, 1), (b, 1), (a, 1)]",
                 "a+b+c+d+e+f");
-        of_List_Pair_ExponentVector_BigInteger_helper("[(f, 1), (b, 1), (d, 2), (d, -1), (c, 1), (e, 1), (a, 1)]",
+        of_List_Pair_Monomial_BigInteger_helper("[(f, 1), (b, 1), (d, 2), (d, -1), (c, 1), (e, 1), (a, 1)]",
                 "a+b+c+d+e+f");
 
-        of_List_Pair_ExponentVector_BigInteger_fail_helper("[(ooo, 1), null]");
-        of_List_Pair_ExponentVector_BigInteger_fail_helper("[(ooo, null)]");
-        of_List_Pair_ExponentVector_BigInteger_fail_helper("[(null, 1)]");
+        of_List_Pair_Monomial_BigInteger_fail_helper("[(ooo, 1), null]");
+        of_List_Pair_Monomial_BigInteger_fail_helper("[(ooo, null)]");
+        of_List_Pair_Monomial_BigInteger_fail_helper("[(null, 1)]");
     }
 
-    private static void of_ExponentVector_BigInteger_helper(
-            @NotNull String ev,
-            @NotNull String c,
-            @NotNull String output
-    ) {
-        MultivariatePolynomial p = of(ExponentVector.readStrict(ev).get(), Readers.readBigIntegerStrict(c).get());
+    private static void of_Monomial_BigInteger_helper(@NotNull String ev, @NotNull String c, @NotNull String output) {
+        MultivariatePolynomial p = of(Monomial.readStrict(ev).get(), Readers.readBigIntegerStrict(c).get());
         p.validate();
         aeq(p, output);
     }
 
     @Test
-    public void testOf_ExponentVector_BigInteger() {
-        of_ExponentVector_BigInteger_helper("1", "0", "0");
-        of_ExponentVector_BigInteger_helper("1", "1", "1");
-        of_ExponentVector_BigInteger_helper("1", "-1", "-1");
-        of_ExponentVector_BigInteger_helper("1", "3", "3");
-        of_ExponentVector_BigInteger_helper("1", "-5", "-5");
-        of_ExponentVector_BigInteger_helper("ooo", "0", "0");
-        of_ExponentVector_BigInteger_helper("ooo", "1", "ooo");
-        of_ExponentVector_BigInteger_helper("ooo", "-1", "-ooo");
-        of_ExponentVector_BigInteger_helper("ooo", "3", "3*ooo");
-        of_ExponentVector_BigInteger_helper("ooo", "-5", "-5*ooo");
-        of_ExponentVector_BigInteger_helper("a*b^2", "0", "0");
-        of_ExponentVector_BigInteger_helper("a*b^2", "1", "a*b^2");
-        of_ExponentVector_BigInteger_helper("a*b^2", "-1", "-a*b^2");
-        of_ExponentVector_BigInteger_helper("a*b^2", "3", "3*a*b^2");
-        of_ExponentVector_BigInteger_helper("a*b^2", "-5", "-5*a*b^2");
+    public void testOf_Monomial_BigInteger() {
+        of_Monomial_BigInteger_helper("1", "0", "0");
+        of_Monomial_BigInteger_helper("1", "1", "1");
+        of_Monomial_BigInteger_helper("1", "-1", "-1");
+        of_Monomial_BigInteger_helper("1", "3", "3");
+        of_Monomial_BigInteger_helper("1", "-5", "-5");
+        of_Monomial_BigInteger_helper("ooo", "0", "0");
+        of_Monomial_BigInteger_helper("ooo", "1", "ooo");
+        of_Monomial_BigInteger_helper("ooo", "-1", "-ooo");
+        of_Monomial_BigInteger_helper("ooo", "3", "3*ooo");
+        of_Monomial_BigInteger_helper("ooo", "-5", "-5*ooo");
+        of_Monomial_BigInteger_helper("a*b^2", "0", "0");
+        of_Monomial_BigInteger_helper("a*b^2", "1", "a*b^2");
+        of_Monomial_BigInteger_helper("a*b^2", "-1", "-a*b^2");
+        of_Monomial_BigInteger_helper("a*b^2", "3", "3*a*b^2");
+        of_Monomial_BigInteger_helper("a*b^2", "-5", "-5*a*b^2");
     }
 
     private static void of_BigInteger_helper(@NotNull String input) {
@@ -595,61 +591,61 @@ public class MultivariatePolynomialTest {
         multiply_BigInteger_helper("a+b+c+d+e+f", "4", "4*a+4*b+4*c+4*d+4*e+4*f");
     }
 
-    private static void multiply_ExponentVector_BigInteger_helper(
+    private static void multiply_Monomial_BigInteger_helper(
             @NotNull String p,
             @NotNull String ev,
             @NotNull String c,
             @NotNull String output
     ) {
         MultivariatePolynomial q = readStrict(p).get()
-                .multiply(ExponentVector.readStrict(ev).get(), Readers.readBigIntegerStrict(c).get());
+                .multiply(Monomial.readStrict(ev).get(), Readers.readBigIntegerStrict(c).get());
         q.validate();
         aeq(q, output);
     }
 
     @Test
-    public void testMultiply_ExponentVector_BigInteger() {
-        multiply_ExponentVector_BigInteger_helper("0", "1", "0", "0");
-        multiply_ExponentVector_BigInteger_helper("0", "1", "1", "0");
-        multiply_ExponentVector_BigInteger_helper("0", "ooo", "2", "0");
-        multiply_ExponentVector_BigInteger_helper("0", "a*b*c", "-2", "0");
+    public void testMultiply_Monomial_BigInteger() {
+        multiply_Monomial_BigInteger_helper("0", "1", "0", "0");
+        multiply_Monomial_BigInteger_helper("0", "1", "1", "0");
+        multiply_Monomial_BigInteger_helper("0", "ooo", "2", "0");
+        multiply_Monomial_BigInteger_helper("0", "a*b*c", "-2", "0");
 
-        multiply_ExponentVector_BigInteger_helper("1", "1", "0", "0");
-        multiply_ExponentVector_BigInteger_helper("1", "1", "1", "1");
-        multiply_ExponentVector_BigInteger_helper("1", "ooo", "2", "2*ooo");
-        multiply_ExponentVector_BigInteger_helper("1", "a*b*c", "-2", "-2*a*b*c");
+        multiply_Monomial_BigInteger_helper("1", "1", "0", "0");
+        multiply_Monomial_BigInteger_helper("1", "1", "1", "1");
+        multiply_Monomial_BigInteger_helper("1", "ooo", "2", "2*ooo");
+        multiply_Monomial_BigInteger_helper("1", "a*b*c", "-2", "-2*a*b*c");
 
-        multiply_ExponentVector_BigInteger_helper("-17", "1", "0", "0");
-        multiply_ExponentVector_BigInteger_helper("-17", "1", "1", "-17");
-        multiply_ExponentVector_BigInteger_helper("-17", "ooo", "2", "-34*ooo");
-        multiply_ExponentVector_BigInteger_helper("-17", "a*b*c", "-2", "34*a*b*c");
+        multiply_Monomial_BigInteger_helper("-17", "1", "0", "0");
+        multiply_Monomial_BigInteger_helper("-17", "1", "1", "-17");
+        multiply_Monomial_BigInteger_helper("-17", "ooo", "2", "-34*ooo");
+        multiply_Monomial_BigInteger_helper("-17", "a*b*c", "-2", "34*a*b*c");
 
-        multiply_ExponentVector_BigInteger_helper("ooo", "1", "0", "0");
-        multiply_ExponentVector_BigInteger_helper("ooo", "1", "1", "ooo");
-        multiply_ExponentVector_BigInteger_helper("ooo", "ooo", "2", "2*ooo^2");
-        multiply_ExponentVector_BigInteger_helper("ooo", "a*b*c", "-2", "-2*a*b*c*ooo");
+        multiply_Monomial_BigInteger_helper("ooo", "1", "0", "0");
+        multiply_Monomial_BigInteger_helper("ooo", "1", "1", "ooo");
+        multiply_Monomial_BigInteger_helper("ooo", "ooo", "2", "2*ooo^2");
+        multiply_Monomial_BigInteger_helper("ooo", "a*b*c", "-2", "-2*a*b*c*ooo");
 
-        multiply_ExponentVector_BigInteger_helper("a*b*c", "1", "0", "0");
-        multiply_ExponentVector_BigInteger_helper("a*b*c", "1", "1", "a*b*c");
-        multiply_ExponentVector_BigInteger_helper("a*b*c", "ooo", "2", "2*a*b*c*ooo");
-        multiply_ExponentVector_BigInteger_helper("a*b*c", "a*b*c", "-2", "-2*a^2*b^2*c^2");
+        multiply_Monomial_BigInteger_helper("a*b*c", "1", "0", "0");
+        multiply_Monomial_BigInteger_helper("a*b*c", "1", "1", "a*b*c");
+        multiply_Monomial_BigInteger_helper("a*b*c", "ooo", "2", "2*a*b*c*ooo");
+        multiply_Monomial_BigInteger_helper("a*b*c", "a*b*c", "-2", "-2*a^2*b^2*c^2");
 
-        multiply_ExponentVector_BigInteger_helper("x^2-4*x+7", "1", "0", "0");
-        multiply_ExponentVector_BigInteger_helper("x^2-4*x+7", "1", "1", "x^2-4*x+7");
-        multiply_ExponentVector_BigInteger_helper("x^2-4*x+7", "ooo", "2", "2*x^2*ooo-8*x*ooo+14*ooo");
-        multiply_ExponentVector_BigInteger_helper("x^2-4*x+7", "a*b*c", "-2", "-2*a*b*c*x^2+8*a*b*c*x-14*a*b*c");
+        multiply_Monomial_BigInteger_helper("x^2-4*x+7", "1", "0", "0");
+        multiply_Monomial_BigInteger_helper("x^2-4*x+7", "1", "1", "x^2-4*x+7");
+        multiply_Monomial_BigInteger_helper("x^2-4*x+7", "ooo", "2", "2*x^2*ooo-8*x*ooo+14*ooo");
+        multiply_Monomial_BigInteger_helper("x^2-4*x+7", "a*b*c", "-2", "-2*a*b*c*x^2+8*a*b*c*x-14*a*b*c");
 
-        multiply_ExponentVector_BigInteger_helper("x^2+2*x*y+y^2", "1", "0", "0");
-        multiply_ExponentVector_BigInteger_helper("x^2+2*x*y+y^2", "1", "1", "x^2+2*x*y+y^2");
-        multiply_ExponentVector_BigInteger_helper("x^2+2*x*y+y^2", "ooo", "2", "2*x^2*ooo+4*x*y*ooo+2*y^2*ooo");
-        multiply_ExponentVector_BigInteger_helper("x^2+2*x*y+y^2", "a*b*c", "-2",
+        multiply_Monomial_BigInteger_helper("x^2+2*x*y+y^2", "1", "0", "0");
+        multiply_Monomial_BigInteger_helper("x^2+2*x*y+y^2", "1", "1", "x^2+2*x*y+y^2");
+        multiply_Monomial_BigInteger_helper("x^2+2*x*y+y^2", "ooo", "2", "2*x^2*ooo+4*x*y*ooo+2*y^2*ooo");
+        multiply_Monomial_BigInteger_helper("x^2+2*x*y+y^2", "a*b*c", "-2",
                 "-2*a*b*c*x^2-4*a*b*c*x*y-2*a*b*c*y^2");
 
-        multiply_ExponentVector_BigInteger_helper("a+b+c+d+e+f", "1", "0", "0");
-        multiply_ExponentVector_BigInteger_helper("a+b+c+d+e+f", "1", "1", "a+b+c+d+e+f");
-        multiply_ExponentVector_BigInteger_helper("a+b+c+d+e+f", "ooo", "2",
+        multiply_Monomial_BigInteger_helper("a+b+c+d+e+f", "1", "0", "0");
+        multiply_Monomial_BigInteger_helper("a+b+c+d+e+f", "1", "1", "a+b+c+d+e+f");
+        multiply_Monomial_BigInteger_helper("a+b+c+d+e+f", "ooo", "2",
                 "2*a*ooo+2*b*ooo+2*c*ooo+2*d*ooo+2*e*ooo+2*f*ooo");
-        multiply_ExponentVector_BigInteger_helper("a+b+c+d+e+f", "a*b*c", "-2",
+        multiply_Monomial_BigInteger_helper("a+b+c+d+e+f", "a*b*c", "-2",
                 "-2*a^2*b*c-2*a*b^2*c-2*a*b*c^2-2*a*b*c*d-2*a*b*c*e-2*a*b*c*f");
     }
 
@@ -895,24 +891,24 @@ public class MultivariatePolynomialTest {
         readStrict_fail_helper("+0");
     }
 
-    private static @NotNull List<Pair<ExponentVector, BigInteger>> readExponentVectorBigIntegerPairList(
+    private static @NotNull List<Pair<Monomial, BigInteger>> readMonomialBigIntegerPairList(
             @NotNull String s
     ) {
         return Readers.readListStrict(
                 u -> Pair.read(
                         u,
-                        t -> NullableOptional.fromOptional(ExponentVector.readStrict(t)),
+                        t -> NullableOptional.fromOptional(Monomial.readStrict(t)),
                         t -> NullableOptional.fromOptional(Readers.readBigIntegerStrict(t))
                 )
         ).apply(s).get();
     }
 
-    private static @NotNull List<Pair<ExponentVector, BigInteger>> readExponentVectorBigIntegerPairListWithNulls(
+    private static @NotNull List<Pair<Monomial, BigInteger>> readMonomialBigIntegerPairListWithNulls(
             @NotNull String s
     ) {
         return Readers.readListWithNullsStrict(
                 u -> Pair.read(
-                        u, Readers.readWithNullsStrict(ExponentVector::readStrict),
+                        u, Readers.readWithNullsStrict(Monomial::readStrict),
                         Readers.readWithNullsStrict(Readers::readBigIntegerStrict)
                 )
         ).apply(s).get();

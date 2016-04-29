@@ -1830,18 +1830,18 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     /**
-     * An {@code Iterable} that generates all {@code ExponentVector}s. A larger {@code scale} corresponds to an
-     * {@code ExponentVector} with more variables and higher exponents on average. Does not support removal.
+     * An {@code Iterable} that generates all {@code Monomial}s. A larger {@code scale} corresponds to a
+     * {@code Monomial} with more variables and higher exponents on average. Does not support removal.
      *
      * <ul>
      *  <li>{@code this} must have a positive {@code scale}.</li>
-     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code ExponentVector}s.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Monomial}s.</li>
      * </ul>
      *
      * Length is infinite
      */
     @Override
-    public @NotNull Iterable<ExponentVector> exponentVectors() {
+    public @NotNull Iterable<Monomial> monomials() {
         int scale = getScale();
         if (scale < 1) {
             throw new IllegalStateException("this must have a positive scale. Invalid scale: " + scale);
@@ -1850,7 +1850,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                 MathUtils.ceilingRoot(2, BigInteger.valueOf(scale)).intValueExact()
         );
         return map(
-                js -> ExponentVector.of(toList(js)),
+                js -> Monomial.of(toList(js)),
                 filterInfinite(
                         is -> is.isEmpty() || last(is) != 0,
                         variableCountProvider.lists(naturalIntegersGeometric())
@@ -1881,7 +1881,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                         p -> MultivariatePolynomial.of(toList(zip(p.a, p.b))),
                         dependentPairsInfinite(
                                 withScale(getTertiaryScale())
-                                        .subsetsAtLeast(1, withScale(getSecondaryScale()).exponentVectors()),
+                                        .subsetsAtLeast(1, withScale(getSecondaryScale()).monomials()),
                                 evs -> lists(evs.size(), nonzeroBigIntegers())
                         )
                 )
@@ -1929,7 +1929,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                         p -> MultivariatePolynomial.of(toList(zip(p.a, p.b))),
                         dependentPairsInfinite(
                                 withScale(tertiaryScale)
-                                        .subsetsAtLeast(1, withScale(secondaryScale).exponentVectors(variables)),
+                                        .subsetsAtLeast(1, withScale(secondaryScale).monomials(variables)),
                                 evs -> lists(evs.size(), nonzeroBigIntegers())
                         )
                 )

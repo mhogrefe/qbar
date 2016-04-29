@@ -253,10 +253,10 @@ public class QBarExhaustiveProviderDemos extends QBarDemos {
         }
     }
 
-    private void demoExponentVectors_List_Variable() {
+    private void demoMonomials_List_Variable() {
         for (List<Variable> vs : take(MEDIUM_LIMIT, P.subsets(P.variables()))) {
             String listString = tail(init(vs.toString()));
-            System.out.println("exponentVectors(" + listString + ") = " + its(QEP.exponentVectors(vs)));
+            System.out.println("monomials(" + listString + ") = " + its(QEP.monomials(vs)));
         }
     }
 

@@ -11,12 +11,12 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
-import static mho.qbar.objects.ExponentVector.*;
+import static mho.qbar.objects.Monomial.*;
 import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
-public class ExponentVectorTest {
+public class MonomialTest {
     @Test
     public void testConstants() {
         aeq(ONE, "1");
@@ -36,8 +36,8 @@ public class ExponentVectorTest {
                 "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 3]");
     }
 
-    private static void exponent_helper(@NotNull String ev, @NotNull String v, int output) {
-        aeq(readStrict(ev).get().exponent(Variable.readStrict(v).get()), output);
+    private static void exponent_helper(@NotNull String m, @NotNull String v, int output) {
+        aeq(readStrict(m).get().exponent(Variable.readStrict(v).get()), output);
     }
 
     @Test
@@ -56,8 +56,8 @@ public class ExponentVectorTest {
         exponent_helper("x^2*y*z^3", "z", 3);
     }
 
-    private static void size_helper(@NotNull String ev, int output) {
-        aeq(readStrict(ev).get().size(), output);
+    private static void size_helper(@NotNull String m, int output) {
+        aeq(readStrict(m).get().size(), output);
     }
 
     @Test
@@ -136,8 +136,8 @@ public class ExponentVectorTest {
         fromTerms_fail_helper("[(a, 0)]");
     }
 
-    private static void degree_helper(@NotNull String ev, int output) {
-        aeq(readStrict(ev).get().degree(), output);
+    private static void degree_helper(@NotNull String m, int output) {
+        aeq(readStrict(m).get().degree(), output);
     }
 
     @Test
@@ -164,8 +164,8 @@ public class ExponentVectorTest {
         variables_helper("x^2*y*z^3", "[x, y, z]");
     }
 
-    private static void removeVariable_helper(@NotNull String ev, @NotNull String v, @NotNull String output) {
-        aeq(readStrict(ev).get().removeVariable(Variable.readStrict(v).get()), output);
+    private static void removeVariable_helper(@NotNull String m, @NotNull String v, @NotNull String output) {
+        aeq(readStrict(m).get().removeVariable(Variable.readStrict(v).get()), output);
     }
 
     @Test
@@ -184,13 +184,13 @@ public class ExponentVectorTest {
         removeVariable_helper("x^2*y*z^3", "z", "x^2*y");
     }
 
-    private static void removeVariables_helper(@NotNull String ev, @NotNull String vs, @NotNull String output) {
-        aeq(readStrict(ev).get().removeVariables(readVariableList(vs)), output);
+    private static void removeVariables_helper(@NotNull String m, @NotNull String vs, @NotNull String output) {
+        aeq(readStrict(m).get().removeVariables(readVariableList(vs)), output);
     }
 
-    private static void removeVariables_fail_helper(@NotNull String ev, @NotNull String vs) {
+    private static void removeVariables_fail_helper(@NotNull String m, @NotNull String vs) {
         try {
-            readStrict(ev).get().removeVariables(readVariableListWithNulls(vs));
+            readStrict(m).get().removeVariables(readVariableListWithNulls(vs));
             fail();
         } catch (NullPointerException | IllegalArgumentException ignored) {}
     }
@@ -254,14 +254,14 @@ public class ExponentVectorTest {
     }
 
     private static void product_helper(@NotNull String input, @NotNull String output) {
-        ExponentVector ev = product(readExponentVectorList(input));
-        ev.validate();
-        aeq(ev, output);
+        Monomial m = product(readMonomialList(input));
+        m.validate();
+        aeq(m, output);
     }
 
     private static void product_fail_helper(@NotNull String input) {
         try {
-            product(readExponentVectorListWithNulls(input));
+            product(readMonomialListWithNulls(input));
             fail();
         } catch (NullPointerException ignored) {}
     }
@@ -318,8 +318,8 @@ public class ExponentVectorTest {
         pow_fail_helper("x^2*y*z^3", -1);
     }
 
-    private static void apply_BigInteger_helper(@NotNull String ev, @NotNull String xs, @NotNull String output) {
-        aeq(readStrict(ev).get().applyBigInteger(readVariableBigIntegerMap(xs)), output);
+    private static void apply_BigInteger_helper(@NotNull String m, @NotNull String xs, @NotNull String output) {
+        aeq(readStrict(m).get().applyBigInteger(readVariableBigIntegerMap(xs)), output);
     }
 
     private static void apply_BigInteger_fail_helper(@NotNull String ev, @NotNull String xs) {
@@ -347,13 +347,13 @@ public class ExponentVectorTest {
         apply_BigInteger_fail_helper("x^2*y*z^3", "[(x, -5), (y, 2), (null, 1)]");
     }
 
-    private static void apply_Rational_helper(@NotNull String ev, @NotNull String xs, @NotNull String output) {
-        aeq(readStrict(ev).get().applyRational(readVariableRationalMap(xs)), output);
+    private static void apply_Rational_helper(@NotNull String m, @NotNull String xs, @NotNull String output) {
+        aeq(readStrict(m).get().applyRational(readVariableRationalMap(xs)), output);
     }
 
-    private static void apply_Rational_fail_helper(@NotNull String ev, @NotNull String xs) {
+    private static void apply_Rational_fail_helper(@NotNull String m, @NotNull String xs) {
         try {
-            readStrict(ev).get().applyRational(readVariableRationalMapWithNulls(xs));
+            readStrict(m).get().applyRational(readVariableRationalMapWithNulls(xs));
             fail();
         } catch (IllegalArgumentException | NullPointerException ignored) {}
     }
@@ -376,13 +376,13 @@ public class ExponentVectorTest {
         apply_Rational_fail_helper("x^2*y*z^3", "[(x, -5/3), (y, 1/2), (null, 1)]");
     }
 
-    private static void substitute_helper(@NotNull String ev, @NotNull String xs, @NotNull String output) {
-        aeq(readStrict(ev).get().substitute(readVariableExponentVectorMap(xs)), output);
+    private static void substitute_helper(@NotNull String m, @NotNull String xs, @NotNull String output) {
+        aeq(readStrict(m).get().substitute(readVariableMonomialMap(xs)), output);
     }
 
-    private static void substitute_fail_helper(@NotNull String ev, @NotNull String xs) {
+    private static void substitute_fail_helper(@NotNull String m, @NotNull String xs) {
         try {
-            readStrict(ev).get().substitute(readVariableExponentVectorMapWithNulls(xs));
+            readStrict(m).get().substitute(readVariableMonomialMapWithNulls(xs));
             fail();
         } catch (IllegalArgumentException | NullPointerException ignored) {}
     }
@@ -409,8 +409,8 @@ public class ExponentVectorTest {
     @Test
     public void testEquals() {
         testEqualsHelper(
-                readExponentVectorList("[1, a, a^2, a^3, x^2*y*z^3]"),
-                readExponentVectorList("[1, a, a^2, a^3, x^2*y*z^3]")
+                readMonomialList("[1, a, a^2, a^3, x^2*y*z^3]"),
+                readMonomialList("[1, a, a^2, a^3, x^2*y*z^3]")
         );
     }
 
@@ -430,9 +430,7 @@ public class ExponentVectorTest {
     @Test
     public void testCompareTo() {
         testCompareToHelper(
-                readExponentVectorList(
-                        "[1, ooo, b, a, z^2, y^2, x*y, x^2, x*y^2, x^2*y, x^3, x^2*z^2, x*y^2*z, a*b*c*d]"
-                )
+                readMonomialList("[1, ooo, b, a, z^2, y^2, x*y, x^2, x*y^2, x^2*y, x^3, x^2*z^2, x*y^2*z, a*b*c*d]")
         );
     }
 
@@ -550,35 +548,35 @@ public class ExponentVectorTest {
         );
     }
 
-    private static @NotNull Map<Variable, ExponentVector> readVariableExponentVectorMap(@NotNull String s) {
+    private static @NotNull Map<Variable, Monomial> readVariableMonomialMap(@NotNull String s) {
         return IterableUtils.toMap(
                 Readers.readListStrict(
                         u -> Pair.read(
                                 u,
                                 t -> NullableOptional.fromOptional(Variable.readStrict(t)),
-                                t -> NullableOptional.fromOptional(ExponentVector.readStrict(t))
+                                t -> NullableOptional.fromOptional(Monomial.readStrict(t))
                         )
                 ).apply(s).get()
         );
     }
 
-    private static @NotNull Map<Variable, ExponentVector> readVariableExponentVectorMapWithNulls(@NotNull String s) {
+    private static @NotNull Map<Variable, Monomial> readVariableMonomialMapWithNulls(@NotNull String s) {
         return IterableUtils.toMap(
                 Readers.readListStrict(
                         u -> Pair.read(
                                 u,
                                 Readers.readWithNullsStrict(Variable::readStrict),
-                                Readers.readWithNullsStrict(ExponentVector::readStrict)
+                                Readers.readWithNullsStrict(Monomial::readStrict)
                         )
                 ).apply(s).get()
         );
     }
 
-    private static @NotNull List<ExponentVector> readExponentVectorList(@NotNull String s) {
-        return Readers.readListStrict(ExponentVector::readStrict).apply(s).get();
+    private static @NotNull List<Monomial> readMonomialList(@NotNull String s) {
+        return Readers.readListStrict(Monomial::readStrict).apply(s).get();
     }
 
-    private static @NotNull List<ExponentVector> readExponentVectorListWithNulls(@NotNull String s) {
-        return Readers.readListWithNullsStrict(ExponentVector::readStrict).apply(s).get();
+    private static @NotNull List<Monomial> readMonomialListWithNulls(@NotNull String s) {
+        return Readers.readListWithNullsStrict(Monomial::readStrict).apply(s).get();
     }
 }

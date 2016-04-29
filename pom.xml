@@ -36,12 +36,12 @@
                         <include>**/QBarRandomProviderProperties.java</include>
                         <include>**/AlgebraicTest.java</include>
                         <include>**/AlgebraicProperties.java</include>
-                        <include>**/ExponentVectorTest.java</include>
-                        <include>**/ExponentVectorProperties.java</include>
                         <include>**/IntervalTest.java</include>
                         <include>**/IntervalProperties.java</include>
                         <include>**/MatrixTest.java</include>
                         <include>**/MatrixProperties.java</include>
+                        <include>**/MonomialTest.java</include>
+                        <include>**/MonomialProperties.java</include>
                         <include>**/MonomialOrderTest.java</include>
                         <include>**/MonomialOrderProperties.java</include>
                         <include>**/MultivariatePolynomialTest.java</include>

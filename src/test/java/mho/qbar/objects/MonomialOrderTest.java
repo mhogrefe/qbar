@@ -13,11 +13,11 @@ import static org.junit.Assert.assertFalse;
 
 public class MonomialOrderTest {
     private static void compare_helper(@NotNull MonomialOrder order, @NotNull String input) {
-        List<ExponentVector> evs = readExponentVectorList(input);
+        List<Monomial> evs = readMonomialList(input);
         for (int i = 0; i < evs.size(); i++) {
-            ExponentVector evi = evs.get(i);
+            Monomial evi = evs.get(i);
             for (int j = 0; j < evs.size(); j++) {
-                ExponentVector evj = evs.get(j);
+                Monomial evj = evs.get(j);
                 aeq(new Pair<>(evi, evj), Integer.compare(i, j), order.compare(evi, evj));
             }
         }
@@ -49,7 +49,7 @@ public class MonomialOrderTest {
         readStrict_fail_helper("ab");
     }
 
-    private static @NotNull List<ExponentVector> readExponentVectorList(@NotNull String s) {
-        return Readers.readListStrict(ExponentVector::readStrict).apply(s).get();
+    private static @NotNull List<Monomial> readMonomialList(@NotNull String s) {
+        return Readers.readListStrict(Monomial::readStrict).apply(s).get();
     }
 }

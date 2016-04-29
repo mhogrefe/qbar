@@ -91,8 +91,8 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         propertiesMonicRationalPolynomialsAtLeast();
         propertiesVariables();
         propertiesMonomialOrders();
-        propertiesExponentVectors();
-        propertiesExponentVectors_List_Variable();
+        propertiesMonomials();
+        propertiesMonomials_List_Variable();
         propertiesMultivariatePolynomials();
         propertiesMultivariatePolynomials_List_Variable();
         propertiesPositiveAlgebraics_int();
@@ -3127,16 +3127,16 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         }
     }
 
-    private void propertiesExponentVectors() {
-        initialize("exponentVectors()");
+    private void propertiesMonomials() {
+        initialize("monomials()");
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 s -> s.getScale() > 0,
                 P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rps)) {
-            Iterable<ExponentVector> evs = rp.exponentVectors();
+            Iterable<Monomial> ms = rp.monomials();
             rp.reset();
-            simpleTest(rp, evs, ev -> true);
+            simpleTest(rp, ms, m -> true);
         }
 
         Iterable<QBarRandomProvider> rpsFail = filterInfinite(
@@ -3145,22 +3145,22 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
-                rp.exponentVectors();
+                rp.monomials();
                 fail(rp);
             } catch (IllegalStateException ignored) {}
         }
     }
 
-    private void propertiesExponentVectors_List_Variable() {
-        initialize("exponentVectors(List<Variable>)");
+    private void propertiesMonomials_List_Variable() {
+        initialize("monomials(List<Variable>)");
         Iterable<Pair<QBarRandomProvider, List<Variable>>> ps = P.pairs(
                 filterInfinite(s -> s.getScale() > 0, P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()),
                 P.subsets(P.variables())
         );
         for (Pair<QBarRandomProvider, List<Variable>> p : take(LIMIT, ps)) {
-            Iterable<ExponentVector> evs = p.a.exponentVectors(p.b);
+            Iterable<Monomial> ms = p.a.monomials(p.b);
             p.a.reset();
-            simpleTest(p.a, evs, ev -> isSubsetOf(ev.variables(), p.b));
+            simpleTest(p.a, ms, m -> isSubsetOf(m.variables(), p.b));
         }
 
         Iterable<Pair<QBarRandomProvider, List<Variable>>> psFail = P.pairs(
@@ -3169,7 +3169,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         );
         for (Pair<QBarRandomProvider, List<Variable>> p : take(LIMIT, psFail)) {
             try {
-                p.a.exponentVectors(p.b);
+                p.a.monomials(p.b);
                 fail(p);
             } catch (IllegalStateException ignored) {}
         }
@@ -3180,7 +3180,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         );
         for (Pair<QBarRandomProvider, List<Variable>> p : take(LIMIT, psFail)) {
             try {
-                p.a.exponentVectors(p.b);
+                p.a.monomials(p.b);
                 fail(p);
             } catch (IllegalArgumentException ignored) {}
         }

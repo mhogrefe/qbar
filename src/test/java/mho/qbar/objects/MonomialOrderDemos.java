@@ -18,12 +18,12 @@ public class MonomialOrderDemos extends QBarDemos {
     }
 
     private void demoCompare() {
-        Iterable<Triple<MonomialOrder, ExponentVector, ExponentVector>> ts = P.triples(
+        Iterable<Triple<MonomialOrder, Monomial, Monomial>> ts = P.triples(
                 P.monomialOrders(),
-                P.exponentVectors(),
-                P.exponentVectors()
+                P.monomials(),
+                P.monomials()
         );
-        for (Triple<MonomialOrder, ExponentVector, ExponentVector> t : take(LIMIT, ts)) {
+        for (Triple<MonomialOrder, Monomial, Monomial> t : take(LIMIT, ts)) {
             System.out.println(t.a + ": " + t.b + " " + Ordering.compare(t.a, t.b, t.c).toChar() + " " + t.c);
         }
     }

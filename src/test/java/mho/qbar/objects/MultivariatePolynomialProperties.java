@@ -31,9 +31,9 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
     protected void testBothModes() {
         propertiesIterator();
         propertiesCoefficient();
-        propertiesOf_List_Pair_ExponentVector_BigInteger();
-        propertiesOf_ExponentVector_BigInteger();
-        compareImplementationsOf_ExponentVector_BigInteger();
+        propertiesOf_List_Pair_Monomial_BigInteger();
+        propertiesOf_Monomial_BigInteger();
+        compareImplementationsOf_Monomial_BigInteger();
         propertiesOf_BigInteger();
         propertiesOf_int();
         propertiesOf_Polynomial_Variable();
@@ -51,7 +51,7 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         compareImplementationsSubtract();
         propertiesMultiply_int();
         propertiesMultiply_BigInteger();
-        propertiesMultiply_ExponentVector_BigInteger();
+        propertiesMultiply_Monomial_BigInteger();
         propertiesMultiply_MultivariatePolynomial();
         compareImplementationsMultiply_MultivariatePolynomial();
         propertiesShiftLeft();
@@ -66,44 +66,44 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
     private void propertiesIterator() {
         initialize("iterator()");
         for (MultivariatePolynomial p : take(LIMIT, P.multivariatePolynomials())) {
-            List<Pair<ExponentVector, BigInteger>> terms = toList(p);
+            List<Pair<Monomial, BigInteger>> terms = toList(p);
             assertFalse(p, any(t -> t == null || t.a == null || t.b == null, terms));
             //noinspection RedundantCast
-            assertTrue(p, increasing((Iterable<ExponentVector>) map(t -> t.a, terms)));
+            assertTrue(p, increasing((Iterable<Monomial>) map(t -> t.a, terms)));
             //noinspection Convert2MethodRef
-            inverse(IterableUtils::toList, (List<Pair<ExponentVector, BigInteger>> ts) -> of(ts), p);
+            inverse(IterableUtils::toList, (List<Pair<Monomial, BigInteger>> ts) -> of(ts), p);
             testNoRemove(p);
             testHasNext(p);
         }
     }
 
     private void propertiesCoefficient() {
-        initialize("coefficient(ExponentVector)");
-        Iterable<Pair<MultivariatePolynomial, ExponentVector>> ps = P.pairs(
+        initialize("coefficient(Monomial)");
+        Iterable<Pair<MultivariatePolynomial, Monomial>> ps = P.pairs(
                 P.multivariatePolynomials(),
-                P.exponentVectors()
+                P.monomials()
         );
-        for (Pair<MultivariatePolynomial, ExponentVector> p : take(LIMIT, ps)) {
+        for (Pair<MultivariatePolynomial, Monomial> p : take(LIMIT, ps)) {
             p.a.coefficient(p.b);
         }
     }
 
-    private void propertiesOf_List_Pair_ExponentVector_BigInteger() {
-        initialize("of(List<Pair<ExponentVector, BigInteger>>)");
-        Iterable<List<Pair<ExponentVector, BigInteger>>> pss = P.lists(P.pairs(P.exponentVectors(), P.bigIntegers()));
-        for (List<Pair<ExponentVector, BigInteger>> ps : take(LIMIT, pss)) {
+    private void propertiesOf_List_Pair_Monomial_BigInteger() {
+        initialize("of(List<Pair<Monomial, BigInteger>>)");
+        Iterable<List<Pair<Monomial, BigInteger>>> pss = P.lists(P.pairs(P.monomials(), P.bigIntegers()));
+        for (List<Pair<Monomial, BigInteger>> ps : take(LIMIT, pss)) {
             MultivariatePolynomial p = of(ps);
             p.validate();
-            for (List<Pair<ExponentVector, BigInteger>> qs : take(TINY_LIMIT, P.permutationsFinite(ps))) {
+            for (List<Pair<Monomial, BigInteger>> qs : take(TINY_LIMIT, P.permutationsFinite(ps))) {
                 assertEquals(ps, of(qs), p);
             }
         }
 
-        Iterable<List<Pair<ExponentVector, BigInteger>>> pssFail = filterInfinite(
+        Iterable<List<Pair<Monomial, BigInteger>>> pssFail = filterInfinite(
                 ps -> any(p -> p == null || p.a == null || p.b == null, ps),
-                P.lists(P.withNull(P.pairs(P.withNull(P.exponentVectors()), P.withNull(P.bigIntegers()))))
+                P.lists(P.withNull(P.pairs(P.withNull(P.monomials()), P.withNull(P.bigIntegers()))))
         );
-        for (List<Pair<ExponentVector, BigInteger>> ps : take(LIMIT, pssFail)) {
+        for (List<Pair<Monomial, BigInteger>> ps : take(LIMIT, pssFail)) {
             try {
                 of(ps);
                 fail(ps);
@@ -111,30 +111,30 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         }
     }
 
-    private static @NotNull MultivariatePolynomial of_ExponentVector_BigInteger_simplest(
-            @NotNull ExponentVector ev,
+    private static @NotNull MultivariatePolynomial of_Monomial_BigInteger_simplest(
+            @NotNull Monomial ev,
             @NotNull BigInteger c
     ) {
         return of(Collections.singletonList(new Pair<>(ev, c)));
     }
 
-    private void propertiesOf_ExponentVector_BigInteger() {
-        initialize("of(ExponentVector, BigInteger)");
-        for (Pair<ExponentVector, BigInteger> p : take(LIMIT, P.pairs(P.exponentVectors(), P.bigIntegers()))) {
+    private void propertiesOf_Monomial_BigInteger() {
+        initialize("of(Monomial, BigInteger)");
+        for (Pair<Monomial, BigInteger> p : take(LIMIT, P.pairs(P.monomials(), P.bigIntegers()))) {
             MultivariatePolynomial q = of(p.a, p.b);
             q.validate();
-            assertEquals(p, of_ExponentVector_BigInteger_simplest(p.a, p.b), q);
+            assertEquals(p, of_Monomial_BigInteger_simplest(p.a, p.b), q);
             assertTrue(p, q.termCount() < 2);
         }
     }
 
-    private void compareImplementationsOf_ExponentVector_BigInteger() {
-        Map<String, Function<Pair<ExponentVector, BigInteger>, MultivariatePolynomial>> functions =
+    private void compareImplementationsOf_Monomial_BigInteger() {
+        Map<String, Function<Pair<Monomial, BigInteger>, MultivariatePolynomial>> functions =
                 new LinkedHashMap<>();
-        functions.put("simplest", p -> of_ExponentVector_BigInteger_simplest(p.a, p.b));
+        functions.put("simplest", p -> of_Monomial_BigInteger_simplest(p.a, p.b));
         functions.put("standard", p -> of(p.a, p.b));
-        Iterable<Pair<ExponentVector, BigInteger>> ps = P.pairs(P.exponentVectors(), P.bigIntegers());
-        compareImplementations("of(ExponentVector, BigInteger)", take(LIMIT, ps), functions);
+        Iterable<Pair<Monomial, BigInteger>> ps = P.pairs(P.monomials(), P.bigIntegers());
+        compareImplementations("of(Monomial, BigInteger)", take(LIMIT, ps), functions);
     }
 
     private void propertiesOf_BigInteger() {
@@ -145,7 +145,7 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
             assertTrue(i, p.degree() <= 0);
             assertTrue(i, p.termCount() <= 1);
             assertEquals(i, p.toString(), i.toString());
-            inverse(MultivariatePolynomial::of, (MultivariatePolynomial q) -> q.coefficient(ExponentVector.ONE), i);
+            inverse(MultivariatePolynomial::of, (MultivariatePolynomial q) -> q.coefficient(Monomial.ONE), i);
         }
     }
 
@@ -159,7 +159,7 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
             assertEquals(i, p.toString(), Integer.toString(i));
             inverse(
                     MultivariatePolynomial::of,
-                    (MultivariatePolynomial q) -> q.coefficient(ExponentVector.ONE).intValueExact(),
+                    (MultivariatePolynomial q) -> q.coefficient(Monomial.ONE).intValueExact(),
                     i
             );
         }
@@ -272,8 +272,8 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
                                     zipWith(
                                             (c, i) -> c.multiply(
                                                     i == 0 ?
-                                                            ExponentVector.ONE :
-                                                            ExponentVector.fromTerms(
+                                                            Monomial.ONE :
+                                                            Monomial.fromTerms(
                                                                     Collections.singletonList(new Pair<>(p.b, i))
                                                             ),
                                                     BigInteger.ONE
@@ -300,7 +300,7 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
             }
             assertEquals(
                     p,
-                    toList(map(c -> c.coefficient(ExponentVector.ONE), coefficients)),
+                    toList(map(c -> c.coefficient(Monomial.ONE), coefficients)),
                     toList(p.b.toPolynomial())
             );
         }
@@ -496,14 +496,14 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         }
     }
 
-    private void propertiesMultiply_ExponentVector_BigInteger() {
-        initialize("multiply(ExponentVector, BigInteger)");
-        Iterable<Triple<MultivariatePolynomial, ExponentVector, BigInteger>> ts = P.triples(
+    private void propertiesMultiply_Monomial_BigInteger() {
+        initialize("multiply(Monomial, BigInteger)");
+        Iterable<Triple<MultivariatePolynomial, Monomial, BigInteger>> ts = P.triples(
                 P.multivariatePolynomials(),
-                P.exponentVectors(),
+                P.monomials(),
                 P.bigIntegers()
         );
-        for (Triple<MultivariatePolynomial, ExponentVector, BigInteger> t : take(LIMIT, ts)) {
+        for (Triple<MultivariatePolynomial, Monomial, BigInteger> t : take(LIMIT, ts)) {
             MultivariatePolynomial product = t.a.multiply(t.b, t.c);
             product.validate();
             assertTrue(
@@ -513,17 +513,17 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
             assertEquals(t, t.a.multiply(of(t.b, t.c)), product);
         }
 
-        Iterable<Pair<MultivariatePolynomial, ExponentVector>> ps = P.pairs(
+        Iterable<Pair<MultivariatePolynomial, Monomial>> ps = P.pairs(
                 P.multivariatePolynomials(),
-                P.exponentVectors()
+                P.monomials()
         );
-        for (Pair<MultivariatePolynomial, ExponentVector> p : take(LIMIT, ps)) {
+        for (Pair<MultivariatePolynomial, Monomial> p : take(LIMIT, ps)) {
             assertEquals(p, p.a.multiply(p.b, BigInteger.ZERO), ZERO);
         }
 
         Iterable<Pair<MultivariatePolynomial, BigInteger>> ps2 = P.pairs(P.multivariatePolynomials(), P.bigIntegers());
         for (Pair<MultivariatePolynomial, BigInteger> p : take(LIMIT, ps2)) {
-            assertEquals(p, p.a.multiply(ExponentVector.ONE, p.b), p.a.multiply(p.b));
+            assertEquals(p, p.a.multiply(Monomial.ONE, p.b), p.a.multiply(p.b));
         }
     }
 
@@ -534,10 +534,10 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         if (a == ZERO || b == ZERO) return ZERO;
         if (a == ONE) return b;
         if (b == ONE) return a;
-        Map<ExponentVector, BigInteger> terms = new HashMap<>();
-        for (Pair<ExponentVector, BigInteger> aTerm : a) {
-            for (Pair<ExponentVector, BigInteger> bTerm : b) {
-                ExponentVector evProduct = aTerm.a.multiply(bTerm.a);
+        Map<Monomial, BigInteger> terms = new HashMap<>();
+        for (Pair<Monomial, BigInteger> aTerm : a) {
+            for (Pair<Monomial, BigInteger> bTerm : b) {
+                Monomial evProduct = aTerm.a.multiply(bTerm.a);
                 BigInteger cProduct = aTerm.b.multiply(bTerm.b);
                 BigInteger coefficient = terms.get(evProduct);
                 if (coefficient == null) coefficient = BigInteger.ZERO;

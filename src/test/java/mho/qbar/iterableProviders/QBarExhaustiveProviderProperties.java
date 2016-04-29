@@ -55,7 +55,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesMonicRationalPolynomials();
         propertiesVariables();
         propertiesMonomialOrders();
-        propertiesExponentVectors();
+        propertiesMonomials();
         propertiesMultivariatePolynomials();
         propertiesPositiveAlgebraics();
         propertiesNegativeAlgebraics();
@@ -103,7 +103,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesRationalPolynomialsAtLeast();
         propertiesMonicRationalPolynomials_int();
         propertiesMonicRationalPolynomialsAtLeast();
-        propertiesExponentVectors_List_Variable();
+        propertiesMonomials_List_Variable();
         propertiesMultivariatePolynomials_List_Variable();
         propertiesPositiveAlgebraics_int();
         propertiesNegativeAlgebraics_int();
@@ -881,21 +881,21 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         biggerTest(QEP, QEP.monomialOrders(), o -> true);
     }
 
-    private void propertiesExponentVectors() {
-        initializeConstant("exponentVectors()");
-        biggerTest(QEP, QEP.exponentVectors(), ev -> true);
+    private void propertiesMonomials() {
+        initializeConstant("monomials()");
+        biggerTest(QEP, QEP.monomials(), m -> true);
     }
 
-    private void propertiesExponentVectors_List_Variable() {
-        initialize("exponentVectors(List<Variable>)");
+    private void propertiesMonomials_List_Variable() {
+        initialize("monomials(List<Variable>)");
         for (List<Variable> vs : take(LIMIT, P.subsets(P.variables()))) {
-            Iterable<ExponentVector> evs = QEP.exponentVectors(vs);
-            simpleTest(vs, evs, ev -> isSubsetOf(ev.variables(), vs));
+            Iterable<Monomial> ms = QEP.monomials(vs);
+            simpleTest(vs, ms, m -> isSubsetOf(m.variables(), vs));
         }
 
         for (List<Variable> vs : take(LIMIT, filterInfinite(us -> !increasing(us), P.lists(P.variables())))) {
             try {
-                QEP.exponentVectors(vs);
+                QEP.monomials(vs);
                 fail(vs);
             } catch (IllegalArgumentException ignored) {}
         }
@@ -906,7 +906,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         );
         for (List<Variable> vs : take(LIMIT, vsFail)) {
             try {
-                QEP.exponentVectors(vs);
+                QEP.monomials(vs);
                 fail(vs);
             } catch (NullPointerException ignored) {}
         }

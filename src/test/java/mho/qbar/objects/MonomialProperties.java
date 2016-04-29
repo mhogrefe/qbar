@@ -12,15 +12,15 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.function.Function;
 
-import static mho.qbar.objects.ExponentVector.*;
+import static mho.qbar.objects.Monomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.*;
 
-public class ExponentVectorProperties extends QBarTestProperties {
-    private static final @NotNull String EXPONENT_VECTOR_CHARS = "*0123456789^abcdefghijklmnopqrstuvwxyz";
+public class MonomialProperties extends QBarTestProperties {
+    private static final @NotNull String MONOMIAL_CHARS = "*0123456789^abcdefghijklmnopqrstuvwxyz";
 
-    public ExponentVectorProperties() {
-        super("ExponentVector");
+    public MonomialProperties() {
+        super("Monomial");
     }
 
     @Override
@@ -50,23 +50,23 @@ public class ExponentVectorProperties extends QBarTestProperties {
 
     private void propertiesGetExponents() {
         initialize("getExponents()");
-        for (ExponentVector ev : take(LIMIT, P.exponentVectors())) {
-            List<Integer> exponents = ev.getExponents();
-            assertTrue(ev, all(i -> i >= 0, exponents));
+        for (Monomial m : take(LIMIT, P.monomials())) {
+            List<Integer> exponents = m.getExponents();
+            assertTrue(m, all(i -> i >= 0, exponents));
             //noinspection Convert2MethodRef
-            inverse(ExponentVector::getExponents, (List<Integer> is) -> of(is), ev);
+            inverse(Monomial::getExponents, (List<Integer> is) -> of(is), m);
         }
 
-        for (ExponentVector ev : take(LIMIT, filterInfinite(f -> f != ONE, P.exponentVectors()))) {
-            List<Integer> exponents = ev.getExponents();
-            assertTrue(ev, last(exponents) != 0);
+        for (Monomial m : take(LIMIT, filterInfinite(f -> f != ONE, P.monomials()))) {
+            List<Integer> exponents = m.getExponents();
+            assertTrue(m, last(exponents) != 0);
         }
     }
 
     private void propertiesExponent() {
         initialize("exponent(int)");
-        Iterable<Pair<ExponentVector, Variable>> ps = P.pairsLogarithmicOrder(P.exponentVectors(), P.variables());
-        for (Pair<ExponentVector, Variable> p : take(LIMIT, ps)) {
+        Iterable<Pair<Monomial, Variable>> ps = P.pairsLogarithmicOrder(P.monomials(), P.variables());
+        for (Pair<Monomial, Variable> p : take(LIMIT, ps)) {
             int exponent = p.a.exponent(p.b);
             assertEquals(p, exponent, lookup(p.b, p.a.terms()).orElse(0));
         }
@@ -74,32 +74,32 @@ public class ExponentVectorProperties extends QBarTestProperties {
 
     private void propertiesSize() {
         initialize("size()");
-        for (ExponentVector ev : take(LIMIT, P.exponentVectors())) {
-            int size = ev.size();
-            assertEquals(ev, size, ev.getExponents().size());
-            assertTrue(ev, size >= 0);
+        for (Monomial m : take(LIMIT, P.monomials())) {
+            int size = m.size();
+            assertEquals(m, size, m.getExponents().size());
+            assertTrue(m, size >= 0);
         }
     }
 
     private void propertiesTerms() {
         initialize("terms()");
-        for (ExponentVector ev : take(LIMIT, P.exponentVectors())) {
-            Iterable<Pair<Variable, Integer>> termsIterable = ev.terms();
+        for (Monomial m : take(LIMIT, P.monomials())) {
+            Iterable<Pair<Variable, Integer>> termsIterable = m.terms();
             testNoRemove(termsIterable);
             testHasNext(termsIterable);
             List<Pair<Variable, Integer>> terms = toList(termsIterable);
-            assertTrue(ev, all(t -> t.b > 0, terms));
+            assertTrue(m, all(t -> t.b > 0, terms));
             //noinspection RedundantCast
-            assertTrue(ev, increasing((Iterable<Variable>) map(t -> t.a, terms)));
-            inverse(u -> toList(u.terms()), ExponentVector::fromTerms, ev);
+            assertTrue(m, increasing((Iterable<Variable>) map(t -> t.a, terms)));
+            inverse(u -> toList(u.terms()), Monomial::fromTerms, m);
         }
     }
 
     private void propertiesOf() {
         initialize("of(List<Integer>)");
         for (List<Integer> is : take(LIMIT, P.withScale(4).lists(P.naturalIntegersGeometric()))) {
-            ExponentVector ev = of(is);
-            ev.validate();
+            Monomial m = of(is);
+            m.validate();
         }
 
         Iterable<List<Integer>> iss = filterInfinite(
@@ -142,8 +142,8 @@ public class ExponentVectorProperties extends QBarTestProperties {
                 )
         );
         for (List<Pair<Variable, Integer>> ps : take(LIMIT, pss)) {
-            ExponentVector ev = fromTerms(ps);
-            ev.validate();
+            Monomial m = fromTerms(ps);
+            m.validate();
         }
 
         pss = P.withElement(
@@ -157,7 +157,7 @@ public class ExponentVectorProperties extends QBarTestProperties {
                 )
         );
         for (List<Pair<Variable, Integer>> ps : take(LIMIT, pss)) {
-            inverse(ExponentVector::fromTerms, u -> toList(u.terms()), ps);
+            inverse(Monomial::fromTerms, u -> toList(u.terms()), ps);
         }
 
         Iterable<List<Pair<Variable, Integer>>> pssFail = map(
@@ -196,29 +196,29 @@ public class ExponentVectorProperties extends QBarTestProperties {
 
     private void propertiesDegree() {
         initialize("degree()");
-        for (ExponentVector ev : take(LIMIT, P.exponentVectors())) {
-            int degree = ev.degree();
-            assertTrue(ev, degree >= 0);
+        for (Monomial m : take(LIMIT, P.monomials())) {
+            int degree = m.degree();
+            assertTrue(m, degree >= 0);
         }
     }
 
     private void propertiesVariables() {
         initialize("variables()");
-        for (ExponentVector ev : take(LIMIT, P.exponentVectors())) {
-            List<Variable> variables = ev.variables();
-            assertTrue(ev, increasing(variables));
-            String s = ev.toString();
+        for (Monomial m : take(LIMIT, P.monomials())) {
+            List<Variable> variables = m.variables();
+            assertTrue(m, increasing(variables));
+            String s = m.toString();
             for (Variable v : variables) {
-                assertTrue(ev, s.contains(v.toString()));
+                assertTrue(m, s.contains(v.toString()));
             }
         }
     }
 
     private void propertiesRemoveVariable() {
         initialize("removeVariable(Variable)");
-        Iterable<Pair<ExponentVector, Variable>> ps = P.pairsLogarithmicOrder(P.exponentVectors(), P.variables());
-        for (Pair<ExponentVector, Variable> p : take(LIMIT, ps)) {
-            ExponentVector removed = p.a.removeVariable(p.b);
+        Iterable<Pair<Monomial, Variable>> ps = P.pairsLogarithmicOrder(P.monomials(), P.variables());
+        for (Pair<Monomial, Variable> p : take(LIMIT, ps)) {
+            Monomial removed = p.a.removeVariable(p.b);
             removed.validate();
         }
 
@@ -227,17 +227,18 @@ public class ExponentVectorProperties extends QBarTestProperties {
         }
     }
 
-    private static @NotNull ExponentVector removeVariables_alt(
-            @NotNull ExponentVector ev,
+    private static @NotNull
+    Monomial removeVariables_alt(
+            @NotNull Monomial m,
             @NotNull List<Variable> vs
     ) {
         if (any(v -> v == null, vs)) {
             throw new NullPointerException();
         }
-        if (ev == ONE) return ev;
-        vs = toList(filter(v -> ev.exponent(v) != 0, vs));
-        if (vs.isEmpty()) return ev;
-        List<Integer> removedExponents = ev.getExponents();
+        if (m == ONE) return m;
+        vs = toList(filter(v -> m.exponent(v) != 0, vs));
+        if (vs.isEmpty()) return m;
+        List<Integer> removedExponents = m.getExponents();
         for (Variable v : vs) {
             removedExponents.set(v.getIndex(), 0);
         }
@@ -246,12 +247,12 @@ public class ExponentVectorProperties extends QBarTestProperties {
 
     private void propertiesRemoveVariables() {
         initialize("removeVariables(List<Variable>)");
-        Iterable<Pair<ExponentVector, List<Variable>>> ps = P.pairsLogarithmicOrder(
-                P.exponentVectors(),
+        Iterable<Pair<Monomial, List<Variable>>> ps = P.pairsLogarithmicOrder(
+                P.monomials(),
                 P.lists(P.variables())
         );
-        for (Pair<ExponentVector, List<Variable>> p : take(LIMIT, ps)) {
-            ExponentVector removed = p.a.removeVariables(p.b);
+        for (Pair<Monomial, List<Variable>> p : take(LIMIT, ps)) {
+            Monomial removed = p.a.removeVariables(p.b);
             removed.validate();
             assertEquals(p, removeVariables_alt(p.a, p.b), removed);
         }
@@ -260,15 +261,15 @@ public class ExponentVectorProperties extends QBarTestProperties {
             fixedPoint(e -> e.removeVariables(vs), ONE);
         }
 
-        for (ExponentVector ev : take(LIMIT, P.exponentVectors())) {
-            assertEquals(ev, ev.removeVariables(ev.variables()), ONE);
+        for (Monomial m : take(LIMIT, P.monomials())) {
+            assertEquals(m, m.removeVariables(m.variables()), ONE);
         }
 
-        Iterable<Pair<ExponentVector, List<Variable>>> psFail = P.pairs(
-                P.exponentVectors(),
+        Iterable<Pair<Monomial, List<Variable>>> psFail = P.pairs(
+                P.monomials(),
                 P.listsWithElement(null, P.variables())
         );
-        for (Pair<ExponentVector, List<Variable>> p : take(LIMIT, psFail)) {
+        for (Pair<Monomial, List<Variable>> p : take(LIMIT, psFail)) {
             try {
                 p.a.removeVariables(p.b);
                 fail(p);
@@ -277,87 +278,91 @@ public class ExponentVectorProperties extends QBarTestProperties {
     }
 
     private void compareImplementationsRemoveVariables() {
-        Map<String, Function<Pair<ExponentVector, List<Variable>>, ExponentVector>> functions = new LinkedHashMap<>();
+        Map<String, Function<Pair<Monomial, List<Variable>>, Monomial>> functions = new LinkedHashMap<>();
         functions.put("alt", p -> removeVariables_alt(p.a, p.b));
         functions.put("standard", p -> p.a.removeVariables(p.b));
-        Iterable<Pair<ExponentVector, List<Variable>>> ps = P.pairsLogarithmicOrder(
-                P.exponentVectors(),
+        Iterable<Pair<Monomial, List<Variable>>> ps = P.pairsLogarithmicOrder(
+                P.monomials(),
                 P.lists(P.variables())
         );
         compareImplementations("removeVariables(List<Variable>)", take(LIMIT, ps), functions);
     }
 
     private void propertiesMultiply() {
-        initialize("multiply(ExponentVector)");
-        for (Pair<ExponentVector, ExponentVector> p : take(LIMIT, P.pairs(P.exponentVectors()))) {
-            ExponentVector product = p.a.multiply(p.b);
+        initialize("multiply(Monomial)");
+        for (Pair<Monomial, Monomial> p : take(LIMIT, P.pairs(P.monomials()))) {
+            Monomial product = p.a.multiply(p.b);
             product.validate();
-            commutative(ExponentVector::multiply, p);
+            commutative(Monomial::multiply, p);
         }
 
-        for (ExponentVector ev : take(LIMIT, P.exponentVectors())) {
-            fixedPoint(ONE::multiply, ev);
-            fixedPoint(f -> f.multiply(ONE), ev);
+        for (Monomial m : take(LIMIT, P.monomials())) {
+            fixedPoint(ONE::multiply, m);
+            fixedPoint(f -> f.multiply(ONE), m);
         }
 
-        for (Triple<ExponentVector, ExponentVector, ExponentVector> t : take(LIMIT, P.triples(P.exponentVectors()))) {
-            associative(ExponentVector::multiply, t);
+        for (Triple<Monomial, Monomial, Monomial> t : take(LIMIT, P.triples(P.monomials()))) {
+            associative(Monomial::multiply, t);
         }
     }
 
-    private static @NotNull ExponentVector product_simplest(@NotNull Iterable<ExponentVector> xs) {
+    private static @NotNull
+    Monomial product_simplest(@NotNull Iterable<Monomial> xs) {
         if (any(x -> x == null, xs)) {
             throw new NullPointerException();
         }
-        return foldl(ExponentVector::multiply, ONE, xs);
+        return foldl(Monomial::multiply, ONE, xs);
     }
 
-    private static @NotNull ExponentVector product_alt(@NotNull Iterable<ExponentVector> xs) {
-        return of(toList(map(IterableUtils::sumInteger, transpose(map(ExponentVector::getExponents, xs)))));
+    private static @NotNull
+    Monomial product_alt(@NotNull Iterable<Monomial> xs) {
+        return of(toList(map(IterableUtils::sumInteger, transpose(map(Monomial::getExponents, xs)))));
     }
 
     private void propertiesProduct() {
-        initialize("product(List<ExponentVector>)");
+        initialize("product(List<Monomial>)");
         propertiesFoldHelper(
                 LIMIT,
                 P.getWheelsProvider(),
-                P.exponentVectors(),
-                ExponentVector::multiply,
-                ExponentVector::product,
-                ExponentVector::validate,
+                P.monomials(),
+                Monomial::multiply,
+                Monomial::product,
+                Monomial::validate,
                 true,
                 true
         );
 
-        for (List<ExponentVector> evs : take(LIMIT, P.withScale(1).lists(P.exponentVectors()))) {
-            ExponentVector product = product(evs);
+        for (List<Monomial> evs : take(LIMIT, P.withScale(1).lists(P.monomials()))) {
+            Monomial product = product(evs);
             assertEquals(evs, product, product_simplest(evs));
             assertEquals(evs, product, product_alt(evs));
         }
     }
 
     private void compareImplementationsProduct() {
-        Map<String, Function<List<ExponentVector>, ExponentVector>> functions = new LinkedHashMap<>();
-        functions.put("simplest", ExponentVectorProperties::product_simplest);
-        functions.put("alt", ExponentVectorProperties::product_alt);
-        functions.put("standard", ExponentVector::product);
-        compareImplementations("product(List<ExponentVector>)", take(LIMIT, P.lists(P.exponentVectors())), functions);
+        Map<String, Function<List<Monomial>, Monomial>> functions = new LinkedHashMap<>();
+        functions.put("simplest", MonomialProperties::product_simplest);
+        functions.put("alt", MonomialProperties::product_alt);
+        functions.put("standard", Monomial::product);
+        compareImplementations("product(List<Monomial>)", take(LIMIT, P.lists(P.monomials())), functions);
     }
 
-    private static @NotNull ExponentVector pow_simplest(@NotNull ExponentVector ev, int p) {
+    private static @NotNull
+    Monomial pow_simplest(@NotNull Monomial ev, int p) {
         return product(toList(replicate(p, ev)));
     }
 
-    private static @NotNull ExponentVector pow_alt(@NotNull ExponentVector ev, int p) {
+    private static @NotNull
+    Monomial pow_alt(@NotNull Monomial m, int p) {
         if (p < 0) {
             throw new ArithmeticException("p cannot be negative. Invalid p: " + p);
         }
-        if (p == 0 || ev == ONE) return ONE;
-        if (p == 1) return ev;
-        ExponentVector powerPower = null; // p^2^i
-        List<ExponentVector> factors = new ArrayList<>();
+        if (p == 0 || m == ONE) return ONE;
+        if (p == 1) return m;
+        Monomial powerPower = null; // p^2^i
+        List<Monomial> factors = new ArrayList<>();
         for (boolean bit : IntegerUtils.bits(p)) {
-            powerPower = powerPower == null ? ev : powerPower.multiply(powerPower);
+            powerPower = powerPower == null ? m : powerPower.multiply(powerPower);
             if (bit) factors.add(powerPower);
         }
         return product(factors);
@@ -365,49 +370,49 @@ public class ExponentVectorProperties extends QBarTestProperties {
 
     private void propertiesPow() {
         initialize("pow(int)");
-        Iterable<Pair<ExponentVector, Integer>> ps = P.pairsLogarithmicOrder(
-                P.exponentVectors(),
+        Iterable<Pair<Monomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.monomials(),
                 P.withScale(4).naturalIntegersGeometric()
         );
-        for (Pair<ExponentVector, Integer> p : take(LIMIT, ps)) {
-            ExponentVector ev = p.a.pow(p.b);
-            ev.validate();
-            assertEquals(p, ev, pow_simplest(p.a, p.b));
-            assertEquals(p, ev, pow_alt(p.a, p.b));
+        for (Pair<Monomial, Integer> p : take(LIMIT, ps)) {
+            Monomial m = p.a.pow(p.b);
+            m.validate();
+            assertEquals(p, m, pow_simplest(p.a, p.b));
+            assertEquals(p, m, pow_alt(p.a, p.b));
         }
 
-        for (ExponentVector ev : take(LIMIT, P.exponentVectors())) {
-            assertTrue(ev, ev.pow(0) == ONE);
-            fixedPoint(f -> f.pow(1), ev);
-            assertEquals(ev, ev.pow(2), ev.multiply(ev));
+        for (Monomial m : take(LIMIT, P.monomials())) {
+            assertTrue(m, m.pow(0) == ONE);
+            fixedPoint(f -> f.pow(1), m);
+            assertEquals(m, m.pow(2), m.multiply(m));
         }
 
-        Iterable<Triple<ExponentVector, Integer, Integer>> ts2 = P.triples(
-                P.exponentVectors(),
+        Iterable<Triple<Monomial, Integer, Integer>> ts2 = P.triples(
+                P.monomials(),
                 P.withScale(4).naturalIntegersGeometric(),
                 P.withScale(4).naturalIntegersGeometric()
         );
-        for (Triple<ExponentVector, Integer, Integer> t : take(LIMIT, ts2)) {
-            ExponentVector expression1 = t.a.pow(t.b).multiply(t.a.pow(t.c));
-            ExponentVector expression2 = t.a.pow(t.b + t.c);
+        for (Triple<Monomial, Integer, Integer> t : take(LIMIT, ts2)) {
+            Monomial expression1 = t.a.pow(t.b).multiply(t.a.pow(t.c));
+            Monomial expression2 = t.a.pow(t.b + t.c);
             assertEquals(t, expression1, expression2);
-            ExponentVector expression5 = t.a.pow(t.b).pow(t.c);
-            ExponentVector expression6 = t.a.pow(t.b * t.c);
+            Monomial expression5 = t.a.pow(t.b).pow(t.c);
+            Monomial expression6 = t.a.pow(t.b * t.c);
             assertEquals(t, expression5, expression6);
         }
 
-        Iterable<Triple<ExponentVector, ExponentVector, Integer>> ts3 = P.triples(
-                P.exponentVectors(),
-                P.exponentVectors(),
+        Iterable<Triple<Monomial, Monomial, Integer>> ts3 = P.triples(
+                P.monomials(),
+                P.monomials(),
                 P.withScale(4).naturalIntegersGeometric()
         );
-        for (Triple<ExponentVector, ExponentVector, Integer> t : take(LIMIT, ts3)) {
-            ExponentVector expression1 = t.a.multiply(t.b).pow(t.c);
-            ExponentVector expression2 = t.a.pow(t.c).multiply(t.b.pow(t.c));
+        for (Triple<Monomial, Monomial, Integer> t : take(LIMIT, ts3)) {
+            Monomial expression1 = t.a.multiply(t.b).pow(t.c);
+            Monomial expression2 = t.a.pow(t.c).multiply(t.b.pow(t.c));
             assertEquals(t, expression1, expression2);
         }
 
-        for (Pair<ExponentVector, Integer> p : take(LIMIT, P.pairs(P.exponentVectors(), P.negativeIntegers()))) {
+        for (Pair<Monomial, Integer> p : take(LIMIT, P.pairs(P.monomials(), P.negativeIntegers()))) {
             try {
                 p.a.pow(p.b);
                 fail(p);
@@ -416,12 +421,12 @@ public class ExponentVectorProperties extends QBarTestProperties {
     }
 
     private void compareImplementationsPow() {
-        Map<String, Function<Pair<ExponentVector, Integer>, ExponentVector>> functions = new LinkedHashMap<>();
+        Map<String, Function<Pair<Monomial, Integer>, Monomial>> functions = new LinkedHashMap<>();
         functions.put("simplest", p -> pow_simplest(p.a, p.b));
         functions.put("alt", p -> pow_alt(p.a, p.b));
         functions.put("standard", p -> p.a.pow(p.b));
-        Iterable<Pair<ExponentVector, Integer>> ps = P.pairsLogarithmicOrder(
-                P.exponentVectors(),
+        Iterable<Pair<Monomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.monomials(),
                 P.withScale(4).naturalIntegersGeometric()
         );
         compareImplementations("pow(int)", take(LIMIT, ps), functions);
@@ -431,17 +436,17 @@ public class ExponentVectorProperties extends QBarTestProperties {
 
     private void propertiesEquals() {
         initialize("equals(Object)");
-        QBarTesting.propertiesEqualsHelper(LIMIT, P, QBarIterableProvider::exponentVectors);
+        QBarTesting.propertiesEqualsHelper(LIMIT, P, QBarIterableProvider::monomials);
     }
 
     private void propertiesHashCode() {
         initialize("hashCode()");
-        QBarTesting.propertiesHashCodeHelper(LIMIT, P, QBarIterableProvider::exponentVectors);
+        QBarTesting.propertiesHashCodeHelper(LIMIT, P, QBarIterableProvider::monomials);
     }
 
     private void propertiesCompareTo() {
-        initialize("compareTo(ExponentVector)");
-        QBarTesting.propertiesCompareToHelper(LIMIT, P, QBarIterableProvider::exponentVectors);
+        initialize("compareTo(Monomial)");
+        QBarTesting.propertiesCompareToHelper(LIMIT, P, QBarIterableProvider::monomials);
     }
 
     private void propertiesReadStrict() {
@@ -449,10 +454,10 @@ public class ExponentVectorProperties extends QBarTestProperties {
         QBarTesting.propertiesReadHelper(
                 LIMIT,
                 P,
-                EXPONENT_VECTOR_CHARS,
-                P.exponentVectors(),
-                ExponentVector::readStrict,
-                ExponentVector::validate,
+                MONOMIAL_CHARS,
+                P.monomials(),
+                Monomial::readStrict,
+                Monomial::validate,
                 false,
                 true
         );
@@ -460,6 +465,6 @@ public class ExponentVectorProperties extends QBarTestProperties {
 
     private void propertiesToString() {
         initialize("toString()");
-        propertiesToStringHelper(LIMIT, EXPONENT_VECTOR_CHARS, P.exponentVectors(), ExponentVector::readStrict);
+        propertiesToStringHelper(LIMIT, MONOMIAL_CHARS, P.monomials(), Monomial::readStrict);
     }
 }

@@ -30,28 +30,28 @@ public class MultivariatePolynomialDemos extends QBarDemos {
     }
 
     private void demoCoefficient() {
-        Iterable<Pair<MultivariatePolynomial, ExponentVector>> ps = P.pairs(
+        Iterable<Pair<MultivariatePolynomial, Monomial>> ps = P.pairs(
                 P.withScale(4).multivariatePolynomials(),
-                P.withScale(4).exponentVectors()
+                P.withScale(4).monomials()
         );
-        for (Pair<MultivariatePolynomial, ExponentVector> p : take(LIMIT, ps)) {
+        for (Pair<MultivariatePolynomial, Monomial> p : take(LIMIT, ps)) {
             System.out.println("coefficient(" + p.a + ", " + p.b + ") = " + p.a.coefficient(p.b));
         }
     }
 
-    private void demoOf_List_Pair_ExponentVector_BigInteger() {
-        Iterable<List<Pair<ExponentVector, BigInteger>>> pss = P.withScale(4).lists(
-                P.pairs(P.withScale(4).exponentVectors(), P.bigIntegers())
+    private void demoOf_List_Pair_Monomial_BigInteger() {
+        Iterable<List<Pair<Monomial, BigInteger>>> pss = P.withScale(4).lists(
+                P.pairs(P.withScale(4).monomials(), P.bigIntegers())
         );
-        for (List<Pair<ExponentVector, BigInteger>> ps : take(LIMIT, pss)) {
+        for (List<Pair<Monomial, BigInteger>> ps : take(LIMIT, pss)) {
             String listString = tail(init(ps.toString()));
             System.out.println("of(" + listString + ") = " + of(ps));
         }
     }
 
-    private void demoOf_ExponentVector_BigInteger() {
-        Iterable<Pair<ExponentVector, BigInteger>> ps = P.pairs(P.withScale(4).exponentVectors(), P.bigIntegers());
-        for (Pair<ExponentVector, BigInteger> p : take(LIMIT, ps)) {
+    private void demoOf_Monomial_BigInteger() {
+        Iterable<Pair<Monomial, BigInteger>> ps = P.pairs(P.withScale(4).monomials(), P.bigIntegers());
+        for (Pair<Monomial, BigInteger> p : take(LIMIT, ps)) {
             System.out.println("of(" + p.a + ", " + p.b + ") = " + of(p.a, p.b));
         }
     }
@@ -182,13 +182,13 @@ public class MultivariatePolynomialDemos extends QBarDemos {
         }
     }
 
-    private void demoMultiply_ExponentVector_BigInteger() {
-        Iterable<Triple<MultivariatePolynomial, ExponentVector, BigInteger>> ts = P.triples(
+    private void demoMultiply_Monomial_BigInteger() {
+        Iterable<Triple<MultivariatePolynomial, Monomial, BigInteger>> ts = P.triples(
                 P.withScale(4).multivariatePolynomials(),
-                P.withScale(4).exponentVectors(),
+                P.withScale(4).monomials(),
                 P.bigIntegers()
         );
-        for (Triple<MultivariatePolynomial, ExponentVector, BigInteger> t : take(LIMIT, ts)) {
+        for (Triple<MultivariatePolynomial, Monomial, BigInteger> t : take(LIMIT, ts)) {
             System.out.println("(" + t.a + ") * (" + t.b + ") * " + t.c + " = " + t.a.multiply(t.b, t.c));
         }
     }

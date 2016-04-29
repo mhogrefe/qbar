@@ -3448,12 +3448,12 @@ public strictfp abstract class QBarIterableProvider {
     public abstract @NotNull Iterable<MonomialOrder> monomialOrders();
 
     /**
-     * Generates {@code ExponentVector}s.
+     * Generates {@code Monomial}s.
      */
-    public abstract @NotNull Iterable<ExponentVector> exponentVectors();
+    public abstract @NotNull Iterable<Monomial> monomials();
 
     /**
-     * Generates {@code ExponentVector}s containing only (a subset of) the given variables.
+     * Generates {@code Monomial}s containing only (a subset of) the given variables.
      *
      * <ul>
      *  <li>{@code variables} must be in increasing order and cannot contain repetitions.</li>
@@ -3461,7 +3461,7 @@ public strictfp abstract class QBarIterableProvider {
      *
      * @param variables the allowed variables in the result
      */
-    public @NotNull Iterable<ExponentVector> exponentVectors(@NotNull List<Variable> variables) {
+    public @NotNull Iterable<Monomial> monomials(@NotNull List<Variable> variables) {
         if (any(v -> v == null, variables)) {
             throw new NullPointerException();
         }
@@ -3471,7 +3471,7 @@ public strictfp abstract class QBarIterableProvider {
         }
         List<Variable> reversed = reverse(variables);
         return map(
-                es -> ExponentVector.fromTerms(toList(filter(p -> p.b != 0, zip(reversed, es)))),
+                es -> Monomial.fromTerms(toList(filter(p -> p.b != 0, zip(reversed, es)))),
                 lists(variables.size(), naturalIntegersGeometric())
         );
     }

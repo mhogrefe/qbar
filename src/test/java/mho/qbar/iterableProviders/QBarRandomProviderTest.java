@@ -4708,25 +4708,21 @@ public class QBarRandomProviderTest {
         simpleProviderHelper(P.monomialOrders(), "QBarRandomProvider_monomialOrders");
     }
 
-    private static void exponentVectorHelper(
-            @NotNull Iterable<ExponentVector> xs,
-            @NotNull String output,
-            double degreeMean
-    ) {
-        List<ExponentVector> sample = toList(take(DEFAULT_SAMPLE_SIZE, xs));
+    private static void monomialHelper(@NotNull Iterable<Monomial> xs, @NotNull String output, double degreeMean) {
+        List<Monomial> sample = toList(take(DEFAULT_SAMPLE_SIZE, xs));
         aeqitLimitQBarLog(TINY_LIMIT, sample, output);
         aeqMapQBarLog(topSampleCount(DEFAULT_TOP_COUNT, sample), output);
-        aeq(meanOfIntegers(toList(map(ExponentVector::degree, sample))), degreeMean);
+        aeq(meanOfIntegers(toList(map(Monomial::degree, sample))), degreeMean);
     }
 
-    private static void exponentVectors_helper(int scale, @NotNull String output, double degreeMean) {
-        exponentVectorHelper(P.withScale(scale).exponentVectors(), output, degreeMean);
+    private static void monomials_helper(int scale, @NotNull String output, double degreeMean) {
+        monomialHelper(P.withScale(scale).monomials(), output, degreeMean);
         P.reset();
     }
 
-    private static void exponentVectors_fail_helper(int scale) {
+    private static void monomials_fail_helper(int scale) {
         try {
-            P.withScale(scale).exponentVectors();
+            P.withScale(scale).monomials();
             fail();
         } catch (IllegalStateException ignored) {}
         finally {
@@ -4735,27 +4731,27 @@ public class QBarRandomProviderTest {
     }
 
     @Test
-    public void testExponentVectors() {
-        exponentVectors_helper(1, "QBarRandomProvider_exponentVectors_i", 1.0010019999980002);
-        exponentVectors_helper(8, "QBarRandomProvider_exponentVectors_ii", 24.01019300000956);
-        exponentVectors_helper(32, "QBarRandomProvider_exponentVectors_iii", 192.2389910000015);
-        exponentVectors_fail_helper(0);
-        exponentVectors_fail_helper(-1);
+    public void testMonomials() {
+        monomials_helper(1, "QBarRandomProvider_monomials_i", 1.0010019999980002);
+        monomials_helper(8, "QBarRandomProvider_monomials_ii", 24.01019300000956);
+        monomials_helper(32, "QBarRandomProvider_monomials_iii", 192.2389910000015);
+        monomials_fail_helper(0);
+        monomials_fail_helper(-1);
     }
 
-    private static void exponentVectors_List_Variable_helper(
+    private static void monomials_List_Variable_helper(
             int scale,
             @NotNull String variables,
             @NotNull String output,
             double degreeMean
     ) {
-        exponentVectorHelper(P.withScale(scale).exponentVectors(readVariableList(variables)), output, degreeMean);
+        monomialHelper(P.withScale(scale).monomials(readVariableList(variables)), output, degreeMean);
         P.reset();
     }
 
-    private static void exponentVectors_List_Variable_fail_helper(int scale, @NotNull String variables) {
+    private static void monomials_List_Variable_fail_helper(int scale, @NotNull String variables) {
         try {
-            P.withScale(scale).exponentVectors(readVariableListWithNulls(variables));
+            P.withScale(scale).monomials(readVariableListWithNulls(variables));
             fail();
         } catch (IllegalStateException | IllegalArgumentException ignored) {}
         finally {
@@ -4764,49 +4760,39 @@ public class QBarRandomProviderTest {
     }
 
     @Test
-    public void testExponentVectors_List_Variable() {
-        exponentVectors_List_Variable_helper(1, "[]", "QBarRandomProvider_exponentVectors_List_Variable_i", 0.0);
-        exponentVectors_List_Variable_helper(8, "[]", "QBarRandomProvider_exponentVectors_List_Variable_ii", 0.0);
-        exponentVectors_List_Variable_helper(
-                1,
-                "[a]",
-                "QBarRandomProvider_exponentVectors_List_Variable_iii",
-                1.0008359999977228
-        );
-        exponentVectors_List_Variable_helper(
-                8,
-                "[a]",
-                "QBarRandomProvider_exponentVectors_List_Variable_iv",
-                7.996049000016875
-        );
-        exponentVectors_List_Variable_helper(
+    public void testMonomials_List_Variable() {
+        monomials_List_Variable_helper(1, "[]", "QBarRandomProvider_monomials_List_Variable_i", 0.0);
+        monomials_List_Variable_helper(8, "[]", "QBarRandomProvider_monomials_List_Variable_ii", 0.0);
+        monomials_List_Variable_helper(1, "[a]", "QBarRandomProvider_monomials_List_Variable_iii", 1.0008359999977228);
+        monomials_List_Variable_helper(8, "[a]", "QBarRandomProvider_monomials_List_Variable_iv", 7.996049000016875);
+        monomials_List_Variable_helper(
                 1,
                 "[x, y]",
-                "QBarRandomProvider_exponentVectors_List_Variable_v",
+                "QBarRandomProvider_monomials_List_Variable_v",
                 1.9999819999876247
         );
-        exponentVectors_List_Variable_helper(
+        monomials_List_Variable_helper(
                 8,
                 "[x, y]",
-                "QBarRandomProvider_exponentVectors_List_Variable_vi",
+                "QBarRandomProvider_monomials_List_Variable_vi",
                 15.985479999996784
         );
-        exponentVectors_List_Variable_helper(
+        monomials_List_Variable_helper(
                 1,
                 "[a, b, c]",
-                "QBarRandomProvider_exponentVectors_List_Variable_vii",
+                "QBarRandomProvider_monomials_List_Variable_vii",
                 3.0025289999869127
         );
-        exponentVectors_List_Variable_helper(
+        monomials_List_Variable_helper(
                 8,
                 "[a, b, c]",
-                "QBarRandomProvider_exponentVectors_List_Variable_viii",
+                "QBarRandomProvider_monomials_List_Variable_viii",
                 23.976022000016762
         );
-        exponentVectors_List_Variable_fail_helper(0, "[a, b]");
-        exponentVectors_List_Variable_fail_helper(-1, "[a, b]");
-        exponentVectors_List_Variable_fail_helper(1, "[a, a]");
-        exponentVectors_List_Variable_fail_helper(1, "[b, a]");
+        monomials_List_Variable_fail_helper(0, "[a, b]");
+        monomials_List_Variable_fail_helper(-1, "[a, b]");
+        monomials_List_Variable_fail_helper(1, "[a, a]");
+        monomials_List_Variable_fail_helper(1, "[b, a]");
     }
 
     private static void multivariatePolynomials_helper(
