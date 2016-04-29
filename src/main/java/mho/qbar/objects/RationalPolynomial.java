@@ -1169,6 +1169,88 @@ public final class RationalPolynomial implements
     }
 
     /**
+     * Expresses powers, from x<sup>0</sup>, to x<sup>{@code maxPower}</sup>, of any root of {@code this} as
+     * polynomials in the root. The polynomials all have degrees less that the degree of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} must be non-constant.</li>
+     *  <li>{@code maxPower} cannot be negative.</li>
+     *  <li>The result is nonempty and contains no nulls.</li>
+     * </ul>
+     *
+     * Length is {@code maxPower}+1
+     *
+     * @param maxPower the maximum power of a root of {@code this}
+     * @return x<sup>0</sup>, ..., x<sup>{@code maxPower}</sup> over the quotient ring ℚ[x]/{@code this}
+     */
+    public @NotNull List<RationalPolynomial> powerTable(int maxPower) {
+        if (maxPower < 0) {
+            throw new IllegalArgumentException("maxPower cannot be negative. Invalid maxPower: " + maxPower);
+        }
+        int degree = degree();
+        if (degree < 1) {
+            throw new UnsupportedOperationException("this cannot be constant. Invalid this: " + this);
+        }
+        List<RationalPolynomial> powers = new ArrayList<>();
+        for (int p = 0; p < degree; p++) {
+            powers.add(of(Rational.ONE, p));
+            if (p == maxPower) {
+                return powers;
+            }
+        }
+        Rational leading = leading().get();
+        RationalPolynomial xDeg = of(toList(map(c -> c.negate().divide(leading), init(coefficients))));
+        powers.add(xDeg);
+        RationalPolynomial power = xDeg;
+        for (int p = degree + 1; p <= maxPower; p++) {
+            Rational highestCoefficient = power.coefficient(degree - 1);
+            List<Rational> newCoefficients = new ArrayList<>(degree);
+            newCoefficients.add(Rational.ZERO);
+            for (int i = 0; i < degree - 1; i++) {
+                newCoefficients.add(power.coefficient(i));
+            }
+            power = of(newCoefficients).add(xDeg.multiply(highestCoefficient));
+            powers.add(power);
+        }
+        return powers;
+    }
+
+    /**
+     * Expresses the {@code p}th power of any root of {@code this} as a polynomial in the root. The polynomial has a
+     * degree less that the degree of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} must be non-constant.</li>
+     *  <li>{@code p} cannot be negative.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param p the power that a root of {@code this} is being raised to
+     * @return x<sup>{@code p}</sup> over the quotient ring ℚ[x]/{@code this}
+     */
+    public @NotNull RationalPolynomial rootPower(int p) {
+        if (p < 0) {
+            throw new IllegalArgumentException("p cannot be negative. Invalid p: " + p);
+        }
+        int degree = degree();
+        if (degree < 1) {
+            throw new UnsupportedOperationException("this cannot be constant. Invalid this: " + this);
+        }
+        if (p < degree) {
+            return of(Rational.ONE, p);
+        }
+        RationalPolynomial power = ONE;
+        for (boolean bit : IntegerUtils.bigEndianBits(p)) {
+            power = power.pow(2);
+            if (bit) {
+                power = power.multiplyByPowerOfX(1);
+            }
+            power = power.divide(this).b;
+        }
+        return power;
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>

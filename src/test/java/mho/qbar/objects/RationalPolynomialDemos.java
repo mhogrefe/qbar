@@ -1,7 +1,6 @@
 package mho.qbar.objects;
 
 import mho.qbar.testing.QBarDemos;
-import mho.wheels.io.Readers;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -9,7 +8,6 @@ import org.jetbrains.annotations.NotNull;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static mho.qbar.objects.RationalPolynomial.*;
 import static mho.qbar.objects.RationalPolynomial.sum;
@@ -414,6 +412,26 @@ public class RationalPolynomialDemos extends QBarDemos {
         );
         for (Pair<RationalPolynomial, Rational> p : take(LIMIT, ps)) {
             System.out.println("stretch(" + p.a + ", " + p.b + ") = " + p.a.stretch(p.b));
+        }
+    }
+
+    private void demoPowerTable() {
+        Iterable<Pair<RationalPolynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).rationalPolynomialsAtLeast(1),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
+            System.out.println("powerTable(" + p.a + ", " + p.b + ") = " + p.a.powerTable(p.b));
+        }
+    }
+
+    private void demoRootPower() {
+        Iterable<Pair<RationalPolynomial, Integer>> ps = P.pairs(
+                P.withScale(4).rationalPolynomialsAtLeast(1),
+                P.naturalIntegersGeometric()
+        );
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
+            System.out.println("rootPower(" + p.a + ", " + p.b + ") = " + p.a.rootPower(p.b));
         }
     }
 

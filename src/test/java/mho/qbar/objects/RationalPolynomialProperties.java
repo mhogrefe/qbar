@@ -94,6 +94,10 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         propertiesReflect();
         propertiesTranslate();
         propertiesStretch();
+        propertiesPowerTable();
+        compareImplementationsPowerTable();
+        propertiesRootPower();
+        compareImplementationsRootPower();
         propertiesEquals();
         propertiesCompanionMatrix();
         propertiesCoefficientMatrix();
@@ -2002,6 +2006,108 @@ public class RationalPolynomialProperties extends QBarTestProperties {
                 fail(p);
             } catch (ArithmeticException ignored) {}
         }
+    }
+
+    private static @NotNull List<RationalPolynomial> powerTable_simplest(@NotNull RationalPolynomial p, int maxPower) {
+        return toList(map(p::rootPower, range(0, maxPower)));
+    }
+
+    private static @NotNull List<RationalPolynomial> powerTable_alt(@NotNull RationalPolynomial p, int maxPower) {
+        return toList(map(i -> of(Rational.ONE, i).divide(p).b, range(0, maxPower)));
+    }
+
+    private void propertiesPowerTable() {
+        initialize("powerTable(int)");
+        Iterable<Pair<RationalPolynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).rationalPolynomialsAtLeast(1),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
+            List<RationalPolynomial> powers = p.a.powerTable(p.b);
+            assertEquals(p, powerTable_simplest(p.a, p.b), powers);
+            assertEquals(p, powerTable_alt(p.a, p.b), powers);
+            assertEquals(p, powers.size(), p.b + 1);
+            assertTrue(p, all(q -> q.degree() < p.a.degree(), powers));
+        }
+
+        Iterable<Pair<RationalPolynomial, Integer>> psFail = P.pairsLogarithmicOrder(
+                filterInfinite(p -> p.degree() < 1, P.rationalPolynomials()),
+                P.naturalIntegersGeometric()
+        );
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.powerTable(p.b);
+                fail(p);
+            } catch (UnsupportedOperationException ignored) {}
+        }
+
+        psFail = P.pairsLogarithmicOrder(P.rationalPolynomialsAtLeast(1), P.negativeIntegers());
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.powerTable(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void compareImplementationsPowerTable() {
+        Map<String, Function<Pair<RationalPolynomial, Integer>, List<RationalPolynomial>>> functions =
+                new LinkedHashMap<>();
+        functions.put("simplest", p -> powerTable_simplest(p.a, p.b));
+        functions.put("alt", p -> powerTable_alt(p.a, p.b));
+        functions.put("standard", p -> p.a.powerTable(p.b));
+        Iterable<Pair<RationalPolynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).rationalPolynomialsAtLeast(1),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        compareImplementations("powerTable(int)", take(LIMIT, ps), functions);
+    }
+
+    private static @NotNull RationalPolynomial rootPower_simplest(@NotNull RationalPolynomial p, int power) {
+        return last(p.powerTable(power));
+    }
+
+    private void propertiesRootPower() {
+        initialize("rootPower(int)");
+        Iterable<Pair<RationalPolynomial, Integer>> ps = P.pairs(
+                P.withScale(4).rationalPolynomialsAtLeast(1),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
+            RationalPolynomial rootPower = p.a.rootPower(p.b);
+            assertEquals(p, rootPower_simplest(p.a, p.b), rootPower);
+            assertTrue(p, rootPower.degree() < p.a.degree());
+        }
+
+        Iterable<Pair<RationalPolynomial, Integer>> psFail = P.pairsLogarithmicOrder(
+                filterInfinite(p -> p.degree() < 1, P.rationalPolynomials()),
+                P.naturalIntegersGeometric()
+        );
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.rootPower(p.b);
+                fail(p);
+            } catch (UnsupportedOperationException ignored) {}
+        }
+
+        psFail = P.pairsLogarithmicOrder(P.rationalPolynomialsAtLeast(1), P.negativeIntegers());
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.rootPower(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void compareImplementationsRootPower() {
+        Map<String, Function<Pair<RationalPolynomial, Integer>, RationalPolynomial>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> rootPower_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.rootPower(p.b));
+        Iterable<Pair<RationalPolynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).rationalPolynomialsAtLeast(1),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        compareImplementations("rootPower(int)", take(LIMIT, ps), functions);
     }
 
     private void propertiesEquals() {

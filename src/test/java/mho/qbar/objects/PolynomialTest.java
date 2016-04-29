@@ -4168,6 +4168,7 @@ public class PolynomialTest {
     private static void powerTable_fail_helper(@NotNull String p, int maxPower) {
         try {
             readStrict(p).get().powerTable(maxPower);
+            fail();
         } catch (UnsupportedOperationException | IllegalArgumentException ignored) {}
     }
 

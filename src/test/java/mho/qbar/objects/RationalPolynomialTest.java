@@ -1923,6 +1923,153 @@ public class RationalPolynomialTest {
         stretch_fail_helper("x^2-7/4*x+1/3", "-1");
     }
 
+    private static void powerTable_helper(@NotNull String p, int maxPower, @NotNull String output) {
+        aeq(readStrict(p).get().powerTable(maxPower), output);
+    }
+
+    private static void powerTable_fail_helper(@NotNull String p, int maxPower) {
+        try {
+            readStrict(p).get().powerTable(maxPower);
+            fail();
+        } catch (UnsupportedOperationException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testPowerTable() {
+        powerTable_helper("x^2-2", 0, "[1]");
+        powerTable_helper("x^2-2", 1, "[1, x]");
+        powerTable_helper("x^2-2", 2, "[1, x, 2]");
+        powerTable_helper("x^2-2", 10, "[1, x, 2, 2*x, 4, 4*x, 8, 8*x, 16, 16*x, 32]");
+
+        powerTable_helper("2*x^2-1", 0, "[1]");
+        powerTable_helper("2*x^2-1", 1, "[1, x]");
+        powerTable_helper("2*x^2-1", 2, "[1, x, 1/2]");
+        powerTable_helper("2*x^2-1", 10, "[1, x, 1/2, 1/2*x, 1/4, 1/4*x, 1/8, 1/8*x, 1/16, 1/16*x, 1/32]");
+
+        powerTable_helper("x", 10, "[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]");
+        powerTable_helper("x+1", 10, "[1, -1, 1, -1, 1, -1, 1, -1, 1, -1, 1]");
+        powerTable_helper("x-1", 10, "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]");
+        powerTable_helper("x^2+2", 10, "[1, x, -2, -2*x, 4, 4*x, -8, -8*x, 16, 16*x, -32]");
+        powerTable_helper("x^2-x-1", 10, "[1, x, x+1, 2*x+1, 3*x+2, 5*x+3, 8*x+5, 13*x+8, 21*x+13, 34*x+21, 55*x+34]");
+        powerTable_helper("x^2+x+1", 10, "[1, x, -x-1, 1, x, -x-1, 1, x, -x-1, 1, x]");
+        powerTable_helper("x^3-1", 10, "[1, x, x^2, 1, x, x^2, 1, x, x^2, 1, x]");
+        powerTable_helper("x^5-x-1", 20,
+                "[1, x, x^2, x^3, x^4, x+1, x^2+x, x^3+x^2, x^4+x^3, x^4+x+1, x^2+2*x+1, x^3+2*x^2+x, x^4+2*x^3+x^2," +
+                " 2*x^4+x^3+x+1, x^4+x^2+3*x+2, x^3+3*x^2+3*x+1, x^4+3*x^3+3*x^2+x, 3*x^4+3*x^3+x^2+x+1," +
+                " 3*x^4+x^3+x^2+4*x+3, x^4+x^3+4*x^2+6*x+3, x^4+4*x^3+6*x^2+4*x+1]");
+
+        powerTable_helper("x^2-7/4*x+1/3", 10,
+                "[1, x, 7/4*x-1/3, 131/48*x-7/12, 805/192*x-131/144, 14809/2304*x-805/576, 10087/1024*x-14809/6912," +
+                " 1669499/110592*x-10087/3072, 10233965/442368*x-1669499/331776," +
+                " 188201281/5308416*x-10233965/1327104, 1153665527/21233664*x-188201281/15925248]");
+
+        powerTable_fail_helper("0", 10);
+        powerTable_fail_helper("1", 10);
+        powerTable_fail_helper("-1", 10);
+        powerTable_fail_helper("3", 10);
+        powerTable_fail_helper("x^2-2", -1);
+    }
+
+    private static void rootPower_helper(@NotNull String x, int p, @NotNull String output) {
+        aeq(readStrict(x).get().rootPower(p), output);
+    }
+
+    private static void rootPower_fail_helper(@NotNull String x, int p) {
+        try {
+            readStrict(x).get().rootPower(p);
+            fail();
+        } catch (UnsupportedOperationException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testRootPower() {
+        rootPower_helper("x", 0, "1");
+        rootPower_helper("x", 1, "0");
+        rootPower_helper("x", 2, "0");
+        rootPower_helper("x", 10, "0");
+        rootPower_helper("x", 100, "0");
+        rootPower_helper("x", 1000, "0");
+
+        rootPower_helper("x+1", 0, "1");
+        rootPower_helper("x+1", 1, "-1");
+        rootPower_helper("x+1", 2, "1");
+        rootPower_helper("x+1", 10, "1");
+        rootPower_helper("x+1", 100, "1");
+        rootPower_helper("x+1", 1000, "1");
+
+        rootPower_helper("x-1", 0, "1");
+        rootPower_helper("x-1", 1, "1");
+        rootPower_helper("x-1", 2, "1");
+        rootPower_helper("x-1", 10, "1");
+        rootPower_helper("x-1", 100, "1");
+        rootPower_helper("x-1", 1000, "1");
+
+        rootPower_helper("x^2-2", 0, "1");
+        rootPower_helper("x^2-2", 1, "x");
+        rootPower_helper("x^2-2", 2, "2");
+        rootPower_helper("x^2-2", 10, "32");
+        rootPower_helper("x^2-2", 100, "1125899906842624");
+        rootPower_helper("x^2-2", 1000,
+                "327339060789614187001318969682759915221664204604306478948329136809613379640467455488327009232590415" +
+                "7150886684127560071009217256545885393053328527589376");
+
+        rootPower_helper("x^2+2", 0, "1");
+        rootPower_helper("x^2+2", 1, "x");
+        rootPower_helper("x^2+2", 2, "-2");
+        rootPower_helper("x^2+2", 10, "-32");
+        rootPower_helper("x^2+2", 100, "1125899906842624");
+        rootPower_helper("x^2+2", 1000,
+                "327339060789614187001318969682759915221664204604306478948329136809613379640467455488327009232590415" +
+                "7150886684127560071009217256545885393053328527589376");
+
+        rootPower_helper("2*x^2-1", 0, "1");
+        rootPower_helper("2*x^2-1", 1, "x");
+        rootPower_helper("2*x^2-1", 2, "1/2");
+        rootPower_helper("2*x^2-1", 10, "1/32");
+        rootPower_helper("2*x^2-1", 100, "1/1125899906842624");
+        rootPower_helper("2*x^2-1", 1000,
+                "1/3273390607896141870013189696827599152216642046043064789483291368096133796404674554883270092325904" +
+                "157150886684127560071009217256545885393053328527589376");
+
+        rootPower_helper("x^2-x-1", 0, "1");
+        rootPower_helper("x^2-x-1", 1, "x");
+        rootPower_helper("x^2-x-1", 2, "x+1");
+        rootPower_helper("x^2-x-1", 10, "55*x+34");
+        rootPower_helper("x^2-x-1", 100, "354224848179261915075*x+218922995834555169026");
+
+        rootPower_helper("x^2+x+1", 0, "1");
+        rootPower_helper("x^2+x+1", 1, "x");
+        rootPower_helper("x^2+x+1", 2, "-x-1");
+        rootPower_helper("x^2+x+1", 10, "x");
+        rootPower_helper("x^2+x+1", 100, "x");
+        rootPower_helper("x^2+x+1", 1000, "x");
+
+        rootPower_helper("1/3*x^3-1", 0, "1");
+        rootPower_helper("1/3*x^3-1", 1, "x");
+        rootPower_helper("1/3*x^3-1", 2, "x^2");
+        rootPower_helper("1/3*x^3-1", 10, "27*x");
+        rootPower_helper("1/3*x^3-1", 100, "5559060566555523*x");
+        rootPower_helper("1/3*x^3-1", 1000,
+                "760988023132059809720425867265032780727896356372077865117010037035791631439306199613044145649378522" +
+                "557935351570949952010001833769302566531786879537190794573523*x");
+
+        rootPower_helper("x^2-7/4*x+1/3", 0, "1");
+        rootPower_helper("x^2-7/4*x+1/3", 1, "x");
+        rootPower_helper("x^2-7/4*x+1/3", 2, "7/4*x-1/3");
+        rootPower_helper("x^2-7/4*x+1/3", 10, "1153665527/21233664*x-188201281/15925248");
+        rootPower_helper("x^2-7/4*x+1/3", 100,
+                "253335604960232163661529033672005926060645690497368545703044739494288172222527726920254554148359185" +
+                "125/96134799026584189281511108847917610543368311432460842820081486288285762013261463552*x-413274776" +
+                "93394557489314212198784350059001650889191759379301296093721625989365583945551616524356374211/721010" +
+                "99269938141961133331635938207907526233574345632115061114716214321509946097664");
+
+        rootPower_fail_helper("0", 10);
+        rootPower_fail_helper("1", 10);
+        rootPower_fail_helper("-1", 10);
+        rootPower_fail_helper("3", 10);
+        rootPower_fail_helper("x^2-2", -1);
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(
