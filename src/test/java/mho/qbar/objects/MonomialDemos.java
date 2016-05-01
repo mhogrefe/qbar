@@ -135,10 +135,10 @@ public class MonomialDemos extends QBarDemos {
                             m -> {
                                 List<Variable> us = toList(m.variables());
                                 return map(
-                                        qs -> toSortedMap(zip(qs.a, qs.b)),
+                                        p -> p.b,
                                         P.dependentPairsInfiniteLogarithmicOrder(
                                                 nub(map(vs -> sort(nub(concat(vs, us))), P.subsets(P.variables()))),
-                                                ws -> P.lists(ws.size(), P.bigIntegers())
+                                                ws -> P.maps(ws, P.bigIntegers())
                                         )
                                 );
                             }
@@ -152,13 +152,10 @@ public class MonomialDemos extends QBarDemos {
                             m -> {
                                 List<Variable> us = toList(m.variables());
                                 return map(
-                                        qs -> toSortedMap(zip(qs.a, qs.b)),
-                                        P.dependentPairsInfinite(
-                                                map(
-                                                        vs -> sort(nub(concat(vs, us))),
-                                                        P.withScale(4).subsets(P.variables())
-                                                ),
-                                                ws -> P.lists(ws.size(), P.withScale(4).bigIntegers())
+                                        p -> p.b,
+                                        P.dependentPairsInfiniteLogarithmicOrder(
+                                                map(vs -> sort(nub(concat(vs, us))), P.subsets(P.variables())),
+                                                ws -> P.maps(ws, P.bigIntegers())
                                         )
                                 );
                             }
@@ -180,10 +177,10 @@ public class MonomialDemos extends QBarDemos {
                             m -> {
                                 List<Variable> us = toList(m.variables());
                                 return map(
-                                        qs -> toSortedMap(zip(qs.a, qs.b)),
+                                        p -> p.b,
                                         P.dependentPairsInfiniteLogarithmicOrder(
                                                 nub(map(vs -> sort(nub(concat(vs, us))), P.subsets(P.variables()))),
-                                                ws -> P.lists(ws.size(), P.rationals())
+                                                ws -> P.maps(ws, P.rationals())
                                         )
                                 );
                             }
@@ -197,13 +194,10 @@ public class MonomialDemos extends QBarDemos {
                             m -> {
                                 List<Variable> us = toList(m.variables());
                                 return map(
-                                        qs -> toSortedMap(zip(qs.a, qs.b)),
-                                        P.dependentPairsInfinite(
-                                                map(
-                                                        vs -> sort(nub(concat(vs, us))),
-                                                        P.withScale(4).subsets(P.variables())
-                                                ),
-                                                ws -> P.lists(ws.size(), P.withScale(4).rationals())
+                                        p -> p.b,
+                                        P.dependentPairsInfiniteLogarithmicOrder(
+                                                map(vs -> sort(nub(concat(vs, us))), P.subsets(P.variables())),
+                                                ws -> P.maps(ws, P.rationals())
                                         )
                                 );
                             }
@@ -221,10 +215,10 @@ public class MonomialDemos extends QBarDemos {
                 P.withElement(
                         new TreeMap<>(),
                         map(
-                                p -> toMap(zip(p.a, p.b)),
+                                p -> p.b,
                                 P.dependentPairsInfiniteLogarithmicOrder(
                                         P.withScale(4).subsetsAtLeast(1, P.variables()),
-                                        vs -> P.lists(vs.size(), P.withScale(4).monomials())
+                                        vs -> P.maps(vs, P.withScale(4).monomials())
                                 )
                         )
                 )

@@ -227,11 +227,7 @@ public class MonomialProperties extends QBarTestProperties {
         }
     }
 
-    private static @NotNull
-    Monomial removeVariables_alt(
-            @NotNull Monomial m,
-            @NotNull List<Variable> vs
-    ) {
+    private static @NotNull Monomial removeVariables_alt(@NotNull Monomial m, @NotNull List<Variable> vs) {
         if (any(v -> v == null, vs)) {
             throw new NullPointerException();
         }
@@ -306,16 +302,14 @@ public class MonomialProperties extends QBarTestProperties {
         }
     }
 
-    private static @NotNull
-    Monomial product_simplest(@NotNull Iterable<Monomial> xs) {
+    private static @NotNull Monomial product_simplest(@NotNull Iterable<Monomial> xs) {
         if (any(x -> x == null, xs)) {
             throw new NullPointerException();
         }
         return foldl(Monomial::multiply, ONE, xs);
     }
 
-    private static @NotNull
-    Monomial product_alt(@NotNull Iterable<Monomial> xs) {
+    private static @NotNull Monomial product_alt(@NotNull Iterable<Monomial> xs) {
         return of(toList(map(IterableUtils::sumInteger, transpose(map(Monomial::getExponents, xs)))));
     }
 
@@ -347,13 +341,11 @@ public class MonomialProperties extends QBarTestProperties {
         compareImplementations("product(List<Monomial>)", take(LIMIT, P.lists(P.monomials())), functions);
     }
 
-    private static @NotNull
-    Monomial pow_simplest(@NotNull Monomial ev, int p) {
+    private static @NotNull Monomial pow_simplest(@NotNull Monomial ev, int p) {
         return product(toList(replicate(p, ev)));
     }
 
-    private static @NotNull
-    Monomial pow_alt(@NotNull Monomial m, int p) {
+    private static @NotNull Monomial pow_alt(@NotNull Monomial m, int p) {
         if (p < 0) {
             throw new ArithmeticException("p cannot be negative. Invalid p: " + p);
         }
