@@ -154,7 +154,10 @@ public class MonomialDemos extends QBarDemos {
                                 return map(
                                         p -> p.b,
                                         P.dependentPairsInfiniteLogarithmicOrder(
-                                                map(vs -> sort(nub(concat(vs, us))), P.subsets(P.variables())),
+                                                map(
+                                                        vs -> sort(nub(concat(vs, us))),
+                                                        P.withScale(4).subsets(P.variables())
+                                                ),
                                                 ws -> P.maps(ws, P.bigIntegers())
                                         )
                                 );
@@ -173,7 +176,7 @@ public class MonomialDemos extends QBarDemos {
             ps = cons(
                     new Pair<>(ONE, new TreeMap<>()),
                     P.dependentPairsInfiniteSquareRootOrder(
-                            filterInfinite(f -> f != ONE, P.monomials()),
+                            filterInfinite(n -> n != ONE, P.monomials()),
                             m -> {
                                 List<Variable> us = toList(m.variables());
                                 return map(
@@ -190,13 +193,16 @@ public class MonomialDemos extends QBarDemos {
             ps = P.withElement(
                     new Pair<>(ONE, new TreeMap<>()),
                     P.dependentPairsInfinite(
-                            filterInfinite(f -> f != ONE, P.withScale(4).monomials()),
+                            filterInfinite(n -> n != ONE, P.withScale(4).monomials()),
                             m -> {
                                 List<Variable> us = toList(m.variables());
                                 return map(
                                         p -> p.b,
                                         P.dependentPairsInfiniteLogarithmicOrder(
-                                                map(vs -> sort(nub(concat(vs, us))), P.subsets(P.variables())),
+                                                map(
+                                                        vs -> sort(nub(concat(vs, us))),
+                                                        P.withScale(4).subsets(P.variables())
+                                                ),
                                                 ws -> P.maps(ws, P.rationals())
                                         )
                                 );

@@ -1,5 +1,6 @@
 package mho.qbar.objects;
 
+import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
@@ -9,6 +10,7 @@ import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigInteger;
 import java.util.*;
 import java.util.function.Function;
 
@@ -41,6 +43,9 @@ public class MonomialProperties extends QBarTestProperties {
         compareImplementationsProduct();
         propertiesPow();
         compareImplementationsPow();
+        propertiesApplyBigInteger();
+        propertiesApplyRational();
+        propertiesSubstitute();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -424,7 +429,151 @@ public class MonomialProperties extends QBarTestProperties {
         compareImplementations("pow(int)", take(LIMIT, ps), functions);
     }
 
-    //todo continue props
+    private void propertiesApplyBigInteger() {
+        initialize("applyBigInteger(Map<Variable, BigInteger>)");
+        Iterable<Pair<Monomial, Map<Variable, BigInteger>>> ps;
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = cons(
+                    new Pair<>(ONE, new TreeMap<>()),
+                    P.dependentPairsInfiniteSquareRootOrder(
+                            filterInfinite(n -> n != ONE, P.monomials()),
+                            m -> {
+                                List<Variable> us = toList(m.variables());
+                                return map(
+                                        p -> p.b,
+                                        P.dependentPairsInfiniteLogarithmicOrder(
+                                                nub(map(vs -> sort(nub(concat(vs, us))), P.subsets(P.variables()))),
+                                                ws -> P.maps(ws, P.bigIntegers())
+                                        )
+                                );
+                            }
+                    )
+            );
+        } else {
+            ps = P.withElement(
+                    new Pair<>(ONE, new TreeMap<>()),
+                    P.dependentPairsInfinite(
+                            filterInfinite(n -> n != ONE, P.monomials()),
+                            m -> {
+                                List<Variable> us = toList(m.variables());
+                                return map(
+                                        p -> p.b,
+                                        P.dependentPairsInfiniteLogarithmicOrder(
+                                                map(vs -> sort(nub(concat(vs, us))), P.subsets(P.variables())),
+                                                ws -> P.maps(ws, P.bigIntegers())
+                                        )
+                                );
+                            }
+                    )
+            );
+        }
+        for (Pair<Monomial, Map<Variable, BigInteger>> p : take(LIMIT, ps)) {
+            p.a.applyBigInteger(p.b);
+        }
+
+        Iterable<Pair<Monomial, Map<Variable, BigInteger>>> psFail = P.dependentPairsInfiniteSquareRootOrder(
+                filterInfinite(n -> n != ONE, P.monomials()),
+                m -> {
+                    List<Variable> us = toList(m.variables());
+                    return map(
+                            p -> p.b,
+                            P.dependentPairsInfiniteLogarithmicOrder(
+                                    filterInfinite(vs -> !isSubsetOf(us, vs), P.subsetsAtLeast(1, P.variables())),
+                                    ws -> P.maps(ws, P.bigIntegers())
+                            )
+                    );
+                }
+        );
+        for (Pair<Monomial, Map<Variable, BigInteger>> p : take(LIMIT, psFail)) {
+            try {
+                p.a.applyBigInteger(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesApplyRational() {
+        initialize("applyRational(Map<Variable, Rational>)");
+        Iterable<Pair<Monomial, Map<Variable, Rational>>> ps;
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = cons(
+                    new Pair<>(ONE, new TreeMap<>()),
+                    P.dependentPairsInfiniteSquareRootOrder(
+                            filterInfinite(n -> n != ONE, P.monomials()),
+                            m -> {
+                                List<Variable> us = toList(m.variables());
+                                return map(
+                                        p -> p.b,
+                                        P.dependentPairsInfiniteLogarithmicOrder(
+                                                nub(map(vs -> sort(nub(concat(vs, us))), P.subsets(P.variables()))),
+                                                ws -> P.maps(ws, P.rationals())
+                                        )
+                                );
+                            }
+                    )
+            );
+        } else {
+            ps = P.withElement(
+                    new Pair<>(ONE, new TreeMap<>()),
+                    P.dependentPairsInfinite(
+                            filterInfinite(n -> n != ONE, P.monomials()),
+                            m -> {
+                                List<Variable> us = toList(m.variables());
+                                return map(
+                                        p -> p.b,
+                                        P.dependentPairsInfiniteLogarithmicOrder(
+                                                map(vs -> sort(nub(concat(vs, us))), P.subsets(P.variables())),
+                                                ws -> P.maps(ws, P.rationals())
+                                        )
+                                );
+                            }
+                    )
+            );
+        }
+        for (Pair<Monomial, Map<Variable, Rational>> p : take(LIMIT, ps)) {
+            p.a.applyRational(p.b);
+        }
+
+        Iterable<Pair<Monomial, Map<Variable, Rational>>> psFail = P.dependentPairsInfiniteSquareRootOrder(
+                filterInfinite(n -> n != ONE, P.monomials()),
+                m -> {
+                    List<Variable> us = toList(m.variables());
+                    return map(
+                            p -> p.b,
+                            P.dependentPairsInfiniteLogarithmicOrder(
+                                    filterInfinite(vs -> !isSubsetOf(us, vs), P.subsetsAtLeast(1, P.variables())),
+                                    ws -> P.maps(ws, P.rationals())
+                            )
+                    );
+                }
+        );
+        for (Pair<Monomial, Map<Variable, Rational>> p : take(LIMIT, psFail)) {
+            try {
+                p.a.applyRational(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesSubstitute() {
+        initialize("substitute(Map<Variable, Monomial>)");
+        Iterable<Pair<Monomial, Map<Variable, Monomial>>> ps = P.pairsSquareRootOrder(
+                P.withScale(4).monomials(),
+                P.withElement(
+                        new TreeMap<>(),
+                        map(
+                                p -> p.b,
+                                P.dependentPairsInfiniteLogarithmicOrder(
+                                        P.withScale(4).subsetsAtLeast(1, P.variables()),
+                                        vs -> P.maps(vs, P.withScale(4).monomials())
+                                )
+                        )
+                )
+        );
+        for (Pair<Monomial, Map<Variable, Monomial>> p : take(LIMIT, ps)) {
+            p.a.substitute(p.b);
+        }
+    }
 
     private void propertiesEquals() {
         initialize("equals(Object)");
