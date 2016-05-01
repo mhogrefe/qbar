@@ -428,6 +428,18 @@ public class AlgebraicDemos extends QBarDemos {
         }
     }
 
+    private void demoShiftLeft() {
+        for (Pair<Algebraic, Integer> p : take(LIMIT, P.pairs(P.withScale(4).algebraics(), P.integersGeometric()))) {
+            System.out.println(p.a + " << " + p.b + " = " + p.a.shiftLeft(p.b));
+        }
+    }
+
+    private void demoShiftRight() {
+        for (Pair<Algebraic, Integer> p : take(LIMIT, P.pairs(P.withScale(4).algebraics(), P.integersGeometric()))) {
+            System.out.println(p.a + " >> " + p.b + " = " + p.a.shiftRight(p.b));
+        }
+    }
+
     private void demoEquals_Algebraic() {
         for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.pairs(P.withScale(4).algebraics()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);

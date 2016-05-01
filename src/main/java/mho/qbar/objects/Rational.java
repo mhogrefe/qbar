@@ -1624,8 +1624,7 @@ public final class Rational implements Comparable<Rational> {
      * @return {@code this}≪{@code bits}
      */
     public @NotNull Rational shiftLeft(int bits) {
-        if (this == ZERO) return ZERO;
-        if (bits == 0) return this;
+        if (this == ZERO || bits == 0) return this;
         if (bits < 0) return shiftRight(-bits);
         int denominatorTwos = denominator.getLowestSetBit();
         if (bits <= denominatorTwos) {
@@ -1654,8 +1653,7 @@ public final class Rational implements Comparable<Rational> {
      * @return {@code this}≫{@code bits}
      */
     public @NotNull Rational shiftRight(int bits) {
-        if (this == ZERO) return ZERO;
-        if (bits == 0) return this;
+        if (this == ZERO || bits == 0) return this;
         if (bits < 0) return shiftLeft(-bits);
         int numeratorTwos = numerator.getLowestSetBit();
         if (bits <= numeratorTwos) {

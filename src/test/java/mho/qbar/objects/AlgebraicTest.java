@@ -2298,6 +2298,184 @@ public class AlgebraicTest {
         divide_Algebraic_fail_helper("sqrt(2)", "0");
     }
 
+    private static void shiftLeft_helper(@NotNull String r, int bits, @NotNull String output) {
+        Algebraic x = readStrict(r).get().shiftLeft(bits);
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testShiftLeft() {
+        shiftLeft_helper("0", 0, "0");
+        shiftLeft_helper("0", 1, "0");
+        shiftLeft_helper("0", 2, "0");
+        shiftLeft_helper("0", 3, "0");
+        shiftLeft_helper("0", 4, "0");
+        shiftLeft_helper("0", -1, "0");
+        shiftLeft_helper("0", -2, "0");
+        shiftLeft_helper("0", -3, "0");
+        shiftLeft_helper("0", -4, "0");
+
+        shiftLeft_helper("1", 0, "1");
+        shiftLeft_helper("1", 1, "2");
+        shiftLeft_helper("1", 2, "4");
+        shiftLeft_helper("1", 3, "8");
+        shiftLeft_helper("1", 4, "16");
+        shiftLeft_helper("1", -1, "1/2");
+        shiftLeft_helper("1", -2, "1/4");
+        shiftLeft_helper("1", -3, "1/8");
+        shiftLeft_helper("1", -4, "1/16");
+
+        shiftLeft_helper("1/2", 0, "1/2");
+        shiftLeft_helper("1/2", 1, "1");
+        shiftLeft_helper("1/2", 2, "2");
+        shiftLeft_helper("1/2", 3, "4");
+        shiftLeft_helper("1/2", 4, "8");
+        shiftLeft_helper("1/2", -1, "1/4");
+        shiftLeft_helper("1/2", -2, "1/8");
+        shiftLeft_helper("1/2", -3, "1/16");
+        shiftLeft_helper("1/2", -4, "1/32");
+
+        shiftLeft_helper("-4/3", 0, "-4/3");
+        shiftLeft_helper("-4/3", 1, "-8/3");
+        shiftLeft_helper("-4/3", 2, "-16/3");
+        shiftLeft_helper("-4/3", 3, "-32/3");
+        shiftLeft_helper("-4/3", 4, "-64/3");
+        shiftLeft_helper("-4/3", -1, "-2/3");
+        shiftLeft_helper("-4/3", -2, "-1/3");
+        shiftLeft_helper("-4/3", -3, "-1/6");
+        shiftLeft_helper("-4/3", -4, "-1/12");
+
+        shiftLeft_helper("sqrt(2)", 0, "sqrt(2)");
+        shiftLeft_helper("sqrt(2)", 1, "2*sqrt(2)");
+        shiftLeft_helper("sqrt(2)", 2, "4*sqrt(2)");
+        shiftLeft_helper("sqrt(2)", 3, "8*sqrt(2)");
+        shiftLeft_helper("sqrt(2)", 4, "16*sqrt(2)");
+        shiftLeft_helper("sqrt(2)", -1, "sqrt(2)/2");
+        shiftLeft_helper("sqrt(2)", -2, "sqrt(2)/4");
+        shiftLeft_helper("sqrt(2)", -3, "sqrt(2)/8");
+        shiftLeft_helper("sqrt(2)", -4, "sqrt(2)/16");
+
+        shiftLeft_helper("-sqrt(2)", 0, "-sqrt(2)");
+        shiftLeft_helper("-sqrt(2)", 1, "-2*sqrt(2)");
+        shiftLeft_helper("-sqrt(2)", 2, "-4*sqrt(2)");
+        shiftLeft_helper("-sqrt(2)", 3, "-8*sqrt(2)");
+        shiftLeft_helper("-sqrt(2)", 4, "-16*sqrt(2)");
+        shiftLeft_helper("-sqrt(2)", -1, "-sqrt(2)/2");
+        shiftLeft_helper("-sqrt(2)", -2, "-sqrt(2)/4");
+        shiftLeft_helper("-sqrt(2)", -3, "-sqrt(2)/8");
+        shiftLeft_helper("-sqrt(2)", -4, "-sqrt(2)/16");
+
+        shiftLeft_helper("(1+sqrt(5))/2", 0, "(1+sqrt(5))/2");
+        shiftLeft_helper("(1+sqrt(5))/2", 1, "1+sqrt(5)");
+        shiftLeft_helper("(1+sqrt(5))/2", 2, "2+2*sqrt(5)");
+        shiftLeft_helper("(1+sqrt(5))/2", 3, "4+4*sqrt(5)");
+        shiftLeft_helper("(1+sqrt(5))/2", 4, "8+8*sqrt(5)");
+        shiftLeft_helper("(1+sqrt(5))/2", -1, "(1+sqrt(5))/4");
+        shiftLeft_helper("(1+sqrt(5))/2", -2, "(1+sqrt(5))/8");
+        shiftLeft_helper("(1+sqrt(5))/2", -3, "(1+sqrt(5))/16");
+        shiftLeft_helper("(1+sqrt(5))/2", -4, "(1+sqrt(5))/32");
+
+        shiftLeft_helper("root 0 of x^5-x-1", 0, "root 0 of x^5-x-1");
+        shiftLeft_helper("root 0 of x^5-x-1", 1, "root 0 of x^5-16*x-32");
+        shiftLeft_helper("root 0 of x^5-x-1", 2, "root 0 of x^5-256*x-1024");
+        shiftLeft_helper("root 0 of x^5-x-1", 3, "root 0 of x^5-4096*x-32768");
+        shiftLeft_helper("root 0 of x^5-x-1", 4, "root 0 of x^5-65536*x-1048576");
+        shiftLeft_helper("root 0 of x^5-x-1", -1, "root 0 of 32*x^5-2*x-1");
+        shiftLeft_helper("root 0 of x^5-x-1", -2, "root 0 of 1024*x^5-4*x-1");
+        shiftLeft_helper("root 0 of x^5-x-1", -3, "root 0 of 32768*x^5-8*x-1");
+        shiftLeft_helper("root 0 of x^5-x-1", -4, "root 0 of 1048576*x^5-16*x-1");
+    }
+
+    private static void shiftRight_helper(@NotNull String r, int bits, @NotNull String output) {
+        Algebraic x = readStrict(r).get().shiftRight(bits);
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testShiftRight() {
+        shiftRight_helper("0", 0, "0");
+        shiftRight_helper("0", 1, "0");
+        shiftRight_helper("0", 2, "0");
+        shiftRight_helper("0", 3, "0");
+        shiftRight_helper("0", 4, "0");
+        shiftRight_helper("0", -1, "0");
+        shiftRight_helper("0", -2, "0");
+        shiftRight_helper("0", -3, "0");
+        shiftRight_helper("0", -4, "0");
+
+        shiftRight_helper("1", 0, "1");
+        shiftRight_helper("1", 1, "1/2");
+        shiftRight_helper("1", 2, "1/4");
+        shiftRight_helper("1", 3, "1/8");
+        shiftRight_helper("1", 4, "1/16");
+        shiftRight_helper("1", -1, "2");
+        shiftRight_helper("1", -2, "4");
+        shiftRight_helper("1", -3, "8");
+        shiftRight_helper("1", -4, "16");
+
+        shiftRight_helper("1/2", 0, "1/2");
+        shiftRight_helper("1/2", 1, "1/4");
+        shiftRight_helper("1/2", 2, "1/8");
+        shiftRight_helper("1/2", 3, "1/16");
+        shiftRight_helper("1/2", 4, "1/32");
+        shiftRight_helper("1/2", -1, "1");
+        shiftRight_helper("1/2", -2, "2");
+        shiftRight_helper("1/2", -3, "4");
+        shiftRight_helper("1/2", -4, "8");
+
+        shiftRight_helper("-4/3", 0, "-4/3");
+        shiftRight_helper("-4/3", 1, "-2/3");
+        shiftRight_helper("-4/3", 2, "-1/3");
+        shiftRight_helper("-4/3", 3, "-1/6");
+        shiftRight_helper("-4/3", 4, "-1/12");
+        shiftRight_helper("-4/3", -1, "-8/3");
+        shiftRight_helper("-4/3", -2, "-16/3");
+        shiftRight_helper("-4/3", -3, "-32/3");
+        shiftRight_helper("-4/3", -4, "-64/3");
+
+        shiftRight_helper("sqrt(2)", 0, "sqrt(2)");
+        shiftRight_helper("sqrt(2)", 1, "sqrt(2)/2");
+        shiftRight_helper("sqrt(2)", 2, "sqrt(2)/4");
+        shiftRight_helper("sqrt(2)", 3, "sqrt(2)/8");
+        shiftRight_helper("sqrt(2)", 4, "sqrt(2)/16");
+        shiftRight_helper("sqrt(2)", -1, "2*sqrt(2)");
+        shiftRight_helper("sqrt(2)", -2, "4*sqrt(2)");
+        shiftRight_helper("sqrt(2)", -3, "8*sqrt(2)");
+        shiftRight_helper("sqrt(2)", -4, "16*sqrt(2)");
+
+        shiftRight_helper("-sqrt(2)", 0, "-sqrt(2)");
+        shiftRight_helper("-sqrt(2)", 1, "-sqrt(2)/2");
+        shiftRight_helper("-sqrt(2)", 2, "-sqrt(2)/4");
+        shiftRight_helper("-sqrt(2)", 3, "-sqrt(2)/8");
+        shiftRight_helper("-sqrt(2)", 4, "-sqrt(2)/16");
+        shiftRight_helper("-sqrt(2)", -1, "-2*sqrt(2)");
+        shiftRight_helper("-sqrt(2)", -2, "-4*sqrt(2)");
+        shiftRight_helper("-sqrt(2)", -3, "-8*sqrt(2)");
+        shiftRight_helper("-sqrt(2)", -4, "-16*sqrt(2)");
+
+        shiftRight_helper("(1+sqrt(5))/2", 0, "(1+sqrt(5))/2");
+        shiftRight_helper("(1+sqrt(5))/2", 1, "(1+sqrt(5))/4");
+        shiftRight_helper("(1+sqrt(5))/2", 2, "(1+sqrt(5))/8");
+        shiftRight_helper("(1+sqrt(5))/2", 3, "(1+sqrt(5))/16");
+        shiftRight_helper("(1+sqrt(5))/2", 4, "(1+sqrt(5))/32");
+        shiftRight_helper("(1+sqrt(5))/2", -1, "1+sqrt(5)");
+        shiftRight_helper("(1+sqrt(5))/2", -2, "2+2*sqrt(5)");
+        shiftRight_helper("(1+sqrt(5))/2", -3, "4+4*sqrt(5)");
+        shiftRight_helper("(1+sqrt(5))/2", -4, "8+8*sqrt(5)");
+
+        shiftRight_helper("root 0 of x^5-x-1", 0, "root 0 of x^5-x-1");
+        shiftRight_helper("root 0 of x^5-x-1", 1, "root 0 of 32*x^5-2*x-1");
+        shiftRight_helper("root 0 of x^5-x-1", 2, "root 0 of 1024*x^5-4*x-1");
+        shiftRight_helper("root 0 of x^5-x-1", 3, "root 0 of 32768*x^5-8*x-1");
+        shiftRight_helper("root 0 of x^5-x-1", 4, "root 0 of 1048576*x^5-16*x-1");
+        shiftRight_helper("root 0 of x^5-x-1", -1, "root 0 of x^5-16*x-32");
+        shiftRight_helper("root 0 of x^5-x-1", -2, "root 0 of x^5-256*x-1024");
+        shiftRight_helper("root 0 of x^5-x-1", -3, "root 0 of x^5-4096*x-32768");
+        shiftRight_helper("root 0 of x^5-x-1", -4, "root 0 of x^5-65536*x-1048576");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

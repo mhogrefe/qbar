@@ -97,6 +97,10 @@ public class AlgebraicProperties extends QBarTestProperties {
         propertiesDivide_BigInteger();
         propertiesDivide_Rational();
         propertiesDivide_Algebraic();
+        propertiesShiftLeft();
+        compareImplementationsShiftLeft();
+        propertiesShiftRight();
+        compareImplementationsShiftRight();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -203,7 +207,7 @@ public class AlgebraicProperties extends QBarTestProperties {
         for (BinaryFraction bf : take(LIMIT, P.binaryFractions())) {
             Algebraic x = of(bf);
             x.validate();
-            //todo assertEquals(bf, of(bf.getMantissa()).multiply(ONE.shiftLeft(bf.getExponent())), x);
+            assertEquals(bf, of(bf.getMantissa()).multiply(ONE.shiftLeft(bf.getExponent())), x);
             assertTrue(bf, IntegerUtils.isPowerOfTwo(x.rationalValueExact().getDenominator()));
             inverse(Algebraic::of, Algebraic::binaryFractionValueExact, bf);
         }
@@ -606,7 +610,7 @@ public class AlgebraicProperties extends QBarTestProperties {
     private void propertiesIsIntegerPowerOfTwo() {
         initialize("isPowerOfTwo()");
         for (Algebraic x : take(LIMIT, P.positiveAlgebraics())) {
-            //todo assertEquals(r, r.isPowerOfTwo(), ONE.shiftLeft(r.binaryExponent()).equals(r));
+            assertEquals(x, x.isIntegerPowerOfTwo(), ONE.shiftLeft(x.binaryExponent()).equals(x));
         }
 
         for (Algebraic x : take(LIMIT, P.withElement(ZERO, P.negativeAlgebraics()))) {
@@ -729,10 +733,9 @@ public class AlgebraicProperties extends QBarTestProperties {
         initialize("binaryExponent()");
         for (Algebraic x : take(LIMIT, P.positiveAlgebraics())) {
             int exponent = x.binaryExponent();
-            //todo
-//            Rational power = ONE.shiftLeft(exponent);
-//            assertTrue(r, le(power, r));
-//            assertTrue(r, le(r, power.shiftLeft(1)));
+            Algebraic power = ONE.shiftLeft(exponent);
+            assertTrue(x, le(power, x));
+            assertTrue(x, le(x, power.shiftLeft(1)));
         }
 
         for (Algebraic x : take(LIMIT, P.withElement(ZERO, P.negativeAlgebraics()))) {
@@ -1600,7 +1603,10 @@ public class AlgebraicProperties extends QBarTestProperties {
         for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.subsetPairs(P.algebraics()))) {
             Interval extension = intervalExtension(p.a, p.b);
             assertTrue(p, extension.isFinitelyBounded());
-            //todo length
+            assertTrue(
+                    p,
+                    le(Real.of(extension.diameter().get().shiftRight(1)), p.b.realValue().subtract(p.a.realValue()))
+            );
         }
 
         Iterable<Pair<Algebraic, Algebraic>> ps = P.subsetPairs(filterInfinite(y -> !y.isRational(), P.algebraics()));
@@ -2060,6 +2066,98 @@ public class AlgebraicProperties extends QBarTestProperties {
                 fail(x);
             } catch (ArithmeticException ignored) {}
         }
+    }
+
+    private static @NotNull Algebraic shiftLeft_simplest(@NotNull Algebraic x, int bits) {
+        if (bits < 0) {
+            return x.divide(BigInteger.ONE.shiftLeft(-bits));
+        } else {
+            return x.multiply(BigInteger.ONE.shiftLeft(bits));
+        }
+    }
+
+    private void propertiesShiftLeft() {
+        initialize("shiftLeft(int)");
+        for (Pair<Algebraic, Integer> p : take(LIMIT, P.pairs(P.algebraics(), P.integersGeometric()))) {
+            homomorphic(
+                    Algebraic::negate,
+                    Function.identity(),
+                    Algebraic::negate,
+                    Algebraic::shiftLeft,
+                    Algebraic::shiftLeft,
+                    p
+            );
+            Algebraic shifted = p.a.shiftLeft(p.b);
+            shifted.validate();
+            assertEquals(p, shifted, shiftLeft_simplest(p.a, p.b));
+            inverse(x -> x.shiftLeft(p.b), (Algebraic x) -> x.shiftRight(p.b), p.a);
+            assertEquals(p, shifted, p.a.shiftRight(-p.b));
+        }
+
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            fixedPoint(y -> y.shiftLeft(0), x);
+        }
+
+        for (Pair<Algebraic, Integer> p : take(LIMIT, P.pairs(P.algebraics(), P.naturalIntegersGeometric()))) {
+            assertEquals(p, p.a.shiftLeft(p.b), p.a.multiply(BigInteger.ONE.shiftLeft(p.b)));
+        }
+    }
+
+    private void compareImplementationsShiftLeft() {
+        Map<String, Function<Pair<Algebraic, Integer>, Algebraic>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> shiftLeft_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.shiftLeft(p.b));
+        compareImplementations(
+                "shiftLeft(int)",
+                take(LIMIT, P.pairs(P.algebraics(), P.integersGeometric())),
+                functions
+        );
+    }
+
+    private static @NotNull Algebraic shiftRight_simplest(@NotNull Algebraic x, int bits) {
+        if (bits < 0) {
+            return x.multiply(BigInteger.ONE.shiftLeft(-bits));
+        } else {
+            return x.divide(BigInteger.ONE.shiftLeft(bits));
+        }
+    }
+
+    private void propertiesShiftRight() {
+        initialize("shiftRight(int)");
+        for (Pair<Algebraic, Integer> p : take(LIMIT, P.pairs(P.algebraics(), P.integersGeometric()))) {
+            homomorphic(
+                    Algebraic::negate,
+                    Function.identity(),
+                    Algebraic::negate,
+                    Algebraic::shiftRight,
+                    Algebraic::shiftRight,
+                    p
+            );
+            Algebraic shifted = p.a.shiftRight(p.b);
+            shifted.validate();
+            assertEquals(p, shifted, shiftRight_simplest(p.a, p.b));
+            inverse(x -> x.shiftRight(p.b), (Algebraic x) -> x.shiftLeft(p.b), p.a);
+            assertEquals(p, shifted, p.a.shiftLeft(-p.b));
+        }
+
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            fixedPoint(y -> y.shiftRight(0), x);
+        }
+
+        for (Pair<Algebraic, Integer> p : take(LIMIT, P.pairs(P.algebraics(), P.naturalIntegersGeometric()))) {
+            assertEquals(p, p.a.shiftRight(p.b), p.a.divide(BigInteger.ONE.shiftLeft(p.b)));
+        }
+    }
+
+    private void compareImplementationsShiftRight() {
+        Map<String, Function<Pair<Algebraic, Integer>, Algebraic>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> shiftRight_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.shiftLeft(p.b));
+        compareImplementations(
+                "shiftRight(int)",
+                take(LIMIT, P.pairs(P.algebraics(), P.integersGeometric())),
+                functions
+        );
     }
 
     private void propertiesEquals() {

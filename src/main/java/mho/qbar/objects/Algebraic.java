@@ -1282,7 +1282,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      */
     public @NotNull Algebraic addRaw(@NotNull Algebraic that) {
         if (degree() == that.degree()) {
-            //todo if (equals(that)) return shiftLeft(1);
+            if (equals(that)) return shiftLeft(1);
             if (equals(that.negate())) return ZERO;
         }
         Polynomial sumMP = minimalPolynomial.addRoots(that.minimalPolynomial).squareFreePart();
@@ -1674,6 +1674,56 @@ public final class Algebraic implements Comparable<Algebraic> {
      */
     public @NotNull Algebraic divide(@NotNull Algebraic that) {
         return multiply(that.invert());
+    }
+
+    /**
+     * Returns the left shift of {@code this} by {@code bits}; {@code this}×2<sup>{@code bits}</sup>. Negative
+     * {@code bits} corresponds to a right shift.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code Algebraic}.</li>
+     *  <li>{@code bits} may be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param bits the number of bits to left-shift by
+     * @return {@code this}≪{@code bits}
+     */
+    public @NotNull Algebraic shiftLeft(int bits) {
+        if (this == ZERO || bits == 0) return this;
+        if (bits < 0) return shiftRight(-bits);
+        if (rational.isPresent()) {
+            Rational shifted = rational.get().shiftLeft(bits);
+            return shifted == Rational.ONE ? ONE : new Algebraic(shifted);
+        }
+        Polynomial shiftedMP = minimalPolynomial.positivePrimitiveShiftRootsLeft(bits);
+        Interval shiftedIsolatingInterval = shiftedMP.powerOfTwoIsolatingInterval(rootIndex);
+        return new Algebraic(shiftedMP, rootIndex, shiftedIsolatingInterval, mpRootCount);
+    }
+
+    /**
+     * Returns the right shift of {@code this} by {@code bits}; {@code this}×2<sup>–{@code bits}</sup>. Negative
+     * {@code bits} corresponds to a left shift.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code Algebraic}.</li>
+     *  <li>{@code bits} may be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param bits the number of bits to right-shift by
+     * @return {@code this}≫{@code bits}
+     */
+    public @NotNull Algebraic shiftRight(int bits) {
+        if (this == ZERO || bits == 0) return this;
+        if (bits < 0) return shiftLeft(-bits);
+        if (rational.isPresent()) {
+            Rational shifted = rational.get().shiftRight(bits);
+            return shifted == Rational.ONE ? ONE : new Algebraic(shifted);
+        }
+        Polynomial shiftedMP = minimalPolynomial.positivePrimitiveShiftRootsRight(bits);
+        Interval shiftedIsolatingInterval = shiftedMP.powerOfTwoIsolatingInterval(rootIndex);
+        return new Algebraic(shiftedMP, rootIndex, shiftedIsolatingInterval, mpRootCount);
     }
 
     /**
