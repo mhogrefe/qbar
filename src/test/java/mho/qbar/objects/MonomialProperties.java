@@ -305,6 +305,18 @@ public class MonomialProperties extends QBarTestProperties {
         for (Triple<Monomial, Monomial, Monomial> t : take(LIMIT, P.triples(P.monomials()))) {
             associative(Monomial::multiply, t);
         }
+
+        Iterable<Triple<Monomial, Monomial, Map<Variable, BigInteger>>> ts = map(
+                r -> new Triple<>(r.a.a, r.a.b, r.b),
+                P.dependentPairsInfinite(
+                        filterInfinite(q -> q.a != ONE || q.b != ONE, P.pairs(P.monomials())),
+                        p -> P.maps(sort(nub(concat(p.a.variables(), p.b.variables()))), P.bigIntegers())
+                )
+        );
+        for (Triple<Monomial, Monomial, Map<Variable, BigInteger>> t : take(LIMIT, ts)) {
+            Monomial product = t.a.multiply(t.b);
+            assertEquals(t, t.a.applyBigInteger(t.c).multiply(t.b.applyBigInteger(t.c)), product.applyBigInteger(t.c));
+        }
     }
 
     private static @NotNull Monomial product_simplest(@NotNull Iterable<Monomial> xs) {
@@ -335,6 +347,15 @@ public class MonomialProperties extends QBarTestProperties {
             Monomial product = product(evs);
             assertEquals(evs, product, product_simplest(evs));
             assertEquals(evs, product, product_alt(evs));
+        }
+
+        Iterable<Pair<List<Monomial>, Map<Variable, BigInteger>>> ps = P.dependentPairsInfinite(
+                filterInfinite(ms -> any(m -> m != ONE, ms), P.withScale(1).lists(P.monomials())),
+                ns -> P.maps(sort(nub(concat(map(Monomial::variables, ns)))), P.bigIntegers())
+        );
+        for (Pair<List<Monomial>, Map<Variable, BigInteger>> p : take(LIMIT, ps)) {
+            Monomial product = product(p.a);
+            assertEquals(p, productBigInteger(map(m -> m.applyBigInteger(p.b), p.a)), product.applyBigInteger(p.b));
         }
     }
 
@@ -384,12 +405,12 @@ public class MonomialProperties extends QBarTestProperties {
             assertEquals(m, m.pow(2), m.multiply(m));
         }
 
-        Iterable<Triple<Monomial, Integer, Integer>> ts2 = P.triples(
+        Iterable<Triple<Monomial, Integer, Integer>> ts = P.triples(
                 P.monomials(),
                 P.withScale(4).naturalIntegersGeometric(),
                 P.withScale(4).naturalIntegersGeometric()
         );
-        for (Triple<Monomial, Integer, Integer> t : take(LIMIT, ts2)) {
+        for (Triple<Monomial, Integer, Integer> t : take(LIMIT, ts)) {
             Monomial expression1 = t.a.pow(t.b).multiply(t.a.pow(t.c));
             Monomial expression2 = t.a.pow(t.b + t.c);
             assertEquals(t, expression1, expression2);
@@ -398,15 +419,30 @@ public class MonomialProperties extends QBarTestProperties {
             assertEquals(t, expression5, expression6);
         }
 
-        Iterable<Triple<Monomial, Monomial, Integer>> ts3 = P.triples(
+        Iterable<Triple<Monomial, Monomial, Integer>> ts2 = P.triples(
                 P.monomials(),
                 P.monomials(),
                 P.withScale(4).naturalIntegersGeometric()
         );
-        for (Triple<Monomial, Monomial, Integer> t : take(LIMIT, ts3)) {
+        for (Triple<Monomial, Monomial, Integer> t : take(LIMIT, ts2)) {
             Monomial expression1 = t.a.multiply(t.b).pow(t.c);
             Monomial expression2 = t.a.pow(t.c).multiply(t.b.pow(t.c));
             assertEquals(t, expression1, expression2);
+        }
+
+        Iterable<Triple<Monomial, Integer, Map<Variable, BigInteger>>> ts3 = map(
+                p -> new Triple<>(p.a.a, p.b, p.a.b),
+                P.pairsLogarithmicOrder(
+                        P.dependentPairsInfinite(
+                                filterInfinite(m -> m != ONE, P.monomials()),
+                                n -> P.maps(n.variables(), P.bigIntegers())
+                        ),
+                        P.withScale(4).naturalIntegersGeometric()
+                )
+        );
+        for (Triple<Monomial, Integer, Map<Variable, BigInteger>> t : take(LIMIT, ts3)) {
+            Monomial m = t.a.pow(t.b);
+            assertEquals(t, t.a.applyBigInteger(t.c).pow(t.b), m.applyBigInteger(t.c));
         }
 
         for (Pair<Monomial, Integer> p : take(LIMIT, P.pairs(P.monomials(), P.negativeIntegers()))) {
