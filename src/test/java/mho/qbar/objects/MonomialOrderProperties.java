@@ -25,8 +25,7 @@ public class MonomialOrderProperties extends QBarTestProperties {
     @Override
     protected void testBothModes() {
         propertiesCompare();
-        propertiesRead();
-        propertiesFindIn();
+        propertiesReadStrict();
     }
 
     private void propertiesCompare() {
@@ -34,15 +33,15 @@ public class MonomialOrderProperties extends QBarTestProperties {
         for (MonomialOrder o : QBarExhaustiveProvider.INSTANCE.monomialOrders()) {
             QBarIterableProvider Q = P.deepCopy();
             QBarIterableProvider R = P.deepCopy();
-            Iterable<Pair<ExponentVector, ExponentVector>> ps = zip(P.exponentVectors(), Q.exponentVectors());
-            for (Pair<ExponentVector, ExponentVector> p : IterableUtils.take(LIMIT, ps)) {
+            Iterable<Pair<Monomial, Monomial>> ps = zip(P.monomials(), Q.monomials());
+            for (Pair<Monomial, Monomial> p : IterableUtils.take(LIMIT, ps)) {
                 assertTrue(p, eq(o, p.a, p.b));
             }
 
             P.reset();
             Q.reset();
-            ps = zip(P.exponentVectors(), Q.exponentVectors());
-            for (Pair<ExponentVector, ExponentVector> p : take(LIMIT, ps)) {
+            ps = zip(P.monomials(), Q.monomials());
+            for (Pair<Monomial, Monomial> p : take(LIMIT, ps)) {
                 int compare = o.compare(p.a, p.b);
                 antiSymmetric((x, y) -> le(o, x, y), p);
                 assertTrue(p, compare == 0 || compare == 1 || compare == -1);
@@ -53,39 +52,28 @@ public class MonomialOrderProperties extends QBarTestProperties {
             P.reset();
             Q.reset();
             R.reset();
-            Iterable<Triple<ExponentVector, ExponentVector, ExponentVector>> ts =  EP.triples(
-                    P.exponentVectors(),
-                    Q.exponentVectors(),
-                    R.exponentVectors()
+            Iterable<Triple<Monomial, Monomial, Monomial>> ts =  EP.triples(
+                    P.monomials(),
+                    Q.monomials(),
+                    R.monomials()
             );
-            for (Triple<ExponentVector, ExponentVector, ExponentVector> t : take(LIMIT, ts)) {
+            for (Triple<Monomial, Monomial, Monomial> t : take(LIMIT, ts)) {
                 transitive((x, y) -> le(o, x, y), t);
             }
         }
     }
 
-    private void propertiesRead() {
-        initialize("read(String)");
+    private void propertiesReadStrict() {
+        initialize("readStrict(String)");
         QBarTesting.propertiesReadHelper(
             LIMIT,
             P,
             MONOMIAL_ORDER_CHARS,
             P.monomialOrders(),
-            MonomialOrder::read,
+            MonomialOrder::readStrict,
             o -> {},
-            false
-        );
-    }
-
-    private void propertiesFindIn() {
-        initialize("findIn(String)");
-        propertiesFindInHelper(
-                LIMIT,
-                P.getWheelsProvider(),
-                P.monomialOrders(),
-                MonomialOrder::read,
-                MonomialOrder::findIn,
-                o -> {}
+            false,
+            true
         );
     }
 }

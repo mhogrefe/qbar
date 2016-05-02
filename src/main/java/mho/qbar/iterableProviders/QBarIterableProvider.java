@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.ordering.Ordering.lt;
 
 /**
  * This class provides {@code Iterables} for testing.
@@ -3299,6 +3300,25 @@ public strictfp abstract class QBarIterableProvider {
     public abstract @NotNull Iterable<Polynomial> positivePrimitivePolynomialsAtLeast(int minDegree);
 
     /**
+     * Generates monic {@code Polynomial}s with a given degree.
+     *
+     * @param degree the degree of the generated {@code Polynomial}s
+     */
+    public abstract @NotNull Iterable<Polynomial> monicPolynomials(int degree);
+
+    /**
+     * Generates monic {@code Polynomial}s.
+     */
+    public abstract @NotNull Iterable<Polynomial> monicPolynomials();
+
+    /**
+     * Generates monic {@code Polynomial}s with a minimum degree.
+     *
+     * @param minDegree the minimum degree of the generated {@code Polynomial}s
+     */
+    public abstract @NotNull Iterable<Polynomial> monicPolynomialsAtLeast(int minDegree);
+
+    /**
      * Generates square-free {@code Polynomial}s with a given degree.
      *
      * @param degree the degree of the generated {@code Polynomial}s
@@ -3429,12 +3449,12 @@ public strictfp abstract class QBarIterableProvider {
     public abstract @NotNull Iterable<MonomialOrder> monomialOrders();
 
     /**
-     * Generates {@code ExponentVector}s.
+     * Generates {@code Monomial}s.
      */
-    public abstract @NotNull Iterable<ExponentVector> exponentVectors();
+    public abstract @NotNull Iterable<Monomial> monomials();
 
     /**
-     * Generates {@code ExponentVector}s containing only (a subset of) the given variables.
+     * Generates {@code Monomial}s containing only (a subset of) the given variables.
      *
      * <ul>
      *  <li>{@code variables} must be in increasing order and cannot contain repetitions.</li>
@@ -3442,7 +3462,7 @@ public strictfp abstract class QBarIterableProvider {
      *
      * @param variables the allowed variables in the result
      */
-    public @NotNull Iterable<ExponentVector> exponentVectors(@NotNull List<Variable> variables) {
+    public @NotNull Iterable<Monomial> monomials(@NotNull List<Variable> variables) {
         if (any(v -> v == null, variables)) {
             throw new NullPointerException();
         }
@@ -3452,7 +3472,7 @@ public strictfp abstract class QBarIterableProvider {
         }
         List<Variable> reversed = reverse(variables);
         return map(
-                es -> ExponentVector.fromTerms(toList(filter(p -> p.b != 0, zip(reversed, es)))),
+                es -> Monomial.fromTerms(toList(filter(p -> p.b != 0, zip(reversed, es)))),
                 lists(variables.size(), naturalIntegersGeometric())
         );
     }
@@ -3623,7 +3643,7 @@ public strictfp abstract class QBarIterableProvider {
             throw new IllegalArgumentException("degree must be positive. Invalid degree: " + degree);
         }
         return filterInfinite(
-                x -> x.signum() != -1 && Ordering.lt(x, Algebraic.ONE),
+                x -> x.signum() != -1 && lt(x, Algebraic.ONE),
                 map(
                         p -> Algebraic.of(p.a, p.b),
                         filterInfinite(
@@ -3644,6 +3664,132 @@ public strictfp abstract class QBarIterableProvider {
      * Generates {@code Algebraic}s in the interval [0, 1).
      */
     public abstract @NotNull Iterable<Algebraic> nonNegativeAlgebraicsLessThanOne();
+
+    /**
+     * Generates {@code Algebraic}s greater than or equal to a given value and with a given degree.
+     *
+     * <ul>
+     *  <li>{@code degree} must be positive.</li>
+     *  <li>{@code a} cannot be null.</li>
+     * </ul>
+     *
+     * @param degree the degree of the {@code Algebraic}s in the result
+     * @param a the inclusive lower bound of the generated {@code Algebraic}s
+     */
+    public abstract @NotNull Iterable<Algebraic> rangeUp(int degree, @NotNull Algebraic a);
+
+    /**
+     * Generates {@code Algebraic}s greater than or equal to a given value.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     * </ul>
+     *
+     * @param a the inclusive lower bound of the generated {@code Algebraic}s
+     */
+    public abstract @NotNull Iterable<Algebraic> rangeUp(@NotNull Algebraic a);
+
+    /**
+     * Generates {@code Algebraic}s less than or equal to a given value and with a given degree.
+     *
+     * <ul>
+     *  <li>{@code degree} must be positive.</li>
+     *  <li>{@code a} cannot be null.</li>
+     * </ul>
+     *
+     * @param degree the degree of the {@code Algebraic}s in the result
+     * @param a the inclusive upper bound of the generated {@code Algebraic}s
+     */
+    public abstract @NotNull Iterable<Algebraic> rangeDown(int degree, @NotNull Algebraic a);
+
+    /**
+     * Generates {@code Algebraic}s less than or equal to a given value.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     * </ul>
+     *
+     * @param a the inclusive upper bound of the generated {@code Algebraic}s
+     */
+    public abstract @NotNull Iterable<Algebraic> rangeDown(@NotNull Algebraic a);
+
+    /**
+     * Generates {@code Algebraic}s between {@code a} and {@code b}, inclusive, and with a given degree.
+     *
+     * <ul>
+     *  <li>{@code degree} must be positive.</li>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>{@code b} cannot be null.</li>
+     *  <li>{@code a} must be less than or equal to {@code b}.</li>
+     * </ul>
+     *
+     * @param degree the degree of the {@code Algebraic}s in the result
+     * @param a the inclusive lower bound of the generated {@code Algebraic}s
+     * @param b the inclusive upper bound of the generated {@code Algebraic}s
+     */
+    public abstract @NotNull Iterable<Algebraic> range(int degree, @NotNull Algebraic a, @NotNull Algebraic b);
+
+    /**
+     * Generates {@code Algebraic}s between {@code a} and {@code b}, inclusive.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>{@code b} cannot be null.</li>
+     *  <li>{@code a} must be less than or equal to {@code b}.</li>
+     * </ul>
+     *
+     * @param a the inclusive lower bound of the generated {@code Algebraic}s
+     * @param b the inclusive upper bound of the generated {@code Algebraic}s
+     */
+    public abstract @NotNull Iterable<Algebraic> range(@NotNull Algebraic a, @NotNull Algebraic b);
+
+    /**
+     * Generates {@code Algebraic}s contained in a given {@code Interval} and with a given degree.
+     *
+     * <ul>
+     *  <li>{@code degree} must be positive.</li>
+     *  <li>{@code a} cannot be null.</li>
+     * </ul>
+     *
+     * @param degree the degree of the {@code Algebraic}s in the result
+     * @param a an {@code Interval}
+     */
+    public abstract @NotNull Iterable<Algebraic> algebraicsIn(int degree, @NotNull Interval a);
+
+    /**
+     * Generates {@code Algebraic}s contained in a given {@code Interval}.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     * </ul>
+     *
+     * @param a an {@code Interval}
+     */
+    public abstract @NotNull Iterable<Algebraic> algebraicsIn(@NotNull Interval a);
+
+    /**
+     * Generates {@code Algebraic}s not contained in a given {@code Interval} and with a given degree.
+     *
+     * <ul>
+     *  <li>{@code degree} must be positive.</li>
+     *  <li>{@code a} cannot be null.</li>
+     * </ul>
+     *
+     * @param a an {@code Interval}
+     */
+    public abstract @NotNull Iterable<Algebraic> algebraicsNotIn(int degree, @NotNull Interval a);
+
+    /**
+     * Generates {@code Algebraic}s not contained in a given {@code Interval}.
+     *
+     * <ul>
+     *  <li>{@code degree} must be positive.</li>
+     *  <li>{@code a} cannot be (–∞, ∞).</li>
+     * </ul>
+     *
+     * @param a an {@code Interval}
+     */
+    public abstract @NotNull Iterable<Algebraic> algebraicsNotIn(@NotNull Interval a);
 
     public @NotNull Iterable<QBarRandomProvider> qbarRandomProvidersFixedScales(
             int scale,

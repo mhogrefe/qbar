@@ -1,7 +1,6 @@
 package mho.qbar.objects;
 
 import mho.qbar.testing.QBarDemos;
-import mho.wheels.io.Readers;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
@@ -10,7 +9,6 @@ import org.jetbrains.annotations.NotNull;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static mho.qbar.objects.Polynomial.*;
 import static mho.qbar.objects.Polynomial.sum;
@@ -820,6 +818,26 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoPowerTable() {
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).monicPolynomialsAtLeast(1),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            System.out.println("powerTable(" + p.a + ", " + p.b + ") = " + p.a.powerTable(p.b));
+        }
+    }
+
+    private void demoRootPower() {
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairs(
+                P.withScale(4).monicPolynomialsAtLeast(1),
+                P.naturalIntegersGeometric()
+        );
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            System.out.println("rootPower(" + p.a + ", " + p.b + ") = " + p.a.rootPower(p.b));
+        }
+    }
+
     private void demoEquals_Polynomial() {
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.withScale(4).polynomials()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);
@@ -845,100 +863,32 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
-    private void demoRead_String() {
+    private void demoReadStrict_String() {
         for (String s : take(LIMIT, P.strings())) {
-            System.out.println("read(" + nicePrint(s) + ") = " + read(s));
+            System.out.println("readStrict(" + nicePrint(s) + ") = " + readStrict(s));
         }
     }
 
-    private void demoRead_String_targeted() {
+    private void demoReadStrict_String_targeted() {
         for (String s : take(LIMIT, P.strings(POLYNOMIAL_CHARS))) {
-            System.out.println("read(" + s + ") = " + read(s));
+            System.out.println("readStrict(" + s + ") = " + readStrict(s));
         }
     }
 
-    private void demoRead_int_String() {
+    private void demoReadStrict_int_String() {
         Iterable<Pair<String, Integer>> ps = P.pairsLogarithmicOrder(P.strings(), P.positiveIntegersGeometric());
         for (Pair<String, Integer> p : take(LIMIT, ps)) {
-            System.out.println("read(" + p.b + ", " + nicePrint(p.a) + ") = " + read(p.b, p.a));
+            System.out.println("readStrict(" + p.b + ", " + nicePrint(p.a) + ") = " + readStrict(p.b, p.a));
         }
     }
 
-    private void demoRead_int_String_targeted() {
+    private void demoReadStrict_int_String_targeted() {
         Iterable<Pair<String, Integer>> ps = P.pairsLogarithmicOrder(
                 P.strings(POLYNOMIAL_CHARS),
                 P.positiveIntegersGeometric()
         );
         for (Pair<String, Integer> p : take(LIMIT, ps)) {
-            System.out.println("read(" + p.b + ", " + p.a + ") = " + read(p.b, p.a));
-        }
-    }
-
-    private static @NotNull Optional<String> badString(@NotNull String s) {
-        boolean seenX = false;
-        boolean seenXCaret = false;
-        int exponentDigitCount = 0;
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
-            if (c == 'x') {
-                seenX = true;
-            } else if (seenX && c == '^') {
-                seenXCaret = true;
-            } else if (seenXCaret && c >= '0' && c <= '9') {
-                exponentDigitCount++;
-                if (exponentDigitCount > 3) return Optional.of("");
-            } else {
-                seenX = false;
-                seenXCaret = false;
-                exponentDigitCount = 0;
-            }
-        }
-        return Optional.empty();
-    }
-
-    private void demoFindIn_String() {
-        Iterable<String> ss = filterInfinite(
-                s -> !Readers.genericFindIn(PolynomialDemos::badString).apply(s).isPresent(),
-                P.strings()
-        );
-        for (String s : take(LIMIT, ss)) {
-            System.out.println("findIn(" + nicePrint(s) + ") = " + findIn(s));
-        }
-    }
-
-    private void demoFindIn_String_targeted() {
-        Iterable<String> ss = filterInfinite(
-                s -> !Readers.genericFindIn(PolynomialDemos::badString).apply(s).isPresent(),
-                P.strings(POLYNOMIAL_CHARS)
-        );
-        for (String s : take(LIMIT, ss)) {
-            System.out.println("findIn(" + s + ") = " + findIn(s));
-        }
-    }
-
-    private void demoFindIn_int_String() {
-        Iterable<Pair<String, Integer>> ps = P.pairsLogarithmicOrder(
-                filterInfinite(
-                        s -> !Readers.genericFindIn(PolynomialDemos::badString).apply(s).isPresent(),
-                        P.strings()
-                ),
-                P.positiveIntegersGeometric()
-        );
-        for (Pair<String, Integer> p : take(LIMIT, ps)) {
-            System.out.println("findIn(" + p.b + ", " + nicePrint(p.a) + ") = " + findIn(p.b, p.a));
-        }
-    }
-
-    private void demoFindIn_int_String_targeted() {
-        Iterable<Pair<String, Integer>> ps = P.pairsLogarithmicOrder(
-                filterInfinite(
-                        s -> !Readers.genericFindIn(PolynomialDemos::badString).apply(s).isPresent(),
-                        P.strings(POLYNOMIAL_CHARS)
-                ),
-                P.positiveIntegersGeometric()
-        );
-        for (Pair<String, Integer> p : take(LIMIT, ps)) {
-            System.out.println("findIn(" + p.b + ", " + p.a + ") = " + findIn(p.b, p.a));
+            System.out.println("readStrict(" + p.b + ", " + p.a + ") = " + readStrict(p.b, p.a));
         }
     }
 

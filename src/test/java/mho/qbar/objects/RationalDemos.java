@@ -145,7 +145,7 @@ public class RationalDemos extends QBarDemos {
 
     private void demoCeiling() {
         for (Rational r : take(LIMIT, P.rationals())) {
-            System.out.println("ceil(" + r + ") = " + r.ceiling());
+            System.out.println("ceiling(" + r + ") = " + r.ceiling());
         }
     }
 
@@ -668,27 +668,15 @@ public class RationalDemos extends QBarDemos {
         }
     }
 
-    private void demoRead() {
+    private void demoReadStrict() {
         for (String s : take(LIMIT, P.strings())) {
-            System.out.println("read(" + nicePrint(s) + ") = " + read(s));
+            System.out.println("readStrict(" + nicePrint(s) + ") = " + readStrict(s));
         }
     }
 
-    private void demoRead_targeted() {
+    private void demoReadStrict_targeted() {
         for (String s : take(LIMIT, P.strings(RATIONAL_CHARS))) {
-            System.out.println("read(" + s + ") = " + read(s));
-        }
-    }
-
-    private void demoFindIn() {
-        for (String s : take(LIMIT, P.strings())) {
-            System.out.println("findIn(" + nicePrint(s) + ") = " + findIn(s));
-        }
-    }
-
-    private void demoFindIn_targeted() {
-        for (String s : take(LIMIT, P.strings(RATIONAL_CHARS))) {
-            System.out.println("findIn(" + s + ") = " + findIn(s));
+            System.out.println("readStrict(" + s + ") = " + readStrict(s));
         }
     }
 

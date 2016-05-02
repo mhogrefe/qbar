@@ -4,7 +4,6 @@ import mho.wheels.io.Readers;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.NoRemoveIterable;
 import mho.wheels.ordering.comparators.LexComparator;
-import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
@@ -21,7 +20,7 @@ import static mho.wheels.testing.Testing.assertTrue;
  *
  * <p>This class is immutable.</p>
  */
-public class PolynomialMatrix implements Comparable<PolynomialMatrix> {
+public final class PolynomialMatrix implements Comparable<PolynomialMatrix> {
     /**
      * Used by {@link PolynomialMatrix#compareTo}
      */
@@ -917,40 +916,20 @@ public class PolynomialMatrix implements Comparable<PolynomialMatrix> {
      * @param s a string representation of a {@code PolynomialMatrix}.
      * @return the wrapped {@code PolynomialMatrix} represented by {@code s}, or {@code empty} if {@code s} is invalid.
      */
-    public static @NotNull Optional<PolynomialMatrix> read(@NotNull String s) {
+    public static @NotNull Optional<PolynomialMatrix> readStrict(@NotNull String s) {
         if (s.startsWith("[]#")) {
-            Optional<Integer> oWidth = Readers.readInteger(s.substring(3));
+            Optional<Integer> oWidth = Readers.readIntegerStrict(s.substring(3));
             if (!oWidth.isPresent()) return Optional.empty();
             int width = oWidth.get();
             if (width < 0) return Optional.empty();
             return Optional.of(new PolynomialMatrix(Collections.emptyList(), width));
         } else {
-            Optional<List<PolynomialVector>> ors = Readers.readList(PolynomialVector::read).apply(s);
+            Optional<List<PolynomialVector>> ors = Readers.readListStrict(PolynomialVector::readStrict).apply(s);
             if (!ors.isPresent()) return Optional.empty();
             List<PolynomialVector> rs = ors.get();
             if (rs.isEmpty() || !same(map(PolynomialVector::dimension, rs))) return Optional.empty();
             return Optional.of(new PolynomialMatrix(rs, rs.get(0).dimension()));
         }
-    }
-
-    /**
-     * Finds the first occurrence of a {@code PolynomialMatrix} in a {@code String}. Returns the
-     * {@code PolynomialMatrix} and the index at which it was found. Returns an empty {@code Optional} if no
-     * {@code PolynomialMatrix} is found. Only {@code String}s which could have been emitted by
-     * {@link mho.qbar.objects.PolynomialMatrix#toString} are recognized. The longest possible {@code PolynomialMatrix}
-     * is parsed.
-     *
-     * <ul>
-     *  <li>{@code s} must be non-null.</li>
-     *  <li>The result is non-null. If it is non-empty, then neither of the {@code Pair}'s components is null, and the
-     *  second component is non-negative.</li>
-     * </ul>
-     *
-     * @param s the input {@code String}
-     * @return the first {@code PolynomialMatrix} found in {@code s}, and the index at which it was found
-     */
-    public static @NotNull Optional<Pair<PolynomialMatrix, Integer>> findIn(@NotNull String s) {
-        return Readers.genericFindIn(PolynomialMatrix::read, " #*+,-0123456789[]^x").apply(s);
     }
 
     /**

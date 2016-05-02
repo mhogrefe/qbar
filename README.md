@@ -14,9 +14,9 @@ Progress
 | QBarIterableProvider     | ✘       | ✘       | ✘     | ✘     | ✘          |
 | QBarRandomProvider       | ✘       | ✘       | ✘     | ✘     | ✘          |
 | Algebraic                | ✘       | ✘       | ✘     | ✘     | ✘          |
-| ExponentVector           | ✘       | ✘       | ✘     | ✘     | ✘          |
 | Interval                 | ✔       | ✔       | ✔     | ✔     | ✔          |
 | Matrix                   | ✘       | ✘       | ✘     | ✘     | ✘          |
+| Monomial                 | ✔       | ✔       | ✔     | ✔     | ✔          |
 | MonomialOrder            | ✔       | ✔       | ✔     | ✔     | ✔          |
 | MultivariatePolynomial   | ✘       | ✘       | ✘     | ✘     | ✘          |
 | Polynomial               | ✘       | ✘       | ✘     | ✘     | ✘          |

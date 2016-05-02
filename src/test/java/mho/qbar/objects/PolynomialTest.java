@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.List;
 
 import static mho.qbar.objects.Polynomial.*;
@@ -26,7 +27,7 @@ public class PolynomialTest {
     }
 
     private static void iterator_helper(@NotNull String x, @NotNull String output) {
-        aeq(toList(read(x).get()), output);
+        aeq(toList(readStrict(x).get()), output);
     }
 
     @Test
@@ -41,7 +42,7 @@ public class PolynomialTest {
     }
 
     private static void apply_BigInteger_helper(@NotNull String p, @NotNull String x, @NotNull String output) {
-        aeq(read(p).get().apply(Readers.readBigInteger(x).get()), output);
+        aeq(readStrict(p).get().apply(Readers.readBigIntegerStrict(x).get()), output);
     }
 
     @Test
@@ -90,7 +91,7 @@ public class PolynomialTest {
     }
 
     private static void apply_Rational_helper(@NotNull String p, @NotNull String x, @NotNull String output) {
-        aeq(read(p).get().apply(Rational.read(x).get()), output);
+        aeq(readStrict(p).get().apply(Rational.readStrict(x).get()), output);
     }
 
     @Test
@@ -139,7 +140,7 @@ public class PolynomialTest {
     }
 
     private static void specialApply_helper(@NotNull String p, @NotNull String x, @NotNull String output) {
-        aeq(read(p).get().specialApply(Rational.read(x).get()), output);
+        aeq(readStrict(p).get().specialApply(Rational.readStrict(x).get()), output);
     }
 
     @Test
@@ -188,7 +189,7 @@ public class PolynomialTest {
     }
 
     private static void toRationalPolynomial_helper(@NotNull String input) {
-        aeq(read(input).get().toRationalPolynomial(), input);
+        aeq(readStrict(input).get().toRationalPolynomial(), input);
     }
 
     @Test
@@ -203,12 +204,12 @@ public class PolynomialTest {
     }
 
     private static void coefficient_helper(@NotNull String p, int i, @NotNull String output) {
-        aeq(read(p).get().coefficient(i), output);
+        aeq(readStrict(p).get().coefficient(i), output);
     }
 
     private static void coefficient_fail_helper(@NotNull String p, int i) {
         try {
-            read(p).get().coefficient(i);
+            readStrict(p).get().coefficient(i);
             fail();
         } catch (ArrayIndexOutOfBoundsException ignored) {}
     }
@@ -262,7 +263,7 @@ public class PolynomialTest {
     }
 
     private static void of_BigInteger_helper(@NotNull String input) {
-        aeq(of(Readers.readBigInteger(input).get()), input);
+        aeq(of(Readers.readBigIntegerStrict(input).get()), input);
     }
 
     @Test
@@ -274,12 +275,12 @@ public class PolynomialTest {
     }
 
     private static void of_BigInteger_int_helper(@NotNull String input, int i, @NotNull String output) {
-        aeq(of(Readers.readBigInteger(input).get(), i), output);
+        aeq(of(Readers.readBigIntegerStrict(input).get(), i), output);
     }
 
     private static void of_BigInteger_int_fail_helper(@NotNull String input, int i) {
         try {
-            of(Readers.readBigInteger(input).get(), i);
+            of(Readers.readBigIntegerStrict(input).get(), i);
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -316,7 +317,7 @@ public class PolynomialTest {
     }
 
     private static void fromRoot_BigInteger_helper(@NotNull String input, @NotNull String output) {
-        aeq(fromRoot(Readers.readBigInteger(input).get()), output);
+        aeq(fromRoot(Readers.readBigIntegerStrict(input).get()), output);
     }
 
     @Test
@@ -328,7 +329,7 @@ public class PolynomialTest {
     }
 
     private static void fromRoot_Rational_helper(@NotNull String input, @NotNull String output) {
-        aeq(fromRoot(Rational.read(input).get()), output);
+        aeq(fromRoot(Rational.readStrict(input).get()), output);
     }
 
     @Test
@@ -340,7 +341,7 @@ public class PolynomialTest {
     }
 
     private static void maxCoefficientBitLength_helper(@NotNull String input, int output) {
-        aeq(read(input).get().maxCoefficientBitLength(), output);
+        aeq(readStrict(input).get().maxCoefficientBitLength(), output);
     }
 
     @Test
@@ -355,7 +356,7 @@ public class PolynomialTest {
     }
 
     private static void degree_helper(@NotNull String input, int output) {
-        aeq(read(input).get().degree(), output);
+        aeq(readStrict(input).get().degree(), output);
     }
 
     @Test
@@ -370,11 +371,11 @@ public class PolynomialTest {
     }
 
     private static void leading_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().leading().get(), output);
+        aeq(readStrict(input).get().leading().get(), output);
     }
 
     private static void leading_empty_helper(@NotNull String input) {
-        assertFalse(read(input).get().leading().isPresent());
+        assertFalse(readStrict(input).get().leading().isPresent());
     }
 
     @Test
@@ -389,12 +390,12 @@ public class PolynomialTest {
     }
 
     private static void multiplyByPowerOfX_helper(@NotNull String a, int p, @NotNull String output) {
-        aeq(read(a).get().multiplyByPowerOfX(p), output);
+        aeq(readStrict(a).get().multiplyByPowerOfX(p), output);
     }
 
     private static void multiplyByPowerOfX_fail_helper(@NotNull String a, int p) {
         try {
-            read(a).get().multiplyByPowerOfX(p);
+            readStrict(a).get().multiplyByPowerOfX(p);
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -437,7 +438,7 @@ public class PolynomialTest {
     }
 
     private static void add_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().add(read(b).get()), output);
+        aeq(readStrict(a).get().add(readStrict(b).get()), output);
     }
 
     @Test
@@ -502,7 +503,7 @@ public class PolynomialTest {
     }
 
     private static void negate_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().negate(), output);
+        aeq(readStrict(input).get().negate(), output);
     }
 
     @Test
@@ -517,7 +518,7 @@ public class PolynomialTest {
     }
 
     private static void abs_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().abs(), output);
+        aeq(readStrict(input).get().abs(), output);
     }
 
     @Test
@@ -532,7 +533,7 @@ public class PolynomialTest {
     }
 
     private static void signum_helper(@NotNull String input, int output) {
-        aeq(read(input).get().signum(), output);
+        aeq(readStrict(input).get().signum(), output);
     }
 
     @Test
@@ -547,7 +548,7 @@ public class PolynomialTest {
     }
 
     private static void signum_BigInteger_helper(@NotNull String p, @NotNull String x, int output) {
-        aeq(read(p).get().signum(Readers.readBigInteger(x).get()), output);
+        aeq(readStrict(p).get().signum(Readers.readBigIntegerStrict(x).get()), output);
     }
 
     @Test
@@ -596,7 +597,7 @@ public class PolynomialTest {
     }
 
     private static void signum_Rational_helper(@NotNull String p, @NotNull String x, int output) {
-        aeq(read(p).get().signum(Rational.read(x).get()), output);
+        aeq(readStrict(p).get().signum(Rational.readStrict(x).get()), output);
     }
 
     @Test
@@ -648,7 +649,7 @@ public class PolynomialTest {
     }
 
     private static void subtract_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().subtract(read(b).get()), output);
+        aeq(readStrict(a).get().subtract(readStrict(b).get()), output);
     }
 
     @Test
@@ -711,7 +712,7 @@ public class PolynomialTest {
     }
 
     private static void multiply_Polynomial_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().multiply(read(b).get()), output);
+        aeq(readStrict(a).get().multiply(readStrict(b).get()), output);
     }
 
     @Test
@@ -774,7 +775,7 @@ public class PolynomialTest {
     }
 
     private static void multiply_BigInteger_helper(@NotNull String p, @NotNull String i, @NotNull String output) {
-        aeq(read(p).get().multiply(Readers.readBigInteger(i).get()), output);
+        aeq(readStrict(p).get().multiply(Readers.readBigIntegerStrict(i).get()), output);
     }
 
     @Test
@@ -818,7 +819,7 @@ public class PolynomialTest {
     }
 
     private static void multiply_int_helper(@NotNull String p, int i, @NotNull String output) {
-        aeq(read(p).get().multiply(i), output);
+        aeq(readStrict(p).get().multiply(i), output);
     }
 
     @Test
@@ -862,12 +863,12 @@ public class PolynomialTest {
     }
 
     private static void divideExact_BigInteger_helper(@NotNull String p, @NotNull String i, @NotNull String output) {
-        aeq(read(p).get().divideExact(Readers.readBigInteger(i).get()), output);
+        aeq(readStrict(p).get().divideExact(Readers.readBigIntegerStrict(i).get()), output);
     }
 
     private static void divideExact_BigInteger_fail_helper(@NotNull String p, @NotNull String i) {
         try {
-            read(p).get().divideExact(Readers.readBigInteger(i).get());
+            readStrict(p).get().divideExact(Readers.readBigIntegerStrict(i).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -892,12 +893,12 @@ public class PolynomialTest {
     }
 
     private static void divideExact_int_helper(@NotNull String p, int i, @NotNull String output) {
-        aeq(read(p).get().divideExact(i), output);
+        aeq(readStrict(p).get().divideExact(i), output);
     }
 
     private static void divideExact_int_fail_helper(@NotNull String p, int i) {
         try {
-            read(p).get().divideExact(i);
+            readStrict(p).get().divideExact(i);
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -922,12 +923,12 @@ public class PolynomialTest {
     }
 
     private static void shiftLeft_helper(@NotNull String p, int bits, @NotNull String output) {
-        aeq(read(p).get().shiftLeft(bits), output);
+        aeq(readStrict(p).get().shiftLeft(bits), output);
     }
 
     private static void shiftLeft_fail_helper(@NotNull String p, int bits) {
         try {
-            read(p).get().shiftLeft(bits);
+            readStrict(p).get().shiftLeft(bits);
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -1041,7 +1042,7 @@ public class PolynomialTest {
         delta_helper("[-17]", "[]");
         delta_helper("[-17, x^2-4*x+7]", "[x^2-4*x+24]");
         delta_helper("[-17, x^2-4*x+7, -x^3-1, 3*x^10]", "[x^2-4*x+24, -x^3-x^2+4*x-8, 3*x^10+x^3+1]");
-        Polynomial seed = read("x+1").get();
+        Polynomial seed = readStrict("x+1").get();
         delta_helper(map(seed::pow, rangeUp(0)),
                 "[x, x^2+x, x^3+2*x^2+x, x^4+3*x^3+3*x^2+x, x^5+4*x^4+6*x^3+4*x^2+x," +
                 " x^6+5*x^5+10*x^4+10*x^3+5*x^2+x, x^7+6*x^6+15*x^5+20*x^4+15*x^3+6*x^2+x," +
@@ -1070,12 +1071,12 @@ public class PolynomialTest {
     }
 
     private static void pow_helper(@NotNull String p, int exponent, @NotNull String output) {
-        aeq(read(p).get().pow(exponent), output);
+        aeq(readStrict(p).get().pow(exponent), output);
     }
 
     private static void pow_fail_helper(@NotNull String p, int exponent) {
         try {
-            read(p).get().pow(exponent);
+            readStrict(p).get().pow(exponent);
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -1125,7 +1126,7 @@ public class PolynomialTest {
     }
 
     private static void substitute_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().substitute(read(b).get()), output);
+        aeq(readStrict(a).get().substitute(readStrict(b).get()), output);
     }
 
     @Test
@@ -1193,7 +1194,7 @@ public class PolynomialTest {
     }
 
     private static void differentiate_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().differentiate(), output);
+        aeq(readStrict(input).get().differentiate(), output);
     }
 
     @Test
@@ -1207,7 +1208,7 @@ public class PolynomialTest {
     }
 
     private static void isMonic_helper(@NotNull String input, boolean output) {
-        aeq(read(input).get().isMonic(), output);
+        aeq(readStrict(input).get().isMonic(), output);
     }
 
     @Test
@@ -1222,7 +1223,7 @@ public class PolynomialTest {
     }
 
     private static void isPrimitive_helper(@NotNull String input, boolean output) {
-        aeq(read(input).get().isPrimitive(), output);
+        aeq(readStrict(input).get().isPrimitive(), output);
     }
 
     @Test
@@ -1242,14 +1243,14 @@ public class PolynomialTest {
             @NotNull String constant,
             @NotNull String polynomial
     ) {
-        Pair<BigInteger, Polynomial> result = read(input).get().contentAndPrimitive();
+        Pair<BigInteger, Polynomial> result = readStrict(input).get().contentAndPrimitive();
         aeq(result.a, constant);
         aeq(result.b, polynomial);
     }
 
     private static void contentAndPrimitive_fail_helper(@NotNull String input) {
         try {
-            read(input).get().contentAndPrimitive();
+            readStrict(input).get().contentAndPrimitive();
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -1271,14 +1272,14 @@ public class PolynomialTest {
             @NotNull String constant,
             @NotNull String polynomial
     ) {
-        Pair<BigInteger, Polynomial> result = read(input).get().constantFactor();
+        Pair<BigInteger, Polynomial> result = readStrict(input).get().constantFactor();
         aeq(result.a, constant);
         aeq(result.b, polynomial);
     }
 
     private static void constantFactor_fail_helper(@NotNull String input) {
         try {
-            read(input).get().constantFactor();
+            readStrict(input).get().constantFactor();
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -1301,14 +1302,14 @@ public class PolynomialTest {
             @NotNull String pseudoQuotient,
             @NotNull String pseudoRemainder
     ) {
-        Pair<Polynomial, Polynomial> result = read(a).get().pseudoDivide(read(b).get());
+        Pair<Polynomial, Polynomial> result = readStrict(a).get().pseudoDivide(readStrict(b).get());
         aeq(result.a, pseudoQuotient);
         aeq(result.b, pseudoRemainder);
     }
 
     private static void pseudoDivide_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().pseudoDivide(read(b).get());
+            readStrict(a).get().pseudoDivide(readStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -1369,12 +1370,12 @@ public class PolynomialTest {
             @NotNull String b,
             @NotNull String output
     ) {
-        aeq(read(a).get().pseudoRemainder(read(b).get()), output);
+        aeq(readStrict(a).get().pseudoRemainder(readStrict(b).get()), output);
     }
 
     private static void pseudoRemainder_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().pseudoRemainder(read(b).get());
+            readStrict(a).get().pseudoRemainder(readStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -1426,14 +1427,14 @@ public class PolynomialTest {
             @NotNull String pseudoQuotient,
             @NotNull String pseudoRemainder
     ) {
-        Pair<Polynomial, Polynomial> result = read(a).get().absolutePseudoDivide(read(b).get());
+        Pair<Polynomial, Polynomial> result = readStrict(a).get().absolutePseudoDivide(readStrict(b).get());
         aeq(result.a, pseudoQuotient);
         aeq(result.b, pseudoRemainder);
     }
 
     private static void absolutePseudoDivide_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().absolutePseudoDivide(read(b).get());
+            readStrict(a).get().absolutePseudoDivide(readStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -1494,12 +1495,12 @@ public class PolynomialTest {
             @NotNull String b,
             @NotNull String output
     ) {
-        aeq(read(a).get().absolutePseudoRemainder(read(b).get()), output);
+        aeq(readStrict(a).get().absolutePseudoRemainder(readStrict(b).get()), output);
     }
 
     private static void absolutePseudoRemainder_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().absolutePseudoRemainder(read(b).get());
+            readStrict(a).get().absolutePseudoRemainder(readStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -1555,14 +1556,14 @@ public class PolynomialTest {
             @NotNull String pseudoQuotient,
             @NotNull String pseudoRemainder
     ) {
-        Pair<Polynomial, Polynomial> result = read(a).get().evenPseudoDivide(read(b).get());
+        Pair<Polynomial, Polynomial> result = readStrict(a).get().evenPseudoDivide(readStrict(b).get());
         aeq(result.a, pseudoQuotient);
         aeq(result.b, pseudoRemainder);
     }
 
     private static void evenPseudoDivide_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().evenPseudoDivide(read(b).get());
+            readStrict(a).get().evenPseudoDivide(readStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -1623,12 +1624,12 @@ public class PolynomialTest {
             @NotNull String b,
             @NotNull String output
     ) {
-        aeq(read(a).get().evenPseudoRemainder(read(b).get()), output);
+        aeq(readStrict(a).get().evenPseudoRemainder(readStrict(b).get()), output);
     }
 
     private static void evenPseudoRemainder_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().evenPseudoRemainder(read(b).get());
+            readStrict(a).get().evenPseudoRemainder(readStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -1679,12 +1680,12 @@ public class PolynomialTest {
     }
 
     private static void divisibleBy_helper(@NotNull String a, @NotNull String b, boolean output) {
-        aeq(read(a).get().isDivisibleBy(read(b).get()), output);
+        aeq(readStrict(a).get().isDivisibleBy(readStrict(b).get()), output);
     }
 
     private static void divisibleBy_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().isDivisibleBy(read(b).get());
+            readStrict(a).get().isDivisibleBy(readStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -1721,12 +1722,12 @@ public class PolynomialTest {
     }
 
     private static void divideExact_Polynomial_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().divideExact(read(b).get()), output);
+        aeq(readStrict(a).get().divideExact(readStrict(b).get()), output);
     }
 
     private static void divideExact_Polynomial_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().divideExact(read(b).get());
+            readStrict(a).get().divideExact(readStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -1752,12 +1753,12 @@ public class PolynomialTest {
     }
 
     private static void remainderExact_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().remainderExact(read(b).get()), output);
+        aeq(readStrict(a).get().remainderExact(readStrict(b).get()), output);
     }
 
     private static void remainderExact_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().remainderExact(read(b).get());
+            readStrict(a).get().remainderExact(readStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -1822,12 +1823,12 @@ public class PolynomialTest {
             @NotNull String b,
             @NotNull String output
     ) {
-        aeq(read(a).get().trivialPseudoRemainderSequence(read(b).get()), output);
+        aeq(readStrict(a).get().trivialPseudoRemainderSequence(readStrict(b).get()), output);
     }
 
     private static void trivialPseudoRemainderSequence_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().trivialPseudoRemainderSequence(read(b).get());
+            readStrict(a).get().trivialPseudoRemainderSequence(readStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -1882,12 +1883,12 @@ public class PolynomialTest {
             @NotNull String b,
             @NotNull String output
     ) {
-        aeq(read(a).get().primitivePseudoRemainderSequence(read(b).get()), output);
+        aeq(readStrict(a).get().primitivePseudoRemainderSequence(readStrict(b).get()), output);
     }
 
     private static void primitivePseudoRemainderSequence_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().primitivePseudoRemainderSequence(read(b).get());
+            readStrict(a).get().primitivePseudoRemainderSequence(readStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -1942,12 +1943,12 @@ public class PolynomialTest {
             @NotNull String b,
             @NotNull String output
     ) {
-        aeq(read(a).get().subresultantSequence(read(b).get()), output);
+        aeq(readStrict(a).get().subresultantSequence(readStrict(b).get()), output);
     }
 
     private static void subresultantSequence_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().subresultantSequence(read(b).get());
+            readStrict(a).get().subresultantSequence(readStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -1998,12 +1999,12 @@ public class PolynomialTest {
     }
 
     private static void gcd_Polynomial_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().gcd(read(b).get()), output);
+        aeq(readStrict(a).get().gcd(readStrict(b).get()), output);
     }
 
     private static void gcd_Polynomial_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().gcd(read(b).get());
+            readStrict(a).get().gcd(readStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -2093,7 +2094,7 @@ public class PolynomialTest {
     }
 
     private static void lcm_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().lcm(read(b).get()), output);
+        aeq(readStrict(a).get().lcm(readStrict(b).get()), output);
     }
 
     @Test
@@ -2158,12 +2159,12 @@ public class PolynomialTest {
     }
 
     private static void isRelativelyPrimeTo_helper(@NotNull String a, @NotNull String b, boolean output) {
-        aeq(read(a).get().isRelativelyPrimeTo(read(b).get()), output);
+        aeq(readStrict(a).get().isRelativelyPrimeTo(readStrict(b).get()), output);
     }
 
     private static void isRelativelyPrimeTo_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().isRelativelyPrimeTo(read(b).get());
+            readStrict(a).get().isRelativelyPrimeTo(readStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -2231,7 +2232,7 @@ public class PolynomialTest {
     }
 
     private static void isSquareFree_helper(@NotNull String input, boolean output) {
-        aeq(read(input).get().isSquareFree(), output);
+        aeq(readStrict(input).get().isSquareFree(), output);
     }
 
     @Test
@@ -2248,12 +2249,12 @@ public class PolynomialTest {
     }
 
     private static void squareFreePart_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().squareFreePart(), output);
+        aeq(readStrict(input).get().squareFreePart(), output);
     }
 
     private static void squareFreePart_fail_helper(@NotNull String input) {
         try {
-            read(input).get().squareFreePart();
+            readStrict(input).get().squareFreePart();
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -2273,8 +2274,8 @@ public class PolynomialTest {
     }
 
     private static void squareFreeFactor_helper(@NotNull String input, @NotNull String output) {
-        assertTrue(read(input).get().isPrimitive());
-        aeq(read(input).get().squareFreeFactor(), output);
+        assertTrue(readStrict(input).get().isPrimitive());
+        aeq(readStrict(input).get().squareFreeFactor(), output);
     }
 
     @Test
@@ -2288,12 +2289,12 @@ public class PolynomialTest {
     }
 
     private static void factor_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().factor(), output);
+        aeq(readStrict(input).get().factor(), output);
     }
 
     private static void factor_fail_helper(@NotNull String input) {
         try {
-            read(input).get().factor();
+            readStrict(input).get().factor();
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -2431,12 +2432,12 @@ public class PolynomialTest {
     }
 
     private static void isIrreducible_helper(@NotNull String input, boolean output) {
-        aeq(read(input).get().isIrreducible(), output);
+        aeq(readStrict(input).get().isIrreducible(), output);
     }
 
     private static void isIrreducible_fail_helper(@NotNull String input) {
         try {
-            read(input).get().isIrreducible();
+            readStrict(input).get().isIrreducible();
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -2515,12 +2516,12 @@ public class PolynomialTest {
     }
 
     private static void companionMatrix_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().companionMatrix(), output);
+        aeq(readStrict(input).get().companionMatrix(), output);
     }
 
     private static void companionMatrix_fail_helper(@NotNull String input) {
         try {
-            read(input).get().companionMatrix();
+            readStrict(input).get().companionMatrix();
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -2622,12 +2623,12 @@ public class PolynomialTest {
     }
 
     private static void sylvesterMatrix_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().sylvesterMatrix(read(b).get()), output);
+        aeq(readStrict(a).get().sylvesterMatrix(readStrict(b).get()), output);
     }
 
     private static void sylvesterMatrix_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().sylvesterMatrix(read(b).get());
+            readStrict(a).get().sylvesterMatrix(readStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -2762,12 +2763,12 @@ public class PolynomialTest {
     }
 
     private static void resultant_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().resultant(read(b).get()), output);
+        aeq(readStrict(a).get().resultant(readStrict(b).get()), output);
     }
 
     private static void resultant_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().resultant(read(b).get());
+            readStrict(a).get().resultant(readStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -2826,12 +2827,12 @@ public class PolynomialTest {
             int j,
             @NotNull String output
     ) {
-        aeq(read(p).get().sylvesterHabichtMatrix(read(q).get(), j), output);
+        aeq(readStrict(p).get().sylvesterHabichtMatrix(readStrict(q).get(), j), output);
     }
 
     private static void sylvesterHabichtMatrix_fail_helper(@NotNull String p, @NotNull String q, int j) {
         try {
-            read(p).get().sylvesterHabichtMatrix(read(q).get(), j);
+            readStrict(p).get().sylvesterHabichtMatrix(readStrict(q).get(), j);
             fail();
         } catch (ArithmeticException | IllegalArgumentException ignored) {}
     }
@@ -2935,12 +2936,12 @@ public class PolynomialTest {
             int j,
             @NotNull String output
     ) {
-        aeq(read(p).get().signedSubresultantCoefficient(read(q).get(), j), output);
+        aeq(readStrict(p).get().signedSubresultantCoefficient(readStrict(q).get(), j), output);
     }
 
     private static void signedSubresultantCoefficient_fail_helper(@NotNull String p, @NotNull String q, int j) {
         try {
-            read(p).get().signedSubresultantCoefficient(read(q).get(), j);
+            readStrict(p).get().signedSubresultantCoefficient(readStrict(q).get(), j);
             fail();
         } catch (ArithmeticException | IllegalArgumentException ignored) {}
     }
@@ -3005,12 +3006,12 @@ public class PolynomialTest {
             int j,
             @NotNull String output
     ) {
-        aeq(read(p).get().sylvesterHabichtPolynomialMatrix(read(q).get(), j), output);
+        aeq(readStrict(p).get().sylvesterHabichtPolynomialMatrix(readStrict(q).get(), j), output);
     }
 
     private static void sylvesterHabichtPolynomialMatrix_fail_helper(@NotNull String p, @NotNull String q, int j) {
         try {
-            read(p).get().sylvesterHabichtPolynomialMatrix(read(q).get(), j);
+            readStrict(p).get().sylvesterHabichtPolynomialMatrix(readStrict(q).get(), j);
             fail();
         } catch (ArithmeticException | IllegalArgumentException ignored) {}
     }
@@ -3126,12 +3127,12 @@ public class PolynomialTest {
             int j,
             @NotNull String output
     ) {
-        aeq(read(p).get().signedSubresultant(read(q).get(), j), output);
+        aeq(readStrict(p).get().signedSubresultant(readStrict(q).get(), j), output);
     }
 
     private static void signedSubresultant_fail_helper(@NotNull String p, @NotNull String q, int j) {
         try {
-            read(p).get().signedSubresultant(read(q).get(), j);
+            readStrict(p).get().signedSubresultant(readStrict(q).get(), j);
             fail();
         } catch (ArithmeticException | IllegalArgumentException ignored) {}
     }
@@ -3195,12 +3196,12 @@ public class PolynomialTest {
             @NotNull String b,
             @NotNull String output
     ) {
-        aeq(read(a).get().signedSubresultantSequence(read(b).get()), output);
+        aeq(readStrict(a).get().signedSubresultantSequence(readStrict(b).get()), output);
     }
 
     private static void signedSubresultantSequence_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().signedSubresultantSequence(read(b).get());
+            readStrict(a).get().signedSubresultantSequence(readStrict(b).get());
             fail();
         } catch (ArithmeticException | IllegalArgumentException ignored) {}
     }
@@ -3249,12 +3250,12 @@ public class PolynomialTest {
             @NotNull String b,
             @NotNull String output
     ) {
-        aeq(read(a).get().primitiveSignedPseudoRemainderSequence(read(b).get()), output);
+        aeq(readStrict(a).get().primitiveSignedPseudoRemainderSequence(readStrict(b).get()), output);
     }
 
     private static void primitiveSignedPseudoRemainderSequence_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().primitiveSignedPseudoRemainderSequence(read(b).get());
+            readStrict(a).get().primitiveSignedPseudoRemainderSequence(readStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -3312,12 +3313,12 @@ public class PolynomialTest {
             @NotNull String b,
             @NotNull String output
     ) {
-        aeq(read(a).get().abbreviatedSignedSubresultantSequence(read(b).get()), output);
+        aeq(readStrict(a).get().abbreviatedSignedSubresultantSequence(readStrict(b).get()), output);
     }
 
     private static void abbreviatedSignedSubresultantSequence_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().abbreviatedSignedSubresultantSequence(read(b).get());
+            readStrict(a).get().abbreviatedSignedSubresultantSequence(readStrict(b).get());
             fail();
         } catch (ArithmeticException | IllegalArgumentException ignored) {}
     }
@@ -3359,12 +3360,12 @@ public class PolynomialTest {
     }
 
     private static void rootBound_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().rootBound(), output);
+        aeq(readStrict(input).get().rootBound(), output);
     }
 
     private static void rootBound_fail_helper(@NotNull String input) {
         try {
-            read(input).get().rootBound();
+            readStrict(input).get().rootBound();
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -3388,12 +3389,12 @@ public class PolynomialTest {
     }
 
     private static void powerOfTwoRootBound_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().powerOfTwoRootBound(), output);
+        aeq(readStrict(input).get().powerOfTwoRootBound(), output);
     }
 
     private static void powerOfTwoRootBound_fail_helper(@NotNull String input) {
         try {
-            read(input).get().powerOfTwoRootBound();
+            readStrict(input).get().powerOfTwoRootBound();
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -3417,13 +3418,13 @@ public class PolynomialTest {
     }
 
     private static void rootCount_Interval_helper(@NotNull String p, @NotNull String i, int output) {
-        assertTrue(read(p).get().isSquareFree());
-        aeq(read(p).get().rootCount(Interval.read(i).get()), output);
+        assertTrue(readStrict(p).get().isSquareFree());
+        aeq(readStrict(p).get().rootCount(Interval.readStrict(i).get()), output);
     }
 
     private static void rootCount_Interval_fail_helper(@NotNull String p, @NotNull String i) {
         try {
-            read(p).get().rootCount(Interval.read(i).get());
+            readStrict(p).get().rootCount(Interval.readStrict(i).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -3450,14 +3451,18 @@ public class PolynomialTest {
         rootCount_Interval_fail_helper("0", "[0, 1]");
     }
 
+    private static void rootCount_helper(@NotNull Polynomial input, int output) {
+        assertTrue(input.isSquareFree());
+        aeq(input.rootCount(), output);
+    }
+
     private static void rootCount_helper(@NotNull String input, int output) {
-        assertTrue(read(input).get().isSquareFree());
-        aeq(read(input).get().rootCount(), output);
+        rootCount_helper(readStrict(input).get(), output);
     }
 
     private static void rootCount_fail_helper(@NotNull String input) {
         try {
-            read(input).get().rootCount();
+            readStrict(input).get().rootCount();
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -3476,16 +3481,29 @@ public class PolynomialTest {
         rootCount_helper("x^5-x+1", 1);
         rootCount_helper("-x^4+x", 2);
 
+        Polynomial wilkinsonsPolynomial = ONE;
+        for (int i = 1; i <= 20; i++) {
+            wilkinsonsPolynomial = wilkinsonsPolynomial.multiply(
+                    of(Arrays.asList(BigInteger.valueOf(-i), BigInteger.ONE))
+            );
+        }
+        rootCount_helper(wilkinsonsPolynomial, 20);
+
+        List<Rational> coefficients = toList(wilkinsonsPolynomial.toRationalPolynomial());
+        coefficients.set(19, coefficients.get(19).subtract(Rational.ONE.shiftRight(23)));
+        Polynomial perturbedWilkinsonsPolynomial = RationalPolynomial.of(coefficients).constantFactor().b;
+        rootCount_helper(perturbedWilkinsonsPolynomial, 10);
+
         rootCount_fail_helper("0");
     }
 
     private static void isolatingInterval_helper(@NotNull String p, int rootIndex, @NotNull String output) {
-        aeq(read(p).get().isolatingInterval(rootIndex), output);
+        aeq(readStrict(p).get().isolatingInterval(rootIndex), output);
     }
 
     private static void isolatingInterval_fail_helper(@NotNull String p, int rootIndex) {
         try {
-            read(p).get().isolatingInterval(rootIndex);
+            readStrict(p).get().isolatingInterval(rootIndex);
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -3512,12 +3530,12 @@ public class PolynomialTest {
     }
 
     private static void powerOfTwoIsolatingInterval_helper(@NotNull String p, int rootIndex, @NotNull String output) {
-        aeq(read(p).get().powerOfTwoIsolatingInterval(rootIndex), output);
+        aeq(readStrict(p).get().powerOfTwoIsolatingInterval(rootIndex), output);
     }
 
     private static void powerOfTwoIsolatingInterval_fail_helper(@NotNull String p, int rootIndex) {
         try {
-            read(p).get().powerOfTwoIsolatingInterval(rootIndex);
+            readStrict(p).get().powerOfTwoIsolatingInterval(rootIndex);
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -3544,12 +3562,12 @@ public class PolynomialTest {
     }
 
     private static void isolatingIntervals_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().isolatingIntervals(), output);
+        aeq(readStrict(input).get().isolatingIntervals(), output);
     }
 
     private static void isolatingIntervals_fail_helper(@NotNull String input) {
         try {
-            read(input).get().isolatingIntervals();
+            readStrict(input).get().isolatingIntervals();
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -3573,12 +3591,12 @@ public class PolynomialTest {
     }
 
     private static void powerOfTwoIsolatingIntervals_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().powerOfTwoIsolatingIntervals(), output);
+        aeq(readStrict(input).get().powerOfTwoIsolatingIntervals(), output);
     }
 
     private static void powerOfTwoIsolatingIntervals_fail_helper(@NotNull String input) {
         try {
-            read(input).get().powerOfTwoIsolatingIntervals();
+            readStrict(input).get().powerOfTwoIsolatingIntervals();
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -3602,7 +3620,7 @@ public class PolynomialTest {
     }
 
     private static void reflect_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().reflect(), output);
+        aeq(readStrict(input).get().reflect(), output);
     }
 
     @Test
@@ -3617,7 +3635,7 @@ public class PolynomialTest {
     }
 
     private static void translate_helper(@NotNull String p, @NotNull String t, @NotNull String output) {
-        aeq(read(p).get().translate(Readers.readBigInteger(t).get()), output);
+        aeq(readStrict(p).get().translate(Readers.readBigIntegerStrict(t).get()), output);
     }
 
     @Test
@@ -3660,7 +3678,7 @@ public class PolynomialTest {
     }
 
     private static void specialTranslate_helper(@NotNull String p, @NotNull String t, @NotNull String output) {
-        aeq(read(p).get().specialTranslate(Rational.read(t).get()), output);
+        aeq(readStrict(p).get().specialTranslate(Rational.readStrict(t).get()), output);
     }
 
     @Test
@@ -3716,7 +3734,7 @@ public class PolynomialTest {
             @NotNull String t,
             @NotNull String output
     ) {
-        aeq(read(p).get().positivePrimitiveTranslate(Rational.read(t).get()), output);
+        aeq(readStrict(p).get().positivePrimitiveTranslate(Rational.readStrict(t).get()), output);
     }
 
     @Test
@@ -3768,12 +3786,12 @@ public class PolynomialTest {
     }
 
     private static void stretch_helper(@NotNull String p, @NotNull String f, @NotNull String output) {
-        aeq(read(p).get().stretch(Rational.read(f).get()), output);
+        aeq(readStrict(p).get().stretch(Rational.readStrict(f).get()), output);
     }
 
     private static void stretch_fail_helper(@NotNull String p, @NotNull String f) {
         try {
-            read(p).get().stretch(Rational.read(f).get());
+            readStrict(p).get().stretch(Rational.readStrict(f).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -3824,12 +3842,12 @@ public class PolynomialTest {
     }
 
     private static void positivePrimitiveStretch_helper(@NotNull String p, @NotNull String f, @NotNull String output) {
-        aeq(read(p).get().positivePrimitiveStretch(Rational.read(f).get()), output);
+        aeq(readStrict(p).get().positivePrimitiveStretch(Rational.readStrict(f).get()), output);
     }
 
     private static void positivePrimitiveStretch_fail_helper(@NotNull String p, @NotNull String f) {
         try {
-            read(p).get().positivePrimitiveStretch(Rational.read(f).get());
+            readStrict(p).get().positivePrimitiveStretch(Rational.readStrict(f).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -3880,12 +3898,12 @@ public class PolynomialTest {
     }
 
     private static void shiftRootsLeft_helper(@NotNull String p, int bits, @NotNull String output) {
-        aeq(read(p).get().shiftRootsLeft(bits), output);
+        aeq(readStrict(p).get().shiftRootsLeft(bits), output);
     }
 
     private static void shiftRootsLeft_fail_helper(@NotNull String p, int bits) {
         try {
-            read(p).get().shiftRootsLeft(bits);
+            readStrict(p).get().shiftRootsLeft(bits);
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -3923,12 +3941,12 @@ public class PolynomialTest {
     }
 
     private static void shiftRootsRight_helper(@NotNull String p, int bits, @NotNull String output) {
-        aeq(read(p).get().shiftRootsRight(bits), output);
+        aeq(readStrict(p).get().shiftRootsRight(bits), output);
     }
 
     private static void shiftRootsRight_fail_helper(@NotNull String p, int bits) {
         try {
-            read(p).get().shiftRootsRight(bits);
+            readStrict(p).get().shiftRootsRight(bits);
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -3966,12 +3984,12 @@ public class PolynomialTest {
     }
 
     private static void positivePrimitiveShiftRootsLeft_helper(@NotNull String p, int bits, @NotNull String output) {
-        aeq(read(p).get().positivePrimitiveShiftRootsLeft(bits), output);
+        aeq(readStrict(p).get().positivePrimitiveShiftRootsLeft(bits), output);
     }
 
     private static void positivePrimitiveShiftRootsLeft_fail_helper(@NotNull String p, int bits) {
         try {
-            read(p).get().positivePrimitiveShiftRootsLeft(bits);
+            readStrict(p).get().positivePrimitiveShiftRootsLeft(bits);
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -4009,12 +4027,12 @@ public class PolynomialTest {
     }
 
     private static void positivePrimitiveShiftRootsRight_helper(@NotNull String p, int bits, @NotNull String output) {
-        aeq(read(p).get().positivePrimitiveShiftRootsRight(bits), output);
+        aeq(readStrict(p).get().positivePrimitiveShiftRootsRight(bits), output);
     }
 
     private static void positivePrimitiveShiftRootsRight_fail_helper(@NotNull String p, int bits) {
         try {
-            read(p).get().positivePrimitiveShiftRootsRight(bits);
+            readStrict(p).get().positivePrimitiveShiftRootsRight(bits);
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -4052,7 +4070,7 @@ public class PolynomialTest {
     }
 
     private static void invertRoots_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().invertRoots(), output);
+        aeq(readStrict(input).get().invertRoots(), output);
     }
 
     @Test
@@ -4067,7 +4085,7 @@ public class PolynomialTest {
     }
 
     private static void addRoots_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().addRoots(read(b).get()), output);
+        aeq(readStrict(a).get().addRoots(readStrict(b).get()), output);
     }
 
     @Test
@@ -4105,7 +4123,7 @@ public class PolynomialTest {
     }
 
     private static void multiplyRoots_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().multiplyRoots(read(b).get()), output);
+        aeq(readStrict(a).get().multiplyRoots(readStrict(b).get()), output);
     }
 
     @Test
@@ -4143,6 +4161,132 @@ public class PolynomialTest {
         multiplyRoots_helper("x^2+x+1", "2*x^3+1", "4*x^6+4*x^3+1");
     }
 
+    private static void powerTable_helper(@NotNull String p, int maxPower, @NotNull String output) {
+        aeq(readStrict(p).get().powerTable(maxPower), output);
+    }
+
+    private static void powerTable_fail_helper(@NotNull String p, int maxPower) {
+        try {
+            readStrict(p).get().powerTable(maxPower);
+            fail();
+        } catch (UnsupportedOperationException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testPowerTable() {
+        powerTable_helper("x^2-2", 0, "[1]");
+        powerTable_helper("x^2-2", 1, "[1, x]");
+        powerTable_helper("x^2-2", 2, "[1, x, 2]");
+        powerTable_helper("x^2-2", 10, "[1, x, 2, 2*x, 4, 4*x, 8, 8*x, 16, 16*x, 32]");
+
+        powerTable_helper("x", 10, "[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]");
+        powerTable_helper("x+1", 10, "[1, -1, 1, -1, 1, -1, 1, -1, 1, -1, 1]");
+        powerTable_helper("x-1", 10, "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]");
+        powerTable_helper("x^2+2", 10, "[1, x, -2, -2*x, 4, 4*x, -8, -8*x, 16, 16*x, -32]");
+        powerTable_helper("x^2-x-1", 10, "[1, x, x+1, 2*x+1, 3*x+2, 5*x+3, 8*x+5, 13*x+8, 21*x+13, 34*x+21, 55*x+34]");
+        powerTable_helper("x^2+x+1", 10, "[1, x, -x-1, 1, x, -x-1, 1, x, -x-1, 1, x]");
+        powerTable_helper("x^3-1", 10, "[1, x, x^2, 1, x, x^2, 1, x, x^2, 1, x]");
+        powerTable_helper("x^5-x-1", 20,
+                "[1, x, x^2, x^3, x^4, x+1, x^2+x, x^3+x^2, x^4+x^3, x^4+x+1, x^2+2*x+1, x^3+2*x^2+x, x^4+2*x^3+x^2," +
+                " 2*x^4+x^3+x+1, x^4+x^2+3*x+2, x^3+3*x^2+3*x+1, x^4+3*x^3+3*x^2+x, 3*x^4+3*x^3+x^2+x+1," +
+                " 3*x^4+x^3+x^2+4*x+3, x^4+x^3+4*x^2+6*x+3, x^4+4*x^3+6*x^2+4*x+1]");
+
+        powerTable_fail_helper("0", 10);
+        powerTable_fail_helper("1", 10);
+        powerTable_fail_helper("-1", 10);
+        powerTable_fail_helper("3", 10);
+        powerTable_fail_helper("2*x+1", 10);
+        powerTable_fail_helper("5*x^2", 10);
+        powerTable_fail_helper("x^2-2", -1);
+    }
+
+    private static void rootPower_helper(@NotNull String x, int p, @NotNull String output) {
+        aeq(readStrict(x).get().rootPower(p), output);
+    }
+
+    private static void rootPower_fail_helper(@NotNull String x, int p) {
+        try {
+            readStrict(x).get().rootPower(p);
+            fail();
+        } catch (UnsupportedOperationException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testRootPower() {
+        rootPower_helper("x", 0, "1");
+        rootPower_helper("x", 1, "0");
+        rootPower_helper("x", 2, "0");
+        rootPower_helper("x", 10, "0");
+        rootPower_helper("x", 100, "0");
+        rootPower_helper("x", 1000, "0");
+
+        rootPower_helper("x+1", 0, "1");
+        rootPower_helper("x+1", 1, "-1");
+        rootPower_helper("x+1", 2, "1");
+        rootPower_helper("x+1", 10, "1");
+        rootPower_helper("x+1", 100, "1");
+        rootPower_helper("x+1", 1000, "1");
+
+        rootPower_helper("x-1", 0, "1");
+        rootPower_helper("x-1", 1, "1");
+        rootPower_helper("x-1", 2, "1");
+        rootPower_helper("x-1", 10, "1");
+        rootPower_helper("x-1", 100, "1");
+        rootPower_helper("x-1", 1000, "1");
+
+        rootPower_helper("x^2-2", 0, "1");
+        rootPower_helper("x^2-2", 1, "x");
+        rootPower_helper("x^2-2", 2, "2");
+        rootPower_helper("x^2-2", 10, "32");
+        rootPower_helper("x^2-2", 100, "1125899906842624");
+        rootPower_helper("x^2-2", 1000,
+                "327339060789614187001318969682759915221664204604306478948329136809613379640467455488327009232590415" +
+                "7150886684127560071009217256545885393053328527589376");
+
+        rootPower_helper("x^2+2", 0, "1");
+        rootPower_helper("x^2+2", 1, "x");
+        rootPower_helper("x^2+2", 2, "-2");
+        rootPower_helper("x^2+2", 10, "-32");
+        rootPower_helper("x^2+2", 100, "1125899906842624");
+        rootPower_helper("x^2+2", 1000,
+                "327339060789614187001318969682759915221664204604306478948329136809613379640467455488327009232590415" +
+                "7150886684127560071009217256545885393053328527589376");
+
+        rootPower_helper("x^2-x-1", 0, "1");
+        rootPower_helper("x^2-x-1", 1, "x");
+        rootPower_helper("x^2-x-1", 2, "x+1");
+        rootPower_helper("x^2-x-1", 10, "55*x+34");
+        rootPower_helper("x^2-x-1", 100, "354224848179261915075*x+218922995834555169026");
+
+        rootPower_helper("x^2+x+1", 0, "1");
+        rootPower_helper("x^2+x+1", 1, "x");
+        rootPower_helper("x^2+x+1", 2, "-x-1");
+        rootPower_helper("x^2+x+1", 10, "x");
+        rootPower_helper("x^2+x+1", 100, "x");
+        rootPower_helper("x^2+x+1", 1000, "x");
+
+        rootPower_helper("x^3-1", 0, "1");
+        rootPower_helper("x^3-1", 1, "x");
+        rootPower_helper("x^3-1", 2, "x^2");
+        rootPower_helper("x^3-1", 10, "x");
+        rootPower_helper("x^3-1", 100, "x");
+        rootPower_helper("x^3-1", 1000, "x");
+
+        rootPower_helper("x^5-x-1", 0, "1");
+        rootPower_helper("x^5-x-1", 1, "x");
+        rootPower_helper("x^5-x-1", 2, "x^2");
+        rootPower_helper("x^5-x-1", 10, "x^2+2*x+1");
+        rootPower_helper("x^5-x-1", 100, "627401*x^4+735723*x^3+864339*x^2+1006897*x+540536");
+
+        rootPower_fail_helper("0", 10);
+        rootPower_fail_helper("1", 10);
+        rootPower_fail_helper("-1", 10);
+        rootPower_fail_helper("3", 10);
+        rootPower_fail_helper("2*x+1", 10);
+        rootPower_fail_helper("5*x^2", 10);
+        rootPower_fail_helper("x^2-2", -1);
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(
@@ -4152,7 +4296,7 @@ public class PolynomialTest {
     }
 
     private static void hashCode_helper(@NotNull String input, int hashCode) {
-        aeq(read(input).get().hashCode(), hashCode);
+        aeq(readStrict(input).get().hashCode(), hashCode);
     }
 
     @Test
@@ -4171,256 +4315,190 @@ public class PolynomialTest {
         testCompareToHelper(readPolynomialList("[-x^3-1, -17, 0, 1, x, x^2-4*x+7, 3*x^10]"));
     }
 
-    private static void read_String_helper(@NotNull String input) {
-        aeq(read(input).get(), input);
+    private static void readStrict_String_helper(@NotNull String input) {
+        aeq(readStrict(input).get(), input);
     }
 
-    private static void read_String_fail_helper(@NotNull String input) {
-        assertFalse(read(input).isPresent());
+    private static void readStrict_String_fail_helper(@NotNull String input) {
+        assertFalse(readStrict(input).isPresent());
     }
 
     @Test
-    public void testRead_String() {
-        read_String_helper("0");
-        read_String_helper("1");
-        read_String_helper("x");
-        read_String_helper("2");
-        read_String_helper("-2");
-        read_String_helper("-x");
-        read_String_helper("3*x");
-        read_String_helper("-3*x");
-        read_String_helper("x^2");
-        read_String_helper("-x^2");
-        read_String_helper("2*x^2");
-        read_String_helper("-2*x^2");
-        read_String_helper("x-1");
-        read_String_helper("-x-1");
-        read_String_helper("x^2-1");
-        read_String_helper("x^2-4*x+7");
-        read_String_helper("3*x^10");
-        read_String_fail_helper("");
-        read_String_fail_helper("+");
-        read_String_fail_helper("-");
-        read_String_fail_helper("-0");
-        read_String_fail_helper("+0");
-        read_String_fail_helper("--");
-        read_String_fail_helper("+1");
-        read_String_fail_helper("+x");
-        read_String_fail_helper("+x^2");
-        read_String_fail_helper("+x^2-x");
-        read_String_fail_helper("x^1000000000000");
-        read_String_fail_helper(" x");
-        read_String_fail_helper("x ");
-        read_String_fail_helper("X");
-        read_String_fail_helper("x + 1");
-        read_String_fail_helper("x^0");
-        read_String_fail_helper("x^-1");
-        read_String_fail_helper("x^1");
-        read_String_fail_helper("1-2");
-        read_String_fail_helper("1*x");
-        read_String_fail_helper("-1*x");
-        read_String_fail_helper("1*x^2");
-        read_String_fail_helper("-1*x^2");
-        read_String_fail_helper("x+x");
-        read_String_fail_helper("x+x^2");
-        read_String_fail_helper("1+x");
-        read_String_fail_helper("x+0");
-        read_String_fail_helper("0*x");
-        read_String_fail_helper("-0*x");
-        read_String_fail_helper("+0*x");
-        read_String_fail_helper("2x");
-        read_String_fail_helper("x^2+1+x");
-        read_String_fail_helper("x^2+3*x^2");
-        read_String_fail_helper("2^x");
-        read_String_fail_helper("abc");
-        read_String_fail_helper("x+y");
-        read_String_fail_helper("y");
-        read_String_fail_helper("1/2");
-        read_String_fail_helper("x/2");
+    public void testReadStrict_String() {
+        readStrict_String_helper("0");
+        readStrict_String_helper("1");
+        readStrict_String_helper("x");
+        readStrict_String_helper("2");
+        readStrict_String_helper("-2");
+        readStrict_String_helper("-x");
+        readStrict_String_helper("3*x");
+        readStrict_String_helper("-3*x");
+        readStrict_String_helper("x^2");
+        readStrict_String_helper("-x^2");
+        readStrict_String_helper("2*x^2");
+        readStrict_String_helper("-2*x^2");
+        readStrict_String_helper("x-1");
+        readStrict_String_helper("-x-1");
+        readStrict_String_helper("x^2-1");
+        readStrict_String_helper("x^2-4*x+7");
+        readStrict_String_helper("3*x^10");
+        readStrict_String_fail_helper("");
+        readStrict_String_fail_helper("+");
+        readStrict_String_fail_helper("-");
+        readStrict_String_fail_helper("-0");
+        readStrict_String_fail_helper("+0");
+        readStrict_String_fail_helper("--");
+        readStrict_String_fail_helper("+1");
+        readStrict_String_fail_helper("+x");
+        readStrict_String_fail_helper("+x^2");
+        readStrict_String_fail_helper("+x^2-x");
+        readStrict_String_fail_helper("x^1000000000000");
+        readStrict_String_fail_helper(" x");
+        readStrict_String_fail_helper("x ");
+        readStrict_String_fail_helper("X");
+        readStrict_String_fail_helper("x + 1");
+        readStrict_String_fail_helper("x^0");
+        readStrict_String_fail_helper("x^-1");
+        readStrict_String_fail_helper("x^1");
+        readStrict_String_fail_helper("1-2");
+        readStrict_String_fail_helper("1*x");
+        readStrict_String_fail_helper("-1*x");
+        readStrict_String_fail_helper("1*x^2");
+        readStrict_String_fail_helper("-1*x^2");
+        readStrict_String_fail_helper("x+x");
+        readStrict_String_fail_helper("x+x^2");
+        readStrict_String_fail_helper("1+x");
+        readStrict_String_fail_helper("x+0");
+        readStrict_String_fail_helper("0*x");
+        readStrict_String_fail_helper("-0*x");
+        readStrict_String_fail_helper("+0*x");
+        readStrict_String_fail_helper("2x");
+        readStrict_String_fail_helper("x^2+1+x");
+        readStrict_String_fail_helper("x^2+3*x^2");
+        readStrict_String_fail_helper("2^x");
+        readStrict_String_fail_helper("abc");
+        readStrict_String_fail_helper("x+y");
+        readStrict_String_fail_helper("y");
+        readStrict_String_fail_helper("1/2");
+        readStrict_String_fail_helper("x/2");
     }
 
-    private static void read_int_String_helper(int maxExponent, @NotNull String input) {
-        aeq(read(maxExponent, input).get(), input);
+    private static void readStrict_int_String_helper(int maxExponent, @NotNull String input) {
+        aeq(readStrict(maxExponent, input).get(), input);
     }
 
-    private static void read_int_String_fail_helper(int maxExponent, @NotNull String input) {
-        assertFalse(read(maxExponent, input).isPresent());
+    private static void readStrict_int_String_fail_helper(int maxExponent, @NotNull String input) {
+        assertFalse(readStrict(maxExponent, input).isPresent());
     }
 
-    private static void read_int_String_bad_maxExponent_fail_helper(int maxExponent, @NotNull String input) {
+    private static void readStrict_int_String_bad_maxExponent_fail_helper(int maxExponent, @NotNull String input) {
         try {
-            read(maxExponent, input);
+            readStrict(maxExponent, input);
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
 
     @Test
-    public void testRead_int_String() {
-        read_int_String_helper(1, "0");
-        read_int_String_helper(1, "1");
-        read_int_String_helper(1, "x");
-        read_int_String_helper(1, "2");
-        read_int_String_helper(1, "-2");
-        read_int_String_helper(1, "-x");
-        read_int_String_helper(1, "3*x");
-        read_int_String_helper(1, "-3*x");
-        read_int_String_helper(2, "x^2");
-        read_int_String_helper(2, "-x^2");
-        read_int_String_helper(2, "2*x^2");
-        read_int_String_helper(2, "-2*x^2");
-        read_int_String_helper(1, "x-1");
-        read_int_String_helper(1, "-x-1");
-        read_int_String_helper(2, "x^2-1");
-        read_int_String_helper(2, "x^2-4*x+7");
-        read_int_String_helper(10, "3*x^10");
-        read_int_String_fail_helper(1, "x^2");
-        read_int_String_fail_helper(1, "-x^2");
-        read_int_String_fail_helper(1, "2*x^2");
-        read_int_String_fail_helper(1, "-2*x^2");
-        read_int_String_fail_helper(1, "x^2-1");
-        read_int_String_fail_helper(1, "x^2-4*x+7");
-        read_int_String_fail_helper(9, "3*x^10");
-        read_int_String_fail_helper(10, "");
-        read_int_String_fail_helper(10, "+");
-        read_int_String_fail_helper(10, "-");
-        read_int_String_fail_helper(10, "-0");
-        read_int_String_fail_helper(10, "+0");
-        read_int_String_fail_helper(10, "--");
-        read_int_String_fail_helper(10, "+1");
-        read_int_String_fail_helper(10, "+x");
-        read_int_String_fail_helper(10, "+x^2");
-        read_int_String_fail_helper(10, "+x^2-x");
-        read_int_String_fail_helper(10, "x^1000000000000");
-        read_int_String_fail_helper(10, " x");
-        read_int_String_fail_helper(10, "x ");
-        read_int_String_fail_helper(10, "X");
-        read_int_String_fail_helper(10, "x + 1");
-        read_int_String_fail_helper(10, "x^0");
-        read_int_String_fail_helper(10, "x^-1");
-        read_int_String_fail_helper(10, "x^1");
-        read_int_String_fail_helper(10, "1-2");
-        read_int_String_fail_helper(10, "1*x");
-        read_int_String_fail_helper(10, "-1*x");
-        read_int_String_fail_helper(10, "1*x^2");
-        read_int_String_fail_helper(10, "-1*x^2");
-        read_int_String_fail_helper(10, "x+x");
-        read_int_String_fail_helper(10, "x+x^2");
-        read_int_String_fail_helper(10, "1+x");
-        read_int_String_fail_helper(10, "x+0");
-        read_int_String_fail_helper(10, "0*x");
-        read_int_String_fail_helper(10, "-0*x");
-        read_int_String_fail_helper(10, "+0*x");
-        read_int_String_fail_helper(10, "2x");
-        read_int_String_fail_helper(10, "x^2+1+x");
-        read_int_String_fail_helper(10, "x^2+3*x^2");
-        read_int_String_fail_helper(10, "2^x");
-        read_int_String_fail_helper(10, "abc");
-        read_int_String_fail_helper(10, "x+y");
-        read_int_String_fail_helper(10, "y");
-        read_int_String_fail_helper(10, "1/2");
-        read_int_String_fail_helper(10, "x/2");
-        read_int_String_bad_maxExponent_fail_helper(0, "1");
-        read_int_String_bad_maxExponent_fail_helper(-1, "0");
-    }
-
-    private static void findIn_String_helper(@NotNull String input, @NotNull String output, int index) {
-        Pair<Polynomial, Integer> result = findIn(input).get();
-        aeq(result.a, output);
-        aeq(result.b, index);
-    }
-
-    private static void findIn_String_fail_helper(@NotNull String input) {
-        assertFalse(findIn(input).isPresent());
-    }
-
-    @Test
-    public void testFindIn_String() {
-        findIn_String_helper("0123", "0", 0);
-        findIn_String_helper("yxy", "x", 1);
-        findIn_String_helper("ax+12b", "x+12", 1);
-        findIn_String_helper("------x------", "-x", 5);
-        findIn_String_helper("3*x^2z", "3*x^2", 0);
-        findIn_String_helper("1+x+x^2", "1", 0);
-        findIn_String_helper("+1", "1", 1);
-        findIn_String_helper("y^12", "12", 2);
-        findIn_String_helper("52*x^-10", "52*x", 0);
-        findIn_String_fail_helper("");
-        findIn_String_fail_helper("o");
-        findIn_String_fail_helper("hello");
-    }
-
-    private static void findIn_int_String_helper(
-            int maxExponent,
-            @NotNull String input,
-            @NotNull String output,
-            int index
-    ) {
-        Pair<Polynomial, Integer> result = findIn(maxExponent, input).get();
-        aeq(result.a, output);
-        aeq(result.b, index);
-    }
-
-    private static void findIn_int_String_fail_helper(int maxExponent, @NotNull String input) {
-        assertFalse(findIn(maxExponent, input).isPresent());
-    }
-
-    private static void findIn_int_String_bad_maxExponent_fail_helper(int maxExponent, @NotNull String input) {
-        try {
-            findIn(maxExponent, input);
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-    }
-
-    @Test
-    public void testFindIn_int_String() {
-        findIn_int_String_helper(2, "0123", "0", 0);
-        findIn_int_String_helper(2, "yxy", "x", 1);
-        findIn_int_String_helper(2, "ax+12b", "x+12", 1);
-        findIn_int_String_helper(2, "------x------", "-x", 5);
-        findIn_int_String_helper(2, "3*x^2z", "3*x^2", 0);
-        findIn_int_String_helper(1, "3*x^2z", "3*x", 0);
-        findIn_int_String_helper(2, "1+x+x^2", "1", 0);
-        findIn_int_String_helper(2, "+1", "1", 1);
-        findIn_int_String_helper(2, "y^12", "12", 2);
-        findIn_int_String_helper(2, "52*x^-10", "52*x", 0);
-        findIn_int_String_fail_helper(2, "");
-        findIn_int_String_fail_helper(2, "o");
-        findIn_int_String_fail_helper(2, "hello");
-        findIn_int_String_bad_maxExponent_fail_helper(0, "1");
-        findIn_int_String_bad_maxExponent_fail_helper(-1, "0");
+    public void testReadStrict_int_String() {
+        readStrict_int_String_helper(1, "0");
+        readStrict_int_String_helper(1, "1");
+        readStrict_int_String_helper(1, "x");
+        readStrict_int_String_helper(1, "2");
+        readStrict_int_String_helper(1, "-2");
+        readStrict_int_String_helper(1, "-x");
+        readStrict_int_String_helper(1, "3*x");
+        readStrict_int_String_helper(1, "-3*x");
+        readStrict_int_String_helper(2, "x^2");
+        readStrict_int_String_helper(2, "-x^2");
+        readStrict_int_String_helper(2, "2*x^2");
+        readStrict_int_String_helper(2, "-2*x^2");
+        readStrict_int_String_helper(1, "x-1");
+        readStrict_int_String_helper(1, "-x-1");
+        readStrict_int_String_helper(2, "x^2-1");
+        readStrict_int_String_helper(2, "x^2-4*x+7");
+        readStrict_int_String_helper(10, "3*x^10");
+        readStrict_int_String_fail_helper(1, "x^2");
+        readStrict_int_String_fail_helper(1, "-x^2");
+        readStrict_int_String_fail_helper(1, "2*x^2");
+        readStrict_int_String_fail_helper(1, "-2*x^2");
+        readStrict_int_String_fail_helper(1, "x^2-1");
+        readStrict_int_String_fail_helper(1, "x^2-4*x+7");
+        readStrict_int_String_fail_helper(9, "3*x^10");
+        readStrict_int_String_fail_helper(10, "");
+        readStrict_int_String_fail_helper(10, "+");
+        readStrict_int_String_fail_helper(10, "-");
+        readStrict_int_String_fail_helper(10, "-0");
+        readStrict_int_String_fail_helper(10, "+0");
+        readStrict_int_String_fail_helper(10, "--");
+        readStrict_int_String_fail_helper(10, "+1");
+        readStrict_int_String_fail_helper(10, "+x");
+        readStrict_int_String_fail_helper(10, "+x^2");
+        readStrict_int_String_fail_helper(10, "+x^2-x");
+        readStrict_int_String_fail_helper(10, "x^1000000000000");
+        readStrict_int_String_fail_helper(10, " x");
+        readStrict_int_String_fail_helper(10, "x ");
+        readStrict_int_String_fail_helper(10, "X");
+        readStrict_int_String_fail_helper(10, "x + 1");
+        readStrict_int_String_fail_helper(10, "x^0");
+        readStrict_int_String_fail_helper(10, "x^-1");
+        readStrict_int_String_fail_helper(10, "x^1");
+        readStrict_int_String_fail_helper(10, "1-2");
+        readStrict_int_String_fail_helper(10, "1*x");
+        readStrict_int_String_fail_helper(10, "-1*x");
+        readStrict_int_String_fail_helper(10, "1*x^2");
+        readStrict_int_String_fail_helper(10, "-1*x^2");
+        readStrict_int_String_fail_helper(10, "x+x");
+        readStrict_int_String_fail_helper(10, "x+x^2");
+        readStrict_int_String_fail_helper(10, "1+x");
+        readStrict_int_String_fail_helper(10, "x+0");
+        readStrict_int_String_fail_helper(10, "0*x");
+        readStrict_int_String_fail_helper(10, "-0*x");
+        readStrict_int_String_fail_helper(10, "+0*x");
+        readStrict_int_String_fail_helper(10, "2x");
+        readStrict_int_String_fail_helper(10, "x^2+1+x");
+        readStrict_int_String_fail_helper(10, "x^2+3*x^2");
+        readStrict_int_String_fail_helper(10, "2^x");
+        readStrict_int_String_fail_helper(10, "abc");
+        readStrict_int_String_fail_helper(10, "x+y");
+        readStrict_int_String_fail_helper(10, "y");
+        readStrict_int_String_fail_helper(10, "1/2");
+        readStrict_int_String_fail_helper(10, "x/2");
+        readStrict_int_String_bad_maxExponent_fail_helper(0, "1");
+        readStrict_int_String_bad_maxExponent_fail_helper(-1, "0");
     }
 
     private static @NotNull List<BigInteger> readBigIntegerList(@NotNull String s) {
-        return Readers.readList(Readers::readBigInteger).apply(s).get();
+        return Readers.readListStrict(Readers::readBigIntegerStrict).apply(s).get();
     }
 
     private static @NotNull List<BigInteger> readBigIntegerListWithNulls(@NotNull String s) {
-        return Readers.readListWithNulls(Readers::readBigInteger).apply(s).get();
+        return Readers.readListWithNullsStrict(Readers::readBigIntegerStrict).apply(s).get();
     }
 
     private static @NotNull List<Polynomial> readPolynomialList(@NotNull String s) {
-        return Readers.readList(Polynomial::read).apply(s).get();
+        return Readers.readListStrict(Polynomial::readStrict).apply(s).get();
     }
 
     private static @NotNull List<Polynomial> readPolynomialListWithNulls(@NotNull String s) {
-        return Readers.readListWithNulls(Polynomial::read).apply(s).get();
+        return Readers.readListWithNullsStrict(Polynomial::readStrict).apply(s).get();
     }
 
     private static @NotNull List<Pair<BigInteger, BigInteger>> readBigIntegerPairList(@NotNull String s) {
-        return Readers.readList(
+        return Readers.readListStrict(
                 t -> Pair.read(
                         t,
-                        i -> NullableOptional.fromOptional(Readers.readBigInteger(i)),
-                        i -> NullableOptional.fromOptional(Readers.readBigInteger(i))
+                        i -> NullableOptional.fromOptional(Readers.readBigIntegerStrict(i)),
+                        i -> NullableOptional.fromOptional(Readers.readBigIntegerStrict(i))
                 )
         ).apply(s).get();
     }
 
     private static @NotNull List<Pair<BigInteger, BigInteger>> readBigIntegerPairListWithNulls(@NotNull String s) {
-        return Readers.readListWithNulls(
+        return Readers.readListWithNullsStrict(
                 t -> Pair.read(
                         t,
-                        Readers.readWithNulls(Readers::readBigInteger), Readers.readWithNulls(Readers::readBigInteger)
+                        Readers.readWithNullsStrict(Readers::readBigIntegerStrict),
+                        Readers.readWithNullsStrict(Readers::readBigIntegerStrict)
                 )
         ).apply(s).get();
     }

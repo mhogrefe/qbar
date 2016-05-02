@@ -1,18 +1,15 @@
 package mho.qbar.objects;
 
-import mho.wheels.io.Readers;
 import mho.wheels.ordering.comparators.LexComparator;
-import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Optional;
 
 /**
- * An ordering for monomials, or {@link ExponentVector}s.
+ * An ordering for {@link Monomial}s.
  */
-public enum MonomialOrder implements Comparator<ExponentVector> {
+public enum MonomialOrder implements Comparator<Monomial> {
     /**
      * Lexicographic order
      */
@@ -24,8 +21,8 @@ public enum MonomialOrder implements Comparator<ExponentVector> {
 
         /**
          * Compares {@code a} to {@code b}, returning 1, –1, or 0 if the answer is "greater than", "less than", or
-         * "equal to", respectively. The {@code ExponentVector}s are compared by first comparing the exponents of the
-         * first variable, then the second, and so on until the tie is broken.
+         * "equal to", respectively. The {@code Monomial}s are compared by first comparing the exponents of the first
+         * variable, then the second, and so on until the tie is broken.
          *
          * <ul>
          *  <li>{@code a} cannot be null.</li>
@@ -33,12 +30,12 @@ public enum MonomialOrder implements Comparator<ExponentVector> {
          *  <li>The result may be –1, 0, or 1.</li>
          * </ul>
          *
-         * @param a the first {@code ExponentVector}
-         * @param b the second {@code ExponentVector}
+         * @param a the first {@code Monomial}
+         * @param b the second {@code Monomial}
          * @return {@code a} lex-compared to {@code b}
          */
         @Override
-        public int compare(@NotNull ExponentVector a, @NotNull ExponentVector b) {
+        public int compare(@NotNull Monomial a, @NotNull Monomial b) {
             if (a == b) return 0;
             return INTEGER_LEX.compare(a.getExponents(), b.getExponents());
         }
@@ -55,8 +52,8 @@ public enum MonomialOrder implements Comparator<ExponentVector> {
 
         /**
          * Compares {@code a} to {@code b}, returning 1, –1, or 0 if the answer is "greater than", "less than", or
-         * "equal to", respectively. The {@code ExponentVector}s are compared by first comparing their degrees, then
-         * the exponents of the first variable, then the second, and so on until the tie is broken.
+         * "equal to", respectively. The {@code Monomial}s are compared by first comparing their degrees, then the
+         * exponents of the first variable, then the second, and so on until the tie is broken.
          *
          * <ul>
          *  <li>{@code a} cannot be null.</li>
@@ -64,12 +61,12 @@ public enum MonomialOrder implements Comparator<ExponentVector> {
          *  <li>The result may be –1, 0, or 1.</li>
          * </ul>
          *
-         * @param a the first {@code ExponentVector}
-         * @param b the second {@code ExponentVector}
+         * @param a the first {@code Monomial}
+         * @param b the second {@code Monomial}
          * @return {@code a} grlex-compared to {@code b}
          */
         @Override
-        public int compare(@NotNull ExponentVector a, @NotNull ExponentVector b) {
+        public int compare(@NotNull Monomial a, @NotNull Monomial b) {
             if (a == b) return 0;
             int thisDegree = a.degree();
             int thatDegree = b.degree();
@@ -80,12 +77,12 @@ public enum MonomialOrder implements Comparator<ExponentVector> {
     },
 
     /**
-     * Graded reverse lexicographic order. The default for {@code ExponentVector}s
+     * Graded reverse lexicographic order. The default for {@code Monomial}s
      */
     GREVLEX {
         /**
          * Compares {@code a} to {@code b}, returning 1, –1, or 0 if the answer is "greater than", "less than", or
-         * "equal to", respectively. The {@code ExponentVector}s are compared by first comparing their degrees. If the
+         * "equal to", respectively. The {@code Monomial}s are compared by first comparing their degrees. If the
          * degrees are equal, the exponents of the <i>last</i> variables are compared first, and, if they differ, the
          * result is reversed–the smaller exponent results in a greater monomial ordering.
          *
@@ -95,12 +92,12 @@ public enum MonomialOrder implements Comparator<ExponentVector> {
          *  <li>The result may be –1, 0, or 1.</li>
          * </ul>
          *
-         * @param a the first {@code ExponentVector}
-         * @param b the second {@code ExponentVector}
+         * @param a the first {@code Monomial}
+         * @param b the second {@code Monomial}
          * @return {@code a} grevlex-compared to {@code b}
          */
         @Override
-        public int compare(@NotNull ExponentVector a, @NotNull ExponentVector b) {
+        public int compare(@NotNull Monomial a, @NotNull Monomial b) {
             if (a == b) return 0;
             int thisDegree = a.degree();
             int thatDegree = b.degree();
@@ -132,7 +129,7 @@ public enum MonomialOrder implements Comparator<ExponentVector> {
      * @return the {@code MonomialOrder} represented by {@code s}, or {@code Optional.empty} if {@code s} does not
      * represent a {@code MonomialOrder}
      */
-    public static @NotNull Optional<MonomialOrder> read(@NotNull String s) {
+    public static @NotNull Optional<MonomialOrder> readStrict(@NotNull String s) {
         switch (s) {
             case "LEX":
                 return Optional.of(MonomialOrder.LEX);
@@ -143,22 +140,5 @@ public enum MonomialOrder implements Comparator<ExponentVector> {
             default:
                 return Optional.empty();
         }
-    }
-
-    /**
-     * Finds the first occurrence of an {@code MonomialOrder} in a {@code String}. Returns the {@code MonomialOrder}
-     * and the index at which it was found. Returns an empty {@code Optional} if no {@code MonomialOrder} is found.
-     *
-     * <ul>
-     *  <li>{@code s} must be non-null.</li>
-     *  <li>The result is non-null. If it is non-empty, then neither of the {@code Pair}'s components is null, and the
-     *  second component is non-negative.</li>
-     * </ul>
-     *
-     * @param s the input {@code String}
-     * @return the first {@code MonomialOrder} found in {@code s}, and the index at which it was found
-     */
-    public static @NotNull Optional<Pair<MonomialOrder, Integer>> findIn(@NotNull String s) {
-        return Readers.genericFindIn(Arrays.asList(MonomialOrder.values())).apply(s);
     }
 }

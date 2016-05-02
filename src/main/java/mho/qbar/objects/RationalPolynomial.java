@@ -511,7 +511,7 @@ public final class RationalPolynomial implements
      *
      * <ul>
      *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
-     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code that} may be any {@code int}.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
@@ -1169,6 +1169,88 @@ public final class RationalPolynomial implements
     }
 
     /**
+     * Expresses powers, from x<sup>0</sup>, to x<sup>{@code maxPower}</sup>, of any root of {@code this} as
+     * polynomials in the root. The polynomials all have degrees less that the degree of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} must be non-constant.</li>
+     *  <li>{@code maxPower} cannot be negative.</li>
+     *  <li>The result is nonempty and contains no nulls.</li>
+     * </ul>
+     *
+     * Length is {@code maxPower}+1
+     *
+     * @param maxPower the maximum power of a root of {@code this}
+     * @return x<sup>0</sup>, ..., x<sup>{@code maxPower}</sup> over the quotient ring ℚ[x]/{@code this}
+     */
+    public @NotNull List<RationalPolynomial> powerTable(int maxPower) {
+        if (maxPower < 0) {
+            throw new IllegalArgumentException("maxPower cannot be negative. Invalid maxPower: " + maxPower);
+        }
+        int degree = degree();
+        if (degree < 1) {
+            throw new UnsupportedOperationException("this cannot be constant. Invalid this: " + this);
+        }
+        List<RationalPolynomial> powers = new ArrayList<>();
+        for (int p = 0; p < degree; p++) {
+            powers.add(of(Rational.ONE, p));
+            if (p == maxPower) {
+                return powers;
+            }
+        }
+        Rational leading = leading().get();
+        RationalPolynomial xDeg = of(toList(map(c -> c.negate().divide(leading), init(coefficients))));
+        powers.add(xDeg);
+        RationalPolynomial power = xDeg;
+        for (int p = degree + 1; p <= maxPower; p++) {
+            Rational highestCoefficient = power.coefficient(degree - 1);
+            List<Rational> newCoefficients = new ArrayList<>(degree);
+            newCoefficients.add(Rational.ZERO);
+            for (int i = 0; i < degree - 1; i++) {
+                newCoefficients.add(power.coefficient(i));
+            }
+            power = of(newCoefficients).add(xDeg.multiply(highestCoefficient));
+            powers.add(power);
+        }
+        return powers;
+    }
+
+    /**
+     * Expresses the {@code p}th power of any root of {@code this} as a polynomial in the root. The polynomial has a
+     * degree less that the degree of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} must be non-constant.</li>
+     *  <li>{@code p} cannot be negative.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param p the power that a root of {@code this} is being raised to
+     * @return x<sup>{@code p}</sup> over the quotient ring ℚ[x]/{@code this}
+     */
+    public @NotNull RationalPolynomial rootPower(int p) {
+        if (p < 0) {
+            throw new IllegalArgumentException("p cannot be negative. Invalid p: " + p);
+        }
+        int degree = degree();
+        if (degree < 1) {
+            throw new UnsupportedOperationException("this cannot be constant. Invalid this: " + this);
+        }
+        if (p < degree) {
+            return of(Rational.ONE, p);
+        }
+        RationalPolynomial power = ONE;
+        for (boolean bit : IntegerUtils.bigEndianBits(p)) {
+            power = power.pow(2);
+            if (bit) {
+                power = power.multiplyByPowerOfX(1);
+            }
+            power = power.divide(this).b;
+        }
+        return power;
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>
@@ -1242,7 +1324,7 @@ public final class RationalPolynomial implements
      * @return the wrapped {@code RationalPolynomial} represented by {@code s}, or {@code empty} if {@code s} is
      * invalid.
      */
-    private static @NotNull Optional<RationalPolynomial> genericRead(
+    private static @NotNull Optional<RationalPolynomial> genericReadStrict(
             @NotNull String s,
             @NotNull Function<String, Optional<Integer>> exponentHandler
     ) {
@@ -1279,7 +1361,7 @@ public final class RationalPolynomial implements
             monomialString = monomialStrings.get(i);
             int xIndex = monomialString.indexOf('x');
             if (xIndex == -1) {
-                Optional<Rational> constant = Rational.read(monomialString);
+                Optional<Rational> constant = Rational.readStrict(monomialString);
                 if (!constant.isPresent()) return Optional.empty();
                 monomials.add(new Pair<>(constant.get(), 0));
             } else {
@@ -1296,7 +1378,7 @@ public final class RationalPolynomial implements
                     default:
                         if (monomialString.charAt(xIndex - 1) != '*') return Optional.empty();
                         String coefficientString = monomialString.substring(0, xIndex - 1);
-                        Optional<Rational> oCoefficient = Rational.read(coefficientString);
+                        Optional<Rational> oCoefficient = Rational.readStrict(coefficientString);
                         if (!oCoefficient.isPresent()) return Optional.empty();
                         coefficient = oCoefficient.get();
                         // no 1*x, -1*x, 1*x^2, -1*x^2, ... allowed
@@ -1339,7 +1421,7 @@ public final class RationalPolynomial implements
      * Creates a {@code RationalPolynomial} from a {@code String}. Valid input takes the form of a {@code String} that
      * could have been returned by {@link mho.qbar.objects.RationalPolynomial#toString}. Caution: It's easy to run out
      * of time and memory reading something like {@code "x^1000000000"}. If such an input is possible, consider using
-     * {@link Polynomial#read(int, String)} instead.
+     * {@link Polynomial#readStrict(int, String)} instead.
      *
      * <ul>
      *  <li>{@code s} cannot be null.</li>
@@ -1350,8 +1432,8 @@ public final class RationalPolynomial implements
      * @return the wrapped {@code RationalPolynomial} represented by {@code s}, or {@code empty} if {@code s} is
      * invalid.
      */
-    public static @NotNull Optional<RationalPolynomial> read(@NotNull String s) {
-        return genericRead(s, Readers::readInteger);
+    public static @NotNull Optional<RationalPolynomial> readStrict(@NotNull String s) {
+        return genericReadStrict(s, Readers::readIntegerStrict);
     }
 
     /**
@@ -1370,63 +1452,17 @@ public final class RationalPolynomial implements
      * @return the wrapped {@code RationalPolynomial} (with degree no greater than {@code maxExponent}) represented by
      * {@code s}, or {@code empty} if {@code s} is invalid.
      */
-    public static @NotNull Optional<RationalPolynomial> read(int maxExponent, @NotNull String s) {
+    public static @NotNull Optional<RationalPolynomial> readStrict(int maxExponent, @NotNull String s) {
         if (maxExponent < 1) {
             throw new IllegalArgumentException("maxExponent must be positive. Invalid maxExponent: " + maxExponent);
         }
-        return genericRead(
+        return genericReadStrict(
                 s,
                 powerString -> {
-                    Optional<Integer> oPower = Readers.readInteger(powerString);
+                    Optional<Integer> oPower = Readers.readIntegerStrict(powerString);
                     return !oPower.isPresent() || oPower.get() > maxExponent ? Optional.<Integer>empty() : oPower;
                 }
         );
-    }
-
-    /**
-     * Finds the first occurrence of a {@code RationalPolynomial} in a {@code String}. Returns the
-     * {@code RationalPolynomial} and the index at which it was found. Returns an empty {@code Optional} if no
-     * {@code RationalPolynomial} is found. Only {@code String}s which could have been emitted by
-     * {@link mho.qbar.objects.RationalPolynomial#toString} are recognized. The longest possible
-     * {@code RationalPolynomial} is parsed. Caution: It's easy to run out of time and memory finding something like
-     * {@code "x^1000000000"}. If such an input is possible, consider using
-     * {@link RationalPolynomial#findIn(int, String)} instead.
-     *
-     * <ul>
-     *  <li>{@code s} must be non-null.</li>
-     *  <li>The result is non-null. If it is non-empty, then neither of the {@code Pair}'s components is null, and the
-     *  second component is non-negative.</li>
-     * </ul>
-     *
-     * @param s the input {@code String}
-     * @return the first {@code RationalPolynomial} found in {@code s}, and the index at which it was found
-     */
-    public static @NotNull Optional<Pair<RationalPolynomial, Integer>> findIn(@NotNull String s) {
-        return Readers.genericFindIn(RationalPolynomial::read, "*+-/0123456789^x").apply(s);
-    }
-
-    /**
-     * Finds the first occurrence of a {@code RationalPolynomial} in a {@code String}. Returns the
-     * {@code RationalPolynomial} and the index at which it was found. Returns an empty {@code Optional} if no
-     * {@code RationalPolynomial} is found. Only{@code String}s which could have been emitted by
-     * {@link mho.qbar.objects.RationalPolynomial#toString} are recognized. The longest possible
-     * {@code RationalPolynomial} is parsed. The input {@code RationalPolynomial} cannot have a degree greater than
-     * {@code maxExponent}.
-     *
-     * <ul>
-     *  <li>{@code maxExponent} must be positive.</li>
-     *  <li>{@code s} must be non-null.</li>
-     *  <li>The result is non-null. If it is non-empty, then neither of the {@code Pair}'s components is null, and the
-     *  second component is non-negative.</li>
-     * </ul>
-     *
-     * @param maxExponent the largest accepted exponent
-     * @param s the input {@code String}
-     * @return the first {@code RationalPolynomial} found in {@code s} (with degree no greater than
-     * {@code maxExponent}), and the index at which it was found
-     */
-    public static @NotNull Optional<Pair<RationalPolynomial, Integer>> findIn(int maxExponent, @NotNull String s) {
-        return Readers.genericFindIn(t -> read(maxExponent, t), "*+-/0123456789^x").apply(s);
     }
 
     /**

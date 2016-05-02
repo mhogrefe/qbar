@@ -1,7 +1,6 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
-import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -24,7 +23,7 @@ public class IntervalTest {
     }
 
     private static void getLower_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().getLower(), output);
+        aeq(readStrict(input).get().getLower(), output);
     }
 
     @Test
@@ -36,7 +35,7 @@ public class IntervalTest {
     }
 
     private static void getUpper_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().getUpper(), output);
+        aeq(readStrict(input).get().getUpper(), output);
     }
 
     @Test
@@ -52,12 +51,12 @@ public class IntervalTest {
             @NotNull String upper,
             @NotNull String output
     ) {
-        aeq(of(Rational.read(lower).get(), Rational.read(upper).get()), output);
+        aeq(of(Rational.readStrict(lower).get(), Rational.readStrict(upper).get()), output);
     }
 
     private static void of_Rational_Rational_fail_helper(@NotNull String lower, @NotNull String upper) {
         try {
-            of(Rational.read(lower).get(), Rational.read(upper).get());
+            of(Rational.readStrict(lower).get(), Rational.readStrict(upper).get());
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -71,7 +70,7 @@ public class IntervalTest {
     }
 
     private static void lessThanOrEqualTo_helper(@NotNull String upper, @NotNull String output) {
-        aeq(lessThanOrEqualTo(Rational.read(upper).get()), output);
+        aeq(lessThanOrEqualTo(Rational.readStrict(upper).get()), output);
     }
 
     @Test
@@ -81,7 +80,7 @@ public class IntervalTest {
     }
 
     private static void greaterThanOrEqualTo_helper(@NotNull String lower, @NotNull String output) {
-        aeq(greaterThanOrEqualTo(Rational.read(lower).get()), output);
+        aeq(greaterThanOrEqualTo(Rational.readStrict(lower).get()), output);
     }
 
     @Test
@@ -91,7 +90,7 @@ public class IntervalTest {
     }
 
     private static void of_Rational_helper(@NotNull String input, @NotNull String output) {
-        aeq(of(Rational.read(input).get()), output);
+        aeq(of(Rational.readStrict(input).get()), output);
     }
 
     @Test
@@ -102,7 +101,7 @@ public class IntervalTest {
     }
 
     private static void bitLength_helper(@NotNull String input, int output) {
-        aeq(read(input).get().bitLength(), output);
+        aeq(readStrict(input).get().bitLength(), output);
     }
 
     @Test
@@ -117,7 +116,7 @@ public class IntervalTest {
     }
 
     private static void isFinitelyBounded_helper(@NotNull String input, boolean output) {
-        aeq(read(input).get().isFinitelyBounded(), output);
+        aeq(readStrict(input).get().isFinitelyBounded(), output);
     }
 
     @Test
@@ -132,7 +131,7 @@ public class IntervalTest {
     }
 
     private static void contains_Rational_helper(@NotNull String a, @NotNull String r, boolean output) {
-        aeq(read(a).get().contains(Rational.read(r).get()), output);
+        aeq(readStrict(a).get().contains(Rational.readStrict(r).get()), output);
     }
 
     @Test
@@ -171,8 +170,58 @@ public class IntervalTest {
         contains_Rational_helper("[-6, Infinity)", "-8", false);
     }
 
+    private static void contains_Algebraic_helper(@NotNull String a, @NotNull String x, boolean output) {
+        aeq(readStrict(a).get().contains(Algebraic.readStrict(x).get()), output);
+    }
+
+    @Test
+    public void testContains_Algebraic() {
+        contains_Algebraic_helper("[0, 0]", "0", true);
+        contains_Algebraic_helper("[0, 0]", "1", false);
+        contains_Algebraic_helper("[0, 0]", "sqrt(2)", false);
+
+        contains_Algebraic_helper("[1, 1]", "1", true);
+        contains_Algebraic_helper("[1, 1]", "0", false);
+        contains_Algebraic_helper("[1, 1]", "sqrt(2)", false);
+
+        contains_Algebraic_helper("(-Infinity, Infinity)", "1", true);
+        contains_Algebraic_helper("(-Infinity, Infinity)", "-4/3", true);
+        contains_Algebraic_helper("(-Infinity, Infinity)", "sqrt(2)", true);
+
+        contains_Algebraic_helper("[-2, 5/3]", "-2", true);
+        contains_Algebraic_helper("[-2, 5/3]", "-1", true);
+        contains_Algebraic_helper("[-2, 5/3]", "0", true);
+        contains_Algebraic_helper("[-2, 5/3]", "1", true);
+        contains_Algebraic_helper("[-2, 5/3]", "5/3", true);
+        contains_Algebraic_helper("[-2, 5/3]", "sqrt(2)", true);
+        contains_Algebraic_helper("[-2, 5/3]", "-sqrt(2)", true);
+        contains_Algebraic_helper("[-2, 5/3]", "-3", false);
+        contains_Algebraic_helper("[-2, 5/3]", "2", false);
+
+        contains_Algebraic_helper("[4, 4]", "4", true);
+        contains_Algebraic_helper("[4, 4]", "3", false);
+        contains_Algebraic_helper("[4, 4]", "5", false);
+        contains_Algebraic_helper("[4, 4]", "sqrt(2)", false);
+
+        contains_Algebraic_helper("(-Infinity, 3/2]", "0", true);
+        contains_Algebraic_helper("(-Infinity, 3/2]", "1", true);
+        contains_Algebraic_helper("(-Infinity, 3/2]", "-10", true);
+        contains_Algebraic_helper("(-Infinity, 3/2]", "3/2", true);
+        contains_Algebraic_helper("(-Infinity, 3/2]", "sqrt(2)", true);
+        contains_Algebraic_helper("(-Infinity, 3/2]", "(1+sqrt(5))/2", false);
+        contains_Algebraic_helper("(-Infinity, 3/2]", "2", false);
+
+        contains_Algebraic_helper("[-6, Infinity)", "0", true);
+        contains_Algebraic_helper("[-6, Infinity)", "1", true);
+        contains_Algebraic_helper("[-6, Infinity)", "-4", true);
+        contains_Algebraic_helper("[-6, Infinity)", "5", true);
+        contains_Algebraic_helper("[-6, Infinity)", "sqrt(2)", true);
+        contains_Algebraic_helper("[-6, Infinity)", "-8", false);
+        contains_Algebraic_helper("[-6, Infinity)", "-10*sqrt(2)", false);
+    }
+
     private static void contains_Interval_helper(@NotNull String a, @NotNull String b, boolean output) {
-        aeq(read(a).get().contains(read(b).get()), output);
+        aeq(readStrict(a).get().contains(readStrict(b).get()), output);
     }
 
     @Test
@@ -204,11 +253,11 @@ public class IntervalTest {
     }
 
     private static void diameter_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().diameter().get(), output);
+        aeq(readStrict(input).get().diameter().get(), output);
     }
 
     private static void diameter_fail_helper(@NotNull String input) {
-        assertFalse(read(input).get().diameter().isPresent());
+        assertFalse(readStrict(input).get().diameter().isPresent());
     }
 
     @Test
@@ -223,7 +272,7 @@ public class IntervalTest {
     }
 
     private static void convexHull_Interval_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().convexHull(read(b).get()), output);
+        aeq(readStrict(a).get().convexHull(readStrict(b).get()), output);
     }
 
     @Test
@@ -315,11 +364,11 @@ public class IntervalTest {
     }
 
     private static void intersection_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().intersection(read(b).get()).get(), output);
+        aeq(readStrict(a).get().intersection(readStrict(b).get()).get(), output);
     }
 
     private static void intersection_empty_helper(@NotNull String a, @NotNull String b) {
-        assertFalse(read(a).get().intersection(read(b).get()).isPresent());
+        assertFalse(readStrict(a).get().intersection(readStrict(b).get()).isPresent());
     }
 
     @Test
@@ -343,7 +392,7 @@ public class IntervalTest {
     }
 
     private static void disjoint_helper(@NotNull String a, @NotNull String b, boolean output) {
-        aeq(read(a).get().disjoint(read(b).get()), output);
+        aeq(readStrict(a).get().disjoint(readStrict(b).get()), output);
     }
 
     @Test
@@ -393,7 +442,7 @@ public class IntervalTest {
     }
 
     private static void complement_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().complement(), output);
+        aeq(readStrict(input).get().complement(), output);
     }
 
     @Test
@@ -408,12 +457,12 @@ public class IntervalTest {
     }
 
     private static void midpoint_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().midpoint(), output);
+        aeq(readStrict(input).get().midpoint(), output);
     }
 
     private static void midpoint_fail_helper(@NotNull String input) {
         try {
-            read(input).get().midpoint();
+            readStrict(input).get().midpoint();
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -431,12 +480,12 @@ public class IntervalTest {
     }
 
     private static void split_helper(@NotNull String a, @NotNull String x, @NotNull String output) {
-        aeq(read(a).get().split(Rational.read(x).get()), output);
+        aeq(readStrict(a).get().split(Rational.readStrict(x).get()), output);
     }
 
     private static void split_fail_helper(@NotNull String a, @NotNull String x) {
         try {
-            read(a).get().split(Rational.read(x).get());
+            readStrict(a).get().split(Rational.readStrict(x).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -460,12 +509,12 @@ public class IntervalTest {
     }
 
     private static void bisect_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().bisect(), output);
+        aeq(readStrict(input).get().bisect(), output);
     }
 
     private static void bisect_fail_helper(@NotNull String input) {
         try {
-            read(input).get().bisect();
+            readStrict(input).get().bisect();
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -713,7 +762,7 @@ public class IntervalTest {
     }
 
     private static void roundingPreimage_BigDecimal_helper(@NotNull String input, @NotNull String output) {
-        aeq(roundingPreimage(Readers.readBigDecimal(input).get()), output);
+        aeq(roundingPreimage(Readers.readBigDecimalStrict(input).get()), output);
     }
 
     @Test
@@ -734,7 +783,7 @@ public class IntervalTest {
     }
 
     private static void add_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().add(read(b).get()), output);
+        aeq(readStrict(a).get().add(readStrict(b).get()), output);
     }
 
     @Test
@@ -797,7 +846,7 @@ public class IntervalTest {
     }
 
     private static void negate_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().negate(), output);
+        aeq(readStrict(input).get().negate(), output);
     }
 
     @Test
@@ -812,7 +861,7 @@ public class IntervalTest {
     }
 
     private static void abs_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().abs(), output);
+        aeq(readStrict(input).get().abs(), output);
     }
 
     @Test
@@ -829,7 +878,7 @@ public class IntervalTest {
     }
 
     private static void signum_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().signum(), output);
+        aeq(readStrict(input).get().signum(), output);
     }
 
     @Test
@@ -846,7 +895,7 @@ public class IntervalTest {
     }
 
     private static void subtract_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().subtract(read(b).get()), output);
+        aeq(readStrict(a).get().subtract(readStrict(b).get()), output);
     }
 
     @Test
@@ -909,7 +958,7 @@ public class IntervalTest {
     }
 
     private static void multiply_Interval_helper(@NotNull String a, @NotNull String b, @NotNull String result) {
-        aeq(read(a).get().multiply(read(b).get()), result);
+        aeq(readStrict(a).get().multiply(readStrict(b).get()), result);
     }
 
     @Test
@@ -973,7 +1022,7 @@ public class IntervalTest {
     }
 
     private static void multiply_Rational_helper(@NotNull String a, @NotNull String b, @NotNull String result) {
-        aeq(read(a).get().multiply(Rational.read(b).get()), result);
+        aeq(readStrict(a).get().multiply(Rational.readStrict(b).get()), result);
     }
 
     @Test
@@ -1015,7 +1064,7 @@ public class IntervalTest {
     }
 
     private static void multiply_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String result) {
-        aeq(read(a).get().multiply(Readers.readBigInteger(b).get()), result);
+        aeq(readStrict(a).get().multiply(Readers.readBigIntegerStrict(b).get()), result);
     }
 
     @Test
@@ -1057,7 +1106,7 @@ public class IntervalTest {
     }
 
     private static void multiply_int_helper(@NotNull String a, int b, @NotNull String result) {
-        aeq(read(a).get().multiply(b), result);
+        aeq(readStrict(a).get().multiply(b), result);
     }
 
     @Test
@@ -1099,7 +1148,7 @@ public class IntervalTest {
     }
 
     private static void invert_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().invert(), output);
+        aeq(readStrict(input).get().invert(), output);
     }
 
     @Test
@@ -1121,12 +1170,12 @@ public class IntervalTest {
     }
 
     private static void invertHull_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().invertHull(), output);
+        aeq(readStrict(input).get().invertHull(), output);
     }
 
     private static void invertHull_fail_helper(@NotNull String input) {
         try {
-            read(input).get().invertHull();
+            readStrict(input).get().invertHull();
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -1150,7 +1199,7 @@ public class IntervalTest {
     }
 
     private static void divide_Interval_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().divide(read(b).get()), output);
+        aeq(readStrict(a).get().divide(readStrict(b).get()), output);
     }
 
     @Test
@@ -1214,12 +1263,12 @@ public class IntervalTest {
     }
 
     private static void divideHull_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().divideHull(read(b).get()), output);
+        aeq(readStrict(a).get().divideHull(readStrict(b).get()), output);
     }
 
     private static void divideHull_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().divideHull(read(b).get());
+            readStrict(a).get().divideHull(readStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -1282,12 +1331,12 @@ public class IntervalTest {
     }
 
     private static void divide_Rational_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().divide(Rational.read(b).get()), output);
+        aeq(readStrict(a).get().divide(Rational.readStrict(b).get()), output);
     }
 
     private static void divide_Rational_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().divide(Rational.read(b).get());
+            readStrict(a).get().divide(Rational.readStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -1326,12 +1375,12 @@ public class IntervalTest {
     }
 
     private static void divide_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().divide(Readers.readBigInteger(b).get()), output);
+        aeq(readStrict(a).get().divide(Readers.readBigIntegerStrict(b).get()), output);
     }
 
     private static void divide_BigInteger_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().divide(Readers.readBigInteger(b).get());
+            readStrict(a).get().divide(Readers.readBigIntegerStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -1370,12 +1419,12 @@ public class IntervalTest {
     }
 
     private static void divide_int_helper(@NotNull String a, int b, @NotNull String output) {
-        aeq(read(a).get().divide(b), output);
+        aeq(readStrict(a).get().divide(b), output);
     }
 
     private static void divide_int_fail_helper(@NotNull String a, int b) {
         try {
-            read(a).get().divide(b);
+            readStrict(a).get().divide(b);
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -1414,7 +1463,7 @@ public class IntervalTest {
     }
 
     private static void shiftLeft_helper(@NotNull String a, int b, @NotNull String output) {
-        aeq(read(a).get().shiftLeft(b), output);
+        aeq(readStrict(a).get().shiftLeft(b), output);
     }
 
     @Test
@@ -1491,7 +1540,7 @@ public class IntervalTest {
     }
 
     private static void shiftRight_helper(@NotNull String a, int b, @NotNull String output) {
-        aeq(read(a).get().shiftRight(b), output);
+        aeq(readStrict(a).get().shiftRight(b), output);
     }
 
     @Test
@@ -1623,7 +1672,7 @@ public class IntervalTest {
     public void testDelta() {
         delta_helper("[[1/3, 2]]", "[]");
         delta_helper("[[-2, 5/3], (-Infinity, 6], [4, 4]]", "[(-Infinity, 8], [-2, Infinity)]");
-        Interval seed = read("[1/3, 1/2]").get();
+        Interval seed = readStrict("[1/3, 1/2]").get();
         delta_helper(
                 iterate(seed::multiply, seed),
                 "[[-7/18, -1/12], [-23/108, 1/72], [-73/648, 11/432], [-227/3888, 49/2592], [-697/23328, 179/15552]," +
@@ -1643,7 +1692,7 @@ public class IntervalTest {
     }
 
     private static void pow_helper(@NotNull String a, int p, @NotNull String output) {
-        aeq(read(a).get().pow(p), output);
+        aeq(readStrict(a).get().pow(p), output);
     }
 
     @Test
@@ -1706,12 +1755,12 @@ public class IntervalTest {
     }
 
     private static void powHull_helper(@NotNull String a, int p, @NotNull String output) {
-        aeq(read(a).get().powHull(p), output);
+        aeq(readStrict(a).get().powHull(p), output);
     }
 
     private static void powHull_fail_helper(@NotNull String a, int p) {
         try {
-            read(a).get().powHull(p);
+            readStrict(a).get().powHull(p);
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -1777,7 +1826,7 @@ public class IntervalTest {
     }
 
     private static void elementCompare_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().elementCompare(read(b).get()), output);
+        aeq(readStrict(a).get().elementCompare(readStrict(b).get()), output);
     }
 
     @Test
@@ -1852,7 +1901,7 @@ public class IntervalTest {
     }
 
     private static void hashCode_helper(@NotNull String input, int hashCode) {
-        aeq(read(input).get().hashCode(), hashCode);
+        aeq(readStrict(input).get().hashCode(), hashCode);
     }
 
     @Test
@@ -1875,75 +1924,51 @@ public class IntervalTest {
         );
     }
 
-    private static void read_helper(@NotNull String input) {
-        aeq(read(input).get(), input);
+    private static void readStrict_helper(@NotNull String input) {
+        aeq(readStrict(input).get(), input);
     }
 
-    private static void read_empty_helper(@NotNull String input) {
-        assertFalse(read(input).isPresent());
-    }
-
-    @Test
-    public void testRead() {
-        read_helper("[0, 0]");
-        read_helper("[1, 1]");
-        read_helper("(-Infinity, Infinity)");
-        read_helper("[-2, 5/3]");
-        read_helper("[4, 4]");
-        read_helper("(-Infinity, 3/2]");
-        read_helper("[-6, Infinity)");
-        read_empty_helper("");
-        read_empty_helper("[");
-        read_empty_helper("[]");
-        read_empty_helper("[,]");
-        read_empty_helper("[1, 1");
-        read_empty_helper("[12]");
-        read_empty_helper("[1 1]");
-        read_empty_helper("[1,  1]");
-        read_empty_helper("[ 1, 1]");
-        read_empty_helper("[1, 1 ]");
-        read_empty_helper("[1, 1] ");
-        read_empty_helper("[-Infinity, Infinity]");
-        read_empty_helper("(-Infinity, 4)");
-        read_empty_helper("[4, Infinity]");
-        read_empty_helper("(Infinity, -Infinity)");
-        read_empty_helper("[2, 3-]");
-        read_empty_helper("[2.0, 4]");
-        read_empty_helper("[2,4]");
-        read_empty_helper("[5, 4]");
-        read_empty_helper("[5, 4/2]");
-        read_empty_helper("[5, 4/0]");
-    }
-
-    private static void findIn_helper(@NotNull String input, @NotNull String output, int index) {
-        Pair<Interval, Integer> result = findIn(input).get();
-        aeq(result.a, output);
-        aeq(result.b, index);
-    }
-
-    private static void findIn_empty_helper(@NotNull String input) {
-        assertFalse(findIn(input).isPresent());
+    private static void readStrict_empty_helper(@NotNull String input) {
+        assertFalse(readStrict(input).isPresent());
     }
 
     @Test
-    public void testFindIn() {
-        findIn_helper("abcd[-5, 2/3]xyz", "[-5, 2/3]", 4);
-        findIn_helper("vdfvdf(-Infinity, 3]cds", "(-Infinity, 3]", 6);
-        findIn_helper("gvrgw49((-Infinity, Infinity)Infinity)", "(-Infinity, Infinity)", 8);
-        findIn_empty_helper("");
-        findIn_empty_helper("hello");
-        findIn_empty_helper("vdfsvfbf");
-        findIn_empty_helper("vdfvds[-Infinity, 2]vsd");
-        findIn_empty_helper("vdfvds(Infinity, 2]vsd");
-        findIn_empty_helper("abcd[5, 4]xyz");
-        findIn_empty_helper("abcd[5, 4/0]xyz");
+    public void testReadStrict() {
+        readStrict_helper("[0, 0]");
+        readStrict_helper("[1, 1]");
+        readStrict_helper("(-Infinity, Infinity)");
+        readStrict_helper("[-2, 5/3]");
+        readStrict_helper("[4, 4]");
+        readStrict_helper("(-Infinity, 3/2]");
+        readStrict_helper("[-6, Infinity)");
+        readStrict_empty_helper("");
+        readStrict_empty_helper("[");
+        readStrict_empty_helper("[]");
+        readStrict_empty_helper("[,]");
+        readStrict_empty_helper("[1, 1");
+        readStrict_empty_helper("[12]");
+        readStrict_empty_helper("[1 1]");
+        readStrict_empty_helper("[1,  1]");
+        readStrict_empty_helper("[ 1, 1]");
+        readStrict_empty_helper("[1, 1 ]");
+        readStrict_empty_helper("[1, 1] ");
+        readStrict_empty_helper("[-Infinity, Infinity]");
+        readStrict_empty_helper("(-Infinity, 4)");
+        readStrict_empty_helper("[4, Infinity]");
+        readStrict_empty_helper("(Infinity, -Infinity)");
+        readStrict_empty_helper("[2, 3-]");
+        readStrict_empty_helper("[2.0, 4]");
+        readStrict_empty_helper("[2,4]");
+        readStrict_empty_helper("[5, 4]");
+        readStrict_empty_helper("[5, 4/2]");
+        readStrict_empty_helper("[5, 4/0]");
     }
 
     private static @NotNull List<Interval> readIntervalList(@NotNull String s) {
-        return Readers.readList(Interval::read).apply(s).get();
+        return Readers.readListStrict(Interval::readStrict).apply(s).get();
     }
 
     private static @NotNull List<Interval> readIntervalListWithNulls(@NotNull String s) {
-        return Readers.readListWithNulls(Interval::read).apply(s).get();
+        return Readers.readListWithNullsStrict(Interval::readStrict).apply(s).get();
     }
 }

@@ -4,7 +4,6 @@ import mho.wheels.io.Readers;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.NoRemoveIterable;
 import mho.wheels.ordering.comparators.LexComparator;
-import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
@@ -21,7 +20,7 @@ import static mho.wheels.testing.Testing.assertTrue;
  *
  * <p>This class is immutable.</p>
  */
-public class RationalPolynomialMatrix implements Comparable<RationalPolynomialMatrix> {
+public final class RationalPolynomialMatrix implements Comparable<RationalPolynomialMatrix> {
     /**
      * Used by {@link PolynomialMatrix#compareTo}
      */
@@ -1036,40 +1035,21 @@ public class RationalPolynomialMatrix implements Comparable<RationalPolynomialMa
      * @return the wrapped {@code RationalPolynomialMatrix} represented by {@code s}, or {@code empty} if {@code s} is
      * invalid.
      */
-    public static @NotNull Optional<RationalPolynomialMatrix> read(@NotNull String s) {
+    public static @NotNull Optional<RationalPolynomialMatrix> readStrict(@NotNull String s) {
         if (s.startsWith("[]#")) {
-            Optional<Integer> oWidth = Readers.readInteger(s.substring(3));
+            Optional<Integer> oWidth = Readers.readIntegerStrict(s.substring(3));
             if (!oWidth.isPresent()) return Optional.empty();
             int width = oWidth.get();
             if (width < 0) return Optional.empty();
             return Optional.of(new RationalPolynomialMatrix(Collections.emptyList(), width));
         } else {
-            Optional<List<RationalPolynomialVector>> ors = Readers.readList(RationalPolynomialVector::read).apply(s);
+            Optional<List<RationalPolynomialVector>> ors =
+                    Readers.readListStrict(RationalPolynomialVector::readStrict).apply(s);
             if (!ors.isPresent()) return Optional.empty();
             List<RationalPolynomialVector> rs = ors.get();
             if (rs.isEmpty() || !same(map(RationalPolynomialVector::dimension, rs))) return Optional.empty();
             return Optional.of(new RationalPolynomialMatrix(rs, rs.get(0).dimension()));
         }
-    }
-
-    /**
-     * Finds the first occurrence of a {@code RationalPolynomialMatrix} in a {@code String}. Returns the
-     * {@code RationalPolynomialMatrix} and the index at which it was found. Returns an empty {@code Optional} if no
-     * {@code RationalPolynomialMatrix} is found. Only {@code String}s which could have been emitted by
-     * {@link mho.qbar.objects.RationalPolynomialMatrix#toString} are recognized. The longest possible
-     * {@code RationalPolynomialMatrix} is parsed.
-     *
-     * <ul>
-     *  <li>{@code s} must be non-null.</li>
-     *  <li>The result is non-null. If it is non-empty, then neither of the {@code Pair}'s components is null, and the
-     *  second component is non-negative.</li>
-     * </ul>
-     *
-     * @param s the input {@code String}
-     * @return the first {@code RationalPolynomialMatrix} found in {@code s}, and the index at which it was found
-     */
-    public static @NotNull Optional<Pair<RationalPolynomialMatrix, Integer>> findIn(@NotNull String s) {
-        return Readers.genericFindIn(RationalPolynomialMatrix::read, " #*+,-/0123456789[]^x").apply(s);
     }
 
     /**

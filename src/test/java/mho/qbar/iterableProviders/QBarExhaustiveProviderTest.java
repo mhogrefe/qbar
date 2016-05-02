@@ -1,5 +1,6 @@
 package mho.qbar.iterableProviders;
 
+import mho.qbar.objects.Algebraic;
 import mho.qbar.objects.Interval;
 import mho.qbar.objects.Rational;
 import mho.qbar.objects.Variable;
@@ -49,7 +50,7 @@ public class QBarExhaustiveProviderTest {
     }
 
     private static void rangeUp_Rational_helper(@NotNull String a, @NotNull String output) {
-        simpleProviderHelper(QEP.rangeUp(Rational.read(a).get()), output);
+        simpleProviderHelper(QEP.rangeUp(Rational.readStrict(a).get()), output);
     }
 
     @Test
@@ -63,7 +64,7 @@ public class QBarExhaustiveProviderTest {
     }
 
     private static void rangeDown_Rational_helper(@NotNull String a, @NotNull String output) {
-        simpleProviderHelper(QEP.rangeDown(Rational.read(a).get()), output);
+        simpleProviderHelper(QEP.rangeDown(Rational.readStrict(a).get()), output);
     }
 
     @Test
@@ -77,7 +78,7 @@ public class QBarExhaustiveProviderTest {
     }
 
     private static void range_Rational_Rational_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        simpleProviderHelper(QEP.range(Rational.read(a).get(), Rational.read(b).get()), output);
+        simpleProviderHelper(QEP.range(Rational.readStrict(a).get(), Rational.readStrict(b).get()), output);
     }
 
     @Test
@@ -103,7 +104,7 @@ public class QBarExhaustiveProviderTest {
     }
 
     private static void rationalsIn_helper(@NotNull String a, @NotNull String output) {
-        simpleProviderHelper(QEP.rationalsIn(Interval.read(a).get()), output);
+        simpleProviderHelper(QEP.rationalsIn(Interval.readStrict(a).get()), output);
     }
 
     @Test
@@ -117,7 +118,7 @@ public class QBarExhaustiveProviderTest {
     }
 
     private static void rationalsNotIn_helper(@NotNull String a, @NotNull String output) {
-        simpleProviderHelper(QEP.rationalsNotIn(Interval.read(a).get()), output);
+        simpleProviderHelper(QEP.rationalsNotIn(Interval.readStrict(a).get()), output);
     }
 
     @Test
@@ -667,6 +668,53 @@ public class QBarExhaustiveProviderTest {
         positivePrimitivePolynomialsAtLeast_fail_helper(-2);
     }
 
+    private static void monicPolynomials_int_helper(int degree, @NotNull String output) {
+        simpleProviderHelper(QEP.monicPolynomials(degree), output);
+    }
+
+    private static void monicPolynomials_int_fail_helper(int degree) {
+        try {
+            QEP.monicPolynomials(degree);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testMonicPolynomials_int() {
+        monicPolynomials_int_helper(-1, "QBarExhaustiveProvider_monicPolynomials_int_i");
+        monicPolynomials_int_helper(0, "QBarExhaustiveProvider_monicPolynomials_int_ii");
+        monicPolynomials_int_helper(1, "QBarExhaustiveProvider_monicPolynomials_int_iii");
+        monicPolynomials_int_helper(2, "QBarExhaustiveProvider_monicPolynomials_int_iv");
+        monicPolynomials_int_helper(9, "QBarExhaustiveProvider_monicPolynomials_int_v");
+        monicPolynomials_int_fail_helper(-2);
+    }
+
+    @Test
+    public void testMonicPolynomials() {
+        simpleProviderHelper(QEP.monicPolynomials(), "QBarExhaustiveProvider_monicPolynomials");
+    }
+
+    private static void monicPolynomialsAtLeast_helper(int minDegree, @NotNull String output) {
+        simpleProviderHelper(QEP.monicPolynomialsAtLeast(minDegree), output);
+    }
+
+    private static void monicPolynomialsAtLeast_fail_helper(int minDegree) {
+        try {
+            QEP.monicPolynomialsAtLeast(minDegree);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testMonicPolynomialsAtLeast() {
+        monicPolynomialsAtLeast_helper(-1, "QBarExhaustiveProvider_monicPolynomialsAtLeast_i");
+        monicPolynomialsAtLeast_helper(0, "QBarExhaustiveProvider_monicPolynomialsAtLeast_ii");
+        monicPolynomialsAtLeast_helper(1, "QBarExhaustiveProvider_monicPolynomialsAtLeast_iii");
+        monicPolynomialsAtLeast_helper(2, "QBarExhaustiveProvider_monicPolynomialsAtLeast_iv");
+        monicPolynomialsAtLeast_helper(9, "QBarExhaustiveProvider_monicPolynomialsAtLeast_v");
+        monicPolynomialsAtLeast_fail_helper(-2);
+    }
+
     private static void squareFreePolynomials_int_helper(int degree, @NotNull String output) {
         simpleProviderHelper(QEP.squareFreePolynomials(degree), output);
     }
@@ -924,33 +972,33 @@ public class QBarExhaustiveProviderTest {
     }
 
     @Test
-    public void testExponentVectors() {
-        simpleProviderHelper(QEP.exponentVectors(), "QBarExhaustiveProvider_exponentVectors");
+    public void testMonomials() {
+        simpleProviderHelper(QEP.monomials(), "QBarExhaustiveProvider_monomials");
     }
 
-    private static void exponentVectors_List_Variable_helper(@NotNull String variables, @NotNull String output) {
-        simpleProviderHelper(QEP.exponentVectors(readVariableList(variables)), output);
+    private static void monomials_List_Variable_helper(@NotNull String variables, @NotNull String output) {
+        simpleProviderHelper(QEP.monomials(readVariableList(variables)), output);
     }
 
-    private static void exponentVectors_List_Variable_fail_helper(@NotNull String variables) {
+    private static void monomials_List_Variable_fail_helper(@NotNull String variables) {
         try {
-            QEP.exponentVectors(readVariableListWithNulls(variables));
+            QEP.monomials(readVariableListWithNulls(variables));
             fail();
         } catch (IllegalArgumentException | NullPointerException ignored) {}
     }
 
     @Test
-    public void testExponentVectors_List_Variable() {
-        exponentVectors_List_Variable_helper("[]", "QBarExhaustiveProvider_exponentVectors_List_Variable_i");
-        exponentVectors_List_Variable_helper("[a]", "QBarExhaustiveProvider_exponentVectors_List_Variable_ii");
-        exponentVectors_List_Variable_helper("[x]", "QBarExhaustiveProvider_exponentVectors_List_Variable_iii");
-        exponentVectors_List_Variable_helper("[ooo]", "QBarExhaustiveProvider_exponentVectors_List_Variable_iv");
-        exponentVectors_List_Variable_helper("[x, y]", "QBarExhaustiveProvider_exponentVectors_List_Variable_v");
-        exponentVectors_List_Variable_helper("[x, y, z]", "QBarExhaustiveProvider_exponentVectors_List_Variable_vi");
+    public void testMonomials_List_Variable() {
+        monomials_List_Variable_helper("[]", "QBarExhaustiveProvider_monomials_List_Variable_i");
+        monomials_List_Variable_helper("[a]", "QBarExhaustiveProvider_monomials_List_Variable_ii");
+        monomials_List_Variable_helper("[x]", "QBarExhaustiveProvider_monomials_List_Variable_iii");
+        monomials_List_Variable_helper("[ooo]", "QBarExhaustiveProvider_monomials_List_Variable_iv");
+        monomials_List_Variable_helper("[x, y]", "QBarExhaustiveProvider_monomials_List_Variable_v");
+        monomials_List_Variable_helper("[x, y, z]", "QBarExhaustiveProvider_monomials_List_Variable_vi");
 
-        exponentVectors_List_Variable_fail_helper("[a, a]");
-        exponentVectors_List_Variable_fail_helper("[b, a]");
-        exponentVectors_List_Variable_fail_helper("[a, null]");
+        monomials_List_Variable_fail_helper("[a, a]");
+        monomials_List_Variable_fail_helper("[b, a]");
+        monomials_List_Variable_fail_helper("[a, null]");
     }
 
     @Test
@@ -1148,6 +1196,510 @@ public class QBarExhaustiveProviderTest {
                 "QBarExhaustiveProvider_nonNegativeAlgebraicsLessThanOne");
     }
 
+    private static void rangeUp_int_Algebraic_helper(int degree, @NotNull String a, @NotNull String output) {
+        simpleProviderHelper(QEP.rangeUp(degree, Algebraic.readStrict(a).get()), output);
+    }
+
+    private static void rangeUp_int_Algebraic_fail_helper(int degree, @NotNull String a) {
+        try {
+            QEP.rangeUp(degree, Algebraic.readStrict(a).get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testRangeUp_int_Algebraic() {
+        rangeUp_int_Algebraic_helper(1, "0", "QBarExhaustiveProvider_rangeUp_int_Algebraic_i");
+        rangeUp_int_Algebraic_helper(2, "0", "QBarExhaustiveProvider_rangeUp_int_Algebraic_ii");
+        rangeUp_int_Algebraic_helper(3, "0", "QBarExhaustiveProvider_rangeUp_int_Algebraic_iii");
+
+        rangeUp_int_Algebraic_helper(1, "1", "QBarExhaustiveProvider_rangeUp_int_Algebraic_iv");
+        rangeUp_int_Algebraic_helper(2, "1", "QBarExhaustiveProvider_rangeUp_int_Algebraic_v");
+        rangeUp_int_Algebraic_helper(3, "1", "QBarExhaustiveProvider_rangeUp_int_Algebraic_vi");
+
+        rangeUp_int_Algebraic_helper(1, "1/2", "QBarExhaustiveProvider_rangeUp_int_Algebraic_vii");
+        rangeUp_int_Algebraic_helper(2, "1/2", "QBarExhaustiveProvider_rangeUp_int_Algebraic_viii");
+        rangeUp_int_Algebraic_helper(3, "1/2", "QBarExhaustiveProvider_rangeUp_int_Algebraic_ix");
+
+        rangeUp_int_Algebraic_helper(1, "-4/3", "QBarExhaustiveProvider_rangeUp_int_Algebraic_x");
+        rangeUp_int_Algebraic_helper(2, "-4/3", "QBarExhaustiveProvider_rangeUp_int_Algebraic_xi");
+        rangeUp_int_Algebraic_helper(3, "-4/3", "QBarExhaustiveProvider_rangeUp_int_Algebraic_xii");
+
+        rangeUp_int_Algebraic_helper(1, "sqrt(2)", "QBarExhaustiveProvider_rangeUp_int_Algebraic_xiii");
+        rangeUp_int_Algebraic_helper(2, "sqrt(2)", "QBarExhaustiveProvider_rangeUp_int_Algebraic_xiv");
+        rangeUp_int_Algebraic_helper(3, "sqrt(2)", "QBarExhaustiveProvider_rangeUp_int_Algebraic_xv");
+
+        rangeUp_int_Algebraic_helper(1, "-sqrt(2)", "QBarExhaustiveProvider_rangeUp_int_Algebraic_xvi");
+        rangeUp_int_Algebraic_helper(2, "-sqrt(2)", "QBarExhaustiveProvider_rangeUp_int_Algebraic_xvii");
+        rangeUp_int_Algebraic_helper(3, "-sqrt(2)", "QBarExhaustiveProvider_rangeUp_int_Algebraic_xviii");
+
+        rangeUp_int_Algebraic_helper(1, "(1+sqrt(5))/2", "QBarExhaustiveProvider_rangeUp_int_Algebraic_xix");
+        rangeUp_int_Algebraic_helper(2, "(1+sqrt(5))/2", "QBarExhaustiveProvider_rangeUp_int_Algebraic_xx");
+        rangeUp_int_Algebraic_helper(3, "(1+sqrt(5))/2", "QBarExhaustiveProvider_rangeUp_int_Algebraic_xxi");
+
+        rangeUp_int_Algebraic_helper(1, "root 0 of x^5-x-1", "QBarExhaustiveProvider_rangeUp_int_Algebraic_xxii");
+        rangeUp_int_Algebraic_helper(2, "root 0 of x^5-x-1", "QBarExhaustiveProvider_rangeUp_int_Algebraic_xxiii");
+        rangeUp_int_Algebraic_helper(3, "root 0 of x^5-x-1", "QBarExhaustiveProvider_rangeUp_int_Algebraic_xxiv");
+
+        rangeUp_int_Algebraic_fail_helper(0, "1/2");
+        rangeUp_int_Algebraic_fail_helper(-1, "1/2");
+        rangeUp_int_Algebraic_fail_helper(0, "sqrt(2)");
+        rangeUp_int_Algebraic_fail_helper(-1, "sqrt(2)");
+    }
+
+    private static void rangeUp_Algebraic_helper(@NotNull String a, @NotNull String output) {
+        simpleProviderHelper(QEP.rangeUp(Algebraic.readStrict(a).get()), output);
+    }
+
+    @Test
+    public void testRangeUp_Algebraic() {
+        rangeUp_Algebraic_helper("0", "QBarExhaustiveProvider_rangeUp_Algebraic_i");
+        rangeUp_Algebraic_helper("1", "QBarExhaustiveProvider_rangeUp_Algebraic_ii");
+        rangeUp_Algebraic_helper("1/2", "QBarExhaustiveProvider_rangeUp_Algebraic_iii");
+        rangeUp_Algebraic_helper("-4/3", "QBarExhaustiveProvider_rangeUp_Algebraic_iv");
+        rangeUp_Algebraic_helper("sqrt(2)", "QBarExhaustiveProvider_rangeUp_Algebraic_v");
+        rangeUp_Algebraic_helper("-sqrt(2)", "QBarExhaustiveProvider_rangeUp_Algebraic_vi");
+        rangeUp_Algebraic_helper("(1+sqrt(5))/2", "QBarExhaustiveProvider_rangeUp_Algebraic_vii");
+        rangeUp_Algebraic_helper("root 0 of x^5-x-1", "QBarExhaustiveProvider_rangeUp_Algebraic_viii");
+    }
+
+    private static void rangeDown_int_Algebraic_helper(int degree, @NotNull String a, @NotNull String output) {
+        simpleProviderHelper(QEP.rangeDown(degree, Algebraic.readStrict(a).get()), output);
+    }
+
+    private static void rangeDown_int_Algebraic_fail_helper(int degree, @NotNull String a) {
+        try {
+            QEP.rangeDown(degree, Algebraic.readStrict(a).get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testRangeDown_int_Algebraic() {
+        rangeDown_int_Algebraic_helper(1, "0", "QBarExhaustiveProvider_rangeDown_int_Algebraic_i");
+        rangeDown_int_Algebraic_helper(2, "0", "QBarExhaustiveProvider_rangeDown_int_Algebraic_ii");
+        rangeDown_int_Algebraic_helper(3, "0", "QBarExhaustiveProvider_rangeDown_int_Algebraic_iii");
+
+        rangeDown_int_Algebraic_helper(1, "1", "QBarExhaustiveProvider_rangeDown_int_Algebraic_iv");
+        rangeDown_int_Algebraic_helper(2, "1", "QBarExhaustiveProvider_rangeDown_int_Algebraic_v");
+        rangeDown_int_Algebraic_helper(3, "1", "QBarExhaustiveProvider_rangeDown_int_Algebraic_vi");
+
+        rangeDown_int_Algebraic_helper(1, "1/2", "QBarExhaustiveProvider_rangeDown_int_Algebraic_vii");
+        rangeDown_int_Algebraic_helper(2, "1/2", "QBarExhaustiveProvider_rangeDown_int_Algebraic_viii");
+        rangeDown_int_Algebraic_helper(3, "1/2", "QBarExhaustiveProvider_rangeDown_int_Algebraic_ix");
+
+        rangeDown_int_Algebraic_helper(1, "-4/3", "QBarExhaustiveProvider_rangeDown_int_Algebraic_x");
+        rangeDown_int_Algebraic_helper(2, "-4/3", "QBarExhaustiveProvider_rangeDown_int_Algebraic_xi");
+        rangeDown_int_Algebraic_helper(3, "-4/3", "QBarExhaustiveProvider_rangeDown_int_Algebraic_xii");
+
+        rangeDown_int_Algebraic_helper(1, "sqrt(2)", "QBarExhaustiveProvider_rangeDown_int_Algebraic_xiii");
+        rangeDown_int_Algebraic_helper(2, "sqrt(2)", "QBarExhaustiveProvider_rangeDown_int_Algebraic_xiv");
+        rangeDown_int_Algebraic_helper(3, "sqrt(2)", "QBarExhaustiveProvider_rangeDown_int_Algebraic_xv");
+
+        rangeDown_int_Algebraic_helper(1, "-sqrt(2)", "QBarExhaustiveProvider_rangeDown_int_Algebraic_xvi");
+        rangeDown_int_Algebraic_helper(2, "-sqrt(2)", "QBarExhaustiveProvider_rangeDown_int_Algebraic_xvii");
+        rangeDown_int_Algebraic_helper(3, "-sqrt(2)", "QBarExhaustiveProvider_rangeDown_int_Algebraic_xviii");
+
+        rangeDown_int_Algebraic_helper(1, "(1+sqrt(5))/2", "QBarExhaustiveProvider_rangeDown_int_Algebraic_xix");
+        rangeDown_int_Algebraic_helper(2, "(1+sqrt(5))/2", "QBarExhaustiveProvider_rangeDown_int_Algebraic_xx");
+        rangeDown_int_Algebraic_helper(3, "(1+sqrt(5))/2", "QBarExhaustiveProvider_rangeDown_int_Algebraic_xxi");
+
+        rangeDown_int_Algebraic_helper(1, "root 0 of x^5-x-1", "QBarExhaustiveProvider_rangeDown_int_Algebraic_xxii");
+        rangeDown_int_Algebraic_helper(2, "root 0 of x^5-x-1", "QBarExhaustiveProvider_rangeDown_int_Algebraic_xxiii");
+        rangeDown_int_Algebraic_helper(3, "root 0 of x^5-x-1", "QBarExhaustiveProvider_rangeDown_int_Algebraic_xxiv");
+
+        rangeDown_int_Algebraic_fail_helper(0, "1/2");
+        rangeDown_int_Algebraic_fail_helper(-1, "1/2");
+        rangeDown_int_Algebraic_fail_helper(0, "sqrt(2)");
+        rangeDown_int_Algebraic_fail_helper(-1, "sqrt(2)");
+    }
+
+    private static void rangeDown_Algebraic_helper(@NotNull String a, @NotNull String output) {
+        simpleProviderHelper(QEP.rangeDown(Algebraic.readStrict(a).get()), output);
+    }
+
+    @Test
+    public void testRangeDown_Algebraic() {
+        rangeDown_Algebraic_helper("0", "QBarExhaustiveProvider_rangeDown_Algebraic_i");
+        rangeDown_Algebraic_helper("1", "QBarExhaustiveProvider_rangeDown_Algebraic_ii");
+        rangeDown_Algebraic_helper("1/2", "QBarExhaustiveProvider_rangeDown_Algebraic_iii");
+        rangeDown_Algebraic_helper("-4/3", "QBarExhaustiveProvider_rangeDown_Algebraic_iv");
+        rangeDown_Algebraic_helper("sqrt(2)", "QBarExhaustiveProvider_rangeDown_Algebraic_v");
+        rangeDown_Algebraic_helper("-sqrt(2)", "QBarExhaustiveProvider_rangeDown_Algebraic_vi");
+        rangeDown_Algebraic_helper("(1+sqrt(5))/2", "QBarExhaustiveProvider_rangeDown_Algebraic_vii");
+        rangeDown_Algebraic_helper("root 0 of x^5-x-1", "QBarExhaustiveProvider_rangeDown_Algebraic_viii");
+    }
+
+    private static void range_int_Algebraic_Algebraic_helper(
+            int degree,
+            @NotNull String a,
+            @NotNull String b,
+            @NotNull String output
+    ) {
+        simpleProviderHelper(QEP.range(degree, Algebraic.readStrict(a).get(), Algebraic.readStrict(b).get()), output);
+    }
+
+    private static void range_int_Algebraic_Algebraic_fail_helper(int degree, @NotNull String a, @NotNull String b) {
+        try {
+            QEP.range(degree, Algebraic.readStrict(a).get(), Algebraic.readStrict(b).get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testRange_int_Algebraic_Algebraic() {
+        range_int_Algebraic_Algebraic_helper(1, "0", "0", "QBarExhaustiveProvider_int_range_Algebraic_Algebraic_i");
+        range_int_Algebraic_Algebraic_helper(2, "0", "0", "QBarExhaustiveProvider_int_range_Algebraic_Algebraic_ii");
+        range_int_Algebraic_Algebraic_helper(3, "0", "0", "QBarExhaustiveProvider_int_range_Algebraic_Algebraic_iii");
+
+        range_int_Algebraic_Algebraic_helper(1, "1", "1", "QBarExhaustiveProvider_int_range_Algebraic_Algebraic_iv");
+        range_int_Algebraic_Algebraic_helper(2, "1", "1", "QBarExhaustiveProvider_int_range_Algebraic_Algebraic_v");
+        range_int_Algebraic_Algebraic_helper(3, "1", "1", "QBarExhaustiveProvider_int_range_Algebraic_Algebraic_vi");
+
+        range_int_Algebraic_Algebraic_helper(
+                1,
+                "sqrt(2)",
+                "sqrt(2)",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_vii"
+        );
+        range_int_Algebraic_Algebraic_helper(
+                1,
+                "sqrt(2)",
+                "sqrt(2)",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_viii"
+        );
+        range_int_Algebraic_Algebraic_helper(
+                1,
+                "sqrt(2)",
+                "sqrt(2)",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_ix"
+        );
+
+        range_int_Algebraic_Algebraic_helper(1, "1", "2", "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_x");
+        range_int_Algebraic_Algebraic_helper(2, "1", "2", "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xi");
+        range_int_Algebraic_Algebraic_helper(3, "1", "2", "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xii");
+
+        range_int_Algebraic_Algebraic_helper(
+                1,
+                "-4/3",
+                "1/2",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xiii"
+        );
+        range_int_Algebraic_Algebraic_helper(
+                2,
+                "-4/3",
+                "1/2",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xiv"
+        );
+        range_int_Algebraic_Algebraic_helper(
+                3,
+                "-4/3",
+                "1/2",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xv"
+        );
+
+        range_int_Algebraic_Algebraic_helper(
+                1,
+                "1",
+                "sqrt(2)",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xvi"
+        );
+        range_int_Algebraic_Algebraic_helper(
+                2,
+                "1",
+                "sqrt(2)",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xvii"
+        );
+        range_int_Algebraic_Algebraic_helper(
+                3,
+                "1",
+                "sqrt(2)",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xviii"
+        );
+
+        range_int_Algebraic_Algebraic_helper(
+                1,
+                "sqrt(2)",
+                "sqrt(3)",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xix"
+        );
+        range_int_Algebraic_Algebraic_helper(
+                2,
+                "sqrt(2)",
+                "sqrt(3)",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xx"
+        );
+        range_int_Algebraic_Algebraic_helper(
+                3,
+                "sqrt(2)",
+                "sqrt(3)",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xxi"
+        );
+
+        range_int_Algebraic_Algebraic_helper(
+                1,
+                "0",
+                "256",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xxii"
+        );
+        range_int_Algebraic_Algebraic_helper(
+                2,
+                "0",
+                "256",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xxiii"
+        );
+        range_int_Algebraic_Algebraic_helper(
+                3,
+                "0",
+                "256",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xxiv"
+        );
+
+        range_int_Algebraic_Algebraic_helper(
+                1,
+                "sqrt(2)",
+                "6369051672525773/4503599627370496",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xxv"
+        );
+        range_int_Algebraic_Algebraic_helper(
+                2,
+                "sqrt(2)",
+                "6369051672525773/4503599627370496",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xxvi"
+        );
+        range_int_Algebraic_Algebraic_helper(
+                3,
+                "sqrt(2)",
+                "6369051672525773/4503599627370496",
+                "QBarExhaustiveProvider_range_int_Algebraic_Algebraic_xxvii"
+        );
+
+        range_int_Algebraic_Algebraic_fail_helper(0, "0", "1");
+        range_int_Algebraic_Algebraic_fail_helper(-1, "0", "1");
+        range_int_Algebraic_Algebraic_fail_helper(1, "1", "0");
+        range_int_Algebraic_Algebraic_fail_helper(1, "6369051672525773/4503599627370496", "sqrt(2)");
+    }
+
+    private static void range_Algebraic_Algebraic_helper(
+            @NotNull String a,
+            @NotNull String b,
+            @NotNull String output
+    ) {
+        simpleProviderHelper(QEP.range(Algebraic.readStrict(a).get(), Algebraic.readStrict(b).get()), output);
+    }
+
+    private static void range_Algebraic_Algebraic_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            QEP.range(Algebraic.readStrict(a).get(), Algebraic.readStrict(b).get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testRange_Algebraic_Algebraic() {
+        range_Algebraic_Algebraic_helper("0", "0", "QBarExhaustiveProvider_range_Algebraic_Algebraic_i");
+        range_Algebraic_Algebraic_helper("1", "1", "QBarExhaustiveProvider_range_Algebraic_Algebraic_ii");
+        range_Algebraic_Algebraic_helper("sqrt(2)", "sqrt(2)", "QBarExhaustiveProvider_range_Algebraic_Algebraic_iii");
+        range_Algebraic_Algebraic_helper("1", "2", "QBarExhaustiveProvider_range_Algebraic_Algebraic_iv");
+        range_Algebraic_Algebraic_helper("-4/3", "1/2", "QBarExhaustiveProvider_range_Algebraic_Algebraic_v");
+        range_Algebraic_Algebraic_helper("1", "sqrt(2)", "QBarExhaustiveProvider_range_Algebraic_Algebraic_vi");
+        range_Algebraic_Algebraic_helper("sqrt(2)", "sqrt(3)", "QBarExhaustiveProvider_range_Algebraic_Algebraic_vii");
+        range_Algebraic_Algebraic_helper("0", "256", "QBarExhaustiveProvider_range_Algebraic_Algebraic_viii");
+        range_Algebraic_Algebraic_helper(
+                "sqrt(2)",
+                "6369051672525773/4503599627370496",
+                "QBarExhaustiveProvider_range_Algebraic_Algebraic_ix"
+        );
+
+        range_Algebraic_Algebraic_fail_helper("1", "0");
+        range_Algebraic_Algebraic_fail_helper("6369051672525773/4503599627370496", "sqrt(2)");
+    }
+
+    private static void algebraicsIn_int_Interval_helper(int degree, @NotNull String a, @NotNull String output) {
+        simpleProviderHelper(QEP.algebraicsIn(degree, Interval.readStrict(a).get()), output);
+    }
+
+    private static void algebraics_int_Interval_fail_helper(int degree, @NotNull String a) {
+        try {
+            QEP.algebraicsIn(degree, Interval.readStrict(a).get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testAlgebraicsIn_int_Interval() {
+        algebraicsIn_int_Interval_helper(1, "[0, 0]", "QBarExhaustiveProvider_algebraicsIn_int_Interval_i");
+        algebraicsIn_int_Interval_helper(2, "[0, 0]", "QBarExhaustiveProvider_algebraicsIn_int_Interval_ii");
+        algebraicsIn_int_Interval_helper(3, "[0, 0]", "QBarExhaustiveProvider_algebraicsIn_int_Interval_iii");
+
+        algebraicsIn_int_Interval_helper(1, "[1, 1]", "QBarExhaustiveProvider_algebraicsIn_int_Interval_iv");
+        algebraicsIn_int_Interval_helper(2, "[1, 1]", "QBarExhaustiveProvider_algebraicsIn_int_Interval_v");
+        algebraicsIn_int_Interval_helper(3, "[1, 1]", "QBarExhaustiveProvider_algebraicsIn_int_Interval_vi");
+
+        algebraicsIn_int_Interval_helper(
+                1,
+                "(-Infinity, Infinity)",
+                "QBarExhaustiveProvider_algebraicsIn_int_Interval_vii"
+        );
+        algebraicsIn_int_Interval_helper(
+                2,
+                "(-Infinity, Infinity)",
+                "QBarExhaustiveProvider_algebraicsIn_int_Interval_viii"
+        );
+        algebraicsIn_int_Interval_helper(
+                3,
+                "(-Infinity, Infinity)",
+                "QBarExhaustiveProvider_algebraicsIn_int_Interval_ix"
+        );
+
+        algebraicsIn_int_Interval_helper(1, "[1, 4]", "QBarExhaustiveProvider_algebraicsIn_int_Interval_x");
+        algebraicsIn_int_Interval_helper(2, "[1, 4]", "QBarExhaustiveProvider_algebraicsIn_int_Interval_xi");
+        algebraicsIn_int_Interval_helper(3, "[1, 4]", "QBarExhaustiveProvider_algebraicsIn_int_Interval_xii");
+
+        algebraicsIn_int_Interval_helper(
+                1,
+                "(-Infinity, 1/2]",
+                "QBarExhaustiveProvider_algebraicsIn_int_Interval_xiii"
+        );
+        algebraicsIn_int_Interval_helper(
+                2,
+                "(-Infinity, 1/2]",
+                "QBarExhaustiveProvider_algebraicsIn_int_Interval_xiv"
+        );
+        algebraicsIn_int_Interval_helper(
+                3,
+                "(-Infinity, 1/2]",
+                "QBarExhaustiveProvider_algebraicsIn_int_Interval_xv"
+        );
+
+        algebraicsIn_int_Interval_helper(
+                1,
+                "[1/2, Infinity)",
+                "QBarExhaustiveProvider_algebraicsIn_int_Interval_xvi"
+        );
+        algebraicsIn_int_Interval_helper(
+                2,
+                "[1/2, Infinity)",
+                "QBarExhaustiveProvider_algebraicsIn_int_Interval_xvii"
+        );
+        algebraicsIn_int_Interval_helper(
+                3,
+                "[1/2, Infinity)",
+                "QBarExhaustiveProvider_algebraicsIn_int_Interval_xviii"
+        );
+
+        algebraics_int_Interval_fail_helper(0, "[0, 1]");
+        algebraics_int_Interval_fail_helper(-1, "[0, 1]");
+    }
+
+    private static void algebraicsIn_Interval_helper(@NotNull String a, @NotNull String output) {
+        simpleProviderHelper(QEP.algebraicsIn(Interval.readStrict(a).get()), output);
+    }
+
+    @Test
+    public void testAlgebraicsIn_Interval() {
+        algebraicsIn_Interval_helper("[0, 0]", "QBarExhaustiveProvider_algebraicsIn_Interval_i");
+        algebraicsIn_Interval_helper("[1, 1]", "QBarExhaustiveProvider_algebraicsIn_Interval_ii");
+        algebraicsIn_Interval_helper("(-Infinity, Infinity)", "QBarExhaustiveProvider_algebraicsIn_Interval_iii");
+        algebraicsIn_Interval_helper("[1, 4]", "QBarExhaustiveProvider_algebraicsIn_Interval_iv");
+        algebraicsIn_Interval_helper("(-Infinity, 1/2]", "QBarExhaustiveProvider_algebraicsIn_Interval_v");
+        algebraicsIn_Interval_helper("[1/2, Infinity)", "QBarExhaustiveProvider_algebraicsIn_Interval_vi");
+    }
+
+    private static void algebraicsNotIn_int_Interval_helper(int degree, @NotNull String a, @NotNull String output) {
+        simpleProviderHelper(QEP.algebraicsNotIn(degree, Interval.readStrict(a).get()), output);
+    }
+
+    private static void algebraicsNotIn_int_Interval_fail_helper(int degree, @NotNull String a) {
+        try {
+            QEP.algebraicsNotIn(degree, Interval.readStrict(a).get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testAlgebraicsNotIn_int_Interval() {
+        algebraicsNotIn_int_Interval_helper(1, "[0, 0]", "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_i");
+        algebraicsNotIn_int_Interval_helper(2, "[0, 0]", "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_ii");
+        algebraicsNotIn_int_Interval_helper(3, "[0, 0]", "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_iii");
+
+        algebraicsNotIn_int_Interval_helper(1, "[1, 1]", "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_iv");
+        algebraicsNotIn_int_Interval_helper(2, "[1, 1]", "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_v");
+        algebraicsNotIn_int_Interval_helper(3, "[1, 1]", "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_vi");
+
+        algebraicsNotIn_int_Interval_helper(
+                1,
+                "(-Infinity, Infinity)",
+                "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_vii"
+        );
+        algebraicsNotIn_int_Interval_helper(
+                2,
+                "(-Infinity, Infinity)",
+                "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_viii"
+        );
+        algebraicsNotIn_int_Interval_helper(
+                3,
+                "(-Infinity, Infinity)",
+                "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_ix"
+        );
+
+        algebraicsNotIn_int_Interval_helper(1, "[1, 4]", "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_x");
+        algebraicsNotIn_int_Interval_helper(2, "[1, 4]", "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_xi");
+        algebraicsNotIn_int_Interval_helper(3, "[1, 4]", "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_xii");
+
+        algebraicsNotIn_int_Interval_helper(
+                1,
+                "(-Infinity, 1/2]",
+                "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_xiii"
+        );
+        algebraicsNotIn_int_Interval_helper(
+                2,
+                "(-Infinity, 1/2]",
+                "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_xiv"
+        );
+        algebraicsNotIn_int_Interval_helper(
+                3,
+                "(-Infinity, 1/2]",
+                "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_xv"
+        );
+
+        algebraicsNotIn_int_Interval_helper(
+                1,
+                "[1/2, Infinity)",
+                "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_xvi"
+        );
+        algebraicsNotIn_int_Interval_helper(
+                2,
+                "[1/2, Infinity)",
+                "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_xvii"
+        );
+        algebraicsNotIn_int_Interval_helper(
+                3,
+                "[1/2, Infinity)",
+                "QBarExhaustiveProvider_algebraicsNotIn_int_Interval_xviii"
+        );
+
+        algebraicsNotIn_int_Interval_fail_helper(0, "[0, 1]");
+        algebraicsNotIn_int_Interval_fail_helper(-1, "[0, 1]");
+    }
+
+    private static void algebraicsNotIn_Interval_helper(@NotNull String a, @NotNull String output) {
+        simpleProviderHelper(QEP.algebraicsNotIn(Interval.readStrict(a).get()), output);
+    }
+
+    @Test
+    public void testAlgebraicsNotIn_Interval() {
+        algebraicsNotIn_Interval_helper("[0, 0]", "QBarExhaustiveProvider_algebraicsNotIn_Interval_i");
+        algebraicsNotIn_Interval_helper("[1, 1]", "QBarExhaustiveProvider_algebraicsNotIn_Interval_ii");
+        algebraicsNotIn_Interval_helper(
+                "(-Infinity, Infinity)",
+                "QBarExhaustiveProvider_algebraicsNotIn_Interval_iii"
+        );
+        algebraicsNotIn_Interval_helper("[1, 4]", "QBarExhaustiveProvider_algebraicsNotIn_Interval_iv");
+        algebraicsNotIn_Interval_helper("(-Infinity, 1/2]", "QBarExhaustiveProvider_algebraicsNotIn_Interval_v");
+        algebraicsNotIn_Interval_helper("[1/2, Infinity)", "QBarExhaustiveProvider_algebraicsNotIn_Interval_vi");
+    }
+
     @Test
     public void testEquals() {
         //noinspection EqualsWithItself
@@ -1169,10 +1721,10 @@ public class QBarExhaustiveProviderTest {
     }
 
     private static @NotNull List<Variable> readVariableList(@NotNull String s) {
-        return Readers.readList(Variable::read).apply(s).get();
+        return Readers.readListStrict(Variable::readStrict).apply(s).get();
     }
 
     private static @NotNull List<Variable> readVariableListWithNulls(@NotNull String s) {
-        return Readers.readListWithNulls(Variable::read).apply(s).get();
+        return Readers.readListWithNullsStrict(Variable::readStrict).apply(s).get();
     }
 }

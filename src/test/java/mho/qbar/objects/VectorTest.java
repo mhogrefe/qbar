@@ -1,7 +1,6 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
-import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -23,7 +22,7 @@ public class VectorTest {
     }
 
     private static void iterator_helper(@NotNull String input) {
-        aeq(toList(read(input).get()), input);
+        aeq(toList(readStrict(input).get()), input);
     }
 
     @Test
@@ -34,7 +33,7 @@ public class VectorTest {
     }
 
     private static void toRationalVector_helper(@NotNull String input) {
-        aeq(read(input).get().toRationalVector(), input);
+        aeq(readStrict(input).get().toRationalVector(), input);
     }
 
     @Test
@@ -45,12 +44,12 @@ public class VectorTest {
     }
 
     private static void get_helper(@NotNull String input, int i, @NotNull String output) {
-        aeq(read(input).get().get(i), output);
+        aeq(readStrict(input).get().get(i), output);
     }
 
     private static void get_fail_helper(@NotNull String input, int i) {
         try {
-            read(input).get().get(i);
+            readStrict(input).get().get(i);
             fail();
         } catch (IndexOutOfBoundsException ignored) {}
     }
@@ -85,7 +84,7 @@ public class VectorTest {
     }
 
     private static void of_BigInteger_helper(@NotNull String input, @NotNull String output) {
-        aeq(of(Readers.readBigInteger(input).get()), output);
+        aeq(of(Readers.readBigIntegerStrict(input).get()), output);
     }
 
     @Test
@@ -96,7 +95,7 @@ public class VectorTest {
     }
 
     private static void maxCoordinateBitLength_helper(@NotNull String input, int output) {
-        aeq(read(input).get().maxCoordinateBitLength(), output);
+        aeq(readStrict(input).get().maxCoordinateBitLength(), output);
     }
 
     @Test
@@ -108,7 +107,7 @@ public class VectorTest {
     }
 
     private static void dimension_helper(@NotNull String input, int output) {
-        aeq(read(input).get().dimension(), output);
+        aeq(readStrict(input).get().dimension(), output);
     }
 
     @Test
@@ -119,7 +118,7 @@ public class VectorTest {
     }
 
     private static void testIsZero(@NotNull String input, boolean output) {
-        aeq(read(input).get().isZero(), output);
+        aeq(readStrict(input).get().isZero(), output);
     }
 
     @Test
@@ -176,12 +175,12 @@ public class VectorTest {
     }
 
     private static void add_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().add(read(b).get()), output);
+        aeq(readStrict(a).get().add(readStrict(b).get()), output);
     }
 
     private static void add_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().add(read(b).get());
+            readStrict(a).get().add(readStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -199,7 +198,7 @@ public class VectorTest {
     }
 
     private static void negate_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().negate(), output);
+        aeq(readStrict(input).get().negate(), output);
     }
 
     @Test
@@ -210,12 +209,12 @@ public class VectorTest {
     }
 
     private static void subtract_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().subtract(read(b).get()), output);
+        aeq(readStrict(a).get().subtract(readStrict(b).get()), output);
     }
 
     private static void subtract_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().subtract(read(b).get());
+            readStrict(a).get().subtract(readStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -234,7 +233,7 @@ public class VectorTest {
     }
 
     private static void multiply_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().multiply(Readers.readBigInteger(b).get()), output);
+        aeq(readStrict(a).get().multiply(Readers.readBigIntegerStrict(b).get()), output);
     }
 
     @Test
@@ -253,7 +252,7 @@ public class VectorTest {
     }
 
     private static void multiply_int_helper(@NotNull String a, int b, @NotNull String output) {
-        aeq(read(a).get().multiply(b), output);
+        aeq(readStrict(a).get().multiply(b), output);
     }
 
     @Test
@@ -272,12 +271,12 @@ public class VectorTest {
     }
 
     private static void shiftLeft_helper(@NotNull String a, int bits, @NotNull String output) {
-        aeq(read(a).get().shiftLeft(bits), output);
+        aeq(readStrict(a).get().shiftLeft(bits), output);
     }
 
     private static void shiftLeft_fail_helper(@NotNull String a, int bits) {
         try {
-            read(a).get().shiftLeft(bits);
+            readStrict(a).get().shiftLeft(bits);
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -362,12 +361,12 @@ public class VectorTest {
     }
 
     private static void dot_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().dot(read(b).get()), output);
+        aeq(readStrict(a).get().dot(readStrict(b).get()), output);
     }
 
     private static void dot_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().dot(read(b).get());
+            readStrict(a).get().dot(readStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -385,12 +384,12 @@ public class VectorTest {
     }
 
     private static void rightAngleCompare_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().rightAngleCompare(read(b).get()), output);
+        aeq(readStrict(a).get().rightAngleCompare(readStrict(b).get()), output);
     }
 
     private static void rightAngleCompare_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().rightAngleCompare(read(b).get());
+            readStrict(a).get().rightAngleCompare(readStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -412,7 +411,7 @@ public class VectorTest {
     }
 
     private static void squaredLength_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().squaredLength(), output);
+        aeq(readStrict(input).get().squaredLength(), output);
     }
 
     @Test
@@ -426,11 +425,11 @@ public class VectorTest {
     }
 
     private static void pivot_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().pivot().get(), output);
+        aeq(readStrict(input).get().pivot().get(), output);
     }
 
     private static void pivot_empty_helper(@NotNull String input) {
-        assertFalse(read(input).get().pivot().isPresent());
+        assertFalse(readStrict(input).get().pivot().isPresent());
     }
 
     @Test
@@ -445,7 +444,7 @@ public class VectorTest {
     }
 
     private static void isReduced_helper(@NotNull String input, boolean output) {
-        aeq(read(input).get().isReduced(), output);
+        aeq(readStrict(input).get().isReduced(), output);
     }
 
     @Test
@@ -461,7 +460,7 @@ public class VectorTest {
     }
 
     private static void isPrimitive_helper(@NotNull String input, boolean output) {
-        aeq(read(input).get().isPrimitive(), output);
+        aeq(readStrict(input).get().isPrimitive(), output);
     }
 
     @Test
@@ -481,7 +480,7 @@ public class VectorTest {
     }
 
     private static void makePrimitive_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().makePrimitive(), output);
+        aeq(readStrict(input).get().makePrimitive(), output);
     }
 
     @Test
@@ -509,7 +508,7 @@ public class VectorTest {
     }
 
     private static void hashCode_helper(@NotNull String input, int hashCode) {
-        aeq(read(input).get().hashCode(), hashCode);
+        aeq(readStrict(input).get().hashCode(), hashCode);
     }
 
     @Test
@@ -525,64 +524,42 @@ public class VectorTest {
         testCompareToHelper(readVectorList("[[], [2], [5, -4, 23], [5, 4, 23]]"));
     }
 
-    private static void read_helper(@NotNull String input) {
-        aeq(read(input).get(), input);
+    private static void readStrict_helper(@NotNull String input) {
+        aeq(readStrict(input).get(), input);
     }
 
-    private static void read_fail_helper(@NotNull String input) {
-        assertFalse(read(input).isPresent());
-    }
-
-    @Test
-    public void testRead() {
-        read_helper("[]");
-        read_helper("[2]");
-        read_helper("[0, -23, 7]");
-        read_fail_helper("");
-        read_fail_helper("[ 1]");
-        read_fail_helper("[1/3, 1/2]");
-        read_fail_helper("[4, -5/3]");
-        read_fail_helper("hello");
-        read_fail_helper("][");
-        read_fail_helper("1, 3");
-        read_fail_helper("vfbdb ds");
-    }
-
-    private static void findIn_helper(@NotNull String input, @NotNull String output, int index) {
-        Pair<Vector, Integer> result = findIn(input).get();
-        aeq(result.a, output);
-        aeq(result.b, index);
-    }
-
-    private static void findIn_fail_helper(@NotNull String input) {
-        assertFalse(findIn(input).isPresent());
+    private static void readStrict_fail_helper(@NotNull String input) {
+        assertFalse(readStrict(input).isPresent());
     }
 
     @Test
-    public void testFindIn() {
-        findIn_helper("fr24rev[]evfre", "[]", 7);
-        findIn_helper("]]][[4, 45][]dsvdf", "[4, 45]", 4);
-        findIn_helper("]]][[4,  45][]dsvdf", "[]", 12);
-        findIn_helper("]]][[3/4, 45][]dsvdf", "[]", 13);
-        findIn_fail_helper("");
-        findIn_fail_helper("]]][[4,  45]dsvdf");
-        findIn_fail_helper("]]][[3/4, 45]dsvdf");
-        findIn_fail_helper("hello");
+    public void testReadStrict() {
+        readStrict_helper("[]");
+        readStrict_helper("[2]");
+        readStrict_helper("[0, -23, 7]");
+        readStrict_fail_helper("");
+        readStrict_fail_helper("[ 1]");
+        readStrict_fail_helper("[1/3, 1/2]");
+        readStrict_fail_helper("[4, -5/3]");
+        readStrict_fail_helper("hello");
+        readStrict_fail_helper("][");
+        readStrict_fail_helper("1, 3");
+        readStrict_fail_helper("vfbdb ds");
     }
 
     private static @NotNull List<BigInteger> readBigIntegerList(@NotNull String s) {
-        return Readers.readList(Readers::readBigInteger).apply(s).get();
+        return Readers.readListStrict(Readers::readBigIntegerStrict).apply(s).get();
     }
 
     private static @NotNull List<BigInteger> readBigIntegerListWithNulls(@NotNull String s) {
-        return Readers.readListWithNulls(Readers::readBigInteger).apply(s).get();
+        return Readers.readListWithNullsStrict(Readers::readBigIntegerStrict).apply(s).get();
     }
 
     private static @NotNull List<Vector> readVectorList(@NotNull String s) {
-        return Readers.readList(Vector::read).apply(s).get();
+        return Readers.readListStrict(Vector::readStrict).apply(s).get();
     }
 
     private static @NotNull List<Vector> readVectorListWithNulls(@NotNull String s) {
-        return Readers.readListWithNulls(Vector::read).apply(s).get();
+        return Readers.readListWithNullsStrict(Vector::readStrict).apply(s).get();
     }
 }

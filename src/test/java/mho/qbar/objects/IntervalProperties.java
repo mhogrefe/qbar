@@ -43,6 +43,7 @@ public class IntervalProperties extends QBarTestProperties {
         propertiesBitLength();
         propertiesIsFinitelyBounded();
         propertiesContains_Rational();
+        propertiesContains_Algebraic();
         propertiesContains_Interval();
         propertiesDiameter();
         propertiesConvexHull_Interval();
@@ -94,8 +95,7 @@ public class IntervalProperties extends QBarTestProperties {
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
-        propertiesRead();
-        propertiesFindIn();
+        propertiesReadStrict();
         propertiesToString();
     }
 
@@ -202,6 +202,18 @@ public class IntervalProperties extends QBarTestProperties {
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.distinctPairs(P.rationals()))) {
             assertFalse(p, of(p.a).contains(p.b));
+        }
+    }
+
+    private void propertiesContains_Algebraic() {
+        initialize("contains(Algebraic)");
+        for (Pair<Interval, Algebraic> p : take(LIMIT, P.pairs(P.intervals(), P.algebraics()))) {
+            p.a.contains(p.b);
+        }
+
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            assertTrue(x, ALL.contains(x));
+            assertTrue(x, x.isolatingInterval().contains(x));
         }
     }
 
@@ -1888,25 +1900,22 @@ public class IntervalProperties extends QBarTestProperties {
         propertiesCompareToHelper(LIMIT, P, QBarIterableProvider::intervals);
     }
 
-    private void propertiesRead() {
-        initialize("read(String)");
-        propertiesReadHelper(LIMIT, P, INTERVAL_CHARS, P.intervals(), Interval::read, Interval::validate, false);
-    }
-
-    private void propertiesFindIn() {
-        initialize("findIn(String)");
-        propertiesFindInHelper(
+    private void propertiesReadStrict() {
+        initialize("readStrict(String)");
+        propertiesReadHelper(
                 LIMIT,
-                P.getWheelsProvider(),
+                P,
+                INTERVAL_CHARS,
                 P.intervals(),
-                Interval::read,
-                Interval::findIn,
-                Interval::validate
+                Interval::readStrict,
+                Interval::validate,
+                false,
+                true
         );
     }
 
     private void propertiesToString() {
         initialize("toString()");
-        propertiesToStringHelper(LIMIT, INTERVAL_CHARS, P.intervals(), Interval::read);
+        propertiesToStringHelper(LIMIT, INTERVAL_CHARS, P.intervals(), Interval::readStrict);
     }
 }

@@ -61,8 +61,7 @@ public class VectorProperties extends QBarTestProperties {
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
-        propertiesRead();
-        propertiesFindIn();
+        propertiesReadStrict();
         propertiesToString();
     }
 
@@ -923,25 +922,22 @@ public class VectorProperties extends QBarTestProperties {
         }
     }
 
-    private void propertiesRead() {
-        initialize("read(String)");
-        QBarTesting.propertiesReadHelper(LIMIT, P, VECTOR_CHARS, P.vectors(), Vector::read, Vector::validate, false);
-    }
-
-    private void propertiesFindIn() {
-        initialize("findIn(String)");
-        propertiesFindInHelper(
+    private void propertiesReadStrict() {
+        initialize("readStrict(String)");
+        QBarTesting.propertiesReadHelper(
                 LIMIT,
-                P.getWheelsProvider(),
+                P,
+                VECTOR_CHARS,
                 P.vectors(),
-                Vector::read,
-                Vector::findIn,
-                Vector::validate
+                Vector::readStrict,
+                Vector::validate,
+                false,
+                true
         );
     }
 
     private void propertiesToString() {
         initialize("toString()");
-        propertiesToStringHelper(LIMIT, VECTOR_CHARS, P.vectors(), Vector::read);
+        propertiesToStringHelper(LIMIT, VECTOR_CHARS, P.vectors(), Vector::readStrict);
     }
 }

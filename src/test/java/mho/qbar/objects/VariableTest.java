@@ -1,19 +1,19 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
-import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.util.List;
 
-import static mho.qbar.objects.Variable.*;
+import static mho.qbar.objects.Variable.of;
+import static mho.qbar.objects.Variable.readStrict;
 import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.assertFalse;
 
 public class VariableTest {
     private static void getIndex_helper(@NotNull String x, int output) {
-        aeq(read(x).get().getIndex(), output);
+        aeq(readStrict(x).get().getIndex(), output);
     }
 
     @Test
@@ -48,7 +48,7 @@ public class VariableTest {
     }
 
     private static void hashCode_helper(@NotNull String input, int hashCode) {
-        aeq(read(input).get().hashCode(), hashCode);
+        aeq(readStrict(input).get().hashCode(), hashCode);
     }
 
     @Test
@@ -67,51 +67,30 @@ public class VariableTest {
         testCompareToHelper(readVariableList("[a, b, c, x, y, z, ooo]"));
     }
 
-    private static void read_helper(@NotNull String input) {
-        aeq(read(input).get(), input);
+    private static void readStrict_helper(@NotNull String input) {
+        aeq(readStrict(input).get(), input);
     }
 
-    private static void read_fail_helper(@NotNull String input) {
-        assertFalse(read(input).isPresent());
-    }
-
-    @Test
-    public void testRead() {
-        read_helper("a");
-        read_helper("b");
-        read_helper("c");
-        read_helper("x");
-        read_helper("y");
-        read_helper("z");
-        read_helper("ooo");
-        read_fail_helper("");
-        read_fail_helper("1");
-        read_fail_helper(" ");
-        read_fail_helper("ab");
-    }
-
-    private static void findIn_helper(@NotNull String input, @NotNull String output, int index) {
-        Pair<Variable, Integer> result = findIn(input).get();
-        aeq(result.a, output);
-        aeq(result.b, index);
-    }
-
-    private static void findIn_fail_helper(@NotNull String input) {
-        assertFalse(findIn(input).isPresent());
+    private static void readStrict_fail_helper(@NotNull String input) {
+        assertFalse(readStrict(input).isPresent());
     }
 
     @Test
-    public void testFindIn() {
-        findIn_helper("abcd1234xyz", "a", 0);
-        findIn_helper("hello", "h", 0);
-        findIn_helper("llama", "ll", 0);
-        findIn_helper("123aabbcc", "aa", 3);
-        findIn_fail_helper("");
-        findIn_fail_helper("123");
-        findIn_fail_helper("1, 2, 3");
+    public void testReadStrict() {
+        readStrict_helper("a");
+        readStrict_helper("b");
+        readStrict_helper("c");
+        readStrict_helper("x");
+        readStrict_helper("y");
+        readStrict_helper("z");
+        readStrict_helper("ooo");
+        readStrict_fail_helper("");
+        readStrict_fail_helper("1");
+        readStrict_fail_helper(" ");
+        readStrict_fail_helper("ab");
     }
 
     private static @NotNull List<Variable> readVariableList(@NotNull String s) {
-        return Readers.readList(Variable::read).apply(s).get();
+        return Readers.readListStrict(Variable::readStrict).apply(s).get();
     }
 }

@@ -56,8 +56,7 @@ public class PolynomialVectorProperties extends QBarTestProperties {
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
-        propertiesRead();
-        propertiesFindIn();
+        propertiesReadStrict();
         propertiesToString();
     }
 
@@ -890,33 +889,22 @@ public class PolynomialVectorProperties extends QBarTestProperties {
         }
     }
 
-    private void propertiesRead() {
-        initialize("read(String)");
+    private void propertiesReadStrict() {
+        initialize("readStrict(String)");
         QBarTesting.propertiesReadHelper(
                 LIMIT,
                 P,
                 POLYNOMIAL_VECTOR_CHARS,
                 P.polynomialVectors(),
-                PolynomialVector::read,
+                PolynomialVector::readStrict,
                 PolynomialVector::validate,
-                false
-        );
-    }
-
-    private void propertiesFindIn() {
-        initialize("findIn(String)");
-        propertiesFindInHelper(
-                LIMIT,
-                P.getWheelsProvider(),
-                P.polynomialVectors(),
-                PolynomialVector::read,
-                PolynomialVector::findIn,
-                PolynomialVector::validate
+                false,
+                true
         );
     }
 
     private void propertiesToString() {
         initialize("toString()");
-        propertiesToStringHelper(LIMIT, POLYNOMIAL_VECTOR_CHARS, P.polynomialVectors(), PolynomialVector::read);
+        propertiesToStringHelper(LIMIT, POLYNOMIAL_VECTOR_CHARS, P.polynomialVectors(), PolynomialVector::readStrict);
     }
 }

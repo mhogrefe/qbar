@@ -1,7 +1,6 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
-import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -23,7 +22,7 @@ public class PolynomialVectorTest {
     }
 
     private static void iterator_helper(@NotNull String input) {
-        aeq(toList(read(input).get()), input);
+        aeq(toList(readStrict(input).get()), input);
     }
 
     @Test
@@ -34,7 +33,7 @@ public class PolynomialVectorTest {
     }
 
     private static void toRationalPolynomialVector_helper(@NotNull String input) {
-        aeq(read(input).get().toRationalPolynomialVector(), input);
+        aeq(readStrict(input).get().toRationalPolynomialVector(), input);
     }
 
     @Test
@@ -45,12 +44,12 @@ public class PolynomialVectorTest {
     }
 
     private static void get_helper(@NotNull String input, int i, @NotNull String output) {
-        aeq(read(input).get().get(i), output);
+        aeq(readStrict(input).get().get(i), output);
     }
 
     private static void get_fail_helper(@NotNull String input, int i) {
         try {
-            read(input).get().get(i);
+            readStrict(input).get().get(i);
             fail();
         } catch (IndexOutOfBoundsException ignored) {}
     }
@@ -85,7 +84,7 @@ public class PolynomialVectorTest {
     }
 
     private static void of_Polynomial_helper(@NotNull String input, @NotNull String output) {
-        aeq(of(Polynomial.read(input).get()), output);
+        aeq(of(Polynomial.readStrict(input).get()), output);
     }
 
     @Test
@@ -96,7 +95,7 @@ public class PolynomialVectorTest {
     }
 
     private static void of_Vector_helper(@NotNull String input) {
-        aeq(of(Vector.read(input).get()), input);
+        aeq(of(Vector.readStrict(input).get()), input);
     }
 
     @Test
@@ -107,7 +106,7 @@ public class PolynomialVectorTest {
     }
 
     private static void maxCoordinateBitLength_helper(@NotNull String input, int output) {
-        aeq(read(input).get().maxCoordinateBitLength(), output);
+        aeq(readStrict(input).get().maxCoordinateBitLength(), output);
     }
 
     @Test
@@ -119,7 +118,7 @@ public class PolynomialVectorTest {
     }
 
     private static void dimension_helper(@NotNull String input, int output) {
-        aeq(read(input).get().dimension(), output);
+        aeq(readStrict(input).get().dimension(), output);
     }
 
     @Test
@@ -130,7 +129,7 @@ public class PolynomialVectorTest {
     }
 
     private static void testIsZero(@NotNull String input, boolean output) {
-        aeq(read(input).get().isZero(), output);
+        aeq(readStrict(input).get().isZero(), output);
     }
 
     @Test
@@ -187,12 +186,12 @@ public class PolynomialVectorTest {
     }
 
     private static void add_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().add(read(b).get()), output);
+        aeq(readStrict(a).get().add(readStrict(b).get()), output);
     }
 
     private static void add_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().add(read(b).get());
+            readStrict(a).get().add(readStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -210,7 +209,7 @@ public class PolynomialVectorTest {
     }
 
     private static void negate_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().negate(), output);
+        aeq(readStrict(input).get().negate(), output);
     }
 
     @Test
@@ -221,12 +220,12 @@ public class PolynomialVectorTest {
     }
 
     private static void subtract_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().subtract(read(b).get()), output);
+        aeq(readStrict(a).get().subtract(readStrict(b).get()), output);
     }
 
     private static void subtract_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().subtract(read(b).get());
+            readStrict(a).get().subtract(readStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -245,7 +244,7 @@ public class PolynomialVectorTest {
     }
 
     private static void multiply_Polynomial_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().multiply(Polynomial.read(b).get()), output);
+        aeq(readStrict(a).get().multiply(Polynomial.readStrict(b).get()), output);
     }
 
     @Test
@@ -267,7 +266,7 @@ public class PolynomialVectorTest {
     }
 
     private static void multiply_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().multiply(Readers.readBigInteger(b).get()), output);
+        aeq(readStrict(a).get().multiply(Readers.readBigIntegerStrict(b).get()), output);
     }
 
     @Test
@@ -286,7 +285,7 @@ public class PolynomialVectorTest {
     }
 
     private static void multiply_int_helper(@NotNull String a, int b, @NotNull String output) {
-        aeq(read(a).get().multiply(b), output);
+        aeq(readStrict(a).get().multiply(b), output);
     }
 
     @Test
@@ -305,12 +304,12 @@ public class PolynomialVectorTest {
     }
 
     private static void shiftLeft_helper(@NotNull String a, int bits, @NotNull String output) {
-        aeq(read(a).get().shiftLeft(bits), output);
+        aeq(readStrict(a).get().shiftLeft(bits), output);
     }
 
     private static void shiftLeft_fail_helper(@NotNull String a, int bits) {
         try {
-            read(a).get().shiftLeft(bits);
+            readStrict(a).get().shiftLeft(bits);
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -407,12 +406,12 @@ public class PolynomialVectorTest {
     }
 
     private static void dot_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(read(a).get().dot(read(b).get()), output);
+        aeq(readStrict(a).get().dot(readStrict(b).get()), output);
     }
 
     private static void dot_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read(a).get().dot(read(b).get());
+            readStrict(a).get().dot(readStrict(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -430,7 +429,7 @@ public class PolynomialVectorTest {
     }
 
     private static void squaredLength_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().squaredLength(), output);
+        aeq(readStrict(input).get().squaredLength(), output);
     }
 
     @Test
@@ -452,7 +451,7 @@ public class PolynomialVectorTest {
     }
 
     private static void hashCode_helper(@NotNull String input, int hashCode) {
-        aeq(read(input).get().hashCode(), hashCode);
+        aeq(readStrict(input).get().hashCode(), hashCode);
     }
 
     @Test
@@ -468,64 +467,42 @@ public class PolynomialVectorTest {
         testCompareToHelper(readPolynomialVectorList("[[], [x], [5, -4*x+3, 23*x^5], [5, 4*x+3, 23*x^5]]"));
     }
 
-    private static void read_helper(@NotNull String input) {
-        aeq(read(input).get(), input);
+    private static void readStrict_helper(@NotNull String input) {
+        aeq(readStrict(input).get(), input);
     }
 
-    private static void read_fail_helper(@NotNull String input) {
-        assertFalse(read(input).isPresent());
-    }
-
-    @Test
-    public void testRead() {
-        read_helper("[]");
-        read_helper("[x]");
-        read_helper("[5, 4*x+3, 23*x^5]");
-        read_fail_helper("");
-        read_fail_helper("[ 1]");
-        read_fail_helper("[1/3*x, 1/2]");
-        read_fail_helper("[4, -5/3*x^2-1]");
-        read_fail_helper("hello");
-        read_fail_helper("][");
-        read_fail_helper("1, 3");
-        read_fail_helper("vfbdb ds");
-    }
-
-    private static void findIn_helper(@NotNull String input, @NotNull String output, int index) {
-        Pair<PolynomialVector, Integer> result = findIn(input).get();
-        aeq(result.a, output);
-        aeq(result.b, index);
-    }
-
-    private static void findIn_fail_helper(@NotNull String input) {
-        assertFalse(findIn(input).isPresent());
+    private static void readStrict_fail_helper(@NotNull String input) {
+        assertFalse(readStrict(input).isPresent());
     }
 
     @Test
-    public void testFindIn() {
-        findIn_helper("fr24rev[]evfre", "[]", 7);
-        findIn_helper("]]][[x, 45][]dsvdf", "[x, 45]", 4);
-        findIn_helper("]]][[4,  45][]dsvdf", "[]", 12);
-        findIn_helper("]]][[3/4, 45][]dsvdf", "[]", 13);
-        findIn_fail_helper("");
-        findIn_fail_helper("]]][[x,  45]dsvdf");
-        findIn_fail_helper("]]][[3/4*x, 45]dsvdf");
-        findIn_fail_helper("hello");
+    public void testReadStrict() {
+        readStrict_helper("[]");
+        readStrict_helper("[x]");
+        readStrict_helper("[5, 4*x+3, 23*x^5]");
+        readStrict_fail_helper("");
+        readStrict_fail_helper("[ 1]");
+        readStrict_fail_helper("[1/3*x, 1/2]");
+        readStrict_fail_helper("[4, -5/3*x^2-1]");
+        readStrict_fail_helper("hello");
+        readStrict_fail_helper("][");
+        readStrict_fail_helper("1, 3");
+        readStrict_fail_helper("vfbdb ds");
     }
 
     private static @NotNull List<Polynomial> readPolynomialList(@NotNull String s) {
-        return Readers.readList(Polynomial::read).apply(s).get();
+        return Readers.readListStrict(Polynomial::readStrict).apply(s).get();
     }
 
     private static @NotNull List<Polynomial> readPolynomialListWithNulls(@NotNull String s) {
-        return Readers.readListWithNulls(Polynomial::read).apply(s).get();
+        return Readers.readListWithNullsStrict(Polynomial::readStrict).apply(s).get();
     }
 
     private static @NotNull List<PolynomialVector> readPolynomialVectorList(@NotNull String s) {
-        return Readers.readList(PolynomialVector::read).apply(s).get();
+        return Readers.readListStrict(PolynomialVector::readStrict).apply(s).get();
     }
 
     private static @NotNull List<PolynomialVector> readPolynomialVectorListWithNulls(@NotNull String s) {
-        return Readers.readListWithNulls(PolynomialVector::read).apply(s).get();
+        return Readers.readListWithNullsStrict(PolynomialVector::readStrict).apply(s).get();
     }
 }

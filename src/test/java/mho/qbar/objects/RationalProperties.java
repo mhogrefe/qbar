@@ -147,8 +147,7 @@ public class RationalProperties extends QBarTestProperties {
         propertiesHashCode();
         propertiesCompareTo();
         compareImplementationsCompareTo();
-        propertiesRead();
-        propertiesFindIn();
+        propertiesReadStrict();
         propertiesToString();
     }
 
@@ -784,7 +783,8 @@ public class RationalProperties extends QBarTestProperties {
     }
 
     private static boolean isEqualToFloat_simplest(@NotNull Rational r) {
-        return ofExact(r.floatValue(RoundingMode.FLOOR)).get().equals(r);
+        Optional<Rational> or = ofExact(r.floatValue(RoundingMode.FLOOR));
+        return or.isPresent() && or.get().equals(r);
     }
 
     private static boolean isEqualToFloat_alt(@NotNull Rational r) {
@@ -824,7 +824,8 @@ public class RationalProperties extends QBarTestProperties {
     }
 
     private static boolean isEqualToDouble_simplest(@NotNull Rational r) {
-        return ofExact(r.doubleValue(RoundingMode.FLOOR)).get().equals(r);
+        Optional<Rational> or = ofExact(r.doubleValue(RoundingMode.FLOOR));
+        return or.isPresent() && or.get().equals(r);
     }
 
     private static boolean isEqualToDouble_alt(@NotNull Rational r) {
@@ -2165,11 +2166,11 @@ public class RationalProperties extends QBarTestProperties {
 
         for (Rational r : take(LIMIT, P.rationals())) {
             fixedPoint(s -> s.multiply(BigInteger.ONE), r);
-            assertTrue(r, r.multiply(BigInteger.ZERO) == ZERO);
+            assertEquals(r, r.multiply(BigInteger.ZERO), ZERO);
         }
 
         for (BigInteger i : take(LIMIT, P.nonzeroBigIntegers())) {
-            assertTrue(i, of(i).invert().multiply(i) == ONE);
+            assertEquals(i, of(i).invert().multiply(i), ONE);
         }
 
         Iterable<Triple<Rational, Rational, BigInteger>> ts = P.triples(P.rationals(), P.rationals(), P.bigIntegers());
@@ -2215,11 +2216,11 @@ public class RationalProperties extends QBarTestProperties {
 
         for (Rational r : take(LIMIT, P.rationals())) {
             fixedPoint(s -> s.multiply(1), r);
-            assertTrue(r, r.multiply(0) == ZERO);
+            assertEquals(r, r.multiply(0), ZERO);
         }
 
         for (int i : take(LIMIT, P.nonzeroIntegers())) {
-            assertTrue(i, of(i).invert().multiply(i) == ONE);
+            assertEquals(i, of(i).invert().multiply(i), ONE);
         }
 
         Iterable<Triple<Rational, Rational, Integer>> ts = P.triples(P.rationals(), P.rationals(), P.integers());
@@ -3580,40 +3581,38 @@ public class RationalProperties extends QBarTestProperties {
         compareImplementations("compareTo(Rational)", take(LIMIT, P.pairs(P.rationals())), functions);
     }
 
-    private void propertiesRead() {
-        initialize("read(String)");
-        propertiesReadHelper(LIMIT, P, RATIONAL_CHARS, P.rationals(), Rational::read, Rational::validate, true);
+    private void propertiesReadStrict() {
+        initialize("readStrict(String)");
+        propertiesReadHelper(
+                LIMIT,
+                P,
+                RATIONAL_CHARS,
+                P.rationals(),
+                Rational::readStrict,
+                Rational::validate,
+                true,
+                true
+        );
+
         Pair<Iterable<String>, Iterable<String>> slashPartition = partition(
                 s -> s.contains("/"),
-                filterInfinite(s -> read(s).isPresent(), P.strings(RATIONAL_CHARS))
+                filterInfinite(s -> readStrict(s).isPresent(), P.strings(RATIONAL_CHARS))
         );
         for (String s : take(LIMIT, slashPartition.a)) {
             int slashIndex = s.indexOf('/');
             String left = s.substring(0, slashIndex);
             String right = s.substring(slashIndex + 1);
-            assertTrue(s, Readers.readBigInteger(left).isPresent());
-            assertTrue(s, Readers.readBigInteger(right).isPresent());
+            assertTrue(s, Readers.readBigIntegerStrict(left).isPresent());
+            assertTrue(s, Readers.readBigIntegerStrict(right).isPresent());
         }
 
         for (String s : take(LIMIT, slashPartition.b)) {
-            assertTrue(s, Readers.readBigInteger(s).isPresent());
+            assertTrue(s, Readers.readBigIntegerStrict(s).isPresent());
         }
-    }
-
-    private void propertiesFindIn() {
-        initialize("findIn(String)");
-        propertiesFindInHelper(
-                LIMIT,
-                P.getWheelsProvider(),
-                P.rationals(),
-                Rational::read,
-                Rational::findIn,
-                Rational::validate
-        );
     }
 
     private void propertiesToString() {
         initialize("toString()");
-        propertiesToStringHelper(LIMIT, RATIONAL_CHARS, P.rationals(), Rational::read);
+        propertiesToStringHelper(LIMIT, RATIONAL_CHARS, P.rationals(), Rational::readStrict);
     }
 }

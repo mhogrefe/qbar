@@ -3,7 +3,6 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
-import mho.wheels.io.Readers;
 import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.math.MathUtils;
@@ -175,13 +174,15 @@ public class PolynomialProperties extends QBarTestProperties {
         propertiesInvertRoots();
         propertiesAddRoots();
         propertiesMultiplyRoots();
+        propertiesPowerTable();
+        compareImplementationsPowerTable();
+        propertiesRootPower();
+        compareImplementationsRootPower();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
-        propertiesRead_String();
-        propertiesRead_int_String();
-        propertiesFindIn_String();
-        propertiesFindIn_int_String();
+        propertiesReadStrict_String();
+        propertiesReadStrict_int_String();
         propertiesToString();
     }
 
@@ -4401,6 +4402,104 @@ public class PolynomialProperties extends QBarTestProperties {
         }
     }
 
+    private static @NotNull List<Polynomial> powerTable_simplest(@NotNull Polynomial p, int maxPower) {
+        return toList(map(p::rootPower, range(0, maxPower)));
+    }
+
+    private static @NotNull List<Polynomial> powerTable_alt(@NotNull Polynomial p, int maxPower) {
+        return toList(map(i -> of(BigInteger.ONE, i).remainderExact(p), range(0, maxPower)));
+    }
+
+    private void propertiesPowerTable() {
+        initialize("powerTable(int)");
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.monicPolynomialsAtLeast(1),
+                P.naturalIntegersGeometric()
+        );
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            List<Polynomial> powers = p.a.powerTable(p.b);
+            assertEquals(p, powerTable_simplest(p.a, p.b), powers);
+            assertEquals(p, powerTable_alt(p.a, p.b), powers);
+            assertEquals(p, powers.size(), p.b + 1);
+            assertTrue(p, all(q -> q.degree() < p.a.degree(), powers));
+        }
+
+        Iterable<Pair<Polynomial, Integer>> psFail = P.pairsLogarithmicOrder(
+                filterInfinite(p -> p.degree() < 1 || !p.isMonic(), P.polynomials()),
+                P.naturalIntegersGeometric()
+        );
+        for (Pair<Polynomial, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.powerTable(p.b);
+                fail(p);
+            } catch (UnsupportedOperationException ignored) {}
+        }
+
+        psFail = P.pairsLogarithmicOrder(P.monicPolynomialsAtLeast(1), P.negativeIntegers());
+        for (Pair<Polynomial, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.powerTable(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void compareImplementationsPowerTable() {
+        Map<String, Function<Pair<Polynomial, Integer>, List<Polynomial>>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> powerTable_simplest(p.a, p.b));
+        functions.put("alt", p -> powerTable_alt(p.a, p.b));
+        functions.put("standard", p -> p.a.powerTable(p.b));
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.monicPolynomialsAtLeast(1),
+                P.naturalIntegersGeometric()
+        );
+        compareImplementations("powerTable(int)", take(LIMIT, ps), functions);
+    }
+
+    private static @NotNull Polynomial rootPower_simplest(@NotNull Polynomial p, int power) {
+        return last(p.powerTable(power));
+    }
+
+    private void propertiesRootPower() {
+        initialize("rootPower(int)");
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairs(P.monicPolynomialsAtLeast(1), P.naturalIntegersGeometric());
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            Polynomial rootPower = p.a.rootPower(p.b);
+            assertEquals(p, rootPower_simplest(p.a, p.b), rootPower);
+            assertTrue(p, rootPower.degree() < p.a.degree());
+        }
+
+        Iterable<Pair<Polynomial, Integer>> psFail = P.pairsLogarithmicOrder(
+                filterInfinite(p -> p.degree() < 1 || !p.isMonic(), P.polynomials()),
+                P.naturalIntegersGeometric()
+        );
+        for (Pair<Polynomial, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.rootPower(p.b);
+                fail(p);
+            } catch (UnsupportedOperationException ignored) {}
+        }
+
+        psFail = P.pairsLogarithmicOrder(P.monicPolynomialsAtLeast(1), P.negativeIntegers());
+        for (Pair<Polynomial, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.rootPower(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void compareImplementationsRootPower() {
+        Map<String, Function<Pair<Polynomial, Integer>, Polynomial>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> rootPower_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.rootPower(p.b));
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.monicPolynomialsAtLeast(1),
+                P.naturalIntegersGeometric()
+        );
+        compareImplementations("rootPower(int)", take(LIMIT, ps), functions);
+    }
+
     private void propertiesEquals() {
         initialize("equals(Object)");
         propertiesEqualsHelper(LIMIT, P, QBarIterableProvider::polynomials);
@@ -4446,25 +4545,26 @@ public class PolynomialProperties extends QBarTestProperties {
         }
     }
 
-    private void propertiesRead_String() {
-        initialize("read(String)");
+    private void propertiesReadStrict_String() {
+        initialize("readStrict(String)");
         QBarTesting.propertiesReadHelper(
                 LIMIT,
                 P,
                 POLYNOMIAL_CHARS,
                 P.polynomials(),
-                Polynomial::read,
+                Polynomial::readStrict,
                 Polynomial::validate,
-                false
+                false,
+                true
         );
     }
 
-    private void propertiesRead_int_String() {
-        initialize("read(int, String)");
+    private void propertiesReadStrict_int_String() {
+        initialize("readStrict(int, String)");
 
         Iterable<Pair<String, Integer>> ps = P.pairsLogarithmicOrder(P.strings(), P.positiveIntegersGeometric());
         for (Pair<String, Integer> p : take(LIMIT, ps)) {
-            read(p.b, p.a);
+            readStrict(p.b, p.a);
         }
 
         Iterable<Pair<Polynomial, Integer>> ps2 = filterInfinite(
@@ -4472,7 +4572,7 @@ public class PolynomialProperties extends QBarTestProperties {
                 P.pairsLogarithmicOrder(P.polynomials(), P.positiveIntegersGeometric())
         );
         for (Pair<Polynomial, Integer> p : take(LIMIT, ps2)) {
-            Optional<Polynomial> op = read(p.b, p.a.toString());
+            Optional<Polynomial> op = readStrict(p.b, p.a.toString());
             Polynomial q = op.get();
             q.validate();
             assertEquals(p, q, p.a);
@@ -4483,83 +4583,14 @@ public class PolynomialProperties extends QBarTestProperties {
                 P.pairsLogarithmicOrder(P.polynomials(), P.positiveIntegersGeometric())
         );
         for (Pair<Polynomial, Integer> p : take(LIMIT, ps2)) {
-            Optional<Polynomial> op = read(p.b, p.a.toString());
+            Optional<Polynomial> op = readStrict(p.b, p.a.toString());
             assertFalse(p, op.isPresent());
-        }
-    }
-
-    private static @NotNull Optional<String> badString(@NotNull String s) {
-        boolean seenX = false;
-        boolean seenXCaret = false;
-        int exponentDigitCount = 0;
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
-            if (c == 'x') {
-                seenX = true;
-            } else if (seenX && c == '^') {
-                seenXCaret = true;
-            } else if (seenXCaret && c >= '0' && c <= '9') {
-                exponentDigitCount++;
-                if (exponentDigitCount > 3) return Optional.of("");
-            } else {
-                seenX = false;
-                seenXCaret = false;
-                exponentDigitCount = 0;
-            }
-        }
-        return Optional.empty();
-    }
-
-    private void propertiesFindIn_String() {
-        initialize("findIn(String)");
-        propertiesFindInHelper(
-                LIMIT,
-                P.getWheelsProvider(),
-                P.polynomials(),
-                s -> badString(s).isPresent() ? Optional.empty() : read(s),
-                s -> badString(s).isPresent() ? Optional.empty() : findIn(s),
-                Polynomial::validate
-        );
-    }
-
-    private void propertiesFindIn_int_String() {
-        initialize("findIn(int, String)");
-        Iterable<Pair<String, Integer>> ps = P.pairsLogarithmicOrder(
-                filterInfinite(
-                        s -> !Readers.genericFindIn(PolynomialProperties::badString).apply(s).isPresent(),
-                        P.strings()
-                ),
-                P.positiveIntegersGeometric()
-        );
-        for (Pair<String, Integer> p : take(LIMIT, ps)) {
-            findIn(p.b, p.a);
-        }
-
-        Iterable<Pair<Integer, String>> ps2 = P.dependentPairsInfiniteLogarithmicOrder(
-                P.positiveIntegersGeometric(),
-                i -> P.stringsWithSubstrings(
-                        map(Object::toString, filterInfinite(p -> p.degree() <= i, P.polynomials()))
-                )
-        );
-        for (Pair<Integer, String> p : take(LIMIT, ps2)) {
-            Optional<Pair<Polynomial, Integer>> op = findIn(p.a, p.b);
-            Pair<Polynomial, Integer> q = op.get();
-            assertNotNull(p, q.a);
-            assertNotNull(p, q.b);
-            q.a.validate();
-            assertTrue(p, q.b >= 0 && q.b < p.b.length());
-            String before = take(q.b, p.b);
-            assertFalse(p, findIn(before).isPresent());
-            String during = q.a.toString();
-            assertTrue(p, p.b.substring(q.b).startsWith(during));
-            String after = drop(q.b + during.length(), p.b);
-            assertTrue(p, after.isEmpty() || !read(during + head(after)).isPresent());
         }
     }
 
     private void propertiesToString() {
         initialize("toString()");
-        propertiesToStringHelper(LIMIT, POLYNOMIAL_CHARS, P.polynomials(), Polynomial::read);
+        propertiesToStringHelper(LIMIT, POLYNOMIAL_CHARS, P.polynomials(), Polynomial::readStrict);
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
             homomorphic(Polynomial::of, Function.identity(), BigInteger::toString, Polynomial::toString, i);

@@ -357,8 +357,8 @@ public final class Rational implements Comparable<Rational> {
      * {@code -Infinity}, or {@code NaN}
      */
     public static @NotNull Optional<Rational> of(float f) {
-        if (f == 0.0) return Optional.of(ZERO);
-        if (f == 1.0) return Optional.of(ONE);
+        if (f == 0.0f) return Optional.of(ZERO);
+        if (f == 1.0f) return Optional.of(ONE);
         if (Float.isInfinite(f) || Float.isNaN(f)) return Optional.empty();
         return Optional.of(of(new BigDecimal(Float.toString(f))));
     }
@@ -453,16 +453,16 @@ public final class Rational implements Comparable<Rational> {
      * Creates a {@code Rational} from a {@link BigDecimal}.
      *
      * <ul>
-     *  <li>{@code d} may not be null.</li>
+     *  <li>{@code bd} may not be null.</li>
      *  <li>The result is a {@code Rational} whose denominator may be written as 2<sup>m</sup>5<sup>n</sup>, with
      *  m,n≥0.</li>
      * </ul>
      *
-     * @param d the {@code BigDecimal}
-     * @return the {@code Rational} corresponding to {@code d}
+     * @param bd the {@code BigDecimal}
+     * @return the {@code Rational} corresponding to {@code bd}
      */
-    public static @NotNull Rational of(@NotNull BigDecimal d) {
-        return of(d.unscaledValue()).divide(TEN.pow(d.scale()));
+    public static @NotNull Rational of(@NotNull BigDecimal bd) {
+        return of(bd.unscaledValue()).divide(TEN.pow(bd.scale()));
     }
 
     /**
@@ -744,7 +744,7 @@ public final class Rational implements Comparable<Rational> {
      *
      * <ul>
      *  <li>{@code this} must be positive.</li>
-     *  <li>The result could be any integer.</li>
+     *  <li>The result can be any integer.</li>
      * </ul>
      *
      * @return ⌊{@code log<sub>2</sub>this}⌋
@@ -1524,7 +1524,7 @@ public final class Rational implements Comparable<Rational> {
      *
      * <ul>
      *  <li>{@code this} cannot be zero.</li>
-     *  <li>The result is a non-zero {@code Rational}.</li>
+     *  <li>The result is a nonzero {@code Rational}.</li>
      * </ul>
      *
      * @return 1/{@code this}
@@ -1542,11 +1542,11 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * Returns the quotient of {@code a} and {@code b}.
+     * Returns the quotient of {@code this} and {@code that}.
      *
      * <ul>
      *  <li>{@code this} can be any {@code Rational}.</li>
-     *  <li>{@code that} cannot zero.</li>
+     *  <li>{@code that} cannot be zero.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
@@ -1554,6 +1554,11 @@ public final class Rational implements Comparable<Rational> {
      * @return {@code this}/{@code that}
      */
     public @NotNull Rational divide(@NotNull Rational that) {
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        if (this == ZERO) return ZERO;
+        if (that == ONE) return this;
         return multiply(that.invert());
     }
 
@@ -1574,6 +1579,7 @@ public final class Rational implements Comparable<Rational> {
             throw new ArithmeticException("that cannot be zero.");
         }
         if (this == ZERO) return ZERO;
+        if (that.equals(BigInteger.ONE)) return this;
         if (denominator.equals(BigInteger.ONE) && numerator.equals(that)) return ONE;
         BigInteger gcd = numerator.gcd(that);
         if (that.signum() == -1) gcd = gcd.negate();
@@ -1597,6 +1603,7 @@ public final class Rational implements Comparable<Rational> {
             throw new ArithmeticException("that cannot be zero.");
         }
         if (this == ZERO) return ZERO;
+        if (that == 1) return this;
         if (denominator.equals(BigInteger.ONE) && numerator.equals(BigInteger.valueOf(that))) return ONE;
         BigInteger gcd = numerator.gcd(BigInteger.valueOf(that));
         if (that < 0) gcd = gcd.negate();
@@ -1617,8 +1624,7 @@ public final class Rational implements Comparable<Rational> {
      * @return {@code this}≪{@code bits}
      */
     public @NotNull Rational shiftLeft(int bits) {
-        if (this == ZERO) return ZERO;
-        if (bits == 0) return this;
+        if (this == ZERO || bits == 0) return this;
         if (bits < 0) return shiftRight(-bits);
         int denominatorTwos = denominator.getLowestSetBit();
         if (bits <= denominatorTwos) {
@@ -1647,8 +1653,7 @@ public final class Rational implements Comparable<Rational> {
      * @return {@code this}≫{@code bits}
      */
     public @NotNull Rational shiftRight(int bits) {
-        if (this == ZERO) return ZERO;
-        if (bits == 0) return this;
+        if (this == ZERO || bits == 0) return this;
         if (bits < 0) return shiftLeft(-bits);
         int numeratorTwos = numerator.getLowestSetBit();
         if (bits <= numeratorTwos) {
@@ -2350,7 +2355,7 @@ public final class Rational implements Comparable<Rational> {
                     return toList(
                             map(
                                     u -> {
-                                        Optional<BigInteger> oi = Readers.readBigInteger(u);
+                                        Optional<BigInteger> oi = Readers.readBigIntegerStrict(u);
                                         if (!oi.isPresent()) {
                                             throw new IllegalArgumentException("Improperly-formatted digit " + u +
                                                     " in String " + sFinal);
@@ -2477,39 +2482,20 @@ public final class Rational implements Comparable<Rational> {
      * @param s a {@code String} representation of a {@code Rational}
      * @return the {@code Rational} represented by {@code s}, or an empty {@code Optional} if {@code s} is invalid
      */
-    public static @NotNull Optional<Rational> read(@NotNull String s) {
+    public static @NotNull Optional<Rational> readStrict(@NotNull String s) {
         if (s.isEmpty()) return Optional.empty();
         int slashIndex = s.indexOf("/");
         if (slashIndex == -1) {
-            Optional<BigInteger> n = Readers.readBigInteger(s);
+            Optional<BigInteger> n = Readers.readBigIntegerStrict(s);
             return n.map(Rational::of);
         } else {
-            Optional<BigInteger> numerator = Readers.readBigInteger(s.substring(0, slashIndex));
+            Optional<BigInteger> numerator = Readers.readBigIntegerStrict(s.substring(0, slashIndex));
             if (!numerator.isPresent()) return Optional.empty();
-            Optional<BigInteger> denominator = Readers.readBigInteger(s.substring(slashIndex + 1));
+            Optional<BigInteger> denominator = Readers.readBigIntegerStrict(s.substring(slashIndex + 1));
             if (!denominator.isPresent() || denominator.get().equals(BigInteger.ZERO)) return Optional.empty();
             Rational candidate = of(numerator.get(), denominator.get());
             return candidate.toString().equals(s) ? Optional.of(candidate) : Optional.<Rational>empty();
         }
-    }
-
-    /**
-     * Finds the first occurrence of a {@code Rational} in a {@code String}. Returns the {@code Rational} and the index
-     * at which it was found. Returns an empty {@code Optional} if no {@code Rational} is found. Only {@code String}s
-     * which could have been emitted by {@link Rational#toString} are recognized. The longest possible {@code Rational}
-     * is parsed.
-     *
-     * <ul>
-     *  <li>{@code s} must be non-null.</li>
-     *  <li>The result is non-null. If it is non-empty, then neither of the {@code Pair}'s components is null, and the
-     *  second component is non-negative.</li>
-     * </ul>
-     *
-     * @param s the input {@code String}
-     * @return the first {@code Rational} found in {@code s}, and the index at which it was found
-     */
-    public static @NotNull Optional<Pair<Rational, Integer>> findIn(@NotNull String s) {
-        return Readers.genericFindIn(Rational::read, "-/0123456789").apply(s);
     }
 
     /**

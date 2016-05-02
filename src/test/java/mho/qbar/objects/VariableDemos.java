@@ -5,7 +5,8 @@ import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
-import static mho.qbar.objects.Variable.*;
+import static mho.qbar.objects.Variable.of;
+import static mho.qbar.objects.Variable.readStrict;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.MEDIUM_LIMIT;
 import static mho.wheels.testing.Testing.nicePrint;
@@ -55,27 +56,15 @@ public class VariableDemos extends QBarDemos {
         }
     }
 
-    private void demoRead() {
+    private void demoReadStrict() {
         for (String s : take(LIMIT, P.strings())) {
-            System.out.println("read(" + nicePrint(s) + ") = " + read(s));
+            System.out.println("readStrict(" + nicePrint(s) + ") = " + readStrict(s));
         }
     }
 
-    private void demoRead_targeted() {
+    private void demoReadStrict_targeted() {
         for (String s : take(LIMIT, P.strings(VARIABLE_CHARS))) {
-            System.out.println("read(" + s + ") = " + read(s));
-        }
-    }
-
-    private void demoFindIn() {
-        for (String s : take(LIMIT, P.strings())) {
-            System.out.println("findIn(" + nicePrint(s) + ") = " + findIn(s));
-        }
-    }
-
-    private void demoFindIn_targeted() {
-        for (String s : take(LIMIT, P.strings(VARIABLE_CHARS))) {
-            System.out.println("findIn(" + s + ") = " + findIn(s));
+            System.out.println("readStrict(" + s + ") = " + readStrict(s));
         }
     }
 

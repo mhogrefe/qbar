@@ -3,17 +3,17 @@ package mho.qbar.iterableProviders;
 import mho.qbar.objects.*;
 import mho.wheels.iterables.RandomProvider;
 import mho.wheels.math.MathUtils;
-import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.Ordering;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.ordering.Ordering.le;
+import static mho.wheels.ordering.Ordering.*;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -899,7 +899,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                     secondaryScale);
         }
         QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
-                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(secondaryScale)).intValueExact()
+                MathUtils.ceilingRoot(2, BigInteger.valueOf(secondaryScale)).intValueExact()
         );
         return chooseLogarithmicOrder(
                 map(
@@ -940,7 +940,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                     secondaryScale);
         }
         QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
-                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(secondaryScale)).intValueExact()
+                MathUtils.ceilingRoot(2, BigInteger.valueOf(secondaryScale)).intValueExact()
         );
         return withElement(
                 Matrix.zero(0, 0),
@@ -1006,7 +1006,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                     secondaryScale);
         }
         QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
-                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(secondaryScale)).intValueExact()
+                MathUtils.ceilingRoot(2, BigInteger.valueOf(secondaryScale)).intValueExact()
         );
         return chooseLogarithmicOrder(
                 map(
@@ -1048,7 +1048,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                     secondaryScale);
         }
         QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
-                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(secondaryScale)).intValueExact()
+                MathUtils.ceilingRoot(2, BigInteger.valueOf(secondaryScale)).intValueExact()
         );
         return withElement(
                 RationalMatrix.zero(0, 0),
@@ -1124,7 +1124,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                     tertiaryScale);
         }
         QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
-                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(tertiaryScale)).intValueExact()
+                MathUtils.ceilingRoot(2, BigInteger.valueOf(tertiaryScale)).intValueExact()
         );
         return chooseLogarithmicOrder(
                 map(
@@ -1170,7 +1170,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                     tertiaryScale);
         }
         QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
-                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(tertiaryScale)).intValueExact()
+                MathUtils.ceilingRoot(2, BigInteger.valueOf(tertiaryScale)).intValueExact()
         );
         return withElement(
                 PolynomialMatrix.zero(0, 0),
@@ -1252,7 +1252,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                     tertiaryScale);
         }
         QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
-                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(tertiaryScale)).intValueExact()
+                MathUtils.ceilingRoot(2, BigInteger.valueOf(tertiaryScale)).intValueExact()
         );
         return chooseLogarithmicOrder(
                 map(
@@ -1302,7 +1302,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                     tertiaryScale);
         }
         QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
-                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(tertiaryScale)).intValueExact()
+                MathUtils.ceilingRoot(2, BigInteger.valueOf(tertiaryScale)).intValueExact()
         );
         return withElement(
                 RationalPolynomialMatrix.zero(0, 0),
@@ -1561,6 +1561,106 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     /**
+     * An {@code Iterable} that generates all monic {@code Polynomial}s with a given degree. Each coefficient's bit
+     * size is chosen from a geometric distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale}.</li>
+     *  <li>{@code degree} cannot be negative.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing monic {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param degree the degree of the generated {@code Polynomial}s
+     * @return monic {@code Polynomial}s with degree at least {@code minDegree}
+     */
+    @Override
+    public @NotNull Iterable<Polynomial> monicPolynomials(int degree) {
+        if (degree < 0) {
+            throw new IllegalArgumentException("degree cannot be negative. Invalid degree: " + degree);
+        }
+        return map(
+                is -> {
+                    List<BigInteger> coefficients = new ArrayList<>();
+                    coefficients.addAll(is);
+                    coefficients.add(BigInteger.ONE);
+                    return Polynomial.of(coefficients);
+                },
+                lists(degree, bigIntegers())
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all monic {@code Polynomial}s. Each {@code Polynomial}'s degree is chosen
+     * from a geometric distribution with mean {@code secondaryScale}, and each coefficient's bit size is chosen from a
+     * geometric distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale} and a positive {@code secondaryScale}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing monic {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Polynomial> monicPolynomials() {
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale <= 0) {
+            throw new IllegalStateException("this must have a positive secondaryScale. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
+        return map(
+                is -> {
+                    List<BigInteger> coefficients = new ArrayList<>();
+                    coefficients.addAll(is);
+                    coefficients.add(BigInteger.ONE);
+                    return Polynomial.of(coefficients);
+                },
+                withScale(secondaryScale).lists(bigIntegers())
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all monic {@code Polynomial}s with a minimum degree. Each
+     * {@code Polynomial}'s degree is chosen from a geometric distribution with mean {@code secondaryScale}, and each
+     * coefficient's bit size is chosen from a geometric distribution with mean approximately {@code scale}. Does not
+     * support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} that is positive and greater
+     *  than or equal to {@code minDegree}.</li>
+     *  <li>{@code minDegree} must be at least –1.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing monic {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDegree the minimum degree of the generated {@code Polynomial}s
+     * @return monic {@code Polynomial}s with degree at least {@code minDegree}
+     */
+    @Override
+    public @NotNull Iterable<Polynomial> monicPolynomialsAtLeast(int minDegree) {
+        if (minDegree < -1) {
+            throw new IllegalArgumentException("minDegree must be at least -1. Invalid minDegree: " + minDegree);
+        }
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 0 || secondaryScale <= minDegree) {
+            throw new IllegalStateException("this must have a secondaryScale that is positive and greater than" +
+                    " minDegree. secondaryScale: " + secondaryScale + ", minDegree: " + minDegree);
+        }
+        return map(
+                is -> {
+                    List<BigInteger> coefficients = new ArrayList<>();
+                    coefficients.addAll(is);
+                    coefficients.add(BigInteger.ONE);
+                    return Polynomial.of(coefficients);
+                },
+                withScale(secondaryScale).listsAtLeast(minDegree == -1 ? 0 : minDegree, bigIntegers())
+        );
+    }
+
+    /**
      * An {@code Iterable} that generates all square-free {@code Polynomial}s. Each coefficient's bit size is chosen
      * from a geometric distribution with mean approximately {@code scale}. Does not support removal.
      *
@@ -1728,27 +1828,27 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     /**
-     * An {@code Iterable} that generates all {@code ExponentVector}s. A larger {@code scale} corresponds to an
-     * {@code ExponentVector} with more variables and higher exponents on average. Does not support removal.
+     * An {@code Iterable} that generates all {@code Monomial}s. A larger {@code scale} corresponds to a
+     * {@code Monomial} with more variables and higher exponents on average. Does not support removal.
      *
      * <ul>
      *  <li>{@code this} must have a positive {@code scale}.</li>
-     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code ExponentVector}s.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Monomial}s.</li>
      * </ul>
      *
      * Length is infinite
      */
     @Override
-    public @NotNull Iterable<ExponentVector> exponentVectors() {
+    public @NotNull Iterable<Monomial> monomials() {
         int scale = getScale();
         if (scale < 1) {
             throw new IllegalStateException("this must have a positive scale. Invalid scale: " + scale);
         }
         QBarRandomProvider variableCountProvider = (QBarRandomProvider) withScale(
-                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(scale)).intValueExact()
+                MathUtils.ceilingRoot(2, BigInteger.valueOf(scale)).intValueExact()
         );
         return map(
-                js -> ExponentVector.of(toList(js)),
+                js -> Monomial.of(toList(js)),
                 filterInfinite(
                         is -> is.isEmpty() || last(is) != 0,
                         variableCountProvider.lists(naturalIntegersGeometric())
@@ -1779,7 +1879,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                         p -> MultivariatePolynomial.of(toList(zip(p.a, p.b))),
                         dependentPairsInfinite(
                                 withScale(getTertiaryScale())
-                                        .subsetsAtLeast(1, withScale(getSecondaryScale()).exponentVectors()),
+                                        .subsetsAtLeast(1, withScale(getSecondaryScale()).monomials()),
                                 evs -> lists(evs.size(), nonzeroBigIntegers())
                         )
                 )
@@ -1827,7 +1927,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                         p -> MultivariatePolynomial.of(toList(zip(p.a, p.b))),
                         dependentPairsInfinite(
                                 withScale(tertiaryScale)
-                                        .subsetsAtLeast(1, withScale(secondaryScale).exponentVectors(variables)),
+                                        .subsetsAtLeast(1, withScale(secondaryScale).monomials(variables)),
                                 evs -> lists(evs.size(), nonzeroBigIntegers())
                         )
                 )
@@ -1848,12 +1948,12 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     /**
-     * An {@code Iterable} that generates all positive {@code Algebraic}s. A larger {@code scale} corresponds to an
-     * {@code Algebraic} whose minimal polynomial has larger coefficients, and the {@code secondaryScale} is the mean
-     * of the {@code Algebraic}s' degrees. Does not support removal.
+     * An {@code Iterable} that generates all positive {@code Algebraic}s. A larger {@code scale} corresponds to a
+     * {@code Algebraic}s whose minimal polynomials have larger coefficients, and the {@code secondaryScale} is twice
+     * the mean of the {@code Algebraic}s' degrees. Does not support removal.
      *
      * <ul>
-     *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} of at least 2.</li>
+     *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} of at least 4.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing positive {@code Algebraic}s.</li>
      * </ul>
      *
@@ -1865,22 +1965,27 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         if (scale < 1) {
             throw new IllegalStateException("this must have a positive scale. Invalid scale: " + scale);
         }
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 4) {
+            throw new IllegalStateException("this must have a secondaryScale of at least 4. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
         return map(
                 p -> p.b,
                 dependentPairsInfiniteLogarithmicOrder(
-                        withScale(getSecondaryScale()).positiveIntegersGeometric(),
+                        withScale(secondaryScale / 2).positiveIntegersGeometric(),
                         this::positiveAlgebraics
                 )
         );
     }
 
     /**
-     * An {@code Iterable} that generates all negative {@code Algebraic}s. A larger {@code scale} corresponds to an
-     * {@code Algebraic} whose minimal polynomial has larger coefficients, and the {@code secondaryScale} is the mean
-     * of the {@code Algebraic}s' degrees. Does not support removal.
+     * An {@code Iterable} that generates all negative {@code Algebraic}s. A larger {@code scale} corresponds to a
+     * {@code Algebraic}s whose minimal polynomials have larger coefficients, and the {@code secondaryScale} is twice
+     * the mean of the {@code Algebraic}s' degrees. Does not support removal.
      *
      * <ul>
-     *  <li>{@code this} must have a negative {@code scale} and a {@code secondaryScale} of at least 2.</li>
+     *  <li>{@code this} must have a negative {@code scale} and a {@code secondaryScale} of at least 4.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing negative {@code Algebraic}s.</li>
      * </ul>
      *
@@ -1892,22 +1997,27 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         if (scale < 1) {
             throw new IllegalStateException("this must have a positive scale. Invalid scale: " + scale);
         }
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 4) {
+            throw new IllegalStateException("this must have a secondaryScale of at least 4. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
         return map(
                 p -> p.b,
                 dependentPairsInfiniteLogarithmicOrder(
-                        withScale(getSecondaryScale()).positiveIntegersGeometric(),
+                        withScale(secondaryScale / 2).positiveIntegersGeometric(),
                         this::negativeAlgebraics
                 )
         );
     }
 
     /**
-     * An {@code Iterable} that generates all nonzero {@code Algebraic}s. A larger {@code scale} corresponds to an
-     * {@code Algebraic} whose minimal polynomial has larger coefficients, and the {@code secondaryScale} is the mean
-     * of the {@code Algebraic}s' degrees. Does not support removal.
+     * An {@code Iterable} that generates all nonzero {@code Algebraic}s. A larger {@code scale} corresponds to a
+     * {@code Algebraic}s whose minimal polynomials have larger coefficients, and the {@code secondaryScale} is twice
+     * the mean of the {@code Algebraic}s' degrees. Does not support removal.
      *
      * <ul>
-     *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} of at least 2.</li>
+     *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} of at least 4.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing nonzero {@code Algebraic}s.</li>
      * </ul>
      *
@@ -1919,12 +2029,12 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     /**
-     * An {@code Iterable} that generates all {@code Algebraic}s. A larger {@code scale} corresponds to an
-     * {@code Algebraic} whose minimal polynomial has larger coefficients, and the {@code secondaryScale} is the mean
-     * of the {@code Algebraic}s' degrees. Does not support removal.
+     * An {@code Iterable} that generates all {@code Algebraic}s. A larger {@code scale} corresponds to a
+     * {@code Algebraic}s whose minimal polynomials have larger coefficients, and the {@code secondaryScale} is twice
+     * the mean of the {@code Algebraic}s' degrees. Does not support removal.
      *
      * <ul>
-     *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} of at least 2.</li>
+     *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} of at least 4.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Algebraic}s.</li>
      * </ul>
      *
@@ -1936,10 +2046,15 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         if (scale < 1) {
             throw new IllegalStateException("this must have a positive scale. Invalid scale: " + scale);
         }
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 4) {
+            throw new IllegalStateException("this must have a secondaryScale of at least 4. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
         return map(
                 p -> p.b,
                 dependentPairsInfiniteLogarithmicOrder(
-                        withScale(getSecondaryScale()).positiveIntegersGeometric(),
+                        withScale(secondaryScale / 2).positiveIntegersGeometric(),
                         this::algebraics
                 )
         );
@@ -1947,11 +2062,11 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
 
     /**
      * An {@code Iterable} that generates all {@code Algebraic}s in the interval [0, 1). A larger {@code scale}
-     * corresponds to an {@code Algebraic} whose minimal polynomial has larger coefficients, and the
-     * {@code secondaryScale} is the mean of the {@code Algebraic}s' degrees. Does not support removal.
+     * corresponds to a {@code Algebraic}s whose minimal polynomials have larger coefficients, and the
+     * {@code secondaryScale} is twice the mean of the {@code Algebraic}s' degrees. Does not support removal.
      *
      * <ul>
-     *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} of at least 2.</li>
+     *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} of at least 4.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Algebraic}s in the interval
      *  [0, 1).</li>
      * </ul>
@@ -1964,13 +2079,410 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         if (scale < 1) {
             throw new IllegalStateException("this must have a positive scale. Invalid scale: " + scale);
         }
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 4) {
+            throw new IllegalStateException("this must have a secondaryScale of at least 4. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
         return map(
                 p -> p.b,
                 dependentPairsInfiniteLogarithmicOrder(
-                        withScale(getSecondaryScale()).positiveIntegersGeometric(),
+                        withScale(secondaryScale / 2).positiveIntegersGeometric(),
                         this::nonNegativeAlgebraicsLessThanOne
                 )
         );
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code Algebraic}s greater than or equal to {@code a}, and with a given
+     * degree. A larger {@code scale} corresponds to {@code Algebraic}s whose minimal polynomials have larger
+     * coefficients. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 2.</li>
+     *  <li>{@code degree} must be positive.</li>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Algebraic}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param a the inclusive lower bound of the generated elements
+     * @return {@code Algebraic}s greater than or equal to {@code a} and with degree {@code degree}
+     */
+    @Override
+    public @NotNull Iterable<Algebraic> rangeUp(int degree, @NotNull Algebraic a) {
+        int scale = getScale();
+        if (scale < 2) {
+            throw new IllegalStateException("this must have a scale of at least 2. Invalid scale: " + scale);
+        }
+        if (a.isRational()) {
+            Rational r = a.rationalValueExact();
+            if (degree == 1) {
+                return withElement(a, map(x -> x.add(r), positiveAlgebraics(degree)));
+            } else {
+                return map(x -> x.add(r), positiveAlgebraics(degree));
+            }
+        } else {
+            BigInteger floor = a.floor();
+            Algebraic fractionalPart = a.subtract(floor);
+            return map(
+                    x -> x.add(floor),
+                    filterInfinite(x -> ge(x, fractionalPart), positiveAlgebraics(degree))
+            );
+        }
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code Algebraic}s greater than or equal to {@code a}. A larger
+     * {@code scale} corresponds to {@code Algebraic}s whose minimal polynomials have larger coefficients, and a larger
+     * {@code secondaryScale} corresponds to {@code Algebraic}s with higher degrees. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 2 and a {@code secondaryScale} of at least 4.</li>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Algebraic}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param a the inclusive lower bound of the generated elements
+     * @return {@code Algebraic}s greater than or equal to {@code a}
+     */
+    @Override
+    public @NotNull Iterable<Algebraic> rangeUp(@NotNull Algebraic a) {
+        int scale = getScale();
+        if (scale < 2) {
+            throw new IllegalStateException("this must have a scale of at least 2. Invalid scale: " + scale);
+        }
+        if (a.isRational()) {
+            Rational r = a.rationalValueExact();
+            return withElement(a, map(x -> x.add(r), positiveAlgebraics()));
+        } else {
+            BigInteger floor = a.floor();
+            Algebraic fractionalPart = a.subtract(floor);
+            return map(x -> x.add(floor), filterInfinite(x -> ge(x, fractionalPart), positiveAlgebraics()));
+        }
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code Algebraic}s less than or equal to {@code a}, and with a given
+     * degree. A larger {@code scale} corresponds to {@code Algebraic}s whose minimal polynomials have larger
+     * coefficients. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 2.</li>
+     *  <li>{@code degree} must be positive.</li>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Algebraic}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param a the inclusive upper bound of the generated elements
+     * @return {@code Algebraic}s less than or equal to {@code a} and with degree {@code degree}
+     */
+    @Override
+    public @NotNull Iterable<Algebraic> rangeDown(int degree, @NotNull Algebraic a) {
+        int scale = getScale();
+        if (scale < 2) {
+            throw new IllegalStateException("this must have a scale of at least 2. Invalid scale: " + scale);
+        }
+        if (a.isRational()) {
+            Rational r = a.rationalValueExact();
+            if (degree == 1) {
+                return withElement(a, map(x -> x.add(r), negativeAlgebraics(degree)));
+            } else {
+                return map(x -> x.add(r), negativeAlgebraics(degree));
+            }
+        } else {
+            BigInteger ceiling = a.ceiling();
+            Algebraic fractionalPart = a.subtract(ceiling);
+            return map(x -> x.add(ceiling), filterInfinite(x -> le(x, fractionalPart), negativeAlgebraics(degree)));
+        }
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code Algebraic}s less than or equal to {@code a}. A larger
+     * {@code scale} corresponds to {@code Algebraic}s whose minimal polynomials have larger coefficients, and a larger
+     * {@code secondaryScale} corresponds to {@code Algebraic}s with higher degrees. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 2 and a {@code secondaryScale} of at least 4.</li>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Algebraic}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param a the inclusive upper bound of the generated elements
+     * @return {@code Algebraic}s less than or equal to {@code a}
+     */
+    public @NotNull Iterable<Algebraic> rangeDown(@NotNull Algebraic a) {
+        int scale = getScale();
+        if (scale < 2) {
+            throw new IllegalStateException("this must have a scale of at least 2. Invalid scale: " + scale);
+        }
+        if (a.isRational()) {
+            Rational r = a.rationalValueExact();
+            return withElement(a, map(x -> x.add(r), negativeAlgebraics()));
+        } else {
+            BigInteger ceiling = a.ceiling();
+            Algebraic fractionalPart = a.subtract(ceiling);
+            return map(x -> x.add(ceiling), filterInfinite(x -> le(x, fractionalPart), negativeAlgebraics()));
+        }
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code Algebraic}s between {@code a} and {@code b}, inclusive, and with a
+     * given degree. A larger {@code scale} corresponds to {@code Algebraic}s whose minimal polynomials have larger
+     * coefficients. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 2.</li>
+     *  <li>{@code degree} must be positive.</li>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>{@code b} cannot be null.</li>
+     *  <li>{@code a} must be less than or equal to {@code b}.</li>
+     *  <li>If {@code a} and {@code b} are equal, {@code degree} must be equal to the degree of {@code a}.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Algebraic}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param a the inclusive lower bound of the generated elements
+     * @param b the inclusive upper bound of the generated elements
+     * @return {@code Algebraic}s between {@code a} and {@code b}, inclusive, and with degree {@code degree}
+     */
+    @Override
+    public @NotNull Iterable<Algebraic> range(int degree, @NotNull Algebraic a, @NotNull Algebraic b) {
+        if (gt(a, b)) {
+            throw new IllegalArgumentException("a must be less than or equal to b. a: " + a + ", b: " + b);
+        }
+        int scale = getScale();
+        if (scale < 2) {
+            throw new IllegalStateException("this must have a scale of at least 2. Invalid scale: " + scale);
+        }
+        if (a.equals(b)) {
+            if (a.degree() == degree) {
+                return repeat(a);
+            } else {
+                throw new IllegalArgumentException("If a and b are equal, degree must be equal to the degree of a." +
+                        " degree: " + degree + ", degree of a: " + a.degree());
+            }
+        }
+        boolean aRational = a.isRational();
+        boolean bRational = b.isRational();
+        Interval extension = Algebraic.intervalExtension(a, b);
+        Rational lower = extension.getLower().get();
+        Rational upper = extension.getUpper().get();
+        Rational extensionDiameter = upper.subtract(lower);
+        Iterable<Algebraic> xs = map(
+                x -> x.multiply(extensionDiameter).add(lower),
+                nonNegativeAlgebraicsLessThanOne(degree)
+        );
+        if (b.degree() == degree) {
+            return filterInfinite(
+                    x -> (aRational || ge(x, a)) && (bRational || le(x, b)),
+                    withElement(Algebraic.of(upper), xs)
+            );
+        } else {
+            return filterInfinite(x -> (aRational || ge(x, a)) && (bRational || le(x, b)), xs);
+        }
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code Algebraic}s between {@code a} and {@code b}, inclusive. A larger
+     * {@code scale} corresponds to {@code Algebraic}s whose minimal polynomials have larger coefficients, and a larger
+     * {@code secondaryScale} corresponds to {@code Algebraic}s with higher degrees. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 2 and a {@code secondaryScale} of at least 4.</li>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>{@code b} cannot be null.</li>
+     *  <li>{@code a} must be less than or equal to {@code b}.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Algebraic}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param a the inclusive lower bound of the generated elements
+     * @param b the inclusive upper bound of the generated elements
+     * @return {@code Algebraic}s between {@code a} and {@code b}, inclusive
+     */
+    @Override
+    public @NotNull Iterable<Algebraic> range(@NotNull Algebraic a, @NotNull Algebraic b) {
+        if (gt(a, b)) {
+            throw new IllegalArgumentException("a must be greater than or equal to b. a: " + a + ", b: " + b);
+        }
+        int scale = getScale();
+        if (scale < 2) {
+            throw new IllegalStateException("this must have a scale of at least 2. Invalid scale: " + scale);
+        }
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 4) {
+            throw new IllegalStateException("this must have a secondary scale of at least 4. Invalid secondary scale: "
+                    + scale);
+        }
+        if (a.equals(b)) {
+            return repeat(a);
+        }
+        boolean aRational = a.isRational();
+        boolean bRational = b.isRational();
+        Interval extension = Algebraic.intervalExtension(a, b);
+        Rational lower = extension.getLower().get();
+        Rational upper = extension.getUpper().get();
+        Rational extensionDiameter = upper.subtract(lower);
+        return filterInfinite(
+                x -> (aRational || ge(x, a)) && (bRational || le(x, b)),
+                withElement(
+                        Algebraic.of(upper),
+                        map(x -> x.multiply(extensionDiameter).add(lower), nonNegativeAlgebraicsLessThanOne())
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code Algebraic}s contained in a given {@code Interval} and with a given
+     * degree. A larger {@code scale} corresponds to {@code Algebraic}s whose minimal polynomials have larger
+     * coefficients. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 2.</li>
+     *  <li>{@code degree} must be positive.</li>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>If {@code a} has diameter 0, {@code degree} must be 1.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Algebraic}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param a an {@code Interval}
+     * @return {x|x∈{@code a} and deg(x)={@code degree}}
+     */
+    @Override
+    public @NotNull Iterable<Algebraic> algebraicsIn(int degree, @NotNull Interval a) {
+        int scale = getScale();
+        if (scale < 2) {
+            throw new IllegalStateException("this must have a scale of at least 2. Invalid scale: " + scale);
+        }
+        if (!a.getLower().isPresent() && !a.getUpper().isPresent()) {
+            return algebraics(degree);
+        } else if (!a.getLower().isPresent()) {
+            return rangeDown(degree, Algebraic.of(a.getUpper().get()));
+        } else if (!a.getUpper().isPresent()) {
+            return rangeUp(degree, Algebraic.of(a.getLower().get()));
+        } else {
+            return range(degree, Algebraic.of(a.getLower().get()), Algebraic.of(a.getUpper().get()));
+        }
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code Algebraic}s contained in a given {@code Interval}. A larger
+     * {@code scale} corresponds to {@code Algebraic}s whose minimal polynomials have larger coefficients, and a larger
+     * {@code secondaryScale} corresponds to {@code Algebraic}s with higher degrees. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 2.</li>
+     *  <li>{@code degree} must be positive.</li>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Algebraic}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param a an {@code Interval}
+     * @return {x|x∈{@code a} and deg(x)={@code degree}}
+     */
+    @Override
+    public @NotNull Iterable<Algebraic> algebraicsIn(@NotNull Interval a) {
+        int scale = getScale();
+        if (scale < 2) {
+            throw new IllegalStateException("this must have a scale of at least 2. Invalid scale: " + scale);
+        }
+        if (!a.getLower().isPresent() && !a.getUpper().isPresent()) {
+            return algebraics();
+        } else if (!a.getLower().isPresent()) {
+            return rangeDown(Algebraic.of(a.getUpper().get()));
+        } else if (!a.getUpper().isPresent()) {
+            return rangeUp(Algebraic.of(a.getLower().get()));
+        } else {
+            return range(Algebraic.of(a.getLower().get()), Algebraic.of(a.getUpper().get()));
+        }
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code Algebraic}s not contained in a given {@code Interval}. A larger
+     * {@code scale} corresponds to {@code Algebraic}s whose minimal polynomials have larger coefficients. Does not
+     * support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 2.</li>
+     *  <li>{@code a} cannot be (–∞, ∞).</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Algebraic}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param a an {@code Interval}
+     * @return {r|r∉{@code a} and deg(x)={@code degree}
+     */
+    @Override
+    public @NotNull Iterable<Algebraic> algebraicsNotIn(int degree, @NotNull Interval a) {
+        List<Interval> complement = a.complement();
+        switch (complement.size()) {
+            case 0:
+                throw new IllegalArgumentException("a cannot be (-Infinity, Infinity).");
+            case 1:
+                Algebraic boundary = Algebraic.of(a.getLower().isPresent() ? a.getLower().get() : a.getUpper().get());
+                return filterInfinite(r -> !r.equals(boundary), algebraicsIn(degree, complement.get(0)));
+            case 2:
+                Algebraic x = Algebraic.of(complement.get(0).getUpper().get());
+                Algebraic y = Algebraic.of(complement.get(1).getLower().get());
+                //noinspection RedundantCast
+                return choose(
+                        filterInfinite(r -> !r.equals(x), rangeDown(degree, x)),
+                        filterInfinite(r -> !r.equals(y), rangeUp(degree, y))
+                );
+            default: throw new IllegalStateException("unreachable");
+        }
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code Algebraic}s not contained in a given {@code Interval}. A larger
+     * {@code scale} corresponds to {@code Algebraic}s whose minimal polynomials have larger coefficients, and a larger
+     * {@code secondaryScale} corresponds to {@code Algebraic}s with higher degrees. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 2 and a {@code secondaryScale} of at least 4.</li>
+     *  <li>{@code a} cannot be (–∞, ∞).</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Algebraic}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param a an {@code Interval}
+     * @return {r|r∉{@code a}}
+     */
+    @Override
+    public @NotNull Iterable<Algebraic> algebraicsNotIn(@NotNull Interval a) {
+        List<Interval> complement = a.complement();
+        switch (complement.size()) {
+            case 0:
+                throw new IllegalArgumentException("a cannot be (-Infinity, Infinity).");
+            case 1:
+                Algebraic boundary = Algebraic.of(a.getLower().isPresent() ? a.getLower().get() : a.getUpper().get());
+                return filterInfinite(r -> !r.equals(boundary), algebraicsIn(complement.get(0)));
+            case 2:
+                Algebraic x = Algebraic.of(complement.get(0).getUpper().get());
+                Algebraic y = Algebraic.of(complement.get(1).getLower().get());
+                //noinspection RedundantCast
+                return choose(
+                        filterInfinite(r -> !r.equals(x), rangeDown(x)),
+                        filterInfinite(r -> !r.equals(y), rangeUp(y))
+                );
+            default: throw new IllegalStateException("unreachable");
+        }
     }
 
     /**

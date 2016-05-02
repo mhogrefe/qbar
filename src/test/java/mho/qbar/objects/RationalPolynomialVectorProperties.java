@@ -63,8 +63,7 @@ public class RationalPolynomialVectorProperties extends QBarTestProperties {
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
-        propertiesRead();
-        propertiesFindIn();
+        propertiesReadStrict();
         propertiesToString();
     }
 
@@ -1241,28 +1240,17 @@ public class RationalPolynomialVectorProperties extends QBarTestProperties {
         }
     }
 
-    private void propertiesRead() {
-        initialize("read(String)");
+    private void propertiesReadStrict() {
+        initialize("readStrict(String)");
         QBarTesting.propertiesReadHelper(
                 LIMIT,
                 P,
                 RATIONAL_POLYNOMIAL_VECTOR_CHARS,
                 P.rationalPolynomialVectors(),
-                RationalPolynomialVector::read,
+                RationalPolynomialVector::readStrict,
                 RationalPolynomialVector::validate,
-                false
-        );
-    }
-
-    private void propertiesFindIn() {
-        initialize("findIn(String)");
-        propertiesFindInHelper(
-                LIMIT,
-                P.getWheelsProvider(),
-                P.rationalPolynomialVectors(),
-                RationalPolynomialVector::read,
-                RationalPolynomialVector::findIn,
-                RationalPolynomialVector::validate
+                false,
+                true
         );
     }
 
@@ -1272,7 +1260,7 @@ public class RationalPolynomialVectorProperties extends QBarTestProperties {
                 LIMIT,
                 RATIONAL_POLYNOMIAL_VECTOR_CHARS,
                 P.rationalPolynomialVectors(),
-                RationalPolynomialVector::read
+                RationalPolynomialVector::readStrict
         );
     }
 }

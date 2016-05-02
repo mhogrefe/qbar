@@ -1,10 +1,12 @@
 package mho.qbar.iterableProviders;
 
+import mho.qbar.objects.Algebraic;
 import mho.qbar.objects.Interval;
 import mho.qbar.objects.Rational;
 import mho.qbar.objects.Variable;
 import mho.qbar.testing.QBarDemos;
 import mho.wheels.structures.Pair;
+import mho.wheels.structures.Quadruple;
 import mho.wheels.structures.Triple;
 
 import java.util.List;
@@ -12,6 +14,7 @@ import java.util.List;
 import static mho.wheels.iterables.IterableUtils.filterInfinite;
 import static mho.wheels.iterables.IterableUtils.take;
 import static mho.wheels.ordering.Ordering.le;
+import static mho.wheels.ordering.Ordering.lt;
 import static mho.wheels.testing.Testing.*;
 
 @SuppressWarnings("UnusedDeclaration")
@@ -22,7 +25,7 @@ public class QBarRandomProviderDemos extends QBarDemos {
 
     private void demoPositiveRationals() {
         Iterable<QBarRandomProvider> rps = filterInfinite(
-                s -> s.getScale() >= 4,
+                rp -> rp.getScale() >= 4,
                 P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
         );
         for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
@@ -32,7 +35,7 @@ public class QBarRandomProviderDemos extends QBarDemos {
 
     private void demoNegativeRationals() {
         Iterable<QBarRandomProvider> rps = filterInfinite(
-                s -> s.getScale() >= 4,
+                rp -> rp.getScale() >= 4,
                 P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
         );
         for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
@@ -42,7 +45,7 @@ public class QBarRandomProviderDemos extends QBarDemos {
 
     private void demoNonzeroRationals() {
         Iterable<QBarRandomProvider> rps = filterInfinite(
-                s -> s.getScale() >= 4,
+                rp -> rp.getScale() >= 4,
                 P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
         );
         for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
@@ -52,7 +55,7 @@ public class QBarRandomProviderDemos extends QBarDemos {
 
     private void demoRationals() {
         Iterable<QBarRandomProvider> rps = filterInfinite(
-                s -> s.getScale() >= 3,
+                rp -> rp.getScale() >= 3,
                 P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
         );
         for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
@@ -62,7 +65,7 @@ public class QBarRandomProviderDemos extends QBarDemos {
 
     private void demoNonNegativeRationalsLessThanOne() {
         Iterable<QBarRandomProvider> rps = filterInfinite(
-                s -> s.getScale() >= 4,
+                rp -> rp.getScale() >= 4,
                 P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
         );
         for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
@@ -110,7 +113,7 @@ public class QBarRandomProviderDemos extends QBarDemos {
 
     private void demoFinitelyBoundedIntervals() {
         Iterable<QBarRandomProvider> rps = filterInfinite(
-                s -> s.getScale() >= 6,
+                rp -> rp.getScale() >= 6,
                 P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
         );
         for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
@@ -120,7 +123,7 @@ public class QBarRandomProviderDemos extends QBarDemos {
 
     private void demoIntervals() {
         Iterable<QBarRandomProvider> rps = filterInfinite(
-                s -> s.getScale() >= 6,
+                rp -> rp.getScale() >= 6,
                 P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
         );
         for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
@@ -131,7 +134,7 @@ public class QBarRandomProviderDemos extends QBarDemos {
     private void demoRationalsIn() {
         Iterable<Pair<QBarRandomProvider, Interval>> ps = P.pairs(
                 filterInfinite(
-                        s -> s.getScale() >= 4,
+                        rp -> rp.getScale() >= 4,
                         P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
                 ),
                 P.intervals()
@@ -144,7 +147,7 @@ public class QBarRandomProviderDemos extends QBarDemos {
     private void demoRationalsNotIn() {
         Iterable<Pair<QBarRandomProvider, Interval>> ps = P.pairs(
                 filterInfinite(
-                        s -> s.getScale() >= 4,
+                        rp -> rp.getScale() >= 4,
                         P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
                 ),
                 filterInfinite(a -> !a.equals(Interval.ALL), P.intervals())
@@ -637,6 +640,46 @@ public class QBarRandomProviderDemos extends QBarDemos {
         }
     }
 
+    private void demoMonicPolynomials_int() {
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairsSquareRootOrder(
+                filterInfinite(
+                        rp -> rp.getScale() > 0,
+                        P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                ),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("monicPolynomials(" + p.a + ", " + p.b + ") = " + its(p.a.monicPolynomials(p.b)));
+        }
+    }
+
+    private void demoMonicPolynomials() {
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() > 0 && rp.getSecondaryScale() > 0,
+                P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
+            System.out.println("monicPolynomials(" + rp + ") = " + its(rp.monicPolynomials()));
+        }
+    }
+
+    private void demoMonicPolynomialsAtLeast() {
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
+                p -> p.a.getSecondaryScale() > p.b,
+                P.pairsSquareRootOrder(
+                        filterInfinite(
+                                rp -> rp.getScale() > 0 && rp.getSecondaryScale() > 0,
+                                P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
+                        ),
+                        P.withScale(4).rangeUpGeometric(-1)
+                )
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("monicPolynomialsAtLeast(" + p.a + ", " + p.b + ") = " +
+                    its(p.a.monicPolynomialsAtLeast(p.b)));
+        }
+    }
+
     private void demoSquareFreePolynomials_int() {
         Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairsSquareRootOrder(
                 filterInfinite(
@@ -844,7 +887,7 @@ public class QBarRandomProviderDemos extends QBarDemos {
 
     private void demoVariables() {
         Iterable<QBarRandomProvider> rps = filterInfinite(
-                s -> s.getScale() > 0,
+                rp -> rp.getScale() > 0,
                 P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
         );
         for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
@@ -858,32 +901,32 @@ public class QBarRandomProviderDemos extends QBarDemos {
         }
     }
 
-    private void demoExponentVectors() {
+    private void demoMonomials() {
         Iterable<QBarRandomProvider> rps = filterInfinite(
-                s -> s.getScale() > 0,
+                rp -> rp.getScale() > 0,
                 P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
         );
         for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
-            System.out.println("exponentVectors(" + rp + ") = " + its(rp.exponentVectors()));
+            System.out.println("monomials(" + rp + ") = " + its(rp.monomials()));
         }
     }
 
-    private void demoExponentVectors_List_Variable() {
+    private void demoMonomials_List_Variable() {
         Iterable<Pair<QBarRandomProvider, List<Variable>>> ps = P.pairs(
                 filterInfinite(
-                        s -> s.getScale() > 0,
+                        rp -> rp.getScale() > 0,
                         P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
                 ),
                 P.subsets(P.variables())
         );
         for (Pair<QBarRandomProvider, List<Variable>> p : take(SMALL_LIMIT, ps)) {
-            System.out.println("exponentVectors(" + p.a + ", " + p.b + ") = " + its(p.a.exponentVectors(p.b)));
+            System.out.println("monomials(" + p.a + ", " + p.b + ") = " + its(p.a.monomials(p.b)));
         }
     }
 
     private void demoMultivariatePolynomials() {
         Iterable<QBarRandomProvider> rps = filterInfinite(
-                s -> s.getScale() >= 2 && s.getSecondaryScale() > 0 && s.getTertiaryScale() >= 2,
+                rp -> rp.getScale() >= 2 && rp.getSecondaryScale() > 0 && rp.getTertiaryScale() >= 2,
                 P.withScale(4).qbarRandomProviders()
         );
         for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
@@ -894,7 +937,7 @@ public class QBarRandomProviderDemos extends QBarDemos {
     private void demoMultivariatePolynomials_List_Variable() {
         Iterable<Pair<QBarRandomProvider, List<Variable>>> ps = P.pairs(
                 filterInfinite(
-                        s -> s.getScale() >= 2 && s.getSecondaryScale() > 0 && s.getTertiaryScale() >= 2,
+                        rp -> rp.getScale() >= 2 && rp.getSecondaryScale() > 0 && rp.getTertiaryScale() >= 2,
                         P.withScale(4).qbarRandomProviders()
                 ),
                 P.subsets(P.variables())
@@ -908,7 +951,7 @@ public class QBarRandomProviderDemos extends QBarDemos {
     private void demoPositiveAlgebraics_int() {
         Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairs(
                 filterInfinite(
-                        s -> s.getScale() > 0,
+                        rp -> rp.getScale() > 0,
                         P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
                 ),
                 P.withScale(4).positiveIntegersGeometric()
@@ -920,7 +963,7 @@ public class QBarRandomProviderDemos extends QBarDemos {
 
     private void demoPositiveAlgebraics() {
         Iterable<QBarRandomProvider> rps = filterInfinite(
-                s -> s.getScale() > 0 && s.getSecondaryScale() >= 2,
+                rp -> rp.getScale() > 0 && rp.getSecondaryScale() >= 4,
                 P.withScale(2).qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
@@ -931,7 +974,7 @@ public class QBarRandomProviderDemos extends QBarDemos {
     private void demoNegativeAlgebraics_int() {
         Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairs(
                 filterInfinite(
-                        s -> s.getScale() > 0,
+                        rp -> rp.getScale() > 0,
                         P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
                 ),
                 P.withScale(4).positiveIntegersGeometric()
@@ -943,7 +986,7 @@ public class QBarRandomProviderDemos extends QBarDemos {
 
     private void demoNegativeAlgebraics() {
         Iterable<QBarRandomProvider> rps = filterInfinite(
-                s -> s.getScale() > 0 && s.getSecondaryScale() >= 2,
+                rp -> rp.getScale() > 0 && rp.getSecondaryScale() >= 4,
                 P.withScale(2).qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
@@ -954,7 +997,7 @@ public class QBarRandomProviderDemos extends QBarDemos {
     private void demoNonzeroAlgebraics_int() {
         Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairs(
                 filterInfinite(
-                        s -> s.getScale() > 0,
+                        rp -> rp.getScale() > 0,
                         P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
                 ),
                 P.withScale(4).positiveIntegersGeometric()
@@ -966,7 +1009,7 @@ public class QBarRandomProviderDemos extends QBarDemos {
 
     private void demoNonzeroAlgebraics() {
         Iterable<QBarRandomProvider> rps = filterInfinite(
-                s -> s.getScale() > 0 && s.getSecondaryScale() >= 2,
+                rp -> rp.getScale() > 0 && rp.getSecondaryScale() >= 4,
                 P.withScale(2).qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
@@ -977,7 +1020,7 @@ public class QBarRandomProviderDemos extends QBarDemos {
     private void demoAlgebraics_int() {
         Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairs(
                 filterInfinite(
-                        s -> s.getScale() > 0,
+                        rp -> rp.getScale() > 0,
                         P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
                 ),
                 P.withScale(4).positiveIntegersGeometric()
@@ -989,7 +1032,7 @@ public class QBarRandomProviderDemos extends QBarDemos {
 
     private void demoAlgebraics() {
         Iterable<QBarRandomProvider> rps = filterInfinite(
-                s -> s.getScale() > 0 && s.getSecondaryScale() >= 2,
+                rp -> rp.getScale() > 0 && rp.getSecondaryScale() >= 4,
                 P.withScale(2).qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
@@ -1000,7 +1043,7 @@ public class QBarRandomProviderDemos extends QBarDemos {
     private void demoNonNegativeAlgebraicsLessThanOne_int() {
         Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairs(
                 filterInfinite(
-                        s -> s.getScale() > 0,
+                        rp -> rp.getScale() > 0,
                         P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
                 ),
                 P.withScale(4).positiveIntegersGeometric()
@@ -1013,12 +1056,161 @@ public class QBarRandomProviderDemos extends QBarDemos {
 
     private void demoNonNegativeAlgebraicsLessThanOne() {
         Iterable<QBarRandomProvider> rps = filterInfinite(
-                s -> s.getScale() > 0 && s.getSecondaryScale() >= 2,
+                rp -> rp.getScale() > 0 && rp.getSecondaryScale() >= 4,
                 P.withScale(2).qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
             System.out.println("nonNegativeAlgebraicsLessThanOne(" + rp + ") = " +
                     its(rp.nonNegativeAlgebraicsLessThanOne()));
+        }
+    }
+
+    private void demoRangeUp_int_Algebraic() {
+        Iterable<Triple<QBarRandomProvider, Integer, Algebraic>> ts = P.triples(
+                filterInfinite(
+                        rp -> rp.getScale() >= 2,
+                        P.withScale(1).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                ),
+                P.withScale(4).positiveIntegersGeometric(),
+                P.withScale(1).withSecondaryScale(4).algebraics()
+        );
+        for (Triple<QBarRandomProvider, Integer, Algebraic> t : take(SMALL_LIMIT, ts)) {
+            System.out.println("rangeUp(" + t.a + ", " + t.b + ", " + t.c + ") = " + its(t.a.rangeUp(t.b, t.c)));
+        }
+    }
+
+    private void demoRangeUp_Algebraic() {
+        Iterable<Pair<QBarRandomProvider, Algebraic>> ps = P.pairs(
+                filterInfinite(
+                        rp -> rp.getScale() >= 2 && rp.getSecondaryScale() >= 4,
+                        P.withScale(1).qbarRandomProvidersDefaultTertiaryScale()
+                ),
+                P.withScale(1).withSecondaryScale(4).algebraics()
+        );
+        for (Pair<QBarRandomProvider, Algebraic> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("rangeUp(" + p.a + ", " + p.b + ") = " + its(p.a.rangeUp(p.b)));
+        }
+    }
+
+    private void demoRangeDown_int_Algebraic() {
+        Iterable<Triple<QBarRandomProvider, Integer, Algebraic>> ts = P.triples(
+                filterInfinite(
+                        rp -> rp.getScale() >= 2,
+                        P.withScale(1).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                ),
+                P.withScale(4).positiveIntegersGeometric(),
+                P.withScale(1).withSecondaryScale(4).algebraics()
+        );
+        for (Triple<QBarRandomProvider, Integer, Algebraic> t : take(SMALL_LIMIT, ts)) {
+            System.out.println("rangeDown(" + t.a + ", " + t.b + ", " + t.c + ") = " + its(t.a.rangeDown(t.b, t.c)));
+        }
+    }
+
+    private void demoRangeDown_Algebraic() {
+        Iterable<Pair<QBarRandomProvider, Algebraic>> ps = P.pairs(
+                filterInfinite(
+                        rp -> rp.getScale() >= 2 && rp.getSecondaryScale() >= 4,
+                        P.withScale(1).qbarRandomProvidersDefaultTertiaryScale()
+                ),
+                P.withScale(1).withSecondaryScale(4).algebraics()
+        );
+        for (Pair<QBarRandomProvider, Algebraic> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("rangeDown(" + p.a + ", " + p.b + ") = " + its(p.a.rangeDown(p.b)));
+        }
+    }
+
+    private void demoRange_int_Algebraic_Algebraic() {
+        Iterable<Quadruple<QBarRandomProvider, Integer, Algebraic, Algebraic>> qs = filterInfinite(
+                q -> q.b == q.c.degree() && q.c.equals(q.d) || lt(q.c, q.d),
+                P.quadruples(
+                        filterInfinite(
+                                rp -> rp.getScale() >= 2,
+                                P.withScale(1).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                        ),
+                        P.withScale(4).positiveIntegersGeometric(),
+                        P.withScale(1).withSecondaryScale(4).algebraics(),
+                        P.withScale(1).withSecondaryScale(4).algebraics()
+                )
+        );
+        for (Quadruple<QBarRandomProvider, Integer, Algebraic, Algebraic> q : take(SMALL_LIMIT, qs)) {
+            System.out.println("range(" + q.a + ", " + q.b + ", " + q.c + ", " + q.d + ") = " +
+                    its(q.a.range(q.b, q.c, q.d)));
+        }
+    }
+
+    private void demoRange_Algebraic_Algebraic() {
+        Iterable<Triple<QBarRandomProvider, Algebraic, Algebraic>> ts = filterInfinite(
+                t -> le(t.b, t.c),
+                P.triples(
+                        filterInfinite(
+                                rp -> rp.getScale() >= 2 && rp.getSecondaryScale() >= 4,
+                                P.withScale(1).qbarRandomProvidersDefaultTertiaryScale()
+                        ),
+                        P.withScale(1).withSecondaryScale(4).algebraics(),
+                        P.withScale(1).withSecondaryScale(4).algebraics()
+                )
+        );
+        for (Triple<QBarRandomProvider, Algebraic, Algebraic> t : take(MEDIUM_LIMIT, ts)) {
+            System.out.println("range(" + t.a + ", " + t.b + ", " + t.c + ") = " + its(t.a.range(t.b, t.c)));
+        }
+    }
+
+    private void demoAlgebraicsIn_int_Interval() {
+        Iterable<Triple<QBarRandomProvider, Integer, Interval>> ts = filterInfinite(
+                t -> t.b == 1 || !t.c.isFinitelyBounded() || !t.c.getLower().get().equals(t.c.getUpper().get()),
+                        P.triples(
+                        filterInfinite(
+                                rp -> rp.getScale() >= 2,
+                                P.withScale(1).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                        ),
+                        P.withScale(4).positiveIntegersGeometric(),
+                        P.withScale(6).intervals()
+                )
+        );
+        for (Triple<QBarRandomProvider, Integer, Interval> t : take(SMALL_LIMIT, ts)) {
+            System.out.println("algebraicsIn(" + t.a + ", " + t.b + ", " + t.c + ") = " +
+                    its(t.a.algebraicsIn(t.b, t.c)));
+        }
+    }
+
+    private void demoAlgebraicsIn_Interval() {
+        Iterable<Pair<QBarRandomProvider, Interval>> ps = P.pairs(
+                filterInfinite(
+                        rp -> rp.getScale() >= 2 && rp.getSecondaryScale() >= 4,
+                        P.withScale(1).qbarRandomProvidersDefaultTertiaryScale()
+                ),
+                P.withScale(6).intervals()
+        );
+        for (Pair<QBarRandomProvider, Interval> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("algebraicsIn(" + p.a + ", " + p.b + ") = " + its(p.a.algebraicsIn(p.b)));
+        }
+    }
+
+    private void demoAlgebraicsNotIn_int_Interval() {
+        Iterable<Triple<QBarRandomProvider, Integer, Interval>> ts = P.triples(
+                filterInfinite(
+                        rp -> rp.getScale() >= 2,
+                        P.withScale(1).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                ),
+                P.withScale(4).positiveIntegersGeometric(),
+                filterInfinite(a -> !a.equals(Interval.ALL), P.withScale(6).intervals())
+        );
+        for (Triple<QBarRandomProvider, Integer, Interval> t : take(SMALL_LIMIT, ts)) {
+            System.out.println("algebraicsNotIn(" + t.a + ", " + t.b + ", " + t.c + ") = " +
+                    its(t.a.algebraicsNotIn(t.b, t.c)));
+        }
+    }
+
+    private void demoAlgebraicsNotIn_Interval() {
+        Iterable<Pair<QBarRandomProvider, Interval>> ps = P.pairs(
+                filterInfinite(
+                        rp -> rp.getScale() >= 2 && rp.getSecondaryScale() >= 4,
+                        P.withScale(1).qbarRandomProvidersDefaultTertiaryScale()
+                ),
+                filterInfinite(a -> !a.equals(Interval.ALL), P.withScale(6).intervals())
+        );
+        for (Pair<QBarRandomProvider, Interval> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("algebraicsNotIn(" + p.a + ", " + p.b + ") = " + its(p.a.algebraicsNotIn(p.b)));
         }
     }
 }

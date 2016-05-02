@@ -77,6 +77,12 @@ public class IntervalDemos extends QBarDemos {
         }
     }
 
+    private void demoContains_Algebraic() {
+        for (Pair<Interval, Algebraic> p : take(LIMIT, P.pairs(P.intervals(), P.withScale(4).algebraics()))) {
+            System.out.println(p.a + (p.a.contains(p.b) ? " contains " : " does not contain ") + p.b);
+        }
+    }
+
     private void demoContains_Interval() {
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
             System.out.println(p.a + (p.a.contains(p.b) ? " contains " : " does not contain ") + p.b);
@@ -351,27 +357,15 @@ public class IntervalDemos extends QBarDemos {
         }
     }
 
-    private void demoRead() {
+    private void demoReadStrict() {
         for (String s : take(LIMIT, P.strings())) {
-            System.out.println("read(" + nicePrint(s) + ") = " + read(s));
+            System.out.println("readStrict(" + nicePrint(s) + ") = " + readStrict(s));
         }
     }
 
-    private void demoRead_targeted() {
+    private void demoReadStrict_targeted() {
         for (String s : take(LIMIT, P.strings(INTERVAL_CHARS))) {
-            System.out.println("read(" + s + ") = " + read(s));
-        }
-    }
-
-    private void demoFindIn() {
-        for (String s : take(LIMIT, P.strings())) {
-            System.out.println("findIn(" + nicePrint(s) + ") = " + findIn(s));
-        }
-    }
-
-    private void demoFindIn_targeted() {
-        for (String s : take(LIMIT, P.strings(INTERVAL_CHARS))) {
-            System.out.println("findIn(" + s + ") = " + findIn(s));
+            System.out.println("readStrict(" + s + ") = " + readStrict(s));
         }
     }
 

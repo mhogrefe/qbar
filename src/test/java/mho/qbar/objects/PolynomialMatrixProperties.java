@@ -69,8 +69,7 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
-        propertiesRead();
-        propertiesFindIn();
+        propertiesReadStrict();
         propertiesToString();
     }
 
@@ -1305,33 +1304,22 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
         }
     }
 
-    private void propertiesRead() {
-        initialize("read(String)");
+    private void propertiesReadStrict() {
+        initialize("readStrict(String)");
         QBarTesting.propertiesReadHelper(
                 LIMIT,
                 P,
                 POLYNOMIAL_MATRIX_CHARS,
                 P.polynomialMatrices(),
-                PolynomialMatrix::read,
+                PolynomialMatrix::readStrict,
                 PolynomialMatrix::validate,
-                false
-        );
-    }
-
-    private void propertiesFindIn() {
-        initialize("findIn(String)");
-        propertiesFindInHelper(
-                LIMIT,
-                P.getWheelsProvider(),
-                P.polynomialMatrices(),
-                PolynomialMatrix::read,
-                PolynomialMatrix::findIn,
-                PolynomialMatrix::validate
+                false,
+                true
         );
     }
 
     private void propertiesToString() {
         initialize("toString()");
-        propertiesToStringHelper(LIMIT, POLYNOMIAL_MATRIX_CHARS, P.polynomialMatrices(), PolynomialMatrix::read);
+        propertiesToStringHelper(LIMIT, POLYNOMIAL_MATRIX_CHARS, P.polynomialMatrices(), PolynomialMatrix::readStrict);
     }
 }

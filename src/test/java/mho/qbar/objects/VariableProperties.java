@@ -26,8 +26,7 @@ public class VariableProperties extends QBarTestProperties {
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
-        propertiesRead();
-        propertiesFindIn();
+        propertiesReadStrict();
         propertiesToString();
     }
 
@@ -64,33 +63,22 @@ public class VariableProperties extends QBarTestProperties {
         propertiesCompareToHelper(LIMIT, P, QBarIterableProvider::variables);
     }
 
-    private void propertiesRead() {
-        initialize("read(String)");
+    private void propertiesReadStrict() {
+        initialize("readStrict(String)");
         QBarTesting.propertiesReadHelper(
             LIMIT,
             P,
             VARIABLE_CHARS,
             P.variables(),
-            Variable::read,
+            Variable::readStrict,
             Variable::validate,
-            false
-        );
-    }
-
-    private void propertiesFindIn() {
-        initialize("findIn(String)");
-        propertiesFindInHelper(
-                LIMIT,
-                P.getWheelsProvider(),
-                P.variables(),
-                Variable::read,
-                Variable::findIn,
-                Variable::validate
+            false,
+            true
         );
     }
 
     private void propertiesToString() {
         initialize("toString()");
-        propertiesToStringHelper(LIMIT, VARIABLE_CHARS, P.variables(), Variable::read);
+        propertiesToStringHelper(LIMIT, VARIABLE_CHARS, P.variables(), Variable::readStrict);
     }
 }

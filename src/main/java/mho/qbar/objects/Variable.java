@@ -1,7 +1,5 @@
 package mho.qbar.objects;
 
-import mho.wheels.io.Readers;
-import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
@@ -13,7 +11,7 @@ import static mho.wheels.testing.Testing.assertTrue;
  * <p>A variable in a polynomial. The names of the variables with indices 0, 1, 2, … are "a", "b", "c", …, "aa", "bb",
  * "cc", …, "aaa", "bbb", "ccc", ….</p>
  */
-public class Variable implements Comparable<Variable> {
+public final class Variable implements Comparable<Variable> {
     /**
      * The letters of the English alphabet.
      */
@@ -130,31 +128,12 @@ public class Variable implements Comparable<Variable> {
      * @param s a string representation of a {@code Variable}
      * @return the {@code Variable} represented by {@code s}, or an empty {@code Optional} if {@code s} is invalid
      */
-    public static @NotNull Optional<Variable> read(@NotNull String s) {
+    public static @NotNull Optional<Variable> readStrict(@NotNull String s) {
         if (s.isEmpty()) return Optional.empty();
         char letter = head(s);
         if (letter < 'a' || letter > 'z') return Optional.empty();
         if (any(c -> c != letter, s)) return Optional.empty();
         return Optional.of(new Variable(ALPHABET.length() * (s.length() - 1) + letter - 'a'));
-    }
-
-    /**
-     * Finds the first occurrence of a {@code Variable} in a {@code String}. Returns the {@code Variable} and the index
-     * at which it was found. Returns an empty {@code Optional} if no {@code Variable} is found. Only {@code String}s
-     * which could have been emitted by {@link Variable#toString} are recognized. The longest possible {@code Variable}
-     * is parsed.
-     *
-     * <ul>
-     *  <li>{@code s} must be non-null.</li>
-     *  <li>The result is non-null. If it is non-empty, then neither of the {@code Pair}'s components is null, and the
-     *  second component is non-negative.</li>
-     * </ul>
-     *
-     * @param s the input {@code String}
-     * @return the first {@code Variable} found in {@code s}, and the index at which it was found
-     */
-    public static @NotNull Optional<Pair<Variable, Integer>> findIn(@NotNull String s) {
-        return Readers.genericFindIn(Variable::read, ALPHABET).apply(s);
     }
 
     /**
