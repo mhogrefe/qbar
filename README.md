@@ -15,7 +15,7 @@ Progress
 | Algebraic                | ✘       | ✘       | ✘     | ✘     | ✘          |
 | Interval                 | ✔       | ✔       | ✔     | ✔     | ✔          |
 | Matrix                   | ✘       | ✘       | ✘     | ✘     | ✘          |
-| Monomial                 | ✘       | ✘       | ✘     | ✘     | ✘          |
+| Monomial                 | ✔       | ✔       | ✔     | ✔     | ✔          |
 | MonomialOrder            | ✔       | ✔       | ✔     | ✔     | ✔          |
 | MultivariatePolynomial   | ✘       | ✘       | ✘     | ✘     | ✘          |
 | Polynomial               | ✘       | ✘       | ✘     | ✘     | ✘          |
