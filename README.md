@@ -3,6 +3,7 @@ qbar
 
 Rational numbers, real numbers, real algebraic numbers, algebraic angles.
 Uses heavily-modified code from [JAS](http://krum.rz.uni-mannheim.de/jas/) for polynomial factorization.
+Requires [wheels](https://github.com/mhogrefe/wheels).
 
 Progress
 ========
