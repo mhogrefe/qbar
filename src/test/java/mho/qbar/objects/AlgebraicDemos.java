@@ -1,7 +1,6 @@
 package mho.qbar.objects;
 
 import mho.qbar.testing.QBarDemos;
-import mho.wheels.io.Readers;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.numberUtils.FloatingPointUtils;
 import mho.wheels.ordering.Ordering;
@@ -11,13 +10,9 @@ import org.jetbrains.annotations.NotNull;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.util.Optional;
 
 import static mho.qbar.objects.Algebraic.*;
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.iterables.IterableUtils.filterInfinite;
-import static mho.wheels.iterables.IterableUtils.map;
-import static mho.wheels.iterables.IterableUtils.take;
 import static mho.wheels.testing.Testing.nicePrint;
 
 @SuppressWarnings("UnusedDeclaration")

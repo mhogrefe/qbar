@@ -3,7 +3,6 @@ package mho.qbar.objects;
 import mho.wheels.io.Readers;
 import mho.wheels.iterables.NoRemoveIterable;
 import mho.wheels.ordering.comparators.ShortlexComparator;
-import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;

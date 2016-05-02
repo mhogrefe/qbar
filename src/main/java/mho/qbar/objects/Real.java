@@ -4,7 +4,6 @@ import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
-import mho.wheels.testing.Testing;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
@@ -16,7 +15,8 @@ import java.util.function.Function;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.le;
 import static mho.wheels.ordering.Ordering.lt;
-import static mho.wheels.testing.Testing.*;
+import static mho.wheels.testing.Testing.TINY_LIMIT;
+import static mho.wheels.testing.Testing.assertTrue;
 
 /**
  * <p>The {@code Real} class represents real numbers as infinite, converging sequences of bounding intervals. Every

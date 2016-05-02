@@ -13,11 +13,10 @@ import java.util.*;
 import java.util.function.Function;
 
 import static mho.qbar.objects.MultivariatePolynomial.*;
-import static mho.qbar.objects.MultivariatePolynomial.ZERO;
-import static mho.qbar.objects.MultivariatePolynomial.of;
+import static mho.qbar.objects.MultivariatePolynomial.sum;
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.ordering.Ordering.*;
 import static mho.wheels.ordering.Ordering.compare;
+import static mho.wheels.ordering.Ordering.max;
 import static mho.wheels.testing.Testing.*;
 
 public class MultivariatePolynomialProperties extends QBarTestProperties {

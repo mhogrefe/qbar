@@ -1,13 +1,13 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
-import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.util.List;
 
-import static mho.qbar.objects.Variable.*;
+import static mho.qbar.objects.Variable.of;
+import static mho.qbar.objects.Variable.readStrict;
 import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.assertFalse;
 

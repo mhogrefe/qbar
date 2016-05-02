@@ -15,9 +15,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.ordering.Ordering.ge;
-import static mho.wheels.ordering.Ordering.gt;
-import static mho.wheels.ordering.Ordering.le;
+import static mho.wheels.ordering.Ordering.*;
 
 /**
  * A {@code QBarExhaustiveProvider} produces {@code Iterable}s that generate some set of values in a specified order.

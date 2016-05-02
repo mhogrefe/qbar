@@ -5,7 +5,8 @@ import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
-import static mho.qbar.objects.Variable.*;
+import static mho.qbar.objects.Variable.of;
+import static mho.qbar.objects.Variable.readStrict;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.MEDIUM_LIMIT;
 import static mho.wheels.testing.Testing.nicePrint;

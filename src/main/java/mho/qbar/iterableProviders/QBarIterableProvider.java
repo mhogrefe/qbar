@@ -1,7 +1,6 @@
 package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.*;
-import mho.qbar.objects.Vector;
 import mho.wheels.iterables.IterableProvider;
 import mho.wheels.iterables.RandomProvider;
 import mho.wheels.math.BinaryFraction;
@@ -14,11 +13,13 @@ import org.jetbrains.annotations.Nullable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.ordering.Ordering.*;
+import static mho.wheels.ordering.Ordering.lt;
 
 /**
  * This class provides {@code Iterables} for testing.

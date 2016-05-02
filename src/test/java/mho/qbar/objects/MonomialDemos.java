@@ -7,7 +7,10 @@ import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import static mho.qbar.objects.Monomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
