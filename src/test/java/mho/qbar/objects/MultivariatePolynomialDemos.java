@@ -23,6 +23,16 @@ public class MultivariatePolynomialDemos extends QBarDemos {
         super(useRandom);
     }
 
+    private void demoIterable() {
+        Iterable<Pair<MultivariatePolynomial, MonomialOrder>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).multivariatePolynomials(),
+                P.monomialOrders()
+        );
+        for (Pair<MultivariatePolynomial, MonomialOrder> p : take(LIMIT, ps)) {
+            System.out.println("iterable(" + p.a + ", " + p.b + ") = " + toList(p.a.iterable(p.b)));
+        }
+    }
+
     private void demoIterator() {
         for (MultivariatePolynomial p : take(LIMIT, P.withScale(4).multivariatePolynomials())) {
             System.out.println("toList(" + p + ") = " + toList(p));
@@ -124,6 +134,12 @@ public class MultivariatePolynomialDemos extends QBarDemos {
     private void demoDegree() {
         for (MultivariatePolynomial p : take(LIMIT, P.withScale(4).multivariatePolynomials())) {
             System.out.println("degree(" + p + ") = " + p.degree());
+        }
+    }
+
+    private void demoIsHomogeneous() {
+        for (MultivariatePolynomial p : take(LIMIT, P.withScale(4).multivariatePolynomials())) {
+            System.out.println(p + " is " + (p.isHomogeneous() ? "" : "not ") + "homogeneous");
         }
     }
 
@@ -277,15 +293,41 @@ public class MultivariatePolynomialDemos extends QBarDemos {
         }
     }
 
-    private void demoReadStrict() {
+    private void demoReadStrict_String_MonomialOrder() {
+        for (Pair<String, MonomialOrder> p : take(LIMIT, P.pairsLogarithmicOrder(P.strings(), P.monomialOrders()))) {
+            System.out.println("readStrict(" + nicePrint(p.a) + ", " + p.b + ") = " + readStrict(p.a, p.b));
+        }
+    }
+
+    private void demoReadStrict_String_MonomialOrder_targeted() {
+        Iterable<Pair<String, MonomialOrder>> ps = P.pairsLogarithmicOrder(
+                P.strings(MULTIVARIATE_POLYNOMIAL_CHARS),
+                P.monomialOrders()
+        );
+        for (Pair<String, MonomialOrder> p : take(LIMIT, ps)) {
+            System.out.println("readStrict(" + p.a + ", " + p.b + ") = " + readStrict(p.a, p.b));
+        }
+    }
+
+    private void demoReadStrict_String() {
         for (String s : take(LIMIT, P.strings())) {
             System.out.println("readStrict(" + nicePrint(s) + ") = " + readStrict(s));
         }
     }
 
-    private void demoReadStrict_targeted() {
+    private void demoReadStrict_String_targeted() {
         for (String s : take(LIMIT, P.strings(MULTIVARIATE_POLYNOMIAL_CHARS))) {
             System.out.println("readStrict(" + s + ") = " + readStrict(s));
+        }
+    }
+
+    private void demoToString_MonomialOrder() {
+        Iterable<Pair<MultivariatePolynomial, MonomialOrder>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).multivariatePolynomials(),
+                P.monomialOrders()
+        );
+        for (Pair<MultivariatePolynomial, MonomialOrder> p : take(LIMIT, ps)) {
+            System.out.println("toString(" + p.a + ", " + p.b + ") = " + p.a.toString(p.b));
         }
     }
 

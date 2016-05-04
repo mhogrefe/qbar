@@ -28,6 +28,7 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
 
     @Override
     protected void testBothModes() {
+        propertiesIterable();
         propertiesIterator();
         propertiesCoefficient();
         propertiesOf_List_Pair_Monomial_BigInteger();
@@ -42,6 +43,7 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         propertiesTermCount();
         propertiesMaxCoefficientBitLength();
         propertiesDegree();
+        propertiesIsHomogeneous();
         propertiesCoefficientsOfVariable();
         propertiesAdd();
         compareImplementationsAdd();
@@ -58,8 +60,29 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
-        propertiesReadStrict();
+        propertiesReadStrict_String_MonomialOrder();
+        propertiesReadStrict_String();
+        propertiesToString_MonomialOrder();
         propertiesToString();
+    }
+
+    private void propertiesIterable() {
+        initialize("iterable(MonomialOrder)");
+        Iterable<Pair<MultivariatePolynomial, MonomialOrder>> ps = P.pairsLogarithmicOrder(
+                P.multivariatePolynomials(),
+                P.monomialOrders()
+        );
+        for (Pair<MultivariatePolynomial, MonomialOrder> p : take(LIMIT, ps)) {
+            Iterable<Pair<Monomial, BigInteger>> termIterable = p.a.iterable(p.b);
+            List<Pair<Monomial, BigInteger>> terms = toList(termIterable);
+            assertFalse(p, any(t -> t == null || t.a == null || t.b == null, terms));
+            //noinspection RedundantCast
+            assertTrue(p, increasing(p.b, (Iterable<Monomial>) map(t -> t.a, terms)));
+            //noinspection Convert2MethodRef
+            inverse(IterableUtils::toList, (List<Pair<Monomial, BigInteger>> ts) -> of(ts), p.a);
+            testNoRemove(termIterable);
+            testHasNext(termIterable);
+        }
     }
 
     private void propertiesIterator() {
@@ -252,6 +275,13 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         for (MultivariatePolynomial p : take(LIMIT, P.multivariatePolynomials())) {
             int degree = p.degree();
             assertTrue(p, degree >= -1);
+        }
+    }
+
+    private void propertiesIsHomogeneous() {
+        initialize("isHomogeneous()");
+        for (MultivariatePolynomial p : take(LIMIT, P.multivariatePolynomials())) {
+            p.isHomogeneous();
         }
     }
 
@@ -670,7 +700,25 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         }
     }
 
-    private void propertiesReadStrict() {
+    private void propertiesReadStrict_String_MonomialOrder() {
+        initialize("readStrict(String, MonomialOrder)");
+        for (Pair<String, MonomialOrder> p : take(LIMIT, P.pairsLogarithmicOrder(P.strings(), P.monomialOrders()))) {
+            readStrict(p.a, p.b);
+        }
+
+        Iterable<Pair<MultivariatePolynomial, MonomialOrder>> ps = P.pairsLogarithmicOrder(
+                P.multivariatePolynomials(),
+                P.monomialOrders()
+        );
+        for (Pair<MultivariatePolynomial, MonomialOrder> p : take(LIMIT, ps)) {
+            Optional<MultivariatePolynomial> op = readStrict(p.a.toString(p.b), p.b);
+            MultivariatePolynomial q = op.get();
+            q.validate();
+            assertEquals(p, p.a, q);
+        }
+    }
+
+    private void propertiesReadStrict_String() {
         initialize("readStrict(String)");
         QBarTesting.propertiesReadHelper(
                 LIMIT,
@@ -682,6 +730,21 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
                 false,
                 true
         );
+    }
+
+    private void propertiesToString_MonomialOrder() {
+        initialize("toString(MonomialOrder)");
+        Iterable<Pair<MultivariatePolynomial, MonomialOrder>> ps = P.pairsLogarithmicOrder(
+                P.multivariatePolynomials(),
+                P.monomialOrders()
+        );
+        for (Pair<MultivariatePolynomial, MonomialOrder> p : take(LIMIT, ps)) {
+            String s = p.a.toString(p.b);
+            assertTrue(p, isSubsetOf(s, MULTIVARIATE_POLYNOMIAL_CHARS));
+            Optional<MultivariatePolynomial> op = readStrict(s, p.b);
+            assertTrue(p, op.isPresent());
+            assertEquals(p, op.get(), p.a);
+        }
     }
 
     private void propertiesToString() {

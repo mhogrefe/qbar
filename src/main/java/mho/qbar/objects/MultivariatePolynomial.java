@@ -11,6 +11,7 @@ import java.math.BigInteger;
 import java.util.*;
 
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.testing.Testing.assertEquals;
 import static mho.wheels.testing.Testing.assertTrue;
 
 /**
@@ -36,6 +37,11 @@ public final class MultivariatePolynomial implements
             new MultivariatePolynomial(Collections.singletonList(new Pair<>(Monomial.ONE, BigInteger.ONE)));
 
     /**
+     * The default order of the {@code Monomial}s in {@code this}
+     */
+    private static final @NotNull MonomialOrder DEFAULT_ORDER = MonomialOrder.GREVLEX;
+
+    /**
      * This {@code MultivariatePolynomial}'s terms. The second element of each pair is the coefficient of the
      * {@code Monomial} in the first slot. The terms are in grevlex order.
      */
@@ -54,6 +60,28 @@ public final class MultivariatePolynomial implements
      */
     private MultivariatePolynomial(@NotNull List<Pair<Monomial, BigInteger>> terms) {
         this.terms = terms;
+    }
+
+    /**
+     * Returns an {@code Iterable} over this {@code MultivariatePolynomial}'s terms, from lowest to highest with a
+     * given {@code MonomialOrder}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code order} is not null.</li>
+     *  <li>The result is finite, and contains no nulls. The {@code Monomial}s are increasing with respect to
+     *  {@code order}.</li>
+     * </ul>
+     *
+     * @param order the monomial order with respect to which the terms descend
+     * @return an {@code Iterable} over this {@code MultivariatePolynomial}'s terms
+     */
+    public @NotNull Iterable<Pair<Monomial, BigInteger>> iterable(@NotNull MonomialOrder order) {
+        if (order == DEFAULT_ORDER) {
+            return new NoRemoveIterable<>(terms);
+        } else {
+            return new NoRemoveIterable<>(sort((x, y) -> order.compare(x.a, y.a), terms));
+        }
     }
 
     /**
@@ -315,6 +343,20 @@ public final class MultivariatePolynomial implements
     @SuppressWarnings("JavaDoc")
     public int degree() {
         return terms.isEmpty() ? -1 : last(terms).a.degree();
+    }
+
+    /**
+     * Whether {@code this} is homogeneous; whether the degrees of each {@code Monomial} are equal.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is a homogeneous polynomial
+     */
+    public boolean isHomogeneous() {
+        return same(map(t -> t.a.degree(), terms));
     }
 
     /**
@@ -799,18 +841,24 @@ public final class MultivariatePolynomial implements
 
     /**
      * Creates a {@code MultivariatePolynomial} from a {@code String}. Valid input takes the form of a {@code String}
-     * that could have been returned by {@link MultivariatePolynomial#toString()}.
+     * that could have been returned by {@link MultivariatePolynomial#toString(MonomialOrder)} applied to
+     * {@code order}.
      *
      * <ul>
-     *  <li>{@code s} must be non-null.</li>
+     *  <li>{@code s} cannot be null.</li>
+     *  <li>{@code order} cannot be null.</li>
      *  <li>The result may contain any {@code MultivariatePolynomial}, or be empty.</li>
      * </ul>
      *
      * @param s a string representation of a {@code MultivariatePolynomial}
+     * @param order the monomial order with respect to which the input terms must descend
      * @return the {@code MultivariatePolynomial} represented by {@code s}, or an empty {@code Optional} if {@code s}
      * is invalid
      */
-    public static @NotNull Optional<MultivariatePolynomial> readStrict(@NotNull String s) {
+    public static @NotNull Optional<MultivariatePolynomial> readStrict(
+            @NotNull String s,
+            @NotNull MonomialOrder order
+    ) {
         if (s.equals("0")) return Optional.of(ZERO);
         if (s.equals("1")) return Optional.of(ONE);
         if (s.isEmpty() || head(s) == '+') return Optional.empty();
@@ -882,26 +930,51 @@ public final class MultivariatePolynomial implements
             }
         }
         //noinspection RedundantCast
-        if (!increasing((Iterable<Monomial>) map(t -> t.a, terms))) return Optional.empty();
+        if (!increasing(order, (Iterable<Monomial>) map(t -> t.a, terms))) return Optional.empty();
+        if (order != DEFAULT_ORDER) {
+            terms = sort((x, y) -> x.a.compareTo(y.a), terms);
+        }
         return Optional.of(new MultivariatePolynomial(terms));
     }
 
     /**
-     * Creates a {@code String} representation of {@code this}.
+     * Creates a {@code MultivariatePolynomial} from a {@code String}. Valid input takes the form of a {@code String}
+     * that could have been returned by {@link MultivariatePolynomial#toString()}.
+     *
+     * <ul>
+     *  <li>{@code s} must be non-null.</li>
+     *  <li>The result may contain any {@code MultivariatePolynomial}, or be empty.</li>
+     * </ul>
+     *
+     * @param s a string representation of a {@code MultivariatePolynomial}
+     * @return the {@code MultivariatePolynomial} represented by {@code s}, or an empty {@code Optional} if {@code s}
+     * is invalid
+     */
+    public static @NotNull Optional<MultivariatePolynomial> readStrict(@NotNull String s) {
+        return readStrict(s, DEFAULT_ORDER);
+    }
+
+    /**
+     * Creates a {@code String} representation of {@code this}. The terms are descending with respect to {@code order}.
      *
      * <ul>
      *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code order} cannot be null.</li>
      *  <li>See tests and demos for example results.</li>
      * </ul>
      *
+     * @param order the monomial order with respect to which the terms descend
      * @return a {@code String} representation of {@code this}
      */
-    public @NotNull String toString() {
+    public @NotNull String toString(@NotNull MonomialOrder order) {
         if (this == ZERO) return "0";
+        List<Pair<Monomial, BigInteger>> sortedTerms = order == DEFAULT_ORDER ?
+                terms :
+                sort((x, y) -> order.compare(x.a, y.a), terms);
         StringBuilder sb = new StringBuilder();
         boolean first = true;
-        for (int i = terms.size() - 1; i >= 0; i--) {
-            Pair<Monomial, BigInteger> term = terms.get(i);
+        for (int i = sortedTerms.size() - 1; i >= 0; i--) {
+            Pair<Monomial, BigInteger> term = sortedTerms.get(i);
             if (term.b.signum() == 1 && !first) {
                 sb.append('+');
             }
@@ -923,10 +996,25 @@ public final class MultivariatePolynomial implements
     }
 
     /**
+     * Creates a {@code String} representation of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>See tests and demos for example results.</li>
+     * </ul>
+     *
+     * @return a {@code String} representation of {@code this}
+     */
+    public @NotNull String toString() {
+        return toString(DEFAULT_ORDER);
+    }
+
+    /**
      * Ensures that {@code this} is valid. Must return without exceptions for any {@code MultivariatePolynomial} used
      * outside this class.
      */
     public void validate() {
+        assertEquals(this, DEFAULT_ORDER, MonomialOrder.GREVLEX);
         assertTrue(this, all(t -> t != null && t.a != null && t.b != null && !t.b.equals(BigInteger.ZERO), terms));
         //noinspection RedundantCast
         assertTrue(this, increasing((Iterable<Monomial>) map(t -> t.a, terms)));
