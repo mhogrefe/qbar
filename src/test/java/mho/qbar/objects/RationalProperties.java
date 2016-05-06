@@ -1680,7 +1680,7 @@ public class RationalProperties extends QBarTestProperties {
 
         Iterable<Triple<Rational, Integer, RoundingMode>> tsFail = P.triples(
                 P.nonzeroRationals(),
-                P.negativeIntegersGeometric(),
+                P.negativeIntegers(),
                 P.roundingModes()
         );
         for (Triple<Rational, Integer, RoundingMode> t : take(LIMIT, tsFail)) {
@@ -1839,10 +1839,7 @@ public class RationalProperties extends QBarTestProperties {
             assertTrue(p, eq(bd, BigDecimal.ZERO) || bd.signum() == p.a.signum());
         }
 
-        ps = filterInfinite(
-                q -> q.a != ZERO && q.b != 0 && valid.test(q),
-                P.pairsSquareRootOrder(P.rationals(), P.naturalIntegersGeometric())
-        );
+        ps = filterInfinite(valid::test, P.pairsSquareRootOrder(P.nonzeroRationals(), P.positiveIntegersGeometric()));
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
             BigDecimal bd = p.a.bigDecimalValueByPrecision(p.b);
             assertTrue(p, bd.precision() == p.b);
@@ -1887,11 +1884,7 @@ public class RationalProperties extends QBarTestProperties {
 
     private void propertiesBigDecimalValueByScale_int() {
         initialize("bigDecimalValueByScale(int)");
-        Iterable<Pair<Rational, Integer>> ps = filterInfinite(
-                p -> p.a.multiply(TEN.pow(p.b)).isInteger(),
-                P.pairsSquareRootOrder(P.rationals(), P.integersGeometric())
-        );
-        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairsSquareRootOrder(P.rationals(), P.integersGeometric()))) {
             BigDecimal bd = p.a.bigDecimalValueByScale(p.b);
             assertEquals(p, bd, p.a.bigDecimalValueByScale(p.b, RoundingMode.HALF_EVEN));
             assertTrue(p, eq(bd, BigDecimal.ZERO) || bd.signum() == p.a.signum());

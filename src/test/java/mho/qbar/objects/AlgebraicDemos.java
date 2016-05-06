@@ -5,6 +5,7 @@ import mho.wheels.math.BinaryFraction;
 import mho.wheels.numberUtils.FloatingPointUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
+import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
@@ -271,6 +272,87 @@ public class AlgebraicDemos extends QBarDemos {
         );
         for (Algebraic x : take(LIMIT, xs)) {
             System.out.println("doubleValueExact(" + x + ") = " + x.doubleValueExact());
+        }
+    }
+
+    private void demoHasTerminatingBaseExpansion() {
+        //noinspection Convert2MethodRef
+        Iterable<Pair<Algebraic, BigInteger>> ps = P.pairs(
+                P.withScale(4).algebraics(),
+                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
+        );
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, ps)) {
+            System.out.println(p.a + (p.a.hasTerminatingBaseExpansion(p.b) ? " has " : " doesn't have ") +
+                    "a terminating base-" + p.b + " expansion");
+        }
+    }
+
+    private void demoBigDecimalValueByPrecision_int_RoundingMode() {
+        Iterable<Triple<Algebraic, Integer, RoundingMode>> ts = filterInfinite(
+                t -> {
+                    try {
+                        t.a.bigDecimalValueByPrecision(t.b, t.c);
+                        return true;
+                    } catch (ArithmeticException e) {
+                        return false;
+                    }
+                },
+                P.triples(P.withScale(4).algebraics(), P.naturalIntegersGeometric(), P.roundingModes())
+        );
+        for (Triple<Algebraic, Integer, RoundingMode> t : take(LIMIT, ts)) {
+            System.out.println("bigDecimalValueByPrecision(" + t.a + ", " + t.b + ", " + t.c + ") = " +
+                    t.a.bigDecimalValueByPrecision(t.b, t.c));
+        }
+    }
+
+    private void demoBigDecimalValueByScale_int_RoundingMode() {
+        Iterable<Triple<Algebraic, Integer, RoundingMode>> ts = filterInfinite(
+                t -> t.c != RoundingMode.UNNECESSARY ||
+                        t.a.isRational() && t.a.multiply(Rational.TEN.pow(t.b)).isInteger(),
+                P.triples(P.withScale(4).algebraics(), P.integersGeometric(), P.roundingModes())
+        );
+        for (Triple<Algebraic, Integer, RoundingMode> t : take(LIMIT, ts)) {
+            System.out.println("bigDecimalValueByScale(" + t.a + ", " + t.b + ", " + t.c + ") = " +
+                    t.a.bigDecimalValueByScale(t.b, t.c));
+        }
+    }
+
+    private void demoBigDecimalValueByPrecision_int() {
+        Iterable<Pair<Algebraic, Integer>> ps = filterInfinite(
+                p -> {
+                    try {
+                        p.a.bigDecimalValueByPrecision(p.b);
+                        return true;
+                    } catch (ArithmeticException e) {
+                        return false;
+                    }
+                },
+                P.pairsSquareRootOrder(P.withScale(4).algebraics(), P.naturalIntegersGeometric())
+        );
+        for (Pair<Algebraic, Integer> p : take(LIMIT, ps)) {
+            System.out.println("bigDecimalValueByPrecision(" + p.a + ", " + p.b + ") = " +
+                    p.a.bigDecimalValueByPrecision(p.b));
+        }
+    }
+
+    private void demoBigDecimalValueByScale_int() {
+        Iterable<Pair<Algebraic, Integer>> ps = P.pairsSquareRootOrder(
+                P.withScale(4).algebraics(),
+                P.integersGeometric()
+        );
+        for (Pair<Algebraic, Integer> p : take(LIMIT, ps)) {
+            System.out.println("bigDecimalValueByScale(" + p.a + ", " + p.b + ") = " +
+                    p.a.bigDecimalValueByScale(p.b));
+        }
+    }
+
+    private void demoBigDecimalValueExact() {
+        Iterable<Algebraic> xs = map(
+                Algebraic::of,
+                filterInfinite(r -> r.hasTerminatingBaseExpansion(BigInteger.TEN), P.rationals())
+        );
+        for (Algebraic x : take(LIMIT, xs)) {
+            System.out.println("bigDecimalValueExact(" + x + ") = " + x.bigDecimalValueExact());
         }
     }
 

@@ -19,6 +19,7 @@ import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.gt;
+import static mho.wheels.ordering.Ordering.lt;
 import static mho.wheels.testing.Testing.assertEquals;
 import static mho.wheels.testing.Testing.assertTrue;
 
@@ -1045,6 +1046,152 @@ public final class Algebraic implements Comparable<Algebraic> {
             return rational.get().doubleValueExact();
         } else {
             throw new ArithmeticException("this must be an Algebraic equal to a double. Invalid this: " + this);
+        }
+    }
+
+    /**
+     * Determines whether {@code this} has a terminating digit expansion in a particular base.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>{@code base} must be at least 2.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @param base the base in which we are interesting in expanding {@code this}
+     * @return whether {@code this} has a terminating base expansion in base-{@code base}
+     */
+    public boolean hasTerminatingBaseExpansion(@NotNull BigInteger base) {
+        if (lt(base, IntegerUtils.TWO)) {
+            throw new IllegalArgumentException("base must be at least 2. Invalid base: " + base);
+        }
+        return rational.isPresent() && rational.get().hasTerminatingBaseExpansion(base);
+    }
+
+    /**
+     * Rounds {@code this} to a {@link java.math.BigDecimal} with a specified rounding mode (see documentation for
+     * {@code java.math.RoundingMode} for details) and with a specified precision (number of significant digits), or
+     * to full precision if {@code precision} is 0.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>{@code precision} cannot be negative.</li>
+     *  <li>{@code roundingMode} may be any {@code RoundingMode}.</li>
+     *  <li>If {@code precision} is 0, then {@code this} must be an {@code Algebraic} with a terminating decimal
+     *  expansion; that is, it must be rational and its denominator must only have 2 or 5 as prime factors.</li>
+     *  <li>If {@code roundingMode} is {@code RoundingMode.UNNECESSARY}, then {@code precision} must be at least as
+     *  large as the number of digits in {@code this}'s decimal expansion.</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * @param precision the precision with which to round {@code this}. 0 indicates full precision.
+     * @param roundingMode specifies the details of how to round {@code this}.
+     * @return {@code this}, in {@code BigDecimal} form
+     */
+    public @NotNull BigDecimal bigDecimalValueByPrecision(int precision, @NotNull RoundingMode roundingMode) {
+        if (rational.isPresent()) {
+            return rational.get().bigDecimalValueByPrecision(precision, roundingMode);
+        } else {
+            if (precision == 0) {
+                throw new ArithmeticException("If precision is 0, this must be an Algebraic with a terminating" +
+                        " decimal expansion. Invalid this: " + this);
+            }
+            if (roundingMode == RoundingMode.UNNECESSARY) {
+                throw new ArithmeticException("If roundingMode is RoundingMode.UNNECESSARY, then precision must" +
+                        " be as large as the number of digits in this's decimal expansion. Invalid this: " + this);
+            }
+            return realValue().bigDecimalValueByPrecision(precision, roundingMode);
+        }
+    }
+
+    /**
+     * Rounds {@code this} to a {@link java.math.BigDecimal} with a specified rounding mode (see documentation for
+     * {@code java.math.RoundingMode} for details) and with a specified scale (number digits after the decimal point).
+     * Scale may be negative; for example, {@code 1E+1} has a scale of –1.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>{@code scale} may be any {@code int}.</li>
+     *  <li>{@code roundingMode} may be any {@code RoundingMode}.</li>
+     *  <li>If {@code roundingMode} is {@code RoundingMode.UNNECESSARY}, then {@code scale} must be at least as large
+     *  as the smallest n such that {@code this}×10<sup>n</sup> is an integer (and such an n must exist).</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * @param scale the scale with which to round {@code this}.
+     * @param roundingMode specifies the details of how to round {@code this}.
+     * @return {@code this}, in {@code BigDecimal} form
+     */
+    public @NotNull BigDecimal bigDecimalValueByScale(int scale, @NotNull RoundingMode roundingMode) {
+        if (rational.isPresent()) {
+            return rational.get().bigDecimalValueByScale(scale, roundingMode);
+        } else {
+            if (roundingMode == RoundingMode.UNNECESSARY) {
+                throw new IllegalArgumentException("If roundingMode is RoundingMode.UNNECESSARY, then scale must be" +
+                        " at least as large as the smallest n such that this*10^n is an integer. But n does not" +
+                        " exist, since this = " + this);
+            }
+            return realValue().bigDecimalValueByScale(scale, roundingMode);
+        }
+    }
+
+    /**
+     * Rounds {@code this} to a {@code BigDecimal} with a specified precision (number of significant digits), or to
+     * full precision if {@code precision} is 0. {@code RoundingMode.HALF_EVEN} is used for rounding.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>{@code precision} cannot be negative.</li>
+     *  <li>If {@code precision} is 0, then {@code this} must be an {@code Algebraic} with a terminating decimal
+     *  expansion; that is, it must be rational and its denominator must only have 2 or 5 as prime factors.</li>
+     *  <li>The result is a {@code BigDecimal} with minimal scale. That is, the scale is the smallest non-negative n
+     *  such that {@code this}×10<sup>n</sup> is an integer.</li>
+     * </ul>
+     *
+     * @param precision the precision with which to round {@code this}. 0 indicates full precision.
+     * @return {@code this}, in {@code BigDecimal} form
+     */
+    public @NotNull BigDecimal bigDecimalValueByPrecision(int precision) {
+        return bigDecimalValueByPrecision(precision, RoundingMode.HALF_EVEN);
+    }
+
+    /**
+     * Rounds {@code this} to a {@code BigDecimal} with a specified scale (number digits after the decimal point).
+     * Scale may be negative; for example, {@code 1E+1} has a scale of –1. {@code RoundingMode.HALF_EVEN} is used for
+     * rounding.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>{@code scale} may be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param scale the scale with which to round {@code this}.
+     * @return {@code this}, in {@code BigDecimal} form
+     */
+    public @NotNull BigDecimal bigDecimalValueByScale(int scale) {
+        return bigDecimalValueByScale(scale, RoundingMode.HALF_EVEN);
+    }
+
+    /**
+     * Returns a {@code BigDecimal} exactly equal to {@code this}. Throws an {@code ArithmeticException} if
+     * {@code this} cannot be represented as a terminating decimal.
+     *
+     * <ul>
+     *  <li>{@code this} must be an {@code Algebraic} with a terminating decimal expansion; that is, it must be
+     *  rational and its denominator must only have 2 or 5 as prime factors.</li>
+     *  <li>The result is a canonical {@code BigDecimal} (see
+     *  {@link mho.wheels.numberUtils.BigDecimalUtils#isCanonical(BigDecimal)}.)</li>
+     * </ul>
+     *
+     * @return {@code this}, in {@code BigDecimal} form
+     */
+    public @NotNull BigDecimal bigDecimalValueExact() {
+        if (rational.isPresent()) {
+            return rational.get().bigDecimalValueExact();
+        } else {
+            throw new ArithmeticException("this must be an Algebraic with a terminating decimal expansion. Invalid" +
+                    " this: " + this);
         }
     }
 

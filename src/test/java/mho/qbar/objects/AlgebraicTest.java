@@ -1107,6 +1107,1008 @@ public class AlgebraicTest {
         doubleValueExact_fail_helper("root 0 of x^5-x-1");
     }
 
+    private static void hasTerminatingBaseExpansion_helper(@NotNull String r, @NotNull String base, boolean output) {
+        aeq(readStrict(r).get().hasTerminatingBaseExpansion(Readers.readBigIntegerStrict(base).get()), output);
+    }
+
+    private static void hasTerminatingBaseExpansion_fail_helper(@NotNull String r, @NotNull String base) {
+        try {
+            readStrict(r).get().hasTerminatingBaseExpansion(Readers.readBigIntegerStrict(base).get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testHasTerminatingBaseExpansion() {
+        hasTerminatingBaseExpansion_helper("0", "2", true);
+        hasTerminatingBaseExpansion_helper("1", "2", true);
+        hasTerminatingBaseExpansion_helper("60", "2", true);
+        hasTerminatingBaseExpansion_helper("1/2", "2", true);
+        hasTerminatingBaseExpansion_helper("1/5", "2", false);
+        hasTerminatingBaseExpansion_helper("-7/100", "2", false);
+        hasTerminatingBaseExpansion_helper("-3/640", "2", false);
+        hasTerminatingBaseExpansion_helper("1/3", "2", false);
+        hasTerminatingBaseExpansion_helper("-1/15", "2", false);
+        hasTerminatingBaseExpansion_helper("-2/9", "2", false);
+        hasTerminatingBaseExpansion_helper("sqrt(2)", "2", false);
+
+        hasTerminatingBaseExpansion_helper("0", "3", true);
+        hasTerminatingBaseExpansion_helper("1", "3", true);
+        hasTerminatingBaseExpansion_helper("60", "3", true);
+        hasTerminatingBaseExpansion_helper("1/2", "3", false);
+        hasTerminatingBaseExpansion_helper("1/5", "3", false);
+        hasTerminatingBaseExpansion_helper("-7/100", "3", false);
+        hasTerminatingBaseExpansion_helper("-3/640", "3", false);
+        hasTerminatingBaseExpansion_helper("1/3", "3", true);
+        hasTerminatingBaseExpansion_helper("-1/15", "3", false);
+        hasTerminatingBaseExpansion_helper("-2/9", "3", true);
+        hasTerminatingBaseExpansion_helper("sqrt(2)", "3", false);
+
+        hasTerminatingBaseExpansion_helper("0", "4", true);
+        hasTerminatingBaseExpansion_helper("1", "4", true);
+        hasTerminatingBaseExpansion_helper("60", "4", true);
+        hasTerminatingBaseExpansion_helper("1/2", "4", true);
+        hasTerminatingBaseExpansion_helper("1/5", "4", false);
+        hasTerminatingBaseExpansion_helper("-7/100", "4", false);
+        hasTerminatingBaseExpansion_helper("-3/640", "4", false);
+        hasTerminatingBaseExpansion_helper("1/3", "4", false);
+        hasTerminatingBaseExpansion_helper("-1/15", "4", false);
+        hasTerminatingBaseExpansion_helper("-2/9", "4", false);
+        hasTerminatingBaseExpansion_helper("sqrt(2)", "4", false);
+
+        hasTerminatingBaseExpansion_helper("0", "16", true);
+        hasTerminatingBaseExpansion_helper("1", "16", true);
+        hasTerminatingBaseExpansion_helper("60", "16", true);
+        hasTerminatingBaseExpansion_helper("1/2", "16", true);
+        hasTerminatingBaseExpansion_helper("1/5", "16", false);
+        hasTerminatingBaseExpansion_helper("-7/100", "16", false);
+        hasTerminatingBaseExpansion_helper("-3/640", "16", false);
+        hasTerminatingBaseExpansion_helper("1/3", "16", false);
+        hasTerminatingBaseExpansion_helper("-1/15", "16", false);
+        hasTerminatingBaseExpansion_helper("-2/9", "16", false);
+        hasTerminatingBaseExpansion_helper("sqrt(2)", "16", false);
+
+        hasTerminatingBaseExpansion_helper("0", "83", true);
+        hasTerminatingBaseExpansion_helper("1", "83", true);
+        hasTerminatingBaseExpansion_helper("60", "83", true);
+        hasTerminatingBaseExpansion_helper("1/2", "83", false);
+        hasTerminatingBaseExpansion_helper("1/5", "83", false);
+        hasTerminatingBaseExpansion_helper("-7/100", "83", false);
+        hasTerminatingBaseExpansion_helper("-3/640", "83", false);
+        hasTerminatingBaseExpansion_helper("1/3", "83", false);
+        hasTerminatingBaseExpansion_helper("-1/15", "83", false);
+        hasTerminatingBaseExpansion_helper("-2/9", "83", false);
+        hasTerminatingBaseExpansion_helper("sqrt(2)", "83", false);
+
+        hasTerminatingBaseExpansion_helper("0", "100", true);
+        hasTerminatingBaseExpansion_helper("1", "100", true);
+        hasTerminatingBaseExpansion_helper("60", "100", true);
+        hasTerminatingBaseExpansion_helper("1/2", "100", true);
+        hasTerminatingBaseExpansion_helper("1/5", "100", true);
+        hasTerminatingBaseExpansion_helper("-7/100", "100", true);
+        hasTerminatingBaseExpansion_helper("-3/640", "100", true);
+        hasTerminatingBaseExpansion_helper("1/3", "100", false);
+        hasTerminatingBaseExpansion_helper("-1/15", "100", false);
+        hasTerminatingBaseExpansion_helper("-2/9", "100", false);
+        hasTerminatingBaseExpansion_helper("sqrt(2)", "100", false);
+
+        hasTerminatingBaseExpansion_fail_helper("1/2", "1");
+        hasTerminatingBaseExpansion_fail_helper("1/2", "0");
+        hasTerminatingBaseExpansion_fail_helper("1/2", "-1");
+        hasTerminatingBaseExpansion_fail_helper("sqrt(2)", "1");
+        hasTerminatingBaseExpansion_fail_helper("sqrt(2)", "0");
+        hasTerminatingBaseExpansion_fail_helper("sqrt(2)", "-1");
+    }
+
+    private static void bigDecimalValueByPrecision_int_RoundingMode_helper(
+            @NotNull String r,
+            int precision,
+            @NotNull String roundingMode,
+            @NotNull String output
+    ) {
+        aeq(
+                readStrict(r).get()
+                        .bigDecimalValueByPrecision(precision, Readers.readRoundingModeStrict(roundingMode).get()),
+                output
+        );
+    }
+
+    private static void bigDecimalValueByPrecision_int_RoundingMode_fail_helper(
+            @NotNull String r,
+            int precision,
+            @NotNull String roundingMode
+    ) {
+        try {
+            readStrict(r).get()
+                    .bigDecimalValueByPrecision(precision, Readers.readRoundingModeStrict(roundingMode).get());
+            fail();
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testBigDecimalValueByPrecision_int_RoundingMode() {
+        bigDecimalValueByPrecision_int_RoundingMode_helper("0", 0, "FLOOR", "0");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("0", 0, "CEILING", "0");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("0", 0, "DOWN", "0");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("0", 0, "UP", "0");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("0", 0, "HALF_DOWN", "0");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("0", 0, "HALF_UP", "0");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("0", 0, "HALF_EVEN", "0");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("0", 0, "UNNECESSARY", "0");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("0", 4, "FLOOR", "0.000");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("0", 4, "CEILING", "0.000");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("0", 4, "DOWN", "0.000");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("0", 4, "UP", "0.000");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("0", 4, "HALF_DOWN", "0.000");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("0", 4, "HALF_UP", "0.000");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("0", 4, "HALF_EVEN", "0.000");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("0", 4, "UNNECESSARY", "0.000");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1", 0, "FLOOR", "1");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1", 0, "CEILING", "1");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1", 0, "DOWN", "1");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1", 0, "UP", "1");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1", 0, "HALF_DOWN", "1");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1", 0, "HALF_UP", "1");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1", 0, "HALF_EVEN", "1");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1", 0, "UNNECESSARY", "1");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1", 4, "FLOOR", "1.000");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1", 4, "CEILING", "1.000");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1", 4, "DOWN", "1.000");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1", 4, "UP", "1.000");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1", 4, "HALF_DOWN", "1.000");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1", 4, "HALF_UP", "1.000");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1", 4, "HALF_EVEN", "1.000");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1", 4, "UNNECESSARY", "1.000");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/2", 0, "FLOOR", "0.5");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/2", 0, "CEILING", "0.5");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/2", 0, "DOWN", "0.5");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/2", 0, "UP", "0.5");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/2", 0, "HALF_DOWN", "0.5");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/2", 0, "HALF_UP", "0.5");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/2", 0, "HALF_EVEN", "0.5");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/2", 0, "UNNECESSARY", "0.5");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/2", 1, "FLOOR", "0.5");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/2", 1, "CEILING", "0.5");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/2", 1, "DOWN", "0.5");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/2", 1, "UP", "0.5");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/2", 1, "HALF_DOWN", "0.5");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/2", 1, "HALF_UP", "0.5");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/2", 1, "HALF_EVEN", "0.5");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/2", 1, "UNNECESSARY", "0.5");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/2", 4, "FLOOR", "0.5000");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/2", 4, "CEILING", "0.5000");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/2", 4, "DOWN", "0.5000");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/2", 4, "UP", "0.5000");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/2", 4, "HALF_DOWN", "0.5000");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/2", 4, "HALF_UP", "0.5000");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/2", 4, "HALF_EVEN", "0.5000");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/2", 4, "UNNECESSARY", "0.5000");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 0, "FLOOR", "0.015625");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 0, "CEILING", "0.015625");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 0, "DOWN", "0.015625");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 0, "UP", "0.015625");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 0, "HALF_DOWN", "0.015625");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 0, "HALF_UP", "0.015625");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 0, "HALF_EVEN", "0.015625");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 0, "UNNECESSARY", "0.015625");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 1, "FLOOR", "0.01");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 1, "CEILING", "0.02");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 1, "DOWN", "0.01");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 1, "UP", "0.02");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 1, "HALF_DOWN", "0.02");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 1, "HALF_UP", "0.02");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 1, "HALF_EVEN", "0.02");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 2, "FLOOR", "0.015");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 2, "CEILING", "0.016");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 2, "DOWN", "0.015");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 2, "UP", "0.016");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 2, "HALF_DOWN", "0.016");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 2, "HALF_UP", "0.016");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 2, "HALF_EVEN", "0.016");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 3, "FLOOR", "0.0156");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 3, "CEILING", "0.0157");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 3, "DOWN", "0.0156");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 3, "UP", "0.0157");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 3, "HALF_DOWN", "0.0156");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 3, "HALF_UP", "0.0156");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 3, "HALF_EVEN", "0.0156");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 4, "FLOOR", "0.01562");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 4, "CEILING", "0.01563");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 4, "DOWN", "0.01562");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 4, "UP", "0.01563");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 4, "HALF_DOWN", "0.01562");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 4, "HALF_UP", "0.01563");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 4, "HALF_EVEN", "0.01562");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 5, "FLOOR", "0.015625");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 5, "CEILING", "0.015625");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 5, "DOWN", "0.015625");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 5, "UP", "0.015625");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 5, "HALF_DOWN", "0.015625");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 5, "HALF_UP", "0.015625");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 5, "HALF_EVEN", "0.015625");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 5, "UNNECESSARY", "0.015625");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 6, "FLOOR", "0.0156250");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 6, "CEILING", "0.0156250");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 6, "DOWN", "0.0156250");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 6, "UP", "0.0156250");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 6, "HALF_DOWN", "0.0156250");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 6, "HALF_UP", "0.0156250");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 6, "HALF_EVEN", "0.0156250");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 6, "UNNECESSARY", "0.0156250");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 1, "FLOOR", "-0.4");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 1, "CEILING", "-0.3");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 1, "DOWN", "-0.3");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 1, "UP", "-0.4");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 1, "HALF_DOWN", "-0.3");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 1, "HALF_UP", "-0.3");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 1, "HALF_EVEN", "-0.3");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 2, "FLOOR", "-0.34");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 2, "CEILING", "-0.33");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 2, "DOWN", "-0.33");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 2, "UP", "-0.34");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 2, "HALF_DOWN", "-0.33");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 2, "HALF_UP", "-0.33");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 2, "HALF_EVEN", "-0.33");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 3, "FLOOR", "-0.334");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 3, "CEILING", "-0.333");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 3, "DOWN", "-0.333");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 3, "UP", "-0.334");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 3, "HALF_DOWN", "-0.333");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 3, "HALF_UP", "-0.333");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 3, "HALF_EVEN", "-0.333");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 4, "FLOOR", "-0.3334");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 4, "CEILING", "-0.3333");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 4, "DOWN", "-0.3333");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 4, "UP", "-0.3334");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 4, "HALF_DOWN", "-0.3333");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 4, "HALF_UP", "-0.3333");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 4, "HALF_EVEN", "-0.3333");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 0, "FLOOR", "6789");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 0, "CEILING", "6789");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 0, "DOWN", "6789");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 0, "UP", "6789");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 0, "HALF_DOWN", "6789");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 0, "HALF_UP", "6789");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 0, "HALF_EVEN", "6789");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 0, "UNNECESSARY", "6789");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 1, "FLOOR", "6E+3");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 1, "CEILING", "7E+3");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 1, "DOWN", "6E+3");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 1, "UP", "7E+3");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 1, "HALF_DOWN", "7E+3");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 1, "HALF_UP", "7E+3");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 1, "HALF_EVEN", "7E+3");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 2, "FLOOR", "6.7E+3");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 2, "CEILING", "6.8E+3");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 2, "DOWN", "6.7E+3");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 2, "UP", "6.8E+3");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 2, "HALF_DOWN", "6.8E+3");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 2, "HALF_UP", "6.8E+3");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 2, "HALF_EVEN", "6.8E+3");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 3, "FLOOR", "6.78E+3");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 3, "CEILING", "6.79E+3");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 3, "DOWN", "6.78E+3");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 3, "UP", "6.79E+3");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 3, "HALF_DOWN", "6.79E+3");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 3, "HALF_UP", "6.79E+3");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 3, "HALF_EVEN", "6.79E+3");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 4, "FLOOR", "6789");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 4, "CEILING", "6789");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 4, "DOWN", "6789");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 4, "UP", "6789");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 4, "HALF_DOWN", "6789");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 4, "HALF_UP", "6789");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 4, "HALF_EVEN", "6789");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 4, "UNNECESSARY", "6789");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 5, "FLOOR", "6789.0");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 5, "CEILING", "6789.0");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 5, "DOWN", "6789.0");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 5, "UP", "6789.0");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 5, "HALF_DOWN", "6789.0");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 5, "HALF_UP", "6789.0");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 5, "HALF_EVEN", "6789.0");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 5, "UNNECESSARY", "6789.0");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 0, "FLOOR", "0.95");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 0, "CEILING", "0.95");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 0, "DOWN", "0.95");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 0, "UP", "0.95");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 0, "HALF_DOWN", "0.95");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 0, "HALF_UP", "0.95");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 0, "HALF_EVEN", "0.95");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 0, "UNNECESSARY", "0.95");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 1, "FLOOR", "0.9");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 1, "CEILING", "1");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 1, "DOWN", "0.9");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 1, "UP", "1");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 1, "HALF_DOWN", "0.9");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 1, "HALF_UP", "1");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 1, "HALF_EVEN", "1");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("19/20", 1, "UNNECESSARY");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 2, "FLOOR", "0.95");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 2, "CEILING", "0.95");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 2, "DOWN", "0.95");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 2, "UP", "0.95");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 2, "HALF_DOWN", "0.95");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 2, "HALF_UP", "0.95");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 2, "HALF_EVEN", "0.95");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 2, "UNNECESSARY", "0.95");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 3, "FLOOR", "0.950");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 3, "CEILING", "0.950");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 3, "DOWN", "0.950");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 3, "UP", "0.950");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 3, "HALF_DOWN", "0.950");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 3, "HALF_UP", "0.950");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 3, "HALF_EVEN", "0.950");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 3, "UNNECESSARY", "0.950");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 4, "FLOOR", "0.9500");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 4, "CEILING", "0.9500");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 4, "DOWN", "0.9500");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 4, "UP", "0.9500");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 4, "HALF_DOWN", "0.9500");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 4, "HALF_UP", "0.9500");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 4, "HALF_EVEN", "0.9500");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 4, "UNNECESSARY", "0.9500");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 5, "FLOOR", "0.95000");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 5, "CEILING", "0.95000");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 5, "DOWN", "0.95000");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 5, "UP", "0.95000");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 5, "HALF_DOWN", "0.95000");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 5, "HALF_UP", "0.95000");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 5, "HALF_EVEN", "0.95000");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 5, "UNNECESSARY", "0.95000");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 0, "FLOOR", "0.995");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 0, "CEILING", "0.995");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 0, "DOWN", "0.995");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 0, "UP", "0.995");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 0, "HALF_DOWN", "0.995");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 0, "HALF_UP", "0.995");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 0, "HALF_EVEN", "0.995");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 0, "UNNECESSARY", "0.995");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 1, "FLOOR", "0.9");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 1, "CEILING", "1");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 1, "DOWN", "0.9");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 1, "UP", "1");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 1, "HALF_DOWN", "1");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 1, "HALF_UP", "1");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 1, "HALF_EVEN", "1");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 2, "FLOOR", "0.99");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 2, "CEILING", "1.0");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 2, "DOWN", "0.99");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 2, "UP", "1.0");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 2, "HALF_DOWN", "0.99");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 2, "HALF_UP", "1.0");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 2, "HALF_EVEN", "1.0");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 3, "FLOOR", "0.995");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 3, "CEILING", "0.995");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 3, "DOWN", "0.995");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 3, "UP", "0.995");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 3, "HALF_DOWN", "0.995");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 3, "HALF_UP", "0.995");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 3, "HALF_EVEN", "0.995");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 3, "UNNECESSARY", "0.995");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 4, "FLOOR", "0.9950");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 4, "CEILING", "0.9950");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 4, "DOWN", "0.9950");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 4, "UP", "0.9950");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 4, "HALF_DOWN", "0.9950");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 4, "HALF_UP", "0.9950");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 4, "HALF_EVEN", "0.9950");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 4, "UNNECESSARY", "0.9950");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 5, "FLOOR", "0.99500");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 5, "CEILING", "0.99500");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 5, "DOWN", "0.99500");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 5, "UP", "0.99500");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 5, "HALF_DOWN", "0.99500");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 5, "HALF_UP", "0.99500");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 5, "HALF_EVEN", "0.99500");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 5, "UNNECESSARY", "0.99500");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("sqrt(2)", 1, "FLOOR", "1");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("sqrt(2)", 1, "CEILING", "2");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("sqrt(2)", 1, "DOWN", "1");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("sqrt(2)", 1, "UP", "2");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("sqrt(2)", 1, "HALF_DOWN", "1");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("sqrt(2)", 1, "HALF_UP", "1");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("sqrt(2)", 1, "HALF_EVEN", "1");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("sqrt(2)", 2, "FLOOR", "1.4");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("sqrt(2)", 2, "CEILING", "1.5");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("sqrt(2)", 2, "DOWN", "1.4");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("sqrt(2)", 2, "UP", "1.5");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("sqrt(2)", 2, "HALF_DOWN", "1.4");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("sqrt(2)", 2, "HALF_UP", "1.4");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("sqrt(2)", 2, "HALF_EVEN", "1.4");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("sqrt(2)", 3, "FLOOR", "1.41");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("sqrt(2)", 3, "CEILING", "1.42");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("sqrt(2)", 3, "DOWN", "1.41");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("sqrt(2)", 3, "UP", "1.42");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("sqrt(2)", 3, "HALF_DOWN", "1.41");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("sqrt(2)", 3, "HALF_UP", "1.41");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("sqrt(2)", 3, "HALF_EVEN", "1.41");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("sqrt(2)", 4, "FLOOR", "1.414");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("sqrt(2)", 4, "CEILING", "1.415");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("sqrt(2)", 4, "DOWN", "1.414");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("sqrt(2)", 4, "UP", "1.415");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("sqrt(2)", 4, "HALF_DOWN", "1.414");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("sqrt(2)", 4, "HALF_UP", "1.414");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("sqrt(2)", 4, "HALF_EVEN", "1.414");
+
+        bigDecimalValueByPrecision_int_RoundingMode_helper("sqrt(2)", 5, "FLOOR", "1.4142");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("sqrt(2)", 5, "CEILING", "1.4143");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("sqrt(2)", 5, "DOWN", "1.4142");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("sqrt(2)", 5, "UP", "1.4143");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("sqrt(2)", 5, "HALF_DOWN", "1.4142");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("sqrt(2)", 5, "HALF_UP", "1.4142");
+        bigDecimalValueByPrecision_int_RoundingMode_helper("sqrt(2)", 5, "HALF_EVEN", "1.4142");
+
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("1/64", 1, "UNNECESSARY");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("1/64", 2, "UNNECESSARY");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("1/64", 3, "UNNECESSARY");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("1/64", 4, "UNNECESSARY");
+
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("-1/3", 0, "FLOOR");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("-1/3", 0, "CEILING");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("-1/3", 0, "DOWN");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("-1/3", 0, "UP");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("-1/3", 0, "HALF_DOWN");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("-1/3", 0, "HALF_UP");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("-1/3", 0, "HALF_EVEN");
+
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("-1/3", 0, "UNNECESSARY");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("-1/3", 1, "UNNECESSARY");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("-1/3", 2, "UNNECESSARY");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("-1/3", 3, "UNNECESSARY");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("-1/3", 4, "UNNECESSARY");
+
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("6789", 1, "UNNECESSARY");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("6789", 2, "UNNECESSARY");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("6789", 3, "UNNECESSARY");
+
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("199/200", 1, "UNNECESSARY");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("199/200", 2, "UNNECESSARY");
+
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("sqrt(2)", 0, "FLOOR");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("sqrt(2)", 0, "CEILING");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("sqrt(2)", 0, "DOWN");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("sqrt(2)", 0, "UP");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("sqrt(2)", 0, "HALF_DOWN");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("sqrt(2)", 0, "HALF_UP");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("sqrt(2)", 0, "HALF_EVEN");
+
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("sqrt(2)", 0, "UNNECESSARY");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("sqrt(2)", 1, "UNNECESSARY");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("sqrt(2)", 2, "UNNECESSARY");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("sqrt(2)", 3, "UNNECESSARY");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("sqrt(2)", 4, "UNNECESSARY");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("sqrt(2)", 5, "UNNECESSARY");
+
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("5", -1, "FLOOR");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("5", -1, "CEILING");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("5", -1, "DOWN");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("5", -1, "UP");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("5", -1, "HALF_DOWN");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("5", -1, "HALF_UP");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("5", -1, "HALF_EVEN");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("5", -1, "UNNECESSARY");
+
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("sqrt(2)", -1, "FLOOR");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("sqrt(2)", -1, "CEILING");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("sqrt(2)", -1, "DOWN");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("sqrt(2)", -1, "UP");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("sqrt(2)", -1, "HALF_DOWN");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("sqrt(2)", -1, "HALF_UP");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("sqrt(2)", -1, "HALF_EVEN");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("sqrt(2)", -1, "UNNECESSARY");
+    }
+
+    private static void bigDecimalValueByScale_int_RoundingMode_helper(
+            @NotNull String r,
+            int scale,
+            @NotNull String roundingMode,
+            @NotNull String output
+    ) {
+        aeq(
+                readStrict(r).get().bigDecimalValueByScale(scale, Readers.readRoundingModeStrict(roundingMode).get()),
+                output
+        );
+    }
+
+    private static void bigDecimalValueByScale_int_RoundingMode_fail_helper(
+            @NotNull String r,
+            int scale,
+            @NotNull String roundingMode
+    ) {
+        try {
+            readStrict(r).get().bigDecimalValueByScale(scale, Readers.readRoundingModeStrict(roundingMode).get());
+            fail();
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testBigDecimalValueByScale_int_RoundingMode() {
+        bigDecimalValueByScale_int_RoundingMode_helper("0", 0, "FLOOR", "0");
+        bigDecimalValueByScale_int_RoundingMode_helper("0", 0, "CEILING", "0");
+        bigDecimalValueByScale_int_RoundingMode_helper("0", 0, "DOWN", "0");
+        bigDecimalValueByScale_int_RoundingMode_helper("0", 0, "UP", "0");
+        bigDecimalValueByScale_int_RoundingMode_helper("0", 0, "HALF_DOWN", "0");
+        bigDecimalValueByScale_int_RoundingMode_helper("0", 0, "HALF_UP", "0");
+        bigDecimalValueByScale_int_RoundingMode_helper("0", 0, "HALF_EVEN", "0");
+        bigDecimalValueByScale_int_RoundingMode_helper("0", 0, "UNNECESSARY", "0");
+
+        bigDecimalValueByScale_int_RoundingMode_helper("0", 3, "FLOOR", "0.000");
+        bigDecimalValueByScale_int_RoundingMode_helper("0", 3, "CEILING", "0.000");
+        bigDecimalValueByScale_int_RoundingMode_helper("0", 3, "DOWN", "0.000");
+        bigDecimalValueByScale_int_RoundingMode_helper("0", 3, "UP", "0.000");
+        bigDecimalValueByScale_int_RoundingMode_helper("0", 3, "HALF_DOWN", "0.000");
+        bigDecimalValueByScale_int_RoundingMode_helper("0", 3, "HALF_UP", "0.000");
+        bigDecimalValueByScale_int_RoundingMode_helper("0", 3, "HALF_EVEN", "0.000");
+        bigDecimalValueByScale_int_RoundingMode_helper("0", 3, "UNNECESSARY", "0.000");
+
+        bigDecimalValueByScale_int_RoundingMode_helper("0", -3, "FLOOR", "0E+3");
+        bigDecimalValueByScale_int_RoundingMode_helper("0", -3, "CEILING", "0E+3");
+        bigDecimalValueByScale_int_RoundingMode_helper("0", -3, "DOWN", "0E+3");
+        bigDecimalValueByScale_int_RoundingMode_helper("0", -3, "UP", "0E+3");
+        bigDecimalValueByScale_int_RoundingMode_helper("0", -3, "HALF_DOWN", "0E+3");
+        bigDecimalValueByScale_int_RoundingMode_helper("0", -3, "HALF_UP", "0E+3");
+        bigDecimalValueByScale_int_RoundingMode_helper("0", -3, "HALF_EVEN", "0E+3");
+        bigDecimalValueByScale_int_RoundingMode_helper("0", -3, "UNNECESSARY", "0E+3");
+
+        bigDecimalValueByScale_int_RoundingMode_helper("1", 0, "FLOOR", "1");
+        bigDecimalValueByScale_int_RoundingMode_helper("1", 0, "CEILING", "1");
+        bigDecimalValueByScale_int_RoundingMode_helper("1", 0, "DOWN", "1");
+        bigDecimalValueByScale_int_RoundingMode_helper("1", 0, "UP", "1");
+        bigDecimalValueByScale_int_RoundingMode_helper("1", 0, "HALF_DOWN", "1");
+        bigDecimalValueByScale_int_RoundingMode_helper("1", 0, "HALF_UP", "1");
+        bigDecimalValueByScale_int_RoundingMode_helper("1", 0, "HALF_EVEN", "1");
+        bigDecimalValueByScale_int_RoundingMode_helper("1", 0, "UNNECESSARY", "1");
+
+        bigDecimalValueByScale_int_RoundingMode_helper("1", 3, "FLOOR", "1.000");
+        bigDecimalValueByScale_int_RoundingMode_helper("1", 3, "CEILING", "1.000");
+        bigDecimalValueByScale_int_RoundingMode_helper("1", 3, "DOWN", "1.000");
+        bigDecimalValueByScale_int_RoundingMode_helper("1", 3, "UP", "1.000");
+        bigDecimalValueByScale_int_RoundingMode_helper("1", 3, "HALF_DOWN", "1.000");
+        bigDecimalValueByScale_int_RoundingMode_helper("1", 3, "HALF_UP", "1.000");
+        bigDecimalValueByScale_int_RoundingMode_helper("1", 3, "HALF_EVEN", "1.000");
+        bigDecimalValueByScale_int_RoundingMode_helper("1", 3, "UNNECESSARY", "1.000");
+
+        bigDecimalValueByScale_int_RoundingMode_helper("1", -3, "FLOOR", "0E+3");
+        bigDecimalValueByScale_int_RoundingMode_helper("1", -3, "CEILING", "1E+3");
+        bigDecimalValueByScale_int_RoundingMode_helper("1", -3, "DOWN", "0E+3");
+        bigDecimalValueByScale_int_RoundingMode_helper("1", -3, "UP", "1E+3");
+        bigDecimalValueByScale_int_RoundingMode_helper("1", -3, "HALF_DOWN", "0E+3");
+        bigDecimalValueByScale_int_RoundingMode_helper("1", -3, "HALF_UP", "0E+3");
+        bigDecimalValueByScale_int_RoundingMode_helper("1", -3, "HALF_EVEN", "0E+3");
+
+        bigDecimalValueByScale_int_RoundingMode_helper("1/2", 0, "FLOOR", "0");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/2", 0, "CEILING", "1");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/2", 0, "DOWN", "0");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/2", 0, "UP", "1");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/2", 0, "HALF_DOWN", "0");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/2", 0, "HALF_UP", "1");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/2", 0, "HALF_EVEN", "0");
+
+        bigDecimalValueByScale_int_RoundingMode_helper("1/2", 1, "FLOOR", "0.5");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/2", 1, "CEILING", "0.5");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/2", 1, "DOWN", "0.5");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/2", 1, "UP", "0.5");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/2", 1, "HALF_DOWN", "0.5");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/2", 1, "HALF_UP", "0.5");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/2", 1, "HALF_EVEN", "0.5");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/2", 1, "UNNECESSARY", "0.5");
+
+        bigDecimalValueByScale_int_RoundingMode_helper("1/2", 4, "FLOOR", "0.5000");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/2", 4, "CEILING", "0.5000");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/2", 4, "DOWN", "0.5000");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/2", 4, "UP", "0.5000");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/2", 4, "HALF_DOWN", "0.5000");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/2", 4, "HALF_UP", "0.5000");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/2", 4, "HALF_EVEN", "0.5000");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/2", 4, "UNNECESSARY", "0.5000");
+
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 0, "FLOOR", "0");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 0, "CEILING", "1");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 0, "DOWN", "0");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 0, "UP", "1");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 0, "HALF_DOWN", "0");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 0, "HALF_UP", "0");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 0, "HALF_EVEN", "0");
+
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 1, "FLOOR", "0.0");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 1, "CEILING", "0.1");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 1, "DOWN", "0.0");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 1, "UP", "0.1");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 1, "HALF_DOWN", "0.0");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 1, "HALF_UP", "0.0");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 1, "HALF_EVEN", "0.0");
+
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 2, "FLOOR", "0.01");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 2, "CEILING", "0.02");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 2, "DOWN", "0.01");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 2, "UP", "0.02");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 2, "HALF_DOWN", "0.02");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 2, "HALF_UP", "0.02");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 2, "HALF_EVEN", "0.02");
+
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 3, "FLOOR", "0.015");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 3, "CEILING", "0.016");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 3, "DOWN", "0.015");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 3, "UP", "0.016");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 3, "HALF_DOWN", "0.016");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 3, "HALF_UP", "0.016");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 3, "HALF_EVEN", "0.016");
+
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 4, "FLOOR", "0.0156");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 4, "CEILING", "0.0157");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 4, "DOWN", "0.0156");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 4, "UP", "0.0157");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 4, "HALF_DOWN", "0.0156");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 4, "HALF_UP", "0.0156");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 4, "HALF_EVEN", "0.0156");
+
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 5, "FLOOR", "0.01562");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 5, "CEILING", "0.01563");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 5, "DOWN", "0.01562");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 5, "UP", "0.01563");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 5, "HALF_DOWN", "0.01562");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 5, "HALF_UP", "0.01563");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 5, "HALF_EVEN", "0.01562");
+
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 6, "FLOOR", "0.015625");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 6, "CEILING", "0.015625");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 6, "DOWN", "0.015625");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 6, "UP", "0.015625");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 6, "HALF_DOWN", "0.015625");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 6, "HALF_UP", "0.015625");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 6, "HALF_EVEN", "0.015625");
+        bigDecimalValueByScale_int_RoundingMode_helper("1/64", 6, "UNNECESSARY", "0.015625");
+
+        bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 0, "FLOOR", "-1");
+        bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 0, "CEILING", "0");
+        bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 0, "DOWN", "0");
+        bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 0, "UP", "-1");
+        bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 0, "HALF_DOWN", "0");
+        bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 0, "HALF_UP", "0");
+        bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 0, "HALF_EVEN", "0");
+
+        bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 1, "FLOOR", "-0.4");
+        bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 1, "CEILING", "-0.3");
+        bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 1, "DOWN", "-0.3");
+        bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 1, "UP", "-0.4");
+        bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 1, "HALF_DOWN", "-0.3");
+        bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 1, "HALF_UP", "-0.3");
+        bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 1, "HALF_EVEN", "-0.3");
+
+        bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 2, "FLOOR", "-0.34");
+        bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 2, "CEILING", "-0.33");
+        bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 2, "DOWN", "-0.33");
+        bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 2, "UP", "-0.34");
+        bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 2, "HALF_DOWN", "-0.33");
+        bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 2, "HALF_UP", "-0.33");
+        bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 2, "HALF_EVEN", "-0.33");
+
+        bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 3, "FLOOR", "-0.334");
+        bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 3, "CEILING", "-0.333");
+        bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 3, "DOWN", "-0.333");
+        bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 3, "UP", "-0.334");
+        bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 3, "HALF_DOWN", "-0.333");
+        bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 3, "HALF_UP", "-0.333");
+        bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 3, "HALF_EVEN", "-0.333");
+
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", 0, "FLOOR", "6789");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", 0, "CEILING", "6789");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", 0, "DOWN", "6789");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", 0, "UP", "6789");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", 0, "HALF_DOWN", "6789");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", 0, "HALF_UP", "6789");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", 0, "HALF_EVEN", "6789");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", 0, "UNNECESSARY", "6789");
+
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", -1, "FLOOR", "6.78E+3");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", -1, "CEILING", "6.79E+3");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", -1, "DOWN", "6.78E+3");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", -1, "UP", "6.79E+3");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", -1, "HALF_DOWN", "6.79E+3");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", -1, "HALF_UP", "6.79E+3");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", -1, "HALF_EVEN", "6.79E+3");
+
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", -2, "FLOOR", "6.7E+3");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", -2, "CEILING", "6.8E+3");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", -2, "DOWN", "6.7E+3");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", -2, "UP", "6.8E+3");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", -2, "HALF_DOWN", "6.8E+3");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", -2, "HALF_UP", "6.8E+3");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", -2, "HALF_EVEN", "6.8E+3");
+
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", -3, "FLOOR", "6E+3");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", -3, "CEILING", "7E+3");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", -3, "DOWN", "6E+3");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", -3, "UP", "7E+3");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", -3, "HALF_DOWN", "7E+3");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", -3, "HALF_UP", "7E+3");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", -3, "HALF_EVEN", "7E+3");
+
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", -4, "FLOOR", "0E+4");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", -4, "CEILING", "1E+4");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", -4, "DOWN", "0E+4");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", -4, "UP", "1E+4");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", -4, "HALF_DOWN", "1E+4");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", -4, "HALF_UP", "1E+4");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", -4, "HALF_EVEN", "1E+4");
+
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", -5, "FLOOR", "0E+5");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", -5, "CEILING", "1E+5");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", -5, "DOWN", "0E+5");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", -5, "UP", "1E+5");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", -5, "HALF_DOWN", "0E+5");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", -5, "HALF_UP", "0E+5");
+        bigDecimalValueByScale_int_RoundingMode_helper("6789", -5, "HALF_EVEN", "0E+5");
+
+        bigDecimalValueByScale_int_RoundingMode_helper("sqrt(2)", 0, "FLOOR", "1");
+        bigDecimalValueByScale_int_RoundingMode_helper("sqrt(2)", 0, "CEILING", "2");
+        bigDecimalValueByScale_int_RoundingMode_helper("sqrt(2)", 0, "DOWN", "1");
+        bigDecimalValueByScale_int_RoundingMode_helper("sqrt(2)", 0, "UP", "2");
+        bigDecimalValueByScale_int_RoundingMode_helper("sqrt(2)", 0, "HALF_DOWN", "1");
+        bigDecimalValueByScale_int_RoundingMode_helper("sqrt(2)", 0, "HALF_UP", "1");
+        bigDecimalValueByScale_int_RoundingMode_helper("sqrt(2)", 0, "HALF_EVEN", "1");
+
+        bigDecimalValueByScale_int_RoundingMode_helper("sqrt(2)", 1, "FLOOR", "1.4");
+        bigDecimalValueByScale_int_RoundingMode_helper("sqrt(2)", 1, "CEILING", "1.5");
+        bigDecimalValueByScale_int_RoundingMode_helper("sqrt(2)", 1, "DOWN", "1.4");
+        bigDecimalValueByScale_int_RoundingMode_helper("sqrt(2)", 1, "UP", "1.5");
+        bigDecimalValueByScale_int_RoundingMode_helper("sqrt(2)", 1, "HALF_DOWN", "1.4");
+        bigDecimalValueByScale_int_RoundingMode_helper("sqrt(2)", 1, "HALF_UP", "1.4");
+        bigDecimalValueByScale_int_RoundingMode_helper("sqrt(2)", 1, "HALF_EVEN", "1.4");
+
+        bigDecimalValueByScale_int_RoundingMode_helper("sqrt(2)", 2, "FLOOR", "1.41");
+        bigDecimalValueByScale_int_RoundingMode_helper("sqrt(2)", 2, "CEILING", "1.42");
+        bigDecimalValueByScale_int_RoundingMode_helper("sqrt(2)", 2, "DOWN", "1.41");
+        bigDecimalValueByScale_int_RoundingMode_helper("sqrt(2)", 2, "UP", "1.42");
+        bigDecimalValueByScale_int_RoundingMode_helper("sqrt(2)", 2, "HALF_DOWN", "1.41");
+        bigDecimalValueByScale_int_RoundingMode_helper("sqrt(2)", 2, "HALF_UP", "1.41");
+        bigDecimalValueByScale_int_RoundingMode_helper("sqrt(2)", 2, "HALF_EVEN", "1.41");
+
+        bigDecimalValueByScale_int_RoundingMode_helper("sqrt(2)", 3, "FLOOR", "1.414");
+        bigDecimalValueByScale_int_RoundingMode_helper("sqrt(2)", 3, "CEILING", "1.415");
+        bigDecimalValueByScale_int_RoundingMode_helper("sqrt(2)", 3, "DOWN", "1.414");
+        bigDecimalValueByScale_int_RoundingMode_helper("sqrt(2)", 3, "UP", "1.415");
+        bigDecimalValueByScale_int_RoundingMode_helper("sqrt(2)", 3, "HALF_DOWN", "1.414");
+        bigDecimalValueByScale_int_RoundingMode_helper("sqrt(2)", 3, "HALF_UP", "1.414");
+        bigDecimalValueByScale_int_RoundingMode_helper("sqrt(2)", 3, "HALF_EVEN", "1.414");
+
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("1", -3, "UNNECESSARY");
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("1/2", 0, "UNNECESSARY");
+
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("1/64", 0, "UNNECESSARY");
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("1/64", 1, "UNNECESSARY");
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("1/64", 2, "UNNECESSARY");
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("1/64", 3, "UNNECESSARY");
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("1/64", 4, "UNNECESSARY");
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("1/64", 5, "UNNECESSARY");
+
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("-1/3", 0, "UNNECESSARY");
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("-1/3", 1, "UNNECESSARY");
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("-1/3", 2, "UNNECESSARY");
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("-1/3", 3, "UNNECESSARY");
+
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("6789", -1, "UNNECESSARY");
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("6789", -2, "UNNECESSARY");
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("6789", -3, "UNNECESSARY");
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("6789", -4, "UNNECESSARY");
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("6789", -5, "UNNECESSARY");
+
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("sqrt(2)", 0, "UNNECESSARY");
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("sqrt(2)", 1, "UNNECESSARY");
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("sqrt(2)", 2, "UNNECESSARY");
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("sqrt(2)", 3, "UNNECESSARY");
+    }
+
+    private static void bigDecimalValueByPrecision_int_helper(
+            @NotNull String r,
+            int precision,
+            @NotNull String output
+    ) {
+        aeq(readStrict(r).get().bigDecimalValueByPrecision(precision), output);
+    }
+
+    private static void bigDecimalValueByPrecision_int_fail_helper(@NotNull String r, int precision) {
+        try {
+            readStrict(r).get().bigDecimalValueByPrecision(precision);
+            fail();
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testBigDecimalValueByPrecision_int() {
+        bigDecimalValueByPrecision_int_helper("0", 0, "0");
+        bigDecimalValueByPrecision_int_helper("0", 4, "0.000");
+
+        bigDecimalValueByPrecision_int_helper("1", 0, "1");
+        bigDecimalValueByPrecision_int_helper("1", 4, "1.000");
+
+        bigDecimalValueByPrecision_int_helper("1/2", 0, "0.5");
+        bigDecimalValueByPrecision_int_helper("1/2", 1, "0.5");
+        bigDecimalValueByPrecision_int_helper("1/2", 4, "0.5000");
+
+        bigDecimalValueByPrecision_int_helper("1/64", 0, "0.015625");
+        bigDecimalValueByPrecision_int_helper("1/64", 1, "0.02");
+        bigDecimalValueByPrecision_int_helper("1/64", 2, "0.016");
+        bigDecimalValueByPrecision_int_helper("1/64", 3, "0.0156");
+        bigDecimalValueByPrecision_int_helper("1/64", 4, "0.01562");
+        bigDecimalValueByPrecision_int_helper("1/64", 5, "0.015625");
+        bigDecimalValueByPrecision_int_helper("1/64", 6, "0.0156250");
+
+        bigDecimalValueByPrecision_int_helper("-1/3", 1, "-0.3");
+        bigDecimalValueByPrecision_int_helper("-1/3", 2, "-0.33");
+        bigDecimalValueByPrecision_int_helper("-1/3", 3, "-0.333");
+        bigDecimalValueByPrecision_int_helper("-1/3", 4, "-0.3333");
+
+        bigDecimalValueByPrecision_int_helper("6789", 0, "6789");
+        bigDecimalValueByPrecision_int_helper("6789", 1, "7E+3");
+        bigDecimalValueByPrecision_int_helper("6789", 2, "6.8E+3");
+        bigDecimalValueByPrecision_int_helper("6789", 3, "6.79E+3");
+        bigDecimalValueByPrecision_int_helper("6789", 4, "6789");
+        bigDecimalValueByPrecision_int_helper("6789", 5, "6789.0");
+
+        bigDecimalValueByPrecision_int_helper("19/20", 0, "0.95");
+        bigDecimalValueByPrecision_int_helper("19/20", 1, "1");
+        bigDecimalValueByPrecision_int_helper("19/20", 2, "0.95");
+        bigDecimalValueByPrecision_int_helper("19/20", 3, "0.950");
+        bigDecimalValueByPrecision_int_helper("19/20", 4, "0.9500");
+        bigDecimalValueByPrecision_int_helper("19/20", 5, "0.95000");
+
+        bigDecimalValueByPrecision_int_helper("199/200", 0, "0.995");
+        bigDecimalValueByPrecision_int_helper("199/200", 1, "1");
+        bigDecimalValueByPrecision_int_helper("199/200", 2, "1.0");
+        bigDecimalValueByPrecision_int_helper("199/200", 3, "0.995");
+        bigDecimalValueByPrecision_int_helper("199/200", 4, "0.9950");
+        bigDecimalValueByPrecision_int_helper("199/200", 5, "0.99500");
+
+        bigDecimalValueByPrecision_int_helper("sqrt(2)", 1, "1");
+        bigDecimalValueByPrecision_int_helper("sqrt(2)", 2, "1.4");
+        bigDecimalValueByPrecision_int_helper("sqrt(2)", 3, "1.41");
+        bigDecimalValueByPrecision_int_helper("sqrt(2)", 4, "1.414");
+        bigDecimalValueByPrecision_int_helper("sqrt(2)", 5, "1.4142");
+        bigDecimalValueByPrecision_int_helper("sqrt(2)", 6, "1.41421");
+
+        bigDecimalValueByPrecision_int_fail_helper("-1/3", 0);
+        bigDecimalValueByPrecision_int_fail_helper("sqrt(2)", 0);
+        bigDecimalValueByPrecision_int_fail_helper("5", -1);
+        bigDecimalValueByPrecision_int_fail_helper("sqrt(2)", -1);
+    }
+
+    private static void bigDecimalValueByScale_int_helper(@NotNull String r, int scale, @NotNull String output) {
+        aeq(readStrict(r).get().bigDecimalValueByScale(scale), output);
+    }
+
+    @Test
+    public void testBigDecimalValueByScale_int() {
+        bigDecimalValueByScale_int_helper("0", 0, "0");
+        bigDecimalValueByScale_int_helper("0", 3, "0.000");
+        bigDecimalValueByScale_int_helper("0", -3, "0E+3");
+
+        bigDecimalValueByScale_int_helper("1", 0, "1");
+        bigDecimalValueByScale_int_helper("1", 3, "1.000");
+        bigDecimalValueByScale_int_helper("1", -3, "0E+3");
+
+        bigDecimalValueByScale_int_helper("1/2", 0, "0");
+        bigDecimalValueByScale_int_helper("1/2", 1, "0.5");
+        bigDecimalValueByScale_int_helper("1/2", 4, "0.5000");
+
+        bigDecimalValueByScale_int_helper("1/64", 0, "0");
+        bigDecimalValueByScale_int_helper("1/64", 1, "0.0");
+        bigDecimalValueByScale_int_helper("1/64", 2, "0.02");
+        bigDecimalValueByScale_int_helper("1/64", 3, "0.016");
+        bigDecimalValueByScale_int_helper("1/64", 4, "0.0156");
+        bigDecimalValueByScale_int_helper("1/64", 5, "0.01562");
+        bigDecimalValueByScale_int_helper("1/64", 6, "0.015625");
+
+        bigDecimalValueByScale_int_helper("-1/3", 0, "0");
+        bigDecimalValueByScale_int_helper("-1/3", 1, "-0.3");
+        bigDecimalValueByScale_int_helper("-1/3", 2, "-0.33");
+        bigDecimalValueByScale_int_helper("-1/3", 3, "-0.333");
+
+        bigDecimalValueByScale_int_helper("6789", 0, "6789");
+        bigDecimalValueByScale_int_helper("6789", -1, "6.79E+3");
+        bigDecimalValueByScale_int_helper("6789", -2, "6.8E+3");
+        bigDecimalValueByScale_int_helper("6789", -3, "7E+3");
+        bigDecimalValueByScale_int_helper("6789", -4, "1E+4");
+        bigDecimalValueByScale_int_helper("6789", -5, "0E+5");
+
+        bigDecimalValueByScale_int_helper("sqrt(2)", 0, "1");
+        bigDecimalValueByScale_int_helper("sqrt(2)", 1, "1.4");
+        bigDecimalValueByScale_int_helper("sqrt(2)", 2, "1.41");
+        bigDecimalValueByScale_int_helper("sqrt(2)", 3, "1.414");
+        bigDecimalValueByScale_int_helper("sqrt(2)", 4, "1.4142");
+        bigDecimalValueByScale_int_helper("sqrt(2)", 5, "1.41421");
+        bigDecimalValueByScale_int_helper("sqrt(2)", 6, "1.414214");
+    }
+
+    private static void bigDecimalValueExact_helper(@NotNull Algebraic input, @NotNull String output) {
+        aeq(input.bigDecimalValueExact(), output);
+    }
+
+    private static void bigDecimalValueExact_helper(@NotNull String input, @NotNull String output) {
+        bigDecimalValueExact_helper(readStrict(input).get(), output);
+    }
+
+    private static void bigDecimalValueExact_fail_helper(@NotNull String input) {
+        try {
+            readStrict(input).get().bigDecimalValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testBigDecimalValueExact() {
+        bigDecimalValueExact_helper("0", "0");
+        bigDecimalValueExact_helper("1", "1");
+        bigDecimalValueExact_helper("-23", "-23");
+        bigDecimalValueExact_helper("4/5", "0.8");
+        bigDecimalValueExact_helper("1/64", "0.015625");
+        bigDecimalValueExact_helper("1234", "1234");
+        bigDecimalValueExact_helper("19/20", "0.95");
+        bigDecimalValueExact_helper("199/200", "0.995");
+
+        bigDecimalValueExact_helper(of(Rational.SMALLEST_FLOAT),
+                "1.4012984643248170709237295832899161312802619418765157717570682838897910826858606014866381883621215" +
+                "8203125E-45");
+        bigDecimalValueExact_helper(of(Rational.LARGEST_FLOAT), "340282346638528859811704183484516925440");
+        bigDecimalValueExact_helper(of(Rational.SMALLEST_DOUBLE),
+                "4.9406564584124654417656879286822137236505980261432476442558568250067550727020875186529983636163599" +
+                "237979656469544571773092665671035593979639877479601078187812630071319031140452784581716784898210368" +
+                "871863605699873072305000638740915356498438731247339727316961514003171538539807412623856559117102665" +
+                "855668676818703956031062493194527159149245532930545654440112748012970999954193198940908041656332452" +
+                "475714786901472678015935523861155013480352649347201937902681071074917033322268447533357208324319360" +
+                "923828934583680601060115061698097530783422773183292479049825247307763759272478746560847782037344696" +
+                "995336470179726777175851256605511991315048911014510378627381672509558373897335989936648099411642057" +
+                "02637090279242767544565229087538682506419718265533447265625E-324");
+        bigDecimalValueExact_helper(of(Rational.LARGEST_DOUBLE),
+                "179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878" +
+                "171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075" +
+                "868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026" +
+                "184124858368");
+
+        bigDecimalValueExact_fail_helper("1/3");
+        bigDecimalValueExact_fail_helper("sqrt(2)");
+    }
+
     private static void minimalPolynomial_helper(@NotNull String input, @NotNull String output) {
         aeq(readStrict(input).get().minimalPolynomial(), output);
     }
