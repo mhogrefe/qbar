@@ -178,6 +178,7 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementationsPowerTable();
         propertiesRootPower();
         compareImplementationsRootPower();
+        propertiesRealRoots();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -4498,6 +4499,22 @@ public class PolynomialProperties extends QBarTestProperties {
                 P.naturalIntegersGeometric()
         );
         compareImplementations("rootPower(int)", take(LIMIT, ps), functions);
+    }
+
+    private void propertiesRealRoots() {
+        initialize("realRoots()");
+        for (Polynomial p : take(LIMIT, P.withScale(4).polynomialsAtLeast(0))) {
+            List<Algebraic> realRoots = p.realRoots();
+            realRoots.forEach(Algebraic::validate);
+            assertTrue(p, increasing(realRoots));
+            assertEquals(p, realRoots.size(), p.rootCount());
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomials(0))) {
+            assertTrue(p, p.realRoots().isEmpty());
+        }
+
+        //todo p(x)=0
     }
 
     private void propertiesEquals() {

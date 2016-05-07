@@ -35,7 +35,7 @@ public class AlgebraicTest {
         try {
             of(Polynomial.readStrict(polynomial).get(), rootIndex);
             fail();
-        } catch (IllegalArgumentException ignored) {}
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
     }
 
     @Test
@@ -52,6 +52,9 @@ public class AlgebraicTest {
         of_Polynomial_int_helper("x^2-x-1", 1, "(1+sqrt(5))/2");
         of_Polynomial_int_helper("x^10", 0, "0");
         of_Polynomial_int_helper("x^5-x-1", 0, "root 0 of x^5-x-1");
+        of_Polynomial_int_helper("x^3-x^2-2*x+2", 0, "-sqrt(2)");
+        of_Polynomial_int_helper("x^3-x^2-2*x+2", 1, "1");
+        of_Polynomial_int_helper("x^3-x^2-2*x+2", 2, "sqrt(2)");
 
         of_Polynomial_int_fail_helper("0", 0);
         of_Polynomial_int_fail_helper("1", 0);

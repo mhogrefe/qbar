@@ -11,10 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.*;
@@ -195,10 +192,10 @@ public final class Algebraic implements Comparable<Algebraic> {
             throw new IllegalArgumentException("rootIndex cannot be negative. Invalid rootIndex: " + rootIndex);
         }
         if (polynomial == Polynomial.ZERO) {
-            throw new IllegalArgumentException("polynomial cannot be zero.");
+            throw new ArithmeticException("polynomial cannot be zero.");
         }
         if (polynomial.degree() == 0) {
-            throw new IllegalArgumentException("polynomial must have at least one real root. Invalid polynomial: " +
+            throw new ArithmeticException("polynomial must have at least one real root. Invalid polynomial: " +
                     polynomial);
         }
         Polynomial squareFree = polynomial.squareFreePart();
@@ -215,11 +212,11 @@ public final class Algebraic implements Comparable<Algebraic> {
 
         int rootCount = squareFree.rootCount();
         if (rootCount == 0) {
-            throw new IllegalArgumentException("polynomial must have at least one real root. Invalid polynomial: " +
+            throw new ArithmeticException("polynomial must have at least one real root. Invalid polynomial: " +
                     polynomial);
         }
         if (rootIndex >= rootCount) {
-            throw new IllegalArgumentException("rootIndex must be less than the number of real roots of polynomial." +
+            throw new ArithmeticException("rootIndex must be less than the number of real roots of polynomial." +
                     " rootIndex: " + rootIndex + ", number of real roots of " + polynomial + ": " + rootCount);
         }
         List<Polynomial> factors = squareFree.factor();
@@ -455,6 +452,66 @@ public final class Algebraic implements Comparable<Algebraic> {
      */
     public static @NotNull Algebraic of(@NotNull BigDecimal bd) {
         return of(Rational.of(bd));
+    }
+
+    /**
+     * See {@link Polynomial#realRoots()}.
+     *
+     * @param polynomial a {@code Polynomial}
+     * @return the real roots of {@code Polynomial}, in ascending order
+     */
+    public static @NotNull List<Algebraic> roots(@NotNull Polynomial polynomial) {
+        if (polynomial == Polynomial.ZERO) {
+            throw new ArithmeticException("polynomial cannot be zero.");
+        }
+        if (polynomial.degree() == 0) {
+            return Collections.emptyList();
+        }
+        Polynomial squareFree = polynomial.squareFreePart();
+        if (squareFree.degree() == 1) {
+            Rational r = Rational.of(squareFree.coefficient(0).negate(), squareFree.coefficient(1));
+            if (r == Rational.ZERO) return Collections.singletonList(ZERO);
+            if (r == Rational.ONE) return Collections.singletonList(ONE);
+            return Collections.singletonList(new Algebraic(r));
+        }
+
+        List<Polynomial> factors = squareFree.factor();
+        if (factors.size() == 1) {
+            List<Algebraic> roots = new ArrayList<>();
+            List<Interval> isolatingIntervals = squareFree.powerOfTwoIsolatingIntervals();
+            int rootCount = isolatingIntervals.size();
+            for (int i = 0; i < rootCount; i++) {
+                roots.add(new Algebraic(squareFree, i, isolatingIntervals.get(i), rootCount));
+            }
+            return roots;
+        }
+
+        SortedMap<Real, Algebraic> rootMap = new TreeMap<>();
+        for (Polynomial factor : factors) {
+            if (factor.degree() == 1) {
+                Rational r = Rational.of(factor.coefficient(0).negate(), factor.coefficient(1));
+                Algebraic x;
+                if (r == Rational.ZERO) {
+                    x = ZERO;
+                } else if (r == Rational.ONE) {
+                    x = ONE;
+                } else {
+                    x = new Algebraic(r);
+                }
+                rootMap.put(Real.of(r), x);
+            } else {
+                List<Interval> isolatingIntervals = factor.powerOfTwoIsolatingIntervals();
+                int rootCount = isolatingIntervals.size();
+                for (int i = 0; i < rootCount; i++) {
+                    Interval isolatingInterval = isolatingIntervals.get(i);
+                    rootMap.put(
+                            Real.root(factor::signum, isolatingInterval),
+                            new Algebraic(factor, i, isolatingInterval, rootCount)
+                    );
+                }
+            }
+        }
+        return toList(rootMap.values());
     }
 
     /**
@@ -1979,7 +2036,7 @@ public final class Algebraic implements Comparable<Algebraic> {
             Algebraic x;
             try {
                 x = of(oMinimalPolynomial.get(), rootIndex);
-            } catch (IllegalArgumentException e) {
+            } catch (ArithmeticException e) {
                 return Optional.empty();
             }
             if (x.toString().equals("root " + s)) {

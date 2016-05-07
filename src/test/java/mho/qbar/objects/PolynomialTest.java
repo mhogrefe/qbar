@@ -4287,6 +4287,70 @@ public class PolynomialTest {
         rootPower_fail_helper("x^2-2", -1);
     }
 
+    private static void realRoots_helper(@NotNull Polynomial polynomial, @NotNull String output) {
+        List<Algebraic> xs = polynomial.realRoots();
+        xs.forEach(Algebraic::validate);
+        aeq(toList(map(x -> x.bigDecimalValueByScale(30), xs)), output);
+    }
+
+    private static void realRoots_helper(@NotNull String polynomial, @NotNull String output) {
+        List<Algebraic> xs = readStrict(polynomial).get().realRoots();
+        xs.forEach(Algebraic::validate);
+        aeq(xs, output);
+    }
+
+    private static void realRoots_fail_helper(@NotNull String polynomial) {
+        try {
+            Polynomial.readStrict(polynomial).get().realRoots();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testRealRoots() {
+        realRoots_helper("1", "[]");
+        realRoots_helper("x", "[0]");
+        realRoots_helper("x-1", "[1]");
+        realRoots_helper("2*x-1", "[1/2]");
+        realRoots_helper("x^2-2*x+1", "[1]");
+        realRoots_helper("x^2-2", "[-sqrt(2), sqrt(2)]");
+        realRoots_helper("x^3-x^2-2*x+2", "[-sqrt(2), 1, sqrt(2)]");
+        realRoots_helper("x^2-4", "[-2, 2]");
+        realRoots_helper("x^2-x-1", "[(1-sqrt(5))/2, (1+sqrt(5))/2]");
+        realRoots_helper("x^5-x-1", "[root 0 of x^5-x-1]");
+        realRoots_helper("x^10", "[0]");
+
+        Polynomial wilkinsonsPolynomial = ONE;
+        for (int i = 1; i <= 20; i++) {
+            wilkinsonsPolynomial = wilkinsonsPolynomial.multiply(
+                    of(Arrays.asList(BigInteger.valueOf(-i), BigInteger.ONE))
+            );
+        }
+        realRoots_helper(wilkinsonsPolynomial,
+                "[1.000000000000000000000000000000, 2.000000000000000000000000000000," +
+                " 3.000000000000000000000000000000, 4.000000000000000000000000000000," +
+                " 5.000000000000000000000000000000, 6.000000000000000000000000000000," +
+                " 7.000000000000000000000000000000, 8.000000000000000000000000000000," +
+                " 9.000000000000000000000000000000, 10.000000000000000000000000000000," +
+                " 11.000000000000000000000000000000, 12.000000000000000000000000000000," +
+                " 13.000000000000000000000000000000, 14.000000000000000000000000000000," +
+                " 15.000000000000000000000000000000, 16.000000000000000000000000000000," +
+                " 17.000000000000000000000000000000, 18.000000000000000000000000000000," +
+                " 19.000000000000000000000000000000, 20.000000000000000000000000000000]");
+
+        List<Rational> coefficients = toList(wilkinsonsPolynomial.toRationalPolynomial());
+        coefficients.set(19, coefficients.get(19).subtract(Rational.ONE.shiftRight(23)));
+        Polynomial perturbedWilkinsonsPolynomial = RationalPolynomial.of(coefficients).constantFactor().b;
+        realRoots_helper(perturbedWilkinsonsPolynomial,
+                "[0.999999999999999999999999020024, 2.000000000000000009762004355366," +
+                " 2.999999999999805232975909820081, 4.000000000261023189141844190128," +
+                " 4.999999927551537909560059444730, 6.000006943952295707203354647870," +
+                " 6.999697233936013948676182936825, 8.007267603450376854893171187814," +
+                " 8.917250248517070494295520165335, 20.846908101482256914928772892631]");
+
+        realRoots_fail_helper("0");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

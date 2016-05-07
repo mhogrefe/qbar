@@ -2070,6 +2070,39 @@ public class RationalPolynomialTest {
         rootPower_fail_helper("x^2-2", -1);
     }
 
+    private static void realRoots_helper(@NotNull String polynomial, @NotNull String output) {
+        List<Algebraic> xs = RationalPolynomial.readStrict(polynomial).get().realRoots();
+        xs.forEach(Algebraic::validate);
+        aeq(xs, output);
+    }
+
+    private static void realRoots_fail_helper(@NotNull String polynomial) {
+        try {
+            RationalPolynomial.readStrict(polynomial).get().realRoots();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testRealRoots() {
+        realRoots_helper("1", "[]");
+        realRoots_helper("x", "[0]");
+        realRoots_helper("x-1", "[1]");
+        realRoots_helper("2*x-1", "[1/2]");
+        realRoots_helper("x^2-2*x+1", "[1]");
+        realRoots_helper("x^2-2", "[-sqrt(2), sqrt(2)]");
+        realRoots_helper("x^3-x^2-2*x+2", "[-sqrt(2), 1, sqrt(2)]");
+        realRoots_helper("x^2-4", "[-2, 2]");
+        realRoots_helper("x^2-x-1", "[(1-sqrt(5))/2, (1+sqrt(5))/2]");
+        realRoots_helper("x^5-x-1", "[root 0 of x^5-x-1]");
+        realRoots_helper("x^10", "[0]");
+
+        realRoots_helper("x-1/2", "[1/2]");
+        realRoots_helper("x^2-7/4*x+1/3", "[(21-sqrt(249))/24, (21+sqrt(249))/24]");
+
+        realRoots_fail_helper("0");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

@@ -838,6 +838,12 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoRealRoots() {
+        for (Polynomial p : take(LIMIT, P.withScale(4).polynomialsAtLeast(0))) {
+            System.out.println("realRoots(" + p + ") = " + p.realRoots());
+        }
+    }
+
     private void demoEquals_Polynomial() {
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.withScale(4).polynomials()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);

@@ -1251,6 +1251,20 @@ public final class RationalPolynomial implements
     }
 
     /**
+     * The real roots of {@code this}, in ascending order.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>The result is increasing and has no duplicates.</li>
+     * </ul>
+     *
+     * @return all real x such that {@code this}(x)=0.
+     */
+    public @NotNull List<Algebraic> realRoots() {
+        return Algebraic.roots(constantFactor().b);
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>

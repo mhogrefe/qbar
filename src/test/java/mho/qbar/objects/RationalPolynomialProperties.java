@@ -97,6 +97,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         compareImplementationsPowerTable();
         propertiesRootPower();
         compareImplementationsRootPower();
+        propertiesRealRoots();
         propertiesEquals();
         propertiesCompanionMatrix();
         propertiesCoefficientMatrix();
@@ -2107,6 +2108,22 @@ public class RationalPolynomialProperties extends QBarTestProperties {
                 P.withScale(4).naturalIntegersGeometric()
         );
         compareImplementations("rootPower(int)", take(LIMIT, ps), functions);
+    }
+
+    private void propertiesRealRoots() {
+        initialize("realRoots()");
+        for (RationalPolynomial p : take(LIMIT, P.withScale(4).rationalPolynomialsAtLeast(0))) {
+            List<Algebraic> realRoots = p.realRoots();
+            realRoots.forEach(Algebraic::validate);
+            assertTrue(p, increasing(realRoots));
+            assertEquals(p, realRoots.size(), p.constantFactor().b.rootCount());
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials(0))) {
+            assertTrue(p, p.realRoots().isEmpty());
+        }
+
+        //todo p(x)=0
     }
 
     private void propertiesEquals() {
