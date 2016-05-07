@@ -13,6 +13,7 @@ import java.util.List;
 
 import static mho.qbar.objects.MultivariatePolynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.testing.Testing.*;
 import static mho.wheels.testing.Testing.nicePrint;
 
 @SuppressWarnings("UnusedDeclaration")
@@ -259,6 +260,31 @@ public class MultivariatePolynomialDemos extends QBarDemos {
         }
         for (Triple<MultivariatePolynomial, MultivariatePolynomial, Variable> t : take(LIMIT, ts)) {
             System.out.println("resultant(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.resultant(t.b, t.c));
+        }
+    }
+
+    private void demoSum() {
+        Iterable<List<MultivariatePolynomial>> pss = P.withScale(4).lists(P.withScale(4).multivariatePolynomials());
+        for (List<MultivariatePolynomial> ps : take(LIMIT, pss)) {
+            String listString = tail(init(ps.toString()));
+            System.out.println("Σ(" + listString + ") = " + sum(ps));
+        }
+    }
+
+    private void demoProduct() {
+        Iterable<List<MultivariatePolynomial>> pss = P.withScale(4).lists(P.withScale(4).multivariatePolynomials());
+        for (List<MultivariatePolynomial> ps : take(LIMIT, pss)) {
+            String listString = tail(init(ps.toString()));
+            System.out.println("Π(" + listString + ") = " + product(ps));
+        }
+    }
+
+    private void demoDelta() {
+        Iterable<List<MultivariatePolynomial>> pss =
+                P.withScale(4).listsAtLeast(1, P.withScale(4).multivariatePolynomials());
+        for (List<MultivariatePolynomial> ps : take(LIMIT, pss)) {
+            String listString = tail(init(ps.toString()));
+            System.out.println("Δ(" + listString + ") = " + its(delta(ps)));
         }
     }
 

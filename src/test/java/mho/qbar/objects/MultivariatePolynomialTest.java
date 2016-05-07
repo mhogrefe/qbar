@@ -10,6 +10,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 import static mho.qbar.objects.MultivariatePolynomial.*;
+import static mho.wheels.iterables.IterableUtils.take;
 import static mho.wheels.iterables.IterableUtils.toList;
 import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.assertFalse;
@@ -979,6 +980,81 @@ public class MultivariatePolynomialTest {
         shiftLeft_fail_helper("a*b*c", -1);
     }
 
+    private static void sum_helper(@NotNull String input, @NotNull String output) {
+        MultivariatePolynomial p = sum(readMultivariatePolynomialList(input));
+        p.validate();
+        aeq(p, output);
+    }
+
+    private static void sum_fail_helper(@NotNull String input) {
+        try {
+            sum(readMultivariatePolynomialListWithNulls(input));
+            fail();
+        } catch (NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testSum() {
+        sum_helper("[]", "0");
+        sum_helper("[1]", "1");
+        sum_helper("[-17]", "-17");
+        sum_helper("[-17, ooo, a*b*c, x^2-4*x+7, x^2+2*x*y+y^2]", "a*b*c+2*x^2+2*x*y+y^2-4*x+ooo-10");
+        sum_fail_helper("[-17, null, a*b*c, x^2-4*x+7, x^2+2*x*y+y^2]");
+    }
+
+    private static void product_helper(@NotNull String input, @NotNull String output) {
+        MultivariatePolynomial p = product(readMultivariatePolynomialList(input));
+        p.validate();
+        aeq(p, output);
+    }
+
+    private static void product_fail_helper(@NotNull String input) {
+        try {
+            product(readMultivariatePolynomialListWithNulls(input));
+            fail();
+        } catch (NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testProduct() {
+        product_helper("[]", "1");
+        product_helper("[1]", "1");
+        product_helper("[-17]", "-17");
+        product_helper("[-17, ooo, a*b*c, x^2-4*x+7, x^2+2*x*y+y^2]",
+                "-17*a*b*c*x^4*ooo-34*a*b*c*x^3*y*ooo-17*a*b*c*x^2*y^2*ooo+68*a*b*c*x^3*ooo+136*a*b*c*x^2*y*ooo+" +
+                "68*a*b*c*x*y^2*ooo-119*a*b*c*x^2*ooo-238*a*b*c*x*y*ooo-119*a*b*c*y^2*ooo");
+        product_fail_helper("[-17, null, a*b*c, x^2-4*x+7, x^2+2*x*y+y^2]");
+    }
+
+    private static void delta_helper(@NotNull Iterable<MultivariatePolynomial> input, @NotNull String output) {
+        Iterable<MultivariatePolynomial> ps = delta(input);
+        take(TINY_LIMIT, ps).forEach(MultivariatePolynomial::validate);
+        aeqitLimit(TINY_LIMIT, ps, output);
+    }
+
+    private static void delta_helper(@NotNull String input, @NotNull String output) {
+        delta_helper(readMultivariatePolynomialList(input), output);
+    }
+
+    private static void delta_fail_helper(@NotNull String input) {
+        try {
+            toList(delta(readMultivariatePolynomialListWithNulls(input)));
+            fail();
+        } catch (IllegalArgumentException | NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testDelta() {
+        delta_helper("[-17]", "[]");
+        delta_helper("[-17, ooo]", "[ooo+17]");
+        delta_helper("[-17, ooo, a*b*c, x^2-4*x+7, x^2+2*x*y+y^2]",
+                "[ooo+17, a*b*c-ooo, -a*b*c+x^2-4*x+7, 2*x*y+y^2+4*x-7]");
+        //todo pow example
+
+        delta_fail_helper("[]");
+        delta_fail_helper("[-17, null, a*b*c, x^2-4*x+7, x^2+2*x*y+y^2]");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(
@@ -1250,5 +1326,9 @@ public class MultivariatePolynomialTest {
 
     private static @NotNull List<MultivariatePolynomial> readMultivariatePolynomialList(@NotNull String s) {
         return Readers.readListStrict(MultivariatePolynomial::readStrict).apply(s).get();
+    }
+
+    private static @NotNull List<MultivariatePolynomial> readMultivariatePolynomialListWithNulls(@NotNull String s) {
+        return Readers.readListWithNullsStrict(MultivariatePolynomial::readStrict).apply(s).get();
     }
 }

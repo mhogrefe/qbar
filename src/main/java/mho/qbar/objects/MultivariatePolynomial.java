@@ -638,45 +638,66 @@ public final class MultivariatePolynomial implements
         return new MultivariatePolynomial(shiftedTerms);
     }
 
+    /**
+     * Returns the sum of all the {@code MultivariatePolynomial}s in {@code xs}. If {@code xs} is empty, 0 is returned.
+     *
+     * <ul>
+     *  <li>{@code xs} may not contain any nulls.</li>
+     *  <li>The result may be any {@code MultivariatePolynomial}.</li>
+     * </ul>
+     *
+     * @param xs a {@code List} of {@code MultivariatePolynomial}s.
+     * @return Σxs
+     */
     public static @NotNull MultivariatePolynomial sum(@NotNull List<MultivariatePolynomial> xs) {
-        List<Pair<Monomial, BigInteger>> sumTerms = new ArrayList<>();
-        List<Iterator<Pair<Monomial, BigInteger>>> inputTermsIterators =
-                toList(map(MultivariatePolynomial::iterator, xs));
-        List<Pair<Monomial, BigInteger>> inputTerms =
-                toList(map(it -> it.hasNext() ? it.next() : null, inputTermsIterators));
-        while (true) {
-            Monomial lowestMonomial = null;
-            List<Integer> lowestIndices = new ArrayList<>();
-            for (int i = 0; i < inputTerms.size(); i++) {
-                Pair<Monomial, BigInteger> p = inputTerms.get(i);
-                if (p == null) continue;
-                if (lowestMonomial == null || Ordering.lt(p.a, lowestMonomial)) {
-                    lowestMonomial = p.a;
-                    lowestIndices.clear();
-                    lowestIndices.add(i);
-                } else if (p.a.equals(lowestMonomial)) {
-                    lowestIndices.add(i);
-                }
-            }
-            if (lowestMonomial == null) {
-                break;
-            }
-            BigInteger coefficient = BigInteger.ZERO;
-            for (int index : lowestIndices) {
-                coefficient = coefficient.add(inputTerms.get(index).b);
-                Iterator<Pair<Monomial, BigInteger>> it = inputTermsIterators.get(index);
-                inputTerms.set(index, it.hasNext() ? it.next() : null);
-            }
-            if (!coefficient.equals(BigInteger.ZERO)) {
-                sumTerms.add(new Pair<>(lowestMonomial, coefficient));
-            }
+        return foldl(MultivariatePolynomial::add, ZERO, xs);
+    }
+
+    /**
+     * Returns the product of all the {@code MultivariatePolynomial}s in {@code xs}. If {@code xs} is empty, 1 is
+     * returned.
+     *
+     * <ul>
+     *  <li>{@code xs} may not contain any nulls.</li>
+     *  <li>The result may be any {@code MultivariatePolynomial}.</li>
+     * </ul>
+     *
+     * @param xs a {@code List} of {@code MultivariatePolynomial}s.
+     * @return Πxs
+     */
+    public static @NotNull MultivariatePolynomial product(@NotNull List<MultivariatePolynomial> xs) {
+        if (any(x -> x == null, xs)) {
+            throw new NullPointerException();
         }
-        if (sumTerms.size() == 0) return ZERO;
-        if (sumTerms.size() == 1) {
-            Pair<Monomial, BigInteger> term = sumTerms.get(0);
-            if (term.a == Monomial.ONE && term.b.equals(BigInteger.ONE)) return ONE;
+        if (any(x -> x == ZERO, xs)) {
+            return ZERO;
         }
-        return new MultivariatePolynomial(sumTerms);
+        return foldl(MultivariatePolynomial::multiply, ONE, xs);
+    }
+
+    /**
+     * Returns the differences between successive {@code MultivariatePolynomial}s in {@code xs}. If {@code xs} contains
+     * a single {@code MultivariatePolynomial}, an empty {@code Iterable} is returned. {@code xs} cannot be empty. Does
+     * not support removal.
+     *
+     * <ul>
+     *  <li>{@code xs} must not be empty and may not contain any nulls.</li>
+     *  <li>The result does not contain any nulls.</li>
+     * </ul>
+     *
+     * Length is |{@code xs}|–1
+     *
+     * @param xs an {@code Iterable} of {@code MultivariatePolynomial}s.
+     * @return Δxs
+     */
+    public static @NotNull Iterable<MultivariatePolynomial> delta(@NotNull Iterable<MultivariatePolynomial> xs) {
+        if (isEmpty(xs)) {
+            throw new IllegalArgumentException("xs must not be empty.");
+        }
+        if (head(xs) == null) {
+            throw new NullPointerException();
+        }
+        return adjacentPairsWith((x, y) -> y.subtract(x), xs);
     }
 
     /**

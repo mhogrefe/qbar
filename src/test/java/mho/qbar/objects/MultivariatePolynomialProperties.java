@@ -4,6 +4,7 @@ import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
 import mho.wheels.iterables.IterableUtils;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
@@ -21,6 +22,12 @@ import static mho.wheels.testing.Testing.*;
 
 public class MultivariatePolynomialProperties extends QBarTestProperties {
     private static final @NotNull String MULTIVARIATE_POLYNOMIAL_CHARS = "*+-0123456789^abcdefghijklmnopqrstuvwxyz";
+
+    private static final @NotNull Comparator<MultivariatePolynomial> TERM_SHORTLEX_COMPARATOR = (p, q) -> {
+        int c = Integer.compare(p.termCount(), q.termCount());
+        if (c != 0) return c;
+        return p.compareTo(q);
+    };
 
     public MultivariatePolynomialProperties() {
         super("MultivariatePolynomial");
@@ -57,6 +64,11 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         compareImplementationsMultiply_MultivariatePolynomial();
         propertiesShiftLeft();
         compareImplementationsShiftLeft();
+        propertiesSum();
+        compareImplementationsSum();
+        propertiesProduct();
+        compareImplementationsProduct();
+        propertiesDelta();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -674,6 +686,163 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
                 "shiftLeft(int)",
                 take(LIMIT, P.pairs(P.multivariatePolynomials(), P.naturalIntegersGeometric())),
                 functions
+        );
+    }
+
+    private static @NotNull MultivariatePolynomial sum_simplest(@NotNull List<MultivariatePolynomial> xs) {
+        return of(toList(concat(map(p -> (Iterable<Pair<Monomial, BigInteger>>) p, xs))));
+    }
+
+    private static @NotNull MultivariatePolynomial sum_alt(@NotNull List<MultivariatePolynomial> xs) {
+        List<Pair<Monomial, BigInteger>> sumTerms = new ArrayList<>();
+        List<Iterator<Pair<Monomial, BigInteger>>> inputTermsIterators =
+                toList(map(MultivariatePolynomial::iterator, xs));
+        List<Pair<Monomial, BigInteger>> inputTerms =
+                toList(map(it -> it.hasNext() ? it.next() : null, inputTermsIterators));
+        while (true) {
+            Monomial lowestMonomial = null;
+            List<Integer> lowestIndices = new ArrayList<>();
+            for (int i = 0; i < inputTerms.size(); i++) {
+                Pair<Monomial, BigInteger> p = inputTerms.get(i);
+                if (p == null) continue;
+                if (lowestMonomial == null || Ordering.lt(p.a, lowestMonomial)) {
+                    lowestMonomial = p.a;
+                    lowestIndices.clear();
+                    lowestIndices.add(i);
+                } else if (p.a.equals(lowestMonomial)) {
+                    lowestIndices.add(i);
+                }
+            }
+            if (lowestMonomial == null) {
+                break;
+            }
+            BigInteger coefficient = BigInteger.ZERO;
+            for (int index : lowestIndices) {
+                coefficient = coefficient.add(inputTerms.get(index).b);
+                Iterator<Pair<Monomial, BigInteger>> it = inputTermsIterators.get(index);
+                inputTerms.set(index, it.hasNext() ? it.next() : null);
+            }
+            if (!coefficient.equals(BigInteger.ZERO)) {
+                sumTerms.add(new Pair<>(lowestMonomial, coefficient));
+            }
+        }
+        if (sumTerms.size() == 0) return ZERO;
+        if (sumTerms.size() == 1) {
+            Pair<Monomial, BigInteger> term = sumTerms.get(0);
+            if (term.a == Monomial.ONE && term.b.equals(BigInteger.ONE)) return ONE;
+        }
+        return of(sumTerms);
+    }
+
+    private void propertiesSum() {
+        initialize("sum(List<MultivariatePolynomial>)");
+        propertiesFoldHelper(
+                LIMIT,
+                P.getWheelsProvider(),
+                P.multivariatePolynomials(),
+                MultivariatePolynomial::add,
+                MultivariatePolynomial::sum,
+                MultivariatePolynomial::validate,
+                true,
+                true
+        );
+
+        for (List<MultivariatePolynomial> ps : take(LIMIT, P.lists(P.multivariatePolynomials()))) {
+            MultivariatePolynomial sum = sum(ps);
+            sum.validate();
+            assertEquals(ps, sum, sum_simplest(ps));
+            assertEquals(ps, sum, sum_alt(ps));
+            assertTrue(ps, ps.isEmpty() || sum.degree() <= maximum(map(MultivariatePolynomial::degree, ps)));
+        }
+    }
+
+    private void compareImplementationsSum() {
+        Map<String, Function<List<MultivariatePolynomial>, MultivariatePolynomial>> functions = new LinkedHashMap<>();
+        functions.put("simplest", MultivariatePolynomialProperties::sum_simplest);
+        functions.put("alt", MultivariatePolynomialProperties::sum_alt);
+        functions.put("standard", MultivariatePolynomial::sum);
+        Iterable<List<MultivariatePolynomial>> pss = P.lists(P.multivariatePolynomials());
+        compareImplementations("sum(List<Polynomial>)", take(LIMIT, pss), functions);
+    }
+
+    private static @NotNull MultivariatePolynomial product_alt(@NotNull List<MultivariatePolynomial> xs) {
+        if (any(x -> x == null, xs)) {
+            throw new NullPointerException();
+        }
+        if (any(x -> x == ZERO, xs)) {
+            return ZERO;
+        }
+        return foldl(MultivariatePolynomial::multiply, ONE, sort(TERM_SHORTLEX_COMPARATOR, xs));
+    }
+
+    private static @NotNull MultivariatePolynomial product_alt2(@NotNull List<MultivariatePolynomial> xs) {
+        if (any(x -> x == ZERO, xs)) return ZERO;
+        SortedMap<Monomial, BigInteger> termMap = new TreeMap<>();
+        for (List<Pair<Monomial, BigInteger>> terms : EP.cartesianProduct(toList(map(IterableUtils::toList, xs)))) {
+            Monomial termProduct = Monomial.product(toList(map(t -> t.a, terms)));
+            BigInteger coefficientProduct = productBigInteger(map(t -> t.b, terms));
+            BigInteger coefficient = termMap.get(termProduct);
+            if (coefficient == null) {
+                coefficient = BigInteger.ZERO;
+            }
+            coefficient = coefficient.add(coefficientProduct);
+            termMap.put(termProduct, coefficient);
+        }
+        return of(toList(fromMap(termMap)));
+    }
+
+    private void propertiesProduct() {
+        initialize("product(Iterable<MultivariatePolynomial>)");
+        propertiesFoldHelper(
+                LIMIT,
+                P.getWheelsProvider(),
+                P.withScale(4).multivariatePolynomials(),
+                MultivariatePolynomial::multiply,
+                MultivariatePolynomial::product,
+                MultivariatePolynomial::validate,
+                true,
+                true
+        );
+
+        for (List<MultivariatePolynomial> ps : take(LIMIT, P.withScale(1).lists(P.multivariatePolynomials()))) {
+            MultivariatePolynomial product = product(ps);
+            assertTrue(
+                    ps,
+                    any(p -> p == ZERO, ps) ||
+                            product.degree() == IterableUtils.sumInteger(map(MultivariatePolynomial::degree, ps))
+            );
+        }
+
+        for (List<MultivariatePolynomial> ps : take(LIMIT, P.withScale(1).lists(P.multivariatePolynomials()))) {
+            MultivariatePolynomial product = product(ps);
+            assertEquals(ps, product, product_alt(ps));
+            assertEquals(ps, product, product_alt2(ps));
+        }
+    }
+
+    private void compareImplementationsProduct() {
+        Map<String, Function<List<MultivariatePolynomial>, MultivariatePolynomial>> functions = new LinkedHashMap<>();
+        functions.put("alt", MultivariatePolynomialProperties::product_alt);
+        functions.put("alt2", MultivariatePolynomialProperties::product_alt2);
+        functions.put("standard", MultivariatePolynomial::product);
+        compareImplementations(
+                "product(Iterable<MultivariatePolynomial>)",
+                take(LIMIT, P.withScale(1).lists(P.multivariatePolynomials())),
+                functions
+        );
+    }
+
+    private void propertiesDelta() {
+        initialize("delta(Iterable<MultivariatePolynomial>)");
+        propertiesDeltaHelper(
+                LIMIT,
+                P.getWheelsProvider(),
+                QBarTesting.QEP.multivariatePolynomials(),
+                P.multivariatePolynomials(),
+                MultivariatePolynomial::negate,
+                MultivariatePolynomial::subtract,
+                MultivariatePolynomial::delta,
+                MultivariatePolynomial::validate
         );
     }
 
