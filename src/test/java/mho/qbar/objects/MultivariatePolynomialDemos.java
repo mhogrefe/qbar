@@ -205,6 +205,26 @@ public class MultivariatePolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoDivideExact_BigInteger() {
+        Iterable<Pair<MultivariatePolynomial, BigInteger>> ps = map(
+                p -> new Pair<>(p.a.multiply(p.b), p.b),
+                P.pairs(P.withScale(4).multivariatePolynomials(), P.nonzeroBigIntegers())
+        );
+        for (Pair<MultivariatePolynomial, BigInteger> p : take(LIMIT, ps)) {
+            System.out.println("(" + p.a + ") / " + p.b + " = " + p.a.divideExact(p.b));
+        }
+    }
+
+    private void demoDivideExact_int() {
+        Iterable<Pair<MultivariatePolynomial, Integer>> ps = map(
+                p -> new Pair<>(p.a.multiply(p.b), p.b),
+                P.pairs(P.withScale(4).multivariatePolynomials(), P.nonzeroIntegers())
+        );
+        for (Pair<MultivariatePolynomial, Integer> p : take(LIMIT, ps)) {
+            System.out.println("(" + p.a + ") / " + p.b + " = " + p.a.divideExact(p.b));
+        }
+    }
+
     private void demoMultiply_Monomial_BigInteger() {
         Iterable<Triple<MultivariatePolynomial, Monomial, BigInteger>> ts = P.triples(
                 P.withScale(4).multivariatePolynomials(),

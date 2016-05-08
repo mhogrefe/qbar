@@ -725,6 +725,68 @@ public class MultivariatePolynomialTest {
         multiply_BigInteger_helper("x*y^2*z+x^2*z^2+x^3+z^2", "4", "4*x*y^2*z+4*x^2*z^2+4*x^3+4*z^2");
     }
 
+    private static void divideExact_BigInteger_helper(@NotNull String p, @NotNull String i, @NotNull String output) {
+        aeq(readStrict(p).get().divideExact(Readers.readBigIntegerStrict(i).get()), output);
+    }
+
+    private static void divideExact_BigInteger_fail_helper(@NotNull String p, @NotNull String i) {
+        try {
+            readStrict(p).get().divideExact(Readers.readBigIntegerStrict(i).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDivideExact_BigInteger() {
+        divideExact_BigInteger_helper("0", "1", "0");
+        divideExact_BigInteger_helper("0", "-3", "0");
+        divideExact_BigInteger_helper("0", "4", "0");
+        divideExact_BigInteger_helper("1", "1", "1");
+        divideExact_BigInteger_helper("x", "1", "x");
+        divideExact_BigInteger_helper("-17", "1", "-17");
+        divideExact_BigInteger_helper("-17", "-17", "1");
+        divideExact_BigInteger_helper("x^2-4*x+7", "1", "x^2-4*x+7");
+        divideExact_BigInteger_helper("8*x^2+16*x*y+8*y^2", "1", "8*x^2+16*x*y+8*y^2");
+        divideExact_BigInteger_helper("8*x^2+16*x*y+8*y^2", "4", "2*x^2+4*x*y+2*y^2");
+        divideExact_BigInteger_helper("-1", "-1", "1");
+
+        divideExact_BigInteger_fail_helper("0", "0");
+        divideExact_BigInteger_fail_helper("1", "0");
+        divideExact_BigInteger_fail_helper("x", "0");
+        divideExact_BigInteger_fail_helper("a*b*c", "0");
+    }
+
+    private static void divideExact_int_helper(@NotNull String p, int i, @NotNull String output) {
+        aeq(readStrict(p).get().divideExact(i), output);
+    }
+
+    private static void divideExact_int_fail_helper(@NotNull String p, int i) {
+        try {
+            readStrict(p).get().divideExact(i);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDivideExact_int() {
+        divideExact_int_helper("0", 1, "0");
+        divideExact_int_helper("0", -3, "0");
+        divideExact_int_helper("0", 4, "0");
+        divideExact_int_helper("1", 1, "1");
+        divideExact_int_helper("x", 1, "x");
+        divideExact_int_helper("-17", 1, "-17");
+        divideExact_int_helper("-17", -17, "1");
+        divideExact_int_helper("x^2-4*x+7", 1, "x^2-4*x+7");
+        divideExact_int_helper("8*x^2+16*x*y+8*y^2", 1, "8*x^2+16*x*y+8*y^2");
+        divideExact_int_helper("8*x^2+16*x*y+8*y^2", 4, "2*x^2+4*x*y+2*y^2");
+        divideExact_int_helper("-1", -1, "1");
+
+        divideExact_int_fail_helper("0", 0);
+        divideExact_int_fail_helper("1", 0);
+        divideExact_int_fail_helper("x", 0);
+        divideExact_int_fail_helper("a*b*c", 0);
+    }
+
     private static void multiply_Monomial_BigInteger_helper(
             @NotNull String p,
             @NotNull String ev,

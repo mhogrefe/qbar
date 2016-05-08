@@ -60,6 +60,8 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         compareImplementationsSubtract();
         propertiesMultiply_int();
         propertiesMultiply_BigInteger();
+        propertiesDivideExact_BigInteger();
+        propertiesDivideExact_int();
         propertiesMultiply_Monomial_BigInteger();
         propertiesMultiply_MultivariatePolynomial();
         compareImplementationsMultiply_MultivariatePolynomial();
@@ -474,6 +476,11 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
             assertEquals(p, product, of(BigInteger.valueOf(p.b)).multiply(p.a));
         }
 
+        ps = P.pairs(P.multivariatePolynomials(), P.nonzeroIntegers());
+        for (Pair<MultivariatePolynomial, Integer> p : take(LIMIT, ps)) {
+            inverse(q -> q.multiply(p.b), (MultivariatePolynomial q) -> q.divideExact(p.b), p.a);
+        }
+
         for (Pair<BigInteger, Integer> p : take(LIMIT, P.pairs(P.bigIntegers(), P.integers()))) {
             homomorphic(
                     MultivariatePolynomial::of,
@@ -518,6 +525,11 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
             assertEquals(p, product, of(p.b).multiply(p.a));
         }
 
+        ps = P.pairs(P.multivariatePolynomials(), P.nonzeroBigIntegers());
+        for (Pair<MultivariatePolynomial, BigInteger> p : take(LIMIT, ps)) {
+            inverse(q -> q.multiply(p.b), (MultivariatePolynomial q) -> q.divideExact(p.b), p.a);
+        }
+
         for (Pair<BigInteger, BigInteger> p : take(LIMIT, P.pairs(P.bigIntegers()))) {
             //noinspection Convert2MethodRef
             homomorphic(
@@ -549,6 +561,64 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
             MultivariatePolynomial expression1 = t.a.add(t.b).multiply(t.c);
             MultivariatePolynomial expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
             assertEquals(t, expression1, expression2);
+        }
+    }
+
+    private void propertiesDivideExact_BigInteger() {
+        initialize("divideExact(BigInteger)");
+        Iterable<Pair<MultivariatePolynomial, BigInteger>> ps = map(
+                p -> new Pair<>(p.a.multiply(p.b), p.b),
+                P.pairs(P.multivariatePolynomials(), P.nonzeroBigIntegers())
+        );
+        for (Pair<MultivariatePolynomial, BigInteger> p : take(LIMIT, ps)) {
+            MultivariatePolynomial quotient = p.a.divideExact(p.b);
+            quotient.validate();
+            assertTrue(p, quotient.degree() == p.a.degree());
+            inverse(q -> q.divideExact(p.b), (MultivariatePolynomial q) -> q.multiply(p.b), p.a);
+        }
+
+        for (BigInteger i : take(LIMIT, P.nonzeroBigIntegers())) {
+            fixedPoint(j -> j.divideExact(i), ZERO);
+        }
+
+        for (MultivariatePolynomial p : take(LIMIT, P.multivariatePolynomials())) {
+            fixedPoint(q -> q.divideExact(BigInteger.ONE), p);
+        }
+
+        for (MultivariatePolynomial p : take(LIMIT, P.multivariatePolynomials())) {
+            try {
+                p.divideExact(BigInteger.ZERO);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesDivideExact_int() {
+        initialize("divideExact(int)");
+        Iterable<Pair<MultivariatePolynomial, Integer>> ps = map(
+                p -> new Pair<>(p.a.multiply(p.b), p.b),
+                P.pairs(P.multivariatePolynomials(), P.nonzeroIntegers())
+        );
+        for (Pair<MultivariatePolynomial, Integer> p : take(LIMIT, ps)) {
+            MultivariatePolynomial quotient = p.a.divideExact(p.b);
+            quotient.validate();
+            assertTrue(p, quotient.degree() == p.a.degree());
+            inverse(q -> q.divideExact(p.b), (MultivariatePolynomial q) -> q.multiply(p.b), p.a);
+        }
+
+        for (int i : take(LIMIT, P.nonzeroIntegers())) {
+            fixedPoint(j -> j.divideExact(i), ZERO);
+        }
+
+        for (MultivariatePolynomial p : take(LIMIT, P.multivariatePolynomials())) {
+            fixedPoint(q -> q.divideExact(1), p);
+        }
+
+        for (MultivariatePolynomial p : take(LIMIT, P.multivariatePolynomials())) {
+            try {
+                p.divideExact(0);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
         }
     }
 

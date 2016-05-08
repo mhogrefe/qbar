@@ -631,6 +631,63 @@ public final class MultivariatePolynomial implements
     }
 
     /**
+     * Returns the {@code this} divided by {@code that}, assuming that {@code that} divides each coefficient of
+     * {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>{@code that must divide each coefficient of {@code this}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code BigInteger} {@code this} is divided by
+     * @return {@code this}/{@code that}
+     */
+    public @NotNull MultivariatePolynomial divideExact(@NotNull BigInteger that) {
+        if (that.equals(BigInteger.ZERO)) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        if (this == ZERO) return ZERO;
+        if (that.equals(BigInteger.ONE)) return this;
+        List<Pair<Monomial, BigInteger>> quotientTerms = toList(map(t -> new Pair<>(t.a, t.b.divide(that)), terms));
+        if (quotientTerms.size() == 1) {
+            Pair<Monomial, BigInteger> term = quotientTerms.get(0);
+            if (term.a == Monomial.ONE && term.b.equals(BigInteger.ONE)) return ONE;
+        }
+        return new MultivariatePolynomial(quotientTerms);
+    }
+
+    /**
+     * Returns the {@code this} divided by {@code that}, assuming that {@code that} divides each coefficient of
+     * {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>{@code that must divide each coefficient of {@code this}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code int} {@code this} is divided by
+     * @return {@code this}/{@code that}
+     */
+    public @NotNull MultivariatePolynomial divideExact(int that) {
+        if (that == 0) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        if (this == ZERO) return ZERO;
+        if (that == 1) return this;
+        BigInteger bigThat = BigInteger.valueOf(that);
+        List<Pair<Monomial, BigInteger>> quotientTerms = toList(map(t -> new Pair<>(t.a, t.b.divide(bigThat)), terms));
+        if (quotientTerms.size() == 1) {
+            Pair<Monomial, BigInteger> term = quotientTerms.get(0);
+            if (term.a == Monomial.ONE && term.b.equals(BigInteger.ONE)) return ONE;
+        }
+        return new MultivariatePolynomial(quotientTerms);
+    }
+
+    /**
      * Returns the left shift of {@code this} by {@code bits}; {@code this}×2<sup>{@code bits}</sup>. Negative
      * {@code bits} are not allowed, even if {@code this} is divisible by a power of 2.
      *

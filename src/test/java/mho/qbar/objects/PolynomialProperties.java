@@ -1081,7 +1081,7 @@ public class PolynomialProperties extends QBarTestProperties {
         initialize("divideExact(BigInteger)");
         Iterable<Pair<Polynomial, BigInteger>> ps = map(
                 p -> new Pair<>(p.a.multiply(p.b), p.b),
-                P.pairs(P.withScale(4).polynomials(), P.nonzeroBigIntegers())
+                P.pairs(P.polynomials(), P.nonzeroBigIntegers())
         );
         for (Pair<Polynomial, BigInteger> p : take(LIMIT, ps)) {
             Polynomial quotient = p.a.divideExact(p.b);
@@ -1111,7 +1111,7 @@ public class PolynomialProperties extends QBarTestProperties {
         initialize("divideExact(int)");
         Iterable<Pair<Polynomial, Integer>> ps = map(
                 p -> new Pair<>(p.a.multiply(p.b), p.b),
-                P.pairs(P.withScale(4).polynomials(), P.nonzeroIntegers())
+                P.pairs(P.polynomials(), P.nonzeroIntegers())
         );
         for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
             Polynomial quotient = p.a.divideExact(p.b);
