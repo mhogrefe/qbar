@@ -1233,6 +1233,33 @@ public class RationalMatrixTest {
         kroneckerAdd_fail_helper("[[], [], []]", "[]#0");
     }
 
+    private static void realEigenvalues_helper(@NotNull String input, @NotNull String output) {
+        aeq(readStrict(input).get().realEigenvalues(), output);
+    }
+
+    private static void realEigenvalues_fail_helper(@NotNull String input) {
+        try {
+            readStrict(input).get().realEigenvalues();
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testRealEigenvalues() {
+        realEigenvalues_helper("[]#0", "[]");
+        realEigenvalues_helper("[[1]]", "[1]");
+        realEigenvalues_helper("[[-1]]", "[-1]");
+        realEigenvalues_helper("[[-2/3]]", "[-2/3]");
+        realEigenvalues_helper("[[1, 0], [0, 1]]", "[1]");
+        realEigenvalues_helper("[[0, 1], [1, 0]]", "[-1, 1]");
+        realEigenvalues_helper("[[-2/3, -8], [0, 5/7]]", "[-2/3, 5/7]");
+        realEigenvalues_helper("[[-2, 2, -3], [-1, 1, 3], [2, 0, -1]]", "[root 0 of x^3+2*x^2+7*x-18]");
+
+        realEigenvalues_fail_helper("[]#3");
+        realEigenvalues_fail_helper("[[], [], []]");
+        realEigenvalues_fail_helper("[[1, 9, -13], [20, 5, -6]]");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

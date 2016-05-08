@@ -562,6 +562,12 @@ public class RationalMatrixDemos extends QBarDemos {
         }
     }
 
+    private void demoRealEigenvalues() {
+        for (RationalMatrix m : take(LIMIT, P.withScale(4).squareRationalMatrices())) {
+            System.out.println("realEigenvalues(" + m + ") = " + m.realEigenvalues());
+        }
+    }
+
     private void demoEquals_RationalMatrix() {
         for (Pair<RationalMatrix, RationalMatrix> p : take(LIMIT, P.pairs(P.withScale(4).rationalMatrices()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);

@@ -84,6 +84,7 @@ public class MatrixProperties extends QBarTestProperties {
         compareImplementationsCharacteristicPolynomial();
         propertiesKroneckerMultiply();
         propertiesKroneckerAdd();
+        propertiesRealEigenvalues();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -1844,6 +1845,23 @@ public class MatrixProperties extends QBarTestProperties {
             assertEquals(p, sum.height(), 1);
             assertEquals(p, sum.width(), 1);
             assertEquals(p, sum.get(0, 0), p.a.add(p.b));
+        }
+    }
+
+    private void propertiesRealEigenvalues() {
+        initialize("realEigenvalues()");
+        for (Matrix m : take(LIMIT, P.withScale(4).squareMatrices())) {
+            List<Algebraic> realEigenvalues = m.realEigenvalues();
+            realEigenvalues.forEach(Algebraic::validate);
+            assertTrue(m, increasing(realEigenvalues));
+            assertEquals(m, realEigenvalues.size(), m.characteristicPolynomial().rootCount());
+        }
+
+        for (Matrix m : take(LIMIT, filterInfinite(n -> !n.isSquare(), P.matrices()))) {
+            try {
+                m.realEigenvalues();
+                fail(m);
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 

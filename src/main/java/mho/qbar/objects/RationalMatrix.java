@@ -1269,6 +1269,20 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
     }
 
     /**
+     * The real eigenvalues of {@code this} in increasing order.
+     *
+     * <ul>
+     *  <li>{@code this} must be square.</li>
+     *  <li>The result is increasing and has no duplicates.</li>
+     * </ul>
+     *
+     * @return the eigenvalues of {@code this}
+     */
+    public @NotNull List<Algebraic> realEigenvalues() {
+        return characteristicPolynomial().realRoots();
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>
