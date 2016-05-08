@@ -31,10 +31,13 @@ public class MonomialProperties extends QBarTestProperties {
         propertiesExponent();
         propertiesSize();
         propertiesTerms();
-        propertiesOf();
+        propertiesOf_List_Integer();
+        propertiesOf_Variable();
         propertiesFromTerms();
         propertiesDegree();
         propertiesVariables();
+        propertiesVariableCount();
+        compareImplementationsVariableCount();
         propertiesRemoveVariable();
         propertiesRemoveVariables();
         compareImplementationsRemoveVariables();
@@ -100,7 +103,7 @@ public class MonomialProperties extends QBarTestProperties {
         }
     }
 
-    private void propertiesOf() {
+    private void propertiesOf_List_Integer() {
         initialize("of(List<Integer>)");
         for (List<Integer> is : take(LIMIT, P.withScale(4).lists(P.naturalIntegersGeometric()))) {
             Monomial m = of(is);
@@ -131,6 +134,16 @@ public class MonomialProperties extends QBarTestProperties {
                 of(is);
                 fail(is);
             } catch (NullPointerException ignored) {}
+        }
+    }
+
+    private void propertiesOf_Variable() {
+        initialize("of(Variable)");
+        for (Variable v : take(LIMIT, P.variables())) {
+            Monomial m = of(v);
+            m.validate();
+            assertEquals(v, m.variableCount(), 1);
+            assertEquals(v, m.degree(), 1);
         }
     }
 
@@ -217,6 +230,26 @@ public class MonomialProperties extends QBarTestProperties {
                 assertTrue(m, s.contains(v.toString()));
             }
         }
+    }
+
+    private static int variableCount_simplest(@NotNull Monomial m) {
+        return m.variables().size();
+    }
+
+    private void propertiesVariableCount() {
+        initialize("variableCount()");
+        for (Monomial m : take(LIMIT, P.monomials())) {
+            int count = m.variableCount();
+            assertEquals(m, count, variableCount_simplest(m));
+            assertTrue(m, count >= 0);
+        }
+    }
+
+    private void compareImplementationsVariableCount() {
+        Map<String, Function<Monomial, Integer>> functions = new LinkedHashMap<>();
+        functions.put("simplest", MonomialProperties::variableCount_simplest);
+        functions.put("standard", Monomial::variableCount);
+        compareImplementations("variableCount()", take(LIMIT, P.monomials()), functions);
     }
 
     private void propertiesRemoveVariable() {

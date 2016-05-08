@@ -710,8 +710,8 @@ public final class RationalPolynomial implements
         if (p < 0) {
             throw new ArithmeticException("p cannot be negative. Invalid p: " + p);
         }
-        if (p == 0) return ONE;
-        if (p == 1) return this;
+        if (p == 0 || this == ONE) return ONE;
+        if (this == ZERO) return ZERO;
         RationalPolynomial result = ONE;
         RationalPolynomial powerPower = null; // p^2^i
         for (boolean bit : IntegerUtils.bits(p)) {

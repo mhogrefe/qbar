@@ -10,6 +10,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 import static mho.qbar.objects.MultivariatePolynomial.*;
+import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.iterables.IterableUtils.take;
 import static mho.wheels.iterables.IterableUtils.toList;
 import static mho.wheels.testing.Testing.*;
@@ -201,6 +202,23 @@ public class MultivariatePolynomialTest {
         of_int_helper(-1);
         of_int_helper(3);
         of_int_helper(-5);
+    }
+
+    private static void of_Variable(@NotNull String input) {
+        MultivariatePolynomial p = of(Variable.readStrict(input).get());
+        p.validate();
+        aeq(p, input);
+    }
+
+    @Test
+    public void testOf_Variable() {
+        of_Variable("a");
+        of_Variable("b");
+        of_Variable("c");
+        of_Variable("x");
+        of_Variable("y");
+        of_Variable("z");
+        of_Variable("ooo");
     }
 
     private static void of_Polynomial_Variable_helper(@NotNull String p, @NotNull String v, @NotNull String output) {
@@ -1049,10 +1067,163 @@ public class MultivariatePolynomialTest {
         delta_helper("[-17, ooo]", "[ooo+17]");
         delta_helper("[-17, ooo, a*b*c, x^2-4*x+7, x^2+2*x*y+y^2]",
                 "[ooo+17, a*b*c-ooo, -a*b*c+x^2-4*x+7, 2*x*y+y^2+4*x-7]");
-        //todo pow example
+        MultivariatePolynomial seed = readStrict("x+y").get();
+        delta_helper(map(seed::pow, rangeUp(0)),
+                "[x+y-1, x^2+2*x*y+y^2-x-y, x^3+3*x^2*y+3*x*y^2+y^3-x^2-2*x*y-y^2," +
+                " x^4+4*x^3*y+6*x^2*y^2+4*x*y^3+y^4-x^3-3*x^2*y-3*x*y^2-y^3," +
+                " x^5+5*x^4*y+10*x^3*y^2+10*x^2*y^3+5*x*y^4+y^5-x^4-4*x^3*y-6*x^2*y^2-4*x*y^3-y^4," +
+                " x^6+6*x^5*y+15*x^4*y^2+20*x^3*y^3+15*x^2*y^4+6*x*y^5+y^6-x^5-5*x^4*y-10*x^3*y^2-10*x^2*y^3-" +
+                "5*x*y^4-y^5," +
+                " x^7+7*x^6*y+21*x^5*y^2+35*x^4*y^3+35*x^3*y^4+21*x^2*y^5+7*x*y^6+y^7-x^6-6*x^5*y-15*x^4*y^2-" +
+                "20*x^3*y^3-15*x^2*y^4-6*x*y^5-y^6," +
+                " x^8+8*x^7*y+28*x^6*y^2+56*x^5*y^3+70*x^4*y^4+56*x^3*y^5+28*x^2*y^6+8*x*y^7+y^8-x^7-7*x^6*y-" +
+                "21*x^5*y^2-35*x^4*y^3-35*x^3*y^4-21*x^2*y^5-7*x*y^6-y^7," +
+                " x^9+9*x^8*y+36*x^7*y^2+84*x^6*y^3+126*x^5*y^4+126*x^4*y^5+84*x^3*y^6+36*x^2*y^7+9*x*y^8+y^9-x^8-" +
+                "8*x^7*y-28*x^6*y^2-56*x^5*y^3-70*x^4*y^4-56*x^3*y^5-28*x^2*y^6-8*x*y^7-y^8," +
+                " x^10+10*x^9*y+45*x^8*y^2+120*x^7*y^3+210*x^6*y^4+252*x^5*y^5+210*x^4*y^6+120*x^3*y^7+45*x^2*y^8+" +
+                "10*x*y^9+y^10-x^9-9*x^8*y-36*x^7*y^2-84*x^6*y^3-126*x^5*y^4-126*x^4*y^5-84*x^3*y^6-36*x^2*y^7-" +
+                "9*x*y^8-y^9," +
+                " x^11+11*x^10*y+55*x^9*y^2+165*x^8*y^3+330*x^7*y^4+462*x^6*y^5+462*x^5*y^6+330*x^4*y^7+165*x^3*y^8+" +
+                "55*x^2*y^9+11*x*y^10+y^11-x^10-10*x^9*y-45*x^8*y^2-120*x^7*y^3-210*x^6*y^4-252*x^5*y^5-210*x^4*y^6-" +
+                "120*x^3*y^7-45*x^2*y^8-10*x*y^9-y^10," +
+                " x^12+12*x^11*y+66*x^10*y^2+220*x^9*y^3+495*x^8*y^4+792*x^7*y^5+924*x^6*y^6+792*x^5*y^7+" +
+                "495*x^4*y^8+220*x^3*y^9+66*x^2*y^10+12*x*y^11+y^12-x^11-11*x^10*y-55*x^9*y^2-165*x^8*y^3-" +
+                "330*x^7*y^4-462*x^6*y^5-462*x^5*y^6-330*x^4*y^7-165*x^3*y^8-55*x^2*y^9-11*x*y^10-y^11," +
+                " x^13+13*x^12*y+78*x^11*y^2+286*x^10*y^3+715*x^9*y^4+1287*x^8*y^5+1716*x^7*y^6+1716*x^6*y^7+" +
+                "1287*x^5*y^8+715*x^4*y^9+286*x^3*y^10+78*x^2*y^11+13*x*y^12+y^13-x^12-12*x^11*y-66*x^10*y^2-" +
+                "220*x^9*y^3-495*x^8*y^4-792*x^7*y^5-924*x^6*y^6-792*x^5*y^7-495*x^4*y^8-220*x^3*y^9-66*x^2*y^10-" +
+                "12*x*y^11-y^12," +
+                " x^14+14*x^13*y+91*x^12*y^2+364*x^11*y^3+1001*x^10*y^4+2002*x^9*y^5+3003*x^8*y^6+3432*x^7*y^7+" +
+                "3003*x^6*y^8+2002*x^5*y^9+1001*x^4*y^10+364*x^3*y^11+91*x^2*y^12+14*x*y^13+y^14-x^13-13*x^12*y-" +
+                "78*x^11*y^2-286*x^10*y^3-715*x^9*y^4-1287*x^8*y^5-1716*x^7*y^6-1716*x^6*y^7-1287*x^5*y^8-" +
+                "715*x^4*y^9-286*x^3*y^10-78*x^2*y^11-13*x*y^12-y^13," +
+                " x^15+15*x^14*y+105*x^13*y^2+455*x^12*y^3+1365*x^11*y^4+3003*x^10*y^5+5005*x^9*y^6+6435*x^8*y^7+" +
+                "6435*x^7*y^8+5005*x^6*y^9+3003*x^5*y^10+1365*x^4*y^11+455*x^3*y^12+105*x^2*y^13+15*x*y^14+y^15-" +
+                "x^14-14*x^13*y-91*x^12*y^2-364*x^11*y^3-1001*x^10*y^4-2002*x^9*y^5-3003*x^8*y^6-3432*x^7*y^7-" +
+                "3003*x^6*y^8-2002*x^5*y^9-1001*x^4*y^10-364*x^3*y^11-91*x^2*y^12-14*x*y^13-y^14," +
+                " x^16+16*x^15*y+120*x^14*y^2+560*x^13*y^3+1820*x^12*y^4+4368*x^11*y^5+8008*x^10*y^6+11440*x^9*y^7+" +
+                "12870*x^8*y^8+11440*x^7*y^9+8008*x^6*y^10+4368*x^5*y^11+1820*x^4*y^12+560*x^3*y^13+120*x^2*y^14+" +
+                "16*x*y^15+y^16-x^15-15*x^14*y-105*x^13*y^2-455*x^12*y^3-1365*x^11*y^4-3003*x^10*y^5-5005*x^9*y^6-" +
+                "6435*x^8*y^7-6435*x^7*y^8-5005*x^6*y^9-3003*x^5*y^10-1365*x^4*y^11-455*x^3*y^12-105*x^2*y^13-" +
+                "15*x*y^14-y^15, x^17+17*x^16*y+136*x^15*y^2+680*x^14*y^3+2380*x^13*y^4+6188*x^12*y^5+" +
+                "12376*x^11*y^6+19448*x^10*y^7+24310*x^9*y^8+24310*x^8*y^9+19448*x^7*y^10+12376*x^6*y^11+" +
+                "6188*x^5*y^12+2380*x^4*y^13+680*x^3*y^14+136*x^2*y^15+17*x*y^16+y^17-x^16-16*x^15*y-120*x^14*y^2-" +
+                "560*x^13*y^3-1820*x^12*y^4-4368*x^11*y^5-8008*x^10*y^6-11440*x^9*y^7-12870*x^8*y^8-11440*x^7*y^9-" +
+                "8008*x^6*y^10-4368*x^5*y^11-1820*x^4*y^12-560*x^3*y^13-120*x^2*y^14-16*x*y^15-y^16," +
+                " x^18+18*x^17*y+153*x^16*y^2+816*x^15*y^3+3060*x^14*y^4+8568*x^13*y^5+18564*x^12*y^6+" +
+                "31824*x^11*y^7+43758*x^10*y^8+48620*x^9*y^9+43758*x^8*y^10+31824*x^7*y^11+18564*x^6*y^12+" +
+                "8568*x^5*y^13+3060*x^4*y^14+816*x^3*y^15+153*x^2*y^16+18*x*y^17+y^18-x^17-17*x^16*y-136*x^15*y^2-" +
+                "680*x^14*y^3-2380*x^13*y^4-6188*x^12*y^5-12376*x^11*y^6-19448*x^10*y^7-24310*x^9*y^8-24310*x^8*y^9-" +
+                "19448*x^7*y^10-12376*x^6*y^11-6188*x^5*y^12-2380*x^4*y^13-680*x^3*y^14-136*x^2*y^15-17*x*y^16-y^17," +
+                " x^19+19*x^18*y+171*x^17*y^2+969*x^16*y^3+3876*x^15*y^4+11628*x^14*y^5+27132*x^13*y^6+" +
+                "50388*x^12*y^7+75582*x^11*y^8+92378*x^10*y^9+92378*x^9*y^10+75582*x^8*y^11+50388*x^7*y^12+" +
+                "27132*x^6*y^13+11628*x^5*y^14+3876*x^4*y^15+969*x^3*y^16+171*x^2*y^17+19*x*y^18+y^19-x^18-" +
+                "18*x^17*y-153*x^16*y^2-816*x^15*y^3-3060*x^14*y^4-8568*x^13*y^5-18564*x^12*y^6-31824*x^11*y^7-" +
+                "43758*x^10*y^8-48620*x^9*y^9-43758*x^8*y^10-31824*x^7*y^11-18564*x^6*y^12-8568*x^5*y^13-" +
+                "3060*x^4*y^14-816*x^3*y^15-153*x^2*y^16-18*x*y^17-y^18, x^20+20*x^19*y+190*x^18*y^2+1140*x^17*y^3+" +
+                "4845*x^16*y^4+15504*x^15*y^5+38760*x^14*y^6+77520*x^13*y^7+125970*x^12*y^8+167960*x^11*y^9+" +
+                "184756*x^10*y^10+167960*x^9*y^11+125970*x^8*y^12+77520*x^7*y^13+38760*x^6*y^14+15504*x^5*y^15+" +
+                "4845*x^4*y^16+1140*x^3*y^17+190*x^2*y^18+20*x*y^19+y^20-x^19-19*x^18*y-171*x^17*y^2-969*x^16*y^3-" +
+                "3876*x^15*y^4-11628*x^14*y^5-27132*x^13*y^6-50388*x^12*y^7-75582*x^11*y^8-92378*x^10*y^9-" +
+                "92378*x^9*y^10-75582*x^8*y^11-50388*x^7*y^12-27132*x^6*y^13-11628*x^5*y^14-3876*x^4*y^15-" +
+                "969*x^3*y^16-171*x^2*y^17-19*x*y^18-y^19, ...]");
 
         delta_fail_helper("[]");
         delta_fail_helper("[-17, null, a*b*c, x^2-4*x+7, x^2+2*x*y+y^2]");
+    }
+
+    private static void pow_helper(@NotNull String p, int exponent, @NotNull String output) {
+        aeq(readStrict(p).get().pow(exponent), output);
+    }
+
+    private static void pow_fail_helper(@NotNull String p, int exponent) {
+        try {
+            readStrict(p).get().pow(exponent);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testPow() {
+        pow_helper("0", 0, "1");
+        pow_helper("0", 1, "0");
+        pow_helper("0", 2, "0");
+        pow_helper("0", 3, "0");
+
+        pow_helper("1", 0, "1");
+        pow_helper("1", 1, "1");
+        pow_helper("1", 2, "1");
+        pow_helper("1", 3, "1");
+
+        pow_helper("-17", 0, "1");
+        pow_helper("-17", 1, "-17");
+        pow_helper("-17", 2, "289");
+        pow_helper("-17", 3, "-4913");
+
+        pow_helper("ooo", 0, "1");
+        pow_helper("ooo", 1, "ooo");
+        pow_helper("ooo", 2, "ooo^2");
+        pow_helper("ooo", 3, "ooo^3");
+
+        pow_helper("a*b*c", 0, "1");
+        pow_helper("a*b*c", 1, "a*b*c");
+        pow_helper("a*b*c", 2, "a^2*b^2*c^2");
+        pow_helper("a*b*c", 3, "a^3*b^3*c^3");
+
+        pow_helper("x^2-4*x+7", 0, "1");
+        pow_helper("x^2-4*x+7", 1, "x^2-4*x+7");
+        pow_helper("x^2-4*x+7", 2, "x^4-8*x^3+30*x^2-56*x+49");
+        pow_helper("x^2-4*x+7", 3, "x^6-12*x^5+69*x^4-232*x^3+483*x^2-588*x+343");
+
+        pow_helper("x^2+2*x*y+y^2", 0, "1");
+        pow_helper("x^2+2*x*y+y^2", 1, "x^2+2*x*y+y^2");
+        pow_helper("x^2+2*x*y+y^2", 2, "x^4+4*x^3*y+6*x^2*y^2+4*x*y^3+y^4");
+        pow_helper("x^2+2*x*y+y^2", 3, "x^6+6*x^5*y+15*x^4*y^2+20*x^3*y^3+15*x^2*y^4+6*x*y^5+y^6");
+
+        pow_helper("x*y^2*z+x^2*z^2+x^3+z^2", 0, "1");
+        pow_helper("x*y^2*z+x^2*z^2+x^3+z^2", 1, "x*y^2*z+x^2*z^2+x^3+z^2");
+        pow_helper("x*y^2*z+x^2*z^2+x^3+z^2", 2,
+                "x^2*y^4*z^2+2*x^3*y^2*z^3+x^4*z^4+2*x^4*y^2*z+2*x^5*z^2+x^6+2*x*y^2*z^3+2*x^2*z^4+2*x^3*z^2+z^4");
+        pow_helper("x*y^2*z+x^2*z^2+x^3+z^2", 3,
+                "x^3*y^6*z^3+3*x^4*y^4*z^4+3*x^5*y^2*z^5+x^6*z^6+3*x^5*y^4*z^2+6*x^6*y^2*z^3+3*x^7*z^4+3*x^7*y^2*z+" +
+                "3*x^8*z^2+3*x^2*y^4*z^4+6*x^3*y^2*z^5+3*x^4*z^6+x^9+6*x^4*y^2*z^3+6*x^5*z^4+3*x^6*z^2+3*x*y^2*z^5+" +
+                "3*x^2*z^6+3*x^3*z^4+z^6");
+
+        pow_fail_helper("a*b*c", -1);
+        pow_fail_helper("0", -1);
+        pow_fail_helper("1", -1);
+    }
+
+    private static void binomialPower_helper(@NotNull String a, @NotNull String b, int p, @NotNull String output) {
+        MultivariatePolynomial q = binomialPower(Variable.readStrict(a).get(), Variable.readStrict(b).get(), p);
+        q.validate();
+        aeq(q, output);
+    }
+
+    private static void binomialPower_fail_helper(@NotNull String a, @NotNull String b, int p) {
+        try {
+            binomialPower(Variable.readStrict(a).get(), Variable.readStrict(b).get(), p);
+            fail();
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testBinomialPower() {
+        binomialPower_helper("x", "y", 0, "1");
+        binomialPower_helper("x", "y", 1, "x+y");
+        binomialPower_helper("x", "y", 2, "x^2+2*x*y+y^2");
+        binomialPower_helper("x", "y", 3, "x^3+3*x^2*y+3*x*y^2+y^3");
+        binomialPower_helper("x", "y", 4, "x^4+4*x^3*y+6*x^2*y^2+4*x*y^3+y^4");
+        binomialPower_helper("x", "y", 10,
+                "x^10+10*x^9*y+45*x^8*y^2+120*x^7*y^3+210*x^6*y^4+252*x^5*y^5+210*x^4*y^6+120*x^3*y^7+45*x^2*y^8+" +
+                "10*x*y^9+y^10");
+        binomialPower_helper("a", "b", 4, "a^4+4*a^3*b+6*a^2*b^2+4*a*b^3+b^4");
+        binomialPower_helper("b", "a", 4, "a^4+4*a^3*b+6*a^2*b^2+4*a*b^3+b^4");
+        binomialPower_helper("gg", "ooo", 4, "gg^4+4*gg^3*ooo+6*gg^2*ooo^2+4*gg*ooo^3+ooo^4");
+
+        binomialPower_fail_helper("a", "a", 2);
+        binomialPower_fail_helper("a", "b", -1);
+        binomialPower_fail_helper("a", "b", -2);
     }
 
     @Test

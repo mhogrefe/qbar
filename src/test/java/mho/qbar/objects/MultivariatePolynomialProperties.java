@@ -43,6 +43,7 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         compareImplementationsOf_Monomial_BigInteger();
         propertiesOf_BigInteger();
         propertiesOf_int();
+        propertiesOf_Variable();
         propertiesOf_Polynomial_Variable();
         propertiesToPolynomial();
         propertiesVariables();
@@ -69,6 +70,10 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         propertiesProduct();
         compareImplementationsProduct();
         propertiesDelta();
+        propertiesPow();
+        compareImplementationsPow();
+        propertiesBinomialPower();
+        compareImplementationsBinomialPower();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -196,6 +201,16 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
                     (MultivariatePolynomial q) -> q.coefficient(Monomial.ONE).intValueExact(),
                     i
             );
+        }
+    }
+
+    private void propertiesOf_Variable() {
+        initialize("of(Variable)");
+        for (Variable v : take(LIMIT, P.variables())) {
+            MultivariatePolynomial p = of(v);
+            p.validate();
+            assertEquals(v, p.termCount(), 1);
+            assertEquals(v, p.degree(), 1);
         }
     }
 
@@ -844,6 +859,165 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
                 MultivariatePolynomial::delta,
                 MultivariatePolynomial::validate
         );
+    }
+
+    private static @NotNull MultivariatePolynomial pow_simplest(@NotNull MultivariatePolynomial a, int p) {
+        return product(toList(replicate(p, a)));
+    }
+
+    private void propertiesPow() {
+        initialize("pow(int)");
+        Iterable<Pair<MultivariatePolynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).multivariatePolynomials(),
+                P.withScale(1).naturalIntegersGeometric()
+        );
+        for (Pair<MultivariatePolynomial, Integer> p : take(LIMIT, ps)) {
+            MultivariatePolynomial q = p.a.pow(p.b);
+            q.validate();
+            assertTrue(p, p.a == ZERO || q.degree() == p.a.degree() * p.b);
+            assertEquals(p, q, pow_simplest(p.a, p.b));
+        }
+
+        for (int i : take(LIMIT, P.withScale(4).positiveIntegersGeometric())) {
+            fixedPoint(p -> p.pow(i), ZERO);
+        }
+
+        for (MultivariatePolynomial p : take(LIMIT, P.withScale(4).multivariatePolynomials())) {
+            assertTrue(p, p.pow(0) == ONE);
+            fixedPoint(q -> q.pow(1), p);
+            assertEquals(p, p.pow(2), p.multiply(p));
+        }
+
+        Iterable<Triple<MultivariatePolynomial, Integer, Integer>> ts2 = map(
+                p -> new Triple<>(p.a, p.b.a, p.b.b),
+                P.pairsSquareRootOrder(
+                        P.withScale(4).withSecondaryScale(4).multivariatePolynomials(),
+                        P.pairs(P.withScale(1).naturalIntegersGeometric())
+                )
+        );
+        for (Triple<MultivariatePolynomial, Integer, Integer> t : take(LIMIT, ts2)) {
+            MultivariatePolynomial expression1 = t.a.pow(t.b).multiply(t.a.pow(t.c));
+            MultivariatePolynomial expression2 = t.a.pow(t.b + t.c);
+            assertEquals(t, expression1, expression2);
+            MultivariatePolynomial expression5 = t.a.pow(t.b).pow(t.c);
+            MultivariatePolynomial expression6 = t.a.pow(t.b * t.c);
+            assertEquals(t, expression5, expression6);
+        }
+
+        Iterable<Triple<MultivariatePolynomial, MultivariatePolynomial, Integer>> ts3 = map(
+                p -> new Triple<>(p.a.a, p.a.b, p.b),
+                P.pairsLogarithmicOrder(
+                        P.pairs(P.withScale(4).withSecondaryScale(4).multivariatePolynomials()),
+                        P.withScale(1).naturalIntegersGeometric()
+                )
+        );
+        for (Triple<MultivariatePolynomial, MultivariatePolynomial, Integer> t : take(LIMIT, ts3)) {
+            System.out.println(t);
+            MultivariatePolynomial expression1 = t.a.multiply(t.b).pow(t.c);
+            MultivariatePolynomial expression2 = t.a.pow(t.c).multiply(t.b.pow(t.c));
+            assertEquals(t, expression1, expression2);
+        }
+
+        Iterable<Pair<MultivariatePolynomial, Integer>> psFail = P.pairs(
+                P.multivariatePolynomials(),
+                P.negativeIntegers()
+        );
+        for (Pair<MultivariatePolynomial, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.pow(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void compareImplementationsPow() {
+        Map<String, Function<Pair<MultivariatePolynomial, Integer>, MultivariatePolynomial>> functions =
+                new LinkedHashMap<>();
+        functions.put("simplest", p -> pow_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.pow(p.b));
+        Iterable<Pair<MultivariatePolynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).multivariatePolynomials(),
+                P.withScale(1).naturalIntegersGeometric()
+        );
+        compareImplementations("pow(int)", take(LIMIT, ps), functions);
+    }
+
+    private static @NotNull MultivariatePolynomial binomialPower_simplest(
+            @NotNull Variable a,
+            @NotNull Variable b,
+            int p
+    ) {
+        return of(
+                Arrays.asList(new Pair<>(Monomial.of(a), BigInteger.ONE), new Pair<>(Monomial.of(b), BigInteger.ONE))
+        ).pow(p);
+    }
+
+    private void propertiesBinomialPower() {
+        initialize("binomialPower(Variable, Variable, int)");
+        Iterable<Triple<Variable, Variable, Integer>> ts = map(
+                p -> new Triple<>(p.a.a, p.a.b, p.b),
+                P.pairsLogarithmicOrder(P.distinctPairs(P.variables()), P.naturalIntegersGeometric())
+        );
+        for (Triple<Variable, Variable, Integer> t : take(LIMIT, ts)) {
+            MultivariatePolynomial p = binomialPower(t.a, t.b, t.c);
+            p.validate();
+            assertEquals(t, p, binomialPower_simplest(t.a, t.b, t.c));
+            assertEquals(t, p, binomialPower(t.b, t.a, t.c));
+            assertTrue(t, p.isHomogeneous());
+        }
+
+        ts = map(
+                p -> new Triple<>(p.a.a, p.a.b, p.b),
+                P.pairsLogarithmicOrder(P.distinctPairs(P.variables()), P.positiveIntegersGeometric())
+        );
+        for (Triple<Variable, Variable, Integer> t : take(LIMIT, ts)) {
+            MultivariatePolynomial p = binomialPower(t.a, t.b, t.c);
+            assertEquals(t, p.variables(), Ordering.lt(t.a, t.b) ? Arrays.asList(t.a, t.b) : Arrays.asList(t.b, t.a));
+        }
+
+        for (Pair<Variable, Variable> p : take(LIMIT, P.distinctPairs(P.variables()))) {
+            assertEquals(p, binomialPower(p.a, p.b, 0), ONE);
+            assertEquals(
+                    p,
+                    binomialPower(p.a, p.b, 1),
+                    of(
+                            Arrays.asList(
+                                    new Pair<>(Monomial.of(p.a), BigInteger.ONE),
+                                    new Pair<>(Monomial.of(p.b), BigInteger.ONE)
+                            )
+                    )
+            );
+        }
+
+        for (Pair<Variable, Integer> p : take(LIMIT, P.pairs(P.variables(), P.naturalIntegers()))) {
+            try {
+                binomialPower(p.a, p.a, p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        Iterable<Triple<Variable, Variable, Integer>> tsFail = map(
+                p -> new Triple<>(p.a.a, p.a.b, p.b),
+                P.pairs(P.distinctPairs(P.variables()), P.negativeIntegersGeometric())
+        );
+        for (Triple<Variable, Variable, Integer> t : take(LIMIT, tsFail)) {
+            try {
+                binomialPower(t.a, t.b, t.c);
+                fail(t);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void compareImplementationsBinomialPower() {
+        Map<String, Function<Triple<Variable, Variable, Integer>, MultivariatePolynomial>> functions =
+                new LinkedHashMap<>();
+        functions.put("simplest", t -> binomialPower_simplest(t.a, t.b, t.c));
+        functions.put("standard", t -> binomialPower(t.a, t.b, t.c));
+        Iterable<Triple<Variable, Variable, Integer>> ts = map(
+                p -> new Triple<>(p.a.a, p.a.b, p.b),
+                P.pairsLogarithmicOrder(P.distinctPairs(P.variables()), P.naturalIntegersGeometric())
+        );
+        compareImplementations("binomialPower(Variable, Variable, int)", take(LIMIT, ts), functions);
     }
 
     private void propertiesEquals() {

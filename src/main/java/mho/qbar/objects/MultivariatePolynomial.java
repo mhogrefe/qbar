@@ -2,8 +2,8 @@ package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
 import mho.wheels.iterables.NoRemoveIterable;
+import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.IntegerUtils;
-import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
@@ -205,6 +205,21 @@ public final class MultivariatePolynomial implements
         return new MultivariatePolynomial(
                 Collections.singletonList(new Pair<>(Monomial.ONE, BigInteger.valueOf(c)))
         );
+    }
+
+    /**
+     * Creates a {@code MultivariatePolynomial} from a single {@code Variable}.
+     *
+     * <ul>
+     *  <li>{@code v} cannot be null.</li>
+     *  <li>The result contains one term, which is equal to a variable.</li>
+     * </ul>
+     *
+     * @param v a {@code Variable}
+     * @return the {@code MultivariatePolynomial} equal to {@code v}
+     */
+    public static @NotNull MultivariatePolynomial of(@NotNull Variable v) {
+        return new MultivariatePolynomial(Collections.singletonList(new Pair<>(Monomial.of(v), BigInteger.ONE)));
     }
 
     /**
@@ -698,6 +713,103 @@ public final class MultivariatePolynomial implements
             throw new NullPointerException();
         }
         return adjacentPairsWith((x, y) -> y.subtract(x), xs);
+    }
+
+    /**
+     * Returns {@code this} raised to the power of {@code p}. 0<sup>0</sup> yields 1.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code p} cannot be negative.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param p the power that {@code this} is raised to
+     * @return {@code this}<sup>{@code p}</sup>
+     */
+    public @NotNull MultivariatePolynomial pow(int p) {
+        if (p < 0) {
+            throw new ArithmeticException("p cannot be negative. Invalid p: " + p);
+        }
+        if (p == 0 || this == ONE) return ONE;
+        if (this == ZERO) return ZERO;
+        if (terms.size() == 1) {
+            Pair<Monomial, BigInteger> term = terms.get(0);
+            if (term.a == Monomial.ONE) {
+                return of(term.b.pow(p));
+            } else {
+                return new MultivariatePolynomial(Collections.singletonList(new Pair<>(term.a.pow(p), term.b.pow(p))));
+            }
+        }
+        MultivariatePolynomial result = ONE;
+        MultivariatePolynomial powerPower = null; // p^2^i
+        for (boolean bit : IntegerUtils.bits(p)) {
+            powerPower = powerPower == null ? this : powerPower.multiply(powerPower);
+            if (bit) result = result.multiply(powerPower);
+        }
+        return result;
+    }
+
+    /**
+     * Given two distinct {@code Variable} {@code a} and {@code b}, returns ({@code a}+{@code b})<sup>{@code p}</sup>.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>{@code b} cannot be null.</li>
+     *  <li>{@code a} cannot equal {@code b}.</li>
+     *  <li>The result is a power of the sum of two {@code Variable}s.</li>
+     * </ul>
+     *
+     * @param a the first {@code Variable}
+     * @param b the second {@code Variable}
+     * @param p the power the binomial is raised to
+     * @return ({@code a}+{@code b})<sup>{@code p}</sup>
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull MultivariatePolynomial binomialPower(@NotNull Variable a, @NotNull Variable b, int p) {
+        if (p < 0) {
+            throw new ArithmeticException("p cannot be negative. Invalid p: " + p);
+        }
+        int vCompare = a.compareTo(b);
+        if (vCompare == 0) {
+            throw new IllegalArgumentException("a cannot equal b. Invalid a and b: " + a);
+        } else if (vCompare == 1) {
+            Variable temp = a;
+            a = b;
+            b = temp;
+        }
+        if (p == 0) return ONE;
+
+        int aIndex = a.getIndex();
+        int bIndex = b.getIndex();
+        List<Integer> exponentVector = toList(replicate(bIndex, 0));
+        exponentVector.add(p);
+
+        BigInteger bigP = BigInteger.valueOf(p);
+        List<BigInteger> coefficients = new ArrayList<>();
+        for (int i = 0; i <= p / 2; i++) {
+            coefficients.add(MathUtils.binomialCoefficient(bigP, i));
+        }
+
+        List<Pair<Monomial, BigInteger>> terms = new ArrayList<>();
+        boolean ascending = true;
+        int j = 0;
+        for (int i = 0; i <= p; i++) {
+            terms.add(new Pair<>(Monomial.of(exponentVector), coefficients.get(j)));
+            exponentVector.set(bIndex, exponentVector.get(bIndex) - 1);
+            exponentVector.set(aIndex, exponentVector.get(aIndex) + 1);
+            if (ascending) {
+                j++;
+                if (i == p / 2) {
+                    ascending = false;
+                    j = i;
+                    if ((p & 1) == 0) j--;
+                }
+            } else {
+                j--;
+            }
+        }
+        return new MultivariatePolynomial(terms);
     }
 
     /**

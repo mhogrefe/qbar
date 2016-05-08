@@ -14,6 +14,7 @@ import java.util.TreeMap;
 
 import static mho.qbar.objects.Monomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.testing.Testing.MEDIUM_LIMIT;
 import static mho.wheels.testing.Testing.nicePrint;
 
 @SuppressWarnings("UnusedDeclaration")
@@ -49,10 +50,16 @@ public class MonomialDemos extends QBarDemos {
         }
     }
 
-    private void demoOf() {
+    private void demoOf_List_Integer() {
         for (List<Integer> is : take(LIMIT, P.lists(P.naturalIntegersGeometric()))) {
             String listString = tail(init(is.toString()));
             System.out.println("of(" + listString + ") = " + of(is));
+        }
+    }
+
+    private void demoOf_Variable() {
+        for (Variable v : take(MEDIUM_LIMIT, P.variables())) {
+            System.out.println("of(" + v + ") = " + of(v));
         }
     }
 
@@ -82,6 +89,12 @@ public class MonomialDemos extends QBarDemos {
     private void demoVariables() {
         for (Monomial m : take(LIMIT, P.monomials())) {
             System.out.println("variables(" + m + ") = " + m.variables());
+        }
+    }
+
+    private void demoVariableCount() {
+        for (Monomial m : take(LIMIT, P.monomials())) {
+            System.out.println("variableCount(" + m + ") = " + m.variableCount());
         }
     }
 

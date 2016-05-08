@@ -82,11 +82,11 @@ public class MonomialTest {
         terms_helper("x^2*y*z^3", "[(x, 2), (y, 1), (z, 3)]");
     }
 
-    private static void of_helper(@NotNull String input, @NotNull String output) {
+    private static void of_List_Integer_helper(@NotNull String input, @NotNull String output) {
         aeq(of(readIntegerList(input)), output);
     }
 
-    private static void of_fail_helper(@NotNull String input) {
+    private static void of_List_Integer_fail_helper(@NotNull String input) {
         try {
             of(readIntegerListWithNulls(input));
             fail();
@@ -94,17 +94,34 @@ public class MonomialTest {
     }
 
     @Test
-    public void testOf() {
-        of_helper("[]", "1");
-        of_helper("[0]", "1");
-        of_helper("[0, 0, 0]", "1");
-        of_helper("[1]", "a");
-        of_helper("[0, 0, 0, 4]", "d^4");
-        of_helper("[1, 2, 3, 4, 5]", "a*b^2*c^3*d^4*e^5");
-        of_helper("[1, 2, 3, 4, 5, 0]", "a*b^2*c^3*d^4*e^5");
+    public void testOf_List_Integer() {
+        of_List_Integer_helper("[]", "1");
+        of_List_Integer_helper("[0]", "1");
+        of_List_Integer_helper("[0, 0, 0]", "1");
+        of_List_Integer_helper("[1]", "a");
+        of_List_Integer_helper("[0, 0, 0, 4]", "d^4");
+        of_List_Integer_helper("[1, 2, 3, 4, 5]", "a*b^2*c^3*d^4*e^5");
+        of_List_Integer_helper("[1, 2, 3, 4, 5, 0]", "a*b^2*c^3*d^4*e^5");
 
-        of_fail_helper("[1, -1, 3]");
-        of_fail_helper("[1, null, 3]");
+        of_List_Integer_fail_helper("[1, -1, 3]");
+        of_List_Integer_fail_helper("[1, null, 3]");
+    }
+
+    private static void of_Variable(@NotNull String input) {
+        Monomial m = of(Variable.readStrict(input).get());
+        m.validate();
+        aeq(m, input);
+    }
+
+    @Test
+    public void testOf_Variable() {
+        of_Variable("a");
+        of_Variable("b");
+        of_Variable("c");
+        of_Variable("x");
+        of_Variable("y");
+        of_Variable("z");
+        of_Variable("ooo");
     }
 
     private static void fromTerms_helper(@NotNull String input, @NotNull String output) {
@@ -162,6 +179,21 @@ public class MonomialTest {
         variables_helper("a*b", "[a, b]");
         variables_helper("ooo", "[ooo]");
         variables_helper("x^2*y*z^3", "[x, y, z]");
+    }
+
+    private static void variableCount_helper(@NotNull String input, int output) {
+        aeq(readStrict(input).get().variableCount(), output);
+    }
+
+    @Test
+    public void testVariableCount() {
+        variableCount_helper("1", 0);
+        variableCount_helper("a", 1);
+        variableCount_helper("a^2", 1);
+        variableCount_helper("a^3", 1);
+        variableCount_helper("a*b", 2);
+        variableCount_helper("ooo", 1);
+        variableCount_helper("x^2*y*z^3", 3);
     }
 
     private static void removeVariable_helper(@NotNull String m, @NotNull String v, @NotNull String output) {

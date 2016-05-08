@@ -141,8 +141,7 @@ public final class Monomial implements Comparable<Monomial> {
      * @param exponents the exponents in this {@code Monomial}
      * @return the {@code Monomial} with the exponents in {@code exponents}
      */
-    public static @NotNull
-    Monomial of(@NotNull List<Integer> exponents) {
+    public static @NotNull Monomial of(@NotNull List<Integer> exponents) {
         if (any(v -> v < 0, exponents)) {
             throw new IllegalArgumentException("None of the elements in exponents may be negative. Invalid " +
                     "exponents: " + exponents);
@@ -155,6 +154,23 @@ public final class Monomial implements Comparable<Monomial> {
         }
         if (actualSize == 0) return ONE;
         return new Monomial(toList(take(actualSize, exponents)));
+    }
+
+    /**
+     * Creates a {@code Monomial} from a single {@code Variable}.
+     *
+     * <ul>
+     *  <li>{@code v} cannot be null.</li>
+     *  <li>The result contains a single variable.</li>
+     * </ul>
+     *
+     * @param v a {@code Variable}
+     * @return the {@code Monomial} equal to {@code v}
+     */
+    public static @NotNull Monomial of(@NotNull Variable v) {
+        List<Integer> exponentVector = toList(replicate(v.getIndex(), 0));
+        exponentVector.add(1);
+        return new Monomial(exponentVector);
     }
 
     /**
@@ -222,6 +238,24 @@ public final class Monomial implements Comparable<Monomial> {
             }
         }
         return variables;
+    }
+
+    /**
+     * Returns the number of variables in {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Monomial}.</li>
+     *  <li>The result is non-negative.</li>
+     * </ul>
+     *
+     * @return the number of variables in {@code this}
+     */
+    public int variableCount() {
+        int variableCount = 0;
+        for (int exponent : exponents) {
+            if (exponent != 0) variableCount++;
+        }
+        return variableCount;
     }
 
     /**

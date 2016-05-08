@@ -85,6 +85,12 @@ public class MultivariatePolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoOf_Variable() {
+        for (Variable v : take(MEDIUM_LIMIT, P.variables())) {
+            System.out.println("of(" + v + ") = " + of(v));
+        }
+    }
+
     private void demoToPolynomial() {
         Iterable<MultivariatePolynomial> ps = P.withElement(
                 ZERO,
@@ -285,6 +291,27 @@ public class MultivariatePolynomialDemos extends QBarDemos {
         for (List<MultivariatePolynomial> ps : take(LIMIT, pss)) {
             String listString = tail(init(ps.toString()));
             System.out.println("Δ(" + listString + ") = " + its(delta(ps)));
+        }
+    }
+
+    private void demoPow() {
+        Iterable<Pair<MultivariatePolynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).multivariatePolynomials(),
+                P.withScale(1).naturalIntegersGeometric()
+        );
+        for (Pair<MultivariatePolynomial, Integer> p : take(LIMIT, ps)) {
+            System.out.println("(" + p.a + ") ^ " + p.b + " = " + p.a.pow(p.b));
+        }
+    }
+
+    private void demoBinomialPower() {
+        Iterable<Triple<Variable, Variable, Integer>> ts = map(
+                p -> new Triple<>(p.a.a, p.a.b, p.b),
+                P.pairsLogarithmicOrder(P.distinctPairs(P.variables()), P.naturalIntegersGeometric())
+        );
+        for (Triple<Variable, Variable, Integer> t : take(LIMIT, ts)) {
+            System.out.println("binomialPower(" + t.a + ", " + t.b + ", " + t.c + ") = " +
+                    binomialPower(t.a, t.b, t.c));
         }
     }
 
