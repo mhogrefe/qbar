@@ -239,7 +239,7 @@ public class MonomialDemos extends QBarDemos {
                         map(
                                 p -> p.b,
                                 P.dependentPairsInfiniteLogarithmicOrder(
-                                        P.withScale(4).subsetsAtLeast(1, P.variables()),
+                                        P.withScale(4).subsetsAtLeast(1, P.withScale(4).variables()),
                                         vs -> P.maps(vs, P.withScale(4).monomials())
                                 )
                         )

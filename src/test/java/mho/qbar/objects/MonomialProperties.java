@@ -640,7 +640,8 @@ public class MonomialProperties extends QBarTestProperties {
                 )
         );
         for (Pair<Monomial, Map<Variable, Monomial>> p : take(LIMIT, ps)) {
-            p.a.substitute(p.b);
+            Monomial m = p.a.substitute(p.b);
+            m.validate();
         }
     }
 

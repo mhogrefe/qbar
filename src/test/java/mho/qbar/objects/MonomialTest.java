@@ -354,9 +354,9 @@ public class MonomialTest {
         aeq(readStrict(m).get().applyBigInteger(readVariableBigIntegerMap(xs)), output);
     }
 
-    private static void apply_BigInteger_fail_helper(@NotNull String ev, @NotNull String xs) {
+    private static void apply_BigInteger_fail_helper(@NotNull String m, @NotNull String xs) {
         try {
-            readStrict(ev).get().applyBigInteger(readVariableBigIntegerMapWithNulls(xs));
+            readStrict(m).get().applyBigInteger(readVariableBigIntegerMapWithNulls(xs));
             fail();
         } catch (IllegalArgumentException | NullPointerException ignored) {}
     }

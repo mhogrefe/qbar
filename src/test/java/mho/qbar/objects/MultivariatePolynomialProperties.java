@@ -1,11 +1,13 @@
 package mho.qbar.objects;
 
+import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
+import mho.wheels.structures.Quadruple;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
@@ -76,6 +78,10 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         compareImplementationsPow();
         propertiesBinomialPower();
         compareImplementationsBinomialPower();
+        propertiesApplyBigInteger();
+        propertiesApplyRational();
+        propertiesSubstituteMonomial();
+        propertiesSubstitute();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -351,6 +357,7 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         );
         for (Pair<Variable, MultivariatePolynomial> p : take(LIMIT, ps2)) {
             List<MultivariatePolynomial> coefficients = p.b.coefficientsOfVariable(p.a);
+            //noinspection Convert2streamapi
             for (MultivariatePolynomial coefficient : coefficients) {
                 if (coefficient.degree() > 0) {
                     fail(p);
@@ -405,6 +412,21 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         for (Triple<MultivariatePolynomial, MultivariatePolynomial, MultivariatePolynomial> t : take(LIMIT, ts)) {
             associative(MultivariatePolynomial::add, t);
         }
+
+        Iterable<Triple<MultivariatePolynomial, MultivariatePolynomial, Map<Variable, BigInteger>>> ts2 = map(
+                r -> new Triple<>(r.a.a, r.a.b, r.b),
+                P.dependentPairsInfinite(
+                        filterInfinite(
+                                q -> q.a.degree() > 0 || q.b.degree() > 0,
+                                P.pairs(P.multivariatePolynomials())
+                        ),
+                        p -> P.maps(sort(nub(concat(p.a.variables(), p.b.variables()))), P.bigIntegers())
+                )
+        );
+        for (Triple<MultivariatePolynomial, MultivariatePolynomial, Map<Variable, BigInteger>> t : take(LIMIT, ts2)) {
+            MultivariatePolynomial sum = t.a.add(t.b);
+            assertEquals(t, t.a.applyBigInteger(t.c).add(t.b.applyBigInteger(t.c)), sum.applyBigInteger(t.c));
+        }
     }
 
     private void compareImplementationsAdd() {
@@ -427,6 +449,15 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
 
         for (MultivariatePolynomial p : take(LIMIT, filterInfinite(q -> q != ZERO, P.multivariatePolynomials()))) {
             assertNotEquals(p, p, p.negate());
+        }
+
+        Iterable<Pair<MultivariatePolynomial, Map<Variable, BigInteger>>> ps = P.dependentPairsInfinite(
+                filterInfinite(q -> q.degree() > 0, P.multivariatePolynomials()),
+                p -> P.maps(p.variables(), P.bigIntegers())
+        );
+        for (Pair<MultivariatePolynomial, Map<Variable, BigInteger>> p : take(LIMIT, ps)) {
+            MultivariatePolynomial negative = p.a.negate();
+            assertEquals(p, p.a.applyBigInteger(p.b).negate(), negative.applyBigInteger(p.b));
         }
     }
 
@@ -453,6 +484,25 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
             assertEquals(p, ZERO.subtract(p), p.negate());
             fixedPoint(q -> q.subtract(ZERO), p);
             assertTrue(p, p.subtract(p) == ZERO);
+        }
+
+        Iterable<Triple<MultivariatePolynomial, MultivariatePolynomial, Map<Variable, BigInteger>>> ts2 = map(
+                r -> new Triple<>(r.a.a, r.a.b, r.b),
+                P.dependentPairsInfinite(
+                        filterInfinite(
+                                q -> q.a.degree() > 0 || q.b.degree() > 0,
+                                P.pairs(P.multivariatePolynomials())
+                        ),
+                        p -> P.maps(sort(nub(concat(p.a.variables(), p.b.variables()))), P.bigIntegers())
+                )
+        );
+        for (Triple<MultivariatePolynomial, MultivariatePolynomial, Map<Variable, BigInteger>> t : take(LIMIT, ts2)) {
+            MultivariatePolynomial difference = t.a.subtract(t.b);
+            assertEquals(
+                    t,
+                    t.a.applyBigInteger(t.c).subtract(t.b.applyBigInteger(t.c)),
+                    difference.applyBigInteger(t.c)
+            );
         }
     }
 
@@ -512,6 +562,21 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
             MultivariatePolynomial expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
             assertEquals(t, expression1, expression2);
         }
+
+        Iterable<Triple<MultivariatePolynomial, Integer, Map<Variable, BigInteger>>> ts3 = map(
+                r -> new Triple<>(r.a.a, r.b, r.a.b),
+                P.pairs(
+                        P.dependentPairsInfinite(
+                                filterInfinite(q -> q.degree() > 0, P.multivariatePolynomials()),
+                                p -> P.maps(p.variables(), P.bigIntegers())
+                        ),
+                        P.integers()
+                )
+        );
+        for (Triple<MultivariatePolynomial, Integer, Map<Variable, BigInteger>> t : take(LIMIT, ts3)) {
+            MultivariatePolynomial product = t.a.multiply(t.b);
+            assertEquals(t, t.a.applyBigInteger(t.c).multiply(BigInteger.valueOf(t.b)), product.applyBigInteger(t.c));
+        }
     }
 
     private void propertiesMultiply_BigInteger() {
@@ -561,6 +626,21 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
             MultivariatePolynomial expression1 = t.a.add(t.b).multiply(t.c);
             MultivariatePolynomial expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
             assertEquals(t, expression1, expression2);
+        }
+
+        Iterable<Triple<MultivariatePolynomial, BigInteger, Map<Variable, BigInteger>>> ts3 = map(
+                r -> new Triple<>(r.a.a, r.b, r.a.b),
+                P.pairs(
+                        P.dependentPairsInfinite(
+                                filterInfinite(q -> q.degree() > 0, P.multivariatePolynomials()),
+                                p -> P.maps(p.variables(), P.bigIntegers())
+                        ),
+                        P.bigIntegers()
+                )
+        );
+        for (Triple<MultivariatePolynomial, BigInteger, Map<Variable, BigInteger>> t : take(LIMIT, ts3)) {
+            MultivariatePolynomial product = t.a.multiply(t.b);
+            assertEquals(t, t.a.applyBigInteger(t.c).multiply(t.b), product.applyBigInteger(t.c));
         }
     }
 
@@ -651,6 +731,28 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         for (Pair<MultivariatePolynomial, BigInteger> p : take(LIMIT, ps2)) {
             assertEquals(p, p.a.multiply(Monomial.ONE, p.b), p.a.multiply(p.b));
         }
+
+        Iterable<Quadruple<MultivariatePolynomial, Monomial, BigInteger, Map<Variable, BigInteger>>> qs = map(
+                r -> new Quadruple<>(r.a.a.a, r.a.a.b, r.b, r.a.b),
+                P.pairs(
+                    P.dependentPairsInfinite(
+                            filterInfinite(
+                                    q -> q.a.degree() > 0 || q.b.degree() > 0,
+                                    P.pairs(P.multivariatePolynomials(), P.monomials())
+                            ),
+                            p -> P.maps(sort(nub(concat(p.a.variables(), p.b.variables()))), P.bigIntegers())
+                    ),
+                    P.bigIntegers()
+                )
+        );
+        for (Quadruple<MultivariatePolynomial, Monomial, BigInteger, Map<Variable, BigInteger>> q : take(LIMIT, qs)) {
+            MultivariatePolynomial product = q.a.multiply(q.b, q.c);
+            assertEquals(
+                    q,
+                    q.a.applyBigInteger(q.d).multiply(q.b.applyBigInteger(q.d)).multiply(q.c),
+                    product.applyBigInteger(q.d)
+            );
+        }
     }
 
     private static @NotNull MultivariatePolynomial multiply_MultivariatePolynomial_alt(
@@ -714,6 +816,21 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
             associative(MultivariatePolynomial::multiply, t);
             leftDistributive(MultivariatePolynomial::add, MultivariatePolynomial::multiply, t);
             rightDistributive(MultivariatePolynomial::add, MultivariatePolynomial::multiply, t);
+        }
+
+        Iterable<Triple<MultivariatePolynomial, MultivariatePolynomial, Map<Variable, BigInteger>>> ts2 = map(
+                r -> new Triple<>(r.a.a, r.a.b, r.b),
+                P.dependentPairsInfinite(
+                        filterInfinite(
+                                q -> q.a.degree() > 0 || q.b.degree() > 0,
+                                P.pairs(P.multivariatePolynomials())
+                        ),
+                        p -> P.maps(sort(nub(concat(p.a.variables(), p.b.variables()))), P.bigIntegers())
+                )
+        );
+        for (Triple<MultivariatePolynomial, MultivariatePolynomial, Map<Variable, BigInteger>> t : take(LIMIT, ts2)) {
+            MultivariatePolynomial product = t.a.multiply(t.b);
+            assertEquals(t, t.a.applyBigInteger(t.c).multiply(t.b.applyBigInteger(t.c)), product.applyBigInteger(t.c));
         }
     }
 
@@ -839,6 +956,15 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
             assertEquals(ps, sum, sum_alt(ps));
             assertTrue(ps, ps.isEmpty() || sum.degree() <= maximum(map(MultivariatePolynomial::degree, ps)));
         }
+
+        Iterable<Pair<List<MultivariatePolynomial>, Map<Variable, BigInteger>>> ps = P.dependentPairsInfinite(
+                filterInfinite(qs -> any(q -> q.degree() > 0, qs), P.withScale(1).lists(P.multivariatePolynomials())),
+                ns -> P.maps(sort(nub(concat(map(MultivariatePolynomial::variables, ns)))), P.bigIntegers())
+        );
+        for (Pair<List<MultivariatePolynomial>, Map<Variable, BigInteger>> p : take(LIMIT, ps)) {
+            MultivariatePolynomial sum = sum(p.a);
+            assertEquals(p, sumBigInteger(map(m -> m.applyBigInteger(p.b), p.a)), sum.applyBigInteger(p.b));
+        }
     }
 
     private void compareImplementationsSum() {
@@ -903,6 +1029,15 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
             assertEquals(ps, product, product_alt(ps));
             assertEquals(ps, product, product_alt2(ps));
         }
+
+        Iterable<Pair<List<MultivariatePolynomial>, Map<Variable, BigInteger>>> ps = P.dependentPairsInfinite(
+                filterInfinite(qs -> any(q -> q.degree() > 0, qs), P.withScale(1).lists(P.multivariatePolynomials())),
+                ns -> P.maps(sort(nub(concat(map(MultivariatePolynomial::variables, ns)))), P.bigIntegers())
+        );
+        for (Pair<List<MultivariatePolynomial>, Map<Variable, BigInteger>> p : take(LIMIT, ps)) {
+            MultivariatePolynomial product = product(p.a);
+            assertEquals(p, productBigInteger(map(m -> m.applyBigInteger(p.b), p.a)), product.applyBigInteger(p.b));
+        }
     }
 
     private void compareImplementationsProduct() {
@@ -929,6 +1064,19 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
                 MultivariatePolynomial::delta,
                 MultivariatePolynomial::validate
         );
+
+        Iterable<Pair<List<MultivariatePolynomial>, Map<Variable, BigInteger>>> ps = P.dependentPairsInfinite(
+                filterInfinite(qs -> any(q -> q.degree() > 0, qs), P.withScale(1).lists(P.multivariatePolynomials())),
+                ns -> P.maps(sort(nub(concat(map(MultivariatePolynomial::variables, ns)))), P.bigIntegers())
+        );
+        for (Pair<List<MultivariatePolynomial>, Map<Variable, BigInteger>> p : take(LIMIT, ps)) {
+            List<MultivariatePolynomial> delta = toList(delta(p.a));
+            assertEquals(
+                    p,
+                    toList(deltaBigInteger(map(m -> m.applyBigInteger(p.b), p.a))),
+                    toList(map(q -> q.applyBigInteger(p.b), delta))
+            );
+        }
     }
 
     private static @NotNull MultivariatePolynomial pow_simplest(@NotNull MultivariatePolynomial a, int p) {
@@ -982,10 +1130,24 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
                 )
         );
         for (Triple<MultivariatePolynomial, MultivariatePolynomial, Integer> t : take(LIMIT, ts3)) {
-            System.out.println(t);
             MultivariatePolynomial expression1 = t.a.multiply(t.b).pow(t.c);
             MultivariatePolynomial expression2 = t.a.pow(t.c).multiply(t.b.pow(t.c));
             assertEquals(t, expression1, expression2);
+        }
+
+        Iterable<Triple<MultivariatePolynomial, Integer, Map<Variable, BigInteger>>> ts4 = map(
+                p -> new Triple<>(p.a.a, p.b, p.a.b),
+                P.pairsLogarithmicOrder(
+                        P.dependentPairsInfinite(
+                                filterInfinite(p -> p.degree() > 0, P.withScale(4).multivariatePolynomials()),
+                                n -> P.maps(n.variables(), P.bigIntegers())
+                        ),
+                        P.withScale(1).naturalIntegersGeometric()
+                )
+        );
+        for (Triple<MultivariatePolynomial, Integer, Map<Variable, BigInteger>> t : take(LIMIT, ts4)) {
+            MultivariatePolynomial p = t.a.pow(t.b);
+            assertEquals(t, t.a.applyBigInteger(t.c).pow(t.b), p.applyBigInteger(t.c));
         }
 
         Iterable<Pair<MultivariatePolynomial, Integer>> psFail = P.pairs(
@@ -1088,6 +1250,191 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
                 P.pairsLogarithmicOrder(P.distinctPairs(P.variables()), P.naturalIntegersGeometric())
         );
         compareImplementations("binomialPower(Variable, Variable, int)", take(LIMIT, ts), functions);
+    }
+
+    private void propertiesApplyBigInteger() {
+        initialize("applyBigInteger(Map<Variable, BigInteger>)");
+        Iterable<Pair<MultivariatePolynomial, Map<Variable, BigInteger>>> ps;
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = P.choose(
+                    map(i -> new Pair<>(of(i), new TreeMap<>()), P.withScale(4).bigIntegers()),
+                    P.dependentPairsInfiniteSquareRootOrder(
+                            filterInfinite(r -> r.degree() > 0, P.multivariatePolynomials()),
+                            q -> {
+                                List<Variable> us = toList(q.variables());
+                                return map(
+                                        p -> p.b,
+                                        P.dependentPairsInfiniteLogarithmicOrder(
+                                                nub(map(vs -> sort(nub(concat(vs, us))), P.subsets(P.variables()))),
+                                                ws -> P.maps(ws, P.bigIntegers())
+                                        )
+                                );
+                            }
+                    )
+            );
+        } else {
+            ps = P.choose(
+                    P.dependentPairsInfinite(
+                            filterInfinite(r -> r.degree() > 0, P.withScale(4).multivariatePolynomials()),
+                            q -> {
+                                List<Variable> us = toList(q.variables());
+                                return map(
+                                        p -> p.b,
+                                        P.dependentPairsInfiniteLogarithmicOrder(
+                                                map(
+                                                        vs -> sort(nub(concat(vs, us))),
+                                                        P.withScale(4).subsets(P.variables())
+                                                ),
+                                                ws -> P.maps(ws, P.bigIntegers())
+                                        )
+                                );
+                            }
+                    ),
+                    map(i -> new Pair<>(of(i), new TreeMap<>()), P.withScale(4).bigIntegers())
+            );
+        }
+        for (Pair<MultivariatePolynomial, Map<Variable, BigInteger>> p : take(LIMIT, ps)) {
+            p.a.applyBigInteger(p.b);
+        }
+
+        Iterable<Pair<MultivariatePolynomial, Map<Variable, BigInteger>>> psFail =
+                P.dependentPairsInfiniteSquareRootOrder(
+                        filterInfinite(p -> p.degree() > 0, P.multivariatePolynomials()),
+                        m -> {
+                            List<Variable> us = toList(m.variables());
+                            return map(
+                                    p -> p.b,
+                                    P.dependentPairsInfiniteLogarithmicOrder(
+                                            filterInfinite(
+                                                    vs -> !isSubsetOf(us, vs),
+                                                    P.subsetsAtLeast(1, P.variables())
+                                            ),
+                                            ws -> P.maps(ws, P.bigIntegers())
+                                    )
+                            );
+                        }
+                );
+        for (Pair<MultivariatePolynomial, Map<Variable, BigInteger>> p : take(LIMIT, psFail)) {
+            try {
+                p.a.applyBigInteger(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesApplyRational() {
+        initialize("applyRational(Map<Variable, Rational>)");
+        Iterable<Pair<MultivariatePolynomial, Map<Variable, Rational>>> ps;
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = P.choose(
+                    map(i -> new Pair<>(of(i), new TreeMap<>()), P.withScale(4).bigIntegers()),
+                    P.dependentPairsInfiniteSquareRootOrder(
+                            filterInfinite(r -> r.degree() > 0, P.multivariatePolynomials()),
+                            q -> {
+                                List<Variable> us = toList(q.variables());
+                                return map(
+                                        p -> p.b,
+                                        P.dependentPairsInfiniteLogarithmicOrder(
+                                                nub(map(vs -> sort(nub(concat(vs, us))), P.subsets(P.variables()))),
+                                                ws -> P.maps(ws, P.rationals())
+                                        )
+                                );
+                            }
+                    )
+            );
+        } else {
+            ps = P.choose(
+                    P.dependentPairsInfinite(
+                            filterInfinite(r -> r.degree() > 0, P.withScale(4).multivariatePolynomials()),
+                            q -> {
+                                List<Variable> us = toList(q.variables());
+                                return map(
+                                        p -> p.b,
+                                        P.dependentPairsInfiniteLogarithmicOrder(
+                                                map(
+                                                        vs -> sort(nub(concat(vs, us))),
+                                                        P.withScale(4).subsets(P.variables())
+                                                ),
+                                                ws -> P.maps(ws, P.rationals())
+                                        )
+                                );
+                            }
+                    ),
+                    map(i -> new Pair<>(of(i), new TreeMap<>()), P.withScale(4).bigIntegers())
+            );
+        }
+        for (Pair<MultivariatePolynomial, Map<Variable, Rational>> p : take(LIMIT, ps)) {
+            p.a.applyRational(p.b);
+        }
+
+        Iterable<Pair<MultivariatePolynomial, Map<Variable, Rational>>> psFail =
+                P.dependentPairsInfiniteSquareRootOrder(
+                        filterInfinite(p -> p.degree() > 0, P.multivariatePolynomials()),
+                        m -> {
+                            List<Variable> us = toList(m.variables());
+                            return map(
+                                    p -> p.b,
+                                    P.dependentPairsInfiniteLogarithmicOrder(
+                                            filterInfinite(
+                                                    vs -> !isSubsetOf(us, vs),
+                                                    P.subsetsAtLeast(1, P.variables())
+                                            ),
+                                            ws -> P.maps(ws, P.rationals())
+                                    )
+                            );
+                        }
+                );
+        for (Pair<MultivariatePolynomial, Map<Variable, Rational>> p : take(LIMIT, psFail)) {
+            try {
+                p.a.applyRational(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesSubstituteMonomial() {
+        initialize("substituteMonomial(Map<Variable, Monomial>)");
+        Iterable<Pair<MultivariatePolynomial, Map<Variable, Monomial>>> ps = P.pairsSquareRootOrder(
+                P.withScale(4).multivariatePolynomials(),
+                P.withElement(
+                        new TreeMap<>(),
+                        map(
+                                p -> p.b,
+                                P.dependentPairsInfiniteLogarithmicOrder(
+                                        P.withScale(4).subsetsAtLeast(1, P.withScale(4).variables()),
+                                        vs -> P.maps(vs, P.withScale(4).monomials())
+                                )
+                        )
+                )
+        );
+        for (Pair<MultivariatePolynomial, Map<Variable, Monomial>> p : take(LIMIT, ps)) {
+            MultivariatePolynomial q = p.a.substituteMonomial(p.b);
+            q.validate();
+        }
+    }
+
+    private void propertiesSubstitute() {
+        initialize("substitute(Map<Variable, MultivariatePolynomial>)");
+        Iterable<Pair<MultivariatePolynomial, Map<Variable, MultivariatePolynomial>>> ps = P.pairsSquareRootOrder(
+                P.withScale(2).withSecondaryScale(1).multivariatePolynomials(),
+                P.withElement(
+                        new TreeMap<>(),
+                        map(
+                                p -> p.b,
+                                P.dependentPairsInfiniteLogarithmicOrder(
+                                        P.withScale(4).subsetsAtLeast(1, P.withScale(4).variables()),
+                                        vs -> P.maps(
+                                                vs,
+                                                P.withScale(2).withSecondaryScale(1).multivariatePolynomials()
+                                        )
+                                )
+                        )
+                )
+        );
+        for (Pair<MultivariatePolynomial, Map<Variable, MultivariatePolynomial>> p : take(LIMIT, ps)) {
+            MultivariatePolynomial q = p.a.substitute(p.b);
+            q.validate();
+        }
     }
 
     private void propertiesEquals() {

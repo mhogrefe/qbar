@@ -10,6 +10,8 @@ import org.jetbrains.annotations.NotNull;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import static mho.qbar.objects.MultivariatePolynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
@@ -332,6 +334,137 @@ public class MultivariatePolynomialDemos extends QBarDemos {
         for (Triple<Variable, Variable, Integer> t : take(LIMIT, ts)) {
             System.out.println("binomialPower(" + t.a + ", " + t.b + ", " + t.c + ") = " +
                     binomialPower(t.a, t.b, t.c));
+        }
+    }
+
+    private void demoApplyBigInteger() {
+        Iterable<Pair<MultivariatePolynomial, Map<Variable, BigInteger>>> ps;
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = P.choose(
+                    map(i -> new Pair<>(of(i), new TreeMap<>()), P.withScale(4).bigIntegers()),
+                    P.dependentPairsInfiniteSquareRootOrder(
+                            filterInfinite(r -> r.degree() > 0, P.multivariatePolynomials()),
+                            q -> {
+                                List<Variable> us = toList(q.variables());
+                                return map(
+                                        p -> p.b,
+                                        P.dependentPairsInfiniteLogarithmicOrder(
+                                                nub(map(vs -> sort(nub(concat(vs, us))), P.subsets(P.variables()))),
+                                                ws -> P.maps(ws, P.bigIntegers())
+                                        )
+                                );
+                            }
+                    )
+            );
+        } else {
+            ps = P.choose(
+                    P.dependentPairsInfinite(
+                            filterInfinite(r -> r.degree() > 0, P.withScale(4).multivariatePolynomials()),
+                            q -> {
+                                List<Variable> us = toList(q.variables());
+                                return map(
+                                        p -> p.b,
+                                        P.dependentPairsInfiniteLogarithmicOrder(
+                                                map(
+                                                        vs -> sort(nub(concat(vs, us))),
+                                                        P.withScale(4).subsets(P.variables())
+                                                ),
+                                                ws -> P.maps(ws, P.bigIntegers())
+                                        )
+                                );
+                            }
+                    ),
+                    map(i -> new Pair<>(of(i), new TreeMap<>()), P.withScale(4).bigIntegers())
+            );
+        }
+        for (Pair<MultivariatePolynomial, Map<Variable, BigInteger>> p : take(LIMIT, ps)) {
+            System.out.println("applyBigInteger(" + p.a + ", " + p.b + ") = " + p.a.applyBigInteger(p.b));
+        }
+    }
+
+    private void demoApplyRational() {
+        Iterable<Pair<MultivariatePolynomial, Map<Variable, Rational>>> ps;
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = P.choose(
+                    map(i -> new Pair<>(of(i), new TreeMap<>()), P.withScale(4).bigIntegers()),
+                    P.dependentPairsInfiniteSquareRootOrder(
+                            filterInfinite(r -> r.degree() > 0, P.multivariatePolynomials()),
+                            q -> {
+                                List<Variable> us = toList(q.variables());
+                                return map(
+                                        p -> p.b,
+                                        P.dependentPairsInfiniteLogarithmicOrder(
+                                                nub(map(vs -> sort(nub(concat(vs, us))), P.subsets(P.variables()))),
+                                                ws -> P.maps(ws, P.rationals())
+                                        )
+                                );
+                            }
+                    )
+            );
+        } else {
+            ps = P.choose(
+                    P.dependentPairsInfinite(
+                            filterInfinite(r -> r.degree() > 0, P.withScale(4).multivariatePolynomials()),
+                            q -> {
+                                List<Variable> us = toList(q.variables());
+                                return map(
+                                        p -> p.b,
+                                        P.dependentPairsInfiniteLogarithmicOrder(
+                                                map(
+                                                        vs -> sort(nub(concat(vs, us))),
+                                                        P.withScale(4).subsets(P.variables())
+                                                ),
+                                                ws -> P.maps(ws, P.rationals())
+                                        )
+                                );
+                            }
+                    ),
+                    map(i -> new Pair<>(of(i), new TreeMap<>()), P.withScale(4).bigIntegers())
+            );
+        }
+        for (Pair<MultivariatePolynomial, Map<Variable, Rational>> p : take(LIMIT, ps)) {
+            System.out.println("applyBigInteger(" + p.a + ", " + p.b + ") = " + p.a.applyRational(p.b));
+        }
+    }
+
+    private void demoSubstituteMonomial() {
+        Iterable<Pair<MultivariatePolynomial, Map<Variable, Monomial>>> ps = P.pairsSquareRootOrder(
+                P.withScale(4).multivariatePolynomials(),
+                P.withElement(
+                        new TreeMap<>(),
+                        map(
+                                p -> p.b,
+                                P.dependentPairsInfiniteLogarithmicOrder(
+                                        P.withScale(4).subsetsAtLeast(1, P.withScale(4).variables()),
+                                        vs -> P.maps(vs, P.withScale(4).monomials())
+                                )
+                        )
+                )
+        );
+        for (Pair<MultivariatePolynomial, Map<Variable, Monomial>> p : take(LIMIT, ps)) {
+            System.out.println("substituteMonomial(" + p.a + ", " + p.b + ") = " + p.a.substituteMonomial(p.b));
+        }
+    }
+
+    private void demoSubstitute() {
+        Iterable<Pair<MultivariatePolynomial, Map<Variable, MultivariatePolynomial>>> ps = P.pairsSquareRootOrder(
+                P.withScale(2).withSecondaryScale(1).multivariatePolynomials(),
+                P.withElement(
+                        new TreeMap<>(),
+                        map(
+                                p -> p.b,
+                                P.dependentPairsInfiniteLogarithmicOrder(
+                                        P.withScale(4).subsetsAtLeast(1, P.withScale(4).variables()),
+                                        vs -> P.maps(
+                                                vs,
+                                                P.withScale(2).withSecondaryScale(1).multivariatePolynomials()
+                                        )
+                                )
+                        )
+                )
+        );
+        for (Pair<MultivariatePolynomial, Map<Variable, MultivariatePolynomial>> p : take(LIMIT, ps)) {
+            System.out.println("substitute(" + p.a + ", " + p.b + ") = " + p.a.substitute(p.b));
         }
     }
 

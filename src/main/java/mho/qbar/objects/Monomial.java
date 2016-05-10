@@ -433,29 +433,29 @@ public final class Monomial implements Comparable<Monomial> {
     }
 
     /**
-     * Substitutes variables in {@code this} with {@code Monomial}s specified by {@code evs}. Not every variable in
+     * Substitutes variables in {@code this} with {@code Monomial}s specified by {@code ms}. Not every variable in
      * {@code this} needs to have an associated {@code Monomial}. Unused variables are also allowed.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Monomial}.</li>
-     *  <li>{@code evs} may not have any null keys or values.</li>
+     *  <li>{@code ms} may not have any null keys or values.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
      * Length is 1 if {@code this}=0 or {@code that}=0, deg({@code this})×deg({@code that})+1 otherwise
      *
-     * @param evs the {@code Monomial}s to substitute for variables in {@code this}
-     * @return {@code this}({@code evs})
+     * @param ms the {@code Monomial}s to substitute for variables in {@code this}
+     * @return {@code this}({@code ms})
      */
-    public @NotNull Monomial substitute(@NotNull Map<Variable, Monomial> evs) {
-        for (Map.Entry<Variable, Monomial> entry : evs.entrySet()) {
+    public @NotNull Monomial substitute(@NotNull Map<Variable, Monomial> ms) {
+        for (Map.Entry<Variable, Monomial> entry : ms.entrySet()) {
             if (entry.getKey() == null || entry.getValue() == null) {
                 throw new NullPointerException();
             }
         }
         List<Monomial> factors = new ArrayList<>();
         for (Pair<Variable, Integer> term : terms()) {
-            Monomial value = evs.get(term.a);
+            Monomial value = ms.get(term.a);
             if (value == null) {
                 factors.add(fromTerms(Collections.singletonList(term)));
             } else {

@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.structures.NullableOptional;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -8,6 +9,7 @@ import org.junit.Test;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Map;
 
 import static mho.qbar.objects.MultivariatePolynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
@@ -726,7 +728,9 @@ public class MultivariatePolynomialTest {
     }
 
     private static void divideExact_BigInteger_helper(@NotNull String p, @NotNull String i, @NotNull String output) {
-        aeq(readStrict(p).get().divideExact(Readers.readBigIntegerStrict(i).get()), output);
+        MultivariatePolynomial q = readStrict(p).get().divideExact(Readers.readBigIntegerStrict(i).get());
+        q.validate();
+        aeq(q, output);
     }
 
     private static void divideExact_BigInteger_fail_helper(@NotNull String p, @NotNull String i) {
@@ -757,7 +761,9 @@ public class MultivariatePolynomialTest {
     }
 
     private static void divideExact_int_helper(@NotNull String p, int i, @NotNull String output) {
-        aeq(readStrict(p).get().divideExact(i), output);
+        MultivariatePolynomial q = readStrict(p).get().divideExact(i);
+        q.validate();
+        aeq(q, output);
     }
 
     private static void divideExact_int_fail_helper(@NotNull String p, int i) {
@@ -1070,7 +1076,7 @@ public class MultivariatePolynomialTest {
         try {
             sum(readMultivariatePolynomialListWithNulls(input));
             fail();
-        } catch (NullPointerException ignored) {}
+        } catch (NullPointerException | IllegalArgumentException ignored) {}
     }
 
     @Test
@@ -1079,6 +1085,7 @@ public class MultivariatePolynomialTest {
         sum_helper("[1]", "1");
         sum_helper("[-17]", "-17");
         sum_helper("[-17, ooo, a*b*c, x^2-4*x+7, x^2+2*x*y+y^2]", "a*b*c+2*x^2+2*x*y+y^2-4*x+ooo-10");
+
         sum_fail_helper("[-17, null, a*b*c, x^2-4*x+7, x^2+2*x*y+y^2]");
     }
 
@@ -1103,6 +1110,7 @@ public class MultivariatePolynomialTest {
         product_helper("[-17, ooo, a*b*c, x^2-4*x+7, x^2+2*x*y+y^2]",
                 "-17*a*b*c*x^4*ooo-34*a*b*c*x^3*y*ooo-17*a*b*c*x^2*y^2*ooo+68*a*b*c*x^3*ooo+136*a*b*c*x^2*y*ooo+" +
                 "68*a*b*c*x*y^2*ooo-119*a*b*c*x^2*ooo-238*a*b*c*x*y*ooo-119*a*b*c*y^2*ooo");
+
         product_fail_helper("[-17, null, a*b*c, x^2-4*x+7, x^2+2*x*y+y^2]");
     }
 
@@ -1286,6 +1294,132 @@ public class MultivariatePolynomialTest {
         binomialPower_fail_helper("a", "a", 2);
         binomialPower_fail_helper("a", "b", -1);
         binomialPower_fail_helper("a", "b", -2);
+    }
+
+    private static void apply_BigInteger_helper(@NotNull String p, @NotNull String xs, @NotNull String output) {
+        aeq(readStrict(p).get().applyBigInteger(readVariableBigIntegerMap(xs)), output);
+    }
+
+    private static void apply_BigInteger_fail_helper(@NotNull String p, @NotNull String xs) {
+        try {
+            readStrict(p).get().applyBigInteger(readVariableBigIntegerMapWithNulls(xs));
+            fail();
+        } catch (IllegalArgumentException | NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testApplyBigInteger() {
+        apply_BigInteger_helper("1", "[]", "1");
+        apply_BigInteger_helper("1", "[(a, 0)]", "1");
+        apply_BigInteger_helper("1", "[(x, -2), (y, 4)]", "1");
+        apply_BigInteger_helper("a", "[(a, 0)]", "0");
+        apply_BigInteger_helper("a", "[(a, -5)]", "-5");
+        apply_BigInteger_helper("a", "[(a, -5), (b, 2)]", "-5");
+        apply_BigInteger_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[(x, -5), (y, 2), (z, 3)]", "49");
+        apply_BigInteger_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[(x, -5), (y, 0), (z, 3), (ooo, 3)]", "109");
+        apply_BigInteger_helper("a+b+c", "[(a, 3), (b, 4), (c, 5)]", "12");
+
+        apply_BigInteger_fail_helper("a", "[]");
+        apply_BigInteger_fail_helper("a", "[(b, 2)]");
+        apply_BigInteger_fail_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[(x, -5), (y, 2)]");
+        apply_BigInteger_fail_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[(x, -5), (y, 2), (z, null)]");
+        apply_BigInteger_fail_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[(x, -5), (y, 2), (null, 1)]");
+    }
+
+    private static void apply_Rational_helper(@NotNull String p, @NotNull String xs, @NotNull String output) {
+        aeq(readStrict(p).get().applyRational(readVariableRationalMap(xs)), output);
+    }
+
+    private static void apply_Rational_fail_helper(@NotNull String p, @NotNull String xs) {
+        try {
+            readStrict(p).get().applyRational(readVariableRationalMapWithNulls(xs));
+            fail();
+        } catch (IllegalArgumentException | NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testApplyRational() {
+        apply_Rational_helper("1", "[]", "1");
+        apply_Rational_helper("1", "[(a, 0)]", "1");
+        apply_Rational_helper("1", "[(x, -1/2), (y, 4/5)]", "1");
+        apply_Rational_helper("a", "[(a, 0)]", "0");
+        apply_Rational_helper("a", "[(a, -5/3)]", "-5/3");
+        apply_Rational_helper("a", "[(a, -5/3), (b, 2/7)]", "-5/3");
+        apply_Rational_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[(x, -5/3), (y, 1/2), (z, 3)]", "3037/108");
+        apply_Rational_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[(x, -5/3), (y, 0), (z, 3), (ooo, 3)]", "793/27");
+        apply_Rational_helper("a+b+c", "[(a, 1), (b, 1/2), (c, 1/3)]", "11/6");
+
+        apply_Rational_fail_helper("a", "[]");
+        apply_Rational_fail_helper("a", "[(b, 1/2)]");
+        apply_Rational_fail_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[(x, -5/3), (y, 1/2)]");
+        apply_Rational_fail_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[(x, -5/3), (y, 1/2), (z, null)]");
+        apply_Rational_fail_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[(x, -5/3), (y, 1/2), (null, 1)]");
+    }
+
+    private static void substituteMonomial_helper(@NotNull String p, @NotNull String xs, @NotNull String output) {
+        MultivariatePolynomial q = readStrict(p).get().substituteMonomial(readVariableMonomialMap(xs));
+        q.validate();
+        aeq(q, output);
+    }
+
+    private static void substituteMonomial_fail_helper(@NotNull String p, @NotNull String xs) {
+        try {
+            readStrict(p).get().substituteMonomial(readVariableMonomialMapWithNulls(xs));
+            fail();
+        } catch (IllegalArgumentException | NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testSubstituteMonomial() {
+        substituteMonomial_helper("1", "[]", "1");
+        substituteMonomial_helper("1", "[(a, b)]", "1");
+        substituteMonomial_helper("a", "[(a, 1)]", "1");
+        substituteMonomial_helper("a", "[(a, a)]", "a");
+        substituteMonomial_helper("a", "[(a, b)]", "b");
+        substituteMonomial_helper("a", "[(a, x*z)]", "x*z");
+        substituteMonomial_helper("a", "[(a, x*z), (b, a)]", "x*z");
+        substituteMonomial_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[]", "x*y^2*z+x^2*z^2+x^3+z^2");
+        substituteMonomial_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[(x, 1)]", "y^2*z+2*z^2+1");
+        substituteMonomial_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[(x, y), (y, z), (z, x)]", "x^2*y^2+x*y*z^2+y^3+x^2");
+        substituteMonomial_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[(x, xx), (y, yy), (z, zz)]",
+                "xx*yy^2*zz+xx^2*zz^2+xx^3+zz^2");
+        substituteMonomial_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[(x, a*b), (y, a^2), (z, a^3*b^5)]",
+                "a^8*b^12+a^6*b^10+a^8*b^6+a^3*b^3");
+
+        substituteMonomial_fail_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[(x, y), (y, z), (z, null)]");
+        substituteMonomial_fail_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[(x, y), (y, z), (null, x)]");
+    }
+
+    private static void substitute_helper(@NotNull String p, @NotNull String xs, @NotNull String output) {
+        MultivariatePolynomial q = readStrict(p).get().substitute(readVariableMultivariatePolynomialMap(xs));
+        q.validate();
+        aeq(q, output);
+    }
+
+    private static void substitute_fail_helper(@NotNull String p, @NotNull String xs) {
+        try {
+            readStrict(p).get().substitute(readVariableMultivariatePolynomialMapWithNulls(xs));
+            fail();
+        } catch (IllegalArgumentException | NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testSubstitute() {
+        substitute_helper("1", "[]", "1");
+        substitute_helper("1", "[(a, a+b)]", "1");
+        substitute_helper("a", "[(a, 1)]", "1");
+        substitute_helper("a", "[(a, a+b)]", "a+b");
+        substitute_helper("a", "[(a, b)]", "b");
+        substitute_helper("a", "[(a, x*z)]", "x*z");
+        substitute_helper("a", "[(a, x*z), (b, a)]", "x*z");
+        substitute_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[]", "x*y^2*z+x^2*z^2+x^3+z^2");
+        substitute_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[(x, 1)]", "y^2*z+2*z^2+1");
+        substitute_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[(x, b^2+a), (y, c), (z, 2*d+1)]",
+                "b^6+4*b^4*d^2+3*a*b^4+4*b^4*d+2*b^2*c^2*d+8*a*b^2*d^2+3*a^2*b^2+b^4+b^2*c^2+8*a*b^2*d+2*a*c^2*d+" +
+                "4*a^2*d^2+a^3+2*a*b^2+a*c^2+4*a^2*d+a^2+4*d^2+4*d+1");
+
+        substitute_fail_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[(x, b^2+a), (y, c), (z, null)]");
+        substitute_fail_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[(x, b^2+a), (y, c), (null, 2*d+1)]");
     }
 
     @Test
@@ -1563,5 +1697,106 @@ public class MultivariatePolynomialTest {
 
     private static @NotNull List<MultivariatePolynomial> readMultivariatePolynomialListWithNulls(@NotNull String s) {
         return Readers.readListWithNullsStrict(MultivariatePolynomial::readStrict).apply(s).get();
+    }
+
+    private static @NotNull
+    Map<Variable, BigInteger> readVariableBigIntegerMap(@NotNull String s) {
+        return IterableUtils.toMap(
+                Readers.readListStrict(
+                        u -> Pair.read(
+                                u,
+                                t -> NullableOptional.fromOptional(Variable.readStrict(t)),
+                                t -> NullableOptional.fromOptional(Readers.readBigIntegerStrict(t))
+                        )
+                ).apply(s).get()
+        );
+    }
+
+    private static @NotNull Map<Variable, BigInteger> readVariableBigIntegerMapWithNulls(@NotNull String s) {
+        return IterableUtils.toMap(
+                Readers.readListStrict(
+                        u -> Pair.read(
+                                u,
+                                Readers.readWithNullsStrict(Variable::readStrict),
+                                Readers.readWithNullsStrict(Readers::readBigIntegerStrict)
+                        )
+                ).apply(s).get()
+        );
+    }
+
+    private static @NotNull Map<Variable, Rational> readVariableRationalMap(@NotNull String s) {
+        return IterableUtils.toMap(
+                Readers.readListStrict(
+                        u -> Pair.read(
+                                u,
+                                t -> NullableOptional.fromOptional(Variable.readStrict(t)),
+                                t -> NullableOptional.fromOptional(Rational.readStrict(t))
+                        )
+                ).apply(s).get()
+        );
+    }
+
+    private static @NotNull Map<Variable, Rational> readVariableRationalMapWithNulls(@NotNull String s) {
+        return IterableUtils.toMap(
+                Readers.readListStrict(
+                        u -> Pair.read(
+                                u,
+                                Readers.readWithNullsStrict(Variable::readStrict),
+                                Readers.readWithNullsStrict(Rational::readStrict)
+                        )
+                ).apply(s).get()
+        );
+    }
+
+    private static @NotNull Map<Variable, Monomial> readVariableMonomialMap(@NotNull String s) {
+        return IterableUtils.toMap(
+                Readers.readListStrict(
+                        u -> Pair.read(
+                                u,
+                                t -> NullableOptional.fromOptional(Variable.readStrict(t)),
+                                t -> NullableOptional.fromOptional(Monomial.readStrict(t))
+                        )
+                ).apply(s).get()
+        );
+    }
+
+    private static @NotNull Map<Variable, Monomial> readVariableMonomialMapWithNulls(@NotNull String s) {
+        return IterableUtils.toMap(
+                Readers.readListStrict(
+                        u -> Pair.read(
+                                u,
+                                Readers.readWithNullsStrict(Variable::readStrict),
+                                Readers.readWithNullsStrict(Monomial::readStrict)
+                        )
+                ).apply(s).get()
+        );
+    }
+
+    private static @NotNull Map<Variable, MultivariatePolynomial> readVariableMultivariatePolynomialMap(
+            @NotNull String s
+    ) {
+        return IterableUtils.toMap(
+                Readers.readListStrict(
+                        u -> Pair.read(
+                                u,
+                                t -> NullableOptional.fromOptional(Variable.readStrict(t)),
+                                t -> NullableOptional.fromOptional(readStrict(t))
+                        )
+                ).apply(s).get()
+        );
+    }
+
+    private static @NotNull Map<Variable, MultivariatePolynomial> readVariableMultivariatePolynomialMapWithNulls(
+            @NotNull String s
+    ) {
+        return IterableUtils.toMap(
+                Readers.readListStrict(
+                        u -> Pair.read(
+                                u,
+                                Readers.readWithNullsStrict(Variable::readStrict),
+                                Readers.readWithNullsStrict(MultivariatePolynomial::readStrict)
+                        )
+                ).apply(s).get()
+        );
     }
 }

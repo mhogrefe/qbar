@@ -870,6 +870,96 @@ public final class MultivariatePolynomial implements
     }
 
     /**
+     * Evaluates {@code this} by substituting a {@code BigInteger} for each variable. Every variable in {@code this}
+     * must have an associated {@code BigInteger}. Unused variables are allowed.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code xs} may not have any null keys or values.</li>
+     *  <li>Every {@code Variable} in {@code this} must be a key in {@code xs}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param xs the values to substitute for each variable in {@code this}
+     * @return {@code this}({@code xs})
+     */
+    public @NotNull BigInteger applyBigInteger(@NotNull Map<Variable, BigInteger> xs) {
+        return sumBigInteger(map(t -> t.a.applyBigInteger(xs).multiply(t.b), terms));
+    }
+
+    /**
+     * Evaluates {@code this} by substituting a {@code Rational} for each variable. Every variable in {@code this} must
+     * have an associated {@code Rational}. Unused variables are allowed.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code xs} may not have any null keys or values.</li>
+     *  <li>Every {@code Variable} in {@code this} must be a key in {@code xs}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param xs the values to substitute for each variable in {@code this}
+     * @return {@code this}({@code xs})
+     */
+    public @NotNull Rational applyRational(@NotNull Map<Variable, Rational> xs) {
+        return Rational.sum(map(t -> t.a.applyRational(xs).multiply(t.b), terms));
+    }
+
+    /**
+     * Substitutes variables in {@code this} with {@code Monomial}s specified by {@code ms}. Not every variable in
+     * {@code this} needs to have an associated {@code Monomial}. Unused variables are also allowed.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code ms} may not have any null keys or values.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param ms the {@code Monomial}s to substitute for variables in {@code this}
+     * @return {@code this}({@code ms})
+     */
+    public @NotNull MultivariatePolynomial substituteMonomial(@NotNull Map<Variable, Monomial> ms) {
+        return of(toList(map(t -> new Pair<>(t.a.substitute(ms), t.b), terms)));
+    }
+
+    /**
+     * Substitutes variables in {@code this} with {@code MultivariatePolynomial}s specified by {@code ps}. Not every
+     * variable in {@code this} needs to have an associated {@code MultivariatePolynomial}. Unused variables are also
+     * allowed.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code ps} may not have any null keys or values.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Length is 1 if {@code this}=0 or {@code that}=0, deg({@code this})×deg({@code that})+1 otherwise
+     *
+     * @param ps the {@code MultivariatePolynomial}s to substitute for variables in {@code this}
+     * @return {@code this}({@code ps})
+     */
+    public @NotNull MultivariatePolynomial substitute(@NotNull Map<Variable, MultivariatePolynomial> ps) {
+        for (Map.Entry<Variable, MultivariatePolynomial> entry : ps.entrySet()) {
+            if (entry.getKey() == null || entry.getValue() == null) {
+                throw new NullPointerException();
+            }
+        }
+        MultivariatePolynomial result = ZERO;
+        for (Pair<Monomial, BigInteger> term : terms) {
+            MultivariatePolynomial product = ONE;
+            for (Pair<Variable, Integer> factor : term.a.terms()) {
+                MultivariatePolynomial p = ps.get(factor.a);
+                if (p == null) {
+                    p = of(factor.a);
+                }
+                product = product.multiply(p.pow(factor.b));
+            }
+            result = result.add(product);
+        }
+        return result;
+    }
+
+    /**
      * Returns the Sylvester matrix of {@code this} and {@code that}, expanded in terms of powers of
      * {@code variableToEliminate}.
      *
