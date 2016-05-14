@@ -39,6 +39,7 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
     protected void testBothModes() {
         propertiesIterable();
         propertiesIterator();
+        propertiesToRationalMultivariatePolynomial();
         propertiesCoefficient();
         propertiesOf_List_Pair_Monomial_BigInteger();
         propertiesOf_Monomial_BigInteger();
@@ -122,6 +123,30 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
             testNoRemove(p);
             testHasNext(p);
         }
+    }
+
+    private void propertiesToRationalMultivariatePolynomial() {
+        initialize("toRationalMultivariatePolynomial()");
+        for (MultivariatePolynomial p : take(LIMIT, P.multivariatePolynomials())) {
+            RationalMultivariatePolynomial rp = p.toRationalMultivariatePolynomial();
+            assertEquals(p, p.toString(), rp.toString());
+            assertEquals(p, p.degree(), rp.degree());
+            inverse(
+                    MultivariatePolynomial::toRationalMultivariatePolynomial,
+                    RationalMultivariatePolynomial::toMultivariatePolynomial,
+                    p
+            );
+        }
+
+        Iterable<Pair<MultivariatePolynomial, Map<Variable, Rational>>> ps = P.dependentPairsInfinite(
+                filterInfinite(q -> q.degree() > 0, P.multivariatePolynomials()),
+                p -> P.maps(p.variables(), P.rationals())
+        );
+        for (Pair<MultivariatePolynomial, Map<Variable, Rational>> p : take(LIMIT, ps)) {
+            assertEquals(p, p.a.applyRational(p.b), p.a.toRationalMultivariatePolynomial().applyRational(p.b));
+        }
+
+        //todo other way
     }
 
     private void propertiesCoefficient() {

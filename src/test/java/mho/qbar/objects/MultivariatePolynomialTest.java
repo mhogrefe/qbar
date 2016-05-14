@@ -86,6 +86,23 @@ public class MultivariatePolynomialTest {
         iterator_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[(z^2, 1), (x^3, 1), (x^2*z^2, 1), (x*y^2*z, 1)]");
     }
 
+    private static void toRationalMultivariatePolynomial_helper(@NotNull String input) {
+        aeq(readStrict(input).get().toRationalMultivariatePolynomial(), input);
+    }
+
+    @Test
+    public void testToRationalMultivariatePolynomial() {
+        toRationalMultivariatePolynomial_helper("0");
+        toRationalMultivariatePolynomial_helper("1");
+        toRationalMultivariatePolynomial_helper("-17");
+        toRationalMultivariatePolynomial_helper("ooo");
+        toRationalMultivariatePolynomial_helper("a*b*c");
+        toRationalMultivariatePolynomial_helper("x^2-4*x+7");
+        toRationalMultivariatePolynomial_helper("x^2+2*x*y+y^2");
+        toRationalMultivariatePolynomial_helper("a+b+c+d+e+f");
+        toRationalMultivariatePolynomial_helper("x*y^2*z+x^2*z^2+x^3+z^2");
+    }
+
     private static void coefficient_helper(@NotNull String p, @NotNull String ev, @NotNull String output) {
         aeq(readStrict(p).get().coefficient(Monomial.readStrict(ev).get()), output);
     }

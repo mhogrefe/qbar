@@ -42,6 +42,13 @@ public class MultivariatePolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoToRationalMultivariatePolynomial() {
+        for (MultivariatePolynomial p : take(LIMIT, P.withScale(4).multivariatePolynomials())) {
+            System.out.println("toRationalMultivariatePolynomial(" + p + ") = " +
+                    p.toRationalMultivariatePolynomial());
+        }
+    }
+
     private void demoCoefficient() {
         Iterable<Pair<MultivariatePolynomial, Monomial>> ps = P.pairs(
                 P.withScale(4).multivariatePolynomials(),

@@ -101,6 +101,22 @@ public final class MultivariatePolynomial implements
     }
 
     /**
+     * Converts {@code this} to a {@code RationalMultivariatePolynomial}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>The result is a {@code RationalMultivariatePolynomial} with integral coefficients.</li>
+     * </ul>
+     *
+     * @return a {@code RationalMultivariatePolynomial} with the same value as {@code this}
+     */
+    public @NotNull RationalMultivariatePolynomial toRationalMultivariatePolynomial() {
+        if (this == ZERO) return RationalMultivariatePolynomial.ZERO;
+        if (this == ONE) return RationalMultivariatePolynomial.ONE;
+        return RationalMultivariatePolynomial.of(toList(map(t -> new Pair<>(t.a, Rational.of(t.b)), terms)));
+    }
+
+    /**
      * Returns the coefficient of a given {@code monomial}. If the coefficient is not present, 0 is returned.
      *
      * <ul>
@@ -156,8 +172,8 @@ public final class MultivariatePolynomial implements
      * Creates a {@code MultivariatePolynomial} containing a single term (or zero terms if the coefficient is zero).
      *
      * <ul>
-     *  <li>{@code monomial} cannot be null.</li>
-     *  <li>{@code BigInteger} cannot be null.</li>
+     *  <li>{@code m} cannot be null.</li>
+     *  <li>{@code c} cannot be null.</li>
      *  <li>The result has no more than one term.</li>
      * </ul>
      *
@@ -705,8 +721,7 @@ public final class MultivariatePolynomial implements
             throw new ArithmeticException("bits cannot be negative. Invalid bits: " + bits);
         }
         if (this == ZERO || bits == 0) return this;
-        List<Pair<Monomial, BigInteger>> shiftedTerms =
-                toList(map(t -> new Pair<>(t.a, t.b.shiftLeft(bits)), terms));
+        List<Pair<Monomial, BigInteger>> shiftedTerms = toList(map(t -> new Pair<>(t.a, t.b.shiftLeft(bits)), terms));
         return new MultivariatePolynomial(shiftedTerms);
     }
 
