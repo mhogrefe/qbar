@@ -1703,7 +1703,6 @@ public final class Algebraic implements Comparable<Algebraic> {
      */
     public @NotNull Algebraic multiplyRaw(@NotNull Algebraic that) {
         if (degree() == that.degree()) {
-            //todo if (equals(that)) return pow(2);
             if (equals(that.invert())) return ONE;
         }
         Polynomial productMP = minimalPolynomial.multiplyRoots(that.minimalPolynomial).squareFreePart();
@@ -1928,6 +1927,35 @@ public final class Algebraic implements Comparable<Algebraic> {
         Polynomial shiftedMP = minimalPolynomial.positivePrimitiveShiftRootsRight(bits);
         Interval shiftedIsolatingInterval = shiftedMP.powerOfTwoIsolatingInterval(rootIndex);
         return new Algebraic(shiftedMP, rootIndex, shiftedIsolatingInterval, mpRootCount);
+    }
+
+    /**
+     * Returns {@code this} raised to the power of {@code p}. 0<sup>0</sup> yields 1.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>{@code p} may be any {@code int}.</li>
+     *  <li>If {@code p}{@literal <}0, {@code this} cannot be 0.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param p the power that {@code this} is raised to
+     * @return {@code this}<sup>{@code p}</sup>
+     */
+    public @NotNull Algebraic pow(int p) {
+        if (p == 0 || this == ONE) return ONE;
+        if (p == 1) return this;
+        if (p < 0) return invert().pow(-p);
+        if (this == ZERO) return this;
+        if (p % 2 == 0 && this.equals(NEGATIVE_ONE)) return ONE;
+        if (rational.isPresent()) {
+            return new Algebraic(rational.get().pow(p));
+        }
+        if (minimalPolynomial.isMonic()) {
+            return minimalPolynomial.rootPower(p).apply(this);
+        } else {
+            return minimalPolynomial.toRationalPolynomial().makeMonic().rootPower(p).apply(this);
+        }
     }
 
     /**

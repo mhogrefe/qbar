@@ -3480,6 +3480,108 @@ public class AlgebraicTest {
         shiftRight_helper("root 0 of x^5-x-1", -4, "root 0 of x^5-65536*x-1048576");
     }
 
+    private static void pow_helper(@NotNull String r, int p, @NotNull String output) {
+        Algebraic x = readStrict(r).get().pow(p);
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void pow_fail_helper(@NotNull String r, int p) {
+        try {
+            readStrict(r).get().pow(p);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testPow() {
+        pow_helper("0", 0, "1");
+        pow_helper("0", 1, "0");
+        pow_helper("0", 2, "0");
+        pow_helper("0", 3, "0");
+        pow_helper("0", 100, "0");
+
+        pow_helper("1", 0, "1");
+        pow_helper("1", 1, "1");
+        pow_helper("1", 2, "1");
+        pow_helper("1", 3, "1");
+        pow_helper("1", 100, "1");
+        pow_helper("1", -1, "1");
+        pow_helper("1", -2, "1");
+        pow_helper("1", -3, "1");
+        pow_helper("1", -100, "1");
+
+        pow_helper("1/2", 0, "1");
+        pow_helper("1/2", 1, "1/2");
+        pow_helper("1/2", 2, "1/4");
+        pow_helper("1/2", 3, "1/8");
+        pow_helper("1/2", 100, "1/1267650600228229401496703205376");
+        pow_helper("1/2", -1, "2");
+        pow_helper("1/2", -2, "4");
+        pow_helper("1/2", -3, "8");
+        pow_helper("1/2", -100, "1267650600228229401496703205376");
+
+        pow_helper("-4/3", 0, "1");
+        pow_helper("-4/3", 1, "-4/3");
+        pow_helper("-4/3", 2, "16/9");
+        pow_helper("-4/3", 3, "-64/27");
+        pow_helper("-4/3", 100,
+                "1606938044258990275541962092341162602522202993782792835301376/5153775207320113310364611297656212727" +
+                "02107522001");
+        pow_helper("-4/3", -1, "-3/4");
+        pow_helper("-4/3", -2, "9/16");
+        pow_helper("-4/3", -3, "-27/64");
+        pow_helper("-4/3", -100,
+                "515377520732011331036461129765621272702107522001/16069380442589902755419620923411626025222029937827" +
+                "92835301376");
+
+        pow_helper("sqrt(2)", 0, "1");
+        pow_helper("sqrt(2)", 1, "sqrt(2)");
+        pow_helper("sqrt(2)", 2, "2");
+        pow_helper("sqrt(2)", 3, "2*sqrt(2)");
+        pow_helper("sqrt(2)", 100, "1125899906842624");
+        pow_helper("sqrt(2)", -1, "sqrt(2)/2");
+        pow_helper("sqrt(2)", -2, "1/2");
+        pow_helper("sqrt(2)", -3, "sqrt(2)/4");
+        pow_helper("sqrt(2)", -100, "1/1125899906842624");
+
+        pow_helper("-sqrt(2)", 0, "1");
+        pow_helper("-sqrt(2)", 1, "-sqrt(2)");
+        pow_helper("-sqrt(2)", 2, "2");
+        pow_helper("-sqrt(2)", 3, "-2*sqrt(2)");
+        pow_helper("-sqrt(2)", 100, "1125899906842624");
+        pow_helper("-sqrt(2)", -1, "-sqrt(2)/2");
+        pow_helper("-sqrt(2)", -2, "1/2");
+        pow_helper("-sqrt(2)", -3, "-sqrt(2)/4");
+        pow_helper("-sqrt(2)", -100, "1/1125899906842624");
+
+        pow_helper("(1+sqrt(5))/2", 0, "1");
+        pow_helper("(1+sqrt(5))/2", 1, "(1+sqrt(5))/2");
+        pow_helper("(1+sqrt(5))/2", 2, "(3+sqrt(5))/2");
+        pow_helper("(1+sqrt(5))/2", 3, "2+sqrt(5)");
+        pow_helper("(1+sqrt(5))/2", 100, "root 1 of x^2-792070839848372253127*x+1");
+        pow_helper("(1+sqrt(5))/2", -1, "(-1+sqrt(5))/2");
+        pow_helper("(1+sqrt(5))/2", -2, "(3-sqrt(5))/2");
+        pow_helper("(1+sqrt(5))/2", -3, "-2+sqrt(5)");
+        pow_helper("(1+sqrt(5))/2", -100, "root 0 of x^2-792070839848372253127*x+1");
+
+        pow_helper("root 0 of x^5-x-1", 0, "1");
+        pow_helper("root 0 of x^5-x-1", 1, "root 0 of x^5-x-1");
+        pow_helper("root 0 of x^5-x-1", 2, "root 0 of x^5-2*x^3+x-1");
+        pow_helper("root 0 of x^5-x-1", 3, "root 0 of x^5-3*x^2-x-1");
+        pow_helper("root 0 of x^5-x-1", 100,
+                "root 0 of x^5-5212284*x^4-85855281194*x^3-827865826315124*x^2+40049481*x-1");
+        pow_helper("root 0 of x^5-x-1", -1, "root 0 of x^5+x^4-1");
+        pow_helper("root 0 of x^5-x-1", -2, "root 0 of x^5-x^4+2*x^2-1");
+        pow_helper("root 0 of x^5-x-1", -3, "root 0 of x^5+x^4+3*x^3-1");
+        pow_helper("root 0 of x^5-x-1", -100,
+                "root 0 of x^5-40049481*x^4+827865826315124*x^3+85855281194*x^2+5212284*x-1");
+
+        pow_fail_helper("0", -1);
+        pow_fail_helper("0", -2);
+        pow_fail_helper("0", -3);
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

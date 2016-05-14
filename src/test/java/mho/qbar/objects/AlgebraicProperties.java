@@ -3,6 +3,7 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
+import mho.wheels.concurrency.ConcurrencyUtils;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.BigDecimalUtils;
@@ -108,6 +109,8 @@ public class AlgebraicProperties extends QBarTestProperties {
         compareImplementationsShiftLeft();
         propertiesShiftRight();
         compareImplementationsShiftRight();
+        propertiesPow();
+        compareImplementationsPow();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -2592,6 +2595,157 @@ public class AlgebraicProperties extends QBarTestProperties {
                 take(LIMIT, P.pairs(P.algebraics(), P.integersGeometric())),
                 functions
         );
+    }
+
+    private static @NotNull Algebraic pow_alt(@NotNull Algebraic x, int p) {
+        if (p == 0 || x == ONE) return ONE;
+        if (p == 1) return x;
+        if (p < 0) return pow_alt(x.invert(), -p);
+        if (x == ZERO) return x;
+        if (p % 2 == 0 && x.equals(NEGATIVE_ONE)) return ONE;
+        if (x.isRational()) {
+            return of(x.rationalValueExact().pow(p));
+        }
+        Algebraic result = ONE;
+        Algebraic powerPower = null; // p^2^i
+        for (boolean bit : IntegerUtils.bits(p)) {
+            powerPower = powerPower == null ? x : powerPower.multiply(powerPower);
+            if (bit) result = result.multiply(powerPower);
+        }
+        return result;
+    }
+
+    private static @NotNull Algebraic pow_alt2(@NotNull Algebraic x, int p) {
+        if (p == 0 || x == ONE) return ONE;
+        if (p == 1) return x;
+        if (p < 0) return pow_alt2(x.invert(), -p);
+        if (x == ZERO) return x;
+        if (p % 2 == 0 && x.equals(NEGATIVE_ONE)) return ONE;
+        if (x.isRational()) {
+            return of(x.rationalValueExact().pow(p));
+        }
+        Map<String, Function<Pair<Algebraic, Integer>, Algebraic>> implementations = new HashMap<>();
+        implementations.put("reducing", q -> q.a.pow(q.b));
+        implementations.put("halving", q -> pow_alt(q.a, q.b));
+        return ConcurrencyUtils.evaluateFastest(implementations, new Pair<>(x, p)).b;
+    }
+
+    private void propertiesPow() {
+        initialize("pow(int)");
+        Iterable<Pair<Algebraic, Integer>> ps = filterInfinite(
+                p -> p.a != ZERO || p.b >= 0,
+                P.pairsSquareRootOrder(
+                        P.withScale(1).withSecondaryScale(4).algebraics(),
+                        P.withScale(1).integersGeometric()
+                )
+        );
+        for (Pair<Algebraic, Integer> p : take(MEDIUM_LIMIT, ps)) {
+            Algebraic x = p.a.pow(p.b);
+            x.validate();
+            assertEquals(p, x, pow_alt(p.a, p.b));
+            assertEquals(p, x, pow_alt2(p.a, p.b));
+        }
+
+        ps = P.pairs(P.withScale(1).withSecondaryScale(4).nonzeroAlgebraics(), P.withScale(1).integersGeometric());
+        for (Pair<Algebraic, Integer> p : take(SMALL_LIMIT, ps)) {
+            homomorphic(Function.identity(), i -> -i, Algebraic::invert, Algebraic::pow, Algebraic::pow, p);
+            homomorphic(Algebraic::invert, i -> -i, Function.identity(), Algebraic::pow, Algebraic::pow, p);
+        }
+
+        for (int i : take(LIMIT, P.positiveIntegersGeometric())) {
+            assertTrue(i, ZERO.pow(i) == ZERO);
+        }
+
+        for (Algebraic x : take(MEDIUM_LIMIT, P.withScale(1).withSecondaryScale(4).algebraics())) {
+            assertTrue(x, x.pow(0) == ONE);
+            fixedPoint(y -> y.pow(1), x);
+            assertEquals(x, x.pow(2), x.multiply(x));
+        }
+
+        for (Algebraic x : take(LIMIT, P.nonzeroAlgebraics())) {
+            assertEquals(x, x.pow(-1), x.invert());
+        }
+
+        Iterable<Triple<Algebraic, Integer, Integer>> ts = filterInfinite(
+                t -> t.a != ZERO || (t.b >= 0 && t.c >= 0),
+                P.triples(
+                        P.withScale(1).withSecondaryScale(4).algebraics(),
+                        P.withScale(1).integersGeometric(),
+                        P.withScale(1).integersGeometric()
+                )
+        );
+        for (Triple<Algebraic, Integer, Integer> t : take(SMALL_LIMIT, ts)) {
+            Algebraic expression1 = t.a.pow(t.b).multiply(t.a.pow(t.c));
+            Algebraic expression2 = t.a.pow(t.b + t.c);
+            assertEquals(t, expression1, expression2);
+            Algebraic expression3 = t.a.pow(t.b).pow(t.c);
+            Algebraic expression4 = t.a.pow(t.b * t.c);
+            assertEquals(t, expression3, expression4);
+        }
+
+        ts = filterInfinite(
+                t -> t.a != ZERO || (t.c == 0 && t.b >= 0),
+                P.triples(
+                        P.withScale(1).withSecondaryScale(4).algebraics(),
+                        P.withScale(1).integersGeometric(),
+                        P.withScale(1).integersGeometric()
+                )
+        );
+        for (Triple<Algebraic, Integer, Integer> t : take(SMALL_LIMIT, ts)) {
+            Algebraic expression1 = t.a.pow(t.b).divide(t.a.pow(t.c));
+            Algebraic expression2 = t.a.pow(t.b - t.c);
+            assertEquals(t, expression1, expression2);
+        }
+
+        Iterable<Triple<Algebraic, Algebraic, Integer>> ts2 = filter(
+                t -> (t.a != ZERO && t.b != ZERO) || t.c >= 0,
+                P.triples(
+                        P.withScale(1).withSecondaryScale(4).algebraics(),
+                        P.withScale(1).withSecondaryScale(4).algebraics(),
+                        P.withScale(2).positiveIntegersGeometric()
+                )
+        );
+        for (Triple<Algebraic, Algebraic, Integer> t : take(TINY_LIMIT, ts2)) {
+            Algebraic expression1 = t.a.multiply(t.b).pow(t.c);
+            Algebraic expression2 = t.a.pow(t.c).multiply(t.b.pow(t.c));
+            assertEquals(t, expression1, expression2);
+        }
+
+        ts2 = filterInfinite(
+                t -> t.a != ZERO || t.c >= 0,
+                P.triples(
+                        filterInfinite(x -> x.degree() < 5, P.withScale(1).withSecondaryScale(4).algebraics()),
+                        filterInfinite(x -> x.degree() < 5, P.withScale(1).withSecondaryScale(4).nonzeroAlgebraics()),
+                        P.withScale(2).positiveIntegersGeometric()
+                )
+        );
+        for (Triple<Algebraic, Algebraic, Integer> t : take(TINY_LIMIT, ts2)) {
+            Algebraic expression1 = t.a.divide(t.b).pow(t.c);
+            Algebraic expression2 = t.a.pow(t.c).divide(t.b.pow(t.c));
+            assertEquals(t, expression1, expression2);
+        }
+
+        for (int i : take(LIMIT, P.negativeIntegers())) {
+            try {
+                ZERO.pow(i);
+                fail(i);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void compareImplementationsPow() {
+        Map<String, Function<Pair<Algebraic, Integer>, Algebraic>> functions = new LinkedHashMap<>();
+        functions.put("alt", p -> pow_alt(p.a, p.b));
+        functions.put("alt2", p -> pow_alt2(p.a, p.b));
+        functions.put("standard", p -> p.a.pow(p.b));
+        Iterable<Pair<Algebraic, Integer>> ps = filterInfinite(
+                p -> p.a != ZERO || p.b >= 0,
+                P.pairsSquareRootOrder(
+                        P.withScale(1).withSecondaryScale(4).algebraics(),
+                        P.withScale(1).integersGeometric()
+                )
+        );
+        compareImplementations("pow(int)", take(MEDIUM_LIMIT, ps), functions);
     }
 
     private void propertiesEquals() {

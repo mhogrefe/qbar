@@ -39,53 +39,132 @@ public class RationalPolynomialTest {
         iterator_helper("1/2*x^10", "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1/2]");
     }
 
-    private static void apply_helper(@NotNull String p, @NotNull String x, @NotNull String output) {
+    private static void apply_Rational_helper(@NotNull String p, @NotNull String x, @NotNull String output) {
         aeq(readStrict(p).get().apply(Rational.readStrict(x).get()), output);
     }
 
     @Test
-    public void testApply() {
-        apply_helper("0", "0", "0");
-        apply_helper("0", "1", "0");
-        apply_helper("0", "-1", "0");
-        apply_helper("0", "4/5", "0");
-        apply_helper("0", "100", "0");
+    public void testApply_Rational() {
+        apply_Rational_helper("0", "0", "0");
+        apply_Rational_helper("0", "1", "0");
+        apply_Rational_helper("0", "-1", "0");
+        apply_Rational_helper("0", "4/5", "0");
+        apply_Rational_helper("0", "100", "0");
 
-        apply_helper("1", "0", "1");
-        apply_helper("1", "1", "1");
-        apply_helper("1", "-1", "1");
-        apply_helper("1", "4/5", "1");
-        apply_helper("1", "100", "1");
+        apply_Rational_helper("1", "0", "1");
+        apply_Rational_helper("1", "1", "1");
+        apply_Rational_helper("1", "-1", "1");
+        apply_Rational_helper("1", "4/5", "1");
+        apply_Rational_helper("1", "100", "1");
 
-        apply_helper("x", "0", "0");
-        apply_helper("x", "1", "1");
-        apply_helper("x", "-1", "-1");
-        apply_helper("x", "4/5", "4/5");
-        apply_helper("x", "100", "100");
+        apply_Rational_helper("x", "0", "0");
+        apply_Rational_helper("x", "1", "1");
+        apply_Rational_helper("x", "-1", "-1");
+        apply_Rational_helper("x", "4/5", "4/5");
+        apply_Rational_helper("x", "100", "100");
 
-        apply_helper("-4/3", "0", "-4/3");
-        apply_helper("-4/3", "1", "-4/3");
-        apply_helper("-4/3", "-1", "-4/3");
-        apply_helper("-4/3", "4/5", "-4/3");
-        apply_helper("-4/3", "100", "-4/3");
+        apply_Rational_helper("-4/3", "0", "-4/3");
+        apply_Rational_helper("-4/3", "1", "-4/3");
+        apply_Rational_helper("-4/3", "-1", "-4/3");
+        apply_Rational_helper("-4/3", "4/5", "-4/3");
+        apply_Rational_helper("-4/3", "100", "-4/3");
 
-        apply_helper("x^2-7/4*x+1/3", "0", "1/3");
-        apply_helper("x^2-7/4*x+1/3", "1", "-5/12");
-        apply_helper("x^2-7/4*x+1/3", "-1", "37/12");
-        apply_helper("x^2-7/4*x+1/3", "4/5", "-32/75");
-        apply_helper("x^2-7/4*x+1/3", "100", "29476/3");
+        apply_Rational_helper("x^2-7/4*x+1/3", "0", "1/3");
+        apply_Rational_helper("x^2-7/4*x+1/3", "1", "-5/12");
+        apply_Rational_helper("x^2-7/4*x+1/3", "-1", "37/12");
+        apply_Rational_helper("x^2-7/4*x+1/3", "4/5", "-32/75");
+        apply_Rational_helper("x^2-7/4*x+1/3", "100", "29476/3");
 
-        apply_helper("x^3-1", "0", "-1");
-        apply_helper("x^3-1", "1", "0");
-        apply_helper("x^3-1", "-1", "-2");
-        apply_helper("x^3-1", "4/5", "-61/125");
-        apply_helper("x^3-1", "100", "999999");
+        apply_Rational_helper("x^3-1", "0", "-1");
+        apply_Rational_helper("x^3-1", "1", "0");
+        apply_Rational_helper("x^3-1", "-1", "-2");
+        apply_Rational_helper("x^3-1", "4/5", "-61/125");
+        apply_Rational_helper("x^3-1", "100", "999999");
 
-        apply_helper("1/2*x^10", "0", "0");
-        apply_helper("1/2*x^10", "1", "1/2");
-        apply_helper("1/2*x^10", "-1", "1/2");
-        apply_helper("1/2*x^10", "4/5", "524288/9765625");
-        apply_helper("1/2*x^10", "100", "50000000000000000000");
+        apply_Rational_helper("1/2*x^10", "0", "0");
+        apply_Rational_helper("1/2*x^10", "1", "1/2");
+        apply_Rational_helper("1/2*x^10", "-1", "1/2");
+        apply_Rational_helper("1/2*x^10", "4/5", "524288/9765625");
+        apply_Rational_helper("1/2*x^10", "100", "50000000000000000000");
+    }
+
+    private static void apply_Algebraic_helper(@NotNull String p, @NotNull String x, @NotNull String output) {
+        aeq(readStrict(p).get().apply(Algebraic.readStrict(x).get()), output);
+    }
+
+    @Test
+    public void testApply_Algebraic() {
+        apply_Algebraic_helper("0", "0", "0");
+        apply_Algebraic_helper("0", "1", "0");
+        apply_Algebraic_helper("0", "1/2", "0");
+        apply_Algebraic_helper("0", "-4/3", "0");
+        apply_Algebraic_helper("0", "sqrt(2)", "0");
+        apply_Algebraic_helper("0", "-sqrt(2)", "0");
+        apply_Algebraic_helper("0", "(1+sqrt(5))/2", "0");
+        apply_Algebraic_helper("0", "root 0 of x^5-x-1", "0");
+
+        apply_Algebraic_helper("1", "0", "1");
+        apply_Algebraic_helper("1", "1", "1");
+        apply_Algebraic_helper("1", "1/2", "1");
+        apply_Algebraic_helper("1", "-4/3", "1");
+        apply_Algebraic_helper("1", "sqrt(2)", "1");
+        apply_Algebraic_helper("1", "-sqrt(2)", "1");
+        apply_Algebraic_helper("1", "(1+sqrt(5))/2", "1");
+        apply_Algebraic_helper("1", "root 0 of x^5-x-1", "1");
+
+        apply_Algebraic_helper("x", "0", "0");
+        apply_Algebraic_helper("x", "1", "1");
+        apply_Algebraic_helper("x", "1/2", "1/2");
+        apply_Algebraic_helper("x", "-4/3", "-4/3");
+        apply_Algebraic_helper("x", "sqrt(2)", "sqrt(2)");
+        apply_Algebraic_helper("x", "-sqrt(2)", "-sqrt(2)");
+        apply_Algebraic_helper("x", "(1+sqrt(5))/2", "(1+sqrt(5))/2");
+        apply_Algebraic_helper("x", "root 0 of x^5-x-1", "root 0 of x^5-x-1");
+
+        apply_Algebraic_helper("-17", "0", "-17");
+        apply_Algebraic_helper("-17", "1", "-17");
+        apply_Algebraic_helper("-17", "1/2", "-17");
+        apply_Algebraic_helper("-17", "-4/3", "-17");
+        apply_Algebraic_helper("-17", "sqrt(2)", "-17");
+        apply_Algebraic_helper("-17", "-sqrt(2)", "-17");
+        apply_Algebraic_helper("-17", "(1+sqrt(5))/2", "-17");
+        apply_Algebraic_helper("-17", "root 0 of x^5-x-1", "-17");
+
+        apply_Algebraic_helper("x^2-7/4*x+1/3", "0", "1/3");
+        apply_Algebraic_helper("x^2-7/4*x+1/3", "1", "-5/12");
+        apply_Algebraic_helper("x^2-7/4*x+1/3", "1/2", "-7/24");
+        apply_Algebraic_helper("x^2-7/4*x+1/3", "-4/3", "40/9");
+        apply_Algebraic_helper("x^2-7/4*x+1/3", "sqrt(2)", "(28-21*sqrt(2))/12");
+        apply_Algebraic_helper("x^2-7/4*x+1/3", "-sqrt(2)", "(28+21*sqrt(2))/12");
+        apply_Algebraic_helper("x^2-7/4*x+1/3", "(1+sqrt(5))/2", "(23-9*sqrt(5))/24");
+        apply_Algebraic_helper("x^2-7/4*x+1/3", "root 0 of x^5-x-1",
+                "root 0 of 248832*x^5-414720*x^4-221184*x^3-465408*x^2+5013060*x+1792793");
+
+        apply_Algebraic_helper("x^3-1", "0", "-1");
+        apply_Algebraic_helper("x^3-1", "1", "0");
+        apply_Algebraic_helper("x^3-1", "1/2", "-7/8");
+        apply_Algebraic_helper("x^3-1", "-4/3", "-91/27");
+        apply_Algebraic_helper("x^3-1", "sqrt(2)", "-1+2*sqrt(2)");
+        apply_Algebraic_helper("x^3-1", "-sqrt(2)", "-1-2*sqrt(2)");
+        apply_Algebraic_helper("x^3-1", "(1+sqrt(5))/2", "1+sqrt(5)");
+        apply_Algebraic_helper("x^3-1", "root 0 of x^5-x-1", "root 0 of x^5+5*x^4+10*x^3+7*x^2-2*x-4");
+
+        apply_Algebraic_helper("1/2*x^10", "0", "0");
+        apply_Algebraic_helper("1/2*x^10", "1", "1/2");
+        apply_Algebraic_helper("1/2*x^10", "-1", "1/2");
+        apply_Algebraic_helper("1/2*x^10", "4/5", "524288/9765625");
+        apply_Algebraic_helper("1/2*x^10", "sqrt(2)", "16");
+        apply_Algebraic_helper("1/2*x^10", "-sqrt(2)", "16");
+        apply_Algebraic_helper("1/2*x^10", "(1+sqrt(5))/2", "(123+55*sqrt(5))/4");
+        apply_Algebraic_helper("1/2*x^10", "root 0 of x^5-x-1", "root 0 of 32*x^5-80*x^4+64*x^3-120*x^2-8*x-1");
+
+        apply_Algebraic_helper("x-1", "1", "0");
+        apply_Algebraic_helper("2*x-1", "1/2", "0");
+        apply_Algebraic_helper("3*x+4", "-4/3", "0");
+        apply_Algebraic_helper("x^2-2", "sqrt(2)", "0");
+        apply_Algebraic_helper("x^2-2", "-sqrt(2)", "0");
+        apply_Algebraic_helper("x^2-x-1", "(1+sqrt(5))/2", "0");
+        apply_Algebraic_helper("x^5-x-1", "root 0 of x^5-x-1", "0");
     }
 
     private static void onlyHasIntegralCoefficients_helper(@NotNull String input, boolean output) {

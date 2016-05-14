@@ -108,6 +108,7 @@ public final class RationalPolynomial implements
      *
      * <ul>
      *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>{@code x} cannot be null.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
@@ -117,6 +118,26 @@ public final class RationalPolynomial implements
     @Override
     public @NotNull Rational apply(@NotNull Rational x) {
         return foldr((c, y) -> y.multiply(x).add(c), Rational.ZERO, coefficients);
+    }
+
+    /**
+     * Evaluates {@code this} at {@code x}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param x the argument
+     * @return {@code this}({@code x})
+     */
+    public @NotNull Algebraic apply(@NotNull Algebraic x) {
+        if (x.isRational()) {
+            return Algebraic.of(apply(x.rationalValueExact()));
+        }
+        RationalPolynomial reduced = divide(x.minimalPolynomial().toRationalPolynomial()).b;
+        return foldr((c, y) -> y.multiply(x).add(c), Algebraic.ZERO, reduced.coefficients);
     }
 
     /**

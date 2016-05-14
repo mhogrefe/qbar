@@ -119,6 +119,7 @@ public final class Polynomial implements
      *
      * <ul>
      *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code x} cannot be null.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
@@ -134,6 +135,7 @@ public final class Polynomial implements
      *
      * <ul>
      *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code x} cannot be null.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
@@ -170,6 +172,25 @@ public final class Polynomial implements
             result = result.multiply(numerator).add(coefficients.get(i).multiply(multiplier));
         }
         return result;
+    }
+
+    /**
+     * Evaluates {@code this} at {@code x}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param x the argument
+     * @return {@code this}({@code x})
+     */
+    public @NotNull Algebraic apply(@NotNull Algebraic x) {
+        if (x.isRational()) {
+            return Algebraic.of(apply(x.rationalValueExact()));
+        }
+        return toRationalPolynomial().apply(x);
     }
 
     /**

@@ -41,6 +41,7 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementationsApply_Rational();
         propertiesSpecialApply();
         compareImplementationsSpecialApply();
+        propertiesApply_Algebraic();
         propertiesToRationalPolynomial();
         propertiesCoefficient();
         propertiesOf_List_BigInteger();
@@ -321,6 +322,39 @@ public class PolynomialProperties extends QBarTestProperties {
         functions.put("alt2", p -> apply_Rational_alt2(p.a, p.b));
         functions.put("standard", p -> p.a.apply(p.b));
         compareImplementations("apply(Rational)", take(LIMIT, P.pairs(P.polynomials(), P.rationals())), functions);
+    }
+
+    private void propertiesApply_Algebraic() {
+        initialize("apply(Algebraic)");
+        Iterable<Pair<Polynomial, Algebraic>> ps = P.pairs(
+                P.withScale(4).withSecondaryScale(1).polynomials(),
+                P.withScale(1).withSecondaryScale(4).algebraics()
+        );
+        for (Pair<Polynomial, Algebraic> p : take(LIMIT, ps)) {
+            Algebraic x = p.a.apply(p.b);
+            x.validate();
+        }
+
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            assertEquals(x, ZERO.apply(x), Algebraic.ZERO);
+            fixedPoint(X::apply, x);
+            assertEquals(x, of(IntegerUtils.NEGATIVE_ONE, 1).apply(x), x.negate());
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
+            assertEquals(p, p.apply(Algebraic.ZERO), Algebraic.of(p.coefficient(0)));
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            assertEquals(p, p.apply(Algebraic.ONE), Algebraic.of(sumBigInteger(p)));
+        }
+
+        for (Pair<BigInteger, Algebraic> p : take(LIMIT, P.pairs(P.bigIntegers(), P.algebraics()))) {
+            assertEquals(p, of(p.a).apply(p.b), Algebraic.of(p.a));
+            assertEquals(p, of(Arrays.asList(p.a, BigInteger.ONE)).apply(p.b), p.b.add(p.a));
+            assertEquals(p, of(Arrays.asList(p.a.negate(), BigInteger.ONE)).apply(p.b), p.b.subtract(p.a));
+            assertEquals(p, of(p.a, 1).apply(p.b), p.b.multiply(p.a));
+        }
     }
 
     private static @NotNull BigInteger specialApply_simplest(@NotNull Polynomial p, @NotNull Rational x) {
@@ -4519,13 +4553,14 @@ public class PolynomialProperties extends QBarTestProperties {
             assertEquals(p, realRoots, realRoots_simplest(p));
             assertTrue(p, increasing(realRoots));
             assertEquals(p, realRoots.size(), p.rootCount());
+            for (Algebraic root : realRoots) {
+                assertEquals(p, p.apply(root), Algebraic.ZERO);
+            }
         }
 
         for (Polynomial p : take(LIMIT, P.polynomials(0))) {
             assertTrue(p, p.realRoots().isEmpty());
         }
-
-        //todo p(x)=0
     }
 
     private void compareImplementationsRealRoots() {

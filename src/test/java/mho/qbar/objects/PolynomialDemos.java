@@ -41,6 +41,16 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoApply_Algebraic() {
+        Iterable<Pair<Polynomial, Algebraic>> ps = P.pairs(
+                P.withScale(4).withSecondaryScale(1).polynomials(),
+                P.withScale(1).withSecondaryScale(4).algebraics()
+        );
+        for (Pair<Polynomial, Algebraic> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " at " + p.b + " = " + p.a.apply(p.b));
+        }
+    }
+
     private void demoSpecialApply() {
         for (Pair<Polynomial, Rational> p : take(LIMIT, P.pairs(P.withScale(4).polynomials(), P.rationals()))) {
             System.out.println("specialApply(" + p.a + ", " + p.b + ") = " + p.a.specialApply(p.b));

@@ -14,6 +14,7 @@ import java.math.RoundingMode;
 
 import static mho.qbar.objects.Algebraic.*;
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.testing.Testing.MEDIUM_LIMIT;
 import static mho.wheels.testing.Testing.nicePrint;
 
 @SuppressWarnings("UnusedDeclaration")
@@ -514,6 +515,19 @@ public class AlgebraicDemos extends QBarDemos {
     private void demoShiftRight() {
         for (Pair<Algebraic, Integer> p : take(LIMIT, P.pairs(P.withScale(4).algebraics(), P.integersGeometric()))) {
             System.out.println(p.a + " >> " + p.b + " = " + p.a.shiftRight(p.b));
+        }
+    }
+
+    private void demoPow() {
+        Iterable<Pair<Algebraic, Integer>> ps = filterInfinite(
+                p -> p.a != ZERO || p.b >= 0,
+                P.pairsSquareRootOrder(
+                        P.withScale(1).withSecondaryScale(4).algebraics(),
+                        P.withScale(1).integersGeometric()
+                )
+        );
+        for (Pair<Algebraic, Integer> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("(" + p.a + ") ^ " + p.b + " = " + p.a.pow(p.b));
         }
     }
 
