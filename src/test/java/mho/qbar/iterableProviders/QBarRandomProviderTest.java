@@ -5004,6 +5004,216 @@ public class QBarRandomProviderTest {
         multivariatePolynomials_List_Variable_fail_helper(2, 1, 1, "[a]");
     }
 
+    private static void rationalMultivariatePolynomials_helper(
+            @NotNull Iterable<RationalMultivariatePolynomial> input,
+            @NotNull String output,
+            double meanTermCount,
+            double meanDegree,
+            double meanCoefficientBitSize
+    ) {
+        List<RationalMultivariatePolynomial> sample = toList(take(DEFAULT_SAMPLE_SIZE / 10, input));
+        aeqitLimitQBarLog(TINY_LIMIT, sample, output);
+        aeqMapQBarLog(topSampleCount(DEFAULT_TOP_COUNT, sample), output);
+        aeq(meanOfIntegers(toList(map(RationalMultivariatePolynomial::termCount, sample))), meanTermCount);
+        aeq(meanOfIntegers(toList(map(RationalMultivariatePolynomial::degree, sample))), meanDegree);
+        aeq(meanOfIntegers(toList(concatMap(ts -> map(t -> t.b.bitLength(), ts), sample))), meanCoefficientBitSize);
+        P.reset();
+    }
+
+    private static void rationalMultivariatePolynomials_helper(
+            int scale,
+            int secondaryScale,
+            int tertiaryScale,
+            @NotNull String output,
+            double meanTermCount,
+            double meanDegree,
+            double meanCoefficientBitSize
+    ) {
+        rationalMultivariatePolynomials_helper(
+                P.withScale(scale).withSecondaryScale(secondaryScale).withTertiaryScale(tertiaryScale).
+                        rationalMultivariatePolynomials(),
+                output,
+                meanTermCount,
+                meanDegree,
+                meanCoefficientBitSize
+        );
+        P.reset();
+    }
+
+    private static void rationalMultivariatePolynomials_fail_helper(int scale, int secondaryScale, int tertiaryScale) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).withTertiaryScale(tertiaryScale)
+                    .rationalMultivariatePolynomials();
+            fail();
+        } catch (IllegalStateException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testRationalMultivariatePolynomials() {
+        rationalMultivariatePolynomials_helper(
+                4,
+                1,
+                2,
+                "QBarRandomProvider_rationalMultivariatePolynomials_i",
+                1.0861099999993993,
+                1.015780000000281,
+                3.7767905644876443
+        );
+        rationalMultivariatePolynomials_helper(
+                5,
+                4,
+                3,
+                "QBarRandomProvider_rationalMultivariatePolynomials_ii",
+                1.9657200000000141,
+                12.086050000003906,
+                4.7071556477973235
+        );
+        rationalMultivariatePolynomials_helper(
+                10,
+                5,
+                8,
+                "QBarRandomProvider_rationalMultivariatePolynomials_iii",
+                5.694160000000104,
+                38.12063999999753,
+                9.361257850138248
+        );
+
+        rationalMultivariatePolynomials_fail_helper(4, 1, 1);
+        rationalMultivariatePolynomials_fail_helper(4, 0, 2);
+        rationalMultivariatePolynomials_fail_helper(3, 1, 2);
+    }
+
+    private static void rationalMultivariatePolynomials_List_Variable_helper(
+            int scale,
+            int secondaryScale,
+            int tertiaryScale,
+            @NotNull String variables,
+            @NotNull String output,
+            double meanTermCount,
+            double meanDegree,
+            double meanCoefficientBitSize
+    ) {
+        rationalMultivariatePolynomials_helper(
+                P.withScale(scale).withSecondaryScale(secondaryScale).withTertiaryScale(tertiaryScale)
+                        .rationalMultivariatePolynomials(readVariableList(variables)),
+                output,
+                meanTermCount,
+                meanDegree,
+                meanCoefficientBitSize
+        );
+        P.reset();
+    }
+
+    private static void rationalMultivariatePolynomials_List_Variable_fail_helper(
+            int scale,
+            int secondaryScale,
+            int tertiaryScale,
+            @NotNull String variables
+    ) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).withTertiaryScale(tertiaryScale)
+                    .rationalMultivariatePolynomials(readVariableListWithNulls(variables));
+            fail();
+        } catch (IllegalStateException | IllegalArgumentException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testRationalMultivariatePolynomials_List_Variable() {
+        rationalMultivariatePolynomials_List_Variable_helper(
+                4,
+                1,
+                2,
+                "[]",
+                "QBarRandomProvider_rationalMultivariatePolynomials_List_Variable_i",
+                0.7762399999991021,
+                -0.223760000000083,
+                4.693393795734666
+        );
+        rationalMultivariatePolynomials_List_Variable_helper(
+                10,
+                9,
+                8,
+                "[]",
+                "QBarRandomProvider_rationalMultivariatePolynomials_List_Variable_ii",
+                0.9491599999983151,
+                -0.050840000000004895,
+                10.344314973240962
+        );
+        rationalMultivariatePolynomials_List_Variable_helper(
+                4,
+                1,
+                2,
+                "[a]",
+                "QBarRandomProvider_rationalMultivariatePolynomials_List_Variable_iii",
+                1.1443799999995272,
+                0.8916500000001601,
+                3.783070308818268
+        );
+        rationalMultivariatePolynomials_List_Variable_helper(
+                10,
+                9,
+                8,
+                "[a]",
+                "QBarRandomProvider_rationalMultivariatePolynomials_List_Variable_iv",
+                5.386610000000372,
+                19.68029000000129,
+                9.360677680395968
+        );
+        rationalMultivariatePolynomials_List_Variable_helper(
+                4,
+                1,
+                2,
+                "[x, y]",
+                "QBarRandomProvider_rationalMultivariatePolynomials_List_Variable_v",
+                1.3659099999998103,
+                1.8545599999994904,
+                3.7687988227625344
+        );
+        rationalMultivariatePolynomials_List_Variable_helper(
+                10,
+                9,
+                8,
+                "[x, y]",
+                "QBarRandomProvider_rationalMultivariatePolynomials_List_Variable_vi",
+                7.060319999999874,
+                32.140500000003314,
+                9.343324381901137
+        );
+        rationalMultivariatePolynomials_List_Variable_helper(
+                4,
+                1,
+                2,
+                "[a, b, c]",
+                "QBarRandomProvider_rationalMultivariatePolynomials_List_Variable_vii",
+                1.4471499999998754,
+                2.7178799999996937,
+                3.7768372317956787
+        );
+        rationalMultivariatePolynomials_List_Variable_helper(
+                10,
+                9,
+                8,
+                "[a, b, c]",
+                "QBarRandomProvider_rationalMultivariatePolynomials_List_Variable_viii",
+                7.183649999999779,
+                43.50401999999417,
+                9.338188803713221
+        );
+
+        rationalMultivariatePolynomials_List_Variable_fail_helper(3, 1, 2, "[]");
+        rationalMultivariatePolynomials_List_Variable_fail_helper(4, 0, 2, "[]");
+        rationalMultivariatePolynomials_List_Variable_fail_helper(4, 1, 1, "[]");
+        rationalMultivariatePolynomials_List_Variable_fail_helper(3, 1, 2, "[a]");
+        rationalMultivariatePolynomials_List_Variable_fail_helper(4, 0, 2, "[a]");
+        rationalMultivariatePolynomials_List_Variable_fail_helper(4, 1, 1, "[a]");
+    }
+
     private static void algebraics_helper(
             @NotNull Iterable<Algebraic> input,
             @NotNull String output,

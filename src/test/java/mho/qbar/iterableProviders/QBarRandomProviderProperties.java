@@ -95,6 +95,8 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         propertiesMonomials_List_Variable();
         propertiesMultivariatePolynomials();
         propertiesMultivariatePolynomials_List_Variable();
+        propertiesRationalMultivariatePolynomials();
+        propertiesRationalMultivariatePolynomials_List_Variable();
         propertiesPositiveAlgebraics_int();
         propertiesPositiveAlgebraics();
         propertiesNegativeAlgebraics_int();
@@ -3210,7 +3212,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         }
 
         rpsFail = filterInfinite(
-                s -> s.getScale() >= 0 && s.getSecondaryScale() <= 0 && s.getTertiaryScale() >= 2,
+                s -> s.getScale() >= 2 && s.getSecondaryScale() <= 0 && s.getTertiaryScale() >= 2,
                 P.qbarRandomProviders()
         );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
@@ -3221,7 +3223,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         }
 
         rpsFail = filterInfinite(
-                s -> s.getScale() >= 0 && s.getSecondaryScale() > 0 && s.getTertiaryScale() < 2,
+                s -> s.getScale() >= 2 && s.getSecondaryScale() > 0 && s.getTertiaryScale() < 2,
                 P.qbarRandomProviders()
         );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
@@ -3299,6 +3301,124 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         for (Pair<QBarRandomProvider, List<Variable>> p : take(LIMIT, psFail)) {
             try {
                 p.a.multivariatePolynomials(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesRationalMultivariatePolynomials() {
+        initialize("rationalMultivariatePolynomials()");
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                s -> s.getScale() >= 4 && s.getSecondaryScale() > 0 && s.getTertiaryScale() >= 2,
+                P.qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rps)) {
+            Iterable<RationalMultivariatePolynomial> ps = rp.rationalMultivariatePolynomials();
+            rp.reset();
+            simpleTest(rp, ps, p -> true);
+        }
+
+        Iterable<QBarRandomProvider> rpsFail = filterInfinite(
+                s -> s.getScale() < 4 && s.getSecondaryScale() > 0 && s.getTertiaryScale() >= 2,
+                P.qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.rationalMultivariatePolynomials();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        rpsFail = filterInfinite(
+                s -> s.getScale() >= 4 && s.getSecondaryScale() <= 0 && s.getTertiaryScale() >= 2,
+                P.qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.rationalMultivariatePolynomials();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        rpsFail = filterInfinite(
+                s -> s.getScale() >= 4 && s.getSecondaryScale() > 0 && s.getTertiaryScale() < 2,
+                P.qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.rationalMultivariatePolynomials();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+    }
+
+    private void propertiesRationalMultivariatePolynomials_List_Variable() {
+        initialize("rationalMultivariatePolynomials(List<Variable>)");
+        Iterable<Pair<QBarRandomProvider, List<Variable>>> ps = P.pairs(
+                filterInfinite(
+                        s -> s.getScale() >= 4 && s.getSecondaryScale() > 0 && s.getTertiaryScale() >= 2,
+                        P.qbarRandomProviders()
+                ),
+                P.subsets(P.variables())
+        );
+        for (Pair<QBarRandomProvider, List<Variable>> p : take(LIMIT, ps)) {
+            Iterable<RationalMultivariatePolynomial> qs = p.a.rationalMultivariatePolynomials(p.b);
+            p.a.reset();
+            simpleTest(p.a, qs, q -> isSubsetOf(q.variables(), p.b));
+        }
+
+        Iterable<Pair<QBarRandomProvider, List<Variable>>> psFail = P.pairs(
+                filterInfinite(
+                        s -> s.getScale() < 4 && s.getSecondaryScale() > 0 && s.getTertiaryScale() >= 2,
+                        P.qbarRandomProviders()
+                ),
+                P.subsets(P.variables())
+        );
+        for (Pair<QBarRandomProvider, List<Variable>> p : take(LIMIT, psFail)) {
+            try {
+                p.a.rationalMultivariatePolynomials(p.b);
+                fail(p);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        psFail = P.pairs(
+                filterInfinite(
+                        s -> s.getScale() >= 4 && s.getSecondaryScale() <= 0 && s.getTertiaryScale() >= 2,
+                        P.qbarRandomProviders()
+                ),
+                P.subsets(P.variables())
+        );
+        for (Pair<QBarRandomProvider, List<Variable>> p : take(LIMIT, psFail)) {
+            try {
+                p.a.rationalMultivariatePolynomials(p.b);
+                fail(p);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        psFail = P.pairs(
+                filterInfinite(
+                        s -> s.getScale() >= 4 && s.getSecondaryScale() > 0 && s.getTertiaryScale() < 2,
+                        P.qbarRandomProviders()
+                ),
+                P.subsets(P.variables())
+        );
+        for (Pair<QBarRandomProvider, List<Variable>> p : take(LIMIT, psFail)) {
+            try {
+                p.a.rationalMultivariatePolynomials(p.b);
+                fail(p);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        psFail = P.pairs(
+                filterInfinite(
+                        s -> s.getScale() >= 4 && s.getSecondaryScale() > 0 && s.getTertiaryScale() >= 2,
+                        P.qbarRandomProviders()
+                ),
+                filterInfinite(vs -> !increasing(vs), P.lists(P.variables()))
+        );
+        for (Pair<QBarRandomProvider, List<Variable>> p : take(LIMIT, psFail)) {
+            try {
+                p.a.rationalMultivariatePolynomials(p.b);
                 fail(p);
             } catch (IllegalArgumentException ignored) {}
         }

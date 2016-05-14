@@ -948,6 +948,31 @@ public class QBarRandomProviderDemos extends QBarDemos {
         }
     }
 
+    private void demoRationalMultivariatePolynomials() {
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() >= 4 && rp.getSecondaryScale() > 0 && rp.getTertiaryScale() >= 2,
+                P.withScale(4).qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
+            System.out.println("rationalMultivariatePolynomials(" + rp + ") = " +
+                    its(rp.rationalMultivariatePolynomials()));
+        }
+    }
+
+    private void demoRationalMultivariatePolynomials_List_Variable() {
+        Iterable<Pair<QBarRandomProvider, List<Variable>>> ps = P.pairs(
+                filterInfinite(
+                        rp -> rp.getScale() >= 4 && rp.getSecondaryScale() > 0 && rp.getTertiaryScale() >= 2,
+                        P.withScale(4).qbarRandomProviders()
+                ),
+                P.subsets(P.variables())
+        );
+        for (Pair<QBarRandomProvider, List<Variable>> p : take(SMALL_LIMIT, ps)) {
+            System.out.println("rationalMultivariatePolynomials(" + p.a + ", " + p.b + ") = " +
+                    its(p.a.rationalMultivariatePolynomials(p.b)));
+        }
+    }
+
     private void demoPositiveAlgebraics_int() {
         Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairs(
                 filterInfinite(

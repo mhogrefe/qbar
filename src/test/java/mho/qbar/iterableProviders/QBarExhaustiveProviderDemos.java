@@ -268,6 +268,14 @@ public class QBarExhaustiveProviderDemos extends QBarDemos {
         }
     }
 
+    private void demoRationalMultivariatePolynomials_List_Variable() {
+        for (List<Variable> vs : take(MEDIUM_LIMIT, P.subsets(P.variables()))) {
+            String listString = tail(init(vs.toString()));
+            System.out.println("rationalMultivariatePolynomials(" + listString + ") = " +
+                    its(QEP.rationalMultivariatePolynomials(vs)));
+        }
+    }
+
     private void demoPositiveAlgebraics_int() {
         for (int i : take(TINY_LIMIT, P.withScale(2).positiveIntegersGeometric())) {
             System.out.println("positiveAlgebraics(" + i + ") = " + its(QEP.positiveAlgebraics(i)));

@@ -57,6 +57,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesMonomialOrders();
         propertiesMonomials();
         propertiesMultivariatePolynomials();
+        propertiesRationalMultivariatePolynomials();
         propertiesPositiveAlgebraics();
         propertiesNegativeAlgebraics();
         propertiesNonzeroAlgebraics();
@@ -105,6 +106,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesMonicRationalPolynomialsAtLeast();
         propertiesMonomials_List_Variable();
         propertiesMultivariatePolynomials_List_Variable();
+        propertiesRationalMultivariatePolynomials_List_Variable();
         propertiesPositiveAlgebraics_int();
         propertiesNegativeAlgebraics_int();
         propertiesNonzeroAlgebraics_int();
@@ -938,6 +940,37 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         for (List<Variable> vs : take(LIMIT, vsFail)) {
             try {
                 QEP.multivariatePolynomials(vs);
+                fail(vs);
+            } catch (NullPointerException ignored) {}
+        }
+    }
+
+    private void propertiesRationalMultivariatePolynomials() {
+        initializeConstant("rationalMultivariatePolynomials()");
+        biggerTest(QEP, QEP.rationalMultivariatePolynomials(), p -> true);
+    }
+
+    private void propertiesRationalMultivariatePolynomials_List_Variable() {
+        initialize("rationalMultivariatePolynomials(List<Variable>)");
+        for (List<Variable> vs : take(LIMIT, P.subsets(P.variables()))) {
+            Iterable<RationalMultivariatePolynomial> ps = QEP.rationalMultivariatePolynomials(vs);
+            simpleTest(vs, ps, p -> isSubsetOf(p.variables(), vs));
+        }
+
+        for (List<Variable> vs : take(LIMIT, filterInfinite(us -> !increasing(us), P.lists(P.variables())))) {
+            try {
+                QEP.rationalMultivariatePolynomials(vs);
+                fail(vs);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        Iterable<List<Variable>> vsFail = filterInfinite(
+                us -> increasing(filter(u -> u != null, us)),
+                P.listsWithElement(null, P.variables())
+        );
+        for (List<Variable> vs : take(LIMIT, vsFail)) {
+            try {
+                QEP.rationalMultivariatePolynomials(vs);
                 fail(vs);
             } catch (NullPointerException ignored) {}
         }

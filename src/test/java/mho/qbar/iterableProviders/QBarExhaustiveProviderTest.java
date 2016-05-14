@@ -1040,6 +1040,46 @@ public class QBarExhaustiveProviderTest {
         multivariatePolynomials_List_Variable_fail_helper("[a, null]");
     }
 
+    @Test
+    public void testRationalMultivariatePolynomials() {
+        simpleProviderHelper(QEP.rationalMultivariatePolynomials(),
+                "QBarExhaustiveProvider_rationalMultivariatePolynomials");
+    }
+
+    private static void rationalMultivariatePolynomials_List_Variable_helper(
+            @NotNull String variables,
+            @NotNull String output
+    ) {
+        simpleProviderHelper(QEP.rationalMultivariatePolynomials(readVariableList(variables)), output);
+    }
+
+    private static void rationalMultivariatePolynomials_List_Variable_fail_helper(@NotNull String variables) {
+        try {
+            QEP.rationalMultivariatePolynomials(readVariableListWithNulls(variables));
+            fail();
+        } catch (IllegalArgumentException | NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testRationalMultivariatePolynomials_List_Variable() {
+        rationalMultivariatePolynomials_List_Variable_helper("[]",
+                "QBarExhaustiveProvider_rationalMultivariatePolynomials_List_Variable_i");
+        rationalMultivariatePolynomials_List_Variable_helper("[a]",
+                "QBarExhaustiveProvider_rationalMultivariatePolynomials_List_Variable_ii");
+        rationalMultivariatePolynomials_List_Variable_helper("[x]",
+                "QBarExhaustiveProvider_rationalMultivariatePolynomials_List_Variable_iii");
+        rationalMultivariatePolynomials_List_Variable_helper("[ooo]",
+                "QBarExhaustiveProvider_rationalMultivariatePolynomials_List_Variable_iv");
+        rationalMultivariatePolynomials_List_Variable_helper("[x, y]",
+                "QBarExhaustiveProvider_rationalMultivariatePolynomials_List_Variable_v");
+        rationalMultivariatePolynomials_List_Variable_helper("[x, y, z]",
+                "QBarExhaustiveProvider_rationalMultivariatePolynomials_List_Variable_vi");
+
+        rationalMultivariatePolynomials_List_Variable_fail_helper("[a, a]");
+        rationalMultivariatePolynomials_List_Variable_fail_helper("[b, a]");
+        rationalMultivariatePolynomials_List_Variable_fail_helper("[a, null]");
+    }
+
     private static void positiveAlgebraics_int_helper(int degree, @NotNull String output) {
         simpleProviderHelper(QEP.positiveAlgebraics(degree), output);
     }

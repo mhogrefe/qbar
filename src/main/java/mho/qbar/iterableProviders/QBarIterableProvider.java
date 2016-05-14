@@ -3495,6 +3495,24 @@ public strictfp abstract class QBarIterableProvider {
             @NotNull List<Variable> variables
     );
 
+    /**
+     * Generates {@code RationalMultivariatePolynomials}.
+     */
+    public abstract @NotNull Iterable<RationalMultivariatePolynomial> rationalMultivariatePolynomials();
+
+    /**
+     * Generates {@code RationalMultivariatePolynomial}s containing only (a subset of) the given variables.
+     *
+     * <ul>
+     *  <li>{@code variables} must be in increasing order and cannot contain repetitions.</li>
+     * </ul>
+     *
+     * @param variables the allowed variables in the result
+     */
+    public abstract @NotNull Iterable<RationalMultivariatePolynomial> rationalMultivariatePolynomials(
+            @NotNull List<Variable> variables
+    );
+
     public abstract @NotNull Iterable<Real> reals();
 
     /**

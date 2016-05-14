@@ -1119,6 +1119,61 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         );
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code RationalMultivariatePolynomial}s.
+     *
+     * <ul>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code RationalMultivariatePolynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<RationalMultivariatePolynomial> rationalMultivariatePolynomials() {
+        return cons(
+                RationalMultivariatePolynomial.ZERO,
+                map(
+                        p -> RationalMultivariatePolynomial.of(toList(zip(p.a, p.b))),
+                        dependentPairsInfinite(
+                                subsetsAtLeast(1, monomials()),
+                                evs -> lists(evs.size(), nonzeroRationals())
+                        )
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code RationalMultivariatePolynomial}s containing only (a subset of) the
+     * given variables.
+     *
+     * <ul>
+     *  <li>{@code variables} must be in increasing order and cannot contain repetitions.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code RationalMultivariatePolynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param variables the allowed variables in the result
+     */
+    @Override
+    public @NotNull Iterable<RationalMultivariatePolynomial> rationalMultivariatePolynomials(
+            @NotNull List<Variable> variables
+    ) {
+        if (variables.isEmpty()) {
+            return map(RationalMultivariatePolynomial::of, rationals());
+        }
+        return cons(
+                RationalMultivariatePolynomial.ZERO,
+                map(
+                        p -> RationalMultivariatePolynomial.of(toList(zip(p.a, p.b))),
+                        dependentPairsInfinite(
+                                subsetsAtLeast(1, monomials(variables)),
+                                evs -> lists(evs.size(), nonzeroRationals())
+                        )
+                )
+        );
+    }
+
     @Override
     public @NotNull Iterable<Real> reals() {
         return map(Algebraic::realValue, algebraics());
