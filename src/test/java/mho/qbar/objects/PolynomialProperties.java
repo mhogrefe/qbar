@@ -174,6 +174,7 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementationsPositivePrimitiveShiftRootsRight();
         propertiesInvertRoots();
         propertiesAddRoots();
+        compareImplementationsAddRoots();
         propertiesMultiplyRoots();
         propertiesPowerTable();
         compareImplementationsPowerTable();
@@ -4376,12 +4377,26 @@ public class PolynomialProperties extends QBarTestProperties {
         }
     }
 
+    private static @NotNull Polynomial addRoots_alt(@NotNull Polynomial x, @NotNull Polynomial y) {
+        if (x.degree() < 1 || y.degree() < 1) return ONE;
+        if (x.isMonic() && y.isMonic()) {
+            return x.companionMatrix().kroneckerAdd(y.companionMatrix()).characteristicPolynomial();
+        } else {
+            RationalPolynomial rThis = x.toRationalPolynomial().makeMonic();
+            RationalPolynomial rThat = y.toRationalPolynomial().makeMonic();
+            RationalPolynomial cp = rThis.companionMatrix().kroneckerAdd(rThat.companionMatrix())
+                    .characteristicPolynomial();
+            return cp.constantFactor().b;
+        }
+    }
+
     private void propertiesAddRoots() {
         initialize("addRoots(Polynomial)");
         Iterable<Pair<Polynomial, Polynomial>> ps = P.pairs(P.withScale(4).withSecondaryScale(0).polynomials());
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
             Polynomial q = p.a.addRoots(p.b);
             q.validate();
+            assertEquals(p, addRoots_alt(p.a, p.b), q);
             assertTrue(p, q.isPrimitive());
             assertNotEquals(p, q.signum(), -1);
             commutative(Polynomial::addRoots, p);
@@ -4403,6 +4418,14 @@ public class PolynomialProperties extends QBarTestProperties {
             Polynomial sumRootsP = product(map(Polynomial::fromRoot, sumRs));
             assertEquals(p, a.addRoots(b), sumRootsP);
         }
+    }
+
+    private void compareImplementationsAddRoots() {
+        Map<String, Function<Pair<Polynomial, Polynomial>, Polynomial>> functions = new LinkedHashMap<>();
+        functions.put("alt", p -> addRoots_alt(p.a, p.b));
+        functions.put("standard", p -> p.a.addRoots(p.b));
+        Iterable<Pair<Polynomial, Polynomial>> ps = P.pairs(P.withScale(4).withSecondaryScale(0).polynomials());
+        compareImplementations("addRoots(Polynomial)", take(LIMIT, ps), functions);
     }
 
     private void propertiesMultiplyRoots() {

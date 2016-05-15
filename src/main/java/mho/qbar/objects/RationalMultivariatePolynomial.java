@@ -900,7 +900,7 @@ public final class RationalMultivariatePolynomial implements
         }
         RationalMultivariatePolynomial result = ZERO;
         for (Pair<Monomial, Rational> term : terms) {
-            RationalMultivariatePolynomial product = ONE;
+            RationalMultivariatePolynomial product = of(term.b);
             for (Pair<Variable, Integer> factor : term.a.terms()) {
                 RationalMultivariatePolynomial p = ps.get(factor.a);
                 if (p == null) {

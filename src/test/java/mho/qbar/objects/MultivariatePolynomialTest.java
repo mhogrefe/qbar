@@ -1434,6 +1434,7 @@ public class MultivariatePolynomialTest {
         substitute_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[(x, b^2+a), (y, c), (z, 2*d+1)]",
                 "b^6+4*b^4*d^2+3*a*b^4+4*b^4*d+2*b^2*c^2*d+8*a*b^2*d^2+3*a^2*b^2+b^4+b^2*c^2+8*a*b^2*d+2*a*c^2*d+" +
                 "4*a^2*d^2+a^3+2*a*b^2+a*c^2+4*a^2*d+a^2+4*d^2+4*d+1");
+        substitute_helper("2*a", "[(a, b)]", "2*b");
 
         substitute_fail_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[(x, b^2+a), (y, c), (z, null)]");
         substitute_fail_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[(x, b^2+a), (y, c), (null, 2*d+1)]");

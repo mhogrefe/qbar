@@ -73,6 +73,16 @@ public final class Algebraic implements Comparable<Algebraic> {
     public static final @NotNull Algebraic PHI = of(Polynomial.readStrict("x^2-x-1").get(), 1);
 
     /**
+     * Whether to cache some results of {@link Algebraic#add(Algebraic)}
+     */
+    public static boolean USE_SUM_CACHE = true;
+
+    /**
+     * Whether to cache some results of {@link Algebraic#multiply(Algebraic)}
+     */
+    public static boolean USE_PRODUCT_CACHE = true;
+
+    /**
      * A thread-safe cache of some of the results of {@link Algebraic#add(Algebraic)}
      */
     private static final ResultCache<Pair<Algebraic, Algebraic>, Algebraic> SUM_CACHE = new ResultCache<>(
@@ -1478,7 +1488,7 @@ public final class Algebraic implements Comparable<Algebraic> {
         if (that == ZERO) return this;
         if (isRational()) return that.add(rational.get());
         if (that.isRational()) return add(that.rational.get());
-        return SUM_CACHE.get(new Pair<>(this, that));
+        return USE_SUM_CACHE ? SUM_CACHE.get(new Pair<>(this, that)) : addRaw(that);
     }
 
     /**
@@ -1695,7 +1705,7 @@ public final class Algebraic implements Comparable<Algebraic> {
         if (that == ONE) return this;
         if (isRational()) return that.multiply(rational.get());
         if (that.isRational()) return multiply(that.rational.get());
-        return PRODUCT_CACHE.get(new Pair<>(this, that));
+        return USE_PRODUCT_CACHE ? PRODUCT_CACHE.get(new Pair<>(this, that)) : multiplyRaw(that);
     }
 
     /**

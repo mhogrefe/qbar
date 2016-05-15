@@ -76,6 +76,23 @@ public final class Polynomial implements
     };
 
     /**
+     * A {@code HashMap} used by {@link Polynomial#addRoots(Polynomial)}.
+     */
+    private static final @NotNull Map<Variable, MultivariatePolynomial> ADD_ROOTS_SUB_MAP;
+    static {
+        Variable a = Variable.of(0);
+        Variable b = Variable.of(1);
+        MultivariatePolynomial difference = MultivariatePolynomial.of(
+                Arrays.asList(
+                        new Pair<>(Monomial.of(b), BigInteger.ONE),
+                        new Pair<>(Monomial.of(a), IntegerUtils.NEGATIVE_ONE)
+                )
+        );
+        ADD_ROOTS_SUB_MAP = new HashMap<>();
+        ADD_ROOTS_SUB_MAP.put(a, difference);
+    }
+
+    /**
      * The polynomial's coefficients. The coefficient of x<sup>i</sup> is at the ith position.
      */
     private final @NotNull List<BigInteger> coefficients;
@@ -2768,15 +2785,9 @@ public final class Polynomial implements
      */
     public @NotNull Polynomial addRoots(@NotNull Polynomial that) {
         if (degree() < 1 || that.degree() < 1) return ONE;
-        if (isMonic() && that.isMonic()) {
-            return companionMatrix().kroneckerAdd(that.companionMatrix()).characteristicPolynomial();
-        } else {
-            RationalPolynomial rThis = toRationalPolynomial().makeMonic();
-            RationalPolynomial rThat = that.toRationalPolynomial().makeMonic();
-            RationalPolynomial cp = rThis.companionMatrix().kroneckerAdd(rThat.companionMatrix())
-                    .characteristicPolynomial();
-            return cp.constantFactor().b;
-        }
+        Variable a = Variable.of(0);
+        return MultivariatePolynomial.of(this, a)
+                .resultant(MultivariatePolynomial.of(that, a).substitute(ADD_ROOTS_SUB_MAP), a).constantFactor().b;
     }
 
     /**

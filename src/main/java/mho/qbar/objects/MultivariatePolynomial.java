@@ -961,7 +961,7 @@ public final class MultivariatePolynomial implements
         }
         MultivariatePolynomial result = ZERO;
         for (Pair<Monomial, BigInteger> term : terms) {
-            MultivariatePolynomial product = ONE;
+            MultivariatePolynomial product = of(term.b);
             for (Pair<Variable, Integer> factor : term.a.terms()) {
                 MultivariatePolynomial p = ps.get(factor.a);
                 if (p == null) {

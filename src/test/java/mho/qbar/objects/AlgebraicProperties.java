@@ -2734,6 +2734,9 @@ public class AlgebraicProperties extends QBarTestProperties {
     }
 
     private void compareImplementationsPow() {
+        Polynomial.USE_FACTOR_CACHE = false;
+        Algebraic.USE_SUM_CACHE = false;
+        Algebraic.USE_PRODUCT_CACHE = false;
         Map<String, Function<Pair<Algebraic, Integer>, Algebraic>> functions = new LinkedHashMap<>();
         functions.put("alt", p -> pow_alt(p.a, p.b));
         functions.put("alt2", p -> pow_alt2(p.a, p.b));
