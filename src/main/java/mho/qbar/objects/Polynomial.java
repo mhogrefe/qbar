@@ -2805,15 +2805,17 @@ public final class Polynomial implements
      */
     public @NotNull Polynomial multiplyRoots(@NotNull Polynomial that) {
         if (degree() < 1 || that.degree() < 1) return ONE;
-        if (isMonic() && that.isMonic()) {
-            return companionMatrix().kroneckerMultiply(that.companionMatrix()).characteristicPolynomial();
-        } else {
-            RationalPolynomial rThis = toRationalPolynomial().makeMonic();
-            RationalPolynomial rThat = that.toRationalPolynomial().makeMonic();
-            RationalPolynomial cp = rThis.companionMatrix().kroneckerMultiply(rThat.companionMatrix())
-                    .characteristicPolynomial();
-            return cp.constantFactor().b;
+        Variable a = Variable.of(0);
+        List<Pair<Monomial, BigInteger>> terms = new ArrayList<>();
+        List<Integer> exponentVector = new ArrayList<>();
+        exponentVector.add(that.coefficients.size());
+        exponentVector.add(-1);
+        for (BigInteger coefficient : that.coefficients) {
+            exponentVector.set(0, exponentVector.get(0) - 1);
+            exponentVector.set(1, exponentVector.get(1) + 1);
+            terms.add(new Pair<>(Monomial.of(exponentVector), coefficient));
         }
+        return MultivariatePolynomial.of(this, a).resultant(MultivariatePolynomial.of(terms), a).constantFactor().b;
     }
 
     /**

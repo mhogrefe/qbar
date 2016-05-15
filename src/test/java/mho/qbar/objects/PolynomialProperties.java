@@ -176,6 +176,7 @@ public class PolynomialProperties extends QBarTestProperties {
         propertiesAddRoots();
         compareImplementationsAddRoots();
         propertiesMultiplyRoots();
+        compareImplementationsMultiplyRoots();
         propertiesPowerTable();
         compareImplementationsPowerTable();
         propertiesRootPower();
@@ -4428,12 +4429,26 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementations("addRoots(Polynomial)", take(LIMIT, ps), functions);
     }
 
+    private static @NotNull Polynomial multiplyRoots_alt(@NotNull Polynomial x, @NotNull Polynomial y) {
+        if (x.degree() < 1 || y.degree() < 1) return ONE;
+        if (x.isMonic() && y.isMonic()) {
+            return x.companionMatrix().kroneckerMultiply(y.companionMatrix()).characteristicPolynomial();
+        } else {
+            RationalPolynomial rThis = x.toRationalPolynomial().makeMonic();
+            RationalPolynomial rThat = y.toRationalPolynomial().makeMonic();
+            RationalPolynomial cp = rThis.companionMatrix().kroneckerMultiply(rThat.companionMatrix())
+                    .characteristicPolynomial();
+            return cp.constantFactor().b;
+        }
+    }
+
     private void propertiesMultiplyRoots() {
         initialize("multiplyRoots(Polynomial)");
         Iterable<Pair<Polynomial, Polynomial>> ps = P.pairs(P.withScale(4).withSecondaryScale(0).polynomials());
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
             Polynomial q = p.a.multiplyRoots(p.b);
             q.validate();
+            assertEquals(p, multiplyRoots_alt(p.a, p.b), q);
             assertTrue(p, q.isPrimitive());
             assertNotEquals(p, q.signum(), -1);
             commutative(Polynomial::multiplyRoots, p);
@@ -4459,6 +4474,14 @@ public class PolynomialProperties extends QBarTestProperties {
             Polynomial productRootsP = product(map(Polynomial::fromRoot, productRs));
             assertEquals(p, a.multiplyRoots(b), productRootsP);
         }
+    }
+
+    private void compareImplementationsMultiplyRoots() {
+        Map<String, Function<Pair<Polynomial, Polynomial>, Polynomial>> functions = new LinkedHashMap<>();
+        functions.put("alt", p -> multiplyRoots_alt(p.a, p.b));
+        functions.put("standard", p -> p.a.multiplyRoots(p.b));
+        Iterable<Pair<Polynomial, Polynomial>> ps = P.pairs(P.withScale(4).withSecondaryScale(0).polynomials());
+        compareImplementations("multiplyRoots(Polynomial)", take(LIMIT, ps), functions);
     }
 
     private static @NotNull List<Polynomial> powerTable_simplest(@NotNull Polynomial p, int maxPower) {
