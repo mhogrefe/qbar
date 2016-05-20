@@ -76,6 +76,7 @@ public class MatrixProperties extends QBarTestProperties {
         compareImplementationsPrimitiveReducedRowEchelonForm();
         propertiesSolveLinearSystem();
         compareImplementationsSolveLinearSystem();
+        propertiesSolveLinearSystemPermissive();
         propertiesInvert();
         compareImplementationsInvert();
         propertiesDeterminant();
@@ -1463,6 +1464,7 @@ public class MatrixProperties extends QBarTestProperties {
                 assertTrue(p, p.a.height() >= p.a.width());
                 RationalVector v = solution.get();
                 assertEquals(p, p.a.toRationalMatrix().multiply(v).toVector(), p.b);
+                assertEquals(p, solution, p.a.solveLinearSystemPermissive(p.b));
             }
         }
 
@@ -1500,6 +1502,44 @@ public class MatrixProperties extends QBarTestProperties {
                 )
         );
         compareImplementations("solveLinearSystem(Vector)", take(LIMIT, ps), functions);
+    }
+
+    private void propertiesSolveLinearSystemPermissive() {
+        initialize("solveLinearSystemPermissive(Vector)");
+        Iterable<Pair<Matrix, Vector>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.withScale(4).positiveIntegersGeometric()),
+                                p -> P.pairs(P.withScale(4).matrices(p.a, p.b), P.withScale(4).vectors(p.a))
+                        )
+                ),
+                P.choose(
+                        map(
+                                i -> new Pair<>(zero(0, i), Vector.ZERO_DIMENSIONAL),
+                                P.withScale(4).naturalIntegersGeometric()
+                        ),
+                        map(v -> new Pair<>(zero(v.dimension(), 0), v), P.withScale(4).vectorsAtLeast(1))
+                )
+        );
+        for (Pair<Matrix, Vector> p : take(LIMIT, ps)) {
+            Optional<RationalVector> solution = p.a.solveLinearSystemPermissive(p.b);
+            if (solution.isPresent()) {
+                RationalVector v = solution.get();
+                assertEquals(p, p.a.toRationalMatrix().multiply(v).toVector(), p.b);
+            }
+        }
+
+        Iterable<Pair<Matrix, Vector>> psFail = filterInfinite(
+                q -> q.b.dimension() != q.a.height(),
+                P.pairs(P.matrices(), P.vectors())
+        );
+        for (Pair<Matrix, Vector> p : take(LIMIT, psFail)) {
+            try {
+                p.a.solveLinearSystemPermissive(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
     }
 
     private static @NotNull Optional<RationalMatrix> invert_simplest(@NotNull Matrix m) {

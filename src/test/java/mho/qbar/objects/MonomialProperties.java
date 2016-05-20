@@ -41,6 +41,8 @@ public class MonomialProperties extends QBarTestProperties {
         propertiesRemoveVariable();
         propertiesRemoveVariables();
         compareImplementationsRemoveVariables();
+        propertiesRetainVariables();
+        compareImplementationsRetainVariables();
         propertiesMultiply();
         propertiesProduct();
         compareImplementationsProduct();
@@ -279,6 +281,12 @@ public class MonomialProperties extends QBarTestProperties {
         return of(removedExponents);
     }
 
+    private static @NotNull Monomial removeVariables_alt2(@NotNull Monomial m, @NotNull List<Variable> vs) {
+        List<Variable> us = m.variables();
+        us.removeAll(vs);
+        return m.retainVariables(us);
+    }
+
     private void propertiesRemoveVariables() {
         initialize("removeVariables(List<Variable>)");
         Iterable<Pair<Monomial, List<Variable>>> ps = P.pairsLogarithmicOrder(
@@ -289,6 +297,7 @@ public class MonomialProperties extends QBarTestProperties {
             Monomial removed = p.a.removeVariables(p.b);
             removed.validate();
             assertEquals(p, removeVariables_alt(p.a, p.b), removed);
+            assertEquals(p, removeVariables_alt2(p.a, p.b), removed);
         }
 
         for (List<Variable> vs : take(LIMIT, P.lists(P.variables()))) {
@@ -296,6 +305,7 @@ public class MonomialProperties extends QBarTestProperties {
         }
 
         for (Monomial m : take(LIMIT, P.monomials())) {
+            fixedPoint(n -> n.removeVariables(Collections.emptyList()), m);
             assertEquals(m, m.removeVariables(m.variables()), ONE);
         }
 
@@ -314,12 +324,63 @@ public class MonomialProperties extends QBarTestProperties {
     private void compareImplementationsRemoveVariables() {
         Map<String, Function<Pair<Monomial, List<Variable>>, Monomial>> functions = new LinkedHashMap<>();
         functions.put("alt", p -> removeVariables_alt(p.a, p.b));
+        functions.put("alt2", p -> removeVariables_alt2(p.a, p.b));
         functions.put("standard", p -> p.a.removeVariables(p.b));
         Iterable<Pair<Monomial, List<Variable>>> ps = P.pairsLogarithmicOrder(
                 P.monomials(),
                 P.lists(P.variables())
         );
         compareImplementations("removeVariables(List<Variable>)", take(LIMIT, ps), functions);
+    }
+
+    private static @NotNull Monomial retainVariables_alt(@NotNull Monomial m, @NotNull List<Variable> vs) {
+        List<Variable> us = m.variables();
+        us.removeAll(vs);
+        return m.removeVariables(us);
+    }
+
+    private void propertiesRetainVariables() {
+        initialize("retainVariables(List<Variable>)");
+        Iterable<Pair<Monomial, List<Variable>>> ps = P.pairsLogarithmicOrder(
+                P.monomials(),
+                P.lists(P.variables())
+        );
+        for (Pair<Monomial, List<Variable>> p : take(LIMIT, ps)) {
+            Monomial retained = p.a.retainVariables(p.b);
+            retained.validate();
+            assertEquals(p, retainVariables_alt(p.a, p.b), retained);
+        }
+
+        for (List<Variable> vs : take(LIMIT, P.lists(P.variables()))) {
+            fixedPoint(e -> e.retainVariables(vs), ONE);
+        }
+
+        for (Monomial m : take(LIMIT, P.monomials())) {
+            fixedPoint(n -> n.retainVariables(n.variables()), m);
+            assertEquals(m, m.retainVariables(Collections.emptyList()), ONE);
+        }
+
+        Iterable<Pair<Monomial, List<Variable>>> psFail = P.pairs(
+                P.monomials(),
+                P.listsWithElement(null, P.variables())
+        );
+        for (Pair<Monomial, List<Variable>> p : take(LIMIT, psFail)) {
+            try {
+                p.a.retainVariables(p.b);
+                fail(p);
+            } catch (NullPointerException | IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void compareImplementationsRetainVariables() {
+        Map<String, Function<Pair<Monomial, List<Variable>>, Monomial>> functions = new LinkedHashMap<>();
+        functions.put("alt", p -> retainVariables_alt(p.a, p.b));
+        functions.put("standard", p -> p.a.retainVariables(p.b));
+        Iterable<Pair<Monomial, List<Variable>>> ps = P.pairsLogarithmicOrder(
+                P.monomials(),
+                P.lists(P.variables())
+        );
+        compareImplementations("retainVariables(List<Variable>)", take(LIMIT, ps), functions);
     }
 
     private void propertiesMultiply() {

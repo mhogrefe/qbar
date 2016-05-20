@@ -370,6 +370,35 @@ public class MultivariatePolynomialTest {
         degree_helper("x*y^2*z+x^2*z^2+x^3+z^2", 4);
     }
 
+    private static void degree_Variable_helper(@NotNull String p, @NotNull String v, int output) {
+        aeq(readStrict(p).get().degree(Variable.readStrict(v).get()), output);
+    }
+
+    @Test
+    public void testDegree_Variable() {
+        degree_Variable_helper("0", "a", -1);
+        degree_Variable_helper("1", "a", 0);
+        degree_Variable_helper("-17", "a", 0);
+        degree_Variable_helper("ooo", "a", 0);
+        degree_Variable_helper("ooo", "ooo", 1);
+        degree_Variable_helper("a*b*c", "a", 1);
+        degree_Variable_helper("a*b*c", "b", 1);
+        degree_Variable_helper("a*b*c", "c", 1);
+        degree_Variable_helper("a*b*c", "d", 0);
+        degree_Variable_helper("x^2-4*x+7", "a", 0);
+        degree_Variable_helper("x^2-4*x+7", "x", 2);
+        degree_Variable_helper("x^2+2*x*y+y^2", "a", 0);
+        degree_Variable_helper("x^2+2*x*y+y^2", "x", 2);
+        degree_Variable_helper("x^2+2*x*y+y^2", "y", 2);
+        degree_Variable_helper("a+b+c+d+e+f", "a", 1);
+        degree_Variable_helper("a+b+c+d+e+f", "f", 1);
+        degree_Variable_helper("a+b+c+d+e+f", "g", 0);
+        degree_Variable_helper("x*y^2*z+x^2*z^2+x^3+z^2", "a", 0);
+        degree_Variable_helper("x*y^2*z+x^2*z^2+x^3+z^2", "x", 3);
+        degree_Variable_helper("x*y^2*z+x^2*z^2+x^3+z^2", "y", 2);
+        degree_Variable_helper("x*y^2*z+x^2*z^2+x^3+z^2", "z", 2);
+    }
+
     private static void isHomogeneous_helper(@NotNull String input, boolean output) {
         aeq(readStrict(input).get().isHomogeneous(), output);
     }
@@ -412,6 +441,223 @@ public class MultivariatePolynomialTest {
         coefficientsOfVariable_helper("x*y^2*z+x^2*z^2+x^3+z^2", "x", "[z^2, y^2*z, z^2, 1]");
         coefficientsOfVariable_helper("x*y^2*z+x^2*z^2+x^3+z^2", "y", "[x^2*z^2+x^3+z^2, 0, x*z]");
         coefficientsOfVariable_helper("x*y^2*z+x^2*z^2+x^3+z^2", "z", "[x^3, x*y^2, x^2+1]");
+    }
+
+    private void groupVariables_List_Variable_MonomialOrder_helper(
+            @NotNull String p,
+            @NotNull String vs,
+            @NotNull String o,
+            @NotNull String output
+    ) {
+        List<Pair<Monomial, MultivariatePolynomial>> ps = readStrict(p).get()
+                .groupVariables(readVariableList(vs), MonomialOrder.readStrict(o).get());
+        ps.forEach(q -> q.b.validate());
+        aeq(ps, output);
+    }
+
+    private void groupVariables_List_Variable_MonomialOrder_fail_helper(
+            @NotNull String p,
+            @NotNull String vs,
+            @NotNull String o
+    ) {
+        try {
+            readStrict(p).get().groupVariables(readVariableListWithNulls(vs), MonomialOrder.readStrict(o).get());
+            fail();
+        } catch (NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testGroupVariables_List_Variable_MonomialOrder() {
+        groupVariables_List_Variable_MonomialOrder_helper("0", "[]", "LEX", "[]");
+        groupVariables_List_Variable_MonomialOrder_helper("0", "[]", "GRLEX", "[]");
+        groupVariables_List_Variable_MonomialOrder_helper("0", "[]", "GREVLEX", "[]");
+        groupVariables_List_Variable_MonomialOrder_helper("0", "[a]", "LEX", "[]");
+        groupVariables_List_Variable_MonomialOrder_helper("0", "[a]", "GRLEX", "[]");
+        groupVariables_List_Variable_MonomialOrder_helper("0", "[a]", "GREVLEX", "[]");
+        groupVariables_List_Variable_MonomialOrder_helper("1", "[]", "LEX", "[(1, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("1", "[]", "GRLEX", "[(1, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("1", "[]", "GREVLEX", "[(1, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("1", "[a]", "LEX", "[(1, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("1", "[a]", "GRLEX", "[(1, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("1", "[a]", "GREVLEX", "[(1, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("-17", "[]", "LEX", "[(1, -17)]");
+        groupVariables_List_Variable_MonomialOrder_helper("-17", "[]", "GRLEX", "[(1, -17)]");
+        groupVariables_List_Variable_MonomialOrder_helper("-17", "[]", "GREVLEX", "[(1, -17)]");
+        groupVariables_List_Variable_MonomialOrder_helper("-17", "[a]", "LEX", "[(1, -17)]");
+        groupVariables_List_Variable_MonomialOrder_helper("-17", "[a]", "GRLEX", "[(1, -17)]");
+        groupVariables_List_Variable_MonomialOrder_helper("-17", "[a]", "GREVLEX", "[(1, -17)]");
+        groupVariables_List_Variable_MonomialOrder_helper("ooo", "[]", "LEX", "[(1, ooo)]");
+        groupVariables_List_Variable_MonomialOrder_helper("ooo", "[]", "GRLEX", "[(1, ooo)]");
+        groupVariables_List_Variable_MonomialOrder_helper("ooo", "[]", "GREVLEX", "[(1, ooo)]");
+        groupVariables_List_Variable_MonomialOrder_helper("ooo", "[ooo]", "LEX", "[(ooo, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("ooo", "[ooo]", "GRLEX", "[(ooo, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("ooo", "[ooo]", "GREVLEX", "[(ooo, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("ooo", "[a, ooo]", "LEX", "[(ooo, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("ooo", "[a, ooo]", "GRLEX", "[(ooo, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("ooo", "[a, ooo]", "GREVLEX", "[(ooo, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("a*b*c", "[]", "LEX", "[(1, a*b*c)]");
+        groupVariables_List_Variable_MonomialOrder_helper("a*b*c", "[]", "GRLEX", "[(1, a*b*c)]");
+        groupVariables_List_Variable_MonomialOrder_helper("a*b*c", "[]", "GREVLEX", "[(1, a*b*c)]");
+        groupVariables_List_Variable_MonomialOrder_helper("a*b*c", "[a]", "LEX", "[(a, b*c)]");
+        groupVariables_List_Variable_MonomialOrder_helper("a*b*c", "[a]", "GRLEX", "[(a, b*c)]");
+        groupVariables_List_Variable_MonomialOrder_helper("a*b*c", "[a]", "GREVLEX", "[(a, b*c)]");
+        groupVariables_List_Variable_MonomialOrder_helper("a*b*c", "[b]", "LEX", "[(b, a*c)]");
+        groupVariables_List_Variable_MonomialOrder_helper("a*b*c", "[b]", "GRLEX", "[(b, a*c)]");
+        groupVariables_List_Variable_MonomialOrder_helper("a*b*c", "[b]", "GREVLEX", "[(b, a*c)]");
+        groupVariables_List_Variable_MonomialOrder_helper("a*b*c", "[c]", "LEX", "[(c, a*b)]");
+        groupVariables_List_Variable_MonomialOrder_helper("a*b*c", "[c]", "GRLEX", "[(c, a*b)]");
+        groupVariables_List_Variable_MonomialOrder_helper("a*b*c", "[c]", "GREVLEX", "[(c, a*b)]");
+        groupVariables_List_Variable_MonomialOrder_helper("a*b*c", "[a, b]", "LEX", "[(a*b, c)]");
+        groupVariables_List_Variable_MonomialOrder_helper("a*b*c", "[a, b]", "GRLEX", "[(a*b, c)]");
+        groupVariables_List_Variable_MonomialOrder_helper("a*b*c", "[a, b]", "GREVLEX", "[(a*b, c)]");
+        groupVariables_List_Variable_MonomialOrder_helper("a*b*c", "[a, c]", "LEX", "[(a*c, b)]");
+        groupVariables_List_Variable_MonomialOrder_helper("a*b*c", "[a, c]", "GRLEX", "[(a*c, b)]");
+        groupVariables_List_Variable_MonomialOrder_helper("a*b*c", "[a, c]", "GREVLEX", "[(a*c, b)]");
+        groupVariables_List_Variable_MonomialOrder_helper("a*b*c", "[b, c]", "LEX", "[(b*c, a)]");
+        groupVariables_List_Variable_MonomialOrder_helper("a*b*c", "[b, c]", "GRLEX", "[(b*c, a)]");
+        groupVariables_List_Variable_MonomialOrder_helper("a*b*c", "[b, c]", "GREVLEX", "[(b*c, a)]");
+        groupVariables_List_Variable_MonomialOrder_helper("a*b*c", "[a, b, c]", "LEX", "[(a*b*c, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("a*b*c", "[a, b, c]", "GRLEX", "[(a*b*c, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("a*b*c", "[a, b, c]", "GREVLEX", "[(a*b*c, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x^2-4*x+7", "[]", "LEX", "[(1, x^2-4*x+7)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x^2-4*x+7", "[]", "GRLEX", "[(1, x^2-4*x+7)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x^2-4*x+7", "[]", "GREVLEX", "[(1, x^2-4*x+7)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x^2-4*x+7", "[x]", "LEX", "[(1, 7), (x, -4), (x^2, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x^2-4*x+7", "[x]", "GRLEX", "[(1, 7), (x, -4), (x^2, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x^2-4*x+7", "[x]", "GREVLEX",
+                "[(1, 7), (x, -4), (x^2, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x^2+2*x*y+y^2", "[]", "LEX", "[(1, x^2+2*x*y+y^2)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x^2+2*x*y+y^2", "[]", "GRLEX", "[(1, x^2+2*x*y+y^2)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x^2+2*x*y+y^2", "[]", "GREVLEX", "[(1, x^2+2*x*y+y^2)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x^2+2*x*y+y^2", "[x]", "LEX",
+                "[(1, y^2), (x, 2*y), (x^2, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x^2+2*x*y+y^2", "[x]", "GRLEX",
+                "[(1, y^2), (x, 2*y), (x^2, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x^2+2*x*y+y^2", "[x]", "GREVLEX",
+                "[(1, y^2), (x, 2*y), (x^2, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x^2+2*x*y+y^2", "[y]", "LEX",
+                "[(1, x^2), (y, 2*x), (y^2, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x^2+2*x*y+y^2", "[y]", "GRLEX",
+                "[(1, x^2), (y, 2*x), (y^2, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x^2+2*x*y+y^2", "[y]", "GREVLEX",
+                "[(1, x^2), (y, 2*x), (y^2, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x^2+2*x*y+y^2", "[x, y]", "LEX",
+                "[(y^2, 1), (x*y, 2), (x^2, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x^2+2*x*y+y^2", "[x, y]", "GRLEX",
+                "[(y^2, 1), (x*y, 2), (x^2, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x^2+2*x*y+y^2", "[x, y]", "GREVLEX",
+                "[(y^2, 1), (x*y, 2), (x^2, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[]", "LEX",
+                "[(1, x*y^2*z+x^2*z^2+x^3+z^2)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[]", "GRLEX",
+                "[(1, x*y^2*z+x^2*z^2+x^3+z^2)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[]", "GREVLEX",
+                "[(1, x*y^2*z+x^2*z^2+x^3+z^2)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[x]", "LEX",
+                "[(1, z^2), (x, y^2*z), (x^2, z^2), (x^3, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[x]", "GRLEX",
+                "[(1, z^2), (x, y^2*z), (x^2, z^2), (x^3, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[x]", "GREVLEX",
+                "[(1, z^2), (x, y^2*z), (x^2, z^2), (x^3, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[y]", "LEX",
+                "[(1, x^2*z^2+x^3+z^2), (y^2, x*z)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[y]", "GRLEX",
+                "[(1, x^2*z^2+x^3+z^2), (y^2, x*z)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[y]", "GREVLEX",
+                "[(1, x^2*z^2+x^3+z^2), (y^2, x*z)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[z]", "LEX",
+                "[(1, x^3), (z, x*y^2), (z^2, x^2+1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[z]", "GRLEX",
+                "[(1, x^3), (z, x*y^2), (z^2, x^2+1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[z]", "GREVLEX",
+                "[(1, x^3), (z, x*y^2), (z^2, x^2+1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[x, y]", "LEX",
+                "[(1, z^2), (x*y^2, z), (x^2, z^2), (x^3, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[x, y]", "GRLEX",
+                "[(1, z^2), (x^2, z^2), (x*y^2, z), (x^3, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[x, y]", "GREVLEX",
+                "[(1, z^2), (x^2, z^2), (x*y^2, z), (x^3, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[x, z]", "LEX",
+                "[(z^2, 1), (x*z, y^2), (x^2*z^2, 1), (x^3, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[x, z]", "GRLEX",
+                "[(z^2, 1), (x*z, y^2), (x^3, 1), (x^2*z^2, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[x, z]", "GREVLEX",
+                "[(z^2, 1), (x*z, y^2), (x^3, 1), (x^2*z^2, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[y, z]", "LEX",
+                "[(1, x^3), (z^2, x^2+1), (y^2*z, x)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[y, z]", "GRLEX",
+                "[(1, x^3), (z^2, x^2+1), (y^2*z, x)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[y, z]", "GREVLEX",
+                "[(1, x^3), (z^2, x^2+1), (y^2*z, x)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[x, y, z]", "LEX",
+                "[(z^2, 1), (x*y^2*z, 1), (x^2*z^2, 1), (x^3, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[x, y, z]", "GRLEX",
+                "[(z^2, 1), (x^3, 1), (x*y^2*z, 1), (x^2*z^2, 1)]");
+        groupVariables_List_Variable_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[x, y, z]", "GREVLEX",
+                "[(z^2, 1), (x^3, 1), (x^2*z^2, 1), (x*y^2*z, 1)]");
+
+        groupVariables_List_Variable_MonomialOrder_fail_helper("x", "[null]", "LEX");
+        groupVariables_List_Variable_MonomialOrder_fail_helper("x", "[null]", "GRLEX");
+        groupVariables_List_Variable_MonomialOrder_fail_helper("x", "[null]", "GREVLEX");
+        groupVariables_List_Variable_MonomialOrder_fail_helper("x", "[a, null, c]", "LEX");
+        groupVariables_List_Variable_MonomialOrder_fail_helper("x", "[a, null, c]", "GRLEX");
+        groupVariables_List_Variable_MonomialOrder_fail_helper("x", "[a, null, c]", "GREVLEX");
+    }
+
+    private void groupVariables_List_Variable_helper(@NotNull String p, @NotNull String vs, @NotNull String output) {
+        List<Pair<Monomial, MultivariatePolynomial>> ps = readStrict(p).get().groupVariables(readVariableList(vs));
+        ps.forEach(q -> q.b.validate());
+        aeq(ps, output);
+    }
+
+    private void groupVariables_List_Variable_fail_helper(@NotNull String p, @NotNull String vs) {
+        try {
+            readStrict(p).get().groupVariables(readVariableListWithNulls(vs));
+            fail();
+        } catch (NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testGroupVariables_List_Variable() {
+        groupVariables_List_Variable_helper("0", "[]", "[]");
+        groupVariables_List_Variable_helper("0", "[a]", "[]");
+        groupVariables_List_Variable_helper("1", "[]", "[(1, 1)]");
+        groupVariables_List_Variable_helper("1", "[a]", "[(1, 1)]");
+        groupVariables_List_Variable_helper("-17", "[]", "[(1, -17)]");
+        groupVariables_List_Variable_helper("-17", "[a]", "[(1, -17)]");
+        groupVariables_List_Variable_helper("ooo", "[]", "[(1, ooo)]");
+        groupVariables_List_Variable_helper("ooo", "[ooo]", "[(ooo, 1)]");
+        groupVariables_List_Variable_helper("ooo", "[a, ooo]", "[(ooo, 1)]");
+        groupVariables_List_Variable_helper("a*b*c", "[]", "[(1, a*b*c)]");
+        groupVariables_List_Variable_helper("a*b*c", "[a]", "[(a, b*c)]");
+        groupVariables_List_Variable_helper("a*b*c", "[b]", "[(b, a*c)]");
+        groupVariables_List_Variable_helper("a*b*c", "[c]", "[(c, a*b)]");
+        groupVariables_List_Variable_helper("a*b*c", "[a, b]", "[(a*b, c)]");
+        groupVariables_List_Variable_helper("a*b*c", "[a, c]", "[(a*c, b)]");
+        groupVariables_List_Variable_helper("a*b*c", "[b, c]", "[(b*c, a)]");
+        groupVariables_List_Variable_helper("a*b*c", "[a, b, c]", "[(a*b*c, 1)]");
+        groupVariables_List_Variable_helper("x^2-4*x+7", "[]", "[(1, x^2-4*x+7)]");
+        groupVariables_List_Variable_helper("x^2-4*x+7", "[x]", "[(1, 7), (x, -4), (x^2, 1)]");
+        groupVariables_List_Variable_helper("x^2+2*x*y+y^2", "[]", "[(1, x^2+2*x*y+y^2)]");
+        groupVariables_List_Variable_helper("x^2+2*x*y+y^2", "[x]", "[(1, y^2), (x, 2*y), (x^2, 1)]");
+        groupVariables_List_Variable_helper("x^2+2*x*y+y^2", "[y]", "[(1, x^2), (y, 2*x), (y^2, 1)]");
+        groupVariables_List_Variable_helper("x^2+2*x*y+y^2", "[x, y]", "[(y^2, 1), (x*y, 2), (x^2, 1)]");
+        groupVariables_List_Variable_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[]", "[(1, x*y^2*z+x^2*z^2+x^3+z^2)]");
+        groupVariables_List_Variable_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[x]",
+                "[(1, z^2), (x, y^2*z), (x^2, z^2), (x^3, 1)]");
+        groupVariables_List_Variable_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[y]", "[(1, x^2*z^2+x^3+z^2), (y^2, x*z)]");
+        groupVariables_List_Variable_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[z]", "[(1, x^3), (z, x*y^2), (z^2, x^2+1)]");
+        groupVariables_List_Variable_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[x, y]",
+                "[(1, z^2), (x^2, z^2), (x*y^2, z), (x^3, 1)]");
+        groupVariables_List_Variable_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[x, z]",
+                "[(z^2, 1), (x*z, y^2), (x^3, 1), (x^2*z^2, 1)]");
+        groupVariables_List_Variable_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[y, z]",
+                "[(1, x^3), (z^2, x^2+1), (y^2*z, x)]");
+        groupVariables_List_Variable_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[x, y, z]",
+                "[(z^2, 1), (x^3, 1), (x^2*z^2, 1), (x*y^2*z, 1)]");
+
+        groupVariables_List_Variable_fail_helper("x", "[null]");
+        groupVariables_List_Variable_fail_helper("x", "[a, null, c]");
     }
 
     private static void add_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
@@ -1440,6 +1686,226 @@ public class MultivariatePolynomialTest {
         substitute_fail_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[(x, b^2+a), (y, c), (null, 2*d+1)]");
     }
 
+    private static void sylvesterMatrix_helper(
+            @NotNull String a,
+            @NotNull String b,
+            @NotNull String v,
+            @NotNull String output
+    ) {
+        aeq(readStrict(a).get().sylvesterMatrix(readStrict(b).get(), Variable.readStrict(v).get()), output);
+    }
+
+    private static void sylvesterMatrix_fail_helper(@NotNull String a, @NotNull String b, @NotNull String v) {
+        try {
+            readStrict(a).get().sylvesterMatrix(readStrict(b).get(), Variable.readStrict(v).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testSylvesterMatrix() {
+        sylvesterMatrix_helper("1", "1", "x", "[]#0");
+        sylvesterMatrix_helper("1", "-17", "x", "[]#0");
+        sylvesterMatrix_helper("1", "ooo", "x", "[]#0");
+        sylvesterMatrix_helper("1", "ooo", "ooo", "[[1]]");
+        sylvesterMatrix_helper("1", "x^2-4*x+7", "x", "[[1, 0], [0, 1]]");
+        sylvesterMatrix_helper("1", "x^2+2*x*y+y^2", "x", "[[1, 0], [0, 1]]");
+        sylvesterMatrix_helper("1", "x^2+2*x*y+y^2", "y", "[[1, 0], [0, 1]]");
+
+        sylvesterMatrix_helper("-17", "1", "x", "[]#0");
+        sylvesterMatrix_helper("-17", "-17", "x", "[]#0");
+        sylvesterMatrix_helper("-17", "ooo", "x", "[]#0");
+        sylvesterMatrix_helper("-17", "ooo", "ooo", "[[-17]]");
+        sylvesterMatrix_helper("-17", "x^2-4*x+7", "x", "[[-17, 0], [0, -17]]");
+        sylvesterMatrix_helper("-17", "x^2+2*x*y+y^2", "x", "[[-17, 0], [0, -17]]");
+        sylvesterMatrix_helper("-17", "x^2+2*x*y+y^2", "y", "[[-17, 0], [0, -17]]");
+
+        sylvesterMatrix_helper("ooo", "1", "x", "[]#0");
+        sylvesterMatrix_helper("ooo", "1", "ooo", "[[1]]");
+        sylvesterMatrix_helper("ooo", "-17", "x", "[]#0");
+        sylvesterMatrix_helper("ooo", "-17", "ooo", "[[-17]]");
+        sylvesterMatrix_helper("ooo", "ooo", "x", "[]#0");
+        sylvesterMatrix_helper("ooo", "ooo", "ooo", "[[1, 0], [1, 0]]");
+        sylvesterMatrix_helper("ooo", "x^2-4*x+7", "x", "[[x, 0], [0, x]]");
+        sylvesterMatrix_helper("ooo", "x^2-4*x+7", "ooo", "[[x^2-4*x+7]]");
+
+        sylvesterMatrix_helper("x^2-4*x+7", "1", "x", "[[1, 0], [0, 1]]");
+        sylvesterMatrix_helper("x^2-4*x+7", "-17", "x", "[[-17, 0], [0, -17]]");
+        sylvesterMatrix_helper("x^2-4*x+7", "ooo", "x", "[[x, 0], [0, x]]");
+        sylvesterMatrix_helper("x^2-4*x+7", "ooo", "ooo", "[[x^2-4*x+7]]");
+        sylvesterMatrix_helper("x^2-4*x+7", "x^2-4*x+7", "x",
+                "[[1, -4, 7, 0], [0, 1, -4, 7], [1, -4, 7, 0], [0, 1, -4, 7]]");
+        sylvesterMatrix_helper("x^2-4*x+7", "x^2+2*x*y+y^2", "x",
+                "[[1, -4, 7, 0], [0, 1, -4, 7], [1, 2*x, x^2, 0], [0, 1, 2*x, x^2]]");
+        sylvesterMatrix_helper("x^2-4*x+7", "x^2+2*x*y+y^2", "y", "[[x^2-4*x+7, 0], [0, x^2-4*x+7]]");
+
+        sylvesterMatrix_helper("x^2+2*x*y+y^2", "1", "x", "[[1, 0], [0, 1]]");
+        sylvesterMatrix_helper("x^2+2*x*y+y^2", "1", "y", "[[1, 0], [0, 1]]");
+        sylvesterMatrix_helper("x^2+2*x*y+y^2", "-17", "x", "[[-17, 0], [0, -17]]");
+        sylvesterMatrix_helper("x^2+2*x*y+y^2", "-17", "y", "[[-17, 0], [0, -17]]");
+        sylvesterMatrix_helper("x^2+2*x*y+y^2", "x^2-4*x+7", "x",
+                "[[1, 2*x, x^2, 0], [0, 1, 2*x, x^2], [1, -4, 7, 0], [0, 1, -4, 7]]");
+        sylvesterMatrix_helper("x^2+2*x*y+y^2", "x^2-4*x+7", "y", "[[x^2-4*x+7, 0], [0, x^2-4*x+7]]");
+        sylvesterMatrix_helper("x^2+2*x*y+y^2", "x^2+2*x*y+y^2", "x",
+                "[[1, 2*x, x^2, 0], [0, 1, 2*x, x^2], [1, 2*x, x^2, 0], [0, 1, 2*x, x^2]]");
+        sylvesterMatrix_helper("x^2+2*x*y+y^2", "x^2+2*x*y+y^2", "y",
+                "[[1, 2*x, x^2, 0], [0, 1, 2*x, x^2], [1, 2*x, x^2, 0], [0, 1, 2*x, x^2]]");
+
+        sylvesterMatrix_helper("x", "y", "z", "[]#0");
+        sylvesterMatrix_helper("x*y-1", "x^2+y^2-5", "x", "[[x, -1, 0], [0, x, -1], [1, 0, x^2-5]]");
+        sylvesterMatrix_helper("x*y-1", "x^2+y^2-5", "y", "[[x, -1, 0], [0, x, -1], [1, 0, x^2-5]]");
+        sylvesterMatrix_helper(
+                "40*x^3+40*y^3-180*x^2-200*x*y+120*y^2+70*x+420*y+189",
+                "56250000*x^2+625000000*y^2-112500000*x-371950000*y-638411279",
+                "x",
+                "[[40, -180, -200*x+70, 40*x^3+120*x^2+420*x+189, 0]," +
+                " [0, 40, -180, -200*x+70, 40*x^3+120*x^2+420*x+189]," +
+                " [56250000, -112500000, 625000000*x^2-371950000*x-638411279, 0, 0]," +
+                " [0, 56250000, -112500000, 625000000*x^2-371950000*x-638411279, 0]," +
+                " [0, 0, 56250000, -112500000, 625000000*x^2-371950000*x-638411279]]"
+        );
+        sylvesterMatrix_helper(
+                "40*x^3+40*y^3-180*x^2-200*x*y+120*y^2+70*x+420*y+189",
+                "56250000*x^2+625000000*y^2-112500000*x-371950000*y-638411279",
+                "y",
+                "[[40, 120, -200*x+420, 40*x^3-180*x^2+70*x+189, 0]," +
+                " [0, 40, 120, -200*x+420, 40*x^3-180*x^2+70*x+189]," +
+                " [625000000, -371950000, 56250000*x^2-112500000*x-638411279, 0, 0]," +
+                " [0, 625000000, -371950000, 56250000*x^2-112500000*x-638411279, 0]," +
+                " [0, 0, 625000000, -371950000, 56250000*x^2-112500000*x-638411279]]"
+        );
+
+        sylvesterMatrix_fail_helper("0", "0", "x");
+        sylvesterMatrix_fail_helper("0", "x", "x");
+        sylvesterMatrix_fail_helper("x", "0", "x");
+        sylvesterMatrix_fail_helper("x*y", "y", "z");
+        sylvesterMatrix_fail_helper("x*y*z", "y", "z");
+    }
+
+    private static void resultant_helper(
+            @NotNull String a,
+            @NotNull String b,
+            @NotNull String v,
+            @NotNull String output
+    ) {
+        aeq(readStrict(a).get().resultant(readStrict(b).get(), Variable.readStrict(v).get()), output);
+    }
+
+    private static void resultant_fail_helper(@NotNull String a, @NotNull String b, @NotNull String v) {
+        try {
+            readStrict(a).get().resultant(readStrict(b).get(), Variable.readStrict(v).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testResultant() {
+        resultant_helper("1", "1", "x", "1");
+        resultant_helper("1", "-17", "x", "1");
+        resultant_helper("1", "ooo", "x", "1");
+        resultant_helper("1", "ooo", "ooo", "1");
+        resultant_helper("1", "x^2-4*x+7", "x", "1");
+        resultant_helper("1", "x^2+2*x*y+y^2", "x", "1");
+        resultant_helper("1", "x^2+2*x*y+y^2", "y", "1");
+
+        resultant_helper("-17", "1", "x", "1");
+        resultant_helper("-17", "-17", "x", "1");
+        resultant_helper("-17", "ooo", "x", "1");
+        resultant_helper("-17", "ooo", "ooo", "-17");
+        resultant_helper("-17", "x^2-4*x+7", "x", "289");
+        resultant_helper("-17", "x^2+2*x*y+y^2", "x", "289");
+        resultant_helper("-17", "x^2+2*x*y+y^2", "y", "289");
+
+        resultant_helper("ooo", "1", "x", "1");
+        resultant_helper("ooo", "1", "ooo", "1");
+        resultant_helper("ooo", "-17", "x", "1");
+        resultant_helper("ooo", "-17", "ooo", "-17");
+        resultant_helper("ooo", "ooo", "x", "1");
+        resultant_helper("ooo", "ooo", "ooo", "0");
+        resultant_helper("ooo", "x^2-4*x+7", "x", "x^2");
+        resultant_helper("ooo", "x^2-4*x+7", "ooo", "x^2-4*x+7");
+
+        resultant_helper("x^2-4*x+7", "1", "x", "1");
+        resultant_helper("x^2-4*x+7", "-17", "x", "289");
+        resultant_helper("x^2-4*x+7", "ooo", "x", "x^2");
+        resultant_helper("x^2-4*x+7", "ooo", "ooo", "x^2-4*x+7");
+        resultant_helper("x^2-4*x+7", "x^2-4*x+7", "x", "0");
+        resultant_helper("x^2-4*x+7", "x^2+2*x*y+y^2", "x", "x^4+8*x^3+30*x^2+56*x+49");
+        resultant_helper("x^2-4*x+7", "x^2+2*x*y+y^2", "y", "x^4-8*x^3+30*x^2-56*x+49");
+
+        resultant_helper("x^2+2*x*y+y^2", "1", "x", "1");
+        resultant_helper("x^2+2*x*y+y^2", "1", "y", "1");
+        resultant_helper("x^2+2*x*y+y^2", "-17", "x", "289");
+        resultant_helper("x^2+2*x*y+y^2", "-17", "y", "289");
+        resultant_helper("x^2+2*x*y+y^2", "x^2-4*x+7", "x", "x^4+8*x^3+30*x^2+56*x+49");
+        resultant_helper("x^2+2*x*y+y^2", "x^2-4*x+7", "y", "x^4-8*x^3+30*x^2-56*x+49");
+        resultant_helper("x^2+2*x*y+y^2", "x^2+2*x*y+y^2", "x", "0");
+        resultant_helper("x^2+2*x*y+y^2", "x^2+2*x*y+y^2", "y", "0");
+
+        resultant_helper("x", "y", "z", "1");
+        resultant_helper("x*y-1", "x^2+y^2-5", "x", "x^4-5*x^2+1");
+        resultant_helper("x*y-1", "x^2+y^2-5", "y", "x^4-5*x^2+1");
+        resultant_helper(
+                "40*x^3+40*y^3-180*x^2-200*x*y+120*y^2+70*x+420*y+189",
+                "56250000*x^2+625000000*y^2-112500000*x-371950000*y-638411279",
+                "x",
+                "390909765625000000000000000000*x^6-334642968750000000000000000000*x^5-" +
+                "820339106250000000000000000000*x^4+484333026034437500000000000000*x^3+" +
+                "613612072168527615000000000000*x^2-176255458931123858987760000000*x-161854774015753450833573022400"
+        );
+        resultant_helper(
+                "40*x^3+40*y^3-180*x^2-200*x*y+120*y^2+70*x+420*y+189",
+                "56250000*x^2+625000000*y^2-112500000*x-371950000*y-638411279",
+                "y",
+                "390909765625000000000000000000*x^6-3759397031250000000000000000000*x^5+" +
+                "10607821713075187500000000000000*x^4-379173958149800000000000000000*x^3-" +
+                "40048005401850319722930000000000*x^2+53353623180055593535860000000000*x-" +
+                "20251526018693655247793313022400"
+        );
+
+        resultant_fail_helper("0", "0", "x");
+        resultant_fail_helper("0", "x", "x");
+        resultant_fail_helper("x", "0", "x");
+        resultant_fail_helper("x*y", "y", "z");
+        resultant_fail_helper("x*y*z", "y", "z");
+    }
+
+    private static void powerReduce_helper(
+            @NotNull String p,
+            @NotNull String minimalPolynomials,
+            @NotNull String result
+    ) {
+        MultivariatePolynomial q = readStrict(p).get().powerReduce(readVariablePolynomialMap(minimalPolynomials));
+        q.validate();
+        aeq(q, result);
+    }
+
+    private static void powerReduce_fail_helper(@NotNull String p, @NotNull String minimalPolynomials) {
+        try {
+            readStrict(p).get().powerReduce(readVariablePolynomialMapWithNulls(minimalPolynomials));
+            fail();
+        } catch (IllegalArgumentException | NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testPowerReduce() {
+        powerReduce_helper("0", "[(a, x)]", "0");
+        powerReduce_helper("1", "[(a, x)]", "1");
+        powerReduce_helper("a", "[(a, x)]", "0");
+        powerReduce_helper("x^2+2*x*y+y^2", "[]", "x^2+2*x*y+y^2");
+        powerReduce_helper("x^2+2*x*y+y^2", "[(x, x^2-2)]", "2*x*y+y^2+2");
+        powerReduce_helper("x^2+2*x*y+y^2", "[(x, x^2-2), (y, x^2-3)]", "2*x*y+5");
+        powerReduce_helper("x*y^2*z+x^2*z^2+x^3+z^2", "[(x, x^2-2), (y, x^2-3), (z, x^2-x-1)]", "3*x*z+2*x+3*z+3");
+        powerReduce_helper("40*x^3+40*y^3-180*x^2-200*x*y+120*y^2+70*x+420*y+189", "[(x, x^2-2), (y, x^2-x-1)]",
+                "-200*x*y+150*x+620*y-11");
+
+        powerReduce_fail_helper("1", "[(a, 0)]");
+        powerReduce_fail_helper("1", "[(a, 1)]");
+        powerReduce_fail_helper("1", "[(a, 2*x)]");
+        powerReduce_fail_helper("1", "[(null, x)]");
+        powerReduce_fail_helper("1", "[(x, null)]");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(
@@ -1717,6 +2183,14 @@ public class MultivariatePolynomialTest {
         return Readers.readListWithNullsStrict(MultivariatePolynomial::readStrict).apply(s).get();
     }
 
+    private static @NotNull List<Variable> readVariableList(@NotNull String s) {
+        return Readers.readListStrict(Variable::readStrict).apply(s).get();
+    }
+
+    private static @NotNull List<Variable> readVariableListWithNulls(@NotNull String s) {
+        return Readers.readListWithNullsStrict(Variable::readStrict).apply(s).get();
+    }
+
     private static @NotNull
     Map<Variable, BigInteger> readVariableBigIntegerMap(@NotNull String s) {
         return IterableUtils.toMap(
@@ -1813,6 +2287,30 @@ public class MultivariatePolynomialTest {
                                 u,
                                 Readers.readWithNullsStrict(Variable::readStrict),
                                 Readers.readWithNullsStrict(MultivariatePolynomial::readStrict)
+                        )
+                ).apply(s).get()
+        );
+    }
+
+    private static @NotNull Map<Variable, Polynomial> readVariablePolynomialMap(@NotNull String s) {
+        return IterableUtils.toMap(
+                Readers.readListStrict(
+                        u -> Pair.read(
+                                u,
+                                t -> NullableOptional.fromOptional(Variable.readStrict(t)),
+                                t -> NullableOptional.fromOptional(Polynomial.readStrict(t))
+                        )
+                ).apply(s).get()
+        );
+    }
+
+    private static @NotNull Map<Variable, Polynomial> readVariablePolynomialMapWithNulls(@NotNull String s) {
+        return IterableUtils.toMap(
+                Readers.readListStrict(
+                        u -> Pair.read(
+                                u,
+                                Readers.readWithNullsStrict(Variable::readStrict),
+                                Readers.readWithNullsStrict(Polynomial::readStrict)
                         )
                 ).apply(s).get()
         );

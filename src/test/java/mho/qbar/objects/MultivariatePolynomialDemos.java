@@ -153,6 +153,16 @@ public class MultivariatePolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoDegree_Variable() {
+        Iterable<Pair<MultivariatePolynomial, Variable>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).multivariatePolynomials(),
+                P.withScale(4).variables()
+        );
+        for (Pair<MultivariatePolynomial, Variable> p : take(LIMIT, ps)) {
+            System.out.println("degree(" + p.a + ", " + p.b + ") = " + p.a.degree(p.b));
+        }
+    }
+
     private void demoIsHomogeneous() {
         for (MultivariatePolynomial p : take(LIMIT, P.withScale(4).multivariatePolynomials())) {
             System.out.println(p + " is " + (p.isHomogeneous() ? "" : "not ") + "homogeneous");
@@ -167,6 +177,28 @@ public class MultivariatePolynomialDemos extends QBarDemos {
         for (Pair<MultivariatePolynomial, Variable> p : take(LIMIT, ps)) {
             System.out.println("coefficientsOfVariable(" + p.a + ", " + p.b + ") = " +
                     p.a.coefficientsOfVariable(p.b));
+        }
+    }
+
+    private void demoGroupVariables_List_Variable_MonomialOrder() {
+        Iterable<Triple<MultivariatePolynomial, List<Variable>, MonomialOrder>> ts = P.triples(
+                P.withScale(4).multivariatePolynomials(),
+                P.withScale(4).lists(P.withScale(4).variables()),
+                P.monomialOrders()
+        );
+        for (Triple<MultivariatePolynomial, List<Variable>, MonomialOrder> t : take(LIMIT, ts)) {
+            System.out.println("groupVariables(" + t.a + ", " + t.b + ", " + t.c + ") = " +
+                    t.a.groupVariables(t.b, t.c));
+        }
+    }
+
+    private void demoGroupVariables_List_Variable() {
+        Iterable<Pair<MultivariatePolynomial, List<Variable>>> ps = P.pairs(
+                P.withScale(4).multivariatePolynomials(),
+                P.withScale(4).lists(P.withScale(4).variables())
+        );
+        for (Pair<MultivariatePolynomial, List<Variable>> p : take(LIMIT, ps)) {
+            System.out.println("groupVariables(" + p.a + ", " + p.b + ") = " + p.a.groupVariables(p.b));
         }
     }
 
@@ -261,40 +293,6 @@ public class MultivariatePolynomialDemos extends QBarDemos {
         );
         for (Pair<MultivariatePolynomial, Integer> p : take(LIMIT, ps)) {
             System.out.println(p.a + " << " + p.b + " = " + p.a.shiftLeft(p.b));
-        }
-    }
-
-    private void demoResultant() {
-        Iterable<Triple<MultivariatePolynomial, MultivariatePolynomial, Variable>> ts;
-        if (P instanceof QBarExhaustiveProvider) {
-            ts = nub(
-                    map(
-                            q -> new Triple<>(q.b.a, q.b.b, q.a.a),
-                            P.dependentPairsInfiniteLogarithmicOrder(
-                                    P.subsetPairs(P.variables()),
-                                    p -> P.pairs(
-                                            filterInfinite(r -> r != ZERO, P.multivariatePolynomials(Pair.toList(p)))
-                                    )
-                            )
-                    )
-            );
-        } else {
-            ts = map(
-                    q -> new Triple<>(q.b.a, q.b.b, q.a.a),
-                    P.dependentPairsInfinite(
-                            P.subsetPairs(P.withScale(4).variables()),
-                            p -> P.pairs(
-                                    filterInfinite(
-                                            r -> r != ZERO,
-                                            P.withScale(4).withSecondaryScale(4)
-                                                    .multivariatePolynomials(Pair.toList(p))
-                                    )
-                            )
-                    )
-            );
-        }
-        for (Triple<MultivariatePolynomial, MultivariatePolynomial, Variable> t : take(LIMIT, ts)) {
-            System.out.println("resultant(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.resultant(t.b, t.c));
         }
     }
 
@@ -472,6 +470,94 @@ public class MultivariatePolynomialDemos extends QBarDemos {
         );
         for (Pair<MultivariatePolynomial, Map<Variable, MultivariatePolynomial>> p : take(LIMIT, ps)) {
             System.out.println("substitute(" + p.a + ", " + p.b + ") = " + p.a.substitute(p.b));
+        }
+    }
+
+    private void demoSylvesterMatrix() {
+        Iterable<Triple<MultivariatePolynomial, MultivariatePolynomial, Variable>> ts;
+        if (P instanceof QBarExhaustiveProvider) {
+            ts = nub(
+                    map(
+                            q -> new Triple<>(q.b.a, q.b.b, q.a.a),
+                            P.dependentPairsInfiniteLogarithmicOrder(
+                                    P.subsetPairs(P.variables()),
+                                    p -> P.pairs(
+                                            filterInfinite(r -> r != ZERO, P.multivariatePolynomials(Pair.toList(p)))
+                                    )
+                            )
+                    )
+            );
+        } else {
+            ts = map(
+                    q -> new Triple<>(q.b.a, q.b.b, q.a.a),
+                    P.dependentPairsInfinite(
+                            P.subsetPairs(P.withScale(4).variables()),
+                            p -> P.pairs(
+                                    filterInfinite(
+                                            r -> r != ZERO,
+                                            P.withScale(4).withSecondaryScale(4)
+                                                    .multivariatePolynomials(Pair.toList(p))
+                                    )
+                            )
+                    )
+            );
+        }
+        for (Triple<MultivariatePolynomial, MultivariatePolynomial, Variable> t : take(LIMIT, ts)) {
+            System.out.println("sylvesterMatrix(" + t.a + ", " + t.b + ", " + t.c + ") = " +
+                    t.a.sylvesterMatrix(t.b, t.c));
+        }
+    }
+
+    private void demoResultant() {
+        Iterable<Triple<MultivariatePolynomial, MultivariatePolynomial, Variable>> ts;
+        if (P instanceof QBarExhaustiveProvider) {
+            ts = nub(
+                    map(
+                            q -> new Triple<>(q.b.a, q.b.b, q.a.a),
+                            P.dependentPairsInfiniteLogarithmicOrder(
+                                    P.subsetPairs(P.variables()),
+                                    p -> P.pairs(
+                                            filterInfinite(r -> r != ZERO, P.multivariatePolynomials(Pair.toList(p)))
+                                    )
+                            )
+                    )
+            );
+        } else {
+            ts = map(
+                    q -> new Triple<>(q.b.a, q.b.b, q.a.a),
+                    P.dependentPairsInfinite(
+                            P.subsetPairs(P.withScale(4).variables()),
+                            p -> P.pairs(
+                                    filterInfinite(
+                                            r -> r != ZERO,
+                                            P.withScale(4).withSecondaryScale(4)
+                                                    .multivariatePolynomials(Pair.toList(p))
+                                    )
+                            )
+                    )
+            );
+        }
+        for (Triple<MultivariatePolynomial, MultivariatePolynomial, Variable> t : take(LIMIT, ts)) {
+            System.out.println("resultant(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.resultant(t.b, t.c));
+        }
+    }
+
+    private void demoPowerReduce() {
+        Iterable<Pair<MultivariatePolynomial, Map<Variable, Polynomial>>> ps = P.pairsSquareRootOrder(
+                P.withScale(4).multivariatePolynomials(),
+                P.withElement(
+                        new TreeMap<>(),
+                        map(
+                                p -> p.b,
+                                P.dependentPairsInfiniteLogarithmicOrder(
+                                        P.withScale(4).subsetsAtLeast(1, P.withScale(4).variables()),
+                                        vs -> P.maps(vs, P.withScale(4).monicPolynomialsAtLeast(1))
+                                )
+                        )
+                )
+        );
+        for (Pair<MultivariatePolynomial, Map<Variable, Polynomial>> p : take(LIMIT, ps)) {
+            System.out.println("powerReduce(" + p.a + ", " + p.b + ") = " + p.a.powerReduce(p.b));
         }
     }
 

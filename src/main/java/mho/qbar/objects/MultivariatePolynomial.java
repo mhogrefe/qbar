@@ -377,6 +377,30 @@ public final class MultivariatePolynomial implements
     }
 
     /**
+     * Returns the degree (the highest power) of a variable in {@code this}. If the variable is not present, its degree
+     * is –1 if {@code this} is zero and 1 otherwise.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code v} cannot be zero.</li>
+     *  <li>The result is at least –1.</li>
+     * </ul>
+     *
+     * @param v a {@code Variable}
+     * @return the degree of {@code v} in {@code this}
+     */
+    public int degree(@NotNull Variable v) {
+        int degree = -1;
+        for (Pair<Monomial, BigInteger> term : terms) {
+            int termDegree = term.a.exponent(v);
+            if (termDegree > degree) {
+                degree = termDegree;
+            }
+        }
+        return degree;
+    }
+
+    /**
      * Whether {@code this} is homogeneous; whether the degrees of each {@code Monomial} are equal.
      *
      * <ul>
@@ -431,6 +455,84 @@ public final class MultivariatePolynomial implements
             }
         }
         return coefficients;
+    }
+
+    /**
+     * Given a {@code List} of {@code Variable}s, decomposes {@code this} into a sum of products of pairs where the
+     * first element of each pair is a unique monomial in {@code variables} and the second element does not contain
+     * {@code variables}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code variables} cannot contain nulls.</li>
+     *  <li>{@code order} cannot be null.</li>
+     *  <li>The result is a {@code List} of pairs such that no variable in any first element is in any of the second
+     *  elements and no variable in any second element is in any of the first elements. The first elements are unique
+     *  and in ascending order according to {@code Order}. None of the second elements is zero.</li>
+     * </ul>
+     *
+     * @param variables the {@code Variable}s to group
+     * @return {@code this} expressed as a sum of polynomial multiples of monomials in {@code variables}
+     */
+    public @NotNull List<Pair<Monomial, MultivariatePolynomial>> groupVariables(
+            @NotNull List<Variable> variables, @NotNull MonomialOrder order
+    ) {
+        if (any(v -> v == null, variables)) {
+            throw new NullPointerException();
+        }
+        SortedMap<Monomial, MultivariatePolynomial> groupedTerms;
+        if (order == DEFAULT_ORDER) {
+            groupedTerms = new TreeMap<>();
+        } else {
+            groupedTerms = new TreeMap<>(order);
+        }
+        for (Pair<Monomial, BigInteger> term : terms) {
+            Monomial componentWithVariables = term.a.retainVariables(variables);
+            Monomial componentWithoutVariables = term.a.removeVariables(variables);
+            MultivariatePolynomial withoutVariables = groupedTerms.get(componentWithVariables);
+            if (withoutVariables == null) {
+                withoutVariables = ZERO;
+            }
+            withoutVariables = withoutVariables.add(of(componentWithoutVariables, term.b));
+            groupedTerms.put(componentWithVariables, withoutVariables);
+        }
+        return toList(fromMap(groupedTerms));
+    }
+
+    /**
+     * Given a {@code List} of {@code Variable}s, decomposes {@code this} into a sum of products of pairs where the
+     * first element of each pair is a unique monomial in {@code variables} and the second element does not contain
+     * {@code variables}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code variables} cannot contain nulls.</li>
+     *  <li>The result is a {@code List} of pairs such that no variable in any first element is in any of the second
+     *  elements and no variable in any second element is in any of the first elements. The first elements are unique
+     *  and in grevlex ascending order. None of the second elements is zero.</li>
+     * </ul>
+     *
+     * @param variables the {@code Variable}s to group
+     * @return {@code this} expressed as a sum of polynomial multiples of monomials in {@code variables}
+     */
+    public @NotNull List<Pair<Monomial, MultivariatePolynomial>> groupVariables(
+            @NotNull List<Variable> variables
+    ) {
+        if (any(v -> v == null, variables)) {
+            throw new NullPointerException();
+        }
+        SortedMap<Monomial, MultivariatePolynomial> groupedTerms = new TreeMap<>();
+        for (Pair<Monomial, BigInteger> term : terms) {
+            Monomial componentWithVariables = term.a.retainVariables(variables);
+            Monomial componentWithoutVariables = term.a.removeVariables(variables);
+            MultivariatePolynomial withoutVariables = groupedTerms.get(componentWithVariables);
+            if (withoutVariables == null) {
+                withoutVariables = ZERO;
+            }
+            withoutVariables = withoutVariables.add(of(componentWithoutVariables, term.b));
+            groupedTerms.put(componentWithVariables, withoutVariables);
+        }
+        return toList(fromMap(groupedTerms));
     }
 
     /**
@@ -990,7 +1092,6 @@ public final class MultivariatePolynomial implements
      * @param that a {@code MultivariatePolynomial}
      * @return S<sub>{@code this},{@code that}</sub> expanded with respect to {@code variableToEliminate}
      */
-    //todo finish testing
     public @NotNull PolynomialMatrix sylvesterMatrix(
             @NotNull MultivariatePolynomial that,
             Variable variableToEliminate
@@ -1004,12 +1105,14 @@ public final class MultivariatePolynomial implements
         List<Variable> thisVariables = variables();
         thisVariables.remove(variableToEliminate);
         if (thisVariables.size() > 1) {
-            throw new ArithmeticException();
+            throw new ArithmeticException("Apart from variableToEliminate, this must have no more than one other" +
+                    " variable. variableToEliminate: " + variableToEliminate + ", this: " + this);
         }
         List<Variable> thatVariables = that.variables();
         thatVariables.remove(variableToEliminate);
         if (thatVariables.size() > 1) {
-            throw new ArithmeticException();
+            throw new ArithmeticException("Apart from variableToEliminate, that must have no more than one other" +
+                    " variable. variableToEliminate: " + variableToEliminate + ", that: " + that);
         }
 
         List<Polynomial> thisCoefficients =
@@ -1059,10 +1162,63 @@ public final class MultivariatePolynomial implements
      * @param that a {@code Polynomial}
      * @return Res({@code this},{@code that}) with respect to {@code variableToEliminate}
      */
-    //todo finish testing
     @SuppressWarnings("JavaDoc")
     public @NotNull Polynomial resultant(@NotNull MultivariatePolynomial that, @NotNull Variable variableToEliminate) {
         return sylvesterMatrix(that, variableToEliminate).determinant();
+    }
+
+    /**
+     * Given some {@code Variable}s v<sub>i</sub> and some monic {@code Polynomials} p<sub>i</sub> such that
+     * p<sub>i</sub>(v<sub>i</sub>)=0, reduces {@code this} so that the degree of v<sub>i</sub> in the result is less
+     * than deg(p<sub>i</sub>). If a {@code Variable} isn't listed in {@code minimalPolynomials} it won't be reduced.
+     * Unused variables are allowed.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code minimalPolynomials} may not have any null keys or values. All values must be monic and
+     *  non-constant.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param minimalPolynomials {@code Polynomial}s that define when variables are 0
+     * @return {@code this} reduced by {@code minimalPolynomials}
+     */
+    public @NotNull MultivariatePolynomial powerReduce(@NotNull Map<Variable, Polynomial> minimalPolynomials) {
+        for (Map.Entry<Variable, Polynomial> entry : minimalPolynomials.entrySet()) {
+            Polynomial p = entry.getValue();
+            if (entry.getKey() == null || p == null) {
+                throw new NullPointerException();
+            }
+            if (p.degree() < 1) {
+                throw new IllegalArgumentException("All values in minimalPolynomials must be non-constant. Illegal" +
+                        " value: " + p);
+            }
+            if (!p.isMonic()) {
+                throw new IllegalArgumentException("All values in minimalPolynomials must be monic. Illegal value: " +
+                        p);
+            }
+        }
+        if (this == ZERO) return ZERO;
+        Map<Variable, List<MultivariatePolynomial>> powerTables = new HashMap<>();
+        for (Map.Entry<Variable, Polynomial> entry : minimalPolynomials.entrySet()) {
+            Variable v = entry.getKey();
+            powerTables.put(v, toList(map(p -> of(p, v), entry.getValue().powerTable(degree(v)))));
+        }
+        MultivariatePolynomial sum = ZERO;
+        for (Pair<Monomial, BigInteger> term : terms) {
+            MultivariatePolynomial product = of(term.b);
+            for (Pair<Variable, Integer> factor : term.a.terms()) {
+                List<MultivariatePolynomial> powerTable = powerTables.get(factor.a);
+                int power = factor.b;
+                product = product.multiply(
+                        powerTable == null ?
+                                of(Monomial.of(factor.a).pow(power), BigInteger.ONE) :
+                                powerTable.get(power)
+                );
+            }
+            sum = sum.add(product);
+        }
+        return sum;
     }
 
     /**

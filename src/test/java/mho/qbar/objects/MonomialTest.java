@@ -248,6 +248,38 @@ public class MonomialTest {
         removeVariables_fail_helper("a", "[a, null, b]");
     }
 
+    private static void retainVariables_helper(@NotNull String m, @NotNull String vs, @NotNull String output) {
+        aeq(readStrict(m).get().retainVariables(readVariableList(vs)), output);
+    }
+
+    private static void retainVariables_fail_helper(@NotNull String m, @NotNull String vs) {
+        try {
+            readStrict(m).get().retainVariables(readVariableListWithNulls(vs));
+            fail();
+        } catch (NullPointerException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testRetainVariables() {
+        retainVariables_helper("1", "[]", "1");
+        retainVariables_helper("1", "[a]", "1");
+        retainVariables_helper("1", "[a, z]", "1");
+        retainVariables_helper("a", "[]", "1");
+        retainVariables_helper("a", "[b, z]", "1");
+        retainVariables_helper("a", "[a, z]", "a");
+        retainVariables_helper("x^2*y*z^3", "[]", "1");
+        retainVariables_helper("x^2*y*z^3", "[x]", "x^2");
+        retainVariables_helper("x^2*y*z^3", "[y]", "y");
+        retainVariables_helper("x^2*y*z^3", "[z]", "z^3");
+        retainVariables_helper("x^2*y*z^3", "[x, y]", "x^2*y");
+        retainVariables_helper("x^2*y*z^3", "[x, z]", "x^2*z^3");
+        retainVariables_helper("x^2*y*z^3", "[y, z]", "y*z^3");
+        retainVariables_helper("x^2*y*z^3", "[x, y, z]", "x^2*y*z^3");
+
+        retainVariables_fail_helper("1", "[a, null, b]");
+        retainVariables_fail_helper("a", "[a, null, b]");
+    }
+
     private static void multiply_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
         aeq(readStrict(a).get().multiply(readStrict(b).get()), output);
     }

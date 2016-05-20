@@ -1,5 +1,6 @@
 package mho.qbar.objects;
 
+import mho.wheels.concurrency.ConcurrencyUtils;
 import mho.wheels.concurrency.ResultCache;
 import mho.wheels.io.Readers;
 import mho.wheels.math.BinaryFraction;
@@ -1961,11 +1962,25 @@ public final class Algebraic implements Comparable<Algebraic> {
         if (rational.isPresent()) {
             return new Algebraic(rational.get().pow(p));
         }
-        if (minimalPolynomial.isMonic()) {
-            return minimalPolynomial.rootPower(p).apply(this);
-        } else {
-            return minimalPolynomial.toRationalPolynomial().makeMonic().rootPower(p).apply(this);
-        }
+
+        Map<String, Function<Void, Algebraic>> implementations = new HashMap<>();
+        implementations.put("reducing", v -> {
+            if (minimalPolynomial.isMonic()) {
+                return minimalPolynomial.rootPower(p).apply(this);
+            } else {
+                return minimalPolynomial.toRationalPolynomial().makeMonic().rootPower(p).apply(this);
+            }
+        });
+        implementations.put("halving", q -> {
+            Algebraic result = ONE;
+            Algebraic powerPower = null; // p^2^i
+            for (boolean bit : IntegerUtils.bits(p)) {
+                powerPower = powerPower == null ? this : powerPower.multiply(powerPower);
+                if (bit) result = result.multiply(powerPower);
+            }
+            return result;
+        });
+        return ConcurrencyUtils.evaluateFastest(implementations, null).b;
     }
 
     /**

@@ -903,6 +903,9 @@ public class MatrixTest {
         solveLinearSystem_helper("[[-3]]", "[0]", "Optional[[0]]");
         solveLinearSystem_helper("[[-3]]", "[-3]", "Optional[[1]]");
         solveLinearSystem_helper("[[-3]]", "[7]", "Optional[[-7/3]]");
+        solveLinearSystem_helper("[[1, 1]]", "[0]", "Optional.empty");
+        solveLinearSystem_helper("[[1, 1, 1]]", "[0]", "Optional.empty");
+        solveLinearSystem_helper("[[1, 1, 1]]", "[2]", "Optional.empty");
 
         solveLinearSystem_helper("[[1, 1], [1, -1]]", "[10, 5]", "Optional[[15/2, 5/2]]");
         solveLinearSystem_helper("[[1, 1], [1, -1], [2, 2]]", "[10, 5, 20]", "Optional[[15/2, 5/2]]");
@@ -912,6 +915,45 @@ public class MatrixTest {
 
         solveLinearSystem_fail_helper("[]#0", "[0]");
         solveLinearSystem_fail_helper("[[2, 3], [4, 9]]", "[6, 15, 3]");
+    }
+
+    private static void solveLinearSystemPermissive_helper(
+            @NotNull String m,
+            @NotNull String v,
+            @NotNull String output
+    ) {
+        aeq(readStrict(m).get().solveLinearSystemPermissive(Vector.readStrict(v).get()), output);
+    }
+
+    private static void solveLinearSystemPermissive_fail_helper(@NotNull String m, @NotNull String v) {
+        try {
+            readStrict(m).get().solveLinearSystemPermissive(Vector.readStrict(v).get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testSolveLinearSystemPermissive() {
+        solveLinearSystemPermissive_helper("[]#0", "[]", "Optional[[]]");
+        solveLinearSystemPermissive_helper("[]#3", "[]", "Optional[[0, 0, 0]]");
+        solveLinearSystemPermissive_helper("[[], [], []]", "[0, 0, 0]", "Optional[[]]");
+        solveLinearSystemPermissive_helper("[[], [], []]", "[0, 3, 0]", "Optional.empty");
+        solveLinearSystemPermissive_helper("[[-3]]", "[0]", "Optional[[0]]");
+        solveLinearSystemPermissive_helper("[[-3]]", "[-3]", "Optional[[1]]");
+        solveLinearSystemPermissive_helper("[[-3]]", "[7]", "Optional[[-7/3]]");
+        solveLinearSystemPermissive_helper("[[1, 1]]", "[0]", "Optional[[0, 0]]");
+        solveLinearSystemPermissive_helper("[[1, 1, 1]]", "[0]", "Optional[[0, 0, 0]]");
+        solveLinearSystemPermissive_helper("[[1, 1, 1]]", "[2]", "Optional[[2, 0, 0]]");
+
+        solveLinearSystemPermissive_helper("[[1, 1], [1, -1]]", "[10, 5]", "Optional[[15/2, 5/2]]");
+        solveLinearSystemPermissive_helper("[[1, 1], [1, -1], [2, 2]]", "[10, 5, 20]", "Optional[[15/2, 5/2]]");
+        solveLinearSystemPermissive_helper("[[1, 1], [1, -1], [2, 2]]", "[10, 5, 19]", "Optional.empty");
+        solveLinearSystemPermissive_helper("[[2, 3], [4, 9]]", "[6, 15]", "Optional[[3/2, 1]]");
+        solveLinearSystemPermissive_helper("[[3, 2, -1], [2, -2, 4], [-2, 1, -2]]", "[1, -2, 0]",
+                "Optional[[1, -2, -2]]");
+
+        solveLinearSystemPermissive_fail_helper("[]#0", "[0]");
+        solveLinearSystemPermissive_fail_helper("[[2, 3], [4, 9]]", "[6, 15, 3]");
     }
 
     private static void invert_helper(@NotNull String input, @NotNull String output) {

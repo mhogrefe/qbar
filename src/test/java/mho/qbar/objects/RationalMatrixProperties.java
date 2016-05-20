@@ -74,6 +74,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
         propertiesIsInReducedRowEchelonForm();
         propertiesReducedRowEchelonForm();
         propertiesSolveLinearSystem();
+        propertiesSolveLinearSystemPermissive();
         propertiesInvert();
         propertiesDeterminant();
         compareImplementationsDeterminant();
@@ -1490,6 +1491,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
                 assertTrue(p, p.a.height() >= p.a.width());
                 RationalVector v = solution.get();
                 assertEquals(p, p.a.multiply(v), p.b);
+                assertEquals(p, solution, p.a.solveLinearSystemPermissive(p.b));
             }
         }
 
@@ -1500,6 +1502,47 @@ public class RationalMatrixProperties extends QBarTestProperties {
         for (Pair<RationalMatrix, RationalVector> p : take(LIMIT, psFail)) {
             try {
                 p.a.solveLinearSystem(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesSolveLinearSystemPermissive() {
+        initialize("solveLinearSystemPermissive(RationalVector)");
+        Iterable<Pair<RationalMatrix, RationalVector>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.withScale(4).positiveIntegersGeometric()),
+                                p -> P.pairs(
+                                        P.withScale(4).rationalMatrices(p.a, p.b),
+                                        P.withScale(4).rationalVectors(p.a)
+                                )
+                        )
+                ),
+                P.choose(
+                        map(
+                                i -> new Pair<>(zero(0, i), RationalVector.ZERO_DIMENSIONAL),
+                                P.withScale(4).naturalIntegersGeometric()
+                        ),
+                        map(v -> new Pair<>(zero(v.dimension(), 0), v), P.withScale(4).rationalVectorsAtLeast(1))
+                )
+        );
+        for (Pair<RationalMatrix, RationalVector> p : take(LIMIT, ps)) {
+            Optional<RationalVector> solution = p.a.solveLinearSystemPermissive(p.b);
+            if (solution.isPresent()) {
+                RationalVector v = solution.get();
+                assertEquals(p, p.a.multiply(v), p.b);
+            }
+        }
+
+        Iterable<Pair<RationalMatrix, RationalVector>> psFail = filterInfinite(
+                q -> q.b.dimension() != q.a.height(),
+                P.pairs(P.rationalMatrices(), P.rationalVectors())
+        );
+        for (Pair<RationalMatrix, RationalVector> p : take(LIMIT, psFail)) {
+            try {
+                p.a.solveLinearSystemPermissive(p.b);
                 fail(p);
             } catch (IllegalArgumentException ignored) {}
         }

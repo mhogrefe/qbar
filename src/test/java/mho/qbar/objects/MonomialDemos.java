@@ -118,6 +118,16 @@ public class MonomialDemos extends QBarDemos {
         }
     }
 
+    private void demoRetainVariables() {
+        Iterable<Pair<Monomial, List<Variable>>> ps = P.pairsLogarithmicOrder(
+                P.monomials(),
+                P.withScale(4).lists(P.withScale(4).variables())
+        );
+        for (Pair<Monomial, List<Variable>> p : take(LIMIT, ps)) {
+            System.out.println("retainVariables(" + p.a + ", " + p.b + ") = " + p.a.retainVariables(p.b));
+        }
+    }
+
     private void demoMultiply() {
         for (Pair<Monomial, Monomial> p : take(LIMIT, P.pairs(P.monomials()))) {
             System.out.println("(" + p.a + ") * (" + p.b + ") = " + p.a.multiply(p.b));

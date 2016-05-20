@@ -407,6 +407,30 @@ public final class RationalMultivariatePolynomial implements
     }
 
     /**
+     * Returns the degree (the highest power) of a variable in {@code this}. If the variable is not present, its degree
+     * is –1 if {@code this} is zero and 1 otherwise.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
+     *  <li>{@code v} cannot be zero.</li>
+     *  <li>The result is at least –1.</li>
+     * </ul>
+     *
+     * @param v a {@code Variable}
+     * @return the degree of {@code v} in {@code this}
+     */
+    public int degree(@NotNull Variable v) {
+        int degree = -1;
+        for (Pair<Monomial, Rational> term : terms) {
+            int termDegree = term.a.exponent(v);
+            if (termDegree > degree) {
+                degree = termDegree;
+            }
+        }
+        return degree;
+    }
+
+    /**
      * Whether {@code this} is homogeneous; whether the degrees of each {@code Monomial} are equal.
      *
      * <ul>
@@ -461,6 +485,84 @@ public final class RationalMultivariatePolynomial implements
             }
         }
         return coefficients;
+    }
+
+    /**
+     * Given a {@code List} of {@code Variable}s, decomposes {@code this} into a sum of products of pairs where the
+     * first element of each pair is a unique monomial in {@code variables} and the second element does not contain
+     * {@code variables}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
+     *  <li>{@code variables} cannot contain nulls.</li>
+     *  <li>{@code order} cannot be null.</li>
+     *  <li>The result is a {@code List} of pairs such that no variable in any first element is in any of the second
+     *  elements and no variable in any second element is in any of the first elements. The first elements are unique
+     *  and in ascending order according to {@code Order}. None of the second elements is zero.</li>
+     * </ul>
+     *
+     * @param variables the {@code Variable}s to group
+     * @return {@code this} expressed as a sum of polynomial multiples of monomials in {@code variables}
+     */
+    public @NotNull List<Pair<Monomial, RationalMultivariatePolynomial>> groupVariables(
+            @NotNull List<Variable> variables, @NotNull MonomialOrder order
+    ) {
+        if (any(v -> v == null, variables)) {
+            throw new NullPointerException();
+        }
+        SortedMap<Monomial, RationalMultivariatePolynomial> groupedTerms;
+        if (order == DEFAULT_ORDER) {
+            groupedTerms = new TreeMap<>();
+        } else {
+            groupedTerms = new TreeMap<>(order);
+        }
+        for (Pair<Monomial, Rational> term : terms) {
+            Monomial componentWithVariables = term.a.retainVariables(variables);
+            Monomial componentWithoutVariables = term.a.removeVariables(variables);
+            RationalMultivariatePolynomial withoutVariables = groupedTerms.get(componentWithVariables);
+            if (withoutVariables == null) {
+                withoutVariables = ZERO;
+            }
+            withoutVariables = withoutVariables.add(of(componentWithoutVariables, term.b));
+            groupedTerms.put(componentWithVariables, withoutVariables);
+        }
+        return toList(fromMap(groupedTerms));
+    }
+
+    /**
+     * Given a {@code List} of {@code Variable}s, decomposes {@code this} into a sum of products of pairs where the
+     * first element of each pair is a unique monomial in {@code variables} and the second element does not contain
+     * {@code variables}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
+     *  <li>{@code variables} cannot contain nulls.</li>
+     *  <li>The result is a {@code List} of pairs such that no variable in any first element is in any of the second
+     *  elements and no variable in any second element is in any of the first elements. The first elements are unique
+     *  and in grevlex ascending order. None of the second elements is zero.</li>
+     * </ul>
+     *
+     * @param variables the {@code Variable}s to group
+     * @return {@code this} expressed as a sum of polynomial multiples of monomials in {@code variables}
+     */
+    public @NotNull List<Pair<Monomial, RationalMultivariatePolynomial>> groupVariables(
+            @NotNull List<Variable> variables
+    ) {
+        if (any(v -> v == null, variables)) {
+            throw new NullPointerException();
+        }
+        SortedMap<Monomial, RationalMultivariatePolynomial> groupedTerms = new TreeMap<>();
+        for (Pair<Monomial, Rational> term : terms) {
+            Monomial componentWithVariables = term.a.retainVariables(variables);
+            Monomial componentWithoutVariables = term.a.removeVariables(variables);
+            RationalMultivariatePolynomial withoutVariables = groupedTerms.get(componentWithVariables);
+            if (withoutVariables == null) {
+                withoutVariables = ZERO;
+            }
+            withoutVariables = withoutVariables.add(of(componentWithoutVariables, term.b));
+            groupedTerms.put(componentWithVariables, withoutVariables);
+        }
+        return toList(fromMap(groupedTerms));
     }
 
     /**
@@ -701,6 +803,21 @@ public final class RationalMultivariatePolynomial implements
         return sum(toList(map(t -> multiply(t.a, t.b), that.terms)));
     }
 
+    //todo
+    public @NotNull Pair<Rational, MultivariatePolynomial> constantFactor() {
+        if (this == ZERO) {
+            throw new ArithmeticException("this cannot be zero.");
+        }
+        MultivariatePolynomial positivePrimitive = MultivariatePolynomial.of(
+                toList(zip(map(t -> t.a, terms), Rational.cancelDenominators(toList(map(t -> t.b, terms)))))
+        );
+        //todo use leading
+        if (last(terms).b.signum() == -1) {
+            positivePrimitive = positivePrimitive.negate();
+        }
+        return new Pair<>(last(terms).b.divide(last(positivePrimitive).b), positivePrimitive);
+    }
+
     /**
      * Returns the left shift of {@code this} by {@code bits}; {@code this}×2<sup>{@code bits}</sup>.
      *
@@ -911,6 +1028,62 @@ public final class RationalMultivariatePolynomial implements
             result = result.add(product);
         }
         return result;
+    }
+
+    /**
+     * Given some {@code Variable}s v<sub>i</sub> and some monic {@code RationalPolynomials} p<sub>i</sub> such that
+     * p<sub>i</sub>(v<sub>i</sub>)=0, reduces {@code this} so that the degree of v<sub>i</sub> in the result is less
+     * than deg(p<sub>i</sub>). If a {@code Variable} isn't listed in {@code minimalPolynomials} it won't be reduced.
+     * Unused variables are allowed.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
+     *  <li>{@code minimalPolynomials} may not have any null keys or values. All values must be monic and
+     *  non-constant.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param minimalPolynomials {@code RationalPolynomial}s that define when variables are 0
+     * @return {@code this} reduced by {@code minimalPolynomials}
+     */
+    public @NotNull RationalMultivariatePolynomial powerReduce(
+            @NotNull Map<Variable, RationalPolynomial> minimalPolynomials
+    ) {
+        for (Map.Entry<Variable, RationalPolynomial> entry : minimalPolynomials.entrySet()) {
+            RationalPolynomial p = entry.getValue();
+            if (entry.getKey() == null || p == null) {
+                throw new NullPointerException();
+            }
+            if (p.degree() < 1) {
+                throw new IllegalArgumentException("All values in minimalPolynomials must be non-constant. Illegal" +
+                        " value: " + p);
+            }
+            if (!p.isMonic()) {
+                throw new IllegalArgumentException("All values in minimalPolynomials must be monic. Illegal value: " +
+                        p);
+            }
+        }
+        if (this == ZERO) return ZERO;
+        Map<Variable, List<RationalMultivariatePolynomial>> powerTables = new HashMap<>();
+        for (Map.Entry<Variable, RationalPolynomial> entry : minimalPolynomials.entrySet()) {
+            Variable v = entry.getKey();
+            powerTables.put(v, toList(map(p -> of(p, v), entry.getValue().powerTable(degree(v)))));
+        }
+        RationalMultivariatePolynomial sum = ZERO;
+        for (Pair<Monomial, Rational> term : terms) {
+            RationalMultivariatePolynomial product = of(term.b);
+            for (Pair<Variable, Integer> factor : term.a.terms()) {
+                List<RationalMultivariatePolynomial> powerTable = powerTables.get(factor.a);
+                int power = factor.b;
+                product = product.multiply(
+                        powerTable == null ?
+                                of(Monomial.of(factor.a).pow(power), Rational.ONE) :
+                                powerTable.get(power)
+                );
+            }
+            sum = sum.add(product);
+        }
+        return sum;
     }
 
     /**

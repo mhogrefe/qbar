@@ -1054,6 +1054,9 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      * overdetermined, it may still be consistent. If the result is non-empty, it represents the values of the <i>m</i>
      * variables, and its <i>j</i>th element is the value of the <i>j</i>th variable.
      *
+     * This method differs from {@link RationalMatrix#solveLinearSystemPermissive(RationalVector)} in that it returns
+     * empty on underdetermined systems (systems with infinitely many solutions).
+     *
      * <ul>
      *  <li>{@code this} may be any {@code RationalMatrix}.</li>
      *  <li>{@code rhs} may be any {@code RationalVector}.</li>
@@ -1078,6 +1081,51 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
         RationalMatrix left = rref.submatrix(toList(range(0, width - 1)), toList(range(0, width - 1)));
         if (!left.isIdentity()) return Optional.empty();
         return Optional.of(rref.submatrix(toList(range(0, width - 1)), Collections.singletonList(width)).column(0));
+    }
+
+    /**
+     * Solves a linear system of equations. If this is a matrix with <i>n</i> rows and <i>m</i> columns, then the
+     * system contains <i>n</i> equations in <i>m</i> variables, and the entry (<i>i</i>, <i>j</i>) is the coefficient
+     * of the <i>j</i>th variable in the <i>i</i>th equation. The vector {@code rhs} represents the right-hand side of
+     * the equations, and its <i>i</i>th entry is the right-hand side of the <i>i</i>th equation. If the system is
+     * inconsistent, the result is empty; otherwise, it is non-empty. If the system is underdetermined, some solution
+     * is returned, usually with some variables set to zero. If the result is non-empty, it represents the values of
+     * the <i>m</i> variables, and its <i>j</i>th element is the value of the <i>j</i>th variable.
+     *
+     * This method differs from {@link RationalMatrix#solveLinearSystem(RationalVector)} in that when the system is
+     * underdetermined (has infinitely many solutions) one solution is returned.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>{@code rhs} may be any {@code RationalVector}.</li>
+     *  <li>The dimension of {@code rhs} must equal the height of {@code this}.</li>
+     *  <li>The result may be empty or any {@code RationalVector}.</li>
+     * </ul>
+     *
+     * Length is width({@code this})
+     *
+     * @param rhs the right-hand side of the system of equations
+     * @return The assignments to the variables in the equations
+     */
+    public @NotNull Optional<RationalVector> solveLinearSystemPermissive(@NotNull RationalVector rhs) {
+        if (height() != rhs.dimension()) {
+            throw new IllegalArgumentException("The dimension of rhs must equal the height of this. rhs: " +
+                    rhs + ", this: " + this);
+        }
+        RationalMatrix rref = augment(fromColumns(Collections.singletonList(rhs))).reducedRowEchelonForm();
+        RationalMatrix bottom = rref.submatrix(toList(range(width, height() - 1)), toList(range(0, width)));
+        if (!bottom.isZero()) return Optional.empty();
+        List<Rational> result = toList(replicate(width, Rational.ZERO));
+        for (RationalVector row : rref.rows) {
+            Rational last = row.get(row.dimension() - 1);
+            Optional<Integer> firstIndex = findIndex(r -> r != Rational.ZERO, init(row));
+            if (firstIndex.isPresent()) {
+                result.set(firstIndex.get(), last);
+            } else if (last != Rational.ZERO) {
+                return Optional.empty();
+            }
+        }
+        return Optional.of(RationalVector.of(result));
     }
 
     /**

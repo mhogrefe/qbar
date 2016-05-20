@@ -301,6 +301,30 @@ public final class Monomial implements Comparable<Monomial> {
     }
 
     /**
+     * Removes all variables from {@code this} except for a given set. Equivalently, sets all variables except those
+     * from the set to 1.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Monomial}.</li>
+     *  <li>{@code vs} cannot contain nulls.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param vs some {@code Variable}s
+     * @return {@code this} with only {@code vs}; {@code this} with every variable not in {@code vs} set to 1
+     */
+    public @NotNull Monomial retainVariables(@NotNull List<Variable> vs) {
+        if (any(v -> v == null, vs)) {
+            throw new NullPointerException();
+        }
+        List<Integer> retainedExponents = new ArrayList<>();
+        for (int i = 0; i < exponents.size(); i++) {
+            retainedExponents.add(vs.contains(Variable.of(i)) ? exponents.get(i) : 0);
+        }
+        return of(retainedExponents);
+    }
+
+    /**
      * Returns the product of {@code this} and {@code that}.
      *
      * <ul>
