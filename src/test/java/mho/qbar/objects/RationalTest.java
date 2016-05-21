@@ -257,7 +257,7 @@ public class RationalTest {
     }
 
     private static void of_BinaryFraction_helper(@NotNull String input, @NotNull String output) {
-        aeq(of(BinaryFraction.read(input).get()), output);
+        aeq(of(BinaryFraction.readStrict(input).get()), output);
     }
 
     @Test

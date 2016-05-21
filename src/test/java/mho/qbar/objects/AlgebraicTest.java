@@ -126,7 +126,7 @@ public class AlgebraicTest {
     }
 
     private static void of_BinaryFraction_helper(@NotNull String input, @NotNull String output) {
-        Algebraic x = of(BinaryFraction.read(input).get());
+        Algebraic x = of(BinaryFraction.readStrict(input).get());
         x.validate();
         aeq(x, output);
     }

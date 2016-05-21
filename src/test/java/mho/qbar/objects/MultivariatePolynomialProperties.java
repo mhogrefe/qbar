@@ -1782,6 +1782,7 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         for (Pair<MultivariatePolynomial, Map<Variable, Polynomial>> p : take(LIMIT, ps)) {
             MultivariatePolynomial q = p.a.powerReduce(p.b);
             q.validate();
+            //noinspection Convert2streamapi
             for (Variable v : p.a.variables()) {
                 if (p.b.containsKey(v)) {
                     assertTrue(p, q.degree(v) < p.b.get(v).degree());
