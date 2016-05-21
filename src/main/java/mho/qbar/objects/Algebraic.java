@@ -1713,8 +1713,19 @@ public final class Algebraic implements Comparable<Algebraic> {
      * The no-cache version of {@link Algebraic#add(Algebraic)}.
      */
     public @NotNull Algebraic multiplyRaw(@NotNull Algebraic that) {
-        if (degree() == that.degree()) {
-            if (equals(that.invert())) return ONE;
+        int thisDegree = degree();
+        if (thisDegree == that.degree()) {
+            if (equals(that)) {
+                if (thisDegree == 2) {
+                    if (minimalPolynomial.isMonic()) {
+                        return minimalPolynomial.rootPower(2).apply(this);
+                    } else {
+                        return minimalPolynomial.toRationalPolynomial().makeMonic().rootPower(2).apply(this);
+                    }
+                }
+            } else if (equals(that.invert())) {
+                return ONE;
+            }
         }
         Polynomial productMP = minimalPolynomial.multiplyRoots(that.minimalPolynomial).squareFreePart();
         int productMPRootCount = productMP.rootCount();

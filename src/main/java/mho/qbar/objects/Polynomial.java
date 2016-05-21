@@ -162,6 +162,7 @@ public final class Polynomial implements
     @Override
     public @NotNull Rational apply(@NotNull Rational x) {
         if (this == ZERO) return Rational.ZERO;
+        if (degree() == 0) return Rational.of(coefficients.get(0));
         return Rational.of(specialApply(x), x.getDenominator().pow(degree()));
     }
 
@@ -180,6 +181,7 @@ public final class Polynomial implements
      */
     public @NotNull BigInteger specialApply(@NotNull Rational x) {
         if (this == ZERO) return BigInteger.ZERO;
+        if (degree() == 0) return coefficients.get(0);
         BigInteger numerator = x.getNumerator();
         BigInteger denominator = x.getDenominator();
         BigInteger result = last(coefficients);
@@ -204,6 +206,8 @@ public final class Polynomial implements
      * @return {@code this}({@code x})
      */
     public @NotNull Algebraic apply(@NotNull Algebraic x) {
+        if (this == ZERO) return Algebraic.ZERO;
+        if (degree() == 0) return Algebraic.of(coefficients.get(0));
         if (x.isRational()) {
             return Algebraic.of(apply(x.rationalValueExact()));
         }

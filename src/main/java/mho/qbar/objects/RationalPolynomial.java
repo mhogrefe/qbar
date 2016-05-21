@@ -117,6 +117,8 @@ public final class RationalPolynomial implements
      */
     @Override
     public @NotNull Rational apply(@NotNull Rational x) {
+        if (this == ZERO) return Rational.ZERO;
+        if (degree() == 0) return coefficients.get(0);
         return foldr((c, y) -> y.multiply(x).add(c), Rational.ZERO, coefficients);
     }
 
@@ -133,6 +135,8 @@ public final class RationalPolynomial implements
      * @return {@code this}({@code x})
      */
     public @NotNull Algebraic apply(@NotNull Algebraic x) {
+        if (this == ZERO) return Algebraic.ZERO;
+        if (degree() == 0) return Algebraic.of(coefficients.get(0));
         if (x.isRational()) {
             return Algebraic.of(apply(x.rationalValueExact()));
         }
