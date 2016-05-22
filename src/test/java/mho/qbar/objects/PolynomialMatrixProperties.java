@@ -543,7 +543,7 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
         Map<String, Function<PolynomialMatrix, PolynomialMatrix>> functions = new LinkedHashMap<>();
         functions.put("alt", PolynomialMatrixProperties::transpose_alt);
         functions.put("standard", PolynomialMatrix::transpose);
-        compareImplementations("transpose()", take(LIMIT, P.polynomialMatrices()), functions);
+        compareImplementations("transpose()", take(LIMIT, P.polynomialMatrices()), functions, v -> P.reset());
     }
 
     private void propertiesConcat() {
@@ -850,7 +850,7 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
                         )
                 )
         );
-        compareImplementations("subtract(PolynomialMatrix)", take(LIMIT, ps), functions);
+        compareImplementations("subtract(PolynomialMatrix)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private void propertiesMultiply_Polynomial() {
@@ -1150,7 +1150,7 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
                         )
                 )
         );
-        compareImplementations("multiply(PolynomialMatrix)", take(LIMIT, ps), functions);
+        compareImplementations("multiply(PolynomialMatrix)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull PolynomialMatrix shiftLeft_simplest(@NotNull PolynomialMatrix m, int bits) {
@@ -1198,7 +1198,7 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
         functions.put("simplest", p -> shiftLeft_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.shiftLeft(p.b));
         Iterable<Pair<PolynomialMatrix, Integer>> ps = P.pairs(P.polynomialMatrices(), P.naturalIntegersGeometric());
-        compareImplementations("shiftLeft(int)", take(LIMIT, ps), functions);
+        compareImplementations("shiftLeft(int)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull Polynomial determinant_Laplace(@NotNull PolynomialMatrix m) {
@@ -1270,7 +1270,12 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
         Map<String, Function<PolynomialMatrix, Polynomial>> functions = new LinkedHashMap<>();
         functions.put("Laplace", PolynomialMatrixProperties::determinant_Laplace);
         functions.put("standard", PolynomialMatrix::determinant);
-        compareImplementations("determinant()", take(LIMIT, P.withScale(4).squarePolynomialMatrices()), functions);
+        compareImplementations(
+                "determinant()",
+                take(LIMIT, P.withScale(4).squarePolynomialMatrices()),
+                functions,
+                v -> P.reset()
+        );
     }
 
     private void propertiesEquals() {

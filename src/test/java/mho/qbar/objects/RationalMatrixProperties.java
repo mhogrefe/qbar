@@ -579,7 +579,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
         Map<String, Function<RationalMatrix, RationalMatrix>> functions = new LinkedHashMap<>();
         functions.put("alt", RationalMatrixProperties::transpose_alt);
         functions.put("standard", RationalMatrix::transpose);
-        compareImplementations("transpose()", take(LIMIT, P.rationalMatrices()), functions);
+        compareImplementations("transpose()", take(LIMIT, P.rationalMatrices()), functions, v -> P.reset());
     }
 
     private void propertiesConcat() {
@@ -881,7 +881,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
                         )
                 )
         );
-        compareImplementations("subtract(RationalMatrix)", take(LIMIT, ps), functions);
+        compareImplementations("subtract(RationalMatrix)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private void propertiesMultiply_Rational() {
@@ -1278,7 +1278,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
                         )
                 )
         );
-        compareImplementations("multiply(RationalMatrix)", take(LIMIT, ps), functions);
+        compareImplementations("multiply(RationalMatrix)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull RationalMatrix shiftLeft_simplest(@NotNull RationalMatrix m, int bits) {
@@ -1325,7 +1325,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
         functions.put("simplest", p -> shiftLeft_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.shiftLeft(p.b));
         Iterable<Pair<RationalMatrix, Integer>> ps = P.pairs(P.rationalMatrices(), P.integersGeometric());
-        compareImplementations("shiftLeft(int)", take(LIMIT, ps), functions);
+        compareImplementations("shiftLeft(int)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull RationalMatrix shiftRight_simplest(@NotNull RationalMatrix m, int bits) {
@@ -1372,7 +1372,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
         functions.put("simplest", p -> shiftRight_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.shiftRight(p.b));
         Iterable<Pair<RationalMatrix, Integer>> ps = P.pairs(P.rationalMatrices(), P.integersGeometric());
-        compareImplementations("shiftRight(int)", take(LIMIT, ps), functions);
+        compareImplementations("shiftRight(int)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private void propertiesIsInRowEchelonForm() {
@@ -1691,7 +1691,12 @@ public class RationalMatrixProperties extends QBarTestProperties {
         functions.put("Laplace", RationalMatrixProperties::determinant_Laplace);
         functions.put("Gauss", RationalMatrixProperties::determinant_Gauss);
         functions.put("standard", RationalMatrix::determinant);
-        compareImplementations("determinant()", take(LIMIT, P.withScale(4).squareRationalMatrices()), functions);
+        compareImplementations(
+                "determinant()",
+                take(LIMIT, P.withScale(4).squareRationalMatrices()),
+                functions,
+                v -> P.reset()
+        );
     }
 
     private static @NotNull RationalPolynomial characteristicPolynomial_alt(@NotNull RationalMatrix a) {
@@ -1732,7 +1737,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
         functions.put("alt", RationalMatrixProperties::characteristicPolynomial_alt);
         functions.put("standard", RationalMatrix::characteristicPolynomial);
         Iterable<RationalMatrix> ms = P.withScale(4).squareRationalMatrices();
-        compareImplementations("characteristicPolynomial()", take(LIMIT, ms), functions);
+        compareImplementations("characteristicPolynomial()", take(LIMIT, ms), functions, v -> P.reset());
     }
 
     private void propertiesKroneckerMultiply() {

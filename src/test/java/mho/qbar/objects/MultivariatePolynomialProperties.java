@@ -210,7 +210,7 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         functions.put("simplest", p -> of_Monomial_BigInteger_simplest(p.a, p.b));
         functions.put("standard", p -> of(p.a, p.b));
         Iterable<Pair<Monomial, BigInteger>> ps = P.pairs(P.monomials(), P.bigIntegers());
-        compareImplementations("of(Monomial, BigInteger)", take(LIMIT, ps), functions);
+        compareImplementations("of(Monomial, BigInteger)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private void propertiesOf_BigInteger() {
@@ -592,7 +592,7 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         functions.put("simplest", p -> add_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.add(p.b));
         Iterable<Pair<MultivariatePolynomial, MultivariatePolynomial>> ps = P.pairs(P.multivariatePolynomials());
-        compareImplementations("add(MultivariatePolynomial)", take(LIMIT, ps), functions);
+        compareImplementations("add(MultivariatePolynomial)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private void propertiesNegate() {
@@ -669,7 +669,7 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         functions.put("simplest", p -> subtract_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.subtract(p.b));
         Iterable<Pair<MultivariatePolynomial, MultivariatePolynomial>> ps = P.pairs(P.multivariatePolynomials());
-        compareImplementations("subtract(MultivariatePolynomial)", take(LIMIT, ps), functions);
+        compareImplementations("subtract(MultivariatePolynomial)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private void propertiesMultiply_int() {
@@ -997,7 +997,7 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         functions.put("alt", p -> multiply_MultivariatePolynomial_alt(p.a, p.b));
         functions.put("standard", p -> p.a.multiply(p.b));
         Iterable<Pair<MultivariatePolynomial, MultivariatePolynomial>> ps = P.pairs(P.multivariatePolynomials());
-        compareImplementations("multiply(MultivariatePolynomial)", take(LIMIT, ps), functions);
+        compareImplementations("multiply(MultivariatePolynomial)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull MultivariatePolynomial shiftLeft_simplest(@NotNull MultivariatePolynomial p, int bits) {
@@ -1044,7 +1044,8 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         compareImplementations(
                 "shiftLeft(int)",
                 take(LIMIT, P.pairs(P.multivariatePolynomials(), P.naturalIntegersGeometric())),
-                functions
+                functions,
+                v -> P.reset()
         );
     }
 
@@ -1135,7 +1136,7 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         functions.put("alt", MultivariatePolynomialProperties::sum_alt);
         functions.put("standard", MultivariatePolynomial::sum);
         Iterable<List<MultivariatePolynomial>> pss = P.lists(P.multivariatePolynomials());
-        compareImplementations("sum(List<Polynomial>)", take(LIMIT, pss), functions);
+        compareImplementations("sum(List<Polynomial>)", take(LIMIT, pss), functions, v -> P.reset());
     }
 
     private static @NotNull MultivariatePolynomial product_alt(@NotNull List<MultivariatePolynomial> xs) {
@@ -1215,7 +1216,8 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         compareImplementations(
                 "product(Iterable<MultivariatePolynomial>)",
                 take(LIMIT, P.withScale(1).lists(P.multivariatePolynomials())),
-                functions
+                functions,
+                v -> P.reset()
         );
     }
 
@@ -1338,7 +1340,7 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
                 P.withScale(4).multivariatePolynomials(),
                 P.withScale(1).naturalIntegersGeometric()
         );
-        compareImplementations("pow(int)", take(LIMIT, ps), functions);
+        compareImplementations("pow(int)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull MultivariatePolynomial binomialPower_simplest(
@@ -1416,7 +1418,7 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
                 p -> new Triple<>(p.a.a, p.a.b, p.b),
                 P.pairsLogarithmicOrder(P.distinctPairs(P.variables()), P.naturalIntegersGeometric())
         );
-        compareImplementations("binomialPower(Variable, Variable, int)", take(LIMIT, ts), functions);
+        compareImplementations("binomialPower(Variable, Variable, int)", take(LIMIT, ts), functions, v -> P.reset());
     }
 
     private void propertiesApplyBigInteger() {

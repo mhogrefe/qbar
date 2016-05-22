@@ -251,7 +251,7 @@ public class MonomialProperties extends QBarTestProperties {
         Map<String, Function<Monomial, Integer>> functions = new LinkedHashMap<>();
         functions.put("simplest", MonomialProperties::variableCount_simplest);
         functions.put("standard", Monomial::variableCount);
-        compareImplementations("variableCount()", take(LIMIT, P.monomials()), functions);
+        compareImplementations("variableCount()", take(LIMIT, P.monomials()), functions, v -> P.reset());
     }
 
     private void propertiesRemoveVariable() {
@@ -330,7 +330,7 @@ public class MonomialProperties extends QBarTestProperties {
                 P.monomials(),
                 P.lists(P.variables())
         );
-        compareImplementations("removeVariables(List<Variable>)", take(LIMIT, ps), functions);
+        compareImplementations("removeVariables(List<Variable>)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull Monomial retainVariables_alt(@NotNull Monomial m, @NotNull List<Variable> vs) {
@@ -380,7 +380,7 @@ public class MonomialProperties extends QBarTestProperties {
                 P.monomials(),
                 P.lists(P.variables())
         );
-        compareImplementations("retainVariables(List<Variable>)", take(LIMIT, ps), functions);
+        compareImplementations("retainVariables(List<Variable>)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private void propertiesMultiply() {
@@ -462,7 +462,12 @@ public class MonomialProperties extends QBarTestProperties {
         functions.put("simplest", MonomialProperties::product_simplest);
         functions.put("alt", MonomialProperties::product_alt);
         functions.put("standard", Monomial::product);
-        compareImplementations("product(List<Monomial>)", take(LIMIT, P.lists(P.monomials())), functions);
+        compareImplementations(
+                "product(List<Monomial>)",
+                take(LIMIT, P.lists(P.monomials())),
+                functions,
+                v -> P.reset()
+        );
     }
 
     private static @NotNull Monomial pow_simplest(@NotNull Monomial ev, int p) {
@@ -560,7 +565,7 @@ public class MonomialProperties extends QBarTestProperties {
                 P.monomials(),
                 P.withScale(4).naturalIntegersGeometric()
         );
-        compareImplementations("pow(int)", take(LIMIT, ps), functions);
+        compareImplementations("pow(int)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private void propertiesApplyBigInteger() {

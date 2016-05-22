@@ -431,7 +431,7 @@ public class RationalPolynomialVectorProperties extends QBarTestProperties {
                         )
                 )
         );
-        compareImplementations("subtract(RationalPolynomialVector)", take(LIMIT, ps), functions);
+        compareImplementations("subtract(RationalPolynomialVector)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private void propertiesMultiply_RationalPolynomial() {
@@ -837,7 +837,7 @@ public class RationalPolynomialVectorProperties extends QBarTestProperties {
                 P.rationalPolynomialVectors(),
                 P.integersGeometric()
         );
-        compareImplementations("shiftLeft(int)", take(LIMIT, ps), functions);
+        compareImplementations("shiftLeft(int)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull RationalPolynomialVector shiftRight_simplest(
@@ -907,7 +907,7 @@ public class RationalPolynomialVectorProperties extends QBarTestProperties {
                 P.rationalPolynomialVectors(),
                 P.integersGeometric()
         );
-        compareImplementations("shiftRight(int)", take(LIMIT, ps), functions);
+        compareImplementations("shiftRight(int)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull RationalPolynomialVector sum_alt(@NotNull Iterable<RationalPolynomialVector> xs) {
@@ -1011,7 +1011,7 @@ public class RationalPolynomialVectorProperties extends QBarTestProperties {
                 ),
                 map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.positiveIntegersGeometric())
         );
-        compareImplementations("sum(Iterable<RationalPolynomialVector>)", take(LIMIT, vss), functions);
+        compareImplementations("sum(Iterable<RationalPolynomialVector>)", take(LIMIT, vss), functions, v -> P.reset());
     }
 
     private void propertiesDelta() {
@@ -1214,7 +1214,12 @@ public class RationalPolynomialVectorProperties extends QBarTestProperties {
         Map<String, Function<RationalPolynomialVector, RationalPolynomial>> functions = new LinkedHashMap<>();
         functions.put("simplest", RationalPolynomialVectorProperties::squaredLength_simplest);
         functions.put("standard", RationalPolynomialVector::squaredLength);
-        compareImplementations("squaredLength()", take(LIMIT, P.rationalPolynomialVectors()), functions);
+        compareImplementations(
+                "squaredLength()",
+                take(LIMIT, P.rationalPolynomialVectors()),
+                functions,
+                v -> P.reset()
+        );
     }
 
     private void propertiesEquals() {

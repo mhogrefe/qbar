@@ -397,7 +397,7 @@ public class RationalVectorProperties extends QBarTestProperties {
                         )
                 )
         );
-        compareImplementations("subtract(RationalVector)", take(LIMIT, ps), functions);
+        compareImplementations("subtract(RationalVector)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private void propertiesMultiply_Rational() {
@@ -718,7 +718,7 @@ public class RationalVectorProperties extends QBarTestProperties {
         functions.put("simplest", p -> shiftLeft_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.shiftLeft(p.b));
         Iterable<Pair<RationalVector, Integer>> ps = P.pairs(P.rationalVectors(), P.integersGeometric());
-        compareImplementations("shiftLeft(int)", take(LIMIT, ps), functions);
+        compareImplementations("shiftLeft(int)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull RationalVector shiftRight_simplest(@NotNull RationalVector v, int bits) {
@@ -776,7 +776,7 @@ public class RationalVectorProperties extends QBarTestProperties {
         functions.put("simplest", p -> shiftRight_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.shiftRight(p.b));
         Iterable<Pair<RationalVector, Integer>> ps = P.pairs(P.rationalVectors(), P.integersGeometric());
-        compareImplementations("shiftRight(int)", take(LIMIT, ps), functions);
+        compareImplementations("shiftRight(int)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull RationalVector sum_alt(@NotNull Iterable<RationalVector> xs) {
@@ -879,7 +879,7 @@ public class RationalVectorProperties extends QBarTestProperties {
                 ),
                 map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.positiveIntegersGeometric())
         );
-        compareImplementations("sum(Iterable<RationalVector>)", take(LIMIT, vss), functions);
+        compareImplementations("sum(Iterable<RationalVector>)", take(LIMIT, vss), functions, v -> P.reset());
     }
 
     private void propertiesDelta() {
@@ -1129,7 +1129,7 @@ public class RationalVectorProperties extends QBarTestProperties {
                         )
                 )
         );
-        compareImplementations("rightAngleCompare(RationalVector)", take(LIMIT, ps), functions);
+        compareImplementations("rightAngleCompare(RationalVector)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull Rational squaredLength_simplest(@NotNull RationalVector v) {
@@ -1162,7 +1162,7 @@ public class RationalVectorProperties extends QBarTestProperties {
         Map<String, Function<RationalVector, Rational>> functions = new LinkedHashMap<>();
         functions.put("simplest", RationalVectorProperties::squaredLength_simplest);
         functions.put("standard", RationalVector::squaredLength);
-        compareImplementations("squaredLength()", take(LIMIT, P.rationalVectors()), functions);
+        compareImplementations("squaredLength()", take(LIMIT, P.rationalVectors()), functions, v -> P.reset());
     }
 
     private void propertiesCancelDenominators() {
@@ -1241,7 +1241,7 @@ public class RationalVectorProperties extends QBarTestProperties {
         Map<String, Function<RationalVector, Boolean>> functions = new LinkedHashMap<>();
         functions.put("simplest", RationalVectorProperties::isReduced_simplest);
         functions.put("standard", RationalVector::isReduced);
-        compareImplementations("isReduced()", take(LIMIT, P.rationalVectors()), functions);
+        compareImplementations("isReduced()", take(LIMIT, P.rationalVectors()), functions, v -> P.reset());
     }
 
     private void propertiesReduce() {

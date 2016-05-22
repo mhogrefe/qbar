@@ -587,7 +587,7 @@ public class RationalPolynomialMatrixProperties extends QBarTestProperties {
         Map<String, Function<RationalPolynomialMatrix, RationalPolynomialMatrix>> functions = new LinkedHashMap<>();
         functions.put("alt", RationalPolynomialMatrixProperties::transpose_alt);
         functions.put("standard", RationalPolynomialMatrix::transpose);
-        compareImplementations("transpose()", take(LIMIT, P.rationalPolynomialMatrices()), functions);
+        compareImplementations("transpose()", take(LIMIT, P.rationalPolynomialMatrices()), functions, v -> P.reset());
     }
 
     private void propertiesConcat() {
@@ -904,7 +904,7 @@ public class RationalPolynomialMatrixProperties extends QBarTestProperties {
                         )
                 )
         );
-        compareImplementations("subtract(RationalPolynomialMatrix)", take(LIMIT, ps), functions);
+        compareImplementations("subtract(RationalPolynomialMatrix)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private void propertiesMultiply_RationalPolynomial() {
@@ -1364,7 +1364,7 @@ public class RationalPolynomialMatrixProperties extends QBarTestProperties {
                         )
                 )
         );
-        compareImplementations("multiply(RationalPolynomialMatrix)", take(LIMIT, ps), functions);
+        compareImplementations("multiply(RationalPolynomialMatrix)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull RationalPolynomialMatrix shiftLeft_simplest(
@@ -1422,7 +1422,7 @@ public class RationalPolynomialMatrixProperties extends QBarTestProperties {
                 P.rationalPolynomialMatrices(),
                 P.naturalIntegersGeometric()
         );
-        compareImplementations("shiftLeft(int)", take(LIMIT, ps), functions);
+        compareImplementations("shiftLeft(int)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull RationalPolynomialMatrix shiftRight_simplest(
@@ -1480,7 +1480,7 @@ public class RationalPolynomialMatrixProperties extends QBarTestProperties {
                 P.rationalPolynomialMatrices(),
                 P.integersGeometric()
         );
-        compareImplementations("shiftRight(int)", take(LIMIT, ps), functions);
+        compareImplementations("shiftRight(int)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull RationalPolynomial determinant_Laplace(@NotNull RationalPolynomialMatrix m) {
@@ -1562,7 +1562,7 @@ public class RationalPolynomialMatrixProperties extends QBarTestProperties {
         functions.put("standard", RationalPolynomialMatrix::determinant);
         Iterable<RationalPolynomialMatrix> ms =
                 P.withScale(3).withSecondaryScale(0).withTertiaryScale(2).squareRationalPolynomialMatrices();
-        compareImplementations("determinant()", take(LIMIT, ms), functions);
+        compareImplementations("determinant()", take(LIMIT, ms), functions, v -> P.reset());
     }
 
     private void propertiesEquals() {

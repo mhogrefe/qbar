@@ -2020,7 +2020,7 @@ public final class Algebraic implements Comparable<Algebraic> {
                     for (int i = 0; i < equalDegreeXs.size(); i++) {
                         if (indicesToSkip.contains(i)) continue;
                         Algebraic x = equalDegreeXs.get(i);
-                        Algebraic negativeX = i == equalDegreeXs.size() - 1 ? null : x.negate();
+                        Algebraic negativeX = i >= equalDegreeXs.size() - 1 ? null : x.negate();
                         int multiple = 1;
                         for (int j = i + 1; j < equalDegreeXs.size(); j++) {
                             if (indicesToSkip.contains(j)) continue;
@@ -2106,7 +2106,7 @@ public final class Algebraic implements Comparable<Algebraic> {
                     for (int i = 0; i < equalDegreeXs.size(); i++) {
                         if (indicesToSkip.contains(i)) continue;
                         Algebraic x = equalDegreeXs.get(i);
-                        Algebraic inverseX = i == equalDegreeXs.size() - 1 ? null : x.invert();
+                        Algebraic inverseX = i >= equalDegreeXs.size() - 1 ? null : x.invert();
                         int power = 1;
                         for (int j = i + 1; j < equalDegreeXs.size(); j++) {
                             if (indicesToSkip.contains(j)) continue;
@@ -2161,46 +2161,41 @@ public final class Algebraic implements Comparable<Algebraic> {
             case 1:
                 return xs.get(0).signum();
             default:
-                Map<String, Function<Void, Integer>> implementations = new HashMap<>();
-                implementations.put("real", v -> Real.sum(toList(map(Algebraic::realValue, xs))).signum());
-                implementations.put("algebraic", v -> {
-                    List<Algebraic> positives = new ArrayList<>();
-                    List<Algebraic> negatives = new ArrayList<>();
-                    for (Algebraic x : xs) {
-                        int signum = x.signum();
-                        if (signum == 1) {
-                            positives.add(x);
-                        } else if (signum == -1) {
-                            negatives.add(x);
-                        }
+                List<Algebraic> positives = new ArrayList<>();
+                List<Algebraic> negatives = new ArrayList<>();
+                for (Algebraic x : xs) {
+                    int signum = x.signum();
+                    if (signum == 1) {
+                        positives.add(x);
+                    } else if (signum == -1) {
+                        negatives.add(x);
                     }
-                    int positiveSize = positives.size();
-                    int negativeSize = negatives.size();
-                    if (positiveSize == 0 && negativeSize == 0) {
-                        return 0;
-                    } else if (positiveSize == 0) {
-                        return -1;
-                    } else if (negativeSize == 0) {
-                        return 1;
-                    } else if (positiveSize < negativeSize) {
-                        Algebraic positiveSum = sum(positives).negate();
-                        Algebraic negativeSum = ZERO;
-                        for (Algebraic negative : negatives) {
-                            negativeSum = negativeSum.add(negative);
-                            if (lt(negativeSum, positiveSum)) return -1;
-                        }
-                        return negativeSum.equals(positiveSum) ? 0 : 1;
-                    } else {
-                        Algebraic negativeSum = sum(negatives).negate();
-                        Algebraic positiveSum = ZERO;
-                        for (Algebraic positive : positives) {
-                            positiveSum = positiveSum.add(positive);
-                            if (gt(positiveSum, negativeSum)) return 1;
-                        }
-                        return negativeSum.equals(positiveSum) ? 0 : -1;
+                }
+                int positiveSize = positives.size();
+                int negativeSize = negatives.size();
+                if (positiveSize == 0 && negativeSize == 0) {
+                    return 0;
+                } else if (positiveSize == 0) {
+                    return -1;
+                } else if (negativeSize == 0) {
+                    return 1;
+                } else if (positiveSize < negativeSize) {
+                    Algebraic positiveSum = sum(positives).negate();
+                    Algebraic negativeSum = ZERO;
+                    for (Algebraic negative : negatives) {
+                        negativeSum = negativeSum.add(negative);
+                        if (lt(negativeSum, positiveSum)) return -1;
                     }
-                });
-            return ConcurrencyUtils.evaluateFastest(implementations, null).b;
+                    return negativeSum.equals(positiveSum) ? 0 : 1;
+                } else {
+                    Algebraic negativeSum = sum(negatives).negate();
+                    Algebraic positiveSum = ZERO;
+                    for (Algebraic positive : positives) {
+                        positiveSum = positiveSum.add(positive);
+                        if (gt(positiveSum, negativeSum)) return 1;
+                    }
+                    return negativeSum.equals(positiveSum) ? 0 : -1;
+                }
         }
     }
 

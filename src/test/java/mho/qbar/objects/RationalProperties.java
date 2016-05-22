@@ -779,7 +779,7 @@ public class RationalProperties extends QBarTestProperties {
         Map<String, Function<Rational, Integer>> functions = new LinkedHashMap<>();
         functions.put("alt", RationalProperties::binaryExponent_alt);
         functions.put("standard", Rational::binaryExponent);
-        compareImplementations("binaryExponent()", take(LIMIT, P.positiveRationals()), functions);
+        compareImplementations("binaryExponent()", take(LIMIT, P.positiveRationals()), functions, v -> P.reset());
     }
 
     private static boolean isEqualToFloat_simplest(@NotNull Rational r) {
@@ -820,7 +820,7 @@ public class RationalProperties extends QBarTestProperties {
         functions.put("simplest", RationalProperties::isEqualToFloat_simplest);
         functions.put("alt", RationalProperties::isEqualToFloat_alt);
         functions.put("standard", Rational::isEqualToFloat);
-        compareImplementations("isEqualToFloat()", take(LIMIT, P.rationals()), functions);
+        compareImplementations("isEqualToFloat()", take(LIMIT, P.rationals()), functions, v -> P.reset());
     }
 
     private static boolean isEqualToDouble_simplest(@NotNull Rational r) {
@@ -867,7 +867,7 @@ public class RationalProperties extends QBarTestProperties {
         functions.put("simplest", RationalProperties::isEqualToDouble_simplest);
         functions.put("alt", RationalProperties::isEqualToDouble_alt);
         functions.put("standard", Rational::isEqualToDouble);
-        compareImplementations("isEqualToDouble()", take(LIMIT, P.rationals()), functions);
+        compareImplementations("isEqualToDouble()", take(LIMIT, P.rationals()), functions, v -> P.reset());
     }
 
     private static boolean floatEquidistant(@NotNull Rational r) {
@@ -1996,7 +1996,7 @@ public class RationalProperties extends QBarTestProperties {
         Map<String, Function<Pair<Rational, Rational>, Rational>> functions = new LinkedHashMap<>();
         functions.put("simplest", p -> add_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.add(p.b));
-        compareImplementations("add(Rational)", take(LIMIT, P.pairs(P.rationals())), functions);
+        compareImplementations("add(Rational)", take(LIMIT, P.pairs(P.rationals())), functions, v -> P.reset());
     }
 
     private void propertiesNegate() {
@@ -2062,7 +2062,7 @@ public class RationalProperties extends QBarTestProperties {
         Map<String, Function<Pair<Rational, Rational>, Rational>> functions = new LinkedHashMap<>();
         functions.put("simplest", p -> subtract_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.subtract(p.b));
-        compareImplementations("subtract(Rational)", take(LIMIT, P.pairs(P.rationals())), functions);
+        compareImplementations("subtract(Rational)", take(LIMIT, P.pairs(P.rationals())), functions, v -> P.reset());
     }
 
     private static @NotNull Pair<BigInteger, BigInteger> multiply_Rational_Knuth(
@@ -2130,7 +2130,7 @@ public class RationalProperties extends QBarTestProperties {
                     return new Pair<>(product.getNumerator(), product.getDenominator());
                 }
         );
-        compareImplementations("multiply(Rational)", take(LIMIT, P.pairs(P.rationals())), functions);
+        compareImplementations("multiply(Rational)", take(LIMIT, P.pairs(P.rationals())), functions, v -> P.reset());
     }
 
     private static @NotNull Rational multiply_BigInteger_simplest(@NotNull Rational a, @NotNull BigInteger b) {
@@ -2179,7 +2179,8 @@ public class RationalProperties extends QBarTestProperties {
         compareImplementations(
                 "multiply(BigInteger)",
                 take(LIMIT, P.pairs(P.rationals(), P.bigIntegers())),
-                functions
+                functions,
+                v -> P.reset()
         );
     }
 
@@ -2226,7 +2227,12 @@ public class RationalProperties extends QBarTestProperties {
         Map<String, Function<Pair<Rational, Integer>, Rational>> functions = new LinkedHashMap<>();
         functions.put("simplest", p -> multiply_int_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.multiply(p.b));
-        compareImplementations("multiply(int)", take(LIMIT, P.pairs(P.rationals(), P.integers())), functions);
+        compareImplementations(
+                "multiply(int)",
+                take(LIMIT, P.pairs(P.rationals(), P.integers())),
+                functions,
+                v -> P.reset()
+        );
     }
 
     private static @NotNull Rational invert_simplest(@NotNull Rational r) {
@@ -2253,7 +2259,7 @@ public class RationalProperties extends QBarTestProperties {
         Map<String, Function<Rational, Rational>> functions = new LinkedHashMap<>();
         functions.put("simplest", RationalProperties::invert_simplest);
         functions.put("standard", Rational::invert);
-        compareImplementations("invert()", take(LIMIT, P.nonzeroRationals()), functions);
+        compareImplementations("invert()", take(LIMIT, P.nonzeroRationals()), functions, v -> P.reset());
     }
 
     private static @NotNull Rational divide_Rational_simplest(@NotNull Rational a, @NotNull Rational b) {
@@ -2299,7 +2305,8 @@ public class RationalProperties extends QBarTestProperties {
         compareImplementations(
                 "divide(Rational)",
                 take(LIMIT, P.pairs(P.rationals(), P.nonzeroRationals())),
-                functions
+                functions,
+                v -> P.reset()
         );
     }
 
@@ -2344,7 +2351,8 @@ public class RationalProperties extends QBarTestProperties {
         compareImplementations(
                 "divide(BigInteger)",
                 take(LIMIT, P.pairs(P.rationals(), P.nonzeroBigIntegers())),
-                functions
+                functions,
+                v -> P.reset()
         );
     }
 
@@ -2386,7 +2394,12 @@ public class RationalProperties extends QBarTestProperties {
         Map<String, Function<Pair<Rational, Integer>, Rational>> functions = new LinkedHashMap<>();
         functions.put("simplest", p -> divide_int_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.divide(p.b));
-        compareImplementations("divide(int)", take(LIMIT, P.pairs(P.rationals(), P.nonzeroIntegers())), functions);
+        compareImplementations(
+                "divide(int)",
+                take(LIMIT, P.pairs(P.rationals(), P.nonzeroIntegers())),
+                functions,
+                v -> P.reset()
+        );
     }
 
     private static @NotNull Rational shiftLeft_simplest(@NotNull Rational r, int bits) {
@@ -2431,7 +2444,8 @@ public class RationalProperties extends QBarTestProperties {
         compareImplementations(
                 "shiftLeft(int)",
                 take(LIMIT, P.pairs(P.rationals(), P.integersGeometric())),
-                functions
+                functions,
+                v -> P.reset()
         );
     }
 
@@ -2477,7 +2491,8 @@ public class RationalProperties extends QBarTestProperties {
         compareImplementations(
                 "shiftRight(int)",
                 take(LIMIT, P.pairs(P.rationals(), P.integersGeometric())),
-                functions
+                functions,
+                v -> P.reset()
         );
     }
 
@@ -2529,7 +2544,12 @@ public class RationalProperties extends QBarTestProperties {
         Map<String, Function<List<Rational>, Rational>> functions = new LinkedHashMap<>();
         functions.put("alt", RationalProperties::sum_alt);
         functions.put("standard", Rational::sum);
-        compareImplementations("sum(Iterable<Rational>)", take(LIMIT, P.lists(P.rationals())), functions);
+        compareImplementations(
+                "sum(Iterable<Rational>)",
+                take(LIMIT, P.lists(P.rationals())),
+                functions,
+                v -> P.reset()
+        );
     }
 
     private static @NotNull Rational product_simplest(@NotNull Iterable<Rational> xs) {
@@ -2561,7 +2581,12 @@ public class RationalProperties extends QBarTestProperties {
         Map<String, Function<List<Rational>, Rational>> functions = new LinkedHashMap<>();
         functions.put("simplest", RationalProperties::product_simplest);
         functions.put("standard", Rational::product);
-        compareImplementations("product(Iterable<Rational>)", take(LIMIT, P.lists(P.rationals())), functions);
+        compareImplementations(
+                "product(Iterable<Rational>)",
+                take(LIMIT, P.lists(P.rationals())),
+                functions,
+                v -> P.reset()
+        );
     }
 
     private static int sumSign_simplest(@NotNull List<Rational> xs) {
@@ -2669,7 +2694,12 @@ public class RationalProperties extends QBarTestProperties {
         functions.put("alt2", RationalProperties::sumSign_alt2);
         functions.put("alt3", RationalProperties::sumSign_alt3);
         functions.put("standard", Rational::sumSign);
-        compareImplementations("sumSign(List<Rational>)", take(LIMIT, P.lists(P.rationals())), functions);
+        compareImplementations(
+                "sumSign(List<Rational>)",
+                take(LIMIT, P.lists(P.rationals())),
+                functions,
+                v -> P.reset()
+        );
     }
 
     private void propertiesDelta() {
@@ -2807,7 +2837,7 @@ public class RationalProperties extends QBarTestProperties {
                 p -> p.b >= 0 || p.a != ZERO,
                 P.pairs(P.rationals(), P.integersGeometric())
         );
-        compareImplementations("pow(int", take(LIMIT, ps), functions);
+        compareImplementations("pow(int", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private void propertiesFractionalPart() {
@@ -3268,7 +3298,7 @@ public class RationalProperties extends QBarTestProperties {
                 P.withElement(ZERO, P.withScale(8).positiveRationals()),
                 P.withScale(8).rangeUp(IntegerUtils.TWO)
         );
-        compareImplementations("digits(BigInteger)", take(LIMIT, ps), functions);
+        compareImplementations("digits(BigInteger)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private void propertiesCommonLeadingDigits() {
@@ -3573,7 +3603,7 @@ public class RationalProperties extends QBarTestProperties {
         Map<String, Function<Pair<Rational, Rational>, Integer>> functions = new LinkedHashMap<>();
         functions.put("simplest", p -> compareTo_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.compareTo(p.b));
-        compareImplementations("compareTo(Rational)", take(LIMIT, P.pairs(P.rationals())), functions);
+        compareImplementations("compareTo(Rational)", take(LIMIT, P.pairs(P.rationals())), functions, v -> P.reset());
     }
 
     private void propertiesReadStrict() {

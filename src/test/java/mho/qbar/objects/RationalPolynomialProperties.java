@@ -170,7 +170,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         functions.put("naïve", p -> apply_naive(p.a, p.b));
         functions.put("standard", p -> p.a.apply(p.b));
         Iterable<Pair<RationalPolynomial, Rational>> ps = P.pairs(P.rationalPolynomials(), P.rationals());
-        compareImplementations("apply(Rational)", take(LIMIT, ps), functions);
+        compareImplementations("apply(Rational)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private void propertiesApply_Algebraic() {
@@ -429,7 +429,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
                 P.withScale(4).rationalPolynomials(),
                 P.withScale(4).naturalIntegersGeometric()
         );
-        compareImplementations("multiplyByPowerOfX(int)", take(LIMIT, ps), functions);
+        compareImplementations("multiplyByPowerOfX(int)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private void propertiesAdd() {
@@ -585,7 +585,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         functions.put("alt", p -> signum_Rational_alt(p.a, p.b));
         functions.put("standard", p -> p.a.signum(p.b));
         Iterable<Pair<RationalPolynomial, Rational>> ps = P.pairs(P.rationalPolynomials(), P.rationals());
-        compareImplementations("signum(Rational)", take(100000, ps), functions);
+        compareImplementations("signum(Rational)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull RationalPolynomial subtract_simplest(
@@ -641,7 +641,8 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         compareImplementations(
                 "subtract(RationalPolynomial)",
                 take(LIMIT, P.pairs(P.rationalPolynomials())),
-                functions
+                functions,
+                v -> P.reset()
         );
     }
 
@@ -744,7 +745,8 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         compareImplementations(
                 "multiply(RationalPolynomial)",
                 take(LIMIT, P.pairs(P.rationalPolynomials())),
-                functions
+                functions,
+                v -> P.reset()
         );
     }
 
@@ -1097,7 +1099,8 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         compareImplementations(
                 "shiftLeft(int)",
                 take(LIMIT, P.pairs(P.rationalPolynomials(), P.integersGeometric())),
-                functions
+                functions,
+                v -> P.reset()
         );
     }
 
@@ -1155,7 +1158,8 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         compareImplementations(
                 "shiftRight(int)",
                 take(LIMIT, P.pairs(P.rationalPolynomials(), P.integersGeometric())),
-                functions
+                functions,
+                v -> P.reset()
         );
     }
 
@@ -1208,7 +1212,8 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         compareImplementations(
                 "sum(Iterable<RationalPolynomial>)",
                 take(LIMIT, P.lists(P.rationalPolynomials())),
-                functions
+                functions,
+                v -> P.reset()
         );
     }
 
@@ -1297,7 +1302,8 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         compareImplementations(
                 "product(Iterable<RationalPolynomial>)",
                 take(LIMIT, P.withScale(1).lists(P.withSecondaryScale(1).rationalPolynomials())),
-                functions
+                functions,
+                v -> P.reset()
         );
     }
 
@@ -1426,7 +1432,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
                 P.withScale(4).rationalPolynomials(),
                 P.withScale(4).naturalIntegersGeometric()
         );
-        compareImplementations("pow(int)", take(LIMIT, ps), functions);
+        compareImplementations("pow(int)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull RationalPolynomial substitute_naive(
@@ -1476,7 +1482,8 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         compareImplementations(
                 "substitute(RationalPolynomial)",
                 take(LIMIT, P.pairs(P.withScale(4).withSecondaryScale(4).rationalPolynomials())),
-                functions
+                functions,
+                v -> P.reset()
         );
     }
 
@@ -1630,7 +1637,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
                 P.rationalPolynomials(),
                 P.rationalPolynomialsAtLeast(0)
         );
-        compareImplementations("divide(RationalPolynomial)", take(LIMIT, ps), functions);
+        compareImplementations("divide(RationalPolynomial)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static boolean isDivisibleBy_simplest(@NotNull RationalPolynomial a, @NotNull RationalPolynomial b) {
@@ -1682,7 +1689,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
                 P.rationalPolynomials(),
                 P.rationalPolynomialsAtLeast(0)
         );
-        compareImplementations("isDivisibleBy(RationalPolynomial)", take(LIMIT, ps), functions);
+        compareImplementations("isDivisibleBy(RationalPolynomial)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private void propertiesRemainderSequence() {
@@ -2094,7 +2101,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
                 P.withScale(4).rationalPolynomialsAtLeast(1),
                 P.withScale(4).naturalIntegersGeometric()
         );
-        compareImplementations("powerTable(int)", take(LIMIT, ps), functions);
+        compareImplementations("powerTable(int)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull RationalPolynomial rootPower_simplest(@NotNull RationalPolynomial p, int power) {
@@ -2141,7 +2148,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
                 P.withScale(4).rationalPolynomialsAtLeast(1),
                 P.withScale(4).naturalIntegersGeometric()
         );
-        compareImplementations("rootPower(int)", take(LIMIT, ps), functions);
+        compareImplementations("rootPower(int)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private void propertiesRealRoots() {

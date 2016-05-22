@@ -257,7 +257,12 @@ public class PolynomialProperties extends QBarTestProperties {
         Map<String, Function<Pair<Polynomial, BigInteger>, BigInteger>> functions = new LinkedHashMap<>();
         functions.put("naïve", p -> apply_BigInteger_naive(p.a, p.b));
         functions.put("standard", p -> p.a.apply(p.b));
-        compareImplementations("apply(BigInteger)", take(LIMIT, P.pairs(P.polynomials(), P.bigIntegers())), functions);
+        compareImplementations(
+                "apply(BigInteger)",
+                take(LIMIT, P.pairs(P.polynomials(), P.bigIntegers())),
+                functions,
+                v -> P.reset()
+        );
     }
 
     private static @NotNull Rational apply_Rational_simplest(@NotNull Polynomial p, @NotNull Rational x) {
@@ -329,7 +334,12 @@ public class PolynomialProperties extends QBarTestProperties {
         functions.put("alt", p -> apply_Rational_alt(p.a, p.b));
         functions.put("alt2", p -> apply_Rational_alt2(p.a, p.b));
         functions.put("standard", p -> p.a.apply(p.b));
-        compareImplementations("apply(Rational)", take(LIMIT, P.pairs(P.polynomials(), P.rationals())), functions);
+        compareImplementations(
+                "apply(Rational)",
+                take(LIMIT, P.pairs(P.polynomials(), P.rationals())),
+                functions,
+                v -> P.reset()
+        );
     }
 
     private void propertiesApply_Algebraic() {
@@ -422,7 +432,8 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementations(
                 "specialApply(Rational)",
                 take(LIMIT, P.pairs(P.polynomials(), P.rationals())),
-                functions
+                functions,
+                v -> P.reset()
         );
     }
 
@@ -649,7 +660,7 @@ public class PolynomialProperties extends QBarTestProperties {
                 P.withScale(4).polynomials(),
                 P.withScale(4).naturalIntegersGeometric()
         );
-        compareImplementations("multiplyByPowerOfX(int)", take(LIMIT, ps), functions);
+        compareImplementations("multiplyByPowerOfX(int)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private void propertiesAdd() {
@@ -790,7 +801,7 @@ public class PolynomialProperties extends QBarTestProperties {
         functions.put("alt2", p -> signum_BigInteger_alt2(p.a, p.b));
         functions.put("standard", p -> p.a.signum(p.b));
         Iterable<Pair<Polynomial, BigInteger>> ps = P.pairs(P.polynomials(), P.bigIntegers());
-        compareImplementations("signum(BigInteger)", take(LIMIT, ps), functions);
+        compareImplementations("signum(BigInteger)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static int signum_Rational_simplest(@NotNull Polynomial p, @NotNull Rational x) {
@@ -873,7 +884,7 @@ public class PolynomialProperties extends QBarTestProperties {
         functions.put("alt3", p -> signum_Rational_alt3(p.a, p.b));
         functions.put("standard", p -> p.a.signum(p.b));
         Iterable<Pair<Polynomial, Rational>> ps = P.pairs(P.polynomials(), P.rationals());
-        compareImplementations("signum(Rational)", take(LIMIT, ps), functions);
+        compareImplementations("signum(Rational)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull Polynomial subtract_simplest(@NotNull Polynomial a, @NotNull Polynomial b) {
@@ -915,7 +926,12 @@ public class PolynomialProperties extends QBarTestProperties {
         Map<String, Function<Pair<Polynomial, Polynomial>, Polynomial>> functions = new LinkedHashMap<>();
         functions.put("simplest", p -> subtract_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.subtract(p.b));
-        compareImplementations("subtract(Polynomial)", take(LIMIT, P.pairs(P.polynomials())), functions);
+        compareImplementations(
+                "subtract(Polynomial)",
+                take(LIMIT, P.pairs(P.polynomials())),
+                functions,
+                v -> P.reset()
+        );
     }
 
     private static @NotNull Polynomial multiply_Polynomial_alt(@NotNull Polynomial a, @NotNull Polynomial b) {
@@ -1004,7 +1020,12 @@ public class PolynomialProperties extends QBarTestProperties {
         Map<String, Function<Pair<Polynomial, Polynomial>, Polynomial>> functions = new LinkedHashMap<>();
         functions.put("alt", p -> multiply_Polynomial_alt(p.a, p.b));
         functions.put("standard", p -> p.a.multiply(p.b));
-        compareImplementations("multiply(Polynomial)", take(LIMIT, P.pairs(P.polynomials())), functions);
+        compareImplementations(
+                "multiply(Polynomial)",
+                take(LIMIT, P.pairs(P.polynomials())),
+                functions,
+                v -> P.reset()
+        );
     }
 
     private void propertiesMultiply_BigInteger() {
@@ -1234,7 +1255,8 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementations(
                 "shiftLeft(int)",
                 take(LIMIT, P.pairs(P.polynomials(), P.naturalIntegersGeometric())),
-                functions
+                functions,
+                v -> P.reset()
         );
     }
 
@@ -1281,7 +1303,12 @@ public class PolynomialProperties extends QBarTestProperties {
         Map<String, Function<List<Polynomial>, Polynomial>> functions = new LinkedHashMap<>();
         functions.put("simplest", PolynomialProperties::sum_simplest);
         functions.put("standard", Polynomial::sum);
-        compareImplementations("sum(Iterable<Polynomial>)", take(LIMIT, P.lists(P.polynomials())), functions);
+        compareImplementations(
+                "sum(Iterable<Polynomial>)",
+                take(LIMIT, P.lists(P.polynomials())),
+                functions,
+                v -> P.reset()
+        );
     }
 
     private static @NotNull Polynomial product_simplest(@NotNull Iterable<Polynomial> xs) {
@@ -1364,7 +1391,8 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementations(
                 "product(Iterable<Polynomial>)",
                 take(LIMIT, P.withScale(1).lists(P.withSecondaryScale(1).polynomials())),
-                functions
+                functions,
+                v -> P.reset()
         );
     }
 
@@ -1482,7 +1510,7 @@ public class PolynomialProperties extends QBarTestProperties {
                 P.withScale(4).polynomials(),
                 P.withScale(4).naturalIntegersGeometric()
         );
-        compareImplementations("pow(int)", take(LIMIT, ps), functions);
+        compareImplementations("pow(int)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull Polynomial substitute_naive(@NotNull Polynomial a, @NotNull Polynomial b) {
@@ -1525,7 +1553,8 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementations(
                 "substitute(Polynomial)",
                 take(LIMIT, P.pairs(P.withScale(4).polynomials())),
-                functions
+                functions,
+                v -> P.reset()
         );
     }
 
@@ -1720,7 +1749,7 @@ public class PolynomialProperties extends QBarTestProperties {
                 q -> q.a.degree() >= q.b.degree(),
                 P.pairs(P.polynomials(), P.polynomialsAtLeast(0))
         );
-        compareImplementations("pseudoDivide(Polynomial)", take(LIMIT, ps), functions);
+        compareImplementations("pseudoDivide(Polynomial)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull Polynomial pseudoRemainder_simplest(@NotNull Polynomial a, @NotNull Polynomial b) {
@@ -1770,7 +1799,7 @@ public class PolynomialProperties extends QBarTestProperties {
                 q -> q.a.degree() >= q.b.degree(),
                 P.pairs(P.polynomials(), P.polynomialsAtLeast(0))
         );
-        compareImplementations("pseudoRemainder(Polynomial)", take(LIMIT, ps), functions);
+        compareImplementations("pseudoRemainder(Polynomial)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull Pair<Polynomial, Polynomial> absolutePseudoDivide_simplest(
@@ -1864,7 +1893,7 @@ public class PolynomialProperties extends QBarTestProperties {
                 q -> q.a.degree() >= q.b.degree(),
                 P.pairs(P.polynomials(), P.polynomialsAtLeast(0))
         );
-        compareImplementations("absolutePseudoDivide(Polynomial)", take(LIMIT, ps), functions);
+        compareImplementations("absolutePseudoDivide(Polynomial)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull Polynomial absolutePseudoRemainder_simplest(@NotNull Polynomial a, @NotNull Polynomial b) {
@@ -1914,7 +1943,7 @@ public class PolynomialProperties extends QBarTestProperties {
                 q -> q.a.degree() >= q.b.degree(),
                 P.pairs(P.polynomials(), P.polynomialsAtLeast(0))
         );
-        compareImplementations("absolutePseudoRemainder(Polynomial)", take(LIMIT, ps), functions);
+        compareImplementations("absolutePseudoRemainder(Polynomial)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull Pair<Polynomial, Polynomial> evenPseudoDivide_simplest(
@@ -2011,7 +2040,7 @@ public class PolynomialProperties extends QBarTestProperties {
                 q -> q.a.degree() >= q.b.degree(),
                 P.pairs(P.polynomials(), P.polynomialsAtLeast(0))
         );
-        compareImplementations("evenPseudoDivide(Polynomial)", take(LIMIT, ps), functions);
+        compareImplementations("evenPseudoDivide(Polynomial)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull Polynomial evenPseudoRemainder_simplest(@NotNull Polynomial a, @NotNull Polynomial b) {
@@ -2061,7 +2090,7 @@ public class PolynomialProperties extends QBarTestProperties {
                 q -> q.a.degree() >= q.b.degree(),
                 P.pairs(P.polynomials(), P.polynomialsAtLeast(0))
         );
-        compareImplementations("evenPseudoRemainder(Polynomial)", take(LIMIT, ps), functions);
+        compareImplementations("evenPseudoRemainder(Polynomial)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static boolean isDivisibleBy_alt(@NotNull Polynomial a, @NotNull Polynomial b) {
@@ -2107,7 +2136,7 @@ public class PolynomialProperties extends QBarTestProperties {
         functions.put("alt", p -> isDivisibleBy_alt(p.a, p.b));
         functions.put("standard", p -> p.a.isDivisibleBy(p.b));
         Iterable<Pair<Polynomial, Polynomial>> ps = P.pairs(P.polynomials(), P.polynomialsAtLeast(0));
-        compareImplementations("isDivisibleBy(Polynomial)", take(LIMIT, ps), functions);
+        compareImplementations("isDivisibleBy(Polynomial)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull Polynomial divideExact_Polynomial_simplest(@NotNull Polynomial a, @NotNull Polynomial b) {
@@ -2169,7 +2198,7 @@ public class PolynomialProperties extends QBarTestProperties {
                 p -> new Pair<>(p.a.multiply(p.b), p.a),
                 P.pairs(P.polynomialsAtLeast(1), P.polynomials())
         );
-        compareImplementations("divideExact(Polynomial)", take(LIMIT, ps), functions);
+        compareImplementations("divideExact(Polynomial)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull Polynomial remainderExact_simplest(@NotNull Polynomial a, @NotNull Polynomial b) {
@@ -2234,7 +2263,7 @@ public class PolynomialProperties extends QBarTestProperties {
                 },
                 P.pairs(P.polynomials(), P.polynomialsAtLeast(0))
         );
-        compareImplementations("remainderExact(Polynomial)", take(LIMIT, ps), functions);
+        compareImplementations("remainderExact(Polynomial)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private void propertiesTrivialPseudoRemainderSequence() {
@@ -2498,7 +2527,7 @@ public class PolynomialProperties extends QBarTestProperties {
                 p -> p.a != ZERO || p.b != ZERO,
                 P.pairs(P.withScale(4).withSecondaryScale(2).polynomials())
         );
-        compareImplementations("gcd(Polynomial)", take(LIMIT, ps), functions);
+        compareImplementations("gcd(Polynomial)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private void compareImplementationsGcd_Polynomial2() {
@@ -2509,7 +2538,7 @@ public class PolynomialProperties extends QBarTestProperties {
                 p -> p.a != ZERO || p.b != ZERO,
                 P.pairs(P.polynomials())
         );
-        compareImplementations("gcd(Polynomial)", take(SMALL_LIMIT, ps), functions);
+        compareImplementations("gcd(Polynomial)", take(SMALL_LIMIT, ps), functions, v -> P.reset());
     }
 
     private void propertiesGcd_List_Polynomial() {
@@ -2634,7 +2663,7 @@ public class PolynomialProperties extends QBarTestProperties {
                 p -> p.a != ZERO || p.b != ZERO,
                 P.pairs(P.withScale(4).polynomials())
         );
-        compareImplementations("isRelativelyPrimeTo(Polynomial)", take(SMALL_LIMIT, ps), functions);
+        compareImplementations("isRelativelyPrimeTo(Polynomial)", take(SMALL_LIMIT, ps), functions, v -> P.reset());
     }
 
     private static boolean isSquareFree_simplest(@NotNull Polynomial p) {
@@ -2664,7 +2693,12 @@ public class PolynomialProperties extends QBarTestProperties {
         Map<String, Function<Polynomial, Boolean>> functions = new LinkedHashMap<>();
         functions.put("simplest", PolynomialProperties::isSquareFree_simplest);
         functions.put("standard", Polynomial::isSquareFree);
-        compareImplementations("isSquareFree()", take(SMALL_LIMIT, P.withScale(4).polynomials()), functions);
+        compareImplementations(
+                "isSquareFree()",
+                take(SMALL_LIMIT, P.withScale(4).polynomials()),
+                functions,
+                v -> P.reset()
+        );
     }
 
     private static @NotNull Polynomial squareFreePart_simplest(@NotNull Polynomial p) {
@@ -2695,7 +2729,12 @@ public class PolynomialProperties extends QBarTestProperties {
         Map<String, Function<Polynomial, Polynomial>> functions = new LinkedHashMap<>();
         functions.put("simplest", PolynomialProperties::squareFreePart_simplest);
         functions.put("standard", Polynomial::squareFreePart);
-        compareImplementations("squareFreePart()", take(SMALL_LIMIT, P.withScale(4).polynomialsAtLeast(0)), functions);
+        compareImplementations(
+                "squareFreePart()",
+                take(SMALL_LIMIT, P.withScale(4).polynomialsAtLeast(0)),
+                functions,
+                v -> P.reset()
+        );
     }
 
     private void propertiesSquareFreeFactor() {
@@ -2833,7 +2872,7 @@ public class PolynomialProperties extends QBarTestProperties {
                 q -> q.degree() < 7,
                 P.withScale(1).withSecondaryScale(1).polynomialsAtLeast(0)
         );
-        compareImplementations("factor()", take(SMALL_LIMIT, ps), functions);
+        compareImplementations("factor()", take(SMALL_LIMIT, ps), functions, v -> P.reset());
 
         USE_FACTOR_CACHE = oldUseFactorCache;
     }
@@ -2876,7 +2915,12 @@ public class PolynomialProperties extends QBarTestProperties {
         Map<String, Function<Polynomial, Boolean>> functions = new LinkedHashMap<>();
         functions.put("simplest", PolynomialProperties::isIrreducible_simplest);
         functions.put("standard", Polynomial::isIrreducible);
-        compareImplementations("isIrreducible()", take(SMALL_LIMIT, P.withScale(4).polynomialsAtLeast(0)), functions);
+        compareImplementations(
+                "isIrreducible()",
+                take(SMALL_LIMIT, P.withScale(4).polynomialsAtLeast(0)),
+                functions,
+                v -> P.reset()
+        );
 
         USE_FACTOR_CACHE = oldUseFactorCache;
     }
@@ -2955,7 +2999,12 @@ public class PolynomialProperties extends QBarTestProperties {
                         )
                 )
         );
-        compareImplementations("interpolate(List<Pair<BigInteger, BigInteger>>)", take(SMALL_LIMIT, pss), functions);
+        compareImplementations(
+                "interpolate(List<Pair<BigInteger, BigInteger>>)",
+                take(SMALL_LIMIT, pss),
+                functions,
+                v -> P.reset()
+        );
     }
 
     private void propertiesCompanionMatrix() {
@@ -3140,7 +3189,7 @@ public class PolynomialProperties extends QBarTestProperties {
                         P.listsAtLeast(1, P.polynomials())
                 )
         );
-        compareImplementations("determinant(List<Polynomial>)", take(SMALL_LIMIT, pss), functions);
+        compareImplementations("determinant(List<Polynomial>)", take(SMALL_LIMIT, pss), functions, v -> P.reset());
     }
 
     private void propertiesSylvesterMatrix() {
@@ -3282,7 +3331,12 @@ public class PolynomialProperties extends QBarTestProperties {
                         p -> P.range(0, p.b.degree())
                 )
         );
-        compareImplementations("sylvesterHabichtMatrix(Polynomial, int)", take(SMALL_LIMIT, ts), functions);
+        compareImplementations(
+                "sylvesterHabichtMatrix(Polynomial, int)",
+                take(SMALL_LIMIT, ts),
+                functions,
+                v -> P.reset()
+        );
     }
 
     private void propertiesSignedSubresultantCoefficient() {
@@ -3460,7 +3514,12 @@ public class PolynomialProperties extends QBarTestProperties {
                         p -> P.range(0, p.b.degree())
                 )
         );
-        compareImplementations("sylvesterHabichtPolynomialMatrix(Polynomial, int)", take(SMALL_LIMIT, ts), functions);
+        compareImplementations(
+                "sylvesterHabichtPolynomialMatrix(Polynomial, int)",
+                take(SMALL_LIMIT, ts),
+                functions,
+                v -> P.reset()
+        );
     }
 
     private void propertiesSignedSubresultant() {
@@ -3635,7 +3694,12 @@ public class PolynomialProperties extends QBarTestProperties {
                 q -> q.a.degree() > q.b.degree(),
                 P.pairs(P.withScale(4).polynomialsAtLeast(0))
         );
-        compareImplementations("signedSubresultantSequence(Polynomial)", take(SMALL_LIMIT, ps), functions);
+        compareImplementations(
+                "signedSubresultantSequence(Polynomial)",
+                take(SMALL_LIMIT, ps),
+                functions,
+                v -> P.reset()
+        );
     }
 
     private void propertiesPrimitiveSignedPseudoRemainderSequence() {
@@ -3787,7 +3851,12 @@ public class PolynomialProperties extends QBarTestProperties {
         Map<String, Function<Polynomial, Integer>> functions = new LinkedHashMap<>();
         functions.put("alt", PolynomialProperties::rootCount_alt);
         functions.put("standard", Polynomial::rootCount);
-        compareImplementations("rootCount()", take(LIMIT, P.squareFreePolynomialsAtLeast(0)), functions);
+        compareImplementations(
+                "rootCount()",
+                take(LIMIT, P.squareFreePolynomialsAtLeast(0)),
+                functions,
+                v -> P.reset()
+        );
     }
 
     private void propertiesIsolatingInterval() {
@@ -3901,7 +3970,7 @@ public class PolynomialProperties extends QBarTestProperties {
         functions.put("alt", PolynomialProperties::isolatingIntervals_alt);
         functions.put("standard", Polynomial::isolatingIntervals);
         Iterable<Polynomial> ps = P.withScale(4).withSecondaryScale(4).squareFreePolynomials();
-        compareImplementations("isolatingIntervals()", take(LIMIT, ps), functions);
+        compareImplementations("isolatingIntervals()", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull List<Interval> powerOfTwoIsolatingIntervals_alt(@NotNull Polynomial p) {
@@ -3931,7 +4000,7 @@ public class PolynomialProperties extends QBarTestProperties {
         functions.put("alt", PolynomialProperties::powerOfTwoIsolatingIntervals_alt);
         functions.put("standard", Polynomial::powerOfTwoIsolatingIntervals);
         Iterable<Polynomial> ps = P.withScale(4).withSecondaryScale(4).squareFreePolynomials();
-        compareImplementations("powerOfTwoIsolatingIntervals()", take(LIMIT, ps), functions);
+        compareImplementations("powerOfTwoIsolatingIntervals()", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private void propertiesReflect() {
@@ -4011,7 +4080,7 @@ public class PolynomialProperties extends QBarTestProperties {
         functions.put("simplest", p -> specialTranslate_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.specialTranslate(p.b));
         Iterable<Pair<Polynomial, Rational>> ps = P.pairs(P.polynomials(), P.rationals());
-        compareImplementations("specialTranslate(Rational)", take(LIMIT, ps), functions);
+        compareImplementations("specialTranslate(Rational)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull Polynomial positivePrimitiveTranslate_simplest(
@@ -4069,7 +4138,7 @@ public class PolynomialProperties extends QBarTestProperties {
         functions.put("simplest", p -> specialTranslate_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.specialTranslate(p.b));
         Iterable<Pair<Polynomial, Rational>> ps = P.pairs(P.polynomials(), P.rationals());
-        compareImplementations("positivePrimitiveTranslate(Rational)", take(LIMIT, ps), functions);
+        compareImplementations("positivePrimitiveTranslate(Rational)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull Polynomial stretch_simplest(@NotNull Polynomial p, @NotNull Rational f) {
@@ -4098,7 +4167,7 @@ public class PolynomialProperties extends QBarTestProperties {
         functions.put("simplest", p -> specialTranslate_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.specialTranslate(p.b));
         Iterable<Pair<Polynomial, Rational>> ps = P.pairs(P.polynomials(), P.rationals());
-        compareImplementations("stretch(Rational)", take(LIMIT, ps), functions);
+        compareImplementations("stretch(Rational)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull Polynomial positivePrimitiveStretch_simplest(@NotNull Polynomial p, @NotNull Rational f) {
@@ -4154,7 +4223,7 @@ public class PolynomialProperties extends QBarTestProperties {
         functions.put("simplest", p -> stretch_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.stretch(p.b));
         Iterable<Pair<Polynomial, Rational>> ps = P.pairs(P.polynomials(), P.positiveRationals());
-        compareImplementations("stretch(Rational)", take(LIMIT, ps), functions);
+        compareImplementations("stretch(Rational)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull Polynomial shiftRootsLeft_simplest(@NotNull Polynomial p, int bits) {
@@ -4189,7 +4258,7 @@ public class PolynomialProperties extends QBarTestProperties {
         functions.put("simplest", p -> shiftRootsLeft_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.shiftRootsLeft(p.b));
         Iterable<Pair<Polynomial, Integer>> ps = P.pairs(P.polynomials(), P.naturalIntegersGeometric());
-        compareImplementations("shiftRootsLeft(int)", take(LIMIT, ps), functions);
+        compareImplementations("shiftRootsLeft(int)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull Polynomial shiftRootsRight_simplest(@NotNull Polynomial p, int bits) {
@@ -4224,7 +4293,7 @@ public class PolynomialProperties extends QBarTestProperties {
         functions.put("simplest", p -> shiftRootsRight_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.shiftRootsRight(p.b));
         Iterable<Pair<Polynomial, Integer>> ps = P.pairs(P.polynomials(), P.naturalIntegersGeometric());
-        compareImplementations("shiftRootsRight(int)", take(LIMIT, ps), functions);
+        compareImplementations("shiftRootsRight(int)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull Polynomial positivePrimitiveShiftRootsLeft_simplest(@NotNull Polynomial p, int bits) {
@@ -4288,7 +4357,7 @@ public class PolynomialProperties extends QBarTestProperties {
         functions.put("simplest", p -> positivePrimitiveShiftRootsLeft_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.positivePrimitiveShiftRootsLeft(p.b));
         Iterable<Pair<Polynomial, Integer>> ps = P.pairs(P.polynomials(), P.naturalIntegersGeometric());
-        compareImplementations("positivePrimitiveShiftRootsLeft(int)", take(LIMIT, ps), functions);
+        compareImplementations("positivePrimitiveShiftRootsLeft(int)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull Polynomial positivePrimitiveShiftRootsRight_simplest(@NotNull Polynomial p, int bits) {
@@ -4352,7 +4421,7 @@ public class PolynomialProperties extends QBarTestProperties {
         functions.put("simplest", p -> positivePrimitiveShiftRootsRight_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.positivePrimitiveShiftRootsRight(p.b));
         Iterable<Pair<Polynomial, Integer>> ps = P.pairs(P.polynomials(), P.naturalIntegersGeometric());
-        compareImplementations("positivePrimitiveShiftRootsRight(int)", take(LIMIT, ps), functions);
+        compareImplementations("positivePrimitiveShiftRootsRight(int)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private void propertiesInvertRoots() {
@@ -4432,7 +4501,7 @@ public class PolynomialProperties extends QBarTestProperties {
         functions.put("alt", p -> addRoots_alt(p.a, p.b));
         functions.put("standard", p -> p.a.addRoots(p.b));
         Iterable<Pair<Polynomial, Polynomial>> ps = P.pairs(P.withScale(4).withSecondaryScale(0).polynomials());
-        compareImplementations("addRoots(Polynomial)", take(LIMIT, ps), functions);
+        compareImplementations("addRoots(Polynomial)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull Polynomial multiplyRoots_alt(@NotNull Polynomial x, @NotNull Polynomial y) {
@@ -4487,7 +4556,7 @@ public class PolynomialProperties extends QBarTestProperties {
         functions.put("alt", p -> multiplyRoots_alt(p.a, p.b));
         functions.put("standard", p -> p.a.multiplyRoots(p.b));
         Iterable<Pair<Polynomial, Polynomial>> ps = P.pairs(P.withScale(4).withSecondaryScale(0).polynomials());
-        compareImplementations("multiplyRoots(Polynomial)", take(LIMIT, ps), functions);
+        compareImplementations("multiplyRoots(Polynomial)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull List<Polynomial> powerTable_simplest(@NotNull Polynomial p, int maxPower) {
@@ -4541,7 +4610,7 @@ public class PolynomialProperties extends QBarTestProperties {
                 P.monicPolynomialsAtLeast(1),
                 P.naturalIntegersGeometric()
         );
-        compareImplementations("powerTable(int)", take(LIMIT, ps), functions);
+        compareImplementations("powerTable(int)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull Polynomial rootPower_simplest(@NotNull Polynomial p, int power) {
@@ -4585,7 +4654,7 @@ public class PolynomialProperties extends QBarTestProperties {
                 P.monicPolynomialsAtLeast(1),
                 P.naturalIntegersGeometric()
         );
-        compareImplementations("rootPower(int)", take(LIMIT, ps), functions);
+        compareImplementations("rootPower(int)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull List<Algebraic> realRoots_simplest(@NotNull Polynomial p) {
@@ -4619,7 +4688,12 @@ public class PolynomialProperties extends QBarTestProperties {
         Map<String, Function<Polynomial, List<Algebraic>>> functions = new LinkedHashMap<>();
         functions.put("simplest", PolynomialProperties::realRoots_simplest);
         functions.put("standard", Polynomial::realRoots);
-        compareImplementations("realRoots()", take(LIMIT, P.withScale(4).polynomialsAtLeast(0)), functions);
+        compareImplementations(
+                "realRoots()",
+                take(LIMIT, P.withScale(4).polynomialsAtLeast(0)),
+                functions,
+                v -> P.reset()
+        );
     }
 
     private void propertiesEquals() {

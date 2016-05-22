@@ -794,7 +794,7 @@ public class AlgebraicProperties extends QBarTestProperties {
         Map<String, Function<Algebraic, Boolean>> functions = new LinkedHashMap<>();
         functions.put("simplest", AlgebraicProperties::isEqualToFloat_simplest);
         functions.put("standard", Algebraic::isEqualToFloat);
-        compareImplementations("isEqualToFloat()", take(LIMIT, P.algebraics()), functions);
+        compareImplementations("isEqualToFloat()", take(LIMIT, P.algebraics()), functions, v -> P.reset());
     }
 
     private static boolean isEqualToDouble_simplest(@NotNull Algebraic x) {
@@ -826,7 +826,7 @@ public class AlgebraicProperties extends QBarTestProperties {
         Map<String, Function<Algebraic, Boolean>> functions = new LinkedHashMap<>();
         functions.put("simplest", AlgebraicProperties::isEqualToDouble_simplest);
         functions.put("standard", Algebraic::isEqualToDouble);
-        compareImplementations("isEqualToDouble()", take(LIMIT, P.algebraics()), functions);
+        compareImplementations("isEqualToDouble()", take(LIMIT, P.algebraics()), functions, v -> P.reset());
     }
 
     private static boolean floatEquidistant(@NotNull Algebraic x) {
@@ -2555,7 +2555,8 @@ public class AlgebraicProperties extends QBarTestProperties {
         compareImplementations(
                 "shiftLeft(int)",
                 take(LIMIT, P.pairs(P.algebraics(), P.integersGeometric())),
-                functions
+                functions,
+                v -> P.reset()
         );
     }
 
@@ -2601,7 +2602,8 @@ public class AlgebraicProperties extends QBarTestProperties {
         compareImplementations(
                 "shiftRight(int)",
                 take(LIMIT, P.pairs(P.algebraics(), P.integersGeometric())),
-                functions
+                functions,
+                v -> P.reset()
         );
     }
 
@@ -2657,7 +2659,7 @@ public class AlgebraicProperties extends QBarTestProperties {
         functions.put("simplest", AlgebraicProperties::sum_simplest);
         functions.put("standard", Algebraic::sum);
         Iterable<List<Algebraic>> xss = P.withScale(1).lists(P.withScale(1).withSecondaryScale(4).algebraics());
-        compareImplementations("sum(Iterable<Algebraic>)", take(SMALL_LIMIT, xss), functions);
+        compareImplementations("sum(Iterable<Algebraic>)", take(SMALL_LIMIT, xss), functions, v -> P.reset());
         Polynomial.USE_FACTOR_CACHE = true;
         Algebraic.USE_SUM_CACHE = true;
         Algebraic.USE_PRODUCT_CACHE = true;
@@ -2715,7 +2717,7 @@ public class AlgebraicProperties extends QBarTestProperties {
         functions.put("simplest", AlgebraicProperties::sum_simplest);
         functions.put("standard", Algebraic::sum);
         Iterable<List<Algebraic>> xss = P.withScale(1).lists(P.withScale(1).withSecondaryScale(4).algebraics());
-        compareImplementations("product(List<Algebraic>)", take(SMALL_LIMIT, xss), functions);
+        compareImplementations("product(List<Algebraic>)", take(SMALL_LIMIT, xss), functions, v -> P.reset());
         Polynomial.USE_FACTOR_CACHE = true;
         Algebraic.USE_SUM_CACHE = true;
         Algebraic.USE_PRODUCT_CACHE = true;
@@ -2746,41 +2748,46 @@ public class AlgebraicProperties extends QBarTestProperties {
             case 1:
                 return xs.get(0).signum();
             default:
-                List<Algebraic> positives = new ArrayList<>();
-                List<Algebraic> negatives = new ArrayList<>();
-                for (Algebraic x : xs) {
-                    int signum = x.signum();
-                    if (signum == 1) {
-                        positives.add(x);
-                    } else if (signum == -1) {
-                        negatives.add(x);
+                Map<String, Function<Void, Integer>> implementations = new HashMap<>();
+                implementations.put("real", v -> Real.sum(toList(map(Algebraic::realValue, xs))).signum());
+                implementations.put("algebraic", v -> {
+                    List<Algebraic> positives = new ArrayList<>();
+                    List<Algebraic> negatives = new ArrayList<>();
+                    for (Algebraic x : xs) {
+                        int signum = x.signum();
+                        if (signum == 1) {
+                            positives.add(x);
+                        } else if (signum == -1) {
+                            negatives.add(x);
+                        }
                     }
-                }
-                int positiveSize = positives.size();
-                int negativeSize = negatives.size();
-                if (positiveSize == 0 && negativeSize == 0) {
-                    return 0;
-                } else if (positiveSize == 0) {
-                    return -1;
-                } else if (negativeSize == 0) {
-                    return 1;
-                } else if (positiveSize < negativeSize) {
-                    Algebraic positiveSum = sum(positives).negate();
-                    Algebraic negativeSum = ZERO;
-                    for (Algebraic negative : negatives) {
-                        negativeSum = negativeSum.add(negative);
-                        if (lt(negativeSum, positiveSum)) return -1;
+                    int positiveSize = positives.size();
+                    int negativeSize = negatives.size();
+                    if (positiveSize == 0 && negativeSize == 0) {
+                        return 0;
+                    } else if (positiveSize == 0) {
+                        return -1;
+                    } else if (negativeSize == 0) {
+                        return 1;
+                    } else if (positiveSize < negativeSize) {
+                        Algebraic positiveSum = sum(positives).negate();
+                        Algebraic negativeSum = ZERO;
+                        for (Algebraic negative : negatives) {
+                            negativeSum = negativeSum.add(negative);
+                            if (lt(negativeSum, positiveSum)) return -1;
+                        }
+                        return negativeSum.equals(positiveSum) ? 0 : 1;
+                    } else {
+                        Algebraic negativeSum = sum(negatives).negate();
+                        Algebraic positiveSum = ZERO;
+                        for (Algebraic positive : positives) {
+                            positiveSum = positiveSum.add(positive);
+                            if (gt(positiveSum, negativeSum)) return 1;
+                        }
+                        return negativeSum.equals(positiveSum) ? 0 : -1;
                     }
-                    return negativeSum.equals(positiveSum) ? 0 : 1;
-                } else {
-                    Algebraic negativeSum = sum(negatives).negate();
-                    Algebraic positiveSum = ZERO;
-                    for (Algebraic positive : positives) {
-                        positiveSum = positiveSum.add(positive);
-                        if (gt(positiveSum, negativeSum)) return 1;
-                    }
-                    return negativeSum.equals(positiveSum) ? 0 : -1;
-                }
+                });
+            return ConcurrencyUtils.evaluateFastest(implementations, null).b;
         }
     }
 
@@ -2822,10 +2829,10 @@ public class AlgebraicProperties extends QBarTestProperties {
         functions.put("alt2", AlgebraicProperties::sumSign_alt2);
         functions.put("standard", Algebraic::sumSign);
         Iterable<List<Algebraic>> xss = filterInfinite(
-                yss -> productInteger(toList(map(Algebraic::degree, yss))) <= 200,
+                yss -> productInteger(toList(map(Algebraic::degree, yss))) <= 20,
                 P.withScale(1).lists(P.withScale(1).withSecondaryScale(4).algebraics())
         );
-        compareImplementations("sumSign(List<Algebraic>)", take(SMALL_LIMIT, xss), functions);
+        compareImplementations("sumSign(List<Algebraic>)", take(MEDIUM_LIMIT, xss), functions, v -> P.reset());
         Polynomial.USE_FACTOR_CACHE = true;
         Algebraic.USE_SUM_CACHE = true;
         Algebraic.USE_PRODUCT_CACHE = true;
@@ -3026,7 +3033,7 @@ public class AlgebraicProperties extends QBarTestProperties {
                         P.withScale(1).integersGeometric()
                 )
         );
-        compareImplementations("pow(int)", take(MEDIUM_LIMIT, ps), functions);
+        compareImplementations("pow(int)", take(MEDIUM_LIMIT, ps), functions, v -> P.reset());
         Polynomial.USE_FACTOR_CACHE = true;
         Algebraic.USE_SUM_CACHE = true;
         Algebraic.USE_PRODUCT_CACHE = true;

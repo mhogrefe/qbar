@@ -381,7 +381,7 @@ public class PolynomialVectorProperties extends QBarTestProperties {
                         )
                 )
         );
-        compareImplementations("subtract(PolynomialVector)", take(LIMIT, ps), functions);
+        compareImplementations("subtract(PolynomialVector)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private void propertiesMultiply_Polynomial() {
@@ -563,7 +563,7 @@ public class PolynomialVectorProperties extends QBarTestProperties {
         functions.put("simplest", p -> shiftLeft_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.shiftLeft(p.b));
         Iterable<Pair<PolynomialVector, Integer>> ps = P.pairs(P.polynomialVectors(), P.naturalIntegersGeometric());
-        compareImplementations("shiftLeft(int)", take(LIMIT, ps), functions);
+        compareImplementations("shiftLeft(int)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull PolynomialVector sum_alt(@NotNull Iterable<PolynomialVector> xs) {
@@ -666,7 +666,7 @@ public class PolynomialVectorProperties extends QBarTestProperties {
                 ),
                 map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.positiveIntegersGeometric())
         );
-        compareImplementations("sum(Iterable<PolynomialVector>)", take(LIMIT, vss), functions);
+        compareImplementations("sum(Iterable<PolynomialVector>)", take(LIMIT, vss), functions, v -> P.reset());
     }
 
     private void propertiesDelta() {
@@ -863,7 +863,7 @@ public class PolynomialVectorProperties extends QBarTestProperties {
         Map<String, Function<PolynomialVector, Polynomial>> functions = new LinkedHashMap<>();
         functions.put("simplest", PolynomialVectorProperties::squaredLength_simplest);
         functions.put("standard", PolynomialVector::squaredLength);
-        compareImplementations("squaredLength()", take(LIMIT, P.polynomialVectors()), functions);
+        compareImplementations("squaredLength()", take(LIMIT, P.polynomialVectors()), functions, v -> P.reset());
     }
 
     private void propertiesEquals() {

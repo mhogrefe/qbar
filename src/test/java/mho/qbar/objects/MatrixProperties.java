@@ -559,7 +559,7 @@ public class MatrixProperties extends QBarTestProperties {
         Map<String, Function<Matrix, Matrix>> functions = new LinkedHashMap<>();
         functions.put("alt", MatrixProperties::transpose_alt);
         functions.put("standard", Matrix::transpose);
-        compareImplementations("transpose()", take(LIMIT, P.matrices()), functions);
+        compareImplementations("transpose()", take(LIMIT, P.matrices()), functions, v -> P.reset());
     }
 
     private void propertiesConcat() {
@@ -859,7 +859,7 @@ public class MatrixProperties extends QBarTestProperties {
                         )
                 )
         );
-        compareImplementations("subtract(Matrix)", take(LIMIT, ps), functions);
+        compareImplementations("subtract(Matrix)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private void propertiesMultiply_BigInteger() {
@@ -1123,7 +1123,7 @@ public class MatrixProperties extends QBarTestProperties {
                         )
                 )
         );
-        compareImplementations("multiply(Matrix)", take(LIMIT, ps), functions);
+        compareImplementations("multiply(Matrix)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull Matrix shiftLeft_simplest(@NotNull Matrix m, int bits) {
@@ -1162,7 +1162,7 @@ public class MatrixProperties extends QBarTestProperties {
         functions.put("simplest", p -> shiftLeft_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.shiftLeft(p.b));
         Iterable<Pair<Matrix, Integer>> ps = P.pairs(P.matrices(), P.naturalIntegersGeometric());
-        compareImplementations("shiftLeft(int)", take(LIMIT, ps), functions);
+        compareImplementations("shiftLeft(int)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private void propertiesIsInRowEchelonForm() {
@@ -1246,7 +1246,7 @@ public class MatrixProperties extends QBarTestProperties {
         Map<String, Function<Matrix, Matrix>> functions = new LinkedHashMap<>();
         functions.put("simplest", MatrixProperties::primitiveRowEchelonForm_simplest);
         functions.put("standard", Matrix::primitiveRowEchelonForm);
-        compareImplementations("primitiveRowEchelonForm()", take(LIMIT, P.matrices()), functions);
+        compareImplementations("primitiveRowEchelonForm()", take(LIMIT, P.matrices()), functions, v -> P.reset());
     }
 
     private static int rank_alt(@NotNull Matrix m) {
@@ -1297,7 +1297,7 @@ public class MatrixProperties extends QBarTestProperties {
         functions.put("alt", MatrixProperties::rank_alt);
         functions.put("alt2", MatrixProperties::rank_alt2);
         functions.put("standard", Matrix::rank);
-        compareImplementations("rank()", take(LIMIT, P.matrices()), functions);
+        compareImplementations("rank()", take(LIMIT, P.matrices()), functions, v -> P.reset());
     }
 
     private static boolean isInvertible_alt(@NotNull Matrix m) {
@@ -1325,7 +1325,12 @@ public class MatrixProperties extends QBarTestProperties {
         Map<String, Function<Matrix, Boolean>> functions = new LinkedHashMap<>();
         functions.put("alt", MatrixProperties::isInvertible_alt);
         functions.put("standard", Matrix::isInvertible);
-        compareImplementations("isInvertible()", take(LIMIT, P.withScale(4).squareMatrices()), functions);
+        compareImplementations(
+                "isInvertible()",
+                take(LIMIT, P.withScale(4).squareMatrices()),
+                functions,
+                v -> P.reset()
+        );
     }
 
     private void propertiesIsInReducedRowEchelonForm() {
@@ -1411,7 +1416,12 @@ public class MatrixProperties extends QBarTestProperties {
         Map<String, Function<Matrix, Matrix>> functions = new LinkedHashMap<>();
         functions.put("simplest", MatrixProperties::primitiveReducedRowEchelonForm_simplest);
         functions.put("standard", Matrix::primitiveReducedRowEchelonForm);
-        compareImplementations("primitiveReducedRowEchelonForm()", take(LIMIT, P.matrices()), functions);
+        compareImplementations(
+                "primitiveReducedRowEchelonForm()",
+                take(LIMIT, P.matrices()),
+                functions,
+                v -> P.reset()
+        );
     }
 
     private static @NotNull Optional<RationalVector> solveLinearSystem_simplest(@NotNull Matrix m, @NotNull Vector v) {
@@ -1501,7 +1511,7 @@ public class MatrixProperties extends QBarTestProperties {
                         map(v -> new Pair<>(zero(v.dimension(), 0), v), P.withScale(4).vectorsAtLeast(1))
                 )
         );
-        compareImplementations("solveLinearSystem(Vector)", take(LIMIT, ps), functions);
+        compareImplementations("solveLinearSystem(Vector)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private void propertiesSolveLinearSystemPermissive() {
@@ -1599,7 +1609,7 @@ public class MatrixProperties extends QBarTestProperties {
         functions.put("alt", MatrixProperties::invert_alt);
         functions.put("standard", Matrix::invert);
         Iterable<Matrix> ms = P.withScale(4).withSecondaryScale(4).squareMatrices();
-        compareImplementations("invert()", take(LIMIT, ms), functions);
+        compareImplementations("invert()", take(LIMIT, ms), functions, v -> P.reset());
     }
 
     private static @NotNull BigInteger determinant_simplest(@NotNull Matrix m) {
@@ -1681,7 +1691,12 @@ public class MatrixProperties extends QBarTestProperties {
         functions.put("simplest", MatrixProperties::determinant_simplest);
         functions.put("Laplace", MatrixProperties::determinant_Laplace);
         functions.put("standard", Matrix::determinant);
-        compareImplementations("determinant()", take(LIMIT, P.withScale(4).squareMatrices()), functions);
+        compareImplementations(
+                "determinant()",
+                take(LIMIT, P.withScale(4).squareMatrices()),
+                functions,
+                v -> P.reset()
+        );
     }
 
     private static @NotNull Polynomial characteristicPolynomial_simplest(@NotNull Matrix m) {
@@ -1727,7 +1742,12 @@ public class MatrixProperties extends QBarTestProperties {
         functions.put("simplest", MatrixProperties::characteristicPolynomial_simplest);
         functions.put("alt", MatrixProperties::characteristicPolynomial_alt);
         functions.put("standard", Matrix::characteristicPolynomial);
-        compareImplementations("characteristicPolynomial()", take(LIMIT, P.withScale(4).squareMatrices()), functions);
+        compareImplementations(
+                "characteristicPolynomial()",
+                take(LIMIT, P.withScale(4).squareMatrices()),
+                functions,
+                v -> P.reset()
+        );
     }
 
     private void propertiesKroneckerMultiply() {
