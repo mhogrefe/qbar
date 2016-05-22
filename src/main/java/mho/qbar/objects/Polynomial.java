@@ -2783,6 +2783,62 @@ public final class Polynomial implements
     }
 
     /**
+     * Returns a {@code Polynomial} whose roots are the {@code r}th roots of the roots of {@code this}. If {@code this}
+     * has a positive leading coefficient, so does the result.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code r} must be positive.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param r the index of the root
+     * @return {@code this}(x<sup>{@code r}</sup>)
+     */
+    public @NotNull Polynomial rootRoots(int r) {
+        if (r < 1) {
+            throw new IllegalArgumentException();
+        }
+        if (r == 1 || degree() < 1) return this;
+        List<BigInteger> spacer = toList(replicate(r - 1, BigInteger.ZERO));
+        return of(toList(intercalate(spacer, map(Collections::singletonList, coefficients))));
+    }
+
+    /**
+     * Undoes the action of {@link Polynomial#rootRoots(int)}. If {@code this} is of the form p(x<sup>{@code r}</sup>),
+     * returns p; otherwise, returns empty.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code r} must be positive.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param r the index of the root
+     * @return p such that p(x<sup>{@code r}</sup>)={@code this}, if p exists
+     */
+    public @NotNull Optional<Polynomial> undoRootRoots(int r) {
+        if (r < 1) {
+            throw new IllegalArgumentException();
+        }
+        int degree = degree();
+        if (degree < 1 || r == 1) return Optional.of(this);
+        if (degree % r != 0) return Optional.empty();
+        List<BigInteger> resultCoefficients = new ArrayList<>();
+        int counter = 0;
+        for (BigInteger c : coefficients) {
+            if (counter == 0) {
+                resultCoefficients.add(c);
+                counter = r - 1;
+            } else {
+                if (!c.equals(BigInteger.ZERO)) return Optional.empty();
+                counter--;
+            }
+        }
+        return Optional.of(of(resultCoefficients));
+    }
+
+    /**
      * Returns a {@code Polynomial} whose roots are the sums of each pair of roots of {@code this} and {@code that}.
      *
      * <ul>

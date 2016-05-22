@@ -814,6 +814,26 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoRootRoots() {
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).polynomials(),
+                P.withScale(4).positiveIntegersGeometric()
+        );
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            System.out.println("rootRoots(" + p.a + ", " + p.b + ") = " + p.a.rootRoots(p.b));
+        }
+    }
+
+    private void demoUndoRootRoots() {
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).polynomials(),
+                P.withScale(4).positiveIntegersGeometric()
+        );
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            System.out.println("undoRootRoots(" + p.a + ", " + p.b + ") = " + p.a.undoRootRoots(p.b));
+        }
+    }
+
     private void demoAddRoots() {
         Iterable<Pair<Polynomial, Polynomial>> ps = P.pairs(P.withScale(4).withSecondaryScale(0).polynomials());
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {

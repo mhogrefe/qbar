@@ -9,6 +9,7 @@ import org.junit.Test;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static mho.qbar.objects.Polynomial.*;
 import static mho.qbar.objects.Polynomial.sum;
@@ -4161,6 +4162,98 @@ public class PolynomialTest {
         invertRoots_helper("x^2-4*x+7", "7*x^2-4*x+1");
         invertRoots_helper("-x^3-1", "x^3+1");
         invertRoots_helper("3*x^10", "3");
+    }
+
+    private static void rootRoots_helper(@NotNull String p, int r, @NotNull String output) {
+        Polynomial q = readStrict(p).get().rootRoots(r);
+        q.validate();
+        aeq(q, output);
+    }
+
+    private static void rootRoots_fail_helper(@NotNull String p, int r) {
+        try {
+            readStrict(p).get().rootRoots(r);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testRootRoots() {
+        rootRoots_helper("0", 1, "0");
+        rootRoots_helper("0", 2, "0");
+        rootRoots_helper("0", 3, "0");
+        rootRoots_helper("1", 1, "1");
+        rootRoots_helper("1", 2, "1");
+        rootRoots_helper("1", 3, "1");
+        rootRoots_helper("x", 1, "x");
+        rootRoots_helper("x", 2, "x^2");
+        rootRoots_helper("x", 3, "x^3");
+        rootRoots_helper("-17", 1, "-17");
+        rootRoots_helper("-17", 2, "-17");
+        rootRoots_helper("-17", 3, "-17");
+        rootRoots_helper("x^2-4*x+7", 1, "x^2-4*x+7");
+        rootRoots_helper("x^2-4*x+7", 2, "x^4-4*x^2+7");
+        rootRoots_helper("x^2-4*x+7", 3, "x^6-4*x^3+7");
+        rootRoots_helper("-x^3-1", 1, "-x^3-1");
+        rootRoots_helper("-x^3-1", 2, "-x^6-1");
+        rootRoots_helper("-x^3-1", 3, "-x^9-1");
+        rootRoots_helper("3*x^10", 1, "3*x^10");
+        rootRoots_helper("3*x^10", 2, "3*x^20");
+        rootRoots_helper("3*x^10", 3, "3*x^30");
+
+        rootRoots_fail_helper("0", 0);
+        rootRoots_fail_helper("x", 0);
+        rootRoots_fail_helper("0", -1);
+        rootRoots_fail_helper("x", -1);
+    }
+
+    private static void undoRootRoots_helper(@NotNull String p, int r, @NotNull String output) {
+        Optional<Polynomial> oq = readStrict(p).get().undoRootRoots(r);
+        if (oq.isPresent()) {
+            oq.get().validate();
+        }
+        aeq(oq, output);
+    }
+
+    private static void undoRootRoots_fail_helper(@NotNull String p, int r) {
+        try {
+            readStrict(p).get().undoRootRoots(r);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testUndoRootRoots() {
+        undoRootRoots_helper("0", 1, "Optional[0]");
+        undoRootRoots_helper("0", 2, "Optional[0]");
+        undoRootRoots_helper("0", 3, "Optional[0]");
+        undoRootRoots_helper("1", 1, "Optional[1]");
+        undoRootRoots_helper("1", 2, "Optional[1]");
+        undoRootRoots_helper("1", 3, "Optional[1]");
+        undoRootRoots_helper("x", 1, "Optional[x]");
+        undoRootRoots_helper("x^2", 2, "Optional[x]");
+        undoRootRoots_helper("x^3", 3, "Optional[x]");
+        undoRootRoots_helper("-17", 1, "Optional[-17]");
+        undoRootRoots_helper("-17", 2, "Optional[-17]");
+        undoRootRoots_helper("-17", 3, "Optional[-17]");
+        undoRootRoots_helper("x^2-4*x+7", 1, "Optional[x^2-4*x+7]");
+        undoRootRoots_helper("x^4-4*x^2+7", 2, "Optional[x^2-4*x+7]");
+        undoRootRoots_helper("x^6-4*x^3+7", 3, "Optional[x^2-4*x+7]");
+        undoRootRoots_helper("-x^3-1", 1, "Optional[-x^3-1]");
+        undoRootRoots_helper("-x^6-1", 2, "Optional[-x^3-1]");
+        undoRootRoots_helper("-x^9-1", 3, "Optional[-x^3-1]");
+        undoRootRoots_helper("3*x^10", 1, "Optional[3*x^10]");
+        undoRootRoots_helper("3*x^20", 2, "Optional[3*x^10]");
+        undoRootRoots_helper("3*x^30", 3, "Optional[3*x^10]");
+
+        undoRootRoots_helper("x+1", 2, "Optional.empty");
+        undoRootRoots_helper("x^2", 3, "Optional.empty");
+        undoRootRoots_helper("x^3-x", 3, "Optional.empty");
+
+        undoRootRoots_fail_helper("0", 0);
+        undoRootRoots_fail_helper("x", 0);
+        undoRootRoots_fail_helper("0", -1);
+        undoRootRoots_fail_helper("x", -1);
     }
 
     private static void addRoots_helper(@NotNull String a, @NotNull String b, @NotNull String output) {

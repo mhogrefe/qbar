@@ -173,6 +173,8 @@ public class PolynomialProperties extends QBarTestProperties {
         propertiesPositiveShiftRootsRight();
         compareImplementationsPositivePrimitiveShiftRootsRight();
         propertiesInvertRoots();
+        propertiesRootRoots();
+        propertiesUndoRootRoots();
         propertiesAddRoots();
         compareImplementationsAddRoots();
         propertiesMultiplyRoots();
@@ -4450,6 +4452,55 @@ public class PolynomialProperties extends QBarTestProperties {
             List<Rational> invertedRs = toList(map(Rational::invert, rs));
             Polynomial invertedRootsP = product(map(Polynomial::fromRoot, invertedRs));
             assertEquals(rs, p.invertRoots(), invertedRootsP);
+        }
+    }
+
+    private void propertiesRootRoots() {
+        initialize("rootRoots(int)");
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.polynomials(),
+                P.positiveIntegersGeometric()
+        );
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            Polynomial q = p.a.rootRoots(p.b);
+            q.validate();
+            if (p.a != ZERO) {
+                assertEquals(p, q.degree(), p.a.degree() * p.b);
+            }
+            inverse(r -> r.rootRoots(p.b), (Polynomial r) -> r.undoRootRoots(p.b).get(), p.a);
+        }
+
+        for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), P.rangeDown(-1)))) {
+            try {
+                p.a.rootRoots(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesUndoRootRoots() {
+        initialize("undoRootRoots(int)");
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.polynomials(),
+                P.positiveIntegersGeometric()
+        );
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            Optional<Polynomial> oq = p.a.undoRootRoots(p.b);
+            if (oq.isPresent()) {
+                Polynomial q = oq.get();
+                q.validate();
+                if (p.a != ZERO) {
+                    assertEquals(p, q.degree(), p.a.degree() / p.b);
+                }
+                inverse(r -> r.undoRootRoots(p.b).get(), (Polynomial r) -> r.rootRoots(p.b), p.a);
+            }
+        }
+
+        for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), P.rangeDown(-1)))) {
+            try {
+                p.a.undoRootRoots(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 
