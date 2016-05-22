@@ -101,6 +101,28 @@ public final class Algebraic implements Comparable<Algebraic> {
             p -> gt(p.a, p.b) ? new Pair<>(p.b, p.a) : p
     );
 
+    private static final @NotNull Comparator<Algebraic> COMPLEXITY_COMPARATOR = (a, b) -> {
+        int aDegree = a.degree();
+        int bDegree = b.degree();
+        if (aDegree > bDegree) return 1;
+        if (aDegree < bDegree) return -1;
+        Polynomial aMP = a.minimalPolynomial;
+        Polynomial bMP = b.minimalPolynomial;
+        int aCoefficientBitSize = 0;
+        for (BigInteger c : aMP) {
+            aCoefficientBitSize += c.bitLength();
+        }
+        int bCoefficientBitSize = 0;
+        for (BigInteger c : bMP) {
+            bCoefficientBitSize += c.bitLength();
+        }
+        if (aCoefficientBitSize > bCoefficientBitSize) return 1;
+        if (aCoefficientBitSize < bCoefficientBitSize) return -1;
+        int pCompare = aMP.compareTo(bMP);
+        if (pCompare != 0) return pCompare;
+        return Integer.compare(a.rootIndex, b.rootIndex);
+    };
+
     /**
      * The minimal polynomial of {@code this}; the unique primitive, irreducible polynomial of minimal degree with
      * positive leading coefficient that has {@code this} as a root
@@ -1949,6 +1971,261 @@ public final class Algebraic implements Comparable<Algebraic> {
         Polynomial shiftedMP = minimalPolynomial.positivePrimitiveShiftRootsRight(bits);
         Interval shiftedIsolatingInterval = shiftedMP.powerOfTwoIsolatingInterval(rootIndex);
         return new Algebraic(shiftedMP, rootIndex, shiftedIsolatingInterval, mpRootCount);
+    }
+
+    /**
+     * Returns the sum of all the {@code Algebraic}s in {@code xs}. If {@code xs} is empty, 0 is returned.
+     *
+     * <ul>
+     *  <li>{@code xs} may not contain any nulls.</li>
+     *  <li>The result may be any {@code Algebraic}.</li>
+     * </ul>
+     *
+     * @param xs a {@code List} of {@code Algebraic}s
+     * @return Σxs
+     */
+    public static @NotNull Algebraic sum(@NotNull List<Algebraic> xs) {
+        if (any(x -> x == null, xs)) {
+            throw new NullPointerException();
+        }
+        switch (xs.size()) {
+            case 0: return ZERO;
+            case 1: return xs.get(0);
+            default:
+                Map<Integer, List<Algebraic>> degreeMap = new HashMap<>();
+                for (Algebraic x : xs) {
+                    if (x != ZERO) {
+                        int degree = x.degree();
+                        List<Algebraic> degreeXs = degreeMap.get(degree);
+                        if (degreeXs == null) {
+                            degreeXs = new ArrayList<>();
+                            degreeMap.put(degree, degreeXs);
+                        }
+                        degreeXs.add(x);
+                    }
+                }
+                List<Algebraic> sums = new ArrayList<>();
+                for (Map.Entry<Integer, List<Algebraic>> entry : degreeMap.entrySet()) {
+                    if (entry.getValue().size() == 1) {
+                        sums.add(entry.getValue().get(0));
+                        continue;
+                    }
+                    if (entry.getKey() == 1) {
+                        sums.add(Algebraic.of(Rational.sum(map(Algebraic::rationalValueExact, entry.getValue()))));
+                        continue;
+                    }
+                    List<Algebraic> equalDegreeXs = entry.getValue();
+                    List<Algebraic> condensed = new ArrayList<>();
+                    Set<Integer> indicesToSkip = new HashSet<>();
+                    for (int i = 0; i < equalDegreeXs.size(); i++) {
+                        if (indicesToSkip.contains(i)) continue;
+                        Algebraic x = equalDegreeXs.get(i);
+                        Algebraic negativeX = i == equalDegreeXs.size() - 1 ? null : x.negate();
+                        int multiple = 1;
+                        for (int j = i + 1; j < equalDegreeXs.size(); j++) {
+                            if (indicesToSkip.contains(j)) continue;
+                            Algebraic y = equalDegreeXs.get(j);
+                            if (x.equals(y)) {
+                                multiple++;
+                                indicesToSkip.add(j);
+                            } else {
+                                //noinspection ConstantConditions
+                                if (negativeX.equals(y)) {
+                                    multiple--;
+                                    indicesToSkip.add(j);
+                                }
+                            }
+                        }
+                        switch (multiple) {
+                            case 0:
+                                break;
+                            case 1:
+                                condensed.add(x);
+                                break;
+                            default:
+                                condensed.add(x.multiply(multiple));
+                        }
+                    }
+                    Collections.sort(condensed, COMPLEXITY_COMPARATOR);
+                    sums.add(foldl(Algebraic::add, ZERO, condensed));
+                }
+                Collections.sort(sums, COMPLEXITY_COMPARATOR);
+                return foldl(Algebraic::add, ZERO, sums);
+        }
+    }
+
+    /**
+     * Returns the product of all the {@code Algebraic}s in {@code xs}. If {@code xs} is empty, 1 is returned.
+     *
+     * <ul>
+     *  <li>{@code xs} may not contain any nulls.</li>
+     *  <li>The result may be any {@code Algebraic}.</li>
+     * </ul>
+     *
+     * @param xs a {@code List} of {@code Algebraic}s
+     * @return Πxs
+     */
+    public static @NotNull Algebraic product(@NotNull List<Algebraic> xs) {
+        if (any(x -> x == null, xs)) {
+            throw new NullPointerException();
+        }
+        if (any(x -> x == ZERO, xs)) {
+            return ZERO;
+        }
+        switch (xs.size()) {
+            case 0: return ONE;
+            case 1: return xs.get(0);
+            default:
+                Map<Integer, List<Algebraic>> degreeMap = new HashMap<>();
+                for (Algebraic x : xs) {
+                    if (x != ONE) {
+                        int degree = x.degree();
+                        List<Algebraic> degreeXs = degreeMap.get(degree);
+                        if (degreeXs == null) {
+                            degreeXs = new ArrayList<>();
+                            degreeMap.put(degree, degreeXs);
+                        }
+                        degreeXs.add(x);
+                    }
+                }
+                List<Algebraic> products = new ArrayList<>();
+                for (Map.Entry<Integer, List<Algebraic>> entry : degreeMap.entrySet()) {
+                    if (entry.getValue().size() == 1) {
+                        products.add(entry.getValue().get(0));
+                        continue;
+                    }
+                    if (entry.getKey() == 1) {
+                        products.add(
+                                Algebraic.of(Rational.product(map(Algebraic::rationalValueExact, entry.getValue())))
+                        );
+                        continue;
+                    }
+                    List<Algebraic> equalDegreeXs = entry.getValue();
+                    List<Algebraic> condensed = new ArrayList<>();
+                    Set<Integer> indicesToSkip = new HashSet<>();
+                    for (int i = 0; i < equalDegreeXs.size(); i++) {
+                        if (indicesToSkip.contains(i)) continue;
+                        Algebraic x = equalDegreeXs.get(i);
+                        Algebraic inverseX = i == equalDegreeXs.size() - 1 ? null : x.invert();
+                        int power = 1;
+                        for (int j = i + 1; j < equalDegreeXs.size(); j++) {
+                            if (indicesToSkip.contains(j)) continue;
+                            Algebraic y = equalDegreeXs.get(j);
+                            if (x.equals(y)) {
+                                power++;
+                                indicesToSkip.add(j);
+                            } else {
+                                //noinspection ConstantConditions
+                                if (inverseX.equals(y)) {
+                                    power--;
+                                    indicesToSkip.add(j);
+                                }
+                            }
+                        }
+                        switch (power) {
+                            case 0:
+                                break;
+                            case 1:
+                                condensed.add(x);
+                                break;
+                            default:
+                                condensed.add(x.pow(power));
+                        }
+                    }
+                    Collections.sort(condensed, COMPLEXITY_COMPARATOR);
+                    products.add(foldl(Algebraic::multiply, ONE, condensed));
+                }
+                Collections.sort(products, COMPLEXITY_COMPARATOR);
+                return foldl(Algebraic::multiply, ONE, products);
+        }
+    }
+
+    /**
+     * Returns the sign of the sum of a {@code List} of {@code Algebraic}s. If {@code xs} is empty, 0 is returned.
+     *
+     * <ul>
+     *  <li>{@code xs} cannot contain nulls.</li>
+     *  <li>The result may be –1, 0, or 1.</li>
+     * </ul>
+     *
+     * @param xs a {@code List} of {@code Algebraic}s
+     * @return sgn(Σxs)
+     */
+    public static int sumSign(@NotNull List<Algebraic> xs) {
+        if (any(x -> x == null, xs)) {
+            throw new NullPointerException();
+        }
+        switch (xs.size()) {
+            case 0:
+                return 0;
+            case 1:
+                return xs.get(0).signum();
+            default:
+                Map<String, Function<Void, Integer>> implementations = new HashMap<>();
+                implementations.put("real", v -> Real.sum(toList(map(Algebraic::realValue, xs))).signum());
+                implementations.put("algebraic", v -> {
+                    List<Algebraic> positives = new ArrayList<>();
+                    List<Algebraic> negatives = new ArrayList<>();
+                    for (Algebraic x : xs) {
+                        int signum = x.signum();
+                        if (signum == 1) {
+                            positives.add(x);
+                        } else if (signum == -1) {
+                            negatives.add(x);
+                        }
+                    }
+                    int positiveSize = positives.size();
+                    int negativeSize = negatives.size();
+                    if (positiveSize == 0 && negativeSize == 0) {
+                        return 0;
+                    } else if (positiveSize == 0) {
+                        return -1;
+                    } else if (negativeSize == 0) {
+                        return 1;
+                    } else if (positiveSize < negativeSize) {
+                        Algebraic positiveSum = sum(positives).negate();
+                        Algebraic negativeSum = ZERO;
+                        for (Algebraic negative : negatives) {
+                            negativeSum = negativeSum.add(negative);
+                            if (lt(negativeSum, positiveSum)) return -1;
+                        }
+                        return negativeSum.equals(positiveSum) ? 0 : 1;
+                    } else {
+                        Algebraic negativeSum = sum(negatives).negate();
+                        Algebraic positiveSum = ZERO;
+                        for (Algebraic positive : positives) {
+                            positiveSum = positiveSum.add(positive);
+                            if (gt(positiveSum, negativeSum)) return 1;
+                        }
+                        return negativeSum.equals(positiveSum) ? 0 : -1;
+                    }
+                });
+            return ConcurrencyUtils.evaluateFastest(implementations, null).b;
+        }
+    }
+
+    /**
+     * Returns the differences between successive {@code Algebraic}s in {@code xs}. If {@code xs} contains a single
+     * {@code Algebraic}, an empty {@code Iterable} is returned. {@code xs} cannot be empty. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code xs} must not be empty and may not contain any nulls.</li>
+     *  <li>The result is does not contain any nulls.</li>
+     * </ul>
+     *
+     * Length is |{@code xs}|–1
+     *
+     * @param xs an {@code Iterable} of {@code Algebraic}s.
+     * @return Δxs
+     */
+    public static @NotNull Iterable<Algebraic> delta(@NotNull Iterable<Algebraic> xs) {
+        if (isEmpty(xs)) {
+            throw new IllegalArgumentException("xs must not be empty.");
+        }
+        if (head(xs) == null) {
+            throw new NullPointerException();
+        }
+        return adjacentPairsWith((x, y) -> y.subtract(x), xs);
     }
 
     /**

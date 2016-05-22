@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.qbar.testing.QBarDemos;
+import mho.qbar.testing.QBarTesting;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.numberUtils.FloatingPointUtils;
 import mho.wheels.ordering.Ordering;
@@ -11,9 +12,11 @@ import org.jetbrains.annotations.NotNull;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.util.List;
 
 import static mho.qbar.objects.Algebraic.*;
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.testing.Testing.*;
 import static mho.wheels.testing.Testing.MEDIUM_LIMIT;
 import static mho.wheels.testing.Testing.nicePrint;
 
@@ -515,6 +518,48 @@ public class AlgebraicDemos extends QBarDemos {
     private void demoShiftRight() {
         for (Pair<Algebraic, Integer> p : take(LIMIT, P.pairs(P.withScale(4).algebraics(), P.integersGeometric()))) {
             System.out.println(p.a + " >> " + p.b + " = " + p.a.shiftRight(p.b));
+        }
+    }
+
+    private void demoSum() {
+        Iterable<List<Algebraic>> xss = P.withScale(1).lists(P.withScale(1).withSecondaryScale(4).algebraics());
+        for (List<Algebraic> xs : take(SMALL_LIMIT, xss)) {
+            String listString = tail(init(xs.toString()));
+            System.out.println("Σ(" + listString + ") = " + sum(xs));
+        }
+    }
+
+    private void demoProduct() {
+        Iterable<List<Algebraic>> xss = P.withScale(1).lists(P.withScale(1).withSecondaryScale(4).algebraics());
+        for (List<Algebraic> xs : take(SMALL_LIMIT, xss)) {
+            String listString = tail(init(xs.toString()));
+            System.out.println("Π(" + listString + ") = " + product(xs));
+        }
+    }
+
+    private void demoSumSign() {
+        Iterable<List<Algebraic>> xss = P.withScale(1).lists(P.withScale(1).withSecondaryScale(4).algebraics());
+        for (List<Algebraic> xs : take(SMALL_LIMIT, xss)) {
+            String listString = tail(init(xs.toString()));
+            System.out.println("sumSign(" + listString + ") = " + sumSign(xs));
+        }
+    }
+
+    private void demoDelta_finite() {
+        Iterable<List<Algebraic>> xss = P.withScale(2).listsAtLeast(
+                1,
+                P.withScale(1).withSecondaryScale(4).algebraics()
+        );
+        for (List<Algebraic> xs : take(SMALL_LIMIT, xss)) {
+            String listString = tail(init(xs.toString()));
+            System.out.println("Δ(" + listString + ") = " + its(delta(xs)));
+        }
+    }
+
+    private void demoDelta_infinite() {
+        for (Iterable<Algebraic> xs : take(SMALL_LIMIT, P.prefixPermutations(QBarTesting.QEP.algebraics()))) {
+            String listString = tail(init(its(xs)));
+            System.out.println("Δ(" + listString + ") = " + its(delta(xs)));
         }
     }
 

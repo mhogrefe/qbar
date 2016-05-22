@@ -8,6 +8,7 @@ import org.junit.Test;
 import java.util.List;
 
 import static mho.qbar.objects.Algebraic.*;
+import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
@@ -3478,6 +3479,114 @@ public class AlgebraicTest {
         shiftRight_helper("root 0 of x^5-x-1", -2, "root 0 of x^5-256*x-1024");
         shiftRight_helper("root 0 of x^5-x-1", -3, "root 0 of x^5-4096*x-32768");
         shiftRight_helper("root 0 of x^5-x-1", -4, "root 0 of x^5-65536*x-1048576");
+    }
+
+    private static void sum_helper(@NotNull String input, @NotNull String output) {
+        aeq(sum(readAlgebraicList(input)), output);
+    }
+
+    private static void sum_fail_helper(@NotNull String input) {
+        try {
+            sum(readAlgebraicListWithNulls(input));
+            fail();
+        } catch (NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testSum() {
+        sum_helper("[]", "0");
+        sum_helper("[1]", "1");
+        sum_helper("[sqrt(2)]", "sqrt(2)");
+        sum_helper("[sqrt(2), sqrt(3), sqrt(5), sqrt(7)]",
+                "root 15 of x^16-136*x^14+6476*x^12-141912*x^10+1513334*x^8-7453176*x^6+13950764*x^4-5596840*x^2+" +
+                "46225");
+        sum_helper("[-sqrt(2), -4/3, 0, 1/2, 1, root 0 of x^5-x-1, sqrt(2), (1+sqrt(5))/2, sqrt(3)]",
+                "root 3 of 3656158440062976*x^20-48748779200839680*x^19+153355534569308160*x^18+" +
+                "629671731344179200*x^17-4384284086067462144*x^16+1471761754280165376*x^15+" +
+                "37397751973500026880*x^14-60096850531909632000*x^13-132412956589604265984*x^12+" +
+                "387337705344476577792*x^11+89646496734273933312*x^10-1211157260332704645120*x^9+" +
+                "1264048530645296042496*x^8+227770961594495459328*x^7-1546260547736250883584*x^6+" +
+                "1492241494101627930624*x^5+262046804243585147856*x^4-1365238895579775294336*x^3+" +
+                "216793940717421461592*x^2+512356049148533523936*x-272520275653354815839");
+        sum_helper("[sqrt(2), -sqrt(2)]", "0");
+
+        sum_fail_helper("[10, null, sqrt(2)]");
+    }
+
+    private static void product_helper(@NotNull String input, @NotNull String output) {
+        aeq(product(readAlgebraicList(input)), output);
+    }
+
+    private static void product_fail_helper(@NotNull String input) {
+        try {
+            product(readAlgebraicListWithNulls(input));
+            fail();
+        } catch (NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testProduct() {
+        product_helper("[]", "1");
+        product_helper("[0]", "0");
+        product_helper("[sqrt(2)]", "sqrt(2)");
+        product_helper("[sqrt(2), sqrt(3), sqrt(5), sqrt(7)]", "sqrt(210)");
+        product_helper("[-sqrt(2), -4/3, 0, 1/2, 1, root 0 of x^5-x-1, sqrt(2), (1+sqrt(5))/2, sqrt(3)]", "0");
+        product_helper("[-sqrt(2), -4/3, 1/2, 1, root 0 of x^5-x-1, sqrt(2), (1+sqrt(5))/2, sqrt(3)]",
+                "root 3 of 59049*x^20-23514624*x^16+2436562944*x^12-31340888064*x^10-19025362944*x^8+" +
+                "260919263232*x^6+38654705664*x^4-618475290624*x^2+1099511627776");
+        product_helper("[sqrt(2), sqrt(2)/2]", "1");
+
+        product_fail_helper("[10, null, sqrt(2)]");
+    }
+
+    private static void sumSign_helper(@NotNull String input, int output) {
+        aeq(sumSign(readAlgebraicList(input)), output);
+    }
+
+    private static void sumSign_fail_helper(@NotNull String input) {
+        try {
+            sumSign(readAlgebraicListWithNulls(input));
+            fail();
+        } catch (NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testSumSign() {
+        sumSign_helper("[]", 0);
+        sumSign_helper("[0]", 0);
+        sumSign_helper("[sqrt(2)]", 1);
+        sumSign_helper("[sqrt(2), sqrt(3), sqrt(5), sqrt(7)]", 1);
+        sumSign_helper("[-sqrt(2), -4/3, 0, 1/2, 1, root 0 of x^5-x-1, sqrt(2), (1+sqrt(5))/2, sqrt(3)]", 1);
+        sumSign_helper("[sqrt(2), -sqrt(2)]", 0);
+
+        sumSign_fail_helper("[10, null, sqrt(2)]");
+    }
+
+    private static void delta_helper(@NotNull Iterable<Algebraic> input, @NotNull String output) {
+        aeqitLimit(TINY_LIMIT, delta(input), output);
+    }
+
+    private static void delta_helper(@NotNull String input, @NotNull String output) {
+        delta_helper(readAlgebraicList(input), output);
+    }
+
+    private static void delta_fail_helper(@NotNull String input) {
+        try {
+            toList(delta(readAlgebraicListWithNulls(input)));
+            fail();
+        } catch (IllegalArgumentException | NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testDelta() {
+        delta_helper("[sqrt(2)]", "[]");
+        delta_helper("[sqrt(2), sqrt(3), sqrt(5), sqrt(7)]", "[1, 9/5, -18/5]");
+        delta_helper("[-sqrt(2), -4/3, 0, 1/2, 1, root 0 of x^5-x-1, sqrt(2), (1+sqrt(5))/2, sqrt(3)]",
+                "[1, 9/5, -18/5]");
+        //todo square roots
+
+        delta_fail_helper("[]");
+        delta_fail_helper("[10, null, sqrt(2)]");
     }
 
     private static void pow_helper(@NotNull String r, int p, @NotNull String output) {

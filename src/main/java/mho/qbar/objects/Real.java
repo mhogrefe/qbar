@@ -188,6 +188,7 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
         T lowerValue = null;
         T upperValue = null;
         for (Interval a : intervals) {
+            if (Thread.interrupted()) return null;
             if (a.isFinitelyBounded()) {
                 Rational lower = a.getLower().get();
                 Rational upper = a.getUpper().get();
@@ -428,6 +429,14 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
                 return lowerInterval.convexHull(upperInterval);
             }
         }
+    }
+
+    public static @NotNull Real sum(@NotNull List<Real> xs) {
+        return new Real(map(Interval::sum, transpose(map(r -> r.intervals, xs))));
+    }
+
+    public static @NotNull Real product(@NotNull List<Real> xs) {
+        return new Real(map(Interval::product, transpose(map(r -> r.intervals, xs))));
     }
 
     public static @NotNull Real champernowne(@NotNull BigInteger base) {

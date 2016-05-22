@@ -4,6 +4,7 @@ import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
 import mho.wheels.concurrency.ConcurrencyUtils;
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.BigDecimalUtils;
@@ -109,6 +110,13 @@ public class AlgebraicProperties extends QBarTestProperties {
         compareImplementationsShiftLeft();
         propertiesShiftRight();
         compareImplementationsShiftRight();
+        propertiesSum();
+        compareImplementationsSum();
+        propertiesProduct();
+        compareImplementationsProduct();
+        propertiesSumSign();
+        compareImplementationsSumSign();
+        propertiesDelta();
         propertiesPow();
         compareImplementationsPow();
         propertiesEquals();
@@ -139,7 +147,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             try {
                 of(Polynomial.ZERO, i);
                 fail(i);
-            } catch (IllegalArgumentException ignored) {}
+            } catch (ArithmeticException ignored) {}
         }
 
         for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), P.negativeIntegersGeometric()))) {
@@ -2597,6 +2605,276 @@ public class AlgebraicProperties extends QBarTestProperties {
         );
     }
 
+    private static @NotNull Algebraic sum_simplest(@NotNull List<Algebraic> xs) {
+        return foldl(Algebraic::add, ZERO, xs);
+    }
+
+    private void propertiesSum() {
+        initialize("sum(List<Algebraic>)");
+        Iterable<List<Algebraic>> xss = filterInfinite(
+                yss -> productInteger(map(Algebraic::degree, yss)) <= 10,
+                P.withScale(1).lists(P.withScale(1).withSecondaryScale(4).algebraics())
+        );
+        for (List<Algebraic> xs : take(SMALL_LIMIT, xss)) {
+            Algebraic sum = sum(xs);
+            sum.validate();
+            assertEquals(xs, sum(xs), sum_simplest(xs));
+        }
+
+        Iterable<Pair<List<Algebraic>, List<Algebraic>>> ps = filterInfinite(
+                q -> !q.a.equals(q.b),
+                P.dependentPairs(xss, P::permutationsFinite)
+        );
+        for (Pair<List<Algebraic>, List<Algebraic>> p : take(SMALL_LIMIT, ps)) {
+            assertEquals(p, sum(p.a), sum(p.b));
+        }
+
+        for (Algebraic x : take(LIMIT, P.withScale(1).withSecondaryScale(4).algebraics())) {
+            assertEquals(x, sum(Collections.singletonList(x)), x);
+        }
+
+        for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.pairs(P.withScale(1).withSecondaryScale(4).algebraics()))) {
+            assertEquals(p, sum(Arrays.asList(p.a, p.b)), p.a.add(p.b));
+        }
+
+        Iterable<List<Algebraic>> xssFail = filterInfinite(
+                ys -> !ys.isEmpty(),
+                P.listsWithElement(null, P.withScale(1).algebraics())
+        );
+        for (List<Algebraic> xs : take(LIMIT, xssFail)) {
+            try {
+                sum(xs);
+                fail(xs);
+            } catch (NullPointerException | IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void compareImplementationsSum() {
+        Polynomial.USE_FACTOR_CACHE = false;
+        Algebraic.USE_SUM_CACHE = false;
+        Algebraic.USE_PRODUCT_CACHE = false;
+        Map<String, Function<List<Algebraic>, Algebraic>> functions = new LinkedHashMap<>();
+        functions.put("simplest", AlgebraicProperties::sum_simplest);
+        functions.put("standard", Algebraic::sum);
+        Iterable<List<Algebraic>> xss = P.withScale(1).lists(P.withScale(1).withSecondaryScale(4).algebraics());
+        compareImplementations("sum(Iterable<Algebraic>)", take(SMALL_LIMIT, xss), functions);
+        Polynomial.USE_FACTOR_CACHE = true;
+        Algebraic.USE_SUM_CACHE = true;
+        Algebraic.USE_PRODUCT_CACHE = true;
+    }
+
+    private static @NotNull Algebraic product_simplest(@NotNull List<Algebraic> xs) {
+        return foldl(Algebraic::multiply, ONE, xs);
+    }
+
+    private void propertiesProduct() {
+        initialize("product(List<Algebraic>)");
+        Iterable<List<Algebraic>> xss = filterInfinite(
+                yss -> productInteger(map(Algebraic::degree, yss)) <= 10,
+                P.withScale(1).lists(P.withScale(1).withSecondaryScale(4).algebraics())
+        );
+        for (List<Algebraic> xs : take(SMALL_LIMIT, xss)) {
+            Algebraic product = product(xs);
+            product.validate();
+            assertEquals(xs, product(xs), product_simplest(xs));
+        }
+
+        Iterable<Pair<List<Algebraic>, List<Algebraic>>> ps = filterInfinite(
+                q -> !q.a.equals(q.b),
+                P.dependentPairs(xss, P::permutationsFinite)
+        );
+        for (Pair<List<Algebraic>, List<Algebraic>> p : take(SMALL_LIMIT, ps)) {
+            assertEquals(p, product_simplest(p.a), product(p.b));
+        }
+
+        for (Algebraic x : take(LIMIT, P.withScale(1).withSecondaryScale(4).algebraics())) {
+            assertEquals(x, product(Collections.singletonList(x)), x);
+        }
+
+        for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.pairs(P.withScale(1).withSecondaryScale(4).algebraics()))) {
+            assertEquals(p, product(Arrays.asList(p.a, p.b)), p.a.multiply(p.b));
+        }
+
+        Iterable<List<Algebraic>> xssFail = filterInfinite(
+                ys -> !ys.isEmpty(),
+                P.listsWithElement(null, P.withScale(1).algebraics())
+        );
+        for (List<Algebraic> xs : take(LIMIT, xssFail)) {
+            try {
+                product(xs);
+                fail(xs);
+            } catch (NullPointerException | IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void compareImplementationsProduct() {
+        Polynomial.USE_FACTOR_CACHE = false;
+        Algebraic.USE_SUM_CACHE = false;
+        Algebraic.USE_PRODUCT_CACHE = false;
+        Map<String, Function<List<Algebraic>, Algebraic>> functions = new LinkedHashMap<>();
+        functions.put("simplest", AlgebraicProperties::sum_simplest);
+        functions.put("standard", Algebraic::sum);
+        Iterable<List<Algebraic>> xss = P.withScale(1).lists(P.withScale(1).withSecondaryScale(4).algebraics());
+        compareImplementations("product(List<Algebraic>)", take(SMALL_LIMIT, xss), functions);
+        Polynomial.USE_FACTOR_CACHE = true;
+        Algebraic.USE_SUM_CACHE = true;
+        Algebraic.USE_PRODUCT_CACHE = true;
+    }
+
+    private static int sumSign_simplest(@NotNull List<Algebraic> xs) {
+        return sum(xs).signum();
+    }
+
+    private static int sumSign_alt(@NotNull List<Algebraic> xs) {
+        switch (xs.size()) {
+            case 0:
+                return 0;
+            case 1:
+                return xs.get(0).signum();
+            default:
+                return Integer.signum(sum(toList(tail(xs))).compareTo(head(xs).negate()));
+        }
+    }
+
+    public static int sumSign_alt2(@NotNull List<Algebraic> xs) {
+        if (any(x -> x == null, xs)) {
+            throw new NullPointerException();
+        }
+        switch (xs.size()) {
+            case 0:
+                return 0;
+            case 1:
+                return xs.get(0).signum();
+            default:
+                List<Algebraic> positives = new ArrayList<>();
+                List<Algebraic> negatives = new ArrayList<>();
+                for (Algebraic x : xs) {
+                    int signum = x.signum();
+                    if (signum == 1) {
+                        positives.add(x);
+                    } else if (signum == -1) {
+                        negatives.add(x);
+                    }
+                }
+                int positiveSize = positives.size();
+                int negativeSize = negatives.size();
+                if (positiveSize == 0 && negativeSize == 0) {
+                    return 0;
+                } else if (positiveSize == 0) {
+                    return -1;
+                } else if (negativeSize == 0) {
+                    return 1;
+                } else if (positiveSize < negativeSize) {
+                    Algebraic positiveSum = sum(positives).negate();
+                    Algebraic negativeSum = ZERO;
+                    for (Algebraic negative : negatives) {
+                        negativeSum = negativeSum.add(negative);
+                        if (lt(negativeSum, positiveSum)) return -1;
+                    }
+                    return negativeSum.equals(positiveSum) ? 0 : 1;
+                } else {
+                    Algebraic negativeSum = sum(negatives).negate();
+                    Algebraic positiveSum = ZERO;
+                    for (Algebraic positive : positives) {
+                        positiveSum = positiveSum.add(positive);
+                        if (gt(positiveSum, negativeSum)) return 1;
+                    }
+                    return negativeSum.equals(positiveSum) ? 0 : -1;
+                }
+        }
+    }
+
+    private void propertiesSumSign() {
+        initialize("sumSign(List<Algebraic>)");
+        Iterable<List<Algebraic>> xss = P.withScale(1).lists(P.withScale(1).withSecondaryScale(4).algebraics());
+        for (List<Algebraic> xs : take(SMALL_LIMIT, xss)) {
+            int sumSign = sumSign(xs);
+            assertEquals(xs, sumSign_simplest(xs), sumSign);
+            assertEquals(xs, sumSign_alt(xs), sumSign);
+            assertEquals(xs, sumSign_alt2(xs), sumSign);
+            assertTrue(xs, sumSign == 0 || sumSign == 1 || sumSign == -1);
+            assertEquals(xs, sumSign(toList(map(Algebraic::negate, xs))), -sumSign);
+        }
+
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            assertEquals(x, sumSign(Collections.singletonList(x)), x.signum());
+        }
+
+        for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.pairs(P.withScale(1).withSecondaryScale(4).algebraics()))) {
+            assertEquals(p, sumSign(Pair.toList(p)), Integer.signum(p.a.compareTo(p.b.negate())));
+        }
+
+        for (List<Algebraic> xs : take(LIMIT, P.listsWithElement(null, P.algebraics()))) {
+            try {
+                sumSign(xs);
+                fail(xs);
+            } catch (NullPointerException ignored) {}
+        }
+    }
+
+    private void compareImplementationsSumSign() {
+        Polynomial.USE_FACTOR_CACHE = false;
+        Algebraic.USE_SUM_CACHE = false;
+        Algebraic.USE_PRODUCT_CACHE = false;
+        Map<String, Function<List<Algebraic>, Integer>> functions = new LinkedHashMap<>();
+        functions.put("simplest", AlgebraicProperties::sumSign_simplest);
+        functions.put("alt", AlgebraicProperties::sumSign_alt);
+        functions.put("alt2", AlgebraicProperties::sumSign_alt2);
+        functions.put("standard", Algebraic::sumSign);
+        Iterable<List<Algebraic>> xss = filterInfinite(
+                yss -> productInteger(map(Algebraic::degree, yss)) <= 200,
+                P.withScale(1).lists(P.withScale(1).withSecondaryScale(4).algebraics())
+        );
+        compareImplementations("sumSign(List<Algebraic>)", take(SMALL_LIMIT, xss), functions);
+        Polynomial.USE_FACTOR_CACHE = true;
+        Algebraic.USE_SUM_CACHE = true;
+        Algebraic.USE_PRODUCT_CACHE = true;
+    }
+
+    private void propertiesDelta() {
+        initialize("delta(Iterable<Algebraic>)");
+        Iterable<List<Algebraic>> xss = P.withScale(2).listsAtLeast(
+                1,
+                P.withScale(1).withSecondaryScale(4).algebraics()
+        );
+        for (List<Algebraic> xs : take(SMALL_LIMIT, xss)) {
+            Iterable<Algebraic> deltas = delta(xs);
+            deltas.forEach(Algebraic::validate);
+            aeq(xs, length(deltas), length(xs) - 1);
+            Iterable<Algebraic> reversed = reverse(map(Algebraic::negate, delta(reverse(xs))));
+            aeqit(xs, deltas, reversed);
+            testNoRemove(TINY_LIMIT, deltas);
+            testHasNext(deltas);
+        }
+
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            assertTrue(x, isEmpty(delta(Collections.singletonList(x))));
+        }
+
+        for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.pairs(P.withScale(1).withSecondaryScale(4).algebraics()))) {
+            aeqit(p, delta(Pair.toList(p)), Collections.singletonList(p.b.subtract(p.a)));
+        }
+
+        for (Iterable<Algebraic> xs : take(SMALL_LIMIT, P.prefixPermutations(QBarTesting.QEP.algebraics()))) {
+            Iterable<Algebraic> deltas = delta(xs);
+            List<Algebraic> deltaPrefix = toList(take(TINY_LIMIT, deltas));
+            deltaPrefix.forEach(Algebraic::validate);
+            aeq(IterableUtils.toString(TINY_LIMIT, xs), length(deltaPrefix), TINY_LIMIT);
+            testNoRemove(TINY_LIMIT, deltas);
+        }
+
+        Iterable<List<Algebraic>> xssFail = P.withScale(3).listsWithElement(
+                null,
+                P.withScale(1).withSecondaryScale(4).algebraics()
+        );
+        for (List<Algebraic> xs : take(LIMIT, xssFail)) {
+            try {
+                toList(delta(xs));
+                fail(xs);
+            } catch (NullPointerException ignored) {}
+        }
+    }
+
     private static @NotNull Algebraic pow_alt(@NotNull Algebraic x, int p) {
         if (p == 0 || x == ONE) return ONE;
         if (p == 1) return x;
@@ -2749,6 +3027,9 @@ public class AlgebraicProperties extends QBarTestProperties {
                 )
         );
         compareImplementations("pow(int)", take(MEDIUM_LIMIT, ps), functions);
+        Polynomial.USE_FACTOR_CACHE = true;
+        Algebraic.USE_SUM_CACHE = true;
+        Algebraic.USE_PRODUCT_CACHE = true;
     }
 
     private void propertiesEquals() {

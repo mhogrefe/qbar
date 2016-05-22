@@ -2640,6 +2640,8 @@ public class RationalProperties extends QBarTestProperties {
             int sumSign = sumSign(rs);
             assertEquals(rs, sumSign_simplest(rs), sumSign);
             assertEquals(rs, sumSign_alt(rs), sumSign);
+            assertEquals(rs, sumSign_alt2(rs), sumSign);
+            assertEquals(rs, sumSign_alt3(rs), sumSign);
             assertTrue(rs, sumSign == 0 || sumSign == 1 || sumSign == -1);
             assertEquals(rs, sumSign(toList(map(Rational::negate, rs))), -sumSign);
         }
