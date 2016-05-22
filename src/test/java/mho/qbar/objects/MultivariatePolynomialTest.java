@@ -2156,7 +2156,7 @@ public class MultivariatePolynomialTest {
             @NotNull String s
     ) {
         return Readers.readListStrict(
-                u -> Pair.read(
+                u -> Pair.readStrict(
                         u,
                         t -> NullableOptional.fromOptional(Monomial.readStrict(t)),
                         t -> NullableOptional.fromOptional(Readers.readBigIntegerStrict(t))
@@ -2168,7 +2168,7 @@ public class MultivariatePolynomialTest {
             @NotNull String s
     ) {
         return Readers.readListWithNullsStrict(
-                u -> Pair.read(
+                u -> Pair.readStrict(
                         u, Readers.readWithNullsStrict(Monomial::readStrict),
                         Readers.readWithNullsStrict(Readers::readBigIntegerStrict)
                 )
@@ -2195,7 +2195,7 @@ public class MultivariatePolynomialTest {
     Map<Variable, BigInteger> readVariableBigIntegerMap(@NotNull String s) {
         return IterableUtils.toMap(
                 Readers.readListStrict(
-                        u -> Pair.read(
+                        u -> Pair.readStrict(
                                 u,
                                 t -> NullableOptional.fromOptional(Variable.readStrict(t)),
                                 t -> NullableOptional.fromOptional(Readers.readBigIntegerStrict(t))
@@ -2207,7 +2207,7 @@ public class MultivariatePolynomialTest {
     private static @NotNull Map<Variable, BigInteger> readVariableBigIntegerMapWithNulls(@NotNull String s) {
         return IterableUtils.toMap(
                 Readers.readListStrict(
-                        u -> Pair.read(
+                        u -> Pair.readStrict(
                                 u,
                                 Readers.readWithNullsStrict(Variable::readStrict),
                                 Readers.readWithNullsStrict(Readers::readBigIntegerStrict)
@@ -2219,7 +2219,7 @@ public class MultivariatePolynomialTest {
     private static @NotNull Map<Variable, Rational> readVariableRationalMap(@NotNull String s) {
         return IterableUtils.toMap(
                 Readers.readListStrict(
-                        u -> Pair.read(
+                        u -> Pair.readStrict(
                                 u,
                                 t -> NullableOptional.fromOptional(Variable.readStrict(t)),
                                 t -> NullableOptional.fromOptional(Rational.readStrict(t))
@@ -2231,7 +2231,7 @@ public class MultivariatePolynomialTest {
     private static @NotNull Map<Variable, Rational> readVariableRationalMapWithNulls(@NotNull String s) {
         return IterableUtils.toMap(
                 Readers.readListStrict(
-                        u -> Pair.read(
+                        u -> Pair.readStrict(
                                 u,
                                 Readers.readWithNullsStrict(Variable::readStrict),
                                 Readers.readWithNullsStrict(Rational::readStrict)
@@ -2243,7 +2243,7 @@ public class MultivariatePolynomialTest {
     private static @NotNull Map<Variable, Monomial> readVariableMonomialMap(@NotNull String s) {
         return IterableUtils.toMap(
                 Readers.readListStrict(
-                        u -> Pair.read(
+                        u -> Pair.readStrict(
                                 u,
                                 t -> NullableOptional.fromOptional(Variable.readStrict(t)),
                                 t -> NullableOptional.fromOptional(Monomial.readStrict(t))
@@ -2255,7 +2255,7 @@ public class MultivariatePolynomialTest {
     private static @NotNull Map<Variable, Monomial> readVariableMonomialMapWithNulls(@NotNull String s) {
         return IterableUtils.toMap(
                 Readers.readListStrict(
-                        u -> Pair.read(
+                        u -> Pair.readStrict(
                                 u,
                                 Readers.readWithNullsStrict(Variable::readStrict),
                                 Readers.readWithNullsStrict(Monomial::readStrict)
@@ -2269,7 +2269,7 @@ public class MultivariatePolynomialTest {
     ) {
         return IterableUtils.toMap(
                 Readers.readListStrict(
-                        u -> Pair.read(
+                        u -> Pair.readStrict(
                                 u,
                                 t -> NullableOptional.fromOptional(Variable.readStrict(t)),
                                 t -> NullableOptional.fromOptional(readStrict(t))
@@ -2283,7 +2283,7 @@ public class MultivariatePolynomialTest {
     ) {
         return IterableUtils.toMap(
                 Readers.readListStrict(
-                        u -> Pair.read(
+                        u -> Pair.readStrict(
                                 u,
                                 Readers.readWithNullsStrict(Variable::readStrict),
                                 Readers.readWithNullsStrict(MultivariatePolynomial::readStrict)
@@ -2295,7 +2295,7 @@ public class MultivariatePolynomialTest {
     private static @NotNull Map<Variable, Polynomial> readVariablePolynomialMap(@NotNull String s) {
         return IterableUtils.toMap(
                 Readers.readListStrict(
-                        u -> Pair.read(
+                        u -> Pair.readStrict(
                                 u,
                                 t -> NullableOptional.fromOptional(Variable.readStrict(t)),
                                 t -> NullableOptional.fromOptional(Polynomial.readStrict(t))
@@ -2307,7 +2307,7 @@ public class MultivariatePolynomialTest {
     private static @NotNull Map<Variable, Polynomial> readVariablePolynomialMapWithNulls(@NotNull String s) {
         return IterableUtils.toMap(
                 Readers.readListStrict(
-                        u -> Pair.read(
+                        u -> Pair.readStrict(
                                 u,
                                 Readers.readWithNullsStrict(Variable::readStrict),
                                 Readers.readWithNullsStrict(Polynomial::readStrict)

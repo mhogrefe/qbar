@@ -2384,7 +2384,7 @@ public class RationalPolynomialTest {
 
     private static @NotNull List<Pair<Rational, Rational>> readRationalPairList(@NotNull String s) {
         return Readers.readListStrict(
-                t -> Pair.read(
+                t -> Pair.readStrict(
                         t,
                         r -> NullableOptional.fromOptional(Rational.readStrict(r)),
                         r -> NullableOptional.fromOptional(Rational.readStrict(r))
@@ -2394,7 +2394,7 @@ public class RationalPolynomialTest {
 
     private static @NotNull List<Pair<Rational, Rational>> readRationalPairListWithNulls(@NotNull String s) {
         return Readers.readListWithNullsStrict(
-                t -> Pair.read(
+                t -> Pair.readStrict(
                         t,
                         Readers.readWithNullsStrict(Rational::readStrict),
                         Readers.readWithNullsStrict(Rational::readStrict)

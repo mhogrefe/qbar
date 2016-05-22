@@ -546,7 +546,7 @@ public class MonomialTest {
 
     private static @NotNull List<Pair<Variable, Integer>> readVariableIntegerPairList(@NotNull String s) {
         return Readers.readListStrict(
-                u -> Pair.read(
+                u -> Pair.readStrict(
                         u,
                         t -> NullableOptional.fromOptional(Variable.readStrict(t)),
                         t -> NullableOptional.fromOptional(Readers.readIntegerStrict(t))
@@ -556,7 +556,7 @@ public class MonomialTest {
 
     private static @NotNull List<Pair<Variable, Integer>> readVariableIntegerPairListWithNulls(@NotNull String s) {
         return Readers.readListWithNullsStrict(
-                u -> Pair.read(
+                u -> Pair.readStrict(
                         u,
                         Readers.readWithNullsStrict(Variable::readStrict),
                         Readers.readWithNullsStrict(Readers::readIntegerStrict)
@@ -567,7 +567,7 @@ public class MonomialTest {
     private static @NotNull Map<Variable, BigInteger> readVariableBigIntegerMap(@NotNull String s) {
         return IterableUtils.toMap(
                 Readers.readListStrict(
-                        u -> Pair.read(
+                        u -> Pair.readStrict(
                                 u,
                                 t -> NullableOptional.fromOptional(Variable.readStrict(t)),
                                 t -> NullableOptional.fromOptional(Readers.readBigIntegerStrict(t))
@@ -579,7 +579,7 @@ public class MonomialTest {
     private static @NotNull Map<Variable, BigInteger> readVariableBigIntegerMapWithNulls(@NotNull String s) {
         return IterableUtils.toMap(
                 Readers.readListStrict(
-                        u -> Pair.read(
+                        u -> Pair.readStrict(
                                 u,
                                 Readers.readWithNullsStrict(Variable::readStrict),
                                 Readers.readWithNullsStrict(Readers::readBigIntegerStrict)
@@ -591,7 +591,7 @@ public class MonomialTest {
     private static @NotNull Map<Variable, Rational> readVariableRationalMap(@NotNull String s) {
         return IterableUtils.toMap(
                 Readers.readListStrict(
-                        u -> Pair.read(
+                        u -> Pair.readStrict(
                                 u,
                                 t -> NullableOptional.fromOptional(Variable.readStrict(t)),
                                 t -> NullableOptional.fromOptional(Rational.readStrict(t))
@@ -603,7 +603,7 @@ public class MonomialTest {
     private static @NotNull Map<Variable, Rational> readVariableRationalMapWithNulls(@NotNull String s) {
         return IterableUtils.toMap(
                 Readers.readListStrict(
-                        u -> Pair.read(
+                        u -> Pair.readStrict(
                                 u,
                                 Readers.readWithNullsStrict(Variable::readStrict),
                                 Readers.readWithNullsStrict(Rational::readStrict)
@@ -615,7 +615,7 @@ public class MonomialTest {
     private static @NotNull Map<Variable, Monomial> readVariableMonomialMap(@NotNull String s) {
         return IterableUtils.toMap(
                 Readers.readListStrict(
-                        u -> Pair.read(
+                        u -> Pair.readStrict(
                                 u,
                                 t -> NullableOptional.fromOptional(Variable.readStrict(t)),
                                 t -> NullableOptional.fromOptional(Monomial.readStrict(t))
@@ -627,7 +627,7 @@ public class MonomialTest {
     private static @NotNull Map<Variable, Monomial> readVariableMonomialMapWithNulls(@NotNull String s) {
         return IterableUtils.toMap(
                 Readers.readListStrict(
-                        u -> Pair.read(
+                        u -> Pair.readStrict(
                                 u,
                                 Readers.readWithNullsStrict(Variable::readStrict),
                                 Readers.readWithNullsStrict(Monomial::readStrict)

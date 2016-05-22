@@ -4628,7 +4628,7 @@ public class PolynomialTest {
 
     private static @NotNull List<Pair<BigInteger, BigInteger>> readBigIntegerPairList(@NotNull String s) {
         return Readers.readListStrict(
-                t -> Pair.read(
+                t -> Pair.readStrict(
                         t,
                         i -> NullableOptional.fromOptional(Readers.readBigIntegerStrict(i)),
                         i -> NullableOptional.fromOptional(Readers.readBigIntegerStrict(i))
@@ -4638,7 +4638,7 @@ public class PolynomialTest {
 
     private static @NotNull List<Pair<BigInteger, BigInteger>> readBigIntegerPairListWithNulls(@NotNull String s) {
         return Readers.readListWithNullsStrict(
-                t -> Pair.read(
+                t -> Pair.readStrict(
                         t,
                         Readers.readWithNullsStrict(Readers::readBigIntegerStrict),
                         Readers.readWithNullsStrict(Readers::readBigIntegerStrict)
