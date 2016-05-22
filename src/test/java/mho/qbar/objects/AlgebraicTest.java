@@ -3580,9 +3580,12 @@ public class AlgebraicTest {
     @Test
     public void testDelta() {
         delta_helper("[sqrt(2)]", "[]");
-        delta_helper("[sqrt(2), sqrt(3), sqrt(5), sqrt(7)]", "[1, 9/5, -18/5]");
+        delta_helper("[sqrt(2), sqrt(3), sqrt(5), sqrt(7)]",
+                "[root 2 of x^4-10*x^2+1, root 2 of x^4-16*x^2+4, root 2 of x^4-24*x^2+4]");
         delta_helper("[-sqrt(2), -4/3, 0, 1/2, 1, root 0 of x^5-x-1, sqrt(2), (1+sqrt(5))/2, sqrt(3)]",
-                "[1, 9/5, -18/5]");
+                "[(-4+3*sqrt(2))/3, 4/3, 1/2, 1/2, root 0 of x^5+5*x^4+10*x^3+10*x^2+4*x-1," +
+                " root 1 of x^10-10*x^8+38*x^6+2*x^5-100*x^4+40*x^3+121*x^2+38*x-17," +
+                " root 1 of x^4-2*x^3-5*x^2+6*x-1, root 2 of x^4+2*x^3-7*x^2-8*x+1]");
         //todo square roots
 
         delta_fail_helper("[]");

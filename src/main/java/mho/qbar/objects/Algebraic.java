@@ -2245,25 +2245,35 @@ public final class Algebraic implements Comparable<Algebraic> {
         if (rational.isPresent()) {
             return new Algebraic(rational.get().pow(p));
         }
+        Optional<Polynomial> oPowerMP = minimalPolynomial.undoRootRoots(p);
+        if (oPowerMP.isPresent()) {
+            Polynomial powerMp = oPowerMP.get();
+            if (powerMp.degree() == 1) {
+                Rational r = Rational.of(powerMp.coefficient(0).negate(), powerMp.coefficient(1));
+                if (r == Rational.ZERO) return ZERO;
+                if (r == Rational.ONE) return ONE;
+                return new Algebraic(r);
+            }
+            int powerRootCount = powerMp.rootCount();
+            int powerRootIndex = rootIndex;
+            if ((p & 1) == 0) {
+                int negativeRootCount = minimalPolynomial.rootCount(Interval.lessThanOrEqualTo(Rational.ZERO));
+                int powerNegativeRootCount = powerMp.rootCount(Interval.lessThanOrEqualTo(Rational.ZERO));
+                if (signum() == 1) {
+                    powerRootIndex = powerNegativeRootCount - negativeRootCount + rootIndex;
+                } else {
+                    powerRootIndex = negativeRootCount + powerNegativeRootCount - rootIndex - 1;
+                }
+            }
+            Interval powerIsolatingInterval = powerMp.powerOfTwoIsolatingInterval(powerRootIndex);
+            return new Algebraic(powerMp, powerRootIndex, powerIsolatingInterval, powerRootCount);
+        }
 
-        Map<String, Function<Void, Algebraic>> implementations = new HashMap<>();
-        implementations.put("reducing", v -> {
-            if (minimalPolynomial.isMonic()) {
-                return minimalPolynomial.rootPower(p).apply(this);
-            } else {
-                return minimalPolynomial.toRationalPolynomial().makeMonic().rootPower(p).apply(this);
-            }
-        });
-        implementations.put("halving", q -> {
-            Algebraic result = ONE;
-            Algebraic powerPower = null; // p^2^i
-            for (boolean bit : IntegerUtils.bits(p)) {
-                powerPower = powerPower == null ? this : powerPower.multiply(powerPower);
-                if (bit) result = result.multiply(powerPower);
-            }
-            return result;
-        });
-        return ConcurrencyUtils.evaluateFastest(implementations, null).b;
+        if (minimalPolynomial.isMonic()) {
+            return minimalPolynomial.rootPower(p).apply(this);
+        } else {
+            return minimalPolynomial.toRationalPolynomial().makeMonic().rootPower(p).apply(this);
+        }
     }
 
     /**

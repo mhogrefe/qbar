@@ -2891,6 +2891,22 @@ public class AlgebraicProperties extends QBarTestProperties {
         if (x.isRational()) {
             return of(x.rationalValueExact().pow(p));
         }
+        Optional<Polynomial> oPowerMP = x.minimalPolynomial().undoRootRoots(p);
+        if (oPowerMP.isPresent()) {
+            Polynomial powerMp = oPowerMP.get();
+            int powerRootIndex = x.rootIndex();
+            if ((p & 1) == 0) {
+                int negativeRootCount = x.minimalPolynomial().rootCount(Interval.lessThanOrEqualTo(Rational.ZERO));
+                int powerNegativeRootCount = powerMp.rootCount(Interval.lessThanOrEqualTo(Rational.ZERO));
+                if (x.signum() == 1) {
+                    powerRootIndex = powerNegativeRootCount - negativeRootCount + x.rootIndex();
+                } else {
+                    powerRootIndex = negativeRootCount + powerNegativeRootCount - x.rootIndex() - 1;
+                }
+            }
+            return of(powerMp, powerRootIndex);
+        }
+
         Algebraic result = ONE;
         Algebraic powerPower = null; // p^2^i
         for (boolean bit : IntegerUtils.bits(p)) {
@@ -2909,6 +2925,22 @@ public class AlgebraicProperties extends QBarTestProperties {
         if (x.isRational()) {
             return of(x.rationalValueExact().pow(p));
         }
+        Optional<Polynomial> oPowerMP = x.minimalPolynomial().undoRootRoots(p);
+        if (oPowerMP.isPresent()) {
+            Polynomial powerMp = oPowerMP.get();
+            int powerRootIndex = x.rootIndex();
+            if ((p & 1) == 0) {
+                int negativeRootCount = x.minimalPolynomial().rootCount(Interval.lessThanOrEqualTo(Rational.ZERO));
+                int powerNegativeRootCount = powerMp.rootCount(Interval.lessThanOrEqualTo(Rational.ZERO));
+                if (x.signum() == 1) {
+                    powerRootIndex = powerNegativeRootCount - negativeRootCount + x.rootIndex();
+                } else {
+                    powerRootIndex = negativeRootCount + powerNegativeRootCount - x.rootIndex() - 1;
+                }
+            }
+            return of(powerMp, powerRootIndex);
+        }
+
         Map<String, Function<Pair<Algebraic, Integer>, Algebraic>> implementations = new HashMap<>();
         implementations.put("reducing", q -> q.a.pow(q.b));
         implementations.put("halving", q -> pow_alt(q.a, q.b));
