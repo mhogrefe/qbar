@@ -1225,7 +1225,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
     private static @NotNull RationalPolynomial product_alt(@NotNull List<RationalPolynomial> xs) {
         if (any(x -> x == ZERO, xs)) return ZERO;
         List<Rational> productCoefficients =
-                toList(replicate(sumInteger(map(RationalPolynomial::degree, xs)) + 1, Rational.ZERO));
+                toList(replicate(sumInteger(toList(map(RationalPolynomial::degree, xs))) + 1, Rational.ZERO));
         List<List<Pair<Rational, Integer>>> selections = toList(map(p -> toList(zip(p, rangeUp(0))), xs));
         outer:
         for (List<Pair<Rational, Integer>> selection : EP.cartesianProduct(selections)) {
@@ -1259,7 +1259,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
             assertTrue(
                     ps,
                     any(p -> p == ZERO, ps) ||
-                            product.degree() == IterableUtils.sumInteger(map(RationalPolynomial::degree, ps))
+                            product.degree() == IterableUtils.sumInteger(toList(map(RationalPolynomial::degree, ps)))
             );
         }
 

@@ -2612,7 +2612,7 @@ public class AlgebraicProperties extends QBarTestProperties {
     private void propertiesSum() {
         initialize("sum(List<Algebraic>)");
         Iterable<List<Algebraic>> xss = filterInfinite(
-                yss -> productInteger(map(Algebraic::degree, yss)) <= 10,
+                yss -> productInteger(toList(map(Algebraic::degree, yss))) <= 10,
                 P.withScale(1).lists(P.withScale(1).withSecondaryScale(4).algebraics())
         );
         for (List<Algebraic> xs : take(SMALL_LIMIT, xss)) {
@@ -2670,7 +2670,7 @@ public class AlgebraicProperties extends QBarTestProperties {
     private void propertiesProduct() {
         initialize("product(List<Algebraic>)");
         Iterable<List<Algebraic>> xss = filterInfinite(
-                yss -> productInteger(map(Algebraic::degree, yss)) <= 10,
+                yss -> productInteger(toList(map(Algebraic::degree, yss))) <= 10,
                 P.withScale(1).lists(P.withScale(1).withSecondaryScale(4).algebraics())
         );
         for (List<Algebraic> xs : take(SMALL_LIMIT, xss)) {
@@ -2822,7 +2822,7 @@ public class AlgebraicProperties extends QBarTestProperties {
         functions.put("alt2", AlgebraicProperties::sumSign_alt2);
         functions.put("standard", Algebraic::sumSign);
         Iterable<List<Algebraic>> xss = filterInfinite(
-                yss -> productInteger(map(Algebraic::degree, yss)) <= 200,
+                yss -> productInteger(toList(map(Algebraic::degree, yss))) <= 200,
                 P.withScale(1).lists(P.withScale(1).withSecondaryScale(4).algebraics())
         );
         compareImplementations("sumSign(List<Algebraic>)", take(SMALL_LIMIT, xss), functions);

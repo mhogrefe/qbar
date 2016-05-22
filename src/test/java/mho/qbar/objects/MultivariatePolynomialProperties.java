@@ -1125,7 +1125,7 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         );
         for (Pair<List<MultivariatePolynomial>, Map<Variable, BigInteger>> p : take(LIMIT, ps)) {
             MultivariatePolynomial sum = sum(p.a);
-            assertEquals(p, sumBigInteger(map(m -> m.applyBigInteger(p.b), p.a)), sum.applyBigInteger(p.b));
+            assertEquals(p, sumBigInteger(toList(map(m -> m.applyBigInteger(p.b), p.a))), sum.applyBigInteger(p.b));
         }
     }
 
@@ -1153,7 +1153,7 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         SortedMap<Monomial, BigInteger> termMap = new TreeMap<>();
         for (List<Pair<Monomial, BigInteger>> terms : EP.cartesianProduct(toList(map(IterableUtils::toList, xs)))) {
             Monomial termProduct = Monomial.product(toList(map(t -> t.a, terms)));
-            BigInteger coefficientProduct = productBigInteger(map(t -> t.b, terms));
+            BigInteger coefficientProduct = productBigInteger(toList(map(t -> t.b, terms)));
             BigInteger coefficient = termMap.get(termProduct);
             if (coefficient == null) {
                 coefficient = BigInteger.ZERO;
@@ -1182,7 +1182,8 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
             assertTrue(
                     ps,
                     any(p -> p == ZERO, ps) ||
-                            product.degree() == IterableUtils.sumInteger(map(MultivariatePolynomial::degree, ps))
+                            product.degree() ==
+                                    IterableUtils.sumInteger(toList(map(MultivariatePolynomial::degree, ps)))
             );
         }
 
@@ -1198,7 +1199,11 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         );
         for (Pair<List<MultivariatePolynomial>, Map<Variable, BigInteger>> p : take(LIMIT, ps)) {
             MultivariatePolynomial product = product(p.a);
-            assertEquals(p, productBigInteger(map(m -> m.applyBigInteger(p.b), p.a)), product.applyBigInteger(p.b));
+            assertEquals(
+                    p,
+                    productBigInteger(toList(map(m -> m.applyBigInteger(p.b), p.a))),
+                    product.applyBigInteger(p.b)
+            );
         }
     }
 

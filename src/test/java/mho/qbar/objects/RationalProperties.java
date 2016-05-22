@@ -2501,7 +2501,7 @@ public class RationalProperties extends QBarTestProperties {
         );
         Rational sum = ZERO;
         for (List<Rational> group : denominatorGrouped) {
-            BigInteger numeratorSum = sumBigInteger(map(Rational::getNumerator, group));
+            BigInteger numeratorSum = sumBigInteger(toList(map(Rational::getNumerator, group)));
             sum = sum.add(of(numeratorSum, head(group).getDenominator()));
         }
         return sum;

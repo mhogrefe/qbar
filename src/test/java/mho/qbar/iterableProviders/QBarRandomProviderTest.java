@@ -7888,17 +7888,17 @@ public class QBarRandomProviderTest {
 
     private static double meanOfIntegers(@NotNull List<Integer> xs) {
         int size = xs.size();
-        return sumDouble(map(i -> (double) i / size, xs));
+        return sumDouble(toList(map(i -> (double) i / size, xs)));
     }
 
     private static double meanOfRationals(@NotNull List<Rational> xs) {
         int size = xs.size();
-        return sumDouble(map(r -> r.doubleValue() / size, xs));
+        return sumDouble(toList(map(r -> r.doubleValue() / size, xs)));
     }
 
     private static double meanOfAlgebraics(@NotNull List<Algebraic> xs) {
         int size = xs.size();
-        return sumDouble(map(r -> r.doubleValue() / size, xs));
+        return sumDouble(toList(map(r -> r.doubleValue() / size, xs)));
     }
 
     private static @NotNull List<Variable> readVariableList(@NotNull String s) {

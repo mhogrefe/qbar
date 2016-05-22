@@ -735,7 +735,14 @@ public final class Polynomial implements
      * @return Σxs
      */
     public static @NotNull Polynomial sum(@NotNull Iterable<Polynomial> xs) {
-        return of(toList(map(IterableUtils::sumBigInteger, transposePadded(BigInteger.ZERO, map(p -> p, xs)))));
+        return of(
+                toList(
+                        map(
+                                is -> sumBigInteger(toList(is)),
+                                (Iterable<Iterable<BigInteger>>) transposePadded(BigInteger.ZERO, map(p -> p, xs))
+                        )
+                )
+        );
     }
 
     /**

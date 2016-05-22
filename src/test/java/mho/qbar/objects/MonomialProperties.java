@@ -449,7 +449,11 @@ public class MonomialProperties extends QBarTestProperties {
         );
         for (Pair<List<Monomial>, Map<Variable, BigInteger>> p : take(LIMIT, ps)) {
             Monomial product = product(p.a);
-            assertEquals(p, productBigInteger(map(m -> m.applyBigInteger(p.b), p.a)), product.applyBigInteger(p.b));
+            assertEquals(
+                    p,
+                    productBigInteger(toList(map(m -> m.applyBigInteger(p.b), p.a))),
+                    product.applyBigInteger(p.b)
+            );
         }
     }
 

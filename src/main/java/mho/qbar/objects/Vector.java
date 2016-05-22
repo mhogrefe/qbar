@@ -435,7 +435,7 @@ public final class Vector implements Comparable<Vector>, Iterable<BigInteger> {
             throw new ArithmeticException("this and that must have the same dimension. this: " + this + ", that: " +
                     that);
         }
-        return sumBigInteger(zipWith(BigInteger::multiply, coordinates, that.coordinates));
+        return sumBigInteger(toList(zipWith(BigInteger::multiply, coordinates, that.coordinates)));
     }
 
     /**
@@ -474,7 +474,7 @@ public final class Vector implements Comparable<Vector>, Iterable<BigInteger> {
      * @return ‖{@code this}‖²
      */
     public @NotNull BigInteger squaredLength() {
-        return sumBigInteger(map(x -> x.pow(2), coordinates));
+        return sumBigInteger(toList(map(x -> x.pow(2), coordinates)));
     }
 
     /**

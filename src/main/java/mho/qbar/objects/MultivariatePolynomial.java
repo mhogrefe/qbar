@@ -1001,7 +1001,7 @@ public final class MultivariatePolynomial implements
      * @return {@code this}({@code xs})
      */
     public @NotNull BigInteger applyBigInteger(@NotNull Map<Variable, BigInteger> xs) {
-        return sumBigInteger(map(t -> t.a.applyBigInteger(xs).multiply(t.b), terms));
+        return sumBigInteger(toList(map(t -> t.a.applyBigInteger(xs).multiply(t.b), terms)));
     }
 
     /**

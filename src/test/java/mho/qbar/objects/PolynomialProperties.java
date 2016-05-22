@@ -210,7 +210,13 @@ public class PolynomialProperties extends QBarTestProperties {
 
     private static @NotNull BigInteger apply_BigInteger_naive(@NotNull Polynomial p, @NotNull BigInteger x) {
         return sumBigInteger(
-                zipWith((c, i) -> c.equals(BigInteger.ZERO) ? BigInteger.ZERO : x.pow(i).multiply(c), p, rangeUp(0))
+                toList(
+                        zipWith(
+                                (c, i) -> c.equals(BigInteger.ZERO) ? BigInteger.ZERO : x.pow(i).multiply(c),
+                                p,
+                                rangeUp(0)
+                        )
+                )
         );
     }
 
@@ -232,7 +238,7 @@ public class PolynomialProperties extends QBarTestProperties {
         }
 
         for (Polynomial p : take(LIMIT, P.polynomials())) {
-            assertEquals(p, p.apply(BigInteger.ONE), sumBigInteger(p));
+            assertEquals(p, p.apply(BigInteger.ONE), sumBigInteger(toList(p)));
         }
 
         for (Pair<BigInteger, BigInteger> p : take(LIMIT, P.pairs(P.bigIntegers()))) {
@@ -297,7 +303,7 @@ public class PolynomialProperties extends QBarTestProperties {
         }
 
         for (Polynomial p : take(LIMIT, P.polynomials())) {
-            assertEquals(p, p.apply(Rational.ONE), Rational.of(sumBigInteger(p)));
+            assertEquals(p, p.apply(Rational.ONE), Rational.of(sumBigInteger(toList(p))));
         }
 
         for (Pair<BigInteger, Rational> p : take(LIMIT, P.pairs(P.bigIntegers(), P.rationals()))) {
@@ -348,7 +354,7 @@ public class PolynomialProperties extends QBarTestProperties {
         }
 
         for (Polynomial p : take(LIMIT, P.polynomials())) {
-            assertEquals(p, p.apply(Algebraic.ONE), Algebraic.of(sumBigInteger(p)));
+            assertEquals(p, p.apply(Algebraic.ONE), Algebraic.of(sumBigInteger(toList(p))));
         }
 
         for (Pair<BigInteger, Algebraic> p : take(LIMIT, P.pairs(P.bigIntegers(), P.algebraics()))) {
@@ -397,7 +403,7 @@ public class PolynomialProperties extends QBarTestProperties {
         }
 
         for (Polynomial p : take(LIMIT, P.polynomials())) {
-            assertEquals(p, p.specialApply(Rational.ONE), sumBigInteger(p));
+            assertEquals(p, p.specialApply(Rational.ONE), sumBigInteger(toList(p)));
         }
 
         for (Pair<BigInteger, Rational> p : take(LIMIT, P.pairs(P.bigIntegers(), P.rationals()))) {
@@ -1257,7 +1263,7 @@ public class PolynomialProperties extends QBarTestProperties {
         }
 
         for (Pair<List<Polynomial>, BigInteger> p : take(LIMIT, P.pairs(P.lists(P.polynomials()), P.bigIntegers()))) {
-            assertEquals(p, sum(p.a).apply(p.b), sumBigInteger(map(q -> q.apply(p.b), p.a)));
+            assertEquals(p, sum(p.a).apply(p.b), sumBigInteger(toList(map(q -> q.apply(p.b), p.a))));
         }
 
         for (List<BigInteger> is : take(LIMIT, P.lists(P.bigIntegers()))) {
@@ -1291,7 +1297,7 @@ public class PolynomialProperties extends QBarTestProperties {
     private static @NotNull Polynomial product_alt(@NotNull List<Polynomial> xs) {
         if (any(x -> x == ZERO, xs)) return ZERO;
         List<BigInteger> productCoefficients =
-                toList(replicate(sumInteger(map(Polynomial::degree, xs)) + 1, BigInteger.ZERO));
+                toList(replicate(sumInteger(toList(map(Polynomial::degree, xs))) + 1, BigInteger.ZERO));
         List<List<Pair<BigInteger, Integer>>> selections = toList(map(p -> toList(zip(p, rangeUp(0))), xs));
         outer:
         for (List<Pair<BigInteger, Integer>> selection : EP.cartesianProduct(selections)) {
@@ -1325,7 +1331,7 @@ public class PolynomialProperties extends QBarTestProperties {
             assertTrue(
                     ps,
                     any(p -> p == ZERO, ps) ||
-                            product.degree() == IterableUtils.sumInteger(map(Polynomial::degree, ps))
+                            product.degree() == IterableUtils.sumInteger(toList(map(Polynomial::degree, ps)))
             );
         }
 
@@ -1336,7 +1342,7 @@ public class PolynomialProperties extends QBarTestProperties {
         }
 
         for (Pair<List<Polynomial>, BigInteger> p : take(LIMIT, P.pairs(P.lists(P.polynomials()), P.bigIntegers()))) {
-            assertEquals(p, product(p.a).apply(p.b), productBigInteger(map(q -> q.apply(p.b), p.a)));
+            assertEquals(p, product(p.a).apply(p.b), productBigInteger(toList(map(q -> q.apply(p.b), p.a))));
         }
 
         for (List<BigInteger> is : take(LIMIT, P.lists(P.bigIntegers()))) {
@@ -1507,7 +1513,7 @@ public class PolynomialProperties extends QBarTestProperties {
 
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             assertEquals(p, p.substitute(ZERO), p == ZERO ? ZERO : of(p.coefficient(0)));
-            assertEquals(p, p.substitute(ONE), of(sumBigInteger(p)));
+            assertEquals(p, p.substitute(ONE), of(sumBigInteger(toList(p))));
             fixedPoint(q -> q.substitute(X), p);
         }
     }
