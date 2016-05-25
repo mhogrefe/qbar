@@ -1,6 +1,5 @@
 package mho.qbar.objects;
 
-import mho.wheels.concurrency.ConcurrencyUtils;
 import mho.wheels.concurrency.ResultCache;
 import mho.wheels.io.Readers;
 import mho.wheels.math.BinaryFraction;
@@ -66,7 +65,7 @@ public final class Algebraic implements Comparable<Algebraic> {
     /**
      * the square root of 2
      */
-    public static final @NotNull Algebraic SQRT_TWO = of(Polynomial.readStrict("x^2-2").get(), 1);
+    public static final @NotNull Algebraic SQRT_TWO = TWO.sqrt();
 
     /**
      * φ, the golden ratio
@@ -1801,7 +1800,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      */
     public @NotNull Algebraic invert() {
         if (this == ZERO) {
-            throw new ArithmeticException("that cannot be zero.");
+            throw new ArithmeticException("this cannot be zero.");
         }
         if (this == ONE) return ONE;
         if (rational.isPresent()) {
@@ -2229,7 +2228,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      * <ul>
      *  <li>{@code this} may be any {@code Algebraic}.</li>
      *  <li>{@code p} may be any {@code int}.</li>
-     *  <li>If {@code p}{@literal <}0, {@code this} cannot be 0.</li>
+     *  <li>If {@code p} is negative, {@code this} cannot be 0.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
@@ -2269,11 +2268,124 @@ public final class Algebraic implements Comparable<Algebraic> {
             return new Algebraic(powerMp, powerRootIndex, powerIsolatingInterval, powerRootCount);
         }
 
-        if (minimalPolynomial.isMonic()) {
-            return minimalPolynomial.rootPower(p).apply(this);
-        } else {
-            return minimalPolynomial.toRationalPolynomial().makeMonic().rootPower(p).apply(this);
+        Algebraic result = ONE;
+        Algebraic powerPower = null; // p^2^i
+        for (boolean bit : IntegerUtils.bits(p)) {
+            powerPower = powerPower == null ? this : powerPower.multiply(powerPower);
+            if (bit) result = result.multiply(powerPower);
         }
+        return result;
+    }
+
+    /**
+     * Returns the {@code r}th root of {@code this}, or {@code this}<sup>1/{@code r}</sup>. If {@code r} is even, the
+     * principal (non-negative) root is chosen.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>{@code r} cannot be 0.</li>
+     *  <li>If {@code r} is negative, {@code this} cannot be zero.</li>
+     *  <li>If {@code r} is even, {@code this} cannot be negative.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param r the index of the root
+     * @return {@code this}<sup>1/{@code r}</sup>
+     */
+    public @NotNull Algebraic root(int r) {
+        if (r == 0) {
+            throw new ArithmeticException("r cannot be zero.");
+        }
+        if (r == 1 || this == ONE) {
+            return this;
+        }
+        if (r < 0) {
+            return invert().root(-r);
+        }
+        if (this == ZERO) {
+            return this;
+        }
+        if ((r & 1) == 0 && signum() == -1) {
+            throw new ArithmeticException("If r is even, this cannot be negative. r: " + r + ", this: " + this);
+        }
+        if (rational.isPresent()) {
+            BigInteger numerator = rational.get().getNumerator();
+            int numeratorSign = numerator.signum();
+            Pair<BigInteger, Integer> numeratorPowers;
+            if (numerator.abs().equals(BigInteger.ONE)) {
+                numeratorPowers = new Pair<>(BigInteger.ONE, 0);
+            } else {
+                numeratorPowers = MathUtils.expressAsPower(numerator.abs());
+            }
+            BigInteger denominator = rational.get().getDenominator();
+            Pair<BigInteger, Integer> denominatorPowers;
+            if (denominator.equals(BigInteger.ONE)) {
+                denominatorPowers = new Pair<>(BigInteger.ONE, 0);
+            } else {
+                denominatorPowers = MathUtils.expressAsPower(denominator);
+            }
+            int gcd = MathUtils.gcd(MathUtils.gcd(numeratorPowers.b, denominatorPowers.b), r);
+            if (gcd != 1) {
+                numerator = numeratorPowers.a.pow(numeratorPowers.b / gcd);
+                if (numeratorSign == -1) {
+                    numerator = numerator.negate();
+                }
+                denominator = denominatorPowers.a.pow(denominatorPowers.b / gcd);
+                r /= gcd;
+                if (r == 1) {
+                    return new Algebraic(Rational.of(numerator, denominator));
+                }
+            }
+            int rootRootIndex = (r & 1) == 0 ? 1 : 0;
+            List<BigInteger> coefficients = new ArrayList<>();
+            coefficients.add(numerator.negate());
+            for (int i = 0; i < r - 1; i++) {
+                coefficients.add(BigInteger.ZERO);
+            }
+            coefficients.add(denominator);
+            Polynomial rootMp = Polynomial.of(coefficients);
+            Interval rootIsolatingInterval = rootMp.powerOfTwoIsolatingInterval(rootRootIndex);
+            return new Algebraic(rootMp, rootRootIndex, rootIsolatingInterval, rootRootIndex + 1);
+        }
+        Polynomial rootMp = minimalPolynomial.rootRoots(r);
+        int rootRootIndex = rootIndex;
+        if ((r & 1) == 0) {
+            int negativeRootCount = minimalPolynomial.rootCount(Interval.lessThanOrEqualTo(Rational.ZERO));
+            int rootNegativeRootCount = rootMp.rootCount(Interval.lessThanOrEqualTo(Rational.ZERO));
+            rootRootIndex = rootIndex + rootNegativeRootCount - negativeRootCount;
+        }
+        return of(rootMp, rootRootIndex);
+    }
+
+    /**
+     * Returns the square root of {@code this}, or {@code this}<sup>1/2</sup>. The principal (non-negative) square root
+     * is chosen.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be negative.</li>
+     *  <li>The result is not negative.</li>
+     * </ul>
+     *
+     * @return sqrt({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Algebraic sqrt() {
+        return root(2);
+    }
+
+    /**
+     * Returns the cube root of {@code this}, or {@code this}<sup>1/3</sup>.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return cbrt({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Algebraic cbrt() {
+        return root(3);
     }
 
     /**

@@ -119,6 +119,9 @@ public class AlgebraicProperties extends QBarTestProperties {
         propertiesDelta();
         propertiesPow();
         compareImplementationsPow();
+        propertiesRoot();
+        propertiesSqrt();
+        propertiesCbrt();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -2907,13 +2910,12 @@ public class AlgebraicProperties extends QBarTestProperties {
             return of(powerMp, powerRootIndex);
         }
 
-        Algebraic result = ONE;
-        Algebraic powerPower = null; // p^2^i
-        for (boolean bit : IntegerUtils.bits(p)) {
-            powerPower = powerPower == null ? x : powerPower.multiply(powerPower);
-            if (bit) result = result.multiply(powerPower);
+        Polynomial mp = x.minimalPolynomial();
+        if (mp.isMonic()) {
+            return mp.rootPower(p).apply(x);
+        } else {
+            return mp.toRationalPolynomial().makeMonic().rootPower(p).apply(x);
         }
-        return result;
     }
 
     private static @NotNull Algebraic pow_alt2(@NotNull Algebraic x, int p) {
@@ -2959,6 +2961,9 @@ public class AlgebraicProperties extends QBarTestProperties {
         for (Pair<Algebraic, Integer> p : take(MEDIUM_LIMIT, ps)) {
             Algebraic x = p.a.pow(p.b);
             x.validate();
+            if (p.b != 0 && ((p.b & 1) == 1 || p.a.signum() != -1)) {
+                inverse(y -> y.pow(p.b), (Algebraic y) -> y.root(p.b), p.a);
+            }
             assertEquals(p, x, pow_alt(p.a, p.b));
             assertEquals(p, x, pow_alt2(p.a, p.b));
         }
@@ -2970,7 +2975,7 @@ public class AlgebraicProperties extends QBarTestProperties {
         }
 
         for (int i : take(LIMIT, P.positiveIntegersGeometric())) {
-            assertTrue(i, ZERO.pow(i) == ZERO);
+            fixedPoint(j -> j.pow(i), ZERO);
         }
 
         for (Algebraic x : take(MEDIUM_LIMIT, P.withScale(1).withSecondaryScale(4).algebraics())) {
@@ -3069,6 +3074,103 @@ public class AlgebraicProperties extends QBarTestProperties {
         Polynomial.USE_FACTOR_CACHE = true;
         Algebraic.USE_SUM_CACHE = true;
         Algebraic.USE_PRODUCT_CACHE = true;
+    }
+
+    private void propertiesRoot() {
+        initialize("root(int)");
+        Iterable<Pair<Algebraic, Integer>> ps = filterInfinite(
+                p -> (p.a != ZERO || p.b >= 0) && ((p.b & 1) != 0 || p.a.signum() != -1),
+                P.pairsSquareRootOrder(P.withScale(4).algebraics(), P.withScale(2).nonzeroIntegersGeometric())
+        );
+        for (Pair<Algebraic, Integer> p : take(MEDIUM_LIMIT, ps)) {
+            Algebraic x = p.a.root(p.b);
+            x.validate();
+            inverse(y -> y.root(p.b), (Algebraic y) -> y.pow(p.b), p.a);
+            if ((p.b & 1) == 0) {
+                assertNotEquals(p, x.signum(), -1);
+            }
+        }
+
+        ps = filterInfinite(
+                p -> (p.b & 1) != 0 || p.a.signum() != -1,
+                P.pairsSquareRootOrder(P.withScale(4).nonzeroAlgebraics(), P.withScale(2).nonzeroIntegersGeometric())
+        );
+        for (Pair<Algebraic, Integer> p : take(MEDIUM_LIMIT, ps)) {
+            homomorphic(Function.identity(), i -> -i, Algebraic::invert, Algebraic::root, Algebraic::root, p);
+            homomorphic(Algebraic::invert, i -> -i, Function.identity(), Algebraic::root, Algebraic::root, p);
+        }
+
+        for (int i : take(LIMIT, P.positiveIntegersGeometric())) {
+            fixedPoint(j -> j.root(i), ZERO);
+        }
+
+        for (Algebraic x : take(MEDIUM_LIMIT, P.withScale(4).algebraics())) {
+            fixedPoint(y -> y.root(1), x);
+        }
+
+        for (Algebraic x : take(LIMIT, P.nonzeroAlgebraics())) {
+            assertEquals(x, x.root(-1), x.invert());
+        }
+
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            try {
+                x.root(0);
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        for (int i : take(LIMIT, P.negativeIntegers())) {
+            try {
+                ZERO.root(i);
+                fail(i);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<Pair<Algebraic, Integer>> psFail = P.pairs(
+                P.negativeAlgebraics(),
+                map(i -> i * 2, P.integersGeometric())
+        );
+        for (Pair<Algebraic, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.root(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesSqrt() {
+        initialize("sqrt()");
+        for (Algebraic x : take(LIMIT, P.withElement(ZERO, P.withScale(4).positiveAlgebraics()))) {
+            Algebraic y = x.sqrt();
+            y.validate();
+            inverse(Algebraic::sqrt, (Algebraic z) -> z.pow(2), x);
+            assertNotEquals(x, x.signum(), -1);
+        }
+
+        Iterable<Pair<Algebraic, Algebraic>> ps = P.pairs(P.withElement(ZERO, P.withScale(4).positiveAlgebraics()));
+        for (Pair<Algebraic, Algebraic> p : take(LIMIT, ps)) {
+            assertEquals(p, p.a.compareTo(p.b), p.a.sqrt().compareTo(p.b.sqrt()));
+        }
+
+        for (Algebraic x : take(LIMIT, P.negativeAlgebraics())) {
+            try {
+                x.sqrt();
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesCbrt() {
+        initialize("cbrt()");
+        for (Algebraic x : take(LIMIT, P.withScale(4).algebraics())) {
+            Algebraic y = x.cbrt();
+            y.validate();
+            inverse(Algebraic::cbrt, (Algebraic z) -> z.pow(3), x);
+        }
+
+        for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.pairs(P.withScale(4).algebraics()))) {
+            assertEquals(p, p.a.compareTo(p.b), p.a.cbrt().compareTo(p.b.cbrt()));
+        }
     }
 
     private void propertiesEquals() {

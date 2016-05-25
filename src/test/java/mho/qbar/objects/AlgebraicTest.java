@@ -3586,21 +3586,26 @@ public class AlgebraicTest {
                 "[(-4+3*sqrt(2))/3, 4/3, 1/2, 1/2, root 0 of x^5+5*x^4+10*x^3+10*x^2+4*x-1," +
                 " root 1 of x^10-10*x^8+38*x^6+2*x^5-100*x^4+40*x^3+121*x^2+38*x-17," +
                 " root 1 of x^4-2*x^3-5*x^2+6*x-1, root 2 of x^4+2*x^3-7*x^2-8*x+1]");
-        //todo square roots
+        delta_helper(map(i -> of(i).sqrt(), EP.positiveIntegers()),
+                "[-1+sqrt(2), root 2 of x^4-10*x^2+1, 2-sqrt(3), -2+sqrt(5), root 2 of x^4-22*x^2+1," +
+                " root 2 of x^4-26*x^2+1, root 2 of x^4-30*x^2+1, 3-2*sqrt(2), -3+sqrt(10), root 2 of x^4-42*x^2+1," +
+                " root 2 of x^4-46*x^2+1, root 2 of x^4-50*x^2+1, root 2 of x^4-54*x^2+1, root 2 of x^4-58*x^2+1," +
+                " 4-sqrt(15), -4+sqrt(17), root 2 of x^4-70*x^2+1, root 2 of x^4-74*x^2+1, root 2 of x^4-78*x^2+1," +
+                " root 2 of x^4-82*x^2+1, ...]");
 
         delta_fail_helper("[]");
         delta_fail_helper("[10, null, sqrt(2)]");
     }
 
-    private static void pow_helper(@NotNull String r, int p, @NotNull String output) {
-        Algebraic x = readStrict(r).get().pow(p);
-        x.validate();
-        aeq(x, output);
+    private static void pow_helper(@NotNull String x, int p, @NotNull String output) {
+        Algebraic y = readStrict(x).get().pow(p);
+        y.validate();
+        aeq(y, output);
     }
 
-    private static void pow_fail_helper(@NotNull String r, int p) {
+    private static void pow_fail_helper(@NotNull String x, int p) {
         try {
-            readStrict(r).get().pow(p);
+            readStrict(x).get().pow(p);
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -3692,6 +3697,154 @@ public class AlgebraicTest {
         pow_fail_helper("0", -1);
         pow_fail_helper("0", -2);
         pow_fail_helper("0", -3);
+    }
+
+    private static void root_helper(@NotNull String x, int r, @NotNull String output) {
+        Algebraic y = readStrict(x).get().root(r);
+        y.validate();
+        aeq(y, output);
+    }
+
+    private static void root_fail_helper(@NotNull String x, int r) {
+        try {
+            readStrict(x).get().root(r);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testRoot() {
+        root_helper("0", 1, "0");
+        root_helper("0", 2, "0");
+        root_helper("0", 3, "0");
+        root_helper("0", 10, "0");
+
+        root_helper("1", 1, "1");
+        root_helper("1", 2, "1");
+        root_helper("1", 3, "1");
+        root_helper("1", 10, "1");
+        root_helper("1", -1, "1");
+        root_helper("1", -2, "1");
+        root_helper("1", -3, "1");
+        root_helper("1", -10, "1");
+
+        root_helper("1/2", 1, "1/2");
+        root_helper("1/2", 2, "sqrt(2)/2");
+        root_helper("1/2", 3, "root 0 of 2*x^3-1");
+        root_helper("1/2", 10, "root 1 of 2*x^10-1");
+        root_helper("1/2", -1, "2");
+        root_helper("1/2", -2, "sqrt(2)");
+        root_helper("1/2", -3, "root 0 of x^3-2");
+        root_helper("1/2", -10, "root 1 of x^10-2");
+
+        root_helper("-4/3", 1, "-4/3");
+        root_helper("-4/3", 3, "root 0 of 3*x^3+4");
+        root_helper("-4/3", 9, "root 0 of 3*x^9+4");
+        root_helper("-4/3", -1, "-3/4");
+        root_helper("-4/3", -3, "root 0 of 4*x^3+3");
+        root_helper("-4/3", -9, "root 0 of 4*x^9+3");
+
+        root_helper("sqrt(2)", 1, "sqrt(2)");
+        root_helper("sqrt(2)", 2, "root 1 of x^4-2");
+        root_helper("sqrt(2)", 3, "root 1 of x^6-2");
+        root_helper("sqrt(2)", 10, "root 1 of x^20-2");
+        root_helper("sqrt(2)", -1, "sqrt(2)/2");
+        root_helper("sqrt(2)", -2, "root 1 of 2*x^4-1");
+        root_helper("sqrt(2)", -3, "root 1 of 2*x^6-1");
+        root_helper("sqrt(2)", -10, "root 1 of 2*x^20-1");
+
+        root_helper("-sqrt(2)", 1, "-sqrt(2)");
+        root_helper("-sqrt(2)", 3, "root 0 of x^6-2");
+        root_helper("-sqrt(2)", 9, "root 0 of x^18-2");
+        root_helper("-sqrt(2)", -1, "-sqrt(2)/2");
+        root_helper("-sqrt(2)", -3, "root 0 of 2*x^6-1");
+        root_helper("-sqrt(2)", -9, "root 0 of 2*x^18-1");
+
+        root_helper("(1+sqrt(5))/2", 1, "(1+sqrt(5))/2");
+        root_helper("(1+sqrt(5))/2", 2, "root 1 of x^4-x^2-1");
+        root_helper("(1+sqrt(5))/2", 3, "root 1 of x^6-x^3-1");
+        root_helper("(1+sqrt(5))/2", 10, "root 1 of x^20-x^10-1");
+        root_helper("(1+sqrt(5))/2", -1, "(-1+sqrt(5))/2");
+        root_helper("(1+sqrt(5))/2", -2, "root 1 of x^4+x^2-1");
+        root_helper("(1+sqrt(5))/2", -3, "root 1 of x^6+x^3-1");
+        root_helper("(1+sqrt(5))/2", -10, "root 1 of x^20+x^10-1");
+
+        root_helper("root 0 of x^5-x-1", 1, "root 0 of x^5-x-1");
+        root_helper("root 0 of x^5-x-1", 2, "root 1 of x^10-x^2-1");
+        root_helper("root 0 of x^5-x-1", 3, "root 0 of x^15-x^3-1");
+        root_helper("root 0 of x^5-x-1", 10, "root 1 of x^50-x^10-1");
+        root_helper("root 0 of x^5-x-1", -1, "root 0 of x^5+x^4-1");
+        root_helper("root 0 of x^5-x-1", -2, "root 1 of x^10+x^8-1");
+        root_helper("root 0 of x^5-x-1", -3, "root 0 of x^15+x^12-1");
+        root_helper("root 0 of x^5-x-1", -10, "root 1 of x^50+x^40-1");
+
+        root_helper("4", 4, "sqrt(2)");
+        root_helper("1728/117649", 12, "root 1 of 49*x^4-12");
+        root_helper("root 0 of x^3-x^2+2*x-1", 2, "root 0 of x^3+x^2-1");
+
+        root_fail_helper("0", -1);
+        root_fail_helper("0", -2);
+        root_fail_helper("0", -3);
+        root_fail_helper("1", 0);
+        root_fail_helper("2", 0);
+        root_fail_helper("sqrt(2)", 0);
+        root_fail_helper("-1", 2);
+        root_fail_helper("-1", -2);
+        root_fail_helper("-sqrt(2)", 2);
+        root_fail_helper("-sqrt(2)", -2);
+    }
+
+    private static void sqrt_helper(@NotNull String input, @NotNull String output) {
+        Algebraic x = readStrict(input).get().sqrt();
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void sqrt_fail_helper(@NotNull String input) {
+        try {
+            readStrict(input).get().sqrt();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testSqrt() {
+        sqrt_helper("0", "0");
+        sqrt_helper("1", "1");
+        sqrt_helper("1/2", "sqrt(2)/2");
+        sqrt_helper("sqrt(2)", "root 1 of x^4-2");
+        sqrt_helper("(1+sqrt(5))/2", "root 1 of x^4-x^2-1");
+        sqrt_helper("root 0 of x^5-x-1", "root 1 of x^10-x^2-1");
+
+        sqrt_helper("4", "2");
+        sqrt_helper("16", "4");
+        sqrt_helper("100/49", "10/7");
+        sqrt_helper("root 0 of x^3-x^2+2*x-1", "root 0 of x^3+x^2-1");
+
+        sqrt_fail_helper("-1");
+        sqrt_fail_helper("-sqrt(2)");
+    }
+
+    private static void cbrt_helper(@NotNull String input, @NotNull String output) {
+        Algebraic x = readStrict(input).get().cbrt();
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testCbrt() {
+        cbrt_helper("0", "0");
+        cbrt_helper("1", "1");
+        cbrt_helper("1/2", "root 0 of 2*x^3-1");
+        cbrt_helper("-4/3", "root 0 of 3*x^3+4");
+        cbrt_helper("sqrt(2)", "root 1 of x^6-2");
+        cbrt_helper("-sqrt(2)", "root 0 of x^6-2");
+        cbrt_helper("(1+sqrt(5))/2", "root 1 of x^6-x^3-1");
+        cbrt_helper("root 0 of x^5-x-1", "root 0 of x^15-x^3-1");
+
+        cbrt_helper("8", "2");
+        cbrt_helper("1000/343", "10/7");
+        cbrt_helper("2985984/13841287201", "144/2401");
     }
 
     @Test

@@ -576,6 +576,28 @@ public class AlgebraicDemos extends QBarDemos {
         }
     }
 
+    private void demoRoot() {
+        Iterable<Pair<Algebraic, Integer>> ps = filterInfinite(
+                p -> (p.a != ZERO || p.b >= 0) && ((p.b & 1) != 0 || p.a.signum() != -1),
+                P.pairsSquareRootOrder(P.withScale(4).algebraics(), P.withScale(2).nonzeroIntegersGeometric())
+        );
+        for (Pair<Algebraic, Integer> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("(" + p.a + ") ^ (1/" + p.b + ") = " + p.a.root(p.b));
+        }
+    }
+
+    private void demoSqrt() {
+        for (Algebraic x : take(LIMIT, P.withElement(ZERO, P.withScale(4).positiveAlgebraics()))) {
+            System.out.println("sqrt(" + x + ") = " + x.sqrt());
+        }
+    }
+
+    private void demoCbrt() {
+        for (Algebraic x : take(LIMIT, P.withScale(4).algebraics())) {
+            System.out.println("cbrt(" + x + ") = " + x.cbrt());
+        }
+    }
+
     private void demoEquals_Algebraic() {
         for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.pairs(P.withScale(4).algebraics()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);
