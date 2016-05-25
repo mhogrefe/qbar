@@ -147,6 +147,9 @@ public final class MultivariatePolynomial implements
     public static @NotNull MultivariatePolynomial of(@NotNull List<Pair<Monomial, BigInteger>> terms) {
         SortedMap<Monomial, BigInteger> termMap = new TreeMap<>();
         for (Pair<Monomial, BigInteger> term : terms) {
+            if (term.a == null || term.b == null) {
+                throw new NullPointerException();
+            }
             BigInteger coefficient = termMap.get(term.a);
             if (coefficient == null) coefficient = BigInteger.ZERO;
             termMap.put(term.a, coefficient.add(term.b));

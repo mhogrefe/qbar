@@ -159,6 +159,9 @@ public final class RationalMultivariatePolynomial implements
     public static @NotNull RationalMultivariatePolynomial of(@NotNull List<Pair<Monomial, Rational>> terms) {
         SortedMap<Monomial, Rational> termMap = new TreeMap<>();
         for (Pair<Monomial, Rational> term : terms) {
+            if (term.a == null || term.b == null) {
+                throw new NullPointerException();
+            }
             Rational coefficient = termMap.get(term.a);
             if (coefficient == null) coefficient = Rational.ZERO;
             termMap.put(term.a, coefficient.add(term.b));
