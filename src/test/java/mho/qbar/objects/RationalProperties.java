@@ -3295,8 +3295,8 @@ public class RationalProperties extends QBarTestProperties {
         functions.put("standard", p -> toList(take(TINY_LIMIT, p.a.digits(p.b).b)));
         //noinspection Convert2MethodRef
         Iterable<Pair<Rational, BigInteger>> ps = P.pairsSquareRootOrder(
-                P.withElement(ZERO, P.withScale(8).positiveRationals()),
-                P.withScale(8).rangeUp(IntegerUtils.TWO)
+                P.withElement(ZERO, P.withScale(4).positiveRationals()),
+                P.withScale(4).rangeUp(IntegerUtils.TWO)
         );
         compareImplementations("digits(BigInteger)", take(LIMIT, ps), functions, v -> P.reset());
     }

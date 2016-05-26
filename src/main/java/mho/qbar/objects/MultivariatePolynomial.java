@@ -842,6 +842,9 @@ public final class MultivariatePolynomial implements
      * @return Σxs
      */
     public static @NotNull MultivariatePolynomial sum(@NotNull List<MultivariatePolynomial> xs) {
+        if (any(x -> x == null, xs)) {
+            throw new NullPointerException();
+        }
         return foldl(MultivariatePolynomial::add, ZERO, xs);
     }
 
