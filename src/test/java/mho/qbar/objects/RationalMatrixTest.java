@@ -1134,7 +1134,8 @@ public class RationalMatrixTest {
         solveLinearSystemPermissive_helper("[[1, 1], [1, -1], [2, 2]]", "[10, 5, 20]", "Optional[[15/2, 5/2]]");
         solveLinearSystemPermissive_helper("[[1, 1], [1, -1], [2, 2]]", "[10, 5, 19]", "Optional.empty");
         solveLinearSystemPermissive_helper("[[2, 3], [4, 9]]", "[6, 15]", "Optional[[3/2, 1]]");
-        solveLinearSystemPermissive_helper("[[3, 2, -1], [2, -2, 4], [-1, 1/2, -1]]", "[1, -2, 0]", "Optional[[1, -2, -2]]");
+        solveLinearSystemPermissive_helper("[[3, 2, -1], [2, -2, 4], [-1, 1/2, -1]]", "[1, -2, 0]",
+                "Optional[[1, -2, -2]]");
 
         solveLinearSystemPermissive_fail_helper("[]#0", "[0]");
         solveLinearSystemPermissive_fail_helper("[[2, 3], [4, 9]]", "[6, 15, 3]");
