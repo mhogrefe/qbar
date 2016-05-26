@@ -198,6 +198,118 @@ public class RationalMultivariatePolynomialTest {
         of_List_Pair_Monomial_Rational_fail_helper("[(null, 1/3)]");
     }
 
+    private static void of_Monomial_Rational_helper(@NotNull String ev, @NotNull String c, @NotNull String output) {
+        RationalMultivariatePolynomial p = of(Monomial.readStrict(ev).get(), Rational.readStrict(c).get());
+        p.validate();
+        aeq(p, output);
+    }
+
+    @Test
+    public void testOf_Monomial_Rational() {
+        of_Monomial_Rational_helper("1", "0", "0");
+        of_Monomial_Rational_helper("1", "1", "1");
+        of_Monomial_Rational_helper("1", "-1", "-1");
+        of_Monomial_Rational_helper("1", "4/3", "4/3");
+        of_Monomial_Rational_helper("1", "-5/2", "-5/2");
+        of_Monomial_Rational_helper("ooo", "0", "0");
+        of_Monomial_Rational_helper("ooo", "1", "ooo");
+        of_Monomial_Rational_helper("ooo", "-1", "-ooo");
+        of_Monomial_Rational_helper("ooo", "4/3", "4/3*ooo");
+        of_Monomial_Rational_helper("ooo", "-5/2", "-5/2*ooo");
+        of_Monomial_Rational_helper("a*b^2", "0", "0");
+        of_Monomial_Rational_helper("a*b^2", "1", "a*b^2");
+        of_Monomial_Rational_helper("a*b^2", "-1", "-a*b^2");
+        of_Monomial_Rational_helper("a*b^2", "4/3", "4/3*a*b^2");
+        of_Monomial_Rational_helper("a*b^2", "-5/2", "-5/2*a*b^2");
+    }
+
+    private static void of_Rational_helper(@NotNull String input) {
+        RationalMultivariatePolynomial p = of(Rational.readStrict(input).get());
+        p.validate();
+        aeq(p, input);
+    }
+
+    @Test
+    public void testOf_Rational() {
+        of_Rational_helper("0");
+        of_Rational_helper("1");
+        of_Rational_helper("-1");
+        of_Rational_helper("4/3");
+        of_Rational_helper("-5/2");
+    }
+
+    private static void of_BigInteger_helper(@NotNull String input) {
+        RationalMultivariatePolynomial p = of(Readers.readBigIntegerStrict(input).get());
+        p.validate();
+        aeq(p, input);
+    }
+
+    @Test
+    public void testOf_BigInteger() {
+        of_BigInteger_helper("0");
+        of_BigInteger_helper("1");
+        of_BigInteger_helper("-1");
+        of_BigInteger_helper("3");
+        of_BigInteger_helper("-5");
+    }
+
+    private static void of_int_helper(int input) {
+        RationalMultivariatePolynomial p = of(input);
+        p.validate();
+        aeq(p, input);
+    }
+
+    @Test
+    public void testOf_int() {
+        of_int_helper(0);
+        of_int_helper(1);
+        of_int_helper(-1);
+        of_int_helper(3);
+        of_int_helper(-5);
+    }
+
+    private static void of_Variable(@NotNull String input) {
+        RationalMultivariatePolynomial p = of(Variable.readStrict(input).get());
+        p.validate();
+        aeq(p, input);
+    }
+
+    @Test
+    public void testOf_Variable() {
+        of_Variable("a");
+        of_Variable("b");
+        of_Variable("c");
+        of_Variable("x");
+        of_Variable("y");
+        of_Variable("z");
+        of_Variable("ooo");
+    }
+
+    private static void of_RationalPolynomial_Variable_helper(
+            @NotNull String p,
+            @NotNull String v,
+            @NotNull String output
+    ) {
+        RationalMultivariatePolynomial q = of(RationalPolynomial.readStrict(p).get(), Variable.readStrict(v).get());
+        q.validate();
+        aeq(q, output);
+    }
+
+    @Test
+    public void testOf_RationalPolynomial_Variable() {
+        of_RationalPolynomial_Variable_helper("0", "x", "0");
+        of_RationalPolynomial_Variable_helper("1", "x", "1");
+        of_RationalPolynomial_Variable_helper("-4/3", "x", "-4/3");
+        of_RationalPolynomial_Variable_helper("x", "x", "x");
+        of_RationalPolynomial_Variable_helper("x", "ooo", "ooo");
+        of_RationalPolynomial_Variable_helper("x^2-7/4*x+1/3", "x", "x^2-7/4*x+1/3");
+        of_RationalPolynomial_Variable_helper("x^2-7/4*x+1/3", "ooo", "ooo^2-7/4*ooo+1/3");
+        of_RationalPolynomial_Variable_helper("x^3-1", "x", "x^3-1");
+        of_RationalPolynomial_Variable_helper("x^3-1", "ooo", "ooo^3-1");
+        of_RationalPolynomial_Variable_helper("1/2*x^10", "x", "1/2*x^10");
+        of_RationalPolynomial_Variable_helper("1/2*x^10", "ooo", "1/2*ooo^10");
+    }
+
     private static @NotNull List<Pair<Monomial, Rational>> readMonomialRationalPairList(
             @NotNull String s
     ) {
