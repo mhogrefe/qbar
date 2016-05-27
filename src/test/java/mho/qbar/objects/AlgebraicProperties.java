@@ -164,7 +164,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             try {
                 of(p.a, p.b);
                 fail(p);
-            } catch (IllegalArgumentException ignored) {}
+            } catch (ArithmeticException ignored) {}
         }
 
         Iterable<Pair<Polynomial, Integer>> psFail = P.pairs(
@@ -175,7 +175,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             try {
                 of(p.a, p.b);
                 fail(p);
-            } catch (IllegalArgumentException ignored) {}
+            } catch (ArithmeticException ignored) {}
         }
     }
 
