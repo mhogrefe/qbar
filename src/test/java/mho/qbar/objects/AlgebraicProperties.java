@@ -646,7 +646,7 @@ public class AlgebraicProperties extends QBarTestProperties {
     private void propertiesRoundUpToIntegerPowerOfTwo() {
         initialize("roundUpToIntegerPowerOfTwo()");
         for (Algebraic x : take(LIMIT, P.positiveAlgebraics())) {
-            Rational powerOfTwo = x.roundUpToIntegerPowerOfTwo();
+            BinaryFraction powerOfTwo = x.roundUpToIntegerPowerOfTwo();
             assertTrue(x, powerOfTwo.isPowerOfTwo());
             assertTrue(x, le(x, of(powerOfTwo)));
             assertTrue(x, lt(of(powerOfTwo.shiftRight(1)), x));

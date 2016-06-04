@@ -685,10 +685,10 @@ public class RationalProperties extends QBarTestProperties {
     private void propertiesRoundUpToPowerOfTwo() {
         initialize("roundUpToPowerOfTwo()");
         for (Rational r : take(LIMIT, P.positiveRationals())) {
-            Rational powerOfTwo = r.roundUpToPowerOfTwo();
+            BinaryFraction powerOfTwo = r.roundUpToPowerOfTwo();
             assertTrue(r, powerOfTwo.isPowerOfTwo());
-            assertTrue(r, le(r, powerOfTwo));
-            assertTrue(r, lt(powerOfTwo.shiftRight(1), r));
+            assertTrue(r, le(r, of(powerOfTwo)));
+            assertTrue(r, lt(of(powerOfTwo.shiftRight(1)), r));
         }
 
         for (Rational r : take(LIMIT, P.withElement(ZERO, P.negativeRationals()))) {

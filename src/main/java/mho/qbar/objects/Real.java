@@ -1,5 +1,6 @@
 package mho.qbar.objects;
 
+import mho.wheels.math.BinaryFraction;
 import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.Ordering;
@@ -312,11 +313,11 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
         }
     }
 
-    public @NotNull Rational roundUpToIntegerPowerOfTwo() {
+    public @NotNull BinaryFraction roundUpToIntegerPowerOfTwo() {
         Optional<Rational> previousLower = Optional.empty();
         Optional<Rational> previousUpper = Optional.empty();
-        Rational lowerValue = null;
-        Rational upperValue = null;
+        BinaryFraction lowerValue = null;
+        BinaryFraction upperValue = null;
         for (Interval a : intervals) {
             if (a.isFinitelyBounded()) {
                 Rational lower = a.getLower().get();

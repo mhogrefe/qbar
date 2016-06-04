@@ -742,7 +742,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      *
      * @return the smallest integer power of 2 greater than or equal to {@code this}.
      */
-    public @NotNull Rational roundUpToIntegerPowerOfTwo() {
+    public @NotNull BinaryFraction roundUpToIntegerPowerOfTwo() {
         if (signum() != 1) {
             throw new ArithmeticException("this must be positive. Invalid this: " + this);
         }

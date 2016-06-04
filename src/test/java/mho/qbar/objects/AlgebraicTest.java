@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Optional;
 
 import static mho.qbar.objects.Algebraic.*;
 import static mho.wheels.iterables.IterableUtils.*;
@@ -146,174 +147,191 @@ public class AlgebraicTest {
     }
 
     private static void of_float_helper(float f, @NotNull String output) {
-        Algebraic x = of(f).get();
-        x.validate();
+        Optional<Algebraic> x = of(f);
+        if (x.isPresent()) {
+            x.get().validate();
+        }
         aeq(x, output);
-    }
-
-    private static void of_float_empty_helper(float f) {
-        assertFalse(of(f).isPresent());
     }
 
     @Test
     public void testOf_float() {
-        of_float_helper(0.0f, "0");
-        of_float_helper(1.0f, "1");
-        of_float_helper(13.0f, "13");
-        of_float_helper(-5.0f, "-5");
-        of_float_helper(1.5f, "3/2");
-        of_float_helper(0.15625f, "5/32");
-        of_float_helper(0.1f, "1/10");
-        of_float_helper(1.0f / 3.0f, "16666667/50000000");
-        of_float_helper(1.0e10f, "10000000000");
-        of_float_helper(1.0e30f, "1000000000000000000000000000000");
-        of_float_helper((float) Math.PI, "31415927/10000000");
-        of_float_helper((float) Math.E, "27182817/10000000");
-        of_float_helper((float) Math.sqrt(2), "2828427/2000000");
-        of_float_helper(Float.MIN_VALUE, "7/5000000000000000000000000000000000000000000000");
-        of_float_helper(-Float.MIN_VALUE, "-7/5000000000000000000000000000000000000000000000");
-        of_float_helper(Float.MIN_NORMAL, "23509887/2000000000000000000000000000000000000000000000");
-        of_float_helper(-Float.MIN_NORMAL, "-23509887/2000000000000000000000000000000000000000000000");
-        of_float_helper(Float.MAX_VALUE, "340282350000000000000000000000000000000");
-        of_float_helper(-Float.MAX_VALUE, "-340282350000000000000000000000000000000");
+        of_float_helper(0.0f, "Optional[0]");
+        of_float_helper(1.0f, "Optional[1]");
+        of_float_helper(13.0f, "Optional[13]");
+        of_float_helper(-5.0f, "Optional[-5]");
+        of_float_helper(1.5f, "Optional[3/2]");
+        of_float_helper(0.15625f, "Optional[5/32]");
+        of_float_helper(0.1f, "Optional[1/10]");
+        of_float_helper(1.0f / 3.0f, "Optional[16666667/50000000]");
+        of_float_helper(1.0e10f, "Optional[10000000000]");
+        of_float_helper(1.0e30f, "Optional[1000000000000000000000000000000]");
+        of_float_helper((float) Math.PI, "Optional[31415927/10000000]");
+        of_float_helper((float) Math.E, "Optional[27182817/10000000]");
+        of_float_helper((float) Math.sqrt(2), "Optional[2828427/2000000]");
+        of_float_helper(Float.MIN_VALUE, "Optional[7/5000000000000000000000000000000000000000000000]");
+        of_float_helper(-Float.MIN_VALUE, "Optional[-7/5000000000000000000000000000000000000000000000]");
+        of_float_helper(Float.MIN_NORMAL, "Optional[23509887/2000000000000000000000000000000000000000000000]");
+        of_float_helper(-Float.MIN_NORMAL, "Optional[-23509887/2000000000000000000000000000000000000000000000]");
+        of_float_helper(Float.MAX_VALUE, "Optional[340282350000000000000000000000000000000]");
+        of_float_helper(-Float.MAX_VALUE, "Optional[-340282350000000000000000000000000000000]");
 
-        of_float_empty_helper(Float.POSITIVE_INFINITY);
-        of_float_empty_helper(Float.NEGATIVE_INFINITY);
-        of_float_empty_helper(Float.NaN);
+        of_float_helper(Float.POSITIVE_INFINITY, "Optional.empty");
+        of_float_helper(Float.NEGATIVE_INFINITY, "Optional.empty");
+        of_float_helper(Float.NaN, "Optional.empty");
     }
 
     private static void of_double_helper(double d, @NotNull String output) {
-        Algebraic x = of(d).get();
-        x.validate();
+        Optional<Algebraic> x = of(d);
+        if (x.isPresent()) {
+            x.get().validate();
+        }
         aeq(x, output);
-    }
-
-    private static void of_double_empty_helper(double d) {
-        assertFalse(of(d).isPresent());
     }
 
     @Test
     public void testOf_double() {
-        of_double_helper(0.0, "0");
-        of_double_helper(1.0, "1");
-        of_double_helper(13.0, "13");
-        of_double_helper(-5.0, "-5");
-        of_double_helper(1.5, "3/2");
-        of_double_helper(0.15625, "5/32");
-        of_double_helper(0.1, "1/10");
-        of_double_helper(1.0 / 3.0, "3333333333333333/10000000000000000");
-        of_double_helper(1.0e10, "10000000000");
-        of_double_helper(1.0e30, "1000000000000000000000000000000");
-        of_double_helper(Math.PI, "3141592653589793/1000000000000000");
-        of_double_helper(Math.E, "543656365691809/200000000000000");
-        of_double_helper(Math.sqrt(2), "14142135623730951/10000000000000000");
+        of_double_helper(0.0, "Optional[0]");
+        of_double_helper(1.0, "Optional[1]");
+        of_double_helper(13.0, "Optional[13]");
+        of_double_helper(-5.0, "Optional[-5]");
+        of_double_helper(1.5, "Optional[3/2]");
+        of_double_helper(0.15625, "Optional[5/32]");
+        of_double_helper(0.1, "Optional[1/10]");
+        of_double_helper(1.0 / 3.0, "Optional[3333333333333333/10000000000000000]");
+        of_double_helper(1.0e10, "Optional[10000000000]");
+        of_double_helper(1.0e30, "Optional[1000000000000000000000000000000]");
+        of_double_helper(Math.PI, "Optional[3141592653589793/1000000000000000]");
+        of_double_helper(Math.E, "Optional[543656365691809/200000000000000]");
+        of_double_helper(Math.sqrt(2), "Optional[14142135623730951/10000000000000000]");
         of_double_helper(Double.MIN_VALUE,
-                "49/100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+                "Optional[49/100000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
-                "00000000000000000000000000000000");
+                "00000000000000000000000000000000000000000]");
         of_double_helper(-Double.MIN_VALUE,
-                "-49/10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+                "Optional[-49/10000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
-                "000000000000000000000000000000000");
+                "000000000000000000000000000000000000000000]");
         of_double_helper(Double.MIN_NORMAL,
-                "11125369292536007/500000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+                "Optional[11125369292536007/500000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
-                "000000000000000000000000000000000000000000000");
+                "000000000000000000000000000000000000000000000000000000]");
         of_double_helper(-Double.MIN_NORMAL,
-                "-11125369292536007/50000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+                "Optional[-11125369292536007/50000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
-                "0000000000000000000000000000000000000000000000");
+                "0000000000000000000000000000000000000000000000000000000]");
         of_double_helper(Double.MAX_VALUE,
-                "179769313486231570000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+                "Optional[179769313486231570000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
-                "000000000000");
+                "000000000000000000000]");
         of_double_helper(-Double.MAX_VALUE,
-                "-17976931348623157000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+                "Optional[-17976931348623157000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
-                "0000000000000");
+                "0000000000000000000000]");
 
-        of_double_empty_helper(Double.POSITIVE_INFINITY);
-        of_double_empty_helper(Double.NEGATIVE_INFINITY);
-        of_double_empty_helper(Double.NaN);
+        of_double_helper(Double.POSITIVE_INFINITY, "Optional.empty");
+        of_double_helper(Double.NEGATIVE_INFINITY, "Optional.empty");
+        of_double_helper(Double.NaN, "Optional.empty");
     }
 
-    private static void ofExact_float_helper(float f, @NotNull Object output) {
-        Algebraic x = ofExact(f).get();
-        x.validate();
+    private static void ofExact_float_helper(float f, @NotNull String output) {
+        Optional<Algebraic> x = ofExact(f);
+        if (x.isPresent()) {
+            x.get().validate();
+        }
         aeq(x, output);
-    }
-
-    private static void ofExact_float_empty_helper(float f) {
-        assertFalse(ofExact(f).isPresent());
     }
 
     @Test
     public void testOfExact_float() {
-        ofExact_float_helper(0.0f, "0");
-        ofExact_float_helper(1.0f, "1");
-        ofExact_float_helper(13.0f, "13");
-        ofExact_float_helper(-5.0f, "-5");
-        ofExact_float_helper(1.5f, "3/2");
-        ofExact_float_helper(0.15625f, "5/32");
-        ofExact_float_helper(0.1f, "13421773/134217728");
-        ofExact_float_helper(1.0f / 3.0f, "11184811/33554432");
-        ofExact_float_helper(1.0e10f, "10000000000");
-        ofExact_float_helper(1.0e30f, "1000000015047466219876688855040");
-        ofExact_float_helper((float) Math.PI, "13176795/4194304");
-        ofExact_float_helper((float) Math.E, "2850325/1048576");
-        ofExact_float_helper((float) Math.sqrt(2), "11863283/8388608");
-        ofExact_float_helper(Float.MIN_VALUE, Rational.SMALLEST_FLOAT);
-        ofExact_float_helper(-Float.MIN_VALUE, Rational.SMALLEST_FLOAT.negate());
-        ofExact_float_helper(Float.MIN_NORMAL, Rational.SMALLEST_NORMAL_FLOAT);
-        ofExact_float_helper(-Float.MIN_NORMAL, Rational.SMALLEST_NORMAL_FLOAT.negate());
-        ofExact_float_helper(Float.MAX_VALUE, Rational.LARGEST_FLOAT);
-        ofExact_float_helper(-Float.MAX_VALUE, Rational.LARGEST_FLOAT.negate());
+        ofExact_float_helper(0.0f, "Optional[0]");
+        ofExact_float_helper(1.0f, "Optional[1]");
+        ofExact_float_helper(13.0f, "Optional[13]");
+        ofExact_float_helper(-5.0f, "Optional[-5]");
+        ofExact_float_helper(1.5f, "Optional[3/2]");
+        ofExact_float_helper(0.15625f, "Optional[5/32]");
+        ofExact_float_helper(0.1f, "Optional[13421773/134217728]");
+        ofExact_float_helper(1.0f / 3.0f, "Optional[11184811/33554432]");
+        ofExact_float_helper(1.0e10f, "Optional[10000000000]");
+        ofExact_float_helper(1.0e30f, "Optional[1000000015047466219876688855040]");
+        ofExact_float_helper((float) Math.PI, "Optional[13176795/4194304]");
+        ofExact_float_helper((float) Math.E, "Optional[2850325/1048576]");
+        ofExact_float_helper((float) Math.sqrt(2), "Optional[11863283/8388608]");
+        ofExact_float_helper(Float.MIN_VALUE, "Optional[1/713623846352979940529142984724747568191373312]");
+        ofExact_float_helper(-Float.MIN_VALUE, "Optional[-1/713623846352979940529142984724747568191373312]");
+        ofExact_float_helper(Float.MIN_NORMAL, "Optional[1/85070591730234615865843651857942052864]");
+        ofExact_float_helper(-Float.MIN_NORMAL, "Optional[-1/85070591730234615865843651857942052864]");
+        ofExact_float_helper(Float.MAX_VALUE, "Optional[340282346638528859811704183484516925440]");
+        ofExact_float_helper(-Float.MAX_VALUE, "Optional[-340282346638528859811704183484516925440]");
 
-        ofExact_float_empty_helper(Float.POSITIVE_INFINITY);
-        ofExact_float_empty_helper(Float.NEGATIVE_INFINITY);
-        ofExact_float_empty_helper(Float.NaN);
+        ofExact_float_helper(Float.POSITIVE_INFINITY, "Optional.empty");
+        ofExact_float_helper(Float.NEGATIVE_INFINITY, "Optional.empty");
+        ofExact_float_helper(Float.NaN, "Optional.empty");
     }
 
-    private static void ofExact_double_helper(double d, @NotNull Object output) {
-        Algebraic x = ofExact(d).get();
-        x.validate();
+    private static void ofExact_double_helper(double d, @NotNull String output) {
+        Optional<Algebraic> x = ofExact(d);
+        if (x.isPresent()) {
+            x.get().validate();
+        }
         aeq(x, output);
-    }
-
-    private static void ofExact_double_empty_helper(double d) {
-        assertFalse(ofExact(d).isPresent());
     }
 
     @Test
     public void testOfExact_double() {
-        ofExact_double_helper(0.0, "0");
-        ofExact_double_helper(1.0, "1");
-        ofExact_double_helper(13.0, "13");
-        ofExact_double_helper(-5.0, "-5");
-        ofExact_double_helper(1.5, "3/2");
-        ofExact_double_helper(0.15625, "5/32");
-        ofExact_double_helper(0.1, "3602879701896397/36028797018963968");
-        ofExact_double_helper(1.0 / 3.0, "6004799503160661/18014398509481984");
-        ofExact_double_helper(1.0e10, "10000000000");
-        ofExact_double_helper(1.0e30, "1000000000000000019884624838656");
-        ofExact_double_helper(Math.PI, "884279719003555/281474976710656");
-        ofExact_double_helper(Math.E, "6121026514868073/2251799813685248");
-        ofExact_double_helper(Math.sqrt(2), "6369051672525773/4503599627370496");
-        ofExact_double_helper(Double.MIN_VALUE, Rational.SMALLEST_DOUBLE);
-        ofExact_double_helper(-Double.MIN_VALUE, Rational.SMALLEST_DOUBLE.negate());
-        ofExact_double_helper(Double.MIN_NORMAL, Rational.SMALLEST_NORMAL_DOUBLE);
-        ofExact_double_helper(-Double.MIN_NORMAL, Rational.SMALLEST_NORMAL_DOUBLE.negate());
-        ofExact_double_helper(Double.MAX_VALUE, Rational.LARGEST_DOUBLE);
-        ofExact_double_helper(-Double.MAX_VALUE, Rational.LARGEST_DOUBLE.negate());
-        ofExact_double_empty_helper(Double.POSITIVE_INFINITY);
-        ofExact_double_empty_helper(Double.NEGATIVE_INFINITY);
-        ofExact_double_empty_helper(Double.NaN);
+        ofExact_double_helper(0.0, "Optional[0]");
+        ofExact_double_helper(1.0, "Optional[1]");
+        ofExact_double_helper(13.0, "Optional[13]");
+        ofExact_double_helper(-5.0, "Optional[-5]");
+        ofExact_double_helper(1.5, "Optional[3/2]");
+        ofExact_double_helper(0.15625, "Optional[5/32]");
+        ofExact_double_helper(0.1, "Optional[3602879701896397/36028797018963968]");
+        ofExact_double_helper(1.0 / 3.0, "Optional[6004799503160661/18014398509481984]");
+        ofExact_double_helper(1.0e10, "Optional[10000000000]");
+        ofExact_double_helper(1.0e30, "Optional[1000000000000000019884624838656]");
+        ofExact_double_helper(Math.PI, "Optional[884279719003555/281474976710656]");
+        ofExact_double_helper(Math.E, "Optional[6121026514868073/2251799813685248]");
+        ofExact_double_helper(Math.sqrt(2), "Optional[6369051672525773/4503599627370496]");
+        ofExact_double_helper(Double.MIN_VALUE,
+                "Optional[1/2024022533073106183524953467189173070495566497641421183569013580274303395679953468919603" +
+                "837014371244951870778643168119113898087373857934768670133999407385099215174242765663613644669077420" +
+                "932163412397676784727450685620074834246926986181033556491595563408100565123587695523334146152305025" +
+                "32186327508646006263307707741093494784]");
+        ofExact_double_helper(-Double.MIN_VALUE,
+                "Optional[-1/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960" +
+                "383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742" +
+                "093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502" +
+                "532186327508646006263307707741093494784]");
+        ofExact_double_helper(Double.MIN_NORMAL,
+                "Optional[1/4494232837155789769323262976972561834044942447355766431835752028943316895137524078317711" +
+                "933060188400528002846996784833941469744220360415562321185765986853109444197335621637131907555490031" +
+                "152352986327073802125144220953767058561572036847827763520680929083762767114657455998681148461992907" +
+                "6208839082406056034304]");
+        ofExact_double_helper(-Double.MIN_NORMAL,
+                "Optional[-1/449423283715578976932326297697256183404494244735576643183575202894331689513752407831771" +
+                "193306018840052800284699678483394146974422036041556232118576598685310944419733562163713190755549003" +
+                "115235298632707380212514422095376705856157203684782776352068092908376276711465745599868114846199290" +
+                "76208839082406056034304]");
+        ofExact_double_helper(Double.MAX_VALUE,
+                "Optional[179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558" +
+                "632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389" +
+                "328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881" +
+                "250404026184124858368]");
+        ofExact_double_helper(-Double.MAX_VALUE,
+                "Optional[-17976931348623157081452742373170435679807056752584499659891747680315726078002853876058955" +
+                "863276687817154045895351438246423432132688946418276846754670353751698604991057655128207624549009038" +
+                "932894407586850845513394230458323690322294816580855933212334827479782620414472316873817718091929988" +
+                "1250404026184124858368]");
+
+        ofExact_double_helper(Double.POSITIVE_INFINITY, "Optional.empty");
+        ofExact_double_helper(Double.NEGATIVE_INFINITY, "Optional.empty");
+        ofExact_double_helper(Double.NaN, "Optional.empty");
     }
 
     private static void of_BigDecimal_helper(@NotNull String input, @NotNull String output) {

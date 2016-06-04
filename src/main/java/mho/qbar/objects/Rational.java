@@ -695,12 +695,12 @@ public final class Rational implements Comparable<Rational> {
      *
      * @return the smallest power of 2 greater than or equal to {@code this}.
      */
-    public @NotNull Rational roundUpToPowerOfTwo() {
+    public @NotNull BinaryFraction roundUpToPowerOfTwo() {
         if (signum() != 1) {
             throw new ArithmeticException("this must be positive. Invalid this: " + this);
         }
-        if (isPowerOfTwo()) return this;
-        return ONE.shiftLeft(binaryExponent() + 1);
+        if (isPowerOfTwo()) return binaryFractionValueExact();
+        return BinaryFraction.ONE.shiftLeft(binaryExponent() + 1);
     }
 
     /**

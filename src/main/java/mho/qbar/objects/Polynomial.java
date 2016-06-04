@@ -2247,7 +2247,7 @@ public final class Polynomial implements
         if (degree() == 0) {
             return Interval.of(Rational.NEGATIVE_ONE, Rational.ONE);
         }
-        return rootBoundHelper(Rational::roundUpToPowerOfTwo);
+        return rootBoundHelper(r -> Rational.of(r.roundUpToPowerOfTwo()));
     }
 
     /**
