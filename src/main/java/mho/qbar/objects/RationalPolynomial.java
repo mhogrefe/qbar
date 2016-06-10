@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.NoRemoveIterable;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.comparators.ShortlexComparator;
@@ -781,7 +782,13 @@ public final class RationalPolynomial implements
             return ONE;
         } else {
             return new RationalPolynomial(
-                    toList(zipWith((c, i) -> c.multiply(BigInteger.valueOf(i)), tail(coefficients), rangeUp(1)))
+                    toList(
+                            zipWith(
+                                    (c, i) -> c.multiply(BigInteger.valueOf(i)),
+                                    tail(coefficients),
+                                    ExhaustiveProvider.INSTANCE.positiveIntegers()
+                            )
+                    )
             );
         }
     }

@@ -440,6 +440,105 @@ public strictfp abstract class QBarIterableProvider {
     }
 
     /**
+     * Generates {@code Byte}s greater than or equal to a given value, in increasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Byte}s
+     */
+    public @NotNull Iterable<Byte> rangeUpIncreasing(byte a) {
+        return wheelsProvider.rangeUpIncreasing(a);
+    }
+
+    /**
+     * Generates {@code Short}s greater than or equal to a given value, in increasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Short}s
+     */
+    public @NotNull Iterable<Short> rangeUpIncreasing(short a) {
+        return wheelsProvider.rangeUpIncreasing(a);
+    }
+
+    /**
+     * Generates {@code Integer}s greater than or equal to a given value, in increasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Integer}s
+     */
+    public @NotNull Iterable<Integer> rangeUpIncreasing(int a) {
+        return wheelsProvider.rangeUpIncreasing(a);
+    }
+
+    /**
+     * Generates {@code Long}s greater than or equal to a given value, in increasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Long}s
+     */
+    public @NotNull Iterable<Long> rangeUpIncreasing(long a) {
+        return wheelsProvider.rangeUpIncreasing(a);
+    }
+
+    /**
+     * Generates {@code BigInteger}s greater than or equal to a given value, in increasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code BigInteger}s
+     */
+    public @NotNull Iterable<BigInteger> rangeUpIncreasing(@NotNull BigInteger a) {
+        return wheelsProvider.rangeUpIncreasing(a);
+    }
+
+    /**
+     * Generates {@code Character}s greater than or equal to a given value, in increasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Character}s
+     */
+    public @NotNull Iterable<Character> rangeUpIncreasing(char a) {
+        return wheelsProvider.rangeUpIncreasing(a);
+    }
+
+    /**
+     * Generates {@code Byte}s greater than or equal to a given value, in decreasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Byte}s
+     */
+    public @NotNull Iterable<Byte> rangeUpDecreasing(byte a) {
+        return wheelsProvider.rangeUpDecreasing(a);
+    }
+
+    /**
+     * Generates {@code Short}s greater than or equal to a given value, in decreasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Short}s
+     */
+    public @NotNull Iterable<Short> rangeUpDecreasing(short a) {
+        return wheelsProvider.rangeUpDecreasing(a);
+    }
+
+    /**
+     * Generates {@code Integer}s greater than or equal to a given value, in decreasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Integer}s
+     */
+    public @NotNull Iterable<Integer> rangeUpDecreasing(int a) {
+        return wheelsProvider.rangeUpDecreasing(a);
+    }
+
+    /**
+     * Generates {@code Long}s greater than or equal to a given value, in decreasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Long}s
+     */
+    public @NotNull Iterable<Long> rangeUpDecreasing(long a) {
+        return wheelsProvider.rangeUpDecreasing(a);
+    }
+
+    /**
+     * Generates {@code Character}s greater than or equal to a given value, in decreasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Character}s
+     */
+    public @NotNull Iterable<Character> rangeUpDecreasing(char a) {
+        return wheelsProvider.rangeUpDecreasing(a);
+    }
+
+    /**
      * Generates {@code Byte}s greater than or equal to a given value.
      *
      * @param a the inclusive lower bound of the generated {@code Byte}s
@@ -494,6 +593,105 @@ public strictfp abstract class QBarIterableProvider {
     }
 
     /**
+     * Generates {@code Byte}s less than or equal to a given value, in increasing order.
+     *
+     * @param a the inclusive upper bound of the generated {@code Byte}s
+     */
+    public @NotNull Iterable<Byte> rangeDownIncreasing(byte a) {
+        return wheelsProvider.rangeDownIncreasing(a);
+    }
+
+    /**
+     * Generates {@code Short}s less than or equal to a given value, in increasing order.
+     *
+     * @param a the inclusive upper bound of the generated {@code Short}s
+     */
+    public @NotNull Iterable<Short> rangeDownIncreasing(short a) {
+        return wheelsProvider.rangeDownIncreasing(a);
+    }
+
+    /**
+     * Generates {@code Integer}s less than or equal to a given value, in increasing order.
+     *
+     * @param a the inclusive upper bound of the generated {@code Integer}s
+     */
+    public @NotNull Iterable<Integer> rangeDownIncreasing(int a) {
+        return wheelsProvider.rangeDownIncreasing(a);
+    }
+
+    /**
+     * Generates {@code Long}s less than or equal to a given value, in increasing order.
+     *
+     * @param a the inclusive upper bound of the generated {@code Long}s
+     */
+    public @NotNull Iterable<Long> rangeDownIncreasing(long a) {
+        return wheelsProvider.rangeDownIncreasing(a);
+    }
+
+    /**
+     * Generates {@code Character}s less than or equal to a given value, in increasing order.
+     *
+     * @param a the inclusive upper bound of the generated {@code Character}s
+     */
+    public @NotNull Iterable<Character> rangeDownIncreasing(char a) {
+        return wheelsProvider.rangeDownIncreasing(a);
+    }
+
+    /**
+     * Generates {@code Byte}s less than or equal to a given value, in decreasing order.
+     *
+     * @param a the inclusive upper bound of the generated {@code Byte}s
+     */
+    public @NotNull Iterable<Byte> rangeDownDecreasing(byte a) {
+        return wheelsProvider.rangeDownDecreasing(a);
+    }
+
+    /**
+     * Generates {@code Short}s less than or equal to a given value, in decreasing order.
+     *
+     * @param a the inclusive upper bound of the generated {@code Short}s
+     */
+    public @NotNull Iterable<Short> rangeDownDecreasing(short a) {
+        return wheelsProvider.rangeDownDecreasing(a);
+    }
+
+    /**
+     * Generates {@code Integer}s less than or equal to a given value, in decreasing order.
+     *
+     * @param a the inclusive upper bound of the generated {@code Integer}s
+     */
+    public @NotNull Iterable<Integer> rangeDownDecreasing(int a) {
+        return wheelsProvider.rangeDownDecreasing(a);
+    }
+
+    /**
+     * Generates {@code Long}s less than or equal to a given value, in decreasing order.
+     *
+     * @param a the inclusive upper bound of the generated {@code Long}s
+     */
+    public @NotNull Iterable<Long> rangeDownDecreasing(long a) {
+        return wheelsProvider.rangeDownDecreasing(a);
+    }
+
+    /**
+     * Generates {@code BigInteger}s less than or equal to a given value, in decreasing order.
+     *
+     * @param a the inclusive upper bound of the generated {@code BigInteger}s
+     */
+    public @NotNull Iterable<BigInteger> rangeDownDecreasing(@NotNull BigInteger a) {
+        return wheelsProvider.rangeDownDecreasing(a);
+    }
+
+    /**
+     * Generates {@code Character}s less than or equal to a given value, in decreasing order.
+     *
+     * @param a the inclusive upper bound of the generated {@code Character}s
+     */
+    public @NotNull Iterable<Character> rangeDownDecreasing(char a) {
+        return wheelsProvider.rangeDownDecreasing(a);
+    }
+
+    /**
      * Generates {@code Byte}s less than or equal to a given value.
      *
      * @param a the inclusive upper bound of the generated {@code Byte}s
@@ -545,6 +743,126 @@ public strictfp abstract class QBarIterableProvider {
      */
     public @NotNull Iterable<Character> rangeDown(char a) {
         return wheelsProvider.rangeDown(a);
+    }
+
+    /**
+     * Generates {@code Byte}s between {@code a} and {@code b}, inclusive, in increasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Byte}s
+     * @param b the inclusive upper bound of the generated {@code Byte}s
+     */
+    public @NotNull Iterable<Byte> rangeIncreasing(byte a, byte b) {
+        return wheelsProvider.rangeIncreasing(a, b);
+    }
+
+    /**
+     * Generates {@code Short}s between {@code a} and {@code b}, inclusive, in increasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Short}s
+     * @param b the inclusive upper bound of the generated {@code Short}s
+     */
+    public @NotNull Iterable<Short> rangeIncreasing(short a, short b) {
+        return wheelsProvider.rangeIncreasing(a, b);
+    }
+
+    /**
+     * Generates {@code Integer}s between {@code a} and {@code b}, inclusive, in increasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Integer}s
+     * @param b the inclusive upper bound of the generated {@code Integer}s
+     */
+    public @NotNull Iterable<Integer> rangeIncreasing(int a, int b) {
+        return wheelsProvider.rangeIncreasing(a, b);
+    }
+
+    /**
+     * Generates {@code Long}s between {@code a} and {@code b}, inclusive, in increasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Long}s
+     * @param b the inclusive upper bound of the generated {@code Long}s
+     */
+    public @NotNull Iterable<Long> rangeIncreasing(long a, long b) {
+        return wheelsProvider.rangeIncreasing(a, b);
+    }
+
+    /**
+     * Generates {@code BigInteger}s between {@code a} and {@code b}, inclusive, in increasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code BigInteger}s
+     * @param b the inclusive upper bound of the generated {@code BigInteger}s
+     */
+    public @NotNull Iterable<BigInteger> rangeIncreasing(@NotNull BigInteger a, @NotNull BigInteger b) {
+        return wheelsProvider.rangeIncreasing(a, b);
+    }
+
+    /**
+     * Generates {@code Character}s between {@code a} and {@code b}, inclusive, in increasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Character}s
+     * @param b the inclusive upper bound of the generated {@code Character}s
+     */
+    public @NotNull Iterable<Character> rangeIncreasing(char a, char b) {
+        return wheelsProvider.rangeIncreasing(a, b);
+    }
+
+    /**
+     * Generates {@code Byte}s between {@code a} and {@code b}, inclusive, in decreasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Byte}s
+     * @param b the inclusive upper bound of the generated {@code Byte}s
+     */
+    public @NotNull Iterable<Byte> rangeDecreasing(byte a, byte b) {
+        return wheelsProvider.rangeDecreasing(a, b);
+    }
+
+    /**
+     * Generates {@code Short}s between {@code a} and {@code b}, inclusive, in decreasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Short}s
+     * @param b the inclusive upper bound of the generated {@code Short}s
+     */
+    public @NotNull Iterable<Short> rangeDecreasing(short a, short b) {
+        return wheelsProvider.rangeDecreasing(a, b);
+    }
+
+    /**
+     * Generates {@code Integer}s between {@code a} and {@code b}, inclusive, in decreasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Integer}s
+     * @param b the inclusive upper bound of the generated {@code Integer}s
+     */
+    public @NotNull Iterable<Integer> rangeDecreasing(int a, int b) {
+        return wheelsProvider.rangeDecreasing(a, b);
+    }
+
+    /**
+     * Generates {@code Long}s between {@code a} and {@code b}, inclusive, in decreasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Long}s
+     * @param b the inclusive upper bound of the generated {@code Long}s
+     */
+    public @NotNull Iterable<Long> rangeDecreasing(long a, long b) {
+        return wheelsProvider.rangeDecreasing(a, b);
+    }
+
+    /**
+     * Generates {@code BigInteger}s between {@code a} and {@code b}, inclusive, in decreasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code BigInteger}s
+     * @param b the inclusive upper bound of the generated {@code BigInteger}s
+     */
+    public @NotNull Iterable<BigInteger> rangeDecreasing(@NotNull BigInteger a, @NotNull BigInteger b) {
+        return wheelsProvider.rangeDecreasing(a, b);
+    }
+
+    /**
+     * Generates {@code Character}s between {@code a} and {@code b}, inclusive, in decreasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Character}s
+     * @param b the inclusive upper bound of the generated {@code Character}s
+     */
+    public @NotNull Iterable<Character> rangeDecreasing(char a, char b) {
+        return wheelsProvider.rangeDecreasing(a, b);
     }
 
     /**

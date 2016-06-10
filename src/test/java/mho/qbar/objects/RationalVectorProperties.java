@@ -3,6 +3,7 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
@@ -118,7 +119,7 @@ public class RationalVectorProperties extends QBarTestProperties {
         initialize("get(int)");
         Iterable<Pair<RationalVector, Integer>> ps = P.dependentPairs(
                 P.rationalVectorsAtLeast(1),
-                v -> P.uniformSample(toList(range(0, v.dimension() - 1)))
+                v -> P.uniformSample(toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, v.dimension() - 1)))
         );
         for (Pair<RationalVector, Integer> p : take(LIMIT, ps)) {
             Rational x = p.a.get(p.b);

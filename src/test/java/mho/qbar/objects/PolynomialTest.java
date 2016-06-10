@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.structures.NullableOptional;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -1123,7 +1124,7 @@ public class PolynomialTest {
         delta_helper("[-17, x^2-4*x+7]", "[x^2-4*x+24]");
         delta_helper("[-17, x^2-4*x+7, -x^3-1, 3*x^10]", "[x^2-4*x+24, -x^3-x^2+4*x-8, 3*x^10+x^3+1]");
         Polynomial seed = readStrict("x+1").get();
-        delta_helper(map(seed::pow, rangeUp(0)),
+        delta_helper(map(seed::pow, ExhaustiveProvider.INSTANCE.naturalIntegers()),
                 "[x, x^2+x, x^3+2*x^2+x, x^4+3*x^3+3*x^2+x, x^5+4*x^4+6*x^3+4*x^2+x," +
                 " x^6+5*x^5+10*x^4+10*x^3+5*x^2+x, x^7+6*x^6+15*x^5+20*x^4+15*x^3+6*x^2+x," +
                 " x^8+7*x^7+21*x^6+35*x^5+35*x^4+21*x^3+7*x^2+x," +

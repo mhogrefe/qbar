@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.NoRemoveIterator;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.math.MathUtils;
@@ -114,7 +115,14 @@ public final class Rational implements Comparable<Rational> {
      * Length is infinite
      */
     public static final @NotNull Iterable<Rational> HARMONIC_NUMBERS =
-            scanl(Rational::add, ONE, map(i -> new Rational(BigInteger.ONE, BigInteger.valueOf(i)), rangeUp(2)));
+            scanl(
+                    Rational::add,
+                    ONE,
+                    map(
+                            i -> new Rational(BigInteger.ONE, BigInteger.valueOf(i)),
+                            ExhaustiveProvider.INSTANCE.rangeUpIncreasing(2)
+                    )
+            );
 
     /**
      * A {@code Comparator} that compares two {@code Rational}s by their denominators, then by the absolute values of
@@ -1802,7 +1810,18 @@ public final class Rational implements Comparable<Rational> {
         if (n < 1) {
             throw new ArithmeticException("n must be positive. Invalid n: " + n);
         }
-        return sum(cons(ONE, map(i -> new Rational(BigInteger.ONE, BigInteger.valueOf(i)), range(2, n))));
+        if (n == 1) {
+            return ONE;
+        }
+        return sum(
+                cons(
+                        ONE,
+                        map(
+                                i -> new Rational(BigInteger.ONE, BigInteger.valueOf(i)),
+                                ExhaustiveProvider.INSTANCE.rangeIncreasing(2, n)
+                        )
+                )
+        );
     }
 
     /**

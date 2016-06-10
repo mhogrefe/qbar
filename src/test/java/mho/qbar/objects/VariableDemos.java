@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.qbar.testing.QBarDemos;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -13,7 +14,8 @@ import static mho.wheels.testing.Testing.nicePrint;
 
 @SuppressWarnings("UnusedDeclaration")
 public class VariableDemos extends QBarDemos {
-    private static final @NotNull String VARIABLE_CHARS = charsToString(range('a', 'z'));
+    private static final @NotNull String VARIABLE_CHARS =
+            charsToString(ExhaustiveProvider.INSTANCE.rangeIncreasing('a', 'z'));
 
     public VariableDemos(boolean useRandom) {
         super(useRandom);

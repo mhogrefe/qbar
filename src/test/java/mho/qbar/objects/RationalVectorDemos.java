@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.qbar.testing.QBarDemos;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -43,7 +44,7 @@ public class RationalVectorDemos extends QBarDemos {
     private void demoGet() {
         Iterable<Pair<RationalVector, Integer>> ps = P.dependentPairs(
                 P.withScale(4).rationalVectorsAtLeast(1),
-                v -> P.uniformSample(toList(range(0, v.dimension() - 1)))
+                v -> P.uniformSample(toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, v.dimension() - 1)))
         );
         for (Pair<RationalVector, Integer> p : take(LIMIT, ps)) {
             System.out.println("get(" + p.a + ", " + p.b + ") = " + p.a.get(p.b));

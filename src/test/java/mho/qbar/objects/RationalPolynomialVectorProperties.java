@@ -3,6 +3,7 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
@@ -123,7 +124,7 @@ public class RationalPolynomialVectorProperties extends QBarTestProperties {
         initialize("get(int)");
         Iterable<Pair<RationalPolynomialVector, Integer>> ps = P.dependentPairs(
                 P.rationalPolynomialVectorsAtLeast(1),
-                v -> P.uniformSample(toList(range(0, v.dimension() - 1)))
+                v -> P.uniformSample(toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, v.dimension() - 1)))
         );
         for (Pair<RationalPolynomialVector, Integer> p : take(LIMIT, ps)) {
             RationalPolynomial x = p.a.get(p.b);

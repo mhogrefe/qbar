@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.NoRemoveIterable;
 import mho.wheels.ordering.comparators.LexComparator;
@@ -383,7 +384,18 @@ public final class Matrix implements Comparable<Matrix> {
         if (dimension < 0) {
             throw new IllegalArgumentException("dimension cannot be negative. Invalid dimension: " + dimension);
         }
-        return new Matrix(toList(map(i -> Vector.standard(dimension, i), range(0, dimension - 1))), dimension);
+        if (dimension == 0) {
+            return zero(0, 0);
+        }
+        return new Matrix(
+                toList(
+                        map(
+                                i -> Vector.standard(dimension, i),
+                                ExhaustiveProvider.INSTANCE.rangeIncreasing(0, dimension - 1)
+                        )
+                ),
+                dimension
+        );
     }
 
     /**
@@ -484,7 +496,15 @@ public final class Matrix implements Comparable<Matrix> {
             }
         }
         //noinspection SuspiciousNameCombination
-        return new Matrix(toList(map(i -> Vector.of(Arrays.asList(elements[i])), range(0, width - 1))), height);
+        return new Matrix(
+                toList(
+                        map(
+                                i -> Vector.of(Arrays.asList(elements[i])),
+                                ExhaustiveProvider.INSTANCE.rangeIncreasing(0, width - 1)
+                        )
+                ),
+                height
+        );
     }
 
     /**
@@ -1088,7 +1108,15 @@ public final class Matrix implements Comparable<Matrix> {
         }
         if (width > height()) return Optional.empty();
         Matrix rref = augment(fromColumns(Collections.singletonList(rhs))).reducedRowEchelonForm();
-        Matrix bottom = rref.submatrix(toList(range(width, height() - 1)), toList(range(0, width)));
+        Matrix bottom;
+        if (width == height()) {
+            bottom = zero(0, width + 1);
+        } else {
+            bottom = rref.submatrix(
+                    toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(width, height() - 1)),
+                    toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, width))
+            );
+        }
         if (!bottom.isZero()) return Optional.empty();
         List<Rational> result = new ArrayList<>();
         int lastColumnIndex = rref.width - 1;
@@ -1132,7 +1160,15 @@ public final class Matrix implements Comparable<Matrix> {
                     rhs + ", this: " + this);
         }
         Matrix rref = augment(fromColumns(Collections.singletonList(rhs))).reducedRowEchelonForm();
-        Matrix bottom = rref.submatrix(toList(range(width, height() - 1)), toList(range(0, width)));
+        Matrix bottom;
+        if (width >= height()) {
+            bottom = zero(0, width + 1);
+        } else {
+            bottom = rref.submatrix(
+                    toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(width, height() - 1)),
+                    toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, width))
+            );
+        }
         if (!bottom.isZero()) return Optional.empty();
         List<Rational> result = toList(replicate(width, Rational.ZERO));
         for (Vector row : rref.rows) {

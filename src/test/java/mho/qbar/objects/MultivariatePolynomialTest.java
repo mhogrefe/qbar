@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.structures.NullableOptional;
 import mho.wheels.structures.Pair;
@@ -1401,7 +1402,7 @@ public class MultivariatePolynomialTest {
         delta_helper("[-17, ooo, a*b*c, x^2-4*x+7, x^2+2*x*y+y^2]",
                 "[ooo+17, a*b*c-ooo, -a*b*c+x^2-4*x+7, 2*x*y+y^2+4*x-7]");
         MultivariatePolynomial seed = readStrict("x+y").get();
-        delta_helper(map(seed::pow, rangeUp(0)),
+        delta_helper(map(seed::pow, ExhaustiveProvider.INSTANCE.naturalIntegers()),
                 "[x+y-1, x^2+2*x*y+y^2-x-y, x^3+3*x^2*y+3*x*y^2+y^3-x^2-2*x*y-y^2," +
                 " x^4+4*x^3*y+6*x^2*y^2+4*x*y^3+y^4-x^3-3*x^2*y-3*x*y^2-y^3," +
                 " x^5+5*x^4*y+10*x^3*y^2+10*x^2*y^3+5*x*y^4+y^5-x^4-4*x^3*y-6*x^2*y^2-4*x*y^3-y^4," +

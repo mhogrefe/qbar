@@ -1,5 +1,6 @@
 package mho.qbar.objects;
 
+import mho.wheels.iterables.ExhaustiveProvider;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
@@ -15,7 +16,7 @@ public final class Variable implements Comparable<Variable> {
     /**
      * The letters of the English alphabet.
      */
-    private static @NotNull String ALPHABET = charsToString(range('a', 'z'));
+    private static @NotNull String ALPHABET = charsToString(ExhaustiveProvider.INSTANCE.rangeIncreasing('a', 'z'));
 
     /**
      * This {@code Variable}'s non-negative index.

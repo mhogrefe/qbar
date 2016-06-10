@@ -1,5 +1,6 @@
 package mho.qbar.objects;
 
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.IntegerUtils;
@@ -444,7 +445,10 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
         return fromDigits(
                 base,
                 Collections.emptyList(),
-                concatMap(i -> IntegerUtils.bigEndianDigits(base, i), rangeUp(BigInteger.ONE))
+                concatMap(
+                        i -> IntegerUtils.bigEndianDigits(base, i),
+                        ExhaustiveProvider.INSTANCE.rangeUpIncreasing(BigInteger.ONE)
+                )
         );
     }
 
@@ -460,7 +464,10 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
         fromDigits(
                 IntegerUtils.TWO,
                 Collections.emptyList(),
-                map(i -> MathUtils.isPrime(i) ? BigInteger.ONE : BigInteger.ZERO, rangeUp(BigInteger.ONE))
+                map(
+                        i -> MathUtils.isPrime(i) ? BigInteger.ONE : BigInteger.ZERO,
+                        ExhaustiveProvider.INSTANCE.rangeUpIncreasing(BigInteger.ONE)
+                )
         );
 
     public static @NotNull Real fromMaclaurinSeries(
@@ -504,7 +511,10 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
             derivativeBounds = Interval.of(Rational.ZERO, Rational.ONE);
         }
         return fromMaclaurinSeries(
-                map(i -> Rational.of(BigInteger.ONE, MathUtils.factorial(i)), rangeUp(BigInteger.ZERO)),
+                map(
+                        i -> Rational.of(BigInteger.ONE, MathUtils.factorial(i)),
+                        ExhaustiveProvider.INSTANCE.rangeUpIncreasing(BigInteger.ZERO)
+                ),
                 k -> derivativeBounds,
                 x
         );
@@ -523,7 +533,7 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
                                                 IntegerUtils.NEGATIVE_ONE,
                                         MathUtils.factorial(i)
                                 ),
-                        rangeUp(BigInteger.ZERO)
+                        ExhaustiveProvider.INSTANCE.rangeUpIncreasing(BigInteger.ZERO)
                 ),
                 k -> derivativeBounds,
                 x
@@ -542,7 +552,7 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
                                                 IntegerUtils.NEGATIVE_ONE,
                                         i
                                 ),
-                        rangeUp(BigInteger.ZERO)
+                        ExhaustiveProvider.INSTANCE.rangeUpIncreasing(BigInteger.ZERO)
                 ),
                 k -> {
                     Rational bound = Rational.of(MathUtils.factorial(k - 1));

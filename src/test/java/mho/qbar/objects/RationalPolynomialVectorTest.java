@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.iterables.ExhaustiveProvider;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -554,7 +555,7 @@ public class RationalPolynomialVectorTest {
                             );
                             return of(Arrays.asList(p, p.pow(2), p.pow(3)));
                         },
-                        rangeUp(1)
+                        ExhaustiveProvider.INSTANCE.positiveIntegers()
                 ),
                 "[[1/2, x-3/4, 3/2*x^2-9/4*x+7/8], [1/6, 1/3*x-5/36, 1/2*x^2-5/12*x+19/216]," +
                 " [1/12, 1/6*x-7/144, 1/4*x^2-7/48*x+37/1728], [1/20, 1/10*x-9/400, 3/20*x^2-27/400*x+61/8000]," +

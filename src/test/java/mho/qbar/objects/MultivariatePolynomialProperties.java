@@ -4,6 +4,7 @@ import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
@@ -403,7 +404,7 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
                                                     BigInteger.ONE
                                             ),
                                             cs,
-                                            rangeUp(0)
+                                            ExhaustiveProvider.INSTANCE.naturalIntegers()
                                     )
                             )
                     ),

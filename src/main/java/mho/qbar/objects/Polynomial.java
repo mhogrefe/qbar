@@ -3,7 +3,7 @@ package mho.qbar.objects;
 import jas.JasApi;
 import mho.wheels.concurrency.ResultCache;
 import mho.wheels.io.Readers;
-import mho.wheels.iterables.IterableUtils;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.NoRemoveIterable;
 import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.IntegerUtils;
@@ -857,7 +857,13 @@ public final class Polynomial implements
             return ONE;
         } else {
             return new Polynomial(
-                    toList(zipWith((c, i) -> c.multiply(BigInteger.valueOf(i)), tail(coefficients), rangeUp(1)))
+                    toList(
+                            zipWith(
+                                    (c, i) -> c.multiply(BigInteger.valueOf(i)),
+                                    tail(coefficients),
+                                    ExhaustiveProvider.INSTANCE.positiveIntegers()
+                            )
+                    )
             );
         }
     }
@@ -1750,8 +1756,16 @@ public final class Polynomial implements
         if (ps.isEmpty()) return PolynomialMatrix.zero(0, 0);
         Matrix coefficientMatrix = coefficientMatrix(ps);
         int m = ps.size();
-        return PolynomialMatrix.of(coefficientMatrix.submatrix(toList(range(0, m - 1)), toList(range(0, m - 2))))
-                .augment(PolynomialMatrix.fromColumns(Collections.singletonList(PolynomialVector.of(ps))));
+        return PolynomialMatrix.of(
+                coefficientMatrix.submatrix(
+                        m == 0 ?
+                                Collections.emptyList() :
+                                toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m - 1)),
+                        m < 2 ?
+                                Collections.emptyList() :
+                                toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m - 2))
+                )
+        ).augment(PolynomialMatrix.fromColumns(Collections.singletonList(PolynomialVector.of(ps))));
     }
 
     /**
@@ -1774,8 +1788,15 @@ public final class Polynomial implements
         List<BigInteger> detCoefficients = new ArrayList<>();
         for (int i = 0; i <= n - m; i++) {
             Matrix sub = coefficientMatrix.submatrix(
-                    toList(range(0, m - 1)),
-                    toList(concat(range(0, m - 2), Collections.singletonList(n - i - 1)))
+                    toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m - 1)),
+                    toList(
+                            concat(
+                                    m < 2 ?
+                                            Collections.emptyList() :
+                                            ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m - 2),
+                                    Collections.singletonList(n - i - 1)
+                            )
+                    )
             );
             detCoefficients.add(sub.determinant());
         }
@@ -1946,7 +1967,9 @@ public final class Polynomial implements
             throw new IllegalArgumentException("j cannot be negative. Invalid j: " + j);
         } else if (j <= thatDegree) {
             Matrix sylvesterHabichtMatrix = sylvesterHabichtMatrix(that, j);
-            List<Integer> range = toList(range(0, sylvesterHabichtMatrix.height() - 1));
+            List<Integer> range = toList(
+                    ExhaustiveProvider.INSTANCE.rangeIncreasing(0, sylvesterHabichtMatrix.height() - 1)
+            );
             return sylvesterHabichtMatrix.submatrix(range, range).determinant();
         } else if (j < thisDegree - 1) {
             return BigInteger.ZERO;
@@ -2000,7 +2023,14 @@ public final class Polynomial implements
                     that);
         }
         Matrix shm = sylvesterHabichtMatrix(that, j);
-        Matrix left = shm.submatrix(toList(range(0, shm.height() - 1)), toList(range(0, shm.height() - 2)));
+        Matrix left = shm.submatrix(
+                shm.height() == 0 ?
+                        Collections.emptyList() :
+                        toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, shm.height() - 1)),
+                shm.height() < 2 ?
+                        Collections.emptyList() :
+                        toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, shm.height() - 2))
+        );
         List<Polynomial> ps = new ArrayList<>();
         for (int i = thatDegree - 1 - j; i >= 0; i--) {
             ps.add(multiplyByPowerOfX(i));

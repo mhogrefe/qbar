@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.qbar.testing.QBarDemos;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
@@ -36,7 +37,7 @@ public class RationalMatrixDemos extends QBarDemos {
     private void demoRow() {
         Iterable<Pair<RationalMatrix, Integer>> ps = P.dependentPairs(
                 filterInfinite(m -> m.height() > 0, P.withScale(4).rationalMatrices()),
-                m -> P.uniformSample(toList(range(0, m.height() - 1)))
+                m -> P.uniformSample(toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m.height() - 1)))
         );
         for (Pair<RationalMatrix, Integer> p : take(LIMIT, ps)) {
             System.out.println("row(" + p.a + ", " + p.b + ") = " + p.a.row(p.b));
@@ -46,7 +47,7 @@ public class RationalMatrixDemos extends QBarDemos {
     private void demoColumn() {
         Iterable<Pair<RationalMatrix, Integer>> ps = P.dependentPairs(
                 filterInfinite(m -> m.width() > 0, P.withScale(4).rationalMatrices()),
-                m -> P.uniformSample(toList(range(0, m.width() - 1)))
+                m -> P.uniformSample(toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m.width() - 1)))
         );
         for (Pair<RationalMatrix, Integer> p : take(LIMIT, ps)) {
             System.out.println("column(" + p.a + ", " + p.b + ") = " + p.a.column(p.b));
@@ -72,7 +73,12 @@ public class RationalMatrixDemos extends QBarDemos {
                 P.dependentPairs(
                         filterInfinite(m -> m.height() > 0 && m.width() > 0, P.withScale(4).rationalMatrices()),
                         m -> P.uniformSample(
-                                toList(EP.pairsLex(range(0, m.height() - 1), toList(range(0, m.width() - 1))))
+                                toList(
+                                        EP.pairsLex(
+                                                ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m.height() - 1),
+                                                toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m.width() - 1))
+                                        )
+                                )
                         )
                 )
         );

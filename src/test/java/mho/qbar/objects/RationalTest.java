@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.numberUtils.FloatingPointUtils;
 import mho.wheels.structures.Pair;
@@ -797,11 +798,11 @@ public class RationalTest {
     @Test
     public void testRoundUpToPowerOfTwo() {
         roundUpToPowerOfTwo_helper("1", "1");
-        roundUpToPowerOfTwo_helper("4", "4");
+        roundUpToPowerOfTwo_helper("4", "1 << 2");
         roundUpToPowerOfTwo_helper("2/3", "1");
-        roundUpToPowerOfTwo_helper("1/100", "1/64");
-        roundUpToPowerOfTwo_helper("100", "128");
-        roundUpToPowerOfTwo_helper("22/7", "4");
+        roundUpToPowerOfTwo_helper("1/100", "1 >> 6");
+        roundUpToPowerOfTwo_helper("100", "1 << 7");
+        roundUpToPowerOfTwo_helper("22/7", "1 << 2");
 
         roundUpToPowerOfTwo_fail_helper("0");
         roundUpToPowerOfTwo_fail_helper("-1");
@@ -3131,7 +3132,7 @@ public class RationalTest {
     public void testDelta() {
         delta_helper("[3]", "[]");
         delta_helper("[31/10, 41/10, 59/10, 23/10]", "[1, 9/5, -18/5]");
-        delta_helper(map(i -> of(i).invert(), rangeUp(1)),
+        delta_helper(map(i -> of(i).invert(), ExhaustiveProvider.INSTANCE.positiveIntegers()),
                 "[-1/2, -1/6, -1/12, -1/20, -1/30, -1/42, -1/56, -1/72, -1/90, -1/110, -1/132, -1/156, -1/182," +
                 " -1/210, -1/240, -1/272, -1/306, -1/342, -1/380, -1/420, ...]");
         delta_fail_helper("[]");

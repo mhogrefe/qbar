@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.NoRemoveIterable;
 import mho.wheels.ordering.comparators.LexComparator;
@@ -402,8 +403,16 @@ public final class PolynomialMatrix implements Comparable<PolynomialMatrix> {
         if (dimension < 0) {
             throw new IllegalArgumentException("dimension cannot be negative. Invalid dimension: " + dimension);
         }
+        if (dimension == 0) {
+            return zero(0, 0);
+        }
         return new PolynomialMatrix(
-                toList(map(i -> PolynomialVector.standard(dimension, i), range(0, dimension - 1))),
+                toList(
+                        map(
+                                i -> PolynomialVector.standard(dimension, i),
+                                ExhaustiveProvider.INSTANCE.rangeIncreasing(0, dimension - 1)
+                        )
+                ),
                 dimension
         );
     }
@@ -510,7 +519,10 @@ public final class PolynomialMatrix implements Comparable<PolynomialMatrix> {
         }
         //noinspection SuspiciousNameCombination
         return new PolynomialMatrix(
-                toList(map(i -> PolynomialVector.of(Arrays.asList(elements[i])), range(0, width - 1))),
+                toList(
+                        map(i -> PolynomialVector.of(Arrays.asList(elements[i])),
+                        ExhaustiveProvider.INSTANCE.rangeIncreasing(0, width - 1))
+                ),
                 height
         );
     }

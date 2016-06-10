@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.NoRemoveIterable;
 import mho.wheels.ordering.comparators.LexComparator;
@@ -419,8 +420,16 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
         if (dimension < 0) {
             throw new IllegalArgumentException("dimension cannot be negative. Invalid dimension: " + dimension);
         }
+        if (dimension == 0) {
+            return zero(0, 0);
+        }
         return new RationalMatrix(
-                toList(map(i -> RationalVector.standard(dimension, i), range(0, dimension - 1))),
+                toList(
+                        map(
+                                i -> RationalVector.standard(dimension, i),
+                                ExhaustiveProvider.INSTANCE.rangeIncreasing(0, dimension - 1)
+                        )
+                ),
                 dimension
         );
     }
@@ -502,7 +511,10 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
         }
         //noinspection SuspiciousNameCombination
         return new RationalMatrix(
-                toList(map(i -> RationalVector.of(Arrays.asList(elements[i])), range(0, width - 1))),
+                toList(
+                        map(i -> RationalVector.of(Arrays.asList(elements[i])),
+                        ExhaustiveProvider.INSTANCE.rangeIncreasing(0, width - 1))
+                ),
                 height
         );
     }
@@ -1076,11 +1088,30 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
         }
         if (width > height()) return Optional.empty();
         RationalMatrix rref = augment(fromColumns(Collections.singletonList(rhs))).reducedRowEchelonForm();
-        RationalMatrix bottom = rref.submatrix(toList(range(width, height() - 1)), toList(range(0, width)));
+        RationalMatrix bottom;
+        if (width == height()) {
+            bottom = zero(0, width + 1);
+        } else {
+            bottom = rref.submatrix(
+                    toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(width, height() - 1)),
+                    toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, width))
+            );
+        }
         if (!bottom.isZero()) return Optional.empty();
-        RationalMatrix left = rref.submatrix(toList(range(0, width - 1)), toList(range(0, width - 1)));
+        if (width == 0) {
+            return Optional.of(RationalVector.ZERO_DIMENSIONAL);
+        }
+        RationalMatrix left = rref.submatrix(
+                toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, width - 1)),
+                toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, width - 1))
+        );
         if (!left.isIdentity()) return Optional.empty();
-        return Optional.of(rref.submatrix(toList(range(0, width - 1)), Collections.singletonList(width)).column(0));
+        return Optional.of(
+                rref.submatrix(
+                        toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, width - 1)),
+                        Collections.singletonList(width)
+                ).column(0)
+       );
     }
 
     /**
@@ -1113,7 +1144,15 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
                     rhs + ", this: " + this);
         }
         RationalMatrix rref = augment(fromColumns(Collections.singletonList(rhs))).reducedRowEchelonForm();
-        RationalMatrix bottom = rref.submatrix(toList(range(width, height() - 1)), toList(range(0, width)));
+        RationalMatrix bottom;
+        if (width >= height()) {
+            bottom = zero(0, width + 1);
+        } else {
+            bottom = rref.submatrix(
+                    toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(width, height() - 1)),
+                    toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, width))
+            );
+        }
         if (!bottom.isZero()) return Optional.empty();
         List<Rational> result = toList(replicate(width, Rational.ZERO));
         for (RationalVector row : rref.rows) {
@@ -1145,9 +1184,19 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
             throw new IllegalArgumentException("this must be square. Invalid this: " + this);
         }
         RationalMatrix rref = augment(identity(width)).reducedRowEchelonForm();
-        RationalMatrix left = rref.submatrix(toList(range(0, width - 1)), toList(range(0, width - 1)));
+        List<Integer> range = width == 0 ?
+                Collections.emptyList() :
+                toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, width - 1));
+        RationalMatrix left = rref.submatrix(range, range);
         if (!left.isIdentity()) return Optional.empty();
-        return Optional.of(rref.submatrix(toList(range(0, width - 1)), toList(range(width, 2 * width - 1))));
+        return Optional.of(
+                rref.submatrix(
+                        range,
+                        width == 0 ?
+                                Collections.emptyList() :
+                                toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(width, 2 * width - 1))
+                )
+        );
     }
 
     /**

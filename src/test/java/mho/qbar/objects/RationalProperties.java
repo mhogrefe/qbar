@@ -3,6 +3,7 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
 import mho.wheels.io.Readers;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.BigDecimalUtils;
@@ -2621,7 +2622,12 @@ public class RationalProperties extends QBarTestProperties {
                     }
                 }
                 int j = mostComplexIndex;
-                Rational sum = sum(map(xs::get, filter(i -> i != j, range(0, xs.size() - 1))));
+                Rational sum = sum(
+                        map(
+                                xs::get,
+                                filter(i -> i != j, ExhaustiveProvider.INSTANCE.rangeIncreasing(0, xs.size() - 1))
+                        )
+                );
                 return Integer.signum(sum.compareTo(xs.get(mostComplexIndex).negate()));
         }
     }
@@ -3395,8 +3401,12 @@ public class RationalProperties extends QBarTestProperties {
             inverse(r -> r.toStringBase(p.b), (String t) -> fromStringBase(t, p.b), p.a);
         }
 
-        String smallBaseChars =
-                charsToString(concat(Arrays.asList(fromString("-."), range('0', '9'), range('A', 'Z'))));
+        String smallBaseChars = charsToString(
+                concat(
+                        Arrays.asList(fromString("-."), ExhaustiveProvider.INSTANCE.rangeIncreasing('0', '9'),
+                        ExhaustiveProvider.INSTANCE.rangeIncreasing('A', 'Z'))
+                )
+        );
         ps = filterInfinite(
                 q -> q.a.hasTerminatingBaseExpansion(q.b),
                 P.pairsSquareRootOrder(P.rationals(), P.range(IntegerUtils.TWO, ASCII_ALPHANUMERIC_COUNT))
@@ -3406,7 +3416,9 @@ public class RationalProperties extends QBarTestProperties {
             assertTrue(p, all(c -> elem(c, smallBaseChars), s));
         }
 
-        String largeBaseChars = charsToString(concat(fromString("-.()"), range('0', '9')));
+        String largeBaseChars = charsToString(
+                concat(fromString("-.()"), ExhaustiveProvider.INSTANCE.rangeIncreasing('0', '9'))
+        );
         //noinspection Convert2MethodRef
         ps = P.pairsSquareRootOrder(
                 P.rationals(),
@@ -3459,15 +3471,22 @@ public class RationalProperties extends QBarTestProperties {
             }
         }
 
-        String smallBaseChars =
-                charsToString(concat(Arrays.asList(fromString("-."), range('0', '9'), range('A', 'Z'))));
+        String smallBaseChars = charsToString(
+                concat(
+                        Arrays.asList(
+                                fromString("-."),
+                                ExhaustiveProvider.INSTANCE.rangeIncreasing('0', '9'),
+                                ExhaustiveProvider.INSTANCE.rangeIncreasing('A', 'Z')
+                        )
+                )
+        );
         ts = P.triples(P.rationals(), P.range(IntegerUtils.TWO, ASCII_ALPHANUMERIC_COUNT), P.integersGeometric());
         for (Triple<Rational, BigInteger, Integer> t : take(LIMIT, ts)) {
             String s = t.a.toStringBase(t.b, t.c);
             assertTrue(t, all(c -> elem(c, smallBaseChars), s));
         }
 
-        String largeBaseChars = charsToString(concat(fromString("-.()"), range('0', '9')));
+        String largeBaseChars = charsToString(concat(fromString("-.()"), ExhaustiveProvider.INSTANCE.rangeIncreasing('0', '9')));
         //noinspection Convert2MethodRef
         ts = P.triples(
                 P.rationals(),

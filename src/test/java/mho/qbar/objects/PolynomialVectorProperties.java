@@ -3,6 +3,7 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
@@ -86,7 +87,7 @@ public class PolynomialVectorProperties extends QBarTestProperties {
         initialize("get(int)");
         Iterable<Pair<PolynomialVector, Integer>> ps = P.dependentPairs(
                 P.polynomialVectorsAtLeast(1),
-                v -> P.uniformSample(toList(range(0, v.dimension() - 1)))
+                v -> P.uniformSample(toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, v.dimension() - 1)))
         );
         for (Pair<PolynomialVector, Integer> p : take(LIMIT, ps)) {
             Polynomial x = p.a.get(p.b);

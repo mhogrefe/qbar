@@ -3,6 +3,7 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
@@ -128,7 +129,11 @@ public class RationalPolynomialProperties extends QBarTestProperties {
 
     private static @NotNull Rational apply_naive(@NotNull RationalPolynomial p, @NotNull Rational x) {
         return Rational.sum(
-                zipWith((c, i) -> c == Rational.ZERO ? Rational.ZERO : x.pow(i).multiply(c), p, rangeUp(0))
+                zipWith(
+                        (c, i) -> c == Rational.ZERO ? Rational.ZERO : x.pow(i).multiply(c),
+                        p,
+                        ExhaustiveProvider.INSTANCE.naturalIntegers()
+                )
         );
     }
 
@@ -546,7 +551,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
                         zipWith(
                                 (c, i) -> c == Rational.ZERO ? Rational.ZERO : x.pow(i).multiply(c),
                                 p,
-                                rangeUp(0)
+                                ExhaustiveProvider.INSTANCE.naturalIntegers()
                         )
                 )
         );
@@ -1231,7 +1236,9 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         if (any(x -> x == ZERO, xs)) return ZERO;
         List<Rational> productCoefficients =
                 toList(replicate(sumInteger(toList(map(RationalPolynomial::degree, xs))) + 1, Rational.ZERO));
-        List<List<Pair<Rational, Integer>>> selections = toList(map(p -> toList(zip(p, rangeUp(0))), xs));
+        List<List<Pair<Rational, Integer>>> selections = toList(
+                map(p -> toList(zip(p, ExhaustiveProvider.INSTANCE.naturalIntegers())), xs)
+        );
         outer:
         for (List<Pair<Rational, Integer>> selection : EP.cartesianProduct(selections)) {
             Rational coefficient = Rational.ONE;
@@ -1439,7 +1446,13 @@ public class RationalPolynomialProperties extends QBarTestProperties {
             @NotNull RationalPolynomial a,
             @NotNull RationalPolynomial b
     ) {
-        return sum(zipWith((c, i) -> c == Rational.ZERO ? ZERO : b.pow(i).multiply(c), a, rangeUp(0)));
+        return sum(
+                zipWith(
+                        (c, i) -> c == Rational.ZERO ? ZERO : b.pow(i).multiply(c),
+                        a,
+                        ExhaustiveProvider.INSTANCE.naturalIntegers()
+                )
+        );
     }
 
     private void propertiesSubstitute() {
@@ -1904,8 +1917,14 @@ public class RationalPolynomialProperties extends QBarTestProperties {
             RationalMatrix companionMatrix = p.companionMatrix();
             assertTrue(
                     p,
-                    companionMatrix.submatrix(toList(range(1, p.degree() - 1)), toList(range(0, p.degree() - 2)))
-                            .isIdentity()
+                    companionMatrix.submatrix(
+                            p.degree() < 2 ?
+                                    Collections.emptyList() :
+                                    toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(1, p.degree() - 1)),
+                            p.degree() < 2 ?
+                                    Collections.emptyList() :
+                                    toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, p.degree() - 2))
+                    ).isIdentity()
             );
         }
 
@@ -1913,7 +1932,12 @@ public class RationalPolynomialProperties extends QBarTestProperties {
             RationalMatrix companionMatrix = p.companionMatrix();
             assertTrue(
                     p,
-                    companionMatrix.submatrix(Collections.singletonList(0), toList(range(0, p.degree() - 2))).isZero()
+                    companionMatrix.submatrix(
+                            Collections.singletonList(0),
+                            p.degree() < 2 ?
+                                    Collections.emptyList() :
+                                    toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, p.degree() - 2))
+                    ).isZero()
             );
         }
 
@@ -1953,8 +1977,10 @@ public class RationalPolynomialProperties extends QBarTestProperties {
                 assertEquals(ps, coefficientMatrix.width(), maximum(map(RationalPolynomial::degree, ps)) + 1);
                 assertFalse(
                         ps,
-                        coefficientMatrix.submatrix(toList(range(0, ps.size() - 1)), Collections.singletonList(0))
-                                .isZero()
+                        coefficientMatrix.submatrix(
+                                toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, ps.size() - 1)),
+                                Collections.singletonList(0)
+                        ).isZero()
                 );
             }
         }
@@ -2050,11 +2076,13 @@ public class RationalPolynomialProperties extends QBarTestProperties {
     }
 
     private static @NotNull List<RationalPolynomial> powerTable_simplest(@NotNull RationalPolynomial p, int maxPower) {
-        return toList(map(p::rootPower, range(0, maxPower)));
+        return toList(map(p::rootPower, ExhaustiveProvider.INSTANCE.rangeIncreasing(0, maxPower)));
     }
 
     private static @NotNull List<RationalPolynomial> powerTable_alt(@NotNull RationalPolynomial p, int maxPower) {
-        return toList(map(i -> of(Rational.ONE, i).divide(p).b, range(0, maxPower)));
+        return toList(
+                map(i -> of(Rational.ONE, i).divide(p).b, ExhaustiveProvider.INSTANCE.rangeIncreasing(0, maxPower))
+        );
     }
 
     private void propertiesPowerTable() {

@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.iterables.ExhaustiveProvider;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -390,7 +391,7 @@ public class PolynomialVectorTest {
                             Polynomial p = Polynomial.of(Arrays.asList(i.negate(), BigInteger.ONE));
                             return of(Arrays.asList(p, p.pow(2), p.pow(3)));
                         },
-                        rangeUp(BigInteger.ONE)
+                        ExhaustiveProvider.INSTANCE.rangeUpIncreasing(BigInteger.ONE)
                 ),
                 "[[-1, -2*x+3, -3*x^2+9*x-7], [-1, -2*x+5, -3*x^2+15*x-19], [-1, -2*x+7, -3*x^2+21*x-37]," +
                 " [-1, -2*x+9, -3*x^2+27*x-61], [-1, -2*x+11, -3*x^2+33*x-91], [-1, -2*x+13, -3*x^2+39*x-127]," +

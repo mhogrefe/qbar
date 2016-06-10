@@ -2,7 +2,6 @@ package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.*;
 import mho.wheels.iterables.ExhaustiveProvider;
-import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.NoRemoveIterable;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.Ordering;
@@ -109,10 +108,10 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
                                 n -> Rational.of(n, d),
                                 filter(
                                         n -> n.gcd(d).equals(BigInteger.ONE),
-                                        IterableUtils.range(BigInteger.ONE, d.subtract(BigInteger.ONE))
+                                        wheelsProvider.rangeIncreasing(BigInteger.ONE, d.subtract(BigInteger.ONE))
                                 )
                         ),
-                        IterableUtils.rangeUp(IntegerUtils.TWO)
+                        wheelsProvider.rangeUpIncreasing(IntegerUtils.TWO)
                 )
         );
     }

@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.iterables.ExhaustiveProvider;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -512,7 +513,7 @@ public class RationalVectorTest {
                             Rational r = Rational.of(i);
                             return of(Arrays.asList(r, r.pow(2), r.pow(3)));
                         },
-                        rangeUp(1)
+                        ExhaustiveProvider.INSTANCE.positiveIntegers()
                 ),
                 "[[1, 3, 7], [1, 5, 19], [1, 7, 37], [1, 9, 61], [1, 11, 91], [1, 13, 127], [1, 15, 169]," +
                 " [1, 17, 217], [1, 19, 271], [1, 21, 331], [1, 23, 397], [1, 25, 469], [1, 27, 547], [1, 29, 631]," +

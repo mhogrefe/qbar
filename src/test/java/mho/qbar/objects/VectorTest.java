@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.iterables.ExhaustiveProvider;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -350,7 +351,9 @@ public class VectorTest {
         delta_helper("[[5, 4, 23]]", "[]");
         delta_helper("[[5, 4, 23], [0, 3, -8], [32, -45, 9]]", "[[-5, -1, -31], [32, -48, 17]]");
         delta_helper("[[2], [3], [4]]", "[[1], [1]]");
-        delta_helper(map(i -> of(Arrays.asList(i, i.pow(2), i.pow(3))), rangeUp(BigInteger.ONE)),
+        delta_helper(
+                map(i -> of(Arrays.asList(i, i.pow(2), i.pow(3))),
+                ExhaustiveProvider.INSTANCE.rangeUpIncreasing(BigInteger.ONE)),
                 "[[1, 3, 7], [1, 5, 19], [1, 7, 37], [1, 9, 61], [1, 11, 91], [1, 13, 127], [1, 15, 169]," +
                 " [1, 17, 217], [1, 19, 271], [1, 21, 331], [1, 23, 397], [1, 25, 469], [1, 27, 547], [1, 29, 631]," +
                 " [1, 31, 721], [1, 33, 817], [1, 35, 919], [1, 37, 1027], [1, 39, 1141], [1, 41, 1261], ...]"

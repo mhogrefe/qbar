@@ -671,11 +671,11 @@ public class AlgebraicTest {
     @Test
     public void testRoundUpToIntegerPowerOfTwo() {
         roundUpToIntegerPowerOfTwo_helper("1", "1");
-        roundUpToIntegerPowerOfTwo_helper("1/2", "1/2");
-        roundUpToIntegerPowerOfTwo_helper("10", "16");
-        roundUpToIntegerPowerOfTwo_helper("sqrt(2)", "2");
-        roundUpToIntegerPowerOfTwo_helper("(1+sqrt(5))/2", "2");
-        roundUpToIntegerPowerOfTwo_helper("root 0 of x^5-x-1", "2");
+        roundUpToIntegerPowerOfTwo_helper("1/2", "1 >> 1");
+        roundUpToIntegerPowerOfTwo_helper("10", "1 << 4");
+        roundUpToIntegerPowerOfTwo_helper("sqrt(2)", "1 << 1");
+        roundUpToIntegerPowerOfTwo_helper("(1+sqrt(5))/2", "1 << 1");
+        roundUpToIntegerPowerOfTwo_helper("root 0 of x^5-x-1", "1 << 1");
 
         roundUpToIntegerPowerOfTwo_fail_helper("0");
         roundUpToIntegerPowerOfTwo_fail_helper("-1");
