@@ -3486,7 +3486,9 @@ public class RationalProperties extends QBarTestProperties {
             assertTrue(t, all(c -> elem(c, smallBaseChars), s));
         }
 
-        String largeBaseChars = charsToString(concat(fromString("-.()"), ExhaustiveProvider.INSTANCE.rangeIncreasing('0', '9')));
+        String largeBaseChars = charsToString(
+                concat(fromString("-.()"), ExhaustiveProvider.INSTANCE.rangeIncreasing('0', '9'))
+        );
         //noinspection Convert2MethodRef
         ts = P.triples(
                 P.rationals(),

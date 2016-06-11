@@ -1111,7 +1111,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
                         toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, width - 1)),
                         Collections.singletonList(width)
                 ).column(0)
-       );
+        );
     }
 
     /**

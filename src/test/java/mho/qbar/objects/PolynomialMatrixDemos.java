@@ -66,7 +66,11 @@ public class PolynomialMatrixDemos extends QBarDemos {
                 P.dependentPairs(
                         filterInfinite(m -> m.height() > 0 && m.width() > 0, P.withScale(4).polynomialMatrices()),
                         m -> P.uniformSample(
-                                toList(EP.pairsLex(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m.height() - 1), toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m.width() - 1))))
+                                toList(
+                                        EP.pairsLex(
+                                                ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m.height() - 1),
+                                                toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m.width() - 1)))
+                                )
                         )
                 )
         );
