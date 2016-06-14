@@ -524,24 +524,21 @@ public class AlgebraicDemos extends QBarDemos {
     private void demoSum() {
         Iterable<List<Algebraic>> xss = P.withScale(1).lists(P.withScale(1).withSecondaryScale(4).algebraics());
         for (List<Algebraic> xs : take(SMALL_LIMIT, xss)) {
-            String listString = tail(init(xs.toString()));
-            System.out.println("Σ(" + listString + ") = " + sum(xs));
+            System.out.println("Σ(" + middle(xs.toString()) + ") = " + sum(xs));
         }
     }
 
     private void demoProduct() {
         Iterable<List<Algebraic>> xss = P.withScale(1).lists(P.withScale(1).withSecondaryScale(4).algebraics());
         for (List<Algebraic> xs : take(SMALL_LIMIT, xss)) {
-            String listString = tail(init(xs.toString()));
-            System.out.println("Π(" + listString + ") = " + product(xs));
+            System.out.println("Π(" + middle(xs.toString()) + ") = " + product(xs));
         }
     }
 
     private void demoSumSign() {
         Iterable<List<Algebraic>> xss = P.withScale(1).lists(P.withScale(1).withSecondaryScale(4).algebraics());
         for (List<Algebraic> xs : take(SMALL_LIMIT, xss)) {
-            String listString = tail(init(xs.toString()));
-            System.out.println("sumSign(" + listString + ") = " + sumSign(xs));
+            System.out.println("sumSign(" + middle(xs.toString()) + ") = " + sumSign(xs));
         }
     }
 
@@ -551,15 +548,13 @@ public class AlgebraicDemos extends QBarDemos {
                 P.withScale(1).withSecondaryScale(4).algebraics()
         );
         for (List<Algebraic> xs : take(SMALL_LIMIT, xss)) {
-            String listString = tail(init(xs.toString()));
-            System.out.println("Δ(" + listString + ") = " + its(delta(xs)));
+            System.out.println("Δ(" + middle(xs.toString()) + ") = " + its(delta(xs)));
         }
     }
 
     private void demoDelta_infinite() {
         for (Iterable<Algebraic> xs : take(SMALL_LIMIT, P.prefixPermutations(QBarTesting.QEP.algebraics()))) {
-            String listString = tail(init(its(xs)));
-            System.out.println("Δ(" + listString + ") = " + its(delta(xs)));
+            System.out.println("Δ(" + middle(its(xs)) + ") = " + its(delta(xs)));
         }
     }
 

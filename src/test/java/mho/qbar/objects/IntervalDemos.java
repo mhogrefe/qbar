@@ -103,8 +103,7 @@ public class IntervalDemos extends QBarDemos {
 
     private void demoConvexHull_List_Interval() {
         for (List<Interval> as : take(LIMIT, P.withScale(4).listsAtLeast(1, P.intervals()))) {
-            String listString = tail(init(as.toString()));
-            System.out.println("convexHull(" + listString + ") = " + convexHull(as));
+            System.out.println("convexHull(" + middle(as.toString()) + ") = " + convexHull(as));
         }
     }
 
@@ -122,8 +121,7 @@ public class IntervalDemos extends QBarDemos {
 
     private void demoUnion() {
         for (List<Interval> as : take(LIMIT, P.withScale(4).lists(P.intervals()))) {
-            String listString = tail(init(as.toString()));
-            System.out.println("⋃(" + listString + ") = " + union(as));
+            System.out.println("⋃(" + middle(as.toString()) + ") = " + union(as));
         }
     }
 
@@ -284,8 +282,7 @@ public class IntervalDemos extends QBarDemos {
 
     private void demoSum() {
         for (List<Interval> rs : take(LIMIT, P.withScale(4).lists(P.intervals()))) {
-            String listString = tail(init(rs.toString()));
-            System.out.println("Σ(" + listString + ") = " + sum(rs));
+            System.out.println("Σ(" + middle(rs.toString()) + ") = " + sum(rs));
         }
     }
 
