@@ -328,7 +328,7 @@ public class RationalPolynomialVectorDemos extends QBarDemos {
                 P.withScale(4).withSecondaryScale(4).rationalPolynomialVectors()
         );
         for (Pair<RationalPolynomialVector, RationalPolynomialVector> p : take(LIMIT, ps)) {
-            System.out.println(p.a + " " + Ordering.compare(p.a, p.b).toChar() + " " + p.b);
+            System.out.println(p.a + " " + Ordering.compare(p.a, p.b) + " " + p.b);
         }
     }
 

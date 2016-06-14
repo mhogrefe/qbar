@@ -895,7 +895,7 @@ public class PolynomialDemos extends QBarDemos {
 
     private void demoCompareTo() {
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.withScale(4).polynomials()))) {
-            System.out.println(p.a + " " + Ordering.compare(p.a, p.b).toChar() + " " + p.b);
+            System.out.println(p.a + " " + Ordering.compare(p.a, p.b) + " " + p.b);
         }
     }
 

@@ -664,7 +664,7 @@ public class RationalDemos extends QBarDemos {
 
     private void demoCompareTo() {
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            System.out.println(p.a + " " + Ordering.compare(p.a, p.b).toChar() + " " + p.b);
+            System.out.println(p.a + " " + Ordering.compare(p.a, p.b) + " " + p.b);
         }
     }
 

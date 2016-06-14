@@ -474,7 +474,7 @@ public class RationalPolynomialDemos extends QBarDemos {
     private void demoCompareTo() {
         Iterable<Pair<RationalPolynomial, RationalPolynomial>> ps = P.pairs(P.withScale(4).rationalPolynomials());
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {
-            System.out.println(p.a + " " + Ordering.compare(p.a, p.b).toChar() + " " + p.b);
+            System.out.println(p.a + " " + Ordering.compare(p.a, p.b) + " " + p.b);
         }
     }
 

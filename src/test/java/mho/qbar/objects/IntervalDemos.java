@@ -353,7 +353,7 @@ public class IntervalDemos extends QBarDemos {
 
     private void demoCompareTo() {
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
-            System.out.println(p.a + " " + Ordering.compare(p.a, p.b).toChar() + " " + p.b);
+            System.out.println(p.a + " " + Ordering.compare(p.a, p.b) + " " + p.b);
         }
     }
 

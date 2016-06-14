@@ -276,7 +276,7 @@ public class VectorDemos extends QBarDemos {
 
     private void demoCompareTo() {
         for (Pair<Vector, Vector> p : take(LIMIT, P.pairs(P.withScale(4).vectors()))) {
-            System.out.println(p.a + " " + Ordering.compare(p.a, p.b).toChar() + " " + p.b);
+            System.out.println(p.a + " " + Ordering.compare(p.a, p.b) + " " + p.b);
         }
     }
 

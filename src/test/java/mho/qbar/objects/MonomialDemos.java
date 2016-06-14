@@ -281,7 +281,7 @@ public class MonomialDemos extends QBarDemos {
 
     private void demoCompareTo() {
         for (Pair<Monomial, Monomial> p : take(LIMIT, P.pairs(P.monomials()))) {
-            System.out.println(p.a + " " + Ordering.compare(p.a, p.b).toChar() + " " + p.b);
+            System.out.println(p.a + " " + Ordering.compare(p.a, p.b) + " " + p.b);
         }
     }
 

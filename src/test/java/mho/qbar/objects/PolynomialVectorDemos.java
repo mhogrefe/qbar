@@ -254,7 +254,7 @@ public class PolynomialVectorDemos extends QBarDemos {
                 P.withScale(4).withSecondaryScale(4).polynomialVectors()
         );
         for (Pair<PolynomialVector, PolynomialVector> p : take(LIMIT, ps)) {
-            System.out.println(p.a + " " + Ordering.compare(p.a, p.b).toChar() + " " + p.b);
+            System.out.println(p.a + " " + Ordering.compare(p.a, p.b) + " " + p.b);
         }
     }
 

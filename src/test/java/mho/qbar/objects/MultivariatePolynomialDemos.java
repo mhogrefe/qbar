@@ -588,7 +588,7 @@ public class MultivariatePolynomialDemos extends QBarDemos {
                 P.withScale(4).multivariatePolynomials()
         );
         for (Pair<MultivariatePolynomial, MultivariatePolynomial> p : take(LIMIT, ps)) {
-            System.out.println(p.a + " " + Ordering.compare(p.a, p.b).toChar() + " " + p.b);
+            System.out.println(p.a + " " + Ordering.compare(p.a, p.b) + " " + p.b);
         }
     }
 

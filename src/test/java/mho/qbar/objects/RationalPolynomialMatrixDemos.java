@@ -551,7 +551,7 @@ public class RationalPolynomialMatrixDemos extends QBarDemos {
                 P.withScale(4).rationalPolynomialMatrices()
         );
         for (Pair<RationalPolynomialMatrix, RationalPolynomialMatrix> p : take(LIMIT, ps)) {
-            System.out.println(p.a + " " + Ordering.compare(p.a, p.b).toChar() + " " + p.b);
+            System.out.println(p.a + " " + Ordering.compare(p.a, p.b) + " " + p.b);
         }
     }
 

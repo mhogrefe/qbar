@@ -54,7 +54,7 @@ public class VariableDemos extends QBarDemos {
 
     private void demoCompareTo() {
         for (Pair<Variable, Variable> p : take(LIMIT, P.pairs(P.variables()))) {
-            System.out.println(p.a + " " + Ordering.compare(p.a, p.b).toChar() + " " + p.b);
+            System.out.println(p.a + " " + Ordering.compare(p.a, p.b) + " " + p.b);
         }
     }
 

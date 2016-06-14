@@ -475,7 +475,7 @@ public class PolynomialMatrixDemos extends QBarDemos {
 
     private void demoCompareTo() {
         for (Pair<PolynomialMatrix, PolynomialMatrix> p : take(LIMIT, P.pairs(P.withScale(4).polynomialMatrices()))) {
-            System.out.println(p.a + " " + Ordering.compare(p.a, p.b).toChar() + " " + p.b);
+            System.out.println(p.a + " " + Ordering.compare(p.a, p.b) + " " + p.b);
         }
     }
 

@@ -560,15 +560,15 @@ public class RationalVectorTest {
 
     @Test
     public void testRightAngleCompare() {
-        rightAngleCompare_helper("[]", "[]", "EQ");
-        rightAngleCompare_helper("[2]", "[3]", "LT");
-        rightAngleCompare_helper("[2]", "[-3]", "GT");
-        rightAngleCompare_helper("[1, 0]", "[1, 1]", "LT");
-        rightAngleCompare_helper("[1, -1]", "[1, 1]", "EQ");
-        rightAngleCompare_helper("[0, -1]", "[1, 1]", "GT");
-        rightAngleCompare_helper("[5/3, 4, 0]", "[-2, 1, 3]", "LT");
-        rightAngleCompare_helper("[5/3, 4, 0]", "[0, 0, 0]", "EQ");
-        rightAngleCompare_helper("[5/3, 4, 0]", "[-5/3, -4, 0]", "GT");
+        rightAngleCompare_helper("[]", "[]", "=");
+        rightAngleCompare_helper("[2]", "[3]", "<");
+        rightAngleCompare_helper("[2]", "[-3]", ">");
+        rightAngleCompare_helper("[1, 0]", "[1, 1]", "<");
+        rightAngleCompare_helper("[1, -1]", "[1, 1]", "=");
+        rightAngleCompare_helper("[0, -1]", "[1, 1]", ">");
+        rightAngleCompare_helper("[5/3, 4, 0]", "[-2, 1, 3]", "<");
+        rightAngleCompare_helper("[5/3, 4, 0]", "[0, 0, 0]", "=");
+        rightAngleCompare_helper("[5/3, 4, 0]", "[-5/3, -4, 0]", ">");
         rightAngleCompare_fail_helper("[]", "[1/2]");
         rightAngleCompare_fail_helper("[1/2]", "[]");
         rightAngleCompare_fail_helper("[1/2, 4, -4]", "[5/6, 2/3]");

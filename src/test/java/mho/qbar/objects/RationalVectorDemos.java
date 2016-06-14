@@ -321,7 +321,7 @@ public class RationalVectorDemos extends QBarDemos {
 
     private void demoCompareTo() {
         for (Pair<RationalVector, RationalVector> p : take(LIMIT, P.pairs(P.withScale(4).rationalVectors()))) {
-            System.out.println(p.a + " " + Ordering.compare(p.a, p.b).toChar() + " " + p.b);
+            System.out.println(p.a + " " + Ordering.compare(p.a, p.b) + " " + p.b);
         }
     }
 
