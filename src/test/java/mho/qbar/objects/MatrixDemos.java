@@ -92,8 +92,7 @@ public class MatrixDemos extends QBarDemos {
                 map(i -> toList(replicate(i, Vector.ZERO_DIMENSIONAL)), P.withScale(4).positiveIntegersGeometric())
         );
         for (List<Vector> vs : take(LIMIT, vss)) {
-            String listString = tail(init(vs.toString()));
-            System.out.println("fromRows(" + listString + ") = " + fromRows(vs));
+            System.out.println("fromRows(" + middle(vs.toString()) + ") = " + fromRows(vs));
         }
     }
 
@@ -109,8 +108,7 @@ public class MatrixDemos extends QBarDemos {
                 map(i -> toList(replicate(i, Vector.ZERO_DIMENSIONAL)), P.withScale(4).positiveIntegersGeometric())
         );
         for (List<Vector> vs : take(LIMIT, vss)) {
-            String listString = tail(init(vs.toString()));
-            System.out.println("fromColumns(" + listString + ") = " + fromColumns(vs));
+            System.out.println("fromColumns(" + middle(vs.toString()) + ") = " + fromColumns(vs));
         }
     }
 

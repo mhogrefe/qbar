@@ -70,8 +70,7 @@ public class RationalPolynomialDemos extends QBarDemos {
 
     private void demoOf_List_Rational() {
         for (List<Rational> rs : take(LIMIT, P.withScale(4).lists(P.rationals()))) {
-            String listString = tail(init(rs.toString()));
-            System.out.println("of(" + listString + ") = " + of(rs));
+            System.out.println("of(" + middle(rs.toString()) + ") = " + of(rs));
         }
     }
 
@@ -241,23 +240,20 @@ public class RationalPolynomialDemos extends QBarDemos {
 
     private void demoSum() {
         for (List<RationalPolynomial> ps : take(LIMIT, P.withScale(4).lists(P.withScale(4).rationalPolynomials()))) {
-            String listString = tail(init(ps.toString()));
-            System.out.println("Σ(" + listString + ") = " + sum(ps));
+            System.out.println("Σ(" + middle(ps.toString()) + ") = " + sum(ps));
         }
     }
 
     private void demoProduct() {
         for (List<RationalPolynomial> ps : take(LIMIT, P.withScale(4).lists(P.withScale(4).rationalPolynomials()))) {
-            String listString = tail(init(ps.toString()));
-            System.out.println("Π(" + listString + ") = " + product(ps));
+            System.out.println("Π(" + middle(ps.toString()) + ") = " + product(ps));
         }
     }
 
     private void demoDelta() {
         Iterable<List<RationalPolynomial>> pss = P.withScale(4).listsAtLeast(1, P.withScale(4).rationalPolynomials());
         for (List<RationalPolynomial> ps : take(LIMIT, pss)) {
-            String listString = tail(init(ps.toString()));
-            System.out.println("Δ(" + listString + ") = " + its(delta(ps)));
+            System.out.println("Δ(" + middle(ps.toString()) + ") = " + its(delta(ps)));
         }
     }
 
@@ -357,8 +353,7 @@ public class RationalPolynomialDemos extends QBarDemos {
                 P.withScale(4).lists(P.rationals())
         );
         for (List<Rational> rs : take(LIMIT, rss)) {
-            String listString = tail(init(rs.toString()));
-            System.out.println("fromPowerSums(" + listString + ") = " + fromPowerSums(rs));
+            System.out.println("fromPowerSums(" + middle(rs.toString()) + ") = " + fromPowerSums(rs));
         }
     }
 
@@ -374,8 +369,7 @@ public class RationalPolynomialDemos extends QBarDemos {
                 )
         );
         for (List<Pair<Rational, Rational>> ps : take(LIMIT, pss)) {
-            String listString = tail(init(ps.toString()));
-            System.out.println("interpolate(" + listString + ") = " + interpolate(ps));
+            System.out.println("interpolate(" + middle(ps.toString()) + ") = " + interpolate(ps));
         }
     }
 
@@ -394,8 +388,7 @@ public class RationalPolynomialDemos extends QBarDemos {
                 )
         );
         for (List<RationalPolynomial> ps : take(LIMIT, pss)) {
-            String listString = tail(init(ps.toString()));
-            System.out.println("coefficientMatrix(" + listString + ") = " + coefficientMatrix(ps));
+            System.out.println("coefficientMatrix(" + middle(ps.toString()) + ") = " + coefficientMatrix(ps));
         }
     }
 

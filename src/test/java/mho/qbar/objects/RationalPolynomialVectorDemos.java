@@ -59,8 +59,7 @@ public class RationalPolynomialVectorDemos extends QBarDemos {
 
     private void demoOf_List_RationalPolynomial() {
         for (List<RationalPolynomial> rs : take(LIMIT, P.withScale(4).lists(P.withScale(4).rationalPolynomials()))) {
-            String listString = tail(init(rs.toString()));
-            System.out.println("of(" + listString + ") = " + of(rs));
+            System.out.println("of(" + middle(rs.toString()) + ") = " + of(rs));
         }
     }
 
@@ -252,8 +251,7 @@ public class RationalPolynomialVectorDemos extends QBarDemos {
                 map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.withScale(4).positiveIntegersGeometric())
         );
         for (List<RationalPolynomialVector> vs : take(LIMIT, vss)) {
-            String listString = tail(init(vs.toString()));
-            System.out.println("Σ(" + listString + ") = " + sum(vs));
+            System.out.println("Σ(" + middle(vs.toString()) + ") = " + sum(vs));
         }
     }
 
@@ -272,8 +270,7 @@ public class RationalPolynomialVectorDemos extends QBarDemos {
                 map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.withScale(4).positiveIntegersGeometric())
         );
         for (List<RationalPolynomialVector> vs : take(LIMIT, vss)) {
-            String listString = tail(init(vs.toString()));
-            System.out.println("Δ(" + listString + ") = " + its(delta(vs)));
+            System.out.println("Δ(" + middle(vs.toString()) + ") = " + its(delta(vs)));
         }
     }
 

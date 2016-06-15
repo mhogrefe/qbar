@@ -2370,7 +2370,7 @@ public final class Rational implements Comparable<Rational> {
                     if (head(t) != '(' || last(t) != ')' || t.contains("()")) {
                         throw new IllegalArgumentException("Invalid String: " + sFinal);
                     }
-                    t = tail(init(t));
+                    t = middle(t);
                     return toList(
                             map(
                                     u -> {

@@ -102,8 +102,7 @@ public class RationalMatrixDemos extends QBarDemos {
                 )
         );
         for (List<RationalVector> vs : take(LIMIT, vss)) {
-            String listString = tail(init(vs.toString()));
-            System.out.println("fromRows(" + listString + ") = " + fromRows(vs));
+            System.out.println("fromRows(" + middle(vs.toString()) + ") = " + fromRows(vs));
         }
     }
 
@@ -122,8 +121,7 @@ public class RationalMatrixDemos extends QBarDemos {
                 )
         );
         for (List<RationalVector> vs : take(LIMIT, vss)) {
-            String listString = tail(init(vs.toString()));
-            System.out.println("fromColumns(" + listString + ") = " + fromColumns(vs));
+            System.out.println("fromColumns(" + middle(vs.toString()) + ") = " + fromColumns(vs));
         }
     }
 

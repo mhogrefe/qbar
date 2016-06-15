@@ -64,8 +64,7 @@ public class MultivariatePolynomialDemos extends QBarDemos {
                 P.pairs(P.withScale(4).monomials(), P.bigIntegers())
         );
         for (List<Pair<Monomial, BigInteger>> ps : take(LIMIT, pss)) {
-            String listString = tail(init(ps.toString()));
-            System.out.println("of(" + listString + ") = " + of(ps));
+            System.out.println("of(" + middle(ps.toString()) + ") = " + of(ps));
         }
     }
 
@@ -299,16 +298,14 @@ public class MultivariatePolynomialDemos extends QBarDemos {
     private void demoSum() {
         Iterable<List<MultivariatePolynomial>> pss = P.withScale(4).lists(P.withScale(4).multivariatePolynomials());
         for (List<MultivariatePolynomial> ps : take(LIMIT, pss)) {
-            String listString = tail(init(ps.toString()));
-            System.out.println("Σ(" + listString + ") = " + sum(ps));
+            System.out.println("Σ(" + middle(ps.toString()) + ") = " + sum(ps));
         }
     }
 
     private void demoProduct() {
         Iterable<List<MultivariatePolynomial>> pss = P.withScale(4).lists(P.withScale(4).multivariatePolynomials());
         for (List<MultivariatePolynomial> ps : take(LIMIT, pss)) {
-            String listString = tail(init(ps.toString()));
-            System.out.println("Π(" + listString + ") = " + product(ps));
+            System.out.println("Π(" + middle(ps.toString()) + ") = " + product(ps));
         }
     }
 
@@ -316,8 +313,7 @@ public class MultivariatePolynomialDemos extends QBarDemos {
         Iterable<List<MultivariatePolynomial>> pss =
                 P.withScale(4).listsAtLeast(1, P.withScale(4).multivariatePolynomials());
         for (List<MultivariatePolynomial> ps : take(LIMIT, pss)) {
-            String listString = tail(init(ps.toString()));
-            System.out.println("Δ(" + listString + ") = " + its(delta(ps)));
+            System.out.println("Δ(" + middle(ps.toString()) + ") = " + its(delta(ps)));
         }
     }
 

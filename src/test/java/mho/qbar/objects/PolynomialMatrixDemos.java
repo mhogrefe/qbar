@@ -94,8 +94,7 @@ public class PolynomialMatrixDemos extends QBarDemos {
                 )
         );
         for (List<PolynomialVector> vs : take(SMALL_LIMIT, vss)) {
-            String listString = tail(init(vs.toString()));
-            System.out.println("fromRows(" + listString + ") = " + fromRows(vs));
+            System.out.println("fromRows(" + middle(vs.toString()) + ") = " + fromRows(vs));
         }
     }
 
@@ -114,8 +113,7 @@ public class PolynomialMatrixDemos extends QBarDemos {
                 )
         );
         for (List<PolynomialVector> vs : take(SMALL_LIMIT, vss)) {
-            String listString = tail(init(vs.toString()));
-            System.out.println("fromColumns(" + listString + ") = " + fromColumns(vs));
+            System.out.println("fromColumns(" + middle(vs.toString()) + ") = " + fromColumns(vs));
         }
     }
 

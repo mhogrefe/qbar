@@ -46,8 +46,7 @@ public class PolynomialVectorDemos extends QBarDemos {
 
     private void demoOf_List_Polynomial() {
         for (List<Polynomial> is : take(LIMIT, P.withScale(4).lists(P.withScale(4).polynomials()))) {
-            String listString = tail(init(is.toString()));
-            System.out.println("of(" + listString + ") = " + of(is));
+            System.out.println("of(" + middle(is.toString()) + ") = " + of(is));
         }
     }
 
@@ -180,8 +179,7 @@ public class PolynomialVectorDemos extends QBarDemos {
                 map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.withScale(4).positiveIntegersGeometric())
         );
         for (List<PolynomialVector> vs : take(LIMIT, vss)) {
-            String listString = tail(init(vs.toString()));
-            System.out.println("Σ(" + listString + ") = " + sum(vs));
+            System.out.println("Σ(" + middle(vs.toString()) + ") = " + sum(vs));
         }
     }
 
@@ -200,8 +198,7 @@ public class PolynomialVectorDemos extends QBarDemos {
                 map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.withScale(4).positiveIntegersGeometric())
         );
         for (List<PolynomialVector> vs : take(LIMIT, vss)) {
-            String listString = tail(init(vs.toString()));
-            System.out.println("Δ(" + listString + ") = " + its(delta(vs)));
+            System.out.println("Δ(" + middle(vs.toString()) + ") = " + its(delta(vs)));
         }
     }
 

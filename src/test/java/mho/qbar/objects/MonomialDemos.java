@@ -52,8 +52,7 @@ public class MonomialDemos extends QBarDemos {
 
     private void demoOf_List_Integer() {
         for (List<Integer> is : take(LIMIT, P.lists(P.naturalIntegersGeometric()))) {
-            String listString = tail(init(is.toString()));
-            System.out.println("of(" + listString + ") = " + of(is));
+            System.out.println("of(" + middle(is.toString()) + ") = " + of(is));
         }
     }
 
@@ -75,8 +74,7 @@ public class MonomialDemos extends QBarDemos {
                 )
         );
         for (List<Pair<Variable, Integer>> ps : take(LIMIT, pss)) {
-            String listString = tail(init(ps.toString()));
-            System.out.println("fromTerms(" + listString + ") = " + fromTerms(ps));
+            System.out.println("fromTerms(" + middle(ps.toString()) + ") = " + fromTerms(ps));
         }
     }
 
@@ -136,8 +134,7 @@ public class MonomialDemos extends QBarDemos {
 
     private void demoProduct() {
         for (List<Monomial> ps : take(LIMIT, P.withScale(4).lists(P.withScale(4).monomials()))) {
-            String listString = tail(init(ps.toString()));
-            System.out.println("Π(" + listString + ") = " + product(ps));
+            System.out.println("Π(" + middle(ps.toString()) + ") = " + product(ps));
         }
     }
 

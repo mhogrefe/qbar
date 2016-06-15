@@ -75,8 +75,7 @@ public class PolynomialDemos extends QBarDemos {
 
     private void demoOf_List_BigInteger() {
         for (List<BigInteger> is : take(LIMIT, P.withScale(4).lists(P.bigIntegers()))) {
-            String listString = tail(init(is.toString()));
-            System.out.println("of(" + listString + ") = " + of(is));
+            System.out.println("of(" + middle(is.toString()) + ") = " + of(is));
         }
     }
 
@@ -228,22 +227,19 @@ public class PolynomialDemos extends QBarDemos {
 
     private void demoSum() {
         for (List<Polynomial> ps : take(LIMIT, P.withScale(4).lists(P.withScale(4).polynomials()))) {
-            String listString = tail(init(ps.toString()));
-            System.out.println("Σ(" + listString + ") = " + sum(ps));
+            System.out.println("Σ(" + middle(ps.toString()) + ") = " + sum(ps));
         }
     }
 
     private void demoProduct() {
         for (List<Polynomial> ps : take(LIMIT, P.withScale(4).lists(P.withScale(4).polynomials()))) {
-            String listString = tail(init(ps.toString()));
-            System.out.println("Π(" + listString + ") = " + product(ps));
+            System.out.println("Π(" + middle(ps.toString()) + ") = " + product(ps));
         }
     }
 
     private void demoDelta() {
         for (List<Polynomial> ps : take(LIMIT, P.withScale(4).listsAtLeast(1, P.withScale(4).polynomials()))) {
-            String listString = tail(init(ps.toString()));
-            System.out.println("Δ(" + listString + ") = " + its(delta(ps)));
+            System.out.println("Δ(" + middle(ps.toString()) + ") = " + its(delta(ps)));
         }
     }
 
@@ -437,8 +433,7 @@ public class PolynomialDemos extends QBarDemos {
                 P.withScale(4).lists(P.withScale(4).polynomials())
         );
         for (List<Polynomial> ps : take(LIMIT, pss)) {
-            String listString = tail(init(ps.toString()));
-            System.out.println("gcd(" + listString + ") = " + gcd(ps));
+            System.out.println("gcd(" + middle(ps.toString()) + ") = " + gcd(ps));
         }
     }
 
@@ -501,8 +496,7 @@ public class PolynomialDemos extends QBarDemos {
                 )
         );
         for (List<Pair<BigInteger, BigInteger>> ps : take(LIMIT, pss)) {
-            String listString = tail(init(ps.toString()));
-            System.out.println("interpolate(" + listString + ") = " + interpolate(ps));
+            System.out.println("interpolate(" + middle(ps.toString()) + ") = " + interpolate(ps));
         }
     }
 
@@ -521,8 +515,7 @@ public class PolynomialDemos extends QBarDemos {
                 )
         );
         for (List<Polynomial> ps : take(LIMIT, pss)) {
-            String listString = tail(init(ps.toString()));
-            System.out.println("coefficientMatrix(" + listString + ") = " + coefficientMatrix(ps));
+            System.out.println("coefficientMatrix(" + middle(ps.toString()) + ") = " + coefficientMatrix(ps));
         }
     }
 
@@ -535,8 +528,8 @@ public class PolynomialDemos extends QBarDemos {
                 )
         );
         for (List<Polynomial> ps : take(LIMIT, pss)) {
-            String listString = tail(init(ps.toString()));
-            System.out.println("augmentedCoefficientMatrix(" + listString + ") = " + augmentedCoefficientMatrix(ps));
+            System.out.println("augmentedCoefficientMatrix(" + middle(ps.toString()) + ") = " +
+                    augmentedCoefficientMatrix(ps));
         }
     }
 
@@ -549,8 +542,7 @@ public class PolynomialDemos extends QBarDemos {
                 )
         );
         for (List<Polynomial> ps : take(LIMIT, pss)) {
-            String listString = tail(init(ps.toString()));
-            System.out.println("determinant(" + listString + ") = " + determinant(ps));
+            System.out.println("determinant(" + middle(ps.toString()) + ") = " + determinant(ps));
         }
     }
 
