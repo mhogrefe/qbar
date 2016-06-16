@@ -11,7 +11,6 @@ import java.util.Optional;
 import static mho.qbar.objects.Algebraic.*;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.*;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 public class AlgebraicTest {
@@ -3500,7 +3499,9 @@ public class AlgebraicTest {
     }
 
     private static void sum_helper(@NotNull String input, @NotNull String output) {
-        aeq(sum(readAlgebraicList(input)), output);
+        Algebraic x = sum(readAlgebraicList(input));
+        x.validate();
+        aeq(x, output);
     }
 
     private static void sum_fail_helper(@NotNull String input) {
@@ -3532,7 +3533,9 @@ public class AlgebraicTest {
     }
 
     private static void product_helper(@NotNull String input, @NotNull String output) {
-        aeq(product(readAlgebraicList(input)), output);
+        Algebraic x = product(readAlgebraicList(input));
+        x.validate();
+        aeq(x, output);
     }
 
     private static void product_fail_helper(@NotNull String input) {
@@ -3581,7 +3584,9 @@ public class AlgebraicTest {
     }
 
     private static void delta_helper(@NotNull Iterable<Algebraic> input, @NotNull String output) {
-        aeqitLimit(TINY_LIMIT, delta(input), output);
+        Iterable<Algebraic> xs = delta(input);
+        take(TINY_LIMIT, xs).forEach(Algebraic::validate);
+        aeqitLimit(TINY_LIMIT, xs, output);
     }
 
     private static void delta_helper(@NotNull String input, @NotNull String output) {
@@ -3896,83 +3901,79 @@ public class AlgebraicTest {
         );
     }
 
-    private static void readStrict_String_helper(@NotNull String input) {
-        Algebraic x = readStrict(input).get();
-        x.validate();
-        aeq(x, input);
-    }
-
-    private static void readStrict_String_fail_helper(@NotNull String input) {
-        assertFalse(readStrict(input).isPresent());
+    private static void readStrict_String_helper(@NotNull String input, @NotNull String output) {
+        Optional<Algebraic> ox = readStrict(input);
+        if (ox.isPresent()) {
+            ox.get().validate();
+        }
+        aeq(ox, output);
     }
 
     @Test
     public void testReadStrict_String() {
-        readStrict_String_helper("0");
-        readStrict_String_helper("1");
-        readStrict_String_helper("1/2");
-        readStrict_String_helper("-4/3");
-        readStrict_String_helper("sqrt(2)");
-        readStrict_String_helper("-sqrt(2)");
-        readStrict_String_helper("(1+sqrt(5))/2");
-        readStrict_String_helper("root 0 of x^5-x-1");
-        readStrict_String_helper("root 1 of x^2-10000000000000");
+        readStrict_String_helper("0", "Optional[0]");
+        readStrict_String_helper("1", "Optional[1]");
+        readStrict_String_helper("1/2", "Optional[1/2]");
+        readStrict_String_helper("-4/3", "Optional[-4/3]");
+        readStrict_String_helper("sqrt(2)", "Optional[sqrt(2)]");
+        readStrict_String_helper("-sqrt(2)", "Optional[-sqrt(2)]");
+        readStrict_String_helper("(1+sqrt(5))/2", "Optional[(1+sqrt(5))/2]");
+        readStrict_String_helper("root 0 of x^5-x-1", "Optional[root 0 of x^5-x-1]");
+        readStrict_String_helper("root 1 of x^2-10000000000000", "Optional[root 1 of x^2-10000000000000]");
 
-        readStrict_String_fail_helper("");
-        readStrict_String_fail_helper(" ");
-        readStrict_String_fail_helper("x");
-        readStrict_String_fail_helper("x^2+3");
-        readStrict_String_fail_helper("2/4");
-        readStrict_String_fail_helper("-");
-        readStrict_String_fail_helper("00");
-        readStrict_String_fail_helper("01");
-        readStrict_String_fail_helper("-0");
-        readStrict_String_fail_helper("+0");
-        readStrict_String_fail_helper("+2");
-        readStrict_String_fail_helper("sqrt(a)");
-        readStrict_String_fail_helper("sqrt(4)");
-        readStrict_String_fail_helper("sqrt(-1)");
-        readStrict_String_fail_helper("sqrt(0)");
-        readStrict_String_fail_helper("0*sqrt(2)");
-        readStrict_String_fail_helper("a*sqrt(2)");
-        readStrict_String_fail_helper("1*sqrt(2)");
-        readStrict_String_fail_helper("-1*sqrt(2)");
-        readStrict_String_fail_helper("a+sqrt(2)");
-        readStrict_String_fail_helper("0+sqrt(2)");
-        readStrict_String_fail_helper("0-sqrt(2)");
-        readStrict_String_fail_helper("(sqrt(2))");
-        readStrict_String_fail_helper("*sqrt(2)");
-        readStrict_String_fail_helper("+sqrt(2)");
-        readStrict_String_fail_helper("(sqrt(2))/2");
-        readStrict_String_fail_helper("sqrt(2)/1");
-        readStrict_String_fail_helper("sqrt(2)/0");
-        readStrict_String_fail_helper("sqrt(2)/-1");
-        readStrict_String_fail_helper("sqrt(2)+1");
-        readStrict_String_fail_helper("sqrt(2)+sqrt(3)");
-        readStrict_String_fail_helper("(2+2*sqrt(2))/2");
-        readStrict_String_fail_helper("root -1 of x^5-x-1");
-        readStrict_String_fail_helper("root 1 of x^5-x-1");
-        readStrict_String_fail_helper("root 0 of x^2-1");
-        readStrict_String_fail_helper("root 0 of x^10");
-        readStrict_String_fail_helper("roof 0 of x^5-x-1");
-        readStrict_String_fail_helper("root 0 on x^5-x-1");
-        readStrict_String_fail_helper("root 0 of 0");
-        readStrict_String_fail_helper("root 0 of 1");
-        readStrict_String_fail_helper("root 0 of x^2-2");
-        readStrict_String_fail_helper("root 0 of x-2");
+        readStrict_String_helper("", "Optional.empty");
+        readStrict_String_helper(" ", "Optional.empty");
+        readStrict_String_helper("x", "Optional.empty");
+        readStrict_String_helper("x^2+3", "Optional.empty");
+        readStrict_String_helper("2/4", "Optional.empty");
+        readStrict_String_helper("-", "Optional.empty");
+        readStrict_String_helper("00", "Optional.empty");
+        readStrict_String_helper("01", "Optional.empty");
+        readStrict_String_helper("-0", "Optional.empty");
+        readStrict_String_helper("+0", "Optional.empty");
+        readStrict_String_helper("+2", "Optional.empty");
+        readStrict_String_helper("sqrt(a)", "Optional.empty");
+        readStrict_String_helper("sqrt(4)", "Optional.empty");
+        readStrict_String_helper("sqrt(-1)", "Optional.empty");
+        readStrict_String_helper("sqrt(0)", "Optional.empty");
+        readStrict_String_helper("0*sqrt(2)", "Optional.empty");
+        readStrict_String_helper("a*sqrt(2)", "Optional.empty");
+        readStrict_String_helper("1*sqrt(2)", "Optional.empty");
+        readStrict_String_helper("-1*sqrt(2)", "Optional.empty");
+        readStrict_String_helper("a+sqrt(2)", "Optional.empty");
+        readStrict_String_helper("0+sqrt(2)", "Optional.empty");
+        readStrict_String_helper("0-sqrt(2)", "Optional.empty");
+        readStrict_String_helper("(sqrt(2))", "Optional.empty");
+        readStrict_String_helper("*sqrt(2)", "Optional.empty");
+        readStrict_String_helper("+sqrt(2)", "Optional.empty");
+        readStrict_String_helper("(sqrt(2))/2", "Optional.empty");
+        readStrict_String_helper("sqrt(2)/1", "Optional.empty");
+        readStrict_String_helper("sqrt(2)/0", "Optional.empty");
+        readStrict_String_helper("sqrt(2)/-1", "Optional.empty");
+        readStrict_String_helper("sqrt(2)+1", "Optional.empty");
+        readStrict_String_helper("sqrt(2)+sqrt(3)", "Optional.empty");
+        readStrict_String_helper("(2+2*sqrt(2))/2", "Optional.empty");
+        readStrict_String_helper("root -1 of x^5-x-1", "Optional.empty");
+        readStrict_String_helper("root 1 of x^5-x-1", "Optional.empty");
+        readStrict_String_helper("root 0 of x^2-1", "Optional.empty");
+        readStrict_String_helper("root 0 of x^10", "Optional.empty");
+        readStrict_String_helper("roof 0 of x^5-x-1", "Optional.empty");
+        readStrict_String_helper("root 0 on x^5-x-1", "Optional.empty");
+        readStrict_String_helper("root 0 of 0", "Optional.empty");
+        readStrict_String_helper("root 0 of 1", "Optional.empty");
+        readStrict_String_helper("root 0 of x^2-2", "Optional.empty");
+        readStrict_String_helper("root 0 of x-2", "Optional.empty");
     }
 
-    private static void readStrict_int_String_helper(int maxDegree, @NotNull String input) {
-        Algebraic x = readStrict(maxDegree, input).get();
-        x.validate();
-        aeq(x, input);
+    private static void readStrict_int_String_helper(int maxDegree, @NotNull String input, @NotNull String output) {
+        Optional<Algebraic> ox = readStrict(maxDegree, input);
+        if (ox.isPresent()) {
+            ox.get().validate();
+        }
+        aeq(ox, output);
     }
 
     private static void readStrict_int_String_fail_helper(int maxDegree, @NotNull String input) {
-        assertFalse(readStrict(maxDegree, input).isPresent());
-    }
-
-    private static void readStrict_int_String_bad_maxExponent_fail_helper(int maxDegree, @NotNull String input) {
         try {
             readStrict(maxDegree, input);
             fail();
@@ -3981,63 +3982,63 @@ public class AlgebraicTest {
 
     @Test
     public void testReadStrict_int_String() {
-        readStrict_int_String_helper(2, "0");
-        readStrict_int_String_helper(2, "1");
-        readStrict_int_String_helper(2, "1/2");
-        readStrict_int_String_helper(2, "-4/3");
-        readStrict_int_String_helper(2, "sqrt(2)");
-        readStrict_int_String_helper(2, "-sqrt(2)");
-        readStrict_int_String_helper(2, "(1+sqrt(5))/2");
-        readStrict_int_String_helper(5, "root 0 of x^5-x-1");
-        readStrict_int_String_helper(2, "root 1 of x^2-10000000000000");
+        readStrict_int_String_helper(2, "0", "Optional[0]");
+        readStrict_int_String_helper(2, "1", "Optional[1]");
+        readStrict_int_String_helper(2, "1/2", "Optional[1/2]");
+        readStrict_int_String_helper(2, "-4/3", "Optional[-4/3]");
+        readStrict_int_String_helper(2, "sqrt(2)", "Optional[sqrt(2)]");
+        readStrict_int_String_helper(2, "-sqrt(2)", "Optional[-sqrt(2)]");
+        readStrict_int_String_helper(2, "(1+sqrt(5))/2", "Optional[(1+sqrt(5))/2]");
+        readStrict_int_String_helper(5, "root 0 of x^5-x-1", "Optional[root 0 of x^5-x-1]");
+        readStrict_int_String_helper(2, "root 1 of x^2-10000000000000", "Optional[root 1 of x^2-10000000000000]");
 
-        readStrict_int_String_fail_helper(4, "root 0 of x^5-x-1");
-        readStrict_int_String_fail_helper(10, "");
-        readStrict_int_String_fail_helper(10, " ");
-        readStrict_int_String_fail_helper(10, "x");
-        readStrict_int_String_fail_helper(10, "x^2+3");
-        readStrict_int_String_fail_helper(10, "2/4");
-        readStrict_int_String_fail_helper(10, "-");
-        readStrict_int_String_fail_helper(10, "00");
-        readStrict_int_String_fail_helper(10, "01");
-        readStrict_int_String_fail_helper(10, "-0");
-        readStrict_int_String_fail_helper(10, "+0");
-        readStrict_int_String_fail_helper(10, "+2");
-        readStrict_int_String_fail_helper(10, "sqrt(a)");
-        readStrict_int_String_fail_helper(10, "sqrt(4)");
-        readStrict_int_String_fail_helper(10, "sqrt(-1)");
-        readStrict_int_String_fail_helper(10, "sqrt(0)");
-        readStrict_int_String_fail_helper(10, "0*sqrt(2)");
-        readStrict_int_String_fail_helper(10, "a*sqrt(2)");
-        readStrict_int_String_fail_helper(10, "1*sqrt(2)");
-        readStrict_int_String_fail_helper(10, "-1*sqrt(2)");
-        readStrict_int_String_fail_helper(10, "a+sqrt(2)");
-        readStrict_int_String_fail_helper(10, "0+sqrt(2)");
-        readStrict_int_String_fail_helper(10, "0-sqrt(2)");
-        readStrict_int_String_fail_helper(10, "(sqrt(2))");
-        readStrict_int_String_fail_helper(10, "*sqrt(2)");
-        readStrict_int_String_fail_helper(10, "+sqrt(2)");
-        readStrict_int_String_fail_helper(10, "(sqrt(2))/2");
-        readStrict_int_String_fail_helper(10, "sqrt(2)/1");
-        readStrict_int_String_fail_helper(10, "sqrt(2)/0");
-        readStrict_int_String_fail_helper(10, "sqrt(2)/-1");
-        readStrict_int_String_fail_helper(10, "sqrt(2)+1");
-        readStrict_int_String_fail_helper(10, "sqrt(2)+sqrt(3)");
-        readStrict_int_String_fail_helper(10, "(2+2*sqrt(2))/2");
-        readStrict_int_String_fail_helper(10, "root -1 of x^5-x-1");
-        readStrict_int_String_fail_helper(10, "root 1 of x^5-x-1");
-        readStrict_int_String_fail_helper(10, "root 0 of x^2-1");
-        readStrict_int_String_fail_helper(10, "root 0 of x^10");
-        readStrict_int_String_fail_helper(10, "roof 0 of x^5-x-1");
-        readStrict_int_String_fail_helper(10, "root 0 on x^5-x-1");
-        readStrict_int_String_fail_helper(10, "root 0 of 0");
-        readStrict_int_String_fail_helper(10, "root 0 of 1");
-        readStrict_int_String_fail_helper(10, "root 0 of x^2-2");
-        readStrict_int_String_fail_helper(10, "root 0 of x-2");
+        readStrict_int_String_helper(4, "root 0 of x^5-x-1", "Optional.empty");
+        readStrict_int_String_helper(10, "", "Optional.empty");
+        readStrict_int_String_helper(10, " ", "Optional.empty");
+        readStrict_int_String_helper(10, "x", "Optional.empty");
+        readStrict_int_String_helper(10, "x^2+3", "Optional.empty");
+        readStrict_int_String_helper(10, "2/4", "Optional.empty");
+        readStrict_int_String_helper(10, "-", "Optional.empty");
+        readStrict_int_String_helper(10, "00", "Optional.empty");
+        readStrict_int_String_helper(10, "01", "Optional.empty");
+        readStrict_int_String_helper(10, "-0", "Optional.empty");
+        readStrict_int_String_helper(10, "+0", "Optional.empty");
+        readStrict_int_String_helper(10, "+2", "Optional.empty");
+        readStrict_int_String_helper(10, "sqrt(a)", "Optional.empty");
+        readStrict_int_String_helper(10, "sqrt(4)", "Optional.empty");
+        readStrict_int_String_helper(10, "sqrt(-1)", "Optional.empty");
+        readStrict_int_String_helper(10, "sqrt(0)", "Optional.empty");
+        readStrict_int_String_helper(10, "0*sqrt(2)", "Optional.empty");
+        readStrict_int_String_helper(10, "a*sqrt(2)", "Optional.empty");
+        readStrict_int_String_helper(10, "1*sqrt(2)", "Optional.empty");
+        readStrict_int_String_helper(10, "-1*sqrt(2)", "Optional.empty");
+        readStrict_int_String_helper(10, "a+sqrt(2)", "Optional.empty");
+        readStrict_int_String_helper(10, "0+sqrt(2)", "Optional.empty");
+        readStrict_int_String_helper(10, "0-sqrt(2)", "Optional.empty");
+        readStrict_int_String_helper(10, "(sqrt(2))", "Optional.empty");
+        readStrict_int_String_helper(10, "*sqrt(2)", "Optional.empty");
+        readStrict_int_String_helper(10, "+sqrt(2)", "Optional.empty");
+        readStrict_int_String_helper(10, "(sqrt(2))/2", "Optional.empty");
+        readStrict_int_String_helper(10, "sqrt(2)/1", "Optional.empty");
+        readStrict_int_String_helper(10, "sqrt(2)/0", "Optional.empty");
+        readStrict_int_String_helper(10, "sqrt(2)/-1", "Optional.empty");
+        readStrict_int_String_helper(10, "sqrt(2)+1", "Optional.empty");
+        readStrict_int_String_helper(10, "sqrt(2)+sqrt(3)", "Optional.empty");
+        readStrict_int_String_helper(10, "(2+2*sqrt(2))/2", "Optional.empty");
+        readStrict_int_String_helper(10, "root -1 of x^5-x-1", "Optional.empty");
+        readStrict_int_String_helper(10, "root 1 of x^5-x-1", "Optional.empty");
+        readStrict_int_String_helper(10, "root 0 of x^2-1", "Optional.empty");
+        readStrict_int_String_helper(10, "root 0 of x^10", "Optional.empty");
+        readStrict_int_String_helper(10, "roof 0 of x^5-x-1", "Optional.empty");
+        readStrict_int_String_helper(10, "root 0 on x^5-x-1", "Optional.empty");
+        readStrict_int_String_helper(10, "root 0 of 0", "Optional.empty");
+        readStrict_int_String_helper(10, "root 0 of 1", "Optional.empty");
+        readStrict_int_String_helper(10, "root 0 of x^2-2", "Optional.empty");
+        readStrict_int_String_helper(10, "root 0 of x-2", "Optional.empty");
 
-        readStrict_int_String_bad_maxExponent_fail_helper(1, "sqrt(2)");
-        readStrict_int_String_bad_maxExponent_fail_helper(0, "sqrt(2)");
-        readStrict_int_String_bad_maxExponent_fail_helper(-1, "sqrt(2)");
+        readStrict_int_String_fail_helper(1, "sqrt(2)");
+        readStrict_int_String_fail_helper(0, "sqrt(2)");
+        readStrict_int_String_fail_helper(-1, "sqrt(2)");
     }
 
     private static @NotNull List<Algebraic> readAlgebraicList(@NotNull String s) {
