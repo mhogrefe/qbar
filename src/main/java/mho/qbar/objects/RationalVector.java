@@ -556,8 +556,8 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * </ul>
      *
      * @param that the {@code RationalVector} which, along with {@code this}, creates the angle under consideration
-     * @return whether the angle between {@code this} and {@code that} is acute ({@code LT}), right ({@code EQ}), or
-     * obtuse ({@code GT}).
+     * @return whether the angle between {@code this} and {@code that} is acute ({@code <}), right ({@code =}), or
+     * obtuse ({@code >}).
      */
     public @NotNull Ordering rightAngleCompare(@NotNull RationalVector that) {
         if (coordinates.size() != that.coordinates.size()) {

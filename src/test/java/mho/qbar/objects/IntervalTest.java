@@ -1831,19 +1831,19 @@ public class IntervalTest {
 
     @Test
     public void testElementCompare() {
-        elementCompare_helper("[0, 0]", "[0, 0]", "Optional[EQ]");
-        elementCompare_helper("[0, 0]", "[1, 1]", "Optional[LT]");
+        elementCompare_helper("[0, 0]", "[0, 0]", "Optional[=]");
+        elementCompare_helper("[0, 0]", "[1, 1]", "Optional[<]");
         elementCompare_helper("[0, 0]", "(-Infinity, Infinity)", "Optional.empty");
         elementCompare_helper("[0, 0]", "[-2, 5/3]", "Optional.empty");
-        elementCompare_helper("[0, 0]", "[4, 4]", "Optional[LT]");
+        elementCompare_helper("[0, 0]", "[4, 4]", "Optional[<]");
         elementCompare_helper("[0, 0]", "(-Infinity, 3/2]", "Optional.empty");
         elementCompare_helper("[0, 0]", "[-6, Infinity)", "Optional.empty");
 
-        elementCompare_helper("[1, 1]", "[0, 0]", "Optional[GT]");
-        elementCompare_helper("[1, 1]", "[1, 1]", "Optional[EQ]");
+        elementCompare_helper("[1, 1]", "[0, 0]", "Optional[>]");
+        elementCompare_helper("[1, 1]", "[1, 1]", "Optional[=]");
         elementCompare_helper("[1, 1]", "(-Infinity, Infinity)", "Optional.empty");
         elementCompare_helper("[1, 1]", "[-2, 5/3]", "Optional.empty");
-        elementCompare_helper("[1, 1]", "[4, 4]", "Optional[LT]");
+        elementCompare_helper("[1, 1]", "[4, 4]", "Optional[<]");
         elementCompare_helper("[1, 1]", "(-Infinity, 3/2]", "Optional.empty");
         elementCompare_helper("[1, 1]", "[-6, Infinity)", "Optional.empty");
 
@@ -1859,23 +1859,23 @@ public class IntervalTest {
         elementCompare_helper("[-2, 5/3]", "[1, 1]", "Optional.empty");
         elementCompare_helper("[-2, 5/3]", "(-Infinity, Infinity)", "Optional.empty");
         elementCompare_helper("[-2, 5/3]", "[-2, 5/3]", "Optional.empty");
-        elementCompare_helper("[-2, 5/3]", "[4, 4]", "Optional[LT]");
+        elementCompare_helper("[-2, 5/3]", "[4, 4]", "Optional[<]");
         elementCompare_helper("[-2, 5/3]", "(-Infinity, 3/2]", "Optional.empty");
         elementCompare_helper("[-2, 5/3]", "[-6, Infinity)", "Optional.empty");
 
-        elementCompare_helper("[4, 4]", "[0, 0]", "Optional[GT]");
-        elementCompare_helper("[4, 4]", "[1, 1]", "Optional[GT]");
+        elementCompare_helper("[4, 4]", "[0, 0]", "Optional[>]");
+        elementCompare_helper("[4, 4]", "[1, 1]", "Optional[>]");
         elementCompare_helper("[4, 4]", "(-Infinity, Infinity)", "Optional.empty");
-        elementCompare_helper("[4, 4]", "[-2, 5/3]", "Optional[GT]");
-        elementCompare_helper("[4, 4]", "[4, 4]", "Optional[EQ]");
-        elementCompare_helper("[4, 4]", "(-Infinity, 3/2]", "Optional[GT]");
+        elementCompare_helper("[4, 4]", "[-2, 5/3]", "Optional[>]");
+        elementCompare_helper("[4, 4]", "[4, 4]", "Optional[=]");
+        elementCompare_helper("[4, 4]", "(-Infinity, 3/2]", "Optional[>]");
         elementCompare_helper("[4, 4]", "[-6, Infinity)", "Optional.empty");
 
         elementCompare_helper("(-Infinity, 3/2]", "[0, 0]", "Optional.empty");
         elementCompare_helper("(-Infinity, 3/2]", "[1, 1]", "Optional.empty");
         elementCompare_helper("(-Infinity, 3/2]", "(-Infinity, Infinity)", "Optional.empty");
         elementCompare_helper("(-Infinity, 3/2]", "[-2, 5/3]", "Optional.empty");
-        elementCompare_helper("(-Infinity, 3/2]", "[4, 4]", "Optional[LT]");
+        elementCompare_helper("(-Infinity, 3/2]", "[4, 4]", "Optional[<]");
         elementCompare_helper("(-Infinity, 3/2]", "(-Infinity, 3/2]", "Optional.empty");
         elementCompare_helper("(-Infinity, 3/2]", "[-6, Infinity)", "Optional.empty");
 
