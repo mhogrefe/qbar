@@ -5,11 +5,11 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Optional;
 
 import static mho.qbar.objects.Matrix.*;
 import static mho.wheels.iterables.IterableUtils.toList;
 import static mho.wheels.testing.Testing.*;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 public class MatrixTest {
@@ -63,6 +63,7 @@ public class MatrixTest {
         row_helper("[[], [], []]", 2, "[]");
         row_helper("[[1, 9, -13], [20, 5, -6]]", 0, "[1, 9, -13]");
         row_helper("[[1, 9, -13], [20, 5, -6]]", 1, "[20, 5, -6]");
+
         row_fail_helper("[]#0", 0);
         row_fail_helper("[]#3", 0);
         row_fail_helper("[[]]", 1);
@@ -91,6 +92,7 @@ public class MatrixTest {
         column_helper("[[1, 9, -13], [20, 5, -6]]", 0, "[1, 20]");
         column_helper("[[1, 9, -13], [20, 5, -6]]", 1, "[9, 5]");
         column_helper("[[1, 9, -13], [20, 5, -6]]", 2, "[-13, -6]");
+
         column_fail_helper("[]#0", 0);
         column_fail_helper("[[]]", 0);
         column_fail_helper("[[], [], []]", 0);
@@ -135,6 +137,7 @@ public class MatrixTest {
         get_helper("[[1, 9, -13], [20, 5, -6]]", 0, 2, "-13");
         get_helper("[[1, 9, -13], [20, 5, -6]]", 1, 0, "20");
         get_helper("[[1, 9, -13], [20, 5, -6]]", 1, 2, "-6");
+
         get_fail_helper("[]#0", 0, 0);
         get_fail_helper("[]#1", 0, 0);
         get_fail_helper("[[]]", 0, 0);
@@ -143,7 +146,9 @@ public class MatrixTest {
     }
 
     private static void fromRows_helper(@NotNull String input, @NotNull String output) {
-        aeq(fromRows(readVectorList(input)), output);
+        Matrix m = fromRows(readVectorList(input));
+        m.validate();
+        aeq(m, output);
     }
 
     private static void fromRows_fail_helper(@NotNull String input) {
@@ -159,12 +164,15 @@ public class MatrixTest {
         fromRows_helper("[[-3]]", "[[-3]]");
         fromRows_helper("[[-3, -8], [0, 7]]", "[[-3, -8], [0, 7]]");
         fromRows_helper("[[1, 9, -13], [20, 5, -6]]", "[[1, 9, -13], [20, 5, -6]]");
+
         fromRows_fail_helper("[[-3, -8], null, [0, 7]]");
         fromRows_fail_helper("[[-3, -8], [0], [0, 7]]");
     }
 
     private static void fromColumns_helper(@NotNull String input, @NotNull String output) {
-        aeq(fromColumns(readVectorList(input)), output);
+        Matrix m = fromColumns(readVectorList(input));
+        m.validate();
+        aeq(m, output);
     }
 
     private static void fromColumns_fail_helper(@NotNull String input) {
@@ -180,6 +188,7 @@ public class MatrixTest {
         fromColumns_helper("[[-3]]", "[[-3]]");
         fromColumns_helper("[[-3, -8], [0, 7]]", "[[-3, 0], [-8, 7]]");
         fromColumns_helper("[[1, 9, -13], [20, 5, -6]]", "[[1, 20], [9, 5], [-13, -6]]");
+
         fromColumns_fail_helper("[[-3, -8], null, [0, 7]]");
         fromColumns_fail_helper("[[-3, -8], [0], [0, 7]]");
     }
@@ -269,7 +278,9 @@ public class MatrixTest {
     }
 
     private static void zero_helper(int height, int width, @NotNull String output) {
-        aeq(zero(height, width), output);
+        Matrix m = zero(height, width);
+        m.validate();
+        aeq(m, output);
     }
 
     private static void zero_fail_helper(int height, int width) {
@@ -287,6 +298,7 @@ public class MatrixTest {
         zero_helper(1, 1, "[[0]]");
         zero_helper(2, 2, "[[0, 0], [0, 0]]");
         zero_helper(3, 4, "[[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]");
+
         zero_fail_helper(-1, 0);
         zero_fail_helper(-1, 3);
         zero_fail_helper(0, -1);
@@ -317,7 +329,9 @@ public class MatrixTest {
     }
 
     private static void identity_helper(int dimension, @NotNull String output) {
-        aeq(identity(dimension), output);
+        Matrix m = identity(dimension);
+        m.validate();
+        aeq(m, output);
     }
 
     private static void identity_fail_helper(int dimension) {
@@ -333,6 +347,7 @@ public class MatrixTest {
         identity_helper(1, "[[1]]");
         identity_helper(3, "[[1, 0, 0], [0, 1, 0], [0, 0, 1]]");
         identity_helper(5, "[[1, 0, 0, 0, 0], [0, 1, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1]]");
+
         identity_fail_helper(-1);
     }
 
@@ -366,7 +381,9 @@ public class MatrixTest {
             @NotNull String columnIndices,
             @NotNull String output
     ) {
-        aeq(readStrict(m).get().submatrix(readIntegerList(rowIndices), readIntegerList(columnIndices)), output);
+        Matrix x = readStrict(m).get().submatrix(readIntegerList(rowIndices), readIntegerList(columnIndices));
+        x.validate();
+        aeq(x, output);
     }
 
     private static void submatrix_fail_helper(
@@ -394,6 +411,7 @@ public class MatrixTest {
         submatrix_helper("[[1, 9, -13], [20, 5, -6]]", "[]", "[1, 2]", "[]#2");
         submatrix_helper("[[1, 9, -13], [20, 5, -6]]", "[0, 1]", "[]", "[[], []]");
         submatrix_helper("[[1, 9, -13], [20, 5, -6]]", "[1]", "[0, 2]", "[[20, -6]]");
+
         submatrix_fail_helper("[[0]]", "[null]", "[]");
         submatrix_fail_helper("[[1, 9, -13], [20, 5, -6]]", "[1]", "[0, null]");
         submatrix_fail_helper("[[1, 9, -13], [20, 5, -6]]", "[1]", "[2, 0]");
@@ -407,7 +425,9 @@ public class MatrixTest {
     }
 
     private static void transpose_helper(@NotNull String input, @NotNull String output) {
-        aeq(readStrict(input).get().transpose(), output);
+        Matrix m = readStrict(input).get().transpose();
+        m.validate();
+        aeq(m, output);
     }
 
     @Test
@@ -423,7 +443,9 @@ public class MatrixTest {
     }
 
     private static void concat_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(readStrict(a).get().concat(readStrict(b).get()), output);
+        Matrix m = readStrict(a).get().concat(readStrict(b).get());
+        m.validate();
+        aeq(m, output);
     }
 
     private static void concat_fail_helper(@NotNull String a, @NotNull String b) {
@@ -443,6 +465,7 @@ public class MatrixTest {
                 "[[4, 3, 1]]",
                 "[[1, 3, 2], [2, 0, 1], [5, 2, 2], [4, 3, 1]]"
         );
+
         concat_fail_helper("[]#0", "[]#1");
         concat_fail_helper("[]#3", "[]#4");
         concat_fail_helper("[[]]", "[[2]]");
@@ -451,7 +474,9 @@ public class MatrixTest {
     }
 
     private static void augment_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(readStrict(a).get().augment(readStrict(b).get()), output);
+        Matrix m = readStrict(a).get().augment(readStrict(b).get());
+        m.validate();
+        aeq(m, output);
     }
 
     private static void augment_fail_helper(@NotNull String a, @NotNull String b) {
@@ -473,13 +498,16 @@ public class MatrixTest {
                 "[[4], [3], [1]]",
                 "[[1, 3, 2, 4], [2, 0, 1, 3], [5, 2, 2, 1]]"
         );
+
         augment_fail_helper("[]#0", "[[]]");
         augment_fail_helper("[[]]", "[[], []]");
         augment_fail_helper("[[2]]", "[[3], [4]]");
     }
 
     private static void add_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(readStrict(a).get().add(readStrict(b).get()), output);
+        Matrix m = readStrict(a).get().add(readStrict(b).get());
+        m.validate();
+        aeq(m, output);
     }
 
     private static void add_fail_helper(@NotNull String a, @NotNull String b) {
@@ -498,13 +526,16 @@ public class MatrixTest {
         add_helper("[[], [], []]", "[[], [], []]", "[[], [], []]");
         add_helper("[[3]]", "[[5]]", "[[8]]");
         add_helper("[[1, 3], [1, 0], [1, 2]]", "[[0, 0], [7, 5], [2, 1]]", "[[1, 3], [8, 5], [3, 3]]");
+
         add_fail_helper("[]#0", "[]#1");
         add_fail_helper("[]#0", "[[]]");
         add_fail_helper("[[3]]", "[[3], [5]]");
     }
 
     private static void negate_helper(@NotNull String input, @NotNull String output) {
-        aeq(readStrict(input).get().negate(), output);
+        Matrix m = readStrict(input).get().negate();
+        m.validate();
+        aeq(m, output);
     }
 
     @Test
@@ -520,7 +551,9 @@ public class MatrixTest {
     }
 
     private static void subtract_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(readStrict(a).get().subtract(readStrict(b).get()), output);
+        Matrix m = readStrict(a).get().subtract(readStrict(b).get());
+        m.validate();
+        aeq(m, output);
     }
 
     private static void subtract_fail_helper(@NotNull String a, @NotNull String b) {
@@ -539,13 +572,16 @@ public class MatrixTest {
         subtract_helper("[[], [], []]", "[[], [], []]", "[[], [], []]");
         subtract_helper("[[3]]", "[[5]]", "[[-2]]");
         subtract_helper("[[1, 3], [1, 0], [1, 2]]", "[[0, 0], [7, 5], [2, 1]]", "[[1, 3], [-6, -5], [-1, 1]]");
+
         subtract_fail_helper("[]#0", "[]#1");
         subtract_fail_helper("[]#0", "[[]]");
         subtract_fail_helper("[[3]]", "[[3], [5]]");
     }
 
     private static void multiply_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(readStrict(a).get().multiply(Readers.readBigIntegerStrict(b).get()), output);
+        Matrix m = readStrict(a).get().multiply(Readers.readBigIntegerStrict(b).get());
+        m.validate();
+        aeq(m, output);
     }
 
     @Test
@@ -572,7 +608,9 @@ public class MatrixTest {
     }
 
     private static void multiply_int_helper(@NotNull String a, int b, @NotNull String output) {
-        aeq(readStrict(a).get().multiply(b), output);
+        Matrix m = readStrict(a).get().multiply(b);
+        m.validate();
+        aeq(m, output);
     }
 
     @Test
@@ -627,7 +665,9 @@ public class MatrixTest {
     }
 
     private static void multiply_Matrix_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(readStrict(a).get().multiply(readStrict(b).get()), output);
+        Matrix m = readStrict(a).get().multiply(readStrict(b).get());
+        m.validate();
+        aeq(m, output);
     }
 
     private static void multiply_Matrix_fail_helper(@NotNull String a, @NotNull String b) {
@@ -659,7 +699,9 @@ public class MatrixTest {
     }
 
     private static void shiftLeft_helper(@NotNull String a, int bits, @NotNull String output) {
-        aeq(readStrict(a).get().shiftLeft(bits), output);
+        Matrix m = readStrict(a).get().shiftLeft(bits);
+        m.validate();
+        aeq(m, output);
     }
 
     private static void shiftLeft_fail_helper(@NotNull String a, int bits) {
@@ -729,7 +771,9 @@ public class MatrixTest {
     }
 
     private static void rowEchelonForm_helper(@NotNull String input, @NotNull String output) {
-        aeq(readStrict(input).get().rowEchelonForm(), output);
+        Matrix m = readStrict(input).get().rowEchelonForm();
+        m.validate();
+        aeq(m, output);
     }
 
     @Test
@@ -749,7 +793,9 @@ public class MatrixTest {
     }
 
     private static void primitiveRowEchelonForm_helper(@NotNull String input, @NotNull String output) {
-        aeq(readStrict(input).get().primitiveRowEchelonForm(), output);
+        Matrix m = readStrict(input).get().primitiveRowEchelonForm();
+        m.validate();
+        aeq(m, output);
     }
 
     @Test
@@ -846,7 +892,9 @@ public class MatrixTest {
     }
 
     private static void reducedRowEchelonForm_helper(@NotNull String input, @NotNull String output) {
-        aeq(readStrict(input).get().reducedRowEchelonForm(), output);
+        Matrix m = readStrict(input).get().reducedRowEchelonForm();
+        m.validate();
+        aeq(m, output);
     }
 
     @Test
@@ -865,7 +913,9 @@ public class MatrixTest {
     }
 
     private static void primitiveReducedRowEchelonForm_helper(@NotNull String input, @NotNull String output) {
-        aeq(readStrict(input).get().primitiveReducedRowEchelonForm(), output);
+        Matrix m = readStrict(input).get().primitiveReducedRowEchelonForm();
+        m.validate();
+        aeq(m, output);
     }
 
     @Test
@@ -1039,7 +1089,9 @@ public class MatrixTest {
     }
 
     private static void kroneckerMultiply_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(readStrict(a).get().kroneckerMultiply(readStrict(b).get()), output);
+        Matrix m = readStrict(a).get().kroneckerMultiply(readStrict(b).get());
+        m.validate();
+        aeq(m, output);
     }
 
     @Test
@@ -1063,7 +1115,9 @@ public class MatrixTest {
     }
 
     private static void kroneckerAdd_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(readStrict(a).get().kroneckerAdd(readStrict(b).get()), output);
+        Matrix m = readStrict(a).get().kroneckerAdd(readStrict(b).get());
+        m.validate();
+        aeq(m, output);
     }
 
     private static void kroneckerAdd_fail_helper(@NotNull String a, @NotNull String b) {
@@ -1149,40 +1203,41 @@ public class MatrixTest {
                 " [[1, 9, -13], [20, 5, -6]], [[], [], []]]"));
     }
 
-    private static void readStrict_helper(@NotNull String input) {
-        aeq(readStrict(input).get(), input);
-    }
-
-    private static void readStrict_fail_helper(@NotNull String input) {
-        assertFalse(readStrict(input).isPresent());
+    private static void readStrict_helper(@NotNull String input, @NotNull String output) {
+        Optional<Matrix> om = readStrict(input);
+        if (om.isPresent()) {
+            om.get().validate();
+        }
+        aeq(om, output);
     }
 
     @Test
     public void testReadStrict() {
-        readStrict_helper("[]#0");
-        readStrict_helper("[]#1");
-        readStrict_helper("[]#3");
-        readStrict_helper("[[]]");
-        readStrict_helper("[[], [], []]");
-        readStrict_helper("[[-3]]");
-        readStrict_helper("[[-3, -8], [0, 7]]");
-        readStrict_helper("[[1, 9, -13], [20, 5, -6]]");
-        readStrict_fail_helper("");
-        readStrict_fail_helper("[]");
-        readStrict_fail_helper("[]#");
-        readStrict_fail_helper("[]#-1");
-        readStrict_fail_helper("[[]]#1");
-        readStrict_fail_helper("[[4]]#1");
-        readStrict_fail_helper("[2]");
-        readStrict_fail_helper("[[ ]]");
-        readStrict_fail_helper("[[],]");
-        readStrict_fail_helper("[[2/3]]");
-        readStrict_fail_helper("[[3], null]");
-        readStrict_fail_helper("[[3], [3, 3]]");
-        readStrict_fail_helper("[[]]]");
-        readStrict_fail_helper("[[[]]");
-        readStrict_fail_helper("hello");
-        readStrict_fail_helper("vdfvfmsl;dfbv");
+        readStrict_helper("[]#0", "Optional[[]#0]");
+        readStrict_helper("[]#1", "Optional[[]#1]");
+        readStrict_helper("[]#3", "Optional[[]#3]");
+        readStrict_helper("[[]]", "Optional[[[]]]");
+        readStrict_helper("[[], [], []]", "Optional[[[], [], []]]");
+        readStrict_helper("[[-3]]", "Optional[[[-3]]]");
+        readStrict_helper("[[-3, -8], [0, 7]]", "Optional[[[-3, -8], [0, 7]]]");
+        readStrict_helper("[[1, 9, -13], [20, 5, -6]]", "Optional[[[1, 9, -13], [20, 5, -6]]]");
+
+        readStrict_helper("", "Optional.empty");
+        readStrict_helper("[]", "Optional.empty");
+        readStrict_helper("[]#", "Optional.empty");
+        readStrict_helper("[]#-1", "Optional.empty");
+        readStrict_helper("[[]]#1", "Optional.empty");
+        readStrict_helper("[[4]]#1", "Optional.empty");
+        readStrict_helper("[2]", "Optional.empty");
+        readStrict_helper("[[ ]]", "Optional.empty");
+        readStrict_helper("[[],]", "Optional.empty");
+        readStrict_helper("[[2/3]]", "Optional.empty");
+        readStrict_helper("[[3], null]", "Optional.empty");
+        readStrict_helper("[[3], [3, 3]]", "Optional.empty");
+        readStrict_helper("[[]]]", "Optional.empty");
+        readStrict_helper("[[[]]", "Optional.empty");
+        readStrict_helper("hello", "Optional.empty");
+        readStrict_helper("vdfvfmsl;dfbv", "Optional.empty");
     }
 
     private static @NotNull List<Integer> readIntegerList(@NotNull String s) {

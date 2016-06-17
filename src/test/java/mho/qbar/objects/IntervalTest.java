@@ -14,7 +14,6 @@ import static mho.wheels.iterables.IterableUtils.iterate;
 import static mho.wheels.iterables.IterableUtils.take;
 import static mho.wheels.iterables.IterableUtils.toList;
 import static mho.wheels.testing.Testing.*;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 public class IntervalTest {
@@ -270,22 +269,18 @@ public class IntervalTest {
     }
 
     private static void diameter_helper(@NotNull String input, @NotNull String output) {
-        aeq(readStrict(input).get().diameter().get(), output);
-    }
-
-    private static void diameter_fail_helper(@NotNull String input) {
-        assertFalse(readStrict(input).get().diameter().isPresent());
+        aeq(readStrict(input).get().diameter(), output);
     }
 
     @Test
     public void testDiameter() {
-        diameter_helper("[0, 0]", "0");
-        diameter_helper("[1, 1]", "0");
-        diameter_fail_helper("(-Infinity, Infinity)");
-        diameter_helper("[-2, 5/3]", "11/3");
-        diameter_helper("[4, 4]", "0");
-        diameter_fail_helper("(-Infinity, 3/2]");
-        diameter_fail_helper("[-6, Infinity)");
+        diameter_helper("[0, 0]", "Optional[0]");
+        diameter_helper("[1, 1]", "Optional[0]");
+        diameter_helper("(-Infinity, Infinity)", "Optional.empty");
+        diameter_helper("[-2, 5/3]", "Optional[11/3]");
+        diameter_helper("[4, 4]", "Optional[0]");
+        diameter_helper("(-Infinity, 3/2]", "Optional.empty");
+        diameter_helper("[-6, Infinity)", "Optional.empty");
     }
 
     private static void convexHull_Interval_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
