@@ -11,20 +11,25 @@ import org.junit.Test;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static mho.qbar.objects.MultivariatePolynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.iterables.IterableUtils.take;
 import static mho.wheels.iterables.IterableUtils.toList;
 import static mho.wheels.testing.Testing.*;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 public class MultivariatePolynomialTest {
+    private static void constant_helper(@NotNull MultivariatePolynomial input, @NotNull String output) {
+        input.validate();
+        aeq(input, output);
+    }
+
     @Test
     public void testConstants() {
-        aeq(ZERO, "0");
-        aeq(ONE, "1");
+        constant_helper(ZERO, "0");
+        constant_helper(ONE, "1");
     }
 
     private static void iterable_helper(@NotNull String p, @NotNull String mo, @NotNull String output) {
@@ -1467,7 +1472,9 @@ public class MultivariatePolynomialTest {
     }
 
     private static void pow_helper(@NotNull String p, int exponent, @NotNull String output) {
-        aeq(readStrict(p).get().pow(exponent), output);
+        MultivariatePolynomial q = readStrict(p).get().pow(exponent);
+        q.validate();
+        aeq(q, output);
     }
 
     private static void pow_fail_helper(@NotNull String p, int exponent) {
@@ -1950,172 +1957,170 @@ public class MultivariatePolynomialTest {
             @NotNull String mo,
             @NotNull String output
     ) {
-        MultivariatePolynomial q = readStrict(p, MonomialOrder.readStrict(mo).get()).get();
-        q.validate();
-        aeq(q, output);
-    }
-
-    private static void readStrict_String_MonomialOrder_fail_helper(@NotNull String p, @NotNull String mo) {
-        assertFalse(readStrict(p, MonomialOrder.readStrict(mo).get()).isPresent());
+        Optional<MultivariatePolynomial> oq = readStrict(p, MonomialOrder.readStrict(mo).get());
+        if (oq.isPresent()) {
+            oq.get().validate();
+        }
+        aeq(oq, output);
     }
 
     @Test
     public void testReadStrict_String_MonomialOrder() {
-        readStrict_String_MonomialOrder_helper("0", "LEX", "0");
-        readStrict_String_MonomialOrder_helper("0", "GRLEX", "0");
-        readStrict_String_MonomialOrder_helper("0", "GREVLEX", "0");
-        readStrict_String_MonomialOrder_helper("1", "LEX", "1");
-        readStrict_String_MonomialOrder_helper("1", "GRLEX", "1");
-        readStrict_String_MonomialOrder_helper("1", "GREVLEX", "1");
-        readStrict_String_MonomialOrder_helper("-17", "LEX", "-17");
-        readStrict_String_MonomialOrder_helper("-17", "GRLEX", "-17");
-        readStrict_String_MonomialOrder_helper("-17", "GREVLEX", "-17");
-        readStrict_String_MonomialOrder_helper("ooo", "LEX", "ooo");
-        readStrict_String_MonomialOrder_helper("ooo", "GRLEX", "ooo");
-        readStrict_String_MonomialOrder_helper("ooo", "GREVLEX", "ooo");
-        readStrict_String_MonomialOrder_helper("-ooo", "LEX", "-ooo");
-        readStrict_String_MonomialOrder_helper("-ooo", "GRLEX", "-ooo");
-        readStrict_String_MonomialOrder_helper("-ooo", "GREVLEX", "-ooo");
-        readStrict_String_MonomialOrder_helper("a*b*c", "LEX", "a*b*c");
-        readStrict_String_MonomialOrder_helper("a*b*c", "GRLEX", "a*b*c");
-        readStrict_String_MonomialOrder_helper("a*b*c", "GREVLEX", "a*b*c");
-        readStrict_String_MonomialOrder_helper("x^2-4*x+7", "LEX", "x^2-4*x+7");
-        readStrict_String_MonomialOrder_helper("x^2-4*x+7", "GRLEX", "x^2-4*x+7");
-        readStrict_String_MonomialOrder_helper("x^2-4*x+7", "GREVLEX", "x^2-4*x+7");
-        readStrict_String_MonomialOrder_helper("a+b+c+d+e+f", "LEX", "a+b+c+d+e+f");
-        readStrict_String_MonomialOrder_helper("a+b+c+d+e+f", "GRLEX", "a+b+c+d+e+f");
-        readStrict_String_MonomialOrder_helper("a+b+c+d+e+f", "GREVLEX", "a+b+c+d+e+f");
-        readStrict_String_MonomialOrder_helper("x^3+x^2*z^2+x*y^2*z+z^2", "LEX", "x*y^2*z+x^2*z^2+x^3+z^2");
-        readStrict_String_MonomialOrder_helper("x^2*z^2+x*y^2*z+x^3+z^2", "GRLEX", "x*y^2*z+x^2*z^2+x^3+z^2");
-        readStrict_String_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "GREVLEX", "x*y^2*z+x^2*z^2+x^3+z^2");
+        readStrict_String_MonomialOrder_helper("0", "LEX", "Optional[0]");
+        readStrict_String_MonomialOrder_helper("0", "GRLEX", "Optional[0]");
+        readStrict_String_MonomialOrder_helper("0", "GREVLEX", "Optional[0]");
+        readStrict_String_MonomialOrder_helper("1", "LEX", "Optional[1]");
+        readStrict_String_MonomialOrder_helper("1", "GRLEX", "Optional[1]");
+        readStrict_String_MonomialOrder_helper("1", "GREVLEX", "Optional[1]");
+        readStrict_String_MonomialOrder_helper("-17", "LEX", "Optional[-17]");
+        readStrict_String_MonomialOrder_helper("-17", "GRLEX", "Optional[-17]");
+        readStrict_String_MonomialOrder_helper("-17", "GREVLEX", "Optional[-17]");
+        readStrict_String_MonomialOrder_helper("ooo", "LEX", "Optional[ooo]");
+        readStrict_String_MonomialOrder_helper("ooo", "GRLEX", "Optional[ooo]");
+        readStrict_String_MonomialOrder_helper("ooo", "GREVLEX", "Optional[ooo]");
+        readStrict_String_MonomialOrder_helper("-ooo", "LEX", "Optional[-ooo]");
+        readStrict_String_MonomialOrder_helper("-ooo", "GRLEX", "Optional[-ooo]");
+        readStrict_String_MonomialOrder_helper("-ooo", "GREVLEX", "Optional[-ooo]");
+        readStrict_String_MonomialOrder_helper("a*b*c", "LEX", "Optional[a*b*c]");
+        readStrict_String_MonomialOrder_helper("a*b*c", "GRLEX", "Optional[a*b*c]");
+        readStrict_String_MonomialOrder_helper("a*b*c", "GREVLEX", "Optional[a*b*c]");
+        readStrict_String_MonomialOrder_helper("x^2-4*x+7", "LEX", "Optional[x^2-4*x+7]");
+        readStrict_String_MonomialOrder_helper("x^2-4*x+7", "GRLEX", "Optional[x^2-4*x+7]");
+        readStrict_String_MonomialOrder_helper("x^2-4*x+7", "GREVLEX", "Optional[x^2-4*x+7]");
+        readStrict_String_MonomialOrder_helper("a+b+c+d+e+f", "LEX", "Optional[a+b+c+d+e+f]");
+        readStrict_String_MonomialOrder_helper("a+b+c+d+e+f", "GRLEX", "Optional[a+b+c+d+e+f]");
+        readStrict_String_MonomialOrder_helper("a+b+c+d+e+f", "GREVLEX", "Optional[a+b+c+d+e+f]");
+        readStrict_String_MonomialOrder_helper("x^3+x^2*z^2+x*y^2*z+z^2", "LEX", "Optional[x*y^2*z+x^2*z^2+x^3+z^2]");
+        readStrict_String_MonomialOrder_helper("x^2*z^2+x*y^2*z+x^3+z^2", "GRLEX",
+                "Optional[x*y^2*z+x^2*z^2+x^3+z^2]");
+        readStrict_String_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "GREVLEX",
+                "Optional[x*y^2*z+x^2*z^2+x^3+z^2]");
 
-        readStrict_String_MonomialOrder_fail_helper("", "LEX");
-        readStrict_String_MonomialOrder_fail_helper("", "GRLEX");
-        readStrict_String_MonomialOrder_fail_helper("", "GREVLEX");
-        readStrict_String_MonomialOrder_fail_helper("hello", "LEX");
-        readStrict_String_MonomialOrder_fail_helper("hello", "GRLEX");
-        readStrict_String_MonomialOrder_fail_helper("hello", "GREVLEX");
-        readStrict_String_MonomialOrder_fail_helper(" ", "LEX");
-        readStrict_String_MonomialOrder_fail_helper(" ", "GRLEX");
-        readStrict_String_MonomialOrder_fail_helper(" ", "GREVLEX");
-        readStrict_String_MonomialOrder_fail_helper("00", "LEX");
-        readStrict_String_MonomialOrder_fail_helper("00", "GRLEX");
-        readStrict_String_MonomialOrder_fail_helper("00", "GREVLEX");
-        readStrict_String_MonomialOrder_fail_helper("-0", "LEX");
-        readStrict_String_MonomialOrder_fail_helper("-0", "GRLEX");
-        readStrict_String_MonomialOrder_fail_helper("-0", "GREVLEX");
-        readStrict_String_MonomialOrder_fail_helper("1/2", "LEX");
-        readStrict_String_MonomialOrder_fail_helper("1/2", "GRLEX");
-        readStrict_String_MonomialOrder_fail_helper("1/2", "GREVLEX");
-        readStrict_String_MonomialOrder_fail_helper("1*x", "LEX");
-        readStrict_String_MonomialOrder_fail_helper("1*x", "GRLEX");
-        readStrict_String_MonomialOrder_fail_helper("1*x", "GREVLEX");
-        readStrict_String_MonomialOrder_fail_helper("x*2", "LEX");
-        readStrict_String_MonomialOrder_fail_helper("x*2", "GRLEX");
-        readStrict_String_MonomialOrder_fail_helper("x*2", "GREVLEX");
-        readStrict_String_MonomialOrder_fail_helper("0*x", "LEX");
-        readStrict_String_MonomialOrder_fail_helper("0*x", "GRLEX");
-        readStrict_String_MonomialOrder_fail_helper("0*x", "GREVLEX");
-        readStrict_String_MonomialOrder_fail_helper("-1*x", "LEX");
-        readStrict_String_MonomialOrder_fail_helper("-1*x", "GRLEX");
-        readStrict_String_MonomialOrder_fail_helper("-1*x", "GREVLEX");
-        readStrict_String_MonomialOrder_fail_helper("a*a", "LEX");
-        readStrict_String_MonomialOrder_fail_helper("a*a", "GRLEX");
-        readStrict_String_MonomialOrder_fail_helper("a*a", "GREVLEX");
-        readStrict_String_MonomialOrder_fail_helper("a^1", "LEX");
-        readStrict_String_MonomialOrder_fail_helper("a^1", "GRLEX");
-        readStrict_String_MonomialOrder_fail_helper("a^1", "GREVLEX");
-        readStrict_String_MonomialOrder_fail_helper("a^0", "LEX");
-        readStrict_String_MonomialOrder_fail_helper("a^0", "GRLEX");
-        readStrict_String_MonomialOrder_fail_helper("a^0", "GREVLEX");
-        readStrict_String_MonomialOrder_fail_helper("a^-1", "LEX");
-        readStrict_String_MonomialOrder_fail_helper("a^-1", "GRLEX");
-        readStrict_String_MonomialOrder_fail_helper("a^-1", "GREVLEX");
-        readStrict_String_MonomialOrder_fail_helper("b*a", "LEX");
-        readStrict_String_MonomialOrder_fail_helper("b*a", "GRLEX");
-        readStrict_String_MonomialOrder_fail_helper("b*a", "GREVLEX");
-        readStrict_String_MonomialOrder_fail_helper("-4*x+x^2+7", "LEX");
-        readStrict_String_MonomialOrder_fail_helper("-4*x+x^2+7", "GRLEX");
-        readStrict_String_MonomialOrder_fail_helper("-4*x+x^2+7", "GREVLEX");
-        readStrict_String_MonomialOrder_fail_helper("b+a+c+d+e+f", "LEX");
-        readStrict_String_MonomialOrder_fail_helper("b+a+c+d+e+f", "GRLEX");
-        readStrict_String_MonomialOrder_fail_helper("b+a+c+d+e+f", "GREVLEX");
-        readStrict_String_MonomialOrder_fail_helper("a+a", "LEX");
-        readStrict_String_MonomialOrder_fail_helper("a+a", "GRLEX");
-        readStrict_String_MonomialOrder_fail_helper("a+a", "GREVLEX");
-        readStrict_String_MonomialOrder_fail_helper("a+0", "LEX");
-        readStrict_String_MonomialOrder_fail_helper("a+0", "GRLEX");
-        readStrict_String_MonomialOrder_fail_helper("a+0", "GREVLEX");
-        readStrict_String_MonomialOrder_fail_helper("a+-1", "LEX");
-        readStrict_String_MonomialOrder_fail_helper("a+-1", "GRLEX");
-        readStrict_String_MonomialOrder_fail_helper("a+-1", "GREVLEX");
-        readStrict_String_MonomialOrder_fail_helper("*x", "LEX");
-        readStrict_String_MonomialOrder_fail_helper("*x", "GRLEX");
-        readStrict_String_MonomialOrder_fail_helper("*x", "GREVLEX");
-        readStrict_String_MonomialOrder_fail_helper("+x", "LEX");
-        readStrict_String_MonomialOrder_fail_helper("+x", "GRLEX");
-        readStrict_String_MonomialOrder_fail_helper("+x", "GREVLEX");
-        readStrict_String_MonomialOrder_fail_helper("+1", "LEX");
-        readStrict_String_MonomialOrder_fail_helper("+1", "GRLEX");
-        readStrict_String_MonomialOrder_fail_helper("+1", "GREVLEX");
-        readStrict_String_MonomialOrder_fail_helper("+0", "LEX");
-        readStrict_String_MonomialOrder_fail_helper("+0", "GRLEX");
-        readStrict_String_MonomialOrder_fail_helper("+0", "GREVLEX");
+        readStrict_String_MonomialOrder_helper("", "LEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("", "GRLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("", "GREVLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("hello", "LEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("hello", "GRLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("hello", "GREVLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper(" ", "LEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper(" ", "GRLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper(" ", "GREVLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("00", "LEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("00", "GRLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("00", "GREVLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("-0", "LEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("-0", "GRLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("-0", "GREVLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("1/2", "LEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("1/2", "GRLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("1/2", "GREVLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("1*x", "LEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("1*x", "GRLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("1*x", "GREVLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("x*2", "LEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("x*2", "GRLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("x*2", "GREVLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("0*x", "LEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("0*x", "GRLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("0*x", "GREVLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("-1*x", "LEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("-1*x", "GRLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("-1*x", "GREVLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("a*a", "LEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("a*a", "GRLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("a*a", "GREVLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("a^1", "LEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("a^1", "GRLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("a^1", "GREVLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("a^0", "LEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("a^0", "GRLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("a^0", "GREVLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("a^-1", "LEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("a^-1", "GRLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("a^-1", "GREVLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("b*a", "LEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("b*a", "GRLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("b*a", "GREVLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("-4*x+x^2+7", "LEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("-4*x+x^2+7", "GRLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("-4*x+x^2+7", "GREVLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("b+a+c+d+e+f", "LEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("b+a+c+d+e+f", "GRLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("b+a+c+d+e+f", "GREVLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("a+a", "LEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("a+a", "GRLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("a+a", "GREVLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("a+0", "LEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("a+0", "GRLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("a+0", "GREVLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("a+-1", "LEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("a+-1", "GRLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("a+-1", "GREVLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("*x", "LEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("*x", "GRLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("*x", "GREVLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("+x", "LEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("+x", "GRLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("+x", "GREVLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("+1", "LEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("+1", "GRLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("+1", "GREVLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("+0", "LEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("+0", "GRLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("+0", "GREVLEX", "Optional.empty");
 
-        readStrict_String_MonomialOrder_fail_helper("x^2*z^2+x*y^2*z+x^3+z^2", "LEX");
-        readStrict_String_MonomialOrder_fail_helper("x*y^2*z+x^2*z^2+x^3+z^2", "LEX");
-        readStrict_String_MonomialOrder_fail_helper("x^3+x^2*z^2+x*y^2*z+z^2", "GRLEX");
-        readStrict_String_MonomialOrder_fail_helper("x*y^2*z+x^2*z^2+x^3+z^2", "GRLEX");
-        readStrict_String_MonomialOrder_fail_helper("x^3+x^2*z^2+x*y^2*z+z^2", "GREVLEX");
-        readStrict_String_MonomialOrder_fail_helper("x^2*z^2+x*y^2*z+x^3+z^2", "GREVLEX");
+        readStrict_String_MonomialOrder_helper("x^2*z^2+x*y^2*z+x^3+z^2", "LEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "LEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("x^3+x^2*z^2+x*y^2*z+z^2", "GRLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "GRLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("x^3+x^2*z^2+x*y^2*z+z^2", "GREVLEX", "Optional.empty");
+        readStrict_String_MonomialOrder_helper("x^2*z^2+x*y^2*z+x^3+z^2", "GREVLEX", "Optional.empty");
     }
 
-    private static void readStrict_String_helper(@NotNull String input) {
-        MultivariatePolynomial p = readStrict(input).get();
-        p.validate();
-        aeq(p, input);
-    }
-
-    private static void readStrict_String_fail_helper(@NotNull String input) {
-        assertFalse(readStrict(input).isPresent());
+    private static void readStrict_String_helper(@NotNull String input, @NotNull String output) {
+        Optional<MultivariatePolynomial> op = readStrict(input);
+        if (op.isPresent()) {
+            op.get().validate();
+        }
+        aeq(op, output);
     }
 
     @Test
     public void testReadStrict_String() {
-        readStrict_String_helper("0");
-        readStrict_String_helper("1");
-        readStrict_String_helper("-17");
-        readStrict_String_helper("ooo");
-        readStrict_String_helper("-ooo");
-        readStrict_String_helper("a*b*c");
-        readStrict_String_helper("x^2-4*x+7");
-        readStrict_String_helper("a+b+c+d+e+f");
-        readStrict_String_helper("x*y^2*z+x^2*z^2+x^3+z^2");
+        readStrict_String_helper("0", "Optional[0]");
+        readStrict_String_helper("1", "Optional[1]");
+        readStrict_String_helper("-17", "Optional[-17]");
+        readStrict_String_helper("ooo", "Optional[ooo]");
+        readStrict_String_helper("-ooo", "Optional[-ooo]");
+        readStrict_String_helper("a*b*c", "Optional[a*b*c]");
+        readStrict_String_helper("x^2-4*x+7", "Optional[x^2-4*x+7]");
+        readStrict_String_helper("a+b+c+d+e+f", "Optional[a+b+c+d+e+f]");
+        readStrict_String_helper("x*y^2*z+x^2*z^2+x^3+z^2", "Optional[x*y^2*z+x^2*z^2+x^3+z^2]");
 
-        readStrict_String_fail_helper("");
-        readStrict_String_fail_helper("hello");
-        readStrict_String_fail_helper(" ");
-        readStrict_String_fail_helper("00");
-        readStrict_String_fail_helper("-0");
-        readStrict_String_fail_helper("1/2");
-        readStrict_String_fail_helper("1*x");
-        readStrict_String_fail_helper("x*2");
-        readStrict_String_fail_helper("0*x");
-        readStrict_String_fail_helper("-1*x");
-        readStrict_String_fail_helper("a*a");
-        readStrict_String_fail_helper("a^1");
-        readStrict_String_fail_helper("a^0");
-        readStrict_String_fail_helper("a^-1");
-        readStrict_String_fail_helper("b*a");
-        readStrict_String_fail_helper("-4*x+x^2+7");
-        readStrict_String_fail_helper("b+a+c+d+e+f");
-        readStrict_String_fail_helper("a+a");
-        readStrict_String_fail_helper("a+0");
-        readStrict_String_fail_helper("a+-1");
-        readStrict_String_fail_helper("*x");
-        readStrict_String_fail_helper("+x");
-        readStrict_String_fail_helper("+1");
-        readStrict_String_fail_helper("+0");
+        readStrict_String_helper("", "Optional.empty");
+        readStrict_String_helper("hello", "Optional.empty");
+        readStrict_String_helper(" ", "Optional.empty");
+        readStrict_String_helper("00", "Optional.empty");
+        readStrict_String_helper("-0", "Optional.empty");
+        readStrict_String_helper("1/2", "Optional.empty");
+        readStrict_String_helper("1*x", "Optional.empty");
+        readStrict_String_helper("x*2", "Optional.empty");
+        readStrict_String_helper("0*x", "Optional.empty");
+        readStrict_String_helper("-1*x", "Optional.empty");
+        readStrict_String_helper("a*a", "Optional.empty");
+        readStrict_String_helper("a^1", "Optional.empty");
+        readStrict_String_helper("a^0", "Optional.empty");
+        readStrict_String_helper("a^-1", "Optional.empty");
+        readStrict_String_helper("b*a", "Optional.empty");
+        readStrict_String_helper("-4*x+x^2+7", "Optional.empty");
+        readStrict_String_helper("b+a+c+d+e+f", "Optional.empty");
+        readStrict_String_helper("a+a", "Optional.empty");
+        readStrict_String_helper("a+0", "Optional.empty");
+        readStrict_String_helper("a+-1", "Optional.empty");
+        readStrict_String_helper("*x", "Optional.empty");
+        readStrict_String_helper("+x", "Optional.empty");
+        readStrict_String_helper("+1", "Optional.empty");
+        readStrict_String_helper("+0", "Optional.empty");
     }
 
     private static void toString_MonomialOrder_helper(@NotNull String p, @NotNull String mo, @NotNull String output) {
