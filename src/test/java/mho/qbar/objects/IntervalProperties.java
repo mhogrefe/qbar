@@ -1570,7 +1570,7 @@ public class IntervalProperties extends QBarTestProperties {
     }
 
     private void propertiesSum() {
-        initialize("sum(Iterable<Interval>)");
+        initialize("sum(List<Interval>)");
         propertiesFoldHelper(
                 LIMIT,
                 P.getWheelsProvider(),
@@ -1599,16 +1599,11 @@ public class IntervalProperties extends QBarTestProperties {
         Map<String, Function<List<Interval>, Interval>> functions = new LinkedHashMap<>();
         functions.put("simplest", IntervalProperties::sum_simplest);
         functions.put("standard", Interval::sum);
-        compareImplementations(
-                "sum(Iterable<Interval>)",
-                take(LIMIT, P.lists(P.intervals())),
-                functions,
-                v -> P.reset()
-        );
+        compareImplementations("sum(List<Interval>)", take(LIMIT, P.lists(P.intervals())), functions, v -> P.reset());
     }
 
     private void propertiesProduct() {
-        initialize("product(Iterable<Interval>)");
+        initialize("product(List<Interval>)");
         propertiesFoldHelper(
                 LIMIT,
                 P.getWheelsProvider(),
@@ -1703,7 +1698,7 @@ public class IntervalProperties extends QBarTestProperties {
         );
         for (Pair<Interval, Integer> p : take(LIMIT, ps)) {
             List<Interval> pow = p.a.pow(p.b);
-            Interval x = product(replicate(Math.abs(p.b), p.a));
+            Interval x = product(toList(replicate(Math.abs(p.b), p.a)));
             Interval product = p.b < 0 ? x.invertHull() : x;
             assertTrue(p, all(product::contains, pow));
         }
@@ -1762,7 +1757,7 @@ public class IntervalProperties extends QBarTestProperties {
             Interval powHull = p.a.powHull(p.b);
             powHull.validate();
             assertEquals(p, powHull_simplest(p.a, p.b), powHull);
-            Interval product = product(replicate(Math.abs(p.b), p.a));
+            Interval product = product(toList(replicate(Math.abs(p.b), p.a)));
             if (p.b < 0) product = product.invertHull();
             assertTrue(p, product.contains(powHull));
         }

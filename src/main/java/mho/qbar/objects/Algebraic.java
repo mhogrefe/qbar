@@ -181,7 +181,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      *  {@code minimalPolynomial.powerOfTwoIsolatingInterval(rootIndex)} (see
      *  {@link Polynomial#powerOfTwoIsolatingInterval(int)}).</li>
      *  <li>{@code mpRootCount} cannot be negative.</li>
-     *  <li>{@code mpRootCount} must be the number of real roots of {@code minimalPolynomial}</li>
+     *  <li>{@code mpRootCount} must be the number of real roots of {@code minimalPolynomial}.</li>
      *  <li>Any irrational {@code Algebraic} may be constructed with this constructor.</li>
      * </ul>
      *

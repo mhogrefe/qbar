@@ -14,16 +14,21 @@ import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.fail;
 
 public class AlgebraicTest {
+    private static void constant_helper(@NotNull Algebraic input, @NotNull String output) {
+        input.validate();
+        aeq(input, output);
+    }
+
     @Test
     public void testConstants() {
-        aeq(ZERO, "0");
-        aeq(ONE, "1");
-        aeq(TEN, "10");
-        aeq(TWO, "2");
-        aeq(NEGATIVE_ONE, "-1");
-        aeq(ONE_HALF, "1/2");
-        aeq(SQRT_TWO, "sqrt(2)");
-        aeq(PHI, "(1+sqrt(5))/2");
+        constant_helper(ZERO, "0");
+        constant_helper(ONE, "1");
+        constant_helper(TEN, "10");
+        constant_helper(TWO, "2");
+        constant_helper(NEGATIVE_ONE, "-1");
+        constant_helper(ONE_HALF, "1/2");
+        constant_helper(SQRT_TWO, "sqrt(2)");
+        constant_helper(PHI, "(1+sqrt(5))/2");
     }
 
     private static void of_Polynomial_int_helper(@NotNull String polynomial, int rootIndex, @NotNull String output) {
