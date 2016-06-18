@@ -725,16 +725,16 @@ public final class Polynomial implements
      * Returns the sum of all the {@code Polynomial}s in {@code xs}. If {@code xs} is empty, 0 is returned.
      *
      * <ul>
-     *  <li>{@code xs} must be finite and may not contain any nulls.</li>
+     *  <li>{@code xs} may not contain any nulls.</li>
      *  <li>The result may be any {@code Polynomial}.</li>
      * </ul>
      *
      * Length is at most max({deg(p)|p∈{@code xs}})+1
      *
-     * @param xs an {@code Iterable} of {@code Polynomial}s.
+     * @param xs a {@code List} of {@code Polynomial}s.
      * @return Σxs
      */
-    public static @NotNull Polynomial sum(@NotNull Iterable<Polynomial> xs) {
+    public static @NotNull Polynomial sum(@NotNull List<Polynomial> xs) {
         return of(
                 toList(
                         map(
@@ -749,16 +749,16 @@ public final class Polynomial implements
      * Returns the product of all the {@code Polynomial}s in {@code xs}. If {@code xs} is empty, 1 is returned.
      *
      * <ul>
-     *  <li>{@code xs} must be finite and may not contain any nulls.</li>
+     *  <li>{@code xs} may not contain any nulls.</li>
      *  <li>The result may be any {@code Polynomial}.</li>
      * </ul>
      *
      * Length is at most sum({deg(p)|p∈{@code xs}})+1
      *
-     * @param xs an {@code Iterable} of {@code Polynomial}s.
+     * @param xs a {@code List} of {@code Polynomial}s.
      * @return Πxs
      */
-    public static @NotNull Polynomial product(@NotNull Iterable<Polynomial> xs) {
+    public static @NotNull Polynomial product(@NotNull List<Polynomial> xs) {
         if (any(x -> x == null, xs)) {
             throw new NullPointerException();
         }

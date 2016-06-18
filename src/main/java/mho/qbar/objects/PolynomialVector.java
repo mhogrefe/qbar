@@ -473,7 +473,7 @@ public final class PolynomialVector implements Comparable<PolynomialVector>, Ite
             throw new ArithmeticException("this and that must have the same dimension. this: " + this + ", that: " +
                     that);
         }
-        return Polynomial.sum(zipWith(Polynomial::multiply, coordinates, that.coordinates));
+        return Polynomial.sum(toList(zipWith(Polynomial::multiply, coordinates, that.coordinates)));
     }
 
     /**
@@ -488,7 +488,7 @@ public final class PolynomialVector implements Comparable<PolynomialVector>, Ite
      * @return ‖{@code this}‖²
      */
     public @NotNull Polynomial squaredLength() {
-        return Polynomial.sum(map(x -> x.pow(2), coordinates));
+        return Polynomial.sum(toList(map(x -> x.pow(2), coordinates)));
     }
 
     /**

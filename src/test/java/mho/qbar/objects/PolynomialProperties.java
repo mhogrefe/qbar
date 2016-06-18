@@ -34,163 +34,163 @@ public class PolynomialProperties extends QBarTestProperties {
 
     @Override
     protected void testBothModes() {
-//        propertiesIterator();
-//        propertiesApply_BigInteger();
-//        compareImplementationsApply_BigInteger();
-//        propertiesApply_Rational();
-//        compareImplementationsApply_Rational();
-//        propertiesSpecialApply();
-//        compareImplementationsSpecialApply();
-//        propertiesApply_Algebraic();
-//        propertiesToRationalPolynomial();
-//        propertiesCoefficient();
-//        propertiesOf_List_BigInteger();
-//        propertiesOf_BigInteger();
-//        propertiesOf_BigInteger_int();
-//        propertiesFromRoot_BigInteger();
-//        propertiesFromRoot_Rational();
-//        propertiesMaxCoefficientBitLength();
-//        propertiesDegree();
-//        propertiesLeading();
-//        propertiesMultiplyByPowerOfX();
-//        compareImplementationsMultiplyByPowerOfX();
-//        propertiesAdd();
-//        propertiesNegate();
-//        propertiesAbs();
-//        propertiesSignum();
-//        propertiesSignum_BigInteger();
-//        compareImplementationsSignum_BigInteger();
-//        propertiesSignum_Rational();
-//        compareImplementationsSignum_Rational();
-//        propertiesSubtract();
-//        compareImplementationsSubtract();
-//        propertiesMultiply_Polynomial();
-//        compareImplementationsMultiply_Polynomial();
-//        propertiesMultiply_BigInteger();
-//        propertiesMultiply_int();
-//        propertiesDivideExact_BigInteger();
-//        propertiesDivideExact_int();
-//        propertiesShiftLeft();
-//        compareImplementationsShiftLeft();
-//        propertiesSum();
-//        compareImplementationsSum();
-//        propertiesProduct();
-//        compareImplementationsProduct();
-//        propertiesDelta();
-//        propertiesPow();
-//        compareImplementationsPow();
-//        propertiesSubstitute();
-//        compareImplementationsSubstitute();
-//        propertiesDifferentiate();
-//        propertiesIsMonic();
-//        propertiesIsPrimitive();
-//        propertiesContentAndPrimitive();
-//        propertiesConstantFactor();
-//        propertiesPseudoDivide();
-//        compareImplementationsPseudoDivide();
-//        propertiesPseudoRemainder();
-//        compareImplementationsPseudoRemainder();
-//        propertiesAbsolutePseudoDivide();
-//        compareImplementationsAbsolutePseudoDivide();
-//        propertiesAbsolutePseudoRemainder();
-//        compareImplementationsAbsolutePseudoRemainder();
-//        propertiesEvenPseudoDivide();
-//        compareImplementationsEvenPseudoDivide();
-//        propertiesEvenPseudoRemainder();
-//        compareImplementationsEvenPseudoRemainder();
-//        propertiesIsDivisibleBy();
-//        compareImplementationsIsDivisibleBy();
-//        propertiesDivideExact_Polynomial();
-//        compareImplementationsDivideExact_Polynomial();
-//        propertiesRemainderExact();
-//        compareImplementationsRemainderExact();
-//        propertiesTrivialPseudoRemainderSequence();
-//        propertiesPrimitivePseudoRemainderSequence();
-//        propertiesSubresultantSequence();
-//        propertiesGcd_Polynomial();
-//        compareImplementationsGcd_Polynomial1();
-//        compareImplementationsGcd_Polynomial2();
-//        propertiesGcd_List_Polynomial();
-//        propertiesLcm();
-//        propertiesIsRelativelyPrimeTo();
-//        compareImplementationsIsRelativelyPrimeTo();
-//        propertiesIsSquareFree();
-//        compareImplementationsIsSquareFree();
-//        propertiesSquareFreePart();
-//        compareImplementationsSquareFreePart();
-//        propertiesSquareFreeFactor();
-//        propertiesFactor();
-//        compareImplementationsFactor();
-//        propertiesIsIrreducible();
-//        compareImplementationsIsIrreducible(false);
-//        compareImplementationsIsIrreducible(true);
-//        propertiesInterpolate();
-//        compareImplementationsInterpolate();
-//        propertiesCompanionMatrix();
-//        propertiesCoefficientMatrix();
-//        propertiesAugmentedCoefficientMatrix();
+        propertiesIterator();
+        propertiesApply_BigInteger();
+        compareImplementationsApply_BigInteger();
+        propertiesApply_Rational();
+        compareImplementationsApply_Rational();
+        propertiesSpecialApply();
+        compareImplementationsSpecialApply();
+        propertiesApply_Algebraic();
+        propertiesToRationalPolynomial();
+        propertiesCoefficient();
+        propertiesOf_List_BigInteger();
+        propertiesOf_BigInteger();
+        propertiesOf_BigInteger_int();
+        propertiesFromRoot_BigInteger();
+        propertiesFromRoot_Rational();
+        propertiesMaxCoefficientBitLength();
+        propertiesDegree();
+        propertiesLeading();
+        propertiesMultiplyByPowerOfX();
+        compareImplementationsMultiplyByPowerOfX();
+        propertiesAdd();
+        propertiesNegate();
+        propertiesAbs();
+        propertiesSignum();
+        propertiesSignum_BigInteger();
+        compareImplementationsSignum_BigInteger();
+        propertiesSignum_Rational();
+        compareImplementationsSignum_Rational();
+        propertiesSubtract();
+        compareImplementationsSubtract();
+        propertiesMultiply_Polynomial();
+        compareImplementationsMultiply_Polynomial();
+        propertiesMultiply_BigInteger();
+        propertiesMultiply_int();
+        propertiesDivideExact_BigInteger();
+        propertiesDivideExact_int();
+        propertiesShiftLeft();
+        compareImplementationsShiftLeft();
+        propertiesSum();
+        compareImplementationsSum();
+        propertiesProduct();
+        compareImplementationsProduct();
+        propertiesDelta();
+        propertiesPow();
+        compareImplementationsPow();
+        propertiesSubstitute();
+        compareImplementationsSubstitute();
+        propertiesDifferentiate();
+        propertiesIsMonic();
+        propertiesIsPrimitive();
+        propertiesContentAndPrimitive();
+        propertiesConstantFactor();
+        propertiesPseudoDivide();
+        compareImplementationsPseudoDivide();
+        propertiesPseudoRemainder();
+        compareImplementationsPseudoRemainder();
+        propertiesAbsolutePseudoDivide();
+        compareImplementationsAbsolutePseudoDivide();
+        propertiesAbsolutePseudoRemainder();
+        compareImplementationsAbsolutePseudoRemainder();
+        propertiesEvenPseudoDivide();
+        compareImplementationsEvenPseudoDivide();
+        propertiesEvenPseudoRemainder();
+        compareImplementationsEvenPseudoRemainder();
+        propertiesIsDivisibleBy();
+        compareImplementationsIsDivisibleBy();
+        propertiesDivideExact_Polynomial();
+        compareImplementationsDivideExact_Polynomial();
+        propertiesRemainderExact();
+        compareImplementationsRemainderExact();
+        propertiesTrivialPseudoRemainderSequence();
+        propertiesPrimitivePseudoRemainderSequence();
+        propertiesSubresultantSequence();
+        propertiesGcd_Polynomial();
+        compareImplementationsGcd_Polynomial1();
+        compareImplementationsGcd_Polynomial2();
+        propertiesGcd_List_Polynomial();
+        propertiesLcm();
+        propertiesIsRelativelyPrimeTo();
+        compareImplementationsIsRelativelyPrimeTo();
+        propertiesIsSquareFree();
+        compareImplementationsIsSquareFree();
+        propertiesSquareFreePart();
+        compareImplementationsSquareFreePart();
+        propertiesSquareFreeFactor();
+        propertiesFactor();
+        compareImplementationsFactor();
+        propertiesIsIrreducible();
+        compareImplementationsIsIrreducible(false);
+        compareImplementationsIsIrreducible(true);
+        propertiesInterpolate();
+        compareImplementationsInterpolate();
+        propertiesCompanionMatrix();
+        propertiesCoefficientMatrix();
+        propertiesAugmentedCoefficientMatrix();
         propertiesDeterminant();
-//        compareImplementationsDeterminant();
-//        propertiesSylvesterMatrix();
-//        propertiesResultant();
-//        propertiesSylvesterHabichtMatrix();
-//        compareImplementationsSylvesterHabichtMatrix();
-//        propertiesSignedSubresultantCoefficient();
-//        propertiesSylvesterHabichtPolynomialMatrix();
-//        compareImplementationsSylvesterHabichtPolynomialMatrix();
-//        propertiesSignedSubresultant();
-//        propertiesSignedSubresultantSequence();
-//        compareImplementationsSignedSubresultantSequence();
-//        propertiesPrimitiveSignedPseudoRemainderSequence();
-//        propertiesAbbreviatedSignedSubresultantSequence();
-//        propertiesRootBound();
-//        propertiesPowerOfTwoRootBound();
-//        propertiesRootCount_Interval();
-//        propertiesRootCount();
-//        compareImplementationsRootCount();
-//        propertiesIsolatingInterval();
-//        propertiesPowerOfTwoIsolatingInterval();
-//        propertiesIsolatingIntervals();
-//        compareImplementationsIsolatingIntervals();
-//        propertiesPowerOfTwoIsolatingIntervals();
-//        compareImplementationsPowerOfTwoIsolatingIntervals();
-//        propertiesReflect();
-//        propertiesTranslate();
-//        propertiesSpecialTranslate();
-//        compareImplementationsSpecialTranslate();
-//        propertiesPositivePrimitiveTranslate();
-//        compareImplementationsPositivePrimitiveTranslate();
-//        propertiesStretch();
-//        compareImplementationsStretch();
-//        propertiesPositivePrimitiveStretch();
-//        compareImplementationsPositivePrimitiveStretch();
-//        propertiesShiftRootsLeft();
-//        compareImplementationsShiftRootsLeft();
-//        propertiesShiftRootsRight();
-//        compareImplementationsShiftRootsRight();
-//        propertiesPositiveShiftRootsLeft();
-//        compareImplementationsPositivePrimitiveShiftRootsLeft();
-//        propertiesPositiveShiftRootsRight();
-//        compareImplementationsPositivePrimitiveShiftRootsRight();
-//        propertiesInvertRoots();
-//        propertiesRootRoots();
-//        propertiesUndoRootRoots();
-//        propertiesAddRoots();
-//        compareImplementationsAddRoots();
-//        propertiesMultiplyRoots();
-//        compareImplementationsMultiplyRoots();
-//        propertiesPowerTable();
-//        compareImplementationsPowerTable();
-//        propertiesRootPower();
-//        compareImplementationsRootPower();
-//        propertiesRealRoots();
-//        compareImplementationsRealRoots();
-//        propertiesEquals();
-//        propertiesHashCode();
-//        propertiesCompareTo();
-//        propertiesReadStrict_String();
-//        propertiesReadStrict_int_String();
-//        propertiesToString();
+        compareImplementationsDeterminant();
+        propertiesSylvesterMatrix();
+        propertiesResultant();
+        propertiesSylvesterHabichtMatrix();
+        compareImplementationsSylvesterHabichtMatrix();
+        propertiesSignedSubresultantCoefficient();
+        propertiesSylvesterHabichtPolynomialMatrix();
+        compareImplementationsSylvesterHabichtPolynomialMatrix();
+        propertiesSignedSubresultant();
+        propertiesSignedSubresultantSequence();
+        compareImplementationsSignedSubresultantSequence();
+        propertiesPrimitiveSignedPseudoRemainderSequence();
+        propertiesAbbreviatedSignedSubresultantSequence();
+        propertiesRootBound();
+        propertiesPowerOfTwoRootBound();
+        propertiesRootCount_Interval();
+        propertiesRootCount();
+        compareImplementationsRootCount();
+        propertiesIsolatingInterval();
+        propertiesPowerOfTwoIsolatingInterval();
+        propertiesIsolatingIntervals();
+        compareImplementationsIsolatingIntervals();
+        propertiesPowerOfTwoIsolatingIntervals();
+        compareImplementationsPowerOfTwoIsolatingIntervals();
+        propertiesReflect();
+        propertiesTranslate();
+        propertiesSpecialTranslate();
+        compareImplementationsSpecialTranslate();
+        propertiesPositivePrimitiveTranslate();
+        compareImplementationsPositivePrimitiveTranslate();
+        propertiesStretch();
+        compareImplementationsStretch();
+        propertiesPositivePrimitiveStretch();
+        compareImplementationsPositivePrimitiveStretch();
+        propertiesShiftRootsLeft();
+        compareImplementationsShiftRootsLeft();
+        propertiesShiftRootsRight();
+        compareImplementationsShiftRootsRight();
+        propertiesPositiveShiftRootsLeft();
+        compareImplementationsPositivePrimitiveShiftRootsLeft();
+        propertiesPositiveShiftRootsRight();
+        compareImplementationsPositivePrimitiveShiftRootsRight();
+        propertiesInvertRoots();
+        propertiesRootRoots();
+        propertiesUndoRootRoots();
+        propertiesAddRoots();
+        compareImplementationsAddRoots();
+        propertiesMultiplyRoots();
+        compareImplementationsMultiplyRoots();
+        propertiesPowerTable();
+        compareImplementationsPowerTable();
+        propertiesRootPower();
+        compareImplementationsRootPower();
+        propertiesRealRoots();
+        compareImplementationsRealRoots();
+        propertiesEquals();
+        propertiesHashCode();
+        propertiesCompareTo();
+        propertiesReadStrict_String();
+        propertiesReadStrict_int_String();
+        propertiesToString();
     }
 
     private void propertiesIterator() {
@@ -1434,7 +1434,7 @@ public class PolynomialProperties extends QBarTestProperties {
     }
 
     private static @NotNull Polynomial pow_simplest(@NotNull Polynomial a, int p) {
-        return product(replicate(p, a));
+        return product(toList(replicate(p, a)));
     }
 
     private void propertiesPow() {
@@ -1523,10 +1523,12 @@ public class PolynomialProperties extends QBarTestProperties {
 
     private static @NotNull Polynomial substitute_naive(@NotNull Polynomial a, @NotNull Polynomial b) {
         return sum(
-                zipWith(
-                        (c, i) -> c.equals(BigInteger.ZERO) ? ZERO : b.pow(i).multiply(c),
-                        a,
-                        ExhaustiveProvider.INSTANCE.naturalIntegers()
+                toList(
+                        zipWith(
+                                (c, i) -> c.equals(BigInteger.ZERO) ? ZERO : b.pow(i).multiply(c),
+                                a,
+                                ExhaustiveProvider.INSTANCE.naturalIntegers()
+                        )
                 )
         );
     }
@@ -2400,7 +2402,7 @@ public class PolynomialProperties extends QBarTestProperties {
         if (a == ZERO) return b.constantFactor().b;
         if (b == ZERO) return a.constantFactor().b;
         if (a.degree() == 0 || b.degree() == 0) return ONE;
-        return product(intersect(a.constantFactor().b.factor(), b.constantFactor().b.factor()));
+        return product(toList(intersect(a.constantFactor().b.factor(), b.constantFactor().b.factor())));
     }
 
     private static @NotNull Polynomial gcd_alt(@NotNull Polynomial x, @NotNull Polynomial y) {
@@ -2719,7 +2721,7 @@ public class PolynomialProperties extends QBarTestProperties {
         switch (p.degree()) {
             case -1: throw new ArithmeticException();
             case 0: return ONE;
-            default: return product(nub(p.constantFactor().b.factor()));
+            default: return product(toList(nub(p.constantFactor().b.factor())));
         }
     }
 
@@ -4047,9 +4049,9 @@ public class PolynomialProperties extends QBarTestProperties {
         }
 
         for (List<Rational> rs : take(LIMIT, P.bags(P.rationals()))) {
-            Polynomial p = product(map(Polynomial::fromRoot, rs));
+            Polynomial p = product(toList(map(Polynomial::fromRoot, rs)));
             List<Rational> negativeRs = toList(map(Rational::negate, rs));
-            Polynomial negativeRootsP = product(map(Polynomial::fromRoot, negativeRs));
+            Polynomial negativeRootsP = product(toList(map(Polynomial::fromRoot, negativeRs)));
             assertEquals(rs, p.reflect(), negativeRootsP);
         }
     }
@@ -4076,9 +4078,9 @@ public class PolynomialProperties extends QBarTestProperties {
 
         Iterable<Pair<BigInteger, List<Rational>>> qs = P.pairs(P.bigIntegers(), P.withScale(4).bags(P.rationals()));
         for (Pair<BigInteger, List<Rational>> p : take(LIMIT, qs)) {
-            Polynomial q = product(map(Polynomial::fromRoot, p.b));
+            Polynomial q = product(toList(map(Polynomial::fromRoot, p.b)));
             List<Rational> translatedRs = toList(map(r -> r.add(Rational.of(p.a)), p.b));
-            Polynomial translatedRootsP = product(map(Polynomial::fromRoot, translatedRs));
+            Polynomial translatedRootsP = product(toList(map(Polynomial::fromRoot, translatedRs)));
             assertEquals(p, q.translate(p.a), translatedRootsP);
         }
     }
@@ -4155,9 +4157,9 @@ public class PolynomialProperties extends QBarTestProperties {
 
         Iterable<Pair<Rational, List<Rational>>> qs = P.pairs(P.rationals(), P.withScale(4).bags(P.rationals()));
         for (Pair<Rational, List<Rational>> p : take(LIMIT, qs)) {
-            Polynomial q = product(map(Polynomial::fromRoot, p.b));
+            Polynomial q = product(toList(map(Polynomial::fromRoot, p.b)));
             List<Rational> translatedRs = toList(map(r -> r.add(p.a), p.b));
-            Polynomial translatedRootsP = product(map(Polynomial::fromRoot, translatedRs));
+            Polynomial translatedRootsP = product(toList(map(Polynomial::fromRoot, translatedRs)));
             assertEquals(p, q.positivePrimitiveTranslate(p.a), translatedRootsP);
         }
     }
@@ -4240,9 +4242,9 @@ public class PolynomialProperties extends QBarTestProperties {
                 P.withScale(4).bags(P.rationals())
         );
         for (Pair<Rational, List<Rational>> p : take(LIMIT, qs)) {
-            Polynomial q = product(map(Polynomial::fromRoot, p.b));
+            Polynomial q = product(toList(map(Polynomial::fromRoot, p.b)));
             List<Rational> stretchedRs = toList(map(r -> r.multiply(p.a), p.b));
-            Polynomial stretchedRootsP = product(map(Polynomial::fromRoot, stretchedRs));
+            Polynomial stretchedRootsP = product(toList(map(Polynomial::fromRoot, stretchedRs)));
             assertEquals(p, q.positivePrimitiveStretch(p.a), stretchedRootsP);
         }
     }
@@ -4367,9 +4369,9 @@ public class PolynomialProperties extends QBarTestProperties {
                 P.withScale(4).bags(P.rationals())
         );
         for (Pair<Integer, List<Rational>> p : take(LIMIT, qs)) {
-            Polynomial q = product(map(Polynomial::fromRoot, p.b));
+            Polynomial q = product(toList(map(Polynomial::fromRoot, p.b)));
             List<Rational> shiftedRs = toList(map(r -> r.shiftLeft(p.a), p.b));
-            Polynomial shiftedRootsP = product(map(Polynomial::fromRoot, shiftedRs));
+            Polynomial shiftedRootsP = product(toList(map(Polynomial::fromRoot, shiftedRs)));
             assertEquals(p, q.positivePrimitiveShiftRootsLeft(p.a), shiftedRootsP);
         }
 
@@ -4431,9 +4433,9 @@ public class PolynomialProperties extends QBarTestProperties {
                 P.withScale(4).bags(P.rationals())
         );
         for (Pair<Integer, List<Rational>> p : take(LIMIT, qs)) {
-            Polynomial q = product(map(Polynomial::fromRoot, p.b));
+            Polynomial q = product(toList(map(Polynomial::fromRoot, p.b)));
             List<Rational> shiftedRs = toList(map(r -> r.shiftRight(p.a), p.b));
-            Polynomial shiftedRootsP = product(map(Polynomial::fromRoot, shiftedRs));
+            Polynomial shiftedRootsP = product(toList(map(Polynomial::fromRoot, shiftedRs)));
             assertEquals(p, q.positivePrimitiveShiftRootsRight(p.a), shiftedRootsP);
         }
 
@@ -4475,9 +4477,9 @@ public class PolynomialProperties extends QBarTestProperties {
         }
 
         for (List<Rational> rs : take(LIMIT, P.bags(P.nonzeroRationals()))) {
-            Polynomial p = product(map(Polynomial::fromRoot, rs));
+            Polynomial p = product(toList(map(Polynomial::fromRoot, rs)));
             List<Rational> invertedRs = toList(map(Rational::invert, rs));
-            Polynomial invertedRootsP = product(map(Polynomial::fromRoot, invertedRs));
+            Polynomial invertedRootsP = product(toList(map(Polynomial::fromRoot, invertedRs)));
             assertEquals(rs, p.invertRoots(), invertedRootsP);
         }
     }
@@ -4566,10 +4568,10 @@ public class PolynomialProperties extends QBarTestProperties {
 
         Iterable<Pair<List<Rational>, List<Rational>>> ps2 = P.pairs(P.withScale(1).bags(P.withScale(3).rationals()));
         for (Pair<List<Rational>, List<Rational>> p : take(LIMIT, ps2)) {
-            Polynomial a = product(map(Polynomial::fromRoot, p.a));
-            Polynomial b = product(map(Polynomial::fromRoot, p.b));
+            Polynomial a = product(toList(map(Polynomial::fromRoot, p.a)));
+            Polynomial b = product(toList(map(Polynomial::fromRoot, p.b)));
             List<Rational> sumRs = toList(map(q -> q.a.add(q.b), EP.pairsLex(p.a, p.b)));
-            Polynomial sumRootsP = product(map(Polynomial::fromRoot, sumRs));
+            Polynomial sumRootsP = product(toList(map(Polynomial::fromRoot, sumRs)));
             assertEquals(p, a.addRoots(b), sumRootsP);
         }
     }
@@ -4621,10 +4623,10 @@ public class PolynomialProperties extends QBarTestProperties {
 
         Iterable<Pair<List<Rational>, List<Rational>>> ps2 = P.pairs(P.withScale(1).bags(P.withScale(3).rationals()));
         for (Pair<List<Rational>, List<Rational>> p : take(LIMIT, ps2)) {
-            Polynomial a = product(map(Polynomial::fromRoot, p.a));
-            Polynomial b = product(map(Polynomial::fromRoot, p.b));
+            Polynomial a = product(toList(map(Polynomial::fromRoot, p.a)));
+            Polynomial b = product(toList(map(Polynomial::fromRoot, p.b)));
             List<Rational> productRs = toList(map(q -> q.a.multiply(q.b), EP.pairsLex(p.a, p.b)));
-            Polynomial productRootsP = product(map(Polynomial::fromRoot, productRs));
+            Polynomial productRootsP = product(toList(map(Polynomial::fromRoot, productRs)));
             assertEquals(p, a.multiplyRoots(b), productRootsP);
         }
     }
