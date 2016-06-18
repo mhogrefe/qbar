@@ -8,18 +8,23 @@ import org.junit.Test;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static mho.qbar.objects.PolynomialVector.*;
 import static mho.qbar.objects.PolynomialVector.sum;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.*;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 public class PolynomialVectorTest {
+    private static void constant_helper(@NotNull PolynomialVector input, @NotNull String output) {
+        input.validate();
+        aeq(input, output);
+    }
+
     @Test
     public void testConstants() {
-        aeq(ZERO_DIMENSIONAL, "[]");
+        constant_helper(ZERO_DIMENSIONAL, "[]");
     }
 
     private static void iterator_helper(@NotNull String input) {
@@ -61,13 +66,16 @@ public class PolynomialVectorTest {
         get_helper("[5, -4*x+3, 23*x^5]", 0, "5");
         get_helper("[5, -4*x+3, 23*x^5]", 1, "-4*x+3");
         get_helper("[5, -4*x+3, 23*x^5]", 2, "23*x^5");
+
         get_fail_helper("[5, -4*x+3, 23*x^5]", 4);
         get_fail_helper("[x]", 3);
         get_fail_helper("[]", 0);
     }
 
     private static void of_List_Polynomial_helper(@NotNull String input) {
-        aeq(of(readPolynomialList(input)), input);
+        PolynomialVector v = of(readPolynomialList(input));
+        v.validate();
+        aeq(v, input);
     }
 
     private static void of_List_Polynomial_fail_helper(@NotNull String input) {
@@ -81,11 +89,14 @@ public class PolynomialVectorTest {
         of_List_Polynomial_helper("[]");
         of_List_Polynomial_helper("[x]");
         of_List_Polynomial_helper("[5, -4*x+3, 23*x^5]");
+
         of_List_Polynomial_fail_helper("[5, null, 23*x^5]");
     }
 
     private static void of_Polynomial_helper(@NotNull String input, @NotNull String output) {
-        aeq(of(Polynomial.readStrict(input).get()), output);
+        PolynomialVector v = of(Polynomial.readStrict(input).get());
+        v.validate();
+        aeq(v, output);
     }
 
     @Test
@@ -96,7 +107,9 @@ public class PolynomialVectorTest {
     }
 
     private static void of_Vector_helper(@NotNull String input) {
-        aeq(of(Vector.readStrict(input).get()), input);
+        PolynomialVector v = of(Vector.readStrict(input).get());
+        v.validate();
+        aeq(v, input);
     }
 
     @Test
@@ -143,7 +156,9 @@ public class PolynomialVectorTest {
     }
 
     private static void zero_helper(int dimension, @NotNull String output) {
-        aeq(zero(dimension), output);
+        PolynomialVector v = zero(dimension);
+        v.validate();
+        aeq(v, output);
     }
 
     private static void zero_fail_helper(int dimension) {
@@ -159,11 +174,14 @@ public class PolynomialVectorTest {
         zero_helper(1, "[0]");
         zero_helper(3, "[0, 0, 0]");
         zero_helper(10, "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]");
+
         zero_fail_helper(-1);
     }
 
     private void standard_helper(int dimension, int i, @NotNull String output) {
-        aeq(standard(dimension, i), output);
+        PolynomialVector v = standard(dimension, i);
+        v.validate();
+        aeq(v, output);
     }
 
     private void standard_fail_helper(int dimension, int i) {
@@ -180,6 +198,7 @@ public class PolynomialVectorTest {
         standard_helper(3, 1, "[0, 1, 0]");
         standard_helper(3, 2, "[0, 0, 1]");
         standard_helper(10, 6, "[0, 0, 0, 0, 0, 0, 1, 0, 0, 0]");
+
         standard_fail_helper(2, -4);
         standard_fail_helper(-3, -4);
         standard_fail_helper(2, 3);
@@ -187,7 +206,9 @@ public class PolynomialVectorTest {
     }
 
     private static void add_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(readStrict(a).get().add(readStrict(b).get()), output);
+        PolynomialVector v = readStrict(a).get().add(readStrict(b).get());
+        v.validate();
+        aeq(v, output);
     }
 
     private static void add_fail_helper(@NotNull String a, @NotNull String b) {
@@ -204,13 +225,16 @@ public class PolynomialVectorTest {
         add_helper("[5, -4*x+3, 23*x^5]", "[-2, 1, 3]", "[3, -4*x+4, 23*x^5+3]");
         add_helper("[5, -4*x+3, 23*x^5]", "[0, 0, 0]", "[5, -4*x+3, 23*x^5]");
         add_helper("[5, -4*x+3, 23*x^5]", "[-5, 4*x-3, -23*x^5]", "[0, 0, 0]");
+
         add_fail_helper("[]", "[x]");
         add_fail_helper("[x]", "[]");
         add_fail_helper("[5, -4*x+3, 23*x^5]", "[6, 3]");
     }
 
     private static void negate_helper(@NotNull String input, @NotNull String output) {
-        aeq(readStrict(input).get().negate(), output);
+        PolynomialVector v = readStrict(input).get().negate();
+        v.validate();
+        aeq(v, output);
     }
 
     @Test
@@ -221,7 +245,9 @@ public class PolynomialVectorTest {
     }
 
     private static void subtract_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(readStrict(a).get().subtract(readStrict(b).get()), output);
+        PolynomialVector v = readStrict(a).get().subtract(readStrict(b).get());
+        v.validate();
+        aeq(v, output);
     }
 
     private static void subtract_fail_helper(@NotNull String a, @NotNull String b) {
@@ -239,13 +265,16 @@ public class PolynomialVectorTest {
         subtract_helper("[5, -4*x+3, 23*x^5]", "[0, 0, 0]", "[5, -4*x+3, 23*x^5]");
         subtract_helper("[5, -4*x+3, 23*x^5]", "[5, -4*x+3, 23*x^5]", "[0, 0, 0]");
         subtract_helper("[0, 0, 0]", "[5, -4*x+3, 23*x^5]", "[-5, 4*x-3, -23*x^5]");
+
         subtract_fail_helper("[]", "[x]");
         subtract_fail_helper("[x]", "[]");
         subtract_fail_helper("[5, -4*x+3, 23*x^5]", "[6, 3]");
     }
 
     private static void multiply_Polynomial_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(readStrict(a).get().multiply(Polynomial.readStrict(b).get()), output);
+        PolynomialVector v = readStrict(a).get().multiply(Polynomial.readStrict(b).get());
+        v.validate();
+        aeq(v, output);
     }
 
     @Test
@@ -267,7 +296,9 @@ public class PolynomialVectorTest {
     }
 
     private static void multiply_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(readStrict(a).get().multiply(Readers.readBigIntegerStrict(b).get()), output);
+        PolynomialVector v = readStrict(a).get().multiply(Readers.readBigIntegerStrict(b).get());
+        v.validate();
+        aeq(v, output);
     }
 
     @Test
@@ -286,7 +317,9 @@ public class PolynomialVectorTest {
     }
 
     private static void multiply_int_helper(@NotNull String a, int b, @NotNull String output) {
-        aeq(readStrict(a).get().multiply(b), output);
+        PolynomialVector v = readStrict(a).get().multiply(b);
+        v.validate();
+        aeq(v, output);
     }
 
     @Test
@@ -305,7 +338,9 @@ public class PolynomialVectorTest {
     }
 
     private static void shiftLeft_helper(@NotNull String a, int bits, @NotNull String output) {
-        aeq(readStrict(a).get().shiftLeft(bits), output);
+        PolynomialVector v = readStrict(a).get().shiftLeft(bits);
+        v.validate();
+        aeq(v, output);
     }
 
     private static void shiftLeft_fail_helper(@NotNull String a, int bits) {
@@ -340,7 +375,9 @@ public class PolynomialVectorTest {
     }
 
     private static void sum_helper(@NotNull String input, @NotNull String output) {
-        aeq(sum(readPolynomialVectorList(input)), output);
+        PolynomialVector v = sum(readPolynomialVectorList(input));
+        v.validate();
+        aeq(v, output);
     }
 
     private static void sum_fail_helper(@NotNull String input) {
@@ -357,13 +394,16 @@ public class PolynomialVectorTest {
         sum_helper("[[5, -4*x+3, 23*x^5]]", "[5, -4*x+3, 23*x^5]");
         sum_helper("[[5, -4*x+3, 23*x^5], [0, 3*x^10, x-8], [x^2-1, 2, 0]]", "[x^2+4, 3*x^10-4*x+5, 23*x^5+x-8]");
         sum_helper("[[2], [x], [x-1]]", "[2*x+1]");
+
         sum_fail_helper("[]");
         sum_fail_helper("[[2, x], null]");
         sum_fail_helper("[[x], [3, 4]]");
     }
 
     private static void delta_helper(@NotNull Iterable<PolynomialVector> input, @NotNull String output) {
-        aeqitLimit(TINY_LIMIT, delta(input), output);
+        Iterable<PolynomialVector> vs = delta(input);
+        take(TINY_LIMIT, vs).forEach(PolynomialVector::validate);
+        aeqitLimit(TINY_LIMIT, vs, output);
     }
 
     private static void delta_helper(@NotNull String input, @NotNull String output) {
@@ -401,6 +441,7 @@ public class PolynomialVectorTest {
                 " [-1, -2*x+33, -3*x^2+99*x-817], [-1, -2*x+35, -3*x^2+105*x-919], [-1, -2*x+37, -3*x^2+111*x-1027]," +
                 " [-1, -2*x+39, -3*x^2+117*x-1141], [-1, -2*x+41, -3*x^2+123*x-1261], ...]"
         );
+
         delta_fail_helper("[]");
         delta_fail_helper("[[2, x], null]");
         delta_fail_helper("[[x], [3, 4]]");
@@ -424,6 +465,7 @@ public class PolynomialVectorTest {
         dot_helper("[5, -4*x+3, 23*x^5]", "[5, 4*x, x^5]", "23*x^10-16*x^2+12*x+25");
         dot_helper("[5, -4*x+3, 23*x^5]", "[0, 0, 0]", "0");
         dot_helper("[5, -4*x+3, 23*x^5]", "[-5, 4*x-3, -23*x^5]", "-529*x^10-16*x^2+24*x-34");
+
         dot_fail_helper("[]", "[2]");
         dot_fail_helper("[x]", "[]");
         dot_fail_helper("[5, -4*x+3, 23*x^5]", "[6, 3]");
@@ -468,27 +510,28 @@ public class PolynomialVectorTest {
         testCompareToHelper(readPolynomialVectorList("[[], [x], [5, -4*x+3, 23*x^5], [5, 4*x+3, 23*x^5]]"));
     }
 
-    private static void readStrict_helper(@NotNull String input) {
-        aeq(readStrict(input).get(), input);
-    }
-
-    private static void readStrict_fail_helper(@NotNull String input) {
-        assertFalse(readStrict(input).isPresent());
+    private static void readStrict_helper(@NotNull String input, @NotNull String output) {
+        Optional<PolynomialVector> ov = readStrict(input);
+        if (ov.isPresent()) {
+            ov.get().validate();
+        }
+        aeq(ov, output);
     }
 
     @Test
     public void testReadStrict() {
-        readStrict_helper("[]");
-        readStrict_helper("[x]");
-        readStrict_helper("[5, 4*x+3, 23*x^5]");
-        readStrict_fail_helper("");
-        readStrict_fail_helper("[ 1]");
-        readStrict_fail_helper("[1/3*x, 1/2]");
-        readStrict_fail_helper("[4, -5/3*x^2-1]");
-        readStrict_fail_helper("hello");
-        readStrict_fail_helper("][");
-        readStrict_fail_helper("1, 3");
-        readStrict_fail_helper("vfbdb ds");
+        readStrict_helper("[]", "Optional[[]]");
+        readStrict_helper("[x]", "Optional[[x]]");
+        readStrict_helper("[5, 4*x+3, 23*x^5]", "Optional[[5, 4*x+3, 23*x^5]]");
+
+        readStrict_helper("", "Optional.empty");
+        readStrict_helper("[ 1]", "Optional.empty");
+        readStrict_helper("[1/3*x, 1/2]", "Optional.empty");
+        readStrict_helper("[4, -5/3*x^2-1]", "Optional.empty");
+        readStrict_helper("hello", "Optional.empty");
+        readStrict_helper("][", "Optional.empty");
+        readStrict_helper("1, 3", "Optional.empty");
+        readStrict_helper("vfbdb ds", "Optional.empty");
     }
 
     private static @NotNull List<Polynomial> readPolynomialList(@NotNull String s) {
