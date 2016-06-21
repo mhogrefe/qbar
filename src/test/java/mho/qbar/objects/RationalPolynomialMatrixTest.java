@@ -5,11 +5,11 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Optional;
 
 import static mho.qbar.objects.RationalPolynomialMatrix.*;
 import static mho.wheels.iterables.IterableUtils.toList;
 import static mho.wheels.testing.Testing.*;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 public class RationalPolynomialMatrixTest {
@@ -63,6 +63,7 @@ public class RationalPolynomialMatrixTest {
         row_helper("[[], [], []]", 2, "[]");
         row_helper("[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]", 0, "[1, x, x^10-1/2]");
         row_helper("[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]", 1, "[x^3-x^2+1, 5, 2/3*x+4]");
+
         row_fail_helper("[]#0", 0);
         row_fail_helper("[]#3", 0);
         row_fail_helper("[[]]", 1);
@@ -91,6 +92,7 @@ public class RationalPolynomialMatrixTest {
         column_helper("[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]", 0, "[1, x^3-x^2+1]");
         column_helper("[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]", 1, "[x, 5]");
         column_helper("[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]", 2, "[x^10-1/2, 2/3*x+4]");
+
         column_fail_helper("[]#0", 0);
         column_fail_helper("[[]]", 0);
         column_fail_helper("[[], [], []]", 0);
@@ -137,6 +139,7 @@ public class RationalPolynomialMatrixTest {
         toPolynomialMatrix_helper("[[]]");
         toPolynomialMatrix_helper("[[], [], []]");
         toPolynomialMatrix_helper("[[x, 9*x+3, -13], [20, 5*x^5, -6]]");
+
         toPolynomialMatrix_fail_helper("[[-2/3]]");
         toPolynomialMatrix_fail_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]");
     }
@@ -158,6 +161,7 @@ public class RationalPolynomialMatrixTest {
         get_helper("[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]", 0, 2, "x^10-1/2");
         get_helper("[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]", 1, 0, "x^3-x^2+1");
         get_helper("[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]", 1, 2, "2/3*x+4");
+
         get_fail_helper("[]#0", 0, 0);
         get_fail_helper("[]#1", 0, 0);
         get_fail_helper("[[]]", 0, 0);
@@ -166,7 +170,9 @@ public class RationalPolynomialMatrixTest {
     }
 
     private static void fromRows_helper(@NotNull String input, @NotNull String output) {
-        aeq(fromRows(readRationalPolynomialVectorList(input)), output);
+        RationalPolynomialMatrix m = fromRows(readRationalPolynomialVectorList(input));
+        m.validate();
+        aeq(m, output);
     }
 
     private static void fromRows_fail_helper(@NotNull String input) {
@@ -182,12 +188,15 @@ public class RationalPolynomialMatrixTest {
         fromRows_helper("[[-1/2*x]]", "[[-1/2*x]]");
         fromRows_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", "[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]");
         fromRows_helper("[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]", "[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]");
+
         fromRows_fail_helper("[[1, x, x^10-1/2], null, [x^3-x^2+1, 5, 2/3*x+4]]");
         fromRows_fail_helper("[[1, x, x^10-1/2], [0], [x^3-x^2+1, 5, 2/3*x+4]]");
     }
 
     private static void fromColumns_helper(@NotNull String input, @NotNull String output) {
-        aeq(fromColumns(readRationalPolynomialVectorList(input)), output);
+        RationalPolynomialMatrix m = fromColumns(readRationalPolynomialVectorList(input));
+        m.validate();
+        aeq(m, output);
     }
 
     private static void fromColumns_fail_helper(@NotNull String input) {
@@ -204,6 +213,7 @@ public class RationalPolynomialMatrixTest {
         fromColumns_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", "[[x-2/3, 0], [-8/5*x^2+x, 7*x-1/2]]");
         fromColumns_helper("[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]",
                 "[[1, x^3-x^2+1], [x, 5], [x^10-1/2, 2/3*x+4]]");
+
         fromColumns_fail_helper("[[1, x, x^10-1/2], null, [x^3-x^2+1, 5, 2/3*x+4]]");
         fromColumns_fail_helper("[[1, x, x^10-1/2], [0], [x^3-x^2+1, 5, 2/3*x+4]]");
     }
@@ -293,7 +303,9 @@ public class RationalPolynomialMatrixTest {
     }
 
     private static void zero_helper(int height, int width, @NotNull String output) {
-        aeq(zero(height, width), output);
+        RationalPolynomialMatrix m = zero(height, width);
+        m.validate();
+        aeq(m, output);
     }
 
     private static void zero_fail_helper(int height, int width) {
@@ -311,6 +323,7 @@ public class RationalPolynomialMatrixTest {
         zero_helper(1, 1, "[[0]]");
         zero_helper(2, 2, "[[0, 0], [0, 0]]");
         zero_helper(3, 4, "[[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]");
+
         zero_fail_helper(-1, 0);
         zero_fail_helper(-1, 3);
         zero_fail_helper(0, -1);
@@ -341,7 +354,9 @@ public class RationalPolynomialMatrixTest {
     }
 
     private static void identity_helper(int dimension, @NotNull String output) {
-        aeq(identity(dimension), output);
+        RationalPolynomialMatrix m = identity(dimension);
+        m.validate();
+        aeq(m, output);
     }
 
     private static void identity_fail_helper(int dimension) {
@@ -357,6 +372,7 @@ public class RationalPolynomialMatrixTest {
         identity_helper(1, "[[1]]");
         identity_helper(3, "[[1, 0, 0], [0, 1, 0], [0, 0, 1]]");
         identity_helper(5, "[[1, 0, 0, 0, 0], [0, 1, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1]]");
+
         identity_fail_helper(-1);
     }
 
@@ -390,7 +406,12 @@ public class RationalPolynomialMatrixTest {
             @NotNull String columnIndices,
             @NotNull String output
     ) {
-        aeq(readStrict(m).get().submatrix(readIntegerList(rowIndices), readIntegerList(columnIndices)), output);
+        RationalPolynomialMatrix a = readStrict(m).get().submatrix(
+                readIntegerList(rowIndices),
+                readIntegerList(columnIndices)
+        );
+        a.validate();
+        aeq(a, output);
     }
 
     private static void submatrix_fail_helper(
@@ -418,6 +439,7 @@ public class RationalPolynomialMatrixTest {
         submatrix_helper("[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]", "[]", "[1, 2]", "[]#2");
         submatrix_helper("[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]", "[0, 1]", "[]", "[[], []]");
         submatrix_helper("[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]", "[1]", "[0, 2]", "[[x^3-x^2+1, 2/3*x+4]]");
+
         submatrix_fail_helper("[[0]]", "[null]", "[]");
         submatrix_fail_helper("[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]", "[1]", "[0, null]");
         submatrix_fail_helper("[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]", "[1]", "[2, 0]");
@@ -431,7 +453,9 @@ public class RationalPolynomialMatrixTest {
     }
 
     private static void transpose_helper(@NotNull String input, @NotNull String output) {
-        aeq(readStrict(input).get().transpose(), output);
+        RationalPolynomialMatrix m = readStrict(input).get().transpose();
+        m.validate();
+        aeq(m, output);
     }
 
     @Test
@@ -448,7 +472,9 @@ public class RationalPolynomialMatrixTest {
     }
 
     private static void concat_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(readStrict(a).get().concat(readStrict(b).get()), output);
+        RationalPolynomialMatrix m = readStrict(a).get().concat(readStrict(b).get());
+        m.validate();
+        aeq(m, output);
     }
 
     private static void concat_fail_helper(@NotNull String a, @NotNull String b) {
@@ -468,6 +494,7 @@ public class RationalPolynomialMatrixTest {
                 "[[4, 3, 1]]",
                 "[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4], [4, 3, 1]]"
         );
+
         concat_fail_helper("[]#0", "[]#1");
         concat_fail_helper("[]#3", "[]#4");
         concat_fail_helper("[[]]", "[[2]]");
@@ -476,7 +503,9 @@ public class RationalPolynomialMatrixTest {
     }
 
     private static void augment_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(readStrict(a).get().augment(readStrict(b).get()), output);
+        RationalPolynomialMatrix m = readStrict(a).get().augment(readStrict(b).get());
+        m.validate();
+        aeq(m, output);
     }
 
     private static void augment_fail_helper(@NotNull String a, @NotNull String b) {
@@ -498,13 +527,16 @@ public class RationalPolynomialMatrixTest {
                 "[[4], [3]]",
                 "[[1, x, x^10-1/2, 4], [x^3-x^2+1, 5, 2/3*x+4, 3]]"
         );
+
         augment_fail_helper("[]#0", "[[]]");
         augment_fail_helper("[[]]", "[[], []]");
         augment_fail_helper("[[2]]", "[[3], [4]]");
     }
 
     private static void add_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(readStrict(a).get().add(readStrict(b).get()), output);
+        RationalPolynomialMatrix m = readStrict(a).get().add(readStrict(b).get());
+        m.validate();
+        aeq(m, output);
     }
 
     private static void add_fail_helper(@NotNull String a, @NotNull String b) {
@@ -524,13 +556,16 @@ public class RationalPolynomialMatrixTest {
         add_helper("[[-1/2*x]]", "[[5]]", "[[-1/2*x+5]]");
         add_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", "[[x^5-3/2*x, -x+3], [1/2*x+1, 4]]",
                 "[[x^5-1/2*x-2/3, -8/5*x^2+3], [1/2*x+1, 7*x+7/2]]");
+
         add_fail_helper("[]#0", "[]#1");
         add_fail_helper("[]#0", "[[]]");
         add_fail_helper("[[-x]]", "[[3], [5]]");
     }
 
     private static void negate_helper(@NotNull String input, @NotNull String output) {
-        aeq(readStrict(input).get().negate(), output);
+        RationalPolynomialMatrix m = readStrict(input).get().negate();
+        m.validate();
+        aeq(m, output);
     }
 
     @Test
@@ -547,7 +582,9 @@ public class RationalPolynomialMatrixTest {
     }
 
     private static void subtract_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(readStrict(a).get().subtract(readStrict(b).get()), output);
+        RationalPolynomialMatrix m = readStrict(a).get().subtract(readStrict(b).get());
+        m.validate();
+        aeq(m, output);
     }
 
     private static void subtract_fail_helper(@NotNull String a, @NotNull String b) {
@@ -567,6 +604,7 @@ public class RationalPolynomialMatrixTest {
         subtract_helper("[[-x]]", "[[5]]", "[[-x-5]]");
         subtract_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", "[[x^5-3/2*x, -x+3], [1/2*x+1, 4]]",
                 "[[-x^5+5/2*x-2/3, -8/5*x^2+2*x-3], [-1/2*x-1, 7*x-9/2]]");
+
         subtract_fail_helper("[]#0", "[]#1");
         subtract_fail_helper("[]#0", "[[]]");
         subtract_fail_helper("[[-1/2*x]]", "[[3], [5]]");
@@ -577,7 +615,9 @@ public class RationalPolynomialMatrixTest {
             @NotNull String b,
             @NotNull String output
     ) {
-        aeq(readStrict(a).get().multiply(RationalPolynomial.readStrict(b).get()), output);
+        RationalPolynomialMatrix m = readStrict(a).get().multiply(RationalPolynomial.readStrict(b).get());
+        m.validate();
+        aeq(m, output);
     }
 
     @Test
@@ -612,7 +652,9 @@ public class RationalPolynomialMatrixTest {
     }
 
     private static void multiply_Rational_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(readStrict(a).get().multiply(Rational.readStrict(b).get()), output);
+        RationalPolynomialMatrix m = readStrict(a).get().multiply(Rational.readStrict(b).get());
+        m.validate();
+        aeq(m, output);
     }
 
     @Test
@@ -640,7 +682,9 @@ public class RationalPolynomialMatrixTest {
     }
 
     private static void multiply_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(readStrict(a).get().multiply(Readers.readBigIntegerStrict(b).get()), output);
+        RationalPolynomialMatrix m = readStrict(a).get().multiply(Readers.readBigIntegerStrict(b).get());
+        m.validate();
+        aeq(m, output);
     }
 
     @Test
@@ -668,7 +712,9 @@ public class RationalPolynomialMatrixTest {
     }
 
     private static void multiply_int_helper(@NotNull String a, int b, @NotNull String output) {
-        aeq(readStrict(a).get().multiply(b), output);
+        RationalPolynomialMatrix m = readStrict(a).get().multiply(b);
+        m.validate();
+        aeq(m, output);
     }
 
     @Test
@@ -695,7 +741,9 @@ public class RationalPolynomialMatrixTest {
     }
 
     private static void divide_Rational_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(readStrict(a).get().divide(Rational.readStrict(b).get()), output);
+        RationalPolynomialMatrix m = readStrict(a).get().divide(Rational.readStrict(b).get());
+        m.validate();
+        aeq(m, output);
     }
 
     private static void divide_Rational_fail_helper(@NotNull String a, @NotNull String b) {
@@ -727,7 +775,9 @@ public class RationalPolynomialMatrixTest {
     }
 
     private static void divide_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(readStrict(a).get().divide(Readers.readBigIntegerStrict(b).get()), output);
+        RationalPolynomialMatrix m = readStrict(a).get().divide(Readers.readBigIntegerStrict(b).get());
+        m.validate();
+        aeq(m, output);
     }
 
     private static void divide_BigInteger_fail_helper(@NotNull String a, @NotNull String b) {
@@ -759,7 +809,9 @@ public class RationalPolynomialMatrixTest {
     }
 
     private static void divide_int_helper(@NotNull String a, int b, @NotNull String output) {
-        aeq(readStrict(a).get().divide(b), output);
+        RationalPolynomialMatrix m = readStrict(a).get().divide(b);
+        m.validate();
+        aeq(m, output);
     }
 
     private static void divide_int_fail_helper(@NotNull String a, int b) {
@@ -828,7 +880,9 @@ public class RationalPolynomialMatrixTest {
             @NotNull String b,
             @NotNull String output
     ) {
-        aeq(readStrict(a).get().multiply(readStrict(b).get()), output);
+        RationalPolynomialMatrix m = readStrict(a).get().multiply(readStrict(b).get());
+        m.validate();
+        aeq(m, output);
     }
 
     private static void multiply_RationalPolynomialMatrix_fail_helper(@NotNull String a, @NotNull String b) {
@@ -865,7 +919,9 @@ public class RationalPolynomialMatrixTest {
     }
 
     private static void shiftLeft_helper(@NotNull String a, int bits, @NotNull String output) {
-        aeq(readStrict(a).get().shiftLeft(bits), output);
+        RationalPolynomialMatrix m = readStrict(a).get().shiftLeft(bits);
+        m.validate();
+        aeq(m, output);
     }
 
     @Test
@@ -923,7 +979,9 @@ public class RationalPolynomialMatrixTest {
     }
 
     private static void shiftRight_helper(@NotNull String a, int bits, @NotNull String output) {
-        aeq(readStrict(a).get().shiftRight(bits), output);
+        RationalPolynomialMatrix m = readStrict(a).get().shiftRight(bits);
+        m.validate();
+        aeq(m, output);
     }
 
     @Test
@@ -1040,41 +1098,43 @@ public class RationalPolynomialMatrixTest {
                 " [[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]], [[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]], [[], [], []]]"));
     }
 
-    private static void readString_helper(@NotNull String input) {
-        aeq(readStrict(input).get(), input);
-    }
-
-    private static void readString_fail_helper(@NotNull String input) {
-        assertFalse(readStrict(input).isPresent());
+    private static void readString_helper(@NotNull String input, @NotNull String output) {
+        Optional<RationalPolynomialMatrix> om = readStrict(input);
+        if (om.isPresent()) {
+            om.get().validate();
+        }
+        aeq(om, output);
     }
 
     @Test
     public void testReadString() {
-        readString_helper("[]#0");
-        readString_helper("[]#1");
-        readString_helper("[]#3");
-        readString_helper("[[]]");
-        readString_helper("[[], [], []]");
-        readString_helper("[[-1/2*x]]");
-        readString_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]");
-        readString_helper("[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]");
-        readString_fail_helper("");
-        readString_fail_helper("[]");
-        readString_fail_helper("[]#");
-        readString_fail_helper("[]#-1");
-        readString_fail_helper("[[]]#1");
-        readString_fail_helper("[[4]]#1");
-        readString_fail_helper("[2]");
-        readString_fail_helper("[[ ]]");
-        readString_fail_helper("[[],]");
-        readString_fail_helper("[[2/2]]");
-        readString_fail_helper("[[2/2*x]]");
-        readString_fail_helper("[[3], null]");
-        readString_fail_helper("[[3], [3, 3]]");
-        readString_fail_helper("[[]]]");
-        readString_fail_helper("[[[]]");
-        readString_fail_helper("hello");
-        readString_fail_helper("vdfvfmsl;dfbv");
+        readString_helper("[]#0", "Optional[[]#0]");
+        readString_helper("[]#1", "Optional[[]#1]");
+        readString_helper("[]#3", "Optional[[]#3]");
+        readString_helper("[[]]", "Optional[[[]]]");
+        readString_helper("[[], [], []]", "Optional[[[], [], []]]");
+        readString_helper("[[-1/2*x]]", "Optional[[[-1/2*x]]]");
+        readString_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", "Optional[[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]]");
+        readString_helper("[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]",
+                "Optional[[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]]");
+
+        readString_helper("", "Optional.empty");
+        readString_helper("[]", "Optional.empty");
+        readString_helper("[]#", "Optional.empty");
+        readString_helper("[]#-1", "Optional.empty");
+        readString_helper("[[]]#1", "Optional.empty");
+        readString_helper("[[4]]#1", "Optional.empty");
+        readString_helper("[2]", "Optional.empty");
+        readString_helper("[[ ]]", "Optional.empty");
+        readString_helper("[[],]", "Optional.empty");
+        readString_helper("[[2/2]]", "Optional.empty");
+        readString_helper("[[2/2*x]]", "Optional.empty");
+        readString_helper("[[3], null]", "Optional.empty");
+        readString_helper("[[3], [3, 3]]", "Optional.empty");
+        readString_helper("[[]]]", "Optional.empty");
+        readString_helper("[[[]]", "Optional.empty");
+        readString_helper("hello", "Optional.empty");
+        readString_helper("vdfvfmsl;dfbv", "Optional.empty");
     }
 
     private static @NotNull List<Integer> readIntegerList(@NotNull String s) {

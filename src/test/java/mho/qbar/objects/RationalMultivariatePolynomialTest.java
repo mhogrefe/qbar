@@ -14,10 +14,15 @@ import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.fail;
 
 public class RationalMultivariatePolynomialTest {
+    private static void constant_helper(@NotNull RationalMultivariatePolynomial input, @NotNull String output) {
+        input.validate();
+        aeq(input, output);
+    }
+
     @Test
     public void testConstants() {
-        aeq(ZERO, "0");
-        aeq(ONE, "1");
+        constant_helper(ZERO, "0");
+        constant_helper(ONE, "1");
     }
 
     private static void iterable_helper(@NotNull String p, @NotNull String mo, @NotNull String output) {
