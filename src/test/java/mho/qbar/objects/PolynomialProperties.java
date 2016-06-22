@@ -3975,7 +3975,15 @@ public class PolynomialProperties extends QBarTestProperties {
     }
 
     private static @NotNull List<Interval> isolatingIntervals_alt(@NotNull Polynomial p) {
-        return toList(map(p::isolatingInterval, ExhaustiveProvider.INSTANCE.rangeIncreasing(0, p.rootCount() - 1)));
+        int rootCount = p.rootCount();
+        return toList(
+                map(
+                        p::isolatingInterval,
+                        rootCount == 0 ?
+                            Collections.emptyList() :
+                            ExhaustiveProvider.INSTANCE.rangeIncreasing(0, rootCount - 1)
+                )
+        );
     }
 
     private void propertiesIsolatingIntervals() {
@@ -4003,8 +4011,14 @@ public class PolynomialProperties extends QBarTestProperties {
     }
 
     private static @NotNull List<Interval> powerOfTwoIsolatingIntervals_alt(@NotNull Polynomial p) {
+        int rootCount = p.rootCount();
         return toList(
-                map(p::powerOfTwoIsolatingInterval, ExhaustiveProvider.INSTANCE.rangeIncreasing(0, p.rootCount() - 1))
+                map(
+                        p::powerOfTwoIsolatingInterval,
+                        rootCount == 0 ?
+                                Collections.emptyList() :
+                                ExhaustiveProvider.INSTANCE.rangeIncreasing(0, rootCount - 1)
+                )
         );
     }
 
