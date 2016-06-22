@@ -1347,7 +1347,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
     }
 
     private static @NotNull RationalPolynomial pow_simplest(@NotNull RationalPolynomial a, int p) {
-        return product(replicate(p, a));
+        return product(toList(replicate(p, a)));
     }
 
     private void propertiesPow() {
@@ -1447,10 +1447,12 @@ public class RationalPolynomialProperties extends QBarTestProperties {
             @NotNull RationalPolynomial b
     ) {
         return sum(
-                zipWith(
-                        (c, i) -> c == Rational.ZERO ? ZERO : b.pow(i).multiply(c),
-                        a,
-                        ExhaustiveProvider.INSTANCE.naturalIntegers()
+                toList(
+                        zipWith(
+                                (c, i) -> c == Rational.ZERO ? ZERO : b.pow(i).multiply(c),
+                                a,
+                                ExhaustiveProvider.INSTANCE.naturalIntegers()
+                        )
                 )
         );
     }

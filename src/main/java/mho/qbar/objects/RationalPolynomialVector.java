@@ -586,7 +586,7 @@ public final class RationalPolynomialVector implements
             throw new ArithmeticException("this and that must have the same dimension. this: " + this + ", that: " +
                     that);
         }
-        return RationalPolynomial.sum(zipWith(RationalPolynomial::multiply, coordinates, that.coordinates));
+        return RationalPolynomial.sum(toList(zipWith(RationalPolynomial::multiply, coordinates, that.coordinates)));
     }
 
     /**
@@ -601,7 +601,7 @@ public final class RationalPolynomialVector implements
      * @return ‖{@code this}‖²
      */
     public @NotNull RationalPolynomial squaredLength() {
-        return RationalPolynomial.sum(map(x -> x.pow(2), coordinates));
+        return RationalPolynomial.sum(toList(map(x -> x.pow(2), coordinates)));
     }
 
     /**

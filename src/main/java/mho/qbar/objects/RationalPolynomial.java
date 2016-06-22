@@ -657,16 +657,16 @@ public final class RationalPolynomial implements
      * Returns the sum of all the {@code RationalPolynomial}s in {@code xs}. If {@code xs} is empty, 0 is returned.
      *
      * <ul>
-     *  <li>{@code xs} must be finite and may not contain any nulls.</li>
+     *  <li>{@code xs} may not contain any nulls.</li>
      *  <li>The result may be any {@code RationalPolynomial}.</li>
      * </ul>
      *
      * Length is at most max({deg(p)|p∈{@code xs}})+1
      *
-     * @param xs an {@code Iterable} of {@code RationalPolynomial}s.
+     * @param xs a {@code List} of {@code RationalPolynomial}s.
      * @return Σxs
      */
-    public static @NotNull RationalPolynomial sum(@NotNull Iterable<RationalPolynomial> xs) {
+    public static @NotNull RationalPolynomial sum(@NotNull List<RationalPolynomial> xs) {
         return of(toList(map(Rational::sum, transposePadded(Rational.ZERO, map(p -> p, xs)))));
     }
 
@@ -674,16 +674,16 @@ public final class RationalPolynomial implements
      * Returns the product of all the {@code RationalPolynomial}s in {@code xs}. If {@code xs} is empty, 1 is returned.
      *
      * <ul>
-     *  <li>{@code xs} must be finite and may not contain any nulls.</li>
+     *  <li>{@code xs} may not contain any nulls.</li>
      *  <li>The result may be any {@code RationalPolynomial}.</li>
      * </ul>
      *
      * Length is at most sum({deg(p)|p∈{@code xs}})+1
      *
-     * @param xs an {@code Iterable} of {@code RationalPolynomial}s.
+     * @param xs an {@code List} of {@code RationalPolynomial}s.
      * @return Πxs
      */
-    public static @NotNull RationalPolynomial product(@NotNull Iterable<RationalPolynomial> xs) {
+    public static @NotNull RationalPolynomial product(@NotNull List<RationalPolynomial> xs) {
         if (any(x -> x == null, xs)) {
             throw new NullPointerException();
         }
