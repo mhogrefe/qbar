@@ -1680,14 +1680,14 @@ public final class Rational implements Comparable<Rational> {
      * Returns the sum of all the {@code Rational}s in {@code xs}. If {@code xs} is empty, 0 is returned.
      *
      * <ul>
-     *  <li>{@code xs} must be finite and may not contain any nulls.</li>
+     *  <li>{@code xs} may not contain any nulls.</li>
      *  <li>The result may be any {@code Rational}.</li>
      * </ul>
      *
-     * @param xs an {@code Iterable} of {@code Rational}s
+     * @param xs a {@code List} of {@code Rational}s
      * @return Σxs
      */
-    public static @NotNull Rational sum(@NotNull Iterable<Rational> xs) {
+    public static @NotNull Rational sum(@NotNull List<Rational> xs) {
         if (any(x -> x == null, xs)) {
             throw new NullPointerException();
         }
@@ -1698,14 +1698,14 @@ public final class Rational implements Comparable<Rational> {
      * Returns the product of all the {@code Rational}s in {@code xs}. If {@code xs} is empty, 1 is returned.
      *
      * <ul>
-     *  <li>{@code xs} must be finite and may not contain any nulls.</li>
+     *  <li>{@code xs} may not contain any nulls.</li>
      *  <li>The result may be any {@code Rational}.</li>
      * </ul>
      *
-     * @param xs an {@code Iterable} of {@code Rational}s
+     * @param xs a {@code List} of {@code Rational}s
      * @return Πxs
      */
-    public static @NotNull Rational product(@NotNull Iterable<Rational> xs) {
+    public static @NotNull Rational product(@NotNull List<Rational> xs) {
         if (any(x -> x == null, xs)) {
             throw new NullPointerException();
         }
@@ -1814,11 +1814,13 @@ public final class Rational implements Comparable<Rational> {
             return ONE;
         }
         return sum(
-                cons(
-                        ONE,
-                        map(
-                                i -> new Rational(BigInteger.ONE, BigInteger.valueOf(i)),
-                                ExhaustiveProvider.INSTANCE.rangeIncreasing(2, n)
+                toList(
+                        cons(
+                                ONE,
+                                map(
+                                        i -> new Rational(BigInteger.ONE, BigInteger.valueOf(i)),
+                                        ExhaustiveProvider.INSTANCE.rangeIncreasing(2, n)
+                                )
                         )
                 )
         );

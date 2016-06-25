@@ -2010,7 +2010,11 @@ public final class Algebraic implements Comparable<Algebraic> {
                         continue;
                     }
                     if (entry.getKey() == 1) {
-                        sums.add(Algebraic.of(Rational.sum(map(Algebraic::rationalValueExact, entry.getValue()))));
+                        sums.add(
+                                Algebraic.of(
+                                        Rational.sum(toList(map(Algebraic::rationalValueExact, entry.getValue())))
+                                )
+                        );
                         continue;
                     }
                     List<Algebraic> equalDegreeXs = entry.getValue();
@@ -2095,7 +2099,9 @@ public final class Algebraic implements Comparable<Algebraic> {
                     }
                     if (entry.getKey() == 1) {
                         products.add(
-                                Algebraic.of(Rational.product(map(Algebraic::rationalValueExact, entry.getValue())))
+                                Algebraic.of(
+                                        Rational.product(toList(map(Algebraic::rationalValueExact, entry.getValue())))
+                                )
                         );
                         continue;
                     }

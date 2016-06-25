@@ -1025,7 +1025,7 @@ public final class MultivariatePolynomial implements
      * @return {@code this}({@code xs})
      */
     public @NotNull Rational applyRational(@NotNull Map<Variable, Rational> xs) {
-        return Rational.sum(map(t -> t.a.applyRational(xs).multiply(t.b), terms));
+        return Rational.sum(toList(map(t -> t.a.applyRational(xs).multiply(t.b), terms)));
     }
 
     /**

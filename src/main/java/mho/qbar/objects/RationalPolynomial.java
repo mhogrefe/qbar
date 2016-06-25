@@ -667,7 +667,14 @@ public final class RationalPolynomial implements
      * @return Σxs
      */
     public static @NotNull RationalPolynomial sum(@NotNull List<RationalPolynomial> xs) {
-        return of(toList(map(Rational::sum, transposePadded(Rational.ZERO, map(p -> p, xs)))));
+        return of(
+                toList(
+                        map(
+                                (Iterable<Rational> rs) -> Rational.sum(toList(rs)),
+                                transposePadded(Rational.ZERO, map(p -> p, xs))
+                        )
+                )
+        );
     }
 
     /**

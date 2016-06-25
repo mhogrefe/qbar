@@ -11,13 +11,13 @@ import org.junit.Test;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Optional;
 
 import static mho.qbar.objects.Rational.*;
 import static mho.qbar.objects.Rational.sum;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class RationalTest {
@@ -118,38 +118,45 @@ public class RationalTest {
     private static final @NotNull Rational JUST_ABOVE_BOUNDARY_DOUBLE =
             SMALLEST_NORMAL_DOUBLE.add(BOUNDARY_DOUBLE.shiftLeft(1)).divide(3);
 
+    private static void constant_helper(@NotNull Rational input, @NotNull String output) {
+        input.validate();
+        aeq(input, output);
+    }
+
     @Test
     public void testConstants() {
-        aeq(ZERO, "0");
-        aeq(ONE, "1");
-        aeq(TEN, "10");
-        aeq(TWO, "2");
-        aeq(NEGATIVE_ONE, "-1");
-        aeq(ONE_HALF, "1/2");
-        aeq(SMALLEST_FLOAT, "1/713623846352979940529142984724747568191373312");
-        aeq(LARGEST_SUBNORMAL_FLOAT, "8388607/713623846352979940529142984724747568191373312");
-        aeq(SMALLEST_NORMAL_FLOAT, "1/85070591730234615865843651857942052864");
-        aeq(LARGEST_FLOAT, "340282346638528859811704183484516925440");
-        aeq(SMALLEST_DOUBLE,
+        constant_helper(ZERO, "0");
+        constant_helper(ONE, "1");
+        constant_helper(TEN, "10");
+        constant_helper(TWO, "2");
+        constant_helper(NEGATIVE_ONE, "-1");
+        constant_helper(ONE_HALF, "1/2");
+        constant_helper(SMALLEST_FLOAT, "1/713623846352979940529142984724747568191373312");
+        constant_helper(LARGEST_SUBNORMAL_FLOAT, "8388607/713623846352979940529142984724747568191373312");
+        constant_helper(SMALLEST_NORMAL_FLOAT, "1/85070591730234615865843651857942052864");
+        constant_helper(LARGEST_FLOAT, "340282346638528859811704183484516925440");
+        constant_helper(SMALLEST_DOUBLE,
                 "1/2024022533073106183524953467189173070495566497641421183569013580274303395679953468919603837014371" +
                 "244951870778643168119113898087373857934768670133999407385099215174242765663613644669077420932163412" +
                 "397676784727450685620074834246926986181033556491595563408100565123587695523334146152305025321863275" +
                 "08646006263307707741093494784");
-        aeq(LARGEST_SUBNORMAL_DOUBLE,
+        constant_helper(LARGEST_SUBNORMAL_DOUBLE,
                 "4503599627370495/2024022533073106183524953467189173070495566497641421183569013580274303395679953468" +
                 "919603837014371244951870778643168119113898087373857934768670133999407385099215174242765663613644669" +
                 "077420932163412397676784727450685620074834246926986181033556491595563408100565123587695523334146152" +
                 "30502532186327508646006263307707741093494784");
-        aeq(SMALLEST_NORMAL_DOUBLE,
+        constant_helper(SMALLEST_NORMAL_DOUBLE,
                 "1/4494232837155789769323262976972561834044942447355766431835752028943316895137524078317711933060188" +
                 "400528002846996784833941469744220360415562321185765986853109444197335621637131907555490031152352986" +
                 "327073802125144220953767058561572036847827763520680929083762767114657455998681148461992907620883908" +
                 "2406056034304");
-        aeq(LARGEST_DOUBLE,
+        constant_helper(LARGEST_DOUBLE,
                 "179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878" +
                 "171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075" +
                 "868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026" +
                 "184124858368");
+
+        take(TINY_LIMIT, HARMONIC_NUMBERS).forEach(Rational::validate);
         aeqitLimit(TINY_LIMIT, HARMONIC_NUMBERS,
                 "[1, 3/2, 11/6, 25/12, 137/60, 49/20, 363/140, 761/280, 7129/2520, 7381/2520, 83711/27720," +
                 " 86021/27720, 1145993/360360, 1171733/360360, 1195757/360360, 2436559/720720, 42142223/12252240," +
@@ -184,81 +191,130 @@ public class RationalTest {
         getDenominator_helper("-5/3", "3");
     }
 
-    private static void of_BigInteger_BigInteger_helper(int x, int y, @NotNull String output) {
-        aeq(of(BigInteger.valueOf(x), BigInteger.valueOf(y)), output);
+    private static void of_BigInteger_BigInteger_helper(@NotNull String x, @NotNull String y, @NotNull String output) {
+        Rational r = of(Readers.readBigIntegerStrict(x).get(), Readers.readBigIntegerStrict(y).get());
+        r.validate();
+        aeq(r, output);
+    }
+
+    private static void of_BigInteger_BigInteger_fail_helper(@NotNull String x, @NotNull String y) {
+        try {
+            of(Readers.readBigIntegerStrict(x).get(), Readers.readBigIntegerStrict(y).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
     }
 
     @Test
     public void testOf_BigInteger_BigInteger() {
-        of_BigInteger_BigInteger_helper(2, 3, "2/3");
-        of_BigInteger_BigInteger_helper(4, 6, "2/3");
-        of_BigInteger_BigInteger_helper(-4, -6, "2/3");
-        of_BigInteger_BigInteger_helper(4, -6, "-2/3");
-        of_BigInteger_BigInteger_helper(4, 4, "1");
-        of_BigInteger_BigInteger_helper(4, 1, "4");
-        of_BigInteger_BigInteger_helper(0, 1, "0");
+        of_BigInteger_BigInteger_helper("2", "3", "2/3");
+        of_BigInteger_BigInteger_helper("4", "6", "2/3");
+        of_BigInteger_BigInteger_helper("-4", "-6", "2/3");
+        of_BigInteger_BigInteger_helper("4", "-6", "-2/3");
+        of_BigInteger_BigInteger_helper("4", "4", "1");
+        of_BigInteger_BigInteger_helper("4", "1", "4");
+        of_BigInteger_BigInteger_helper("0", "1", "0");
+
+        of_BigInteger_BigInteger_fail_helper("1", "0");
+    }
+
+    private static void of_long_long_helper(long x, long y, @NotNull String output) {
+        Rational r = of(x, y);
+        r.validate();
+        aeq(r, output);
+    }
+
+    private static void of_long_long_fail_helper(long x, long y) {
         try {
-            of(BigInteger.ONE, BigInteger.ZERO);
+            of(x, y);
             fail();
         } catch (ArithmeticException ignored) {}
     }
 
     @Test
     public void testOf_long_long() {
-        aeq(of(2L, 3L), "2/3");
-        aeq(of(4L, 6L), "2/3");
-        aeq(of(-4L, -6L), "2/3");
-        aeq(of(4L, -6L), "-2/3");
-        assertTrue(of(4L, 4L) == ONE);
-        aeq(of(4L, 1L), "4");
-        assertTrue(of(0L, 1L) == ZERO);
+        of_long_long_helper(2L, 3L, "2/3");
+        of_long_long_helper(4L, 6L, "2/3");
+        of_long_long_helper(-4L, -6L, "2/3");
+        of_long_long_helper(4L, -6L, "-2/3");
+        of_long_long_helper(4L, 4L, "1");
+        of_long_long_helper(4L, 1L, "4");
+        of_long_long_helper(0L, 1L, "0");
+
+        of_long_long_fail_helper(1L, 0L);
+    }
+
+    private static void of_int_int_helper(int x, int y, @NotNull String output) {
+        Rational r = of(x, y);
+        r.validate();
+        aeq(r, output);
+    }
+
+    private static void of_int_int_fail_helper(int x, int y) {
         try {
-            of(1L, 0L);
+            of(x, y);
             fail();
         } catch (ArithmeticException ignored) {}
     }
 
     @Test
     public void testOf_int_int() {
-        aeq(of(2, 3), "2/3");
-        aeq(of(4, 6), "2/3");
-        aeq(of(-4, -6), "2/3");
-        aeq(of(4, -6), "-2/3");
-        assertTrue(of(4, 4) == ONE);
-        aeq(of(4, 1), "4");
-        assertTrue(of(0, 1) == ZERO);
-        try {
-            of(1, 0);
-            fail();
-        } catch (ArithmeticException ignored) {}
+        of_int_int_helper(2, 3, "2/3");
+        of_int_int_helper(4, 6, "2/3");
+        of_int_int_helper(-4, -6, "2/3");
+        of_int_int_helper(4, -6, "-2/3");
+        of_int_int_helper(4, 4, "1");
+        of_int_int_helper(4, 1, "4");
+        of_int_int_helper(0, 1, "0");
+
+        of_int_int_fail_helper(1, 0);
+    }
+
+    private static void of_BigInteger_helper(@NotNull String input) {
+        Rational r = of(Readers.readBigIntegerStrict(input).get());
+        r.validate();
+        aeq(r, input);
     }
 
     @Test
     public void testOf_BigInteger() {
-        aeq(of(BigInteger.valueOf(23)), "23");
-        aeq(of(BigInteger.valueOf(-23)), "-23");
-        assertTrue(of(BigInteger.valueOf(0)) == ZERO);
-        assertTrue(of(BigInteger.valueOf(1)) == ONE);
+        of_BigInteger_helper("23");
+        of_BigInteger_helper("-23");
+        of_BigInteger_helper("0");
+        of_BigInteger_helper("1");
+    }
+
+    private static void of_long_helper(long input) {
+        Rational r = of(input);
+        r.validate();
+        aeq(r, input);
     }
 
     @Test
     public void testOf_long() {
-        aeq(of(23L), "23");
-        aeq(of(-23L), "-23");
-        assertTrue(of(0L) == ZERO);
-        assertTrue(of(1L) == ONE);
+        of_long_helper(23L);
+        of_long_helper(-23L);
+        of_long_helper(0L);
+        of_long_helper(1L);
+    }
+
+    private static void of_int_helper(long input) {
+        Rational r = of(input);
+        r.validate();
+        aeq(r, input);
     }
 
     @Test
     public void testOf_int() {
-        aeq(of(23), "23");
-        aeq(of(-23), "-23");
-        assertTrue(of(0) == ZERO);
-        assertTrue(of(1) == ONE);
+        of_int_helper(23);
+        of_int_helper(-23);
+        of_int_helper(0);
+        of_int_helper(1);
     }
 
     private static void of_BinaryFraction_helper(@NotNull String input, @NotNull String output) {
-        aeq(of(BinaryFraction.readStrict(input).get()), output);
+        Rational r = of(BinaryFraction.readStrict(input).get());
+        r.validate();
+        aeq(r, output);
     }
 
     @Test
@@ -275,37 +331,38 @@ public class RationalTest {
     }
 
     private static void of_float_helper(float f, @NotNull String output) {
-        aeq(of(f).get(), output);
-    }
-
-    private static void of_float_empty_helper(float f) {
-        assertFalse(of(f).isPresent());
+        Optional<Rational> or = of(f);
+        if (or.isPresent()) {
+            or.get().validate();
+        }
+        aeq(or, output);
     }
 
     @Test
     public void testOf_float() {
-        of_float_helper(0.0f, "0");
-        of_float_helper(1.0f, "1");
-        of_float_helper(13.0f, "13");
-        of_float_helper(-5.0f, "-5");
-        of_float_helper(1.5f, "3/2");
-        of_float_helper(0.15625f, "5/32");
-        of_float_helper(0.1f, "1/10");
-        of_float_helper(1.0f / 3.0f, "16666667/50000000");
-        of_float_helper(1.0e10f, "10000000000");
-        of_float_helper(1.0e30f, "1000000000000000000000000000000");
-        of_float_helper((float) Math.PI, "31415927/10000000");
-        of_float_helper((float) Math.E, "27182817/10000000");
-        of_float_helper((float) Math.sqrt(2), "2828427/2000000");
-        of_float_helper(Float.MIN_VALUE, "7/5000000000000000000000000000000000000000000000");
-        of_float_helper(-Float.MIN_VALUE, "-7/5000000000000000000000000000000000000000000000");
-        of_float_helper(Float.MIN_NORMAL, "23509887/2000000000000000000000000000000000000000000000");
-        of_float_helper(-Float.MIN_NORMAL, "-23509887/2000000000000000000000000000000000000000000000");
-        of_float_helper(Float.MAX_VALUE, "340282350000000000000000000000000000000");
-        of_float_helper(-Float.MAX_VALUE, "-340282350000000000000000000000000000000");
-        of_float_empty_helper(Float.POSITIVE_INFINITY);
-        of_float_empty_helper(Float.NEGATIVE_INFINITY);
-        of_float_empty_helper(Float.NaN);
+        of_float_helper(0.0f, "Optional[0]");
+        of_float_helper(1.0f, "Optional[1]");
+        of_float_helper(13.0f, "Optional[13]");
+        of_float_helper(-5.0f, "Optional[-5]");
+        of_float_helper(1.5f, "Optional[3/2]");
+        of_float_helper(0.15625f, "Optional[5/32]");
+        of_float_helper(0.1f, "Optional[1/10]");
+        of_float_helper(1.0f / 3.0f, "Optional[16666667/50000000]");
+        of_float_helper(1.0e10f, "Optional[10000000000]");
+        of_float_helper(1.0e30f, "Optional[1000000000000000000000000000000]");
+        of_float_helper((float) Math.PI, "Optional[31415927/10000000]");
+        of_float_helper((float) Math.E, "Optional[27182817/10000000]");
+        of_float_helper((float) Math.sqrt(2), "Optional[2828427/2000000]");
+        of_float_helper(Float.MIN_VALUE, "Optional[7/5000000000000000000000000000000000000000000000]");
+        of_float_helper(-Float.MIN_VALUE, "Optional[-7/5000000000000000000000000000000000000000000000]");
+        of_float_helper(Float.MIN_NORMAL, "Optional[23509887/2000000000000000000000000000000000000000000000]");
+        of_float_helper(-Float.MIN_NORMAL, "Optional[-23509887/2000000000000000000000000000000000000000000000]");
+        of_float_helper(Float.MAX_VALUE, "Optional[340282350000000000000000000000000000000]");
+        of_float_helper(-Float.MAX_VALUE, "Optional[-340282350000000000000000000000000000000]");
+
+        of_float_helper(Float.POSITIVE_INFINITY, "Optional.empty");
+        of_float_helper(Float.NEGATIVE_INFINITY, "Optional.empty");
+        of_float_helper(Float.NaN, "Optional.empty");
     }
 
     private static void of_double_helper(double d, @NotNull String output) {

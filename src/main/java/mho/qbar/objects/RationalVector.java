@@ -541,7 +541,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
             throw new ArithmeticException("this and that must have the same dimension. this: " + this + ", that: " +
                     that);
         }
-        return Rational.sum(zipWith(Rational::multiply, coordinates, that.coordinates));
+        return Rational.sum(toList(zipWith(Rational::multiply, coordinates, that.coordinates)));
     }
 
     /**
@@ -580,7 +580,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * @return ‖{@code this}‖²
      */
     public @NotNull Rational squaredLength() {
-        return Rational.sum(map(x -> x.pow(2), coordinates));
+        return Rational.sum(toList(map(x -> x.pow(2), coordinates)));
     }
 
     /**

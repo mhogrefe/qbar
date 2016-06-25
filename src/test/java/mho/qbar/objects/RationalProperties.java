@@ -2601,7 +2601,7 @@ public class RationalProperties extends QBarTestProperties {
             case 1:
                 return xs.get(0).signum();
             default:
-                return Integer.signum(sum(tail(xs)).compareTo(head(xs).negate()));
+                return Integer.signum(sum(toList(tail(xs))).compareTo(head(xs).negate()));
         }
     }
 
@@ -2623,9 +2623,14 @@ public class RationalProperties extends QBarTestProperties {
                 }
                 int j = mostComplexIndex;
                 Rational sum = sum(
-                        map(
-                                xs::get,
-                                filter(i -> i != j, ExhaustiveProvider.INSTANCE.rangeIncreasing(0, xs.size() - 1))
+                        toList(
+                                map(
+                                        xs::get,
+                                        filter(
+                                                i -> i != j,
+                                                ExhaustiveProvider.INSTANCE.rangeIncreasing(0, xs.size() - 1)
+                                        )
+                                )
                         )
                 );
                 return Integer.signum(sum.compareTo(xs.get(mostComplexIndex).negate()));
@@ -2749,7 +2754,7 @@ public class RationalProperties extends QBarTestProperties {
     }
 
     private static @NotNull Rational pow_simplest(@NotNull Rational a, int p) {
-        Rational result = product(replicate(Math.abs(p), a));
+        Rational result = product(toList(replicate(Math.abs(p), a)));
         return p < 0 ? result.invert() : result;
     }
 

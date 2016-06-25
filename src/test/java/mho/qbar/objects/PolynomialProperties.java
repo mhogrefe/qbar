@@ -273,10 +273,12 @@ public class PolynomialProperties extends QBarTestProperties {
 
     private static @NotNull Rational apply_Rational_naive(@NotNull Polynomial p, @NotNull Rational x) {
         return Rational.sum(
-                zipWith(
-                        (c, i) -> c.equals(BigInteger.ZERO) ? Rational.ZERO : x.pow(i).multiply(c),
-                        p,
-                        ExhaustiveProvider.INSTANCE.naturalIntegers()
+                toList(
+                        zipWith(
+                                (c, i) -> c.equals(BigInteger.ZERO) ? Rational.ZERO : x.pow(i).multiply(c),
+                                p,
+                                ExhaustiveProvider.INSTANCE.naturalIntegers()
+                        )
                 )
         );
     }
