@@ -366,133 +366,162 @@ public class RationalTest {
     }
 
     private static void of_double_helper(double d, @NotNull String output) {
-        aeq(of(d).get(), output);
-    }
-
-    private static void of_double_empty_helper(double d) {
-        assertFalse(of(d).isPresent());
+        Optional<Rational> or = of(d);
+        if (or.isPresent()) {
+            or.get().validate();
+        }
+        aeq(or, output);
     }
 
     @Test
     public void testOf_double() {
-        of_double_helper(0.0, "0");
-        of_double_helper(1.0, "1");
-        of_double_helper(13.0, "13");
-        of_double_helper(-5.0, "-5");
-        of_double_helper(1.5, "3/2");
-        of_double_helper(0.15625, "5/32");
-        of_double_helper(0.1, "1/10");
-        of_double_helper(1.0 / 3.0, "3333333333333333/10000000000000000");
-        of_double_helper(1.0e10, "10000000000");
-        of_double_helper(1.0e30, "1000000000000000000000000000000");
-        of_double_helper(Math.PI, "3141592653589793/1000000000000000");
-        of_double_helper(Math.E, "543656365691809/200000000000000");
-        of_double_helper(Math.sqrt(2), "14142135623730951/10000000000000000");
+        of_double_helper(0.0, "Optional[0]");
+        of_double_helper(1.0, "Optional[1]");
+        of_double_helper(13.0, "Optional[13]");
+        of_double_helper(-5.0, "Optional[-5]");
+        of_double_helper(1.5, "Optional[3/2]");
+        of_double_helper(0.15625, "Optional[5/32]");
+        of_double_helper(0.1, "Optional[1/10]");
+        of_double_helper(1.0 / 3.0, "Optional[3333333333333333/10000000000000000]");
+        of_double_helper(1.0e10, "Optional[10000000000]");
+        of_double_helper(1.0e30, "Optional[1000000000000000000000000000000]");
+        of_double_helper(Math.PI, "Optional[3141592653589793/1000000000000000]");
+        of_double_helper(Math.E, "Optional[543656365691809/200000000000000]");
+        of_double_helper(Math.sqrt(2), "Optional[14142135623730951/10000000000000000]");
         of_double_helper(Double.MIN_VALUE,
-                "49/100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+                "Optional[49/100000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
-                "00000000000000000000000000000000");
+                "00000000000000000000000000000000000000000]");
         of_double_helper(-Double.MIN_VALUE,
-                "-49/10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+                "Optional[-49/10000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
-                "000000000000000000000000000000000");
+                "000000000000000000000000000000000000000000]");
         of_double_helper(Double.MIN_NORMAL,
-                "11125369292536007/500000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+                "Optional[11125369292536007/500000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
-                "000000000000000000000000000000000000000000000");
+                "000000000000000000000000000000000000000000000000000000]");
         of_double_helper(-Double.MIN_NORMAL,
-                "-11125369292536007/50000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+                "Optional[-11125369292536007/50000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
-                "0000000000000000000000000000000000000000000000");
+                "0000000000000000000000000000000000000000000000000000000]");
         of_double_helper(Double.MAX_VALUE,
-                "179769313486231570000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+                "Optional[179769313486231570000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
-                "000000000000");
+                "000000000000000000000]");
         of_double_helper(-Double.MAX_VALUE,
-                "-17976931348623157000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+                "Optional[-17976931348623157000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
-                "0000000000000");
-        of_double_empty_helper(Double.POSITIVE_INFINITY);
-        of_double_empty_helper(Double.NEGATIVE_INFINITY);
-        of_double_empty_helper(Double.NaN);
+                "0000000000000000000000]");
+
+        of_double_helper(Double.POSITIVE_INFINITY, "Optional.empty");
+        of_double_helper(Double.NEGATIVE_INFINITY, "Optional.empty");
+        of_double_helper(Double.NaN, "Optional.empty");
     }
 
     private static void ofExact_float_helper(float f, @NotNull Object output) {
-        aeq(ofExact(f).get(), output);
-    }
-
-    private static void ofExact_float_empty_helper(float f) {
-        assertFalse(ofExact(f).isPresent());
+        Optional<Rational> or = ofExact(f);
+        if (or.isPresent()) {
+            or.get().validate();
+        }
+        aeq(or, output);
     }
 
     @Test
     public void testOfExact_float() {
-        ofExact_float_helper(0.0f, "0");
-        ofExact_float_helper(1.0f, "1");
-        ofExact_float_helper(13.0f, "13");
-        ofExact_float_helper(-5.0f, "-5");
-        ofExact_float_helper(1.5f, "3/2");
-        ofExact_float_helper(0.15625f, "5/32");
-        ofExact_float_helper(0.1f, "13421773/134217728");
-        ofExact_float_helper(1.0f / 3.0f, "11184811/33554432");
-        ofExact_float_helper(1.0e10f, "10000000000");
-        ofExact_float_helper(1.0e30f, "1000000015047466219876688855040");
-        ofExact_float_helper((float) Math.PI, "13176795/4194304");
-        ofExact_float_helper((float) Math.E, "2850325/1048576");
-        ofExact_float_helper((float) Math.sqrt(2), "11863283/8388608");
-        ofExact_float_helper(Float.MIN_VALUE, SMALLEST_FLOAT);
-        ofExact_float_helper(-Float.MIN_VALUE, SMALLEST_FLOAT.negate());
-        ofExact_float_helper(Float.MIN_NORMAL, SMALLEST_NORMAL_FLOAT);
-        ofExact_float_helper(-Float.MIN_NORMAL, SMALLEST_NORMAL_FLOAT.negate());
-        ofExact_float_helper(Float.MAX_VALUE, LARGEST_FLOAT);
-        ofExact_float_helper(-Float.MAX_VALUE, LARGEST_FLOAT.negate());
-        ofExact_float_empty_helper(Float.POSITIVE_INFINITY);
-        ofExact_float_empty_helper(Float.NEGATIVE_INFINITY);
-        ofExact_float_empty_helper(Float.NaN);
+        ofExact_float_helper(0.0f, "Optional[0]");
+        ofExact_float_helper(1.0f, "Optional[1]");
+        ofExact_float_helper(13.0f, "Optional[13]");
+        ofExact_float_helper(-5.0f, "Optional[-5]");
+        ofExact_float_helper(1.5f, "Optional[3/2]");
+        ofExact_float_helper(0.15625f, "Optional[5/32]");
+        ofExact_float_helper(0.1f, "Optional[13421773/134217728]");
+        ofExact_float_helper(1.0f / 3.0f, "Optional[11184811/33554432]");
+        ofExact_float_helper(1.0e10f, "Optional[10000000000]");
+        ofExact_float_helper(1.0e30f, "Optional[1000000015047466219876688855040]");
+        ofExact_float_helper((float) Math.PI, "Optional[13176795/4194304]");
+        ofExact_float_helper((float) Math.E, "Optional[2850325/1048576]");
+        ofExact_float_helper((float) Math.sqrt(2), "Optional[11863283/8388608]");
+        ofExact_float_helper(Float.MIN_VALUE, "Optional[1/713623846352979940529142984724747568191373312]");
+        ofExact_float_helper(-Float.MIN_VALUE, "Optional[-1/713623846352979940529142984724747568191373312]");
+        ofExact_float_helper(Float.MIN_NORMAL, "Optional[1/85070591730234615865843651857942052864]");
+        ofExact_float_helper(-Float.MIN_NORMAL, "Optional[-1/85070591730234615865843651857942052864]");
+        ofExact_float_helper(Float.MAX_VALUE, "Optional[340282346638528859811704183484516925440]");
+        ofExact_float_helper(-Float.MAX_VALUE, "Optional[-340282346638528859811704183484516925440]");
+
+        ofExact_float_helper(Float.POSITIVE_INFINITY, "Optional.empty");
+        ofExact_float_helper(Float.NEGATIVE_INFINITY, "Optional.empty");
+        ofExact_float_helper(Float.NaN, "Optional.empty");
     }
 
     private static void ofExact_double_helper(double d, @NotNull Object output) {
-        aeq(ofExact(d).get(), output);
-    }
-
-    private static void ofExact_double_empty_helper(double d) {
-        assertFalse(ofExact(d).isPresent());
+        Optional<Rational> or = ofExact(d);
+        if (or.isPresent()) {
+            or.get().validate();
+        }
+        aeq(or, output);
     }
 
     @Test
     public void testOfExact_double() {
-        ofExact_double_helper(0.0, "0");
-        ofExact_double_helper(1.0, "1");
-        ofExact_double_helper(13.0, "13");
-        ofExact_double_helper(-5.0, "-5");
-        ofExact_double_helper(1.5, "3/2");
-        ofExact_double_helper(0.15625, "5/32");
-        ofExact_double_helper(0.1, "3602879701896397/36028797018963968");
-        ofExact_double_helper(1.0 / 3.0, "6004799503160661/18014398509481984");
-        ofExact_double_helper(1.0e10, "10000000000");
-        ofExact_double_helper(1.0e30, "1000000000000000019884624838656");
-        ofExact_double_helper(Math.PI, "884279719003555/281474976710656");
-        ofExact_double_helper(Math.E, "6121026514868073/2251799813685248");
-        ofExact_double_helper(Math.sqrt(2), "6369051672525773/4503599627370496");
-        ofExact_double_helper(Double.MIN_VALUE, SMALLEST_DOUBLE);
-        ofExact_double_helper(-Double.MIN_VALUE, SMALLEST_DOUBLE.negate());
-        ofExact_double_helper(Double.MIN_NORMAL, SMALLEST_NORMAL_DOUBLE);
-        ofExact_double_helper(-Double.MIN_NORMAL, SMALLEST_NORMAL_DOUBLE.negate());
-        ofExact_double_helper(Double.MAX_VALUE, LARGEST_DOUBLE);
-        ofExact_double_helper(-Double.MAX_VALUE, LARGEST_DOUBLE.negate());
-        ofExact_double_empty_helper(Double.POSITIVE_INFINITY);
-        ofExact_double_empty_helper(Double.NEGATIVE_INFINITY);
-        ofExact_double_empty_helper(Double.NaN);
+        ofExact_double_helper(0.0, "Optional[0]");
+        ofExact_double_helper(1.0, "Optional[1]");
+        ofExact_double_helper(13.0, "Optional[13]");
+        ofExact_double_helper(-5.0, "Optional[-5]");
+        ofExact_double_helper(1.5, "Optional[3/2]");
+        ofExact_double_helper(0.15625, "Optional[5/32]");
+        ofExact_double_helper(0.1, "Optional[3602879701896397/36028797018963968]");
+        ofExact_double_helper(1.0 / 3.0, "Optional[6004799503160661/18014398509481984]");
+        ofExact_double_helper(1.0e10, "Optional[10000000000]");
+        ofExact_double_helper(1.0e30, "Optional[1000000000000000019884624838656]");
+        ofExact_double_helper(Math.PI, "Optional[884279719003555/281474976710656]");
+        ofExact_double_helper(Math.E, "Optional[6121026514868073/2251799813685248]");
+        ofExact_double_helper(Math.sqrt(2), "Optional[6369051672525773/4503599627370496]");
+        ofExact_double_helper(Double.MIN_VALUE,
+                "Optional[1/2024022533073106183524953467189173070495566497641421183569013580274303395679953468919603" +
+                "837014371244951870778643168119113898087373857934768670133999407385099215174242765663613644669077420" +
+                "932163412397676784727450685620074834246926986181033556491595563408100565123587695523334146152305025" +
+                "32186327508646006263307707741093494784]");
+        ofExact_double_helper(-Double.MIN_VALUE,
+                "Optional[-1/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960" +
+                "383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742" +
+                "093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502" +
+                "532186327508646006263307707741093494784]");
+        ofExact_double_helper(Double.MIN_NORMAL,
+                "Optional[1/4494232837155789769323262976972561834044942447355766431835752028943316895137524078317711" +
+                "933060188400528002846996784833941469744220360415562321185765986853109444197335621637131907555490031" +
+                "152352986327073802125144220953767058561572036847827763520680929083762767114657455998681148461992907" +
+                "6208839082406056034304]");
+        ofExact_double_helper(-Double.MIN_NORMAL,
+                "Optional[-1/449423283715578976932326297697256183404494244735576643183575202894331689513752407831771" +
+                "193306018840052800284699678483394146974422036041556232118576598685310944419733562163713190755549003" +
+                "115235298632707380212514422095376705856157203684782776352068092908376276711465745599868114846199290" +
+                "76208839082406056034304]");
+        ofExact_double_helper(Double.MAX_VALUE,
+                "Optional[179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558" +
+                "632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389" +
+                "328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881" +
+                "250404026184124858368]");
+        ofExact_double_helper(-Double.MAX_VALUE,
+                "Optional[-17976931348623157081452742373170435679807056752584499659891747680315726078002853876058955" +
+                "863276687817154045895351438246423432132688946418276846754670353751698604991057655128207624549009038" +
+                "932894407586850845513394230458323690322294816580855933212334827479782620414472316873817718091929988" +
+                "1250404026184124858368]");
+
+        ofExact_double_helper(Double.POSITIVE_INFINITY, "Optional.empty");
+        ofExact_double_helper(Double.NEGATIVE_INFINITY, "Optional.empty");
+        ofExact_double_helper(Double.NaN, "Optional.empty");
     }
 
     private static void of_BigDecimal_helper(@NotNull String input, @NotNull String output) {
-        aeq(of(Readers.readBigDecimalStrict(input).get()), output);
+        Rational r = of(Readers.readBigDecimalStrict(input).get());
+        r.validate();
+        aeq(r, output);
     }
 
     @Test
@@ -526,6 +555,7 @@ public class RationalTest {
         isInteger_helper("1/2", false);
         isInteger_helper("-1/2", false);
         isInteger_helper("-1/2", false);
+
         isInteger_helper(PI_DOUBLE, false);
         isInteger_helper(PI_DOUBLE.negate(), false);
     }
@@ -631,13 +661,14 @@ public class RationalTest {
         bigIntegerValue_RoundingMode_helper("-5/2", "HALF_EVEN", -2);
         bigIntegerValue_RoundingMode_helper("-11/2", "HALF_EVEN", -6);
 
+        bigIntegerValue_RoundingMode_helper("1", "UNNECESSARY", 1);
+        bigIntegerValue_RoundingMode_helper("0", "UNNECESSARY", 0);
+        bigIntegerValue_RoundingMode_helper("-1", "UNNECESSARY", -1);
+
         bigIntegerValue_RoundingMode_fail_helper("11/2", "UNNECESSARY");
         bigIntegerValue_RoundingMode_fail_helper("5/2", "UNNECESSARY");
         bigIntegerValue_RoundingMode_fail_helper("8/5", "UNNECESSARY");
         bigIntegerValue_RoundingMode_fail_helper("11/10", "UNNECESSARY");
-        bigIntegerValue_RoundingMode_helper("1", "UNNECESSARY", 1);
-        bigIntegerValue_RoundingMode_helper("0", "UNNECESSARY", 0);
-        bigIntegerValue_RoundingMode_helper("-1", "UNNECESSARY", -1);
         bigIntegerValue_RoundingMode_fail_helper("-11/10", "UNNECESSARY");
         bigIntegerValue_RoundingMode_fail_helper("-8/5", "UNNECESSARY");
         bigIntegerValue_RoundingMode_fail_helper("-5/2", "UNNECESSARY");
@@ -711,13 +742,14 @@ public class RationalTest {
 
     @Test
     public void testBigIntegerValueExact() {
+        bigIntegerValueExact_helper("1", 1);
+        bigIntegerValueExact_helper("0", 0);
+        bigIntegerValueExact_helper("-1", -1);
+
         bigIntegerValueExact_fail_helper("11/2");
         bigIntegerValueExact_fail_helper("5/2");
         bigIntegerValueExact_fail_helper("8/5");
         bigIntegerValueExact_fail_helper("11/10");
-        bigIntegerValueExact_helper("1", 1);
-        bigIntegerValueExact_helper("0", 0);
-        bigIntegerValueExact_helper("-1", -1);
         bigIntegerValueExact_fail_helper("-11/10");
         bigIntegerValueExact_fail_helper("-8/5");
         bigIntegerValueExact_fail_helper("-5/2");
@@ -742,6 +774,7 @@ public class RationalTest {
         byteValueExact_helper("-1");
         byteValueExact_helper("23");
         byteValueExact_helper("8");
+
         byteValueExact_fail_helper("11/2");
         byteValueExact_fail_helper("-8/5");
         byteValueExact_fail_helper("1000");
@@ -765,6 +798,7 @@ public class RationalTest {
         shortValueExact_helper("-1");
         shortValueExact_helper("23");
         shortValueExact_helper("8");
+
         shortValueExact_fail_helper("11/2");
         shortValueExact_fail_helper("-8/5");
         shortValueExact_fail_helper("100000");
@@ -788,6 +822,7 @@ public class RationalTest {
         intValueExact_helper("-1");
         intValueExact_helper("23");
         intValueExact_helper("8");
+
         intValueExact_fail_helper("11/2");
         intValueExact_fail_helper("-8/5");
         intValueExact_fail_helper("10000000000");
@@ -811,6 +846,7 @@ public class RationalTest {
         longValueExact_helper("-1");
         longValueExact_helper("23");
         longValueExact_helper("8");
+
         longValueExact_fail_helper("11/2");
         longValueExact_fail_helper("-8/5");
         longValueExact_fail_helper("10000000000000000000");
@@ -836,6 +872,7 @@ public class RationalTest {
         isPowerOfTwo_helper("1/256", true);
         isPowerOfTwo_helper("3", false);
         isPowerOfTwo_helper("1/3", false);
+
         isPowerOfTwo_fail_helper("0");
         isPowerOfTwo_fail_helper("-1");
         isPowerOfTwo_fail_helper("-1/2");
@@ -913,6 +950,7 @@ public class RationalTest {
         binaryFractionValueExact_helper("3/4", "3 >> 2");
         binaryFractionValueExact_helper("-1/4", "-1 >> 2");
         binaryFractionValueExact_helper("-3/4", "-3 >> 2");
+
         binaryFractionValueExact_fail_helper("1/3");
         binaryFractionValueExact_fail_helper("1/10");
         binaryFractionValueExact_fail_helper("-1/3");
@@ -942,6 +980,7 @@ public class RationalTest {
         binaryExponent_helper("1/128", -7);
         binaryExponent_helper("1/129", -8);
         binaryExponent_helper("1", 0);
+
         binaryExponent_fail_helper("0");
         binaryExponent_fail_helper("-2/3");
     }
@@ -1091,7 +1130,6 @@ public class RationalTest {
         floatValue_RoundingMode_helper("1/3", "HALF_DOWN", 0.33333334f);
         floatValue_RoundingMode_helper("1/3", "HALF_UP", 0.33333334f);
         floatValue_RoundingMode_helper("1/3", "HALF_EVEN", 0.33333334f);
-        floatValue_RoundingMode_fail_helper("1/3", "UNNECESSARY");
 
         floatValue_RoundingMode_helper("-1/3", "FLOOR", -0.33333334f);
         floatValue_RoundingMode_helper("-1/3", "CEILING", -0.3333333f);
@@ -1100,7 +1138,6 @@ public class RationalTest {
         floatValue_RoundingMode_helper("-1/3", "HALF_DOWN", -0.33333334f);
         floatValue_RoundingMode_helper("-1/3", "HALF_UP", -0.33333334f);
         floatValue_RoundingMode_helper("-1/3", "HALF_EVEN", -0.33333334f);
-        floatValue_RoundingMode_fail_helper("-1/3", "UNNECESSARY");
 
         floatValue_RoundingMode_helper(ALMOST_ONE, "FLOOR", 0.99999994f);
         floatValue_RoundingMode_helper(ALMOST_ONE, "CEILING", 1.0f);
@@ -1109,7 +1146,6 @@ public class RationalTest {
         floatValue_RoundingMode_helper(ALMOST_ONE, "HALF_DOWN", 1.0f);
         floatValue_RoundingMode_helper(ALMOST_ONE, "HALF_UP", 1.0f);
         floatValue_RoundingMode_helper(ALMOST_ONE, "HALF_EVEN", 1.0f);
-        floatValue_RoundingMode_fail_helper(ALMOST_ONE, "UNNECESSARY");
 
         floatValue_RoundingMode_helper(TRILLION, "FLOOR", 1.0E12f);
         floatValue_RoundingMode_helper(TRILLION, "CEILING", 1.00000006E12f);
@@ -1118,7 +1154,6 @@ public class RationalTest {
         floatValue_RoundingMode_helper(TRILLION, "HALF_DOWN", 1.0E12f);
         floatValue_RoundingMode_helper(TRILLION, "HALF_UP", 1.0E12f);
         floatValue_RoundingMode_helper(TRILLION, "HALF_EVEN", 1.0E12f);
-        floatValue_RoundingMode_fail_helper(TRILLION, "UNNECESSARY");
 
         floatValue_RoundingMode_helper(PI_FLOAT, "FLOOR", 3.1415927f);
         floatValue_RoundingMode_helper(PI_FLOAT, "CEILING", 3.1415927f);
@@ -1136,7 +1171,6 @@ public class RationalTest {
         floatValue_RoundingMode_helper(HALF_ABOVE_PI_FLOAT, "HALF_DOWN", 3.1415927f);
         floatValue_RoundingMode_helper(HALF_ABOVE_PI_FLOAT, "HALF_UP", 3.141593f);
         floatValue_RoundingMode_helper(HALF_ABOVE_PI_FLOAT, "HALF_EVEN", 3.141593f);
-        floatValue_RoundingMode_fail_helper(HALF_ABOVE_PI_FLOAT, "UNNECESSARY");
 
         floatValue_RoundingMode_helper(HALF_BELOW_PI_FLOAT, "FLOOR", 3.1415925f);
         floatValue_RoundingMode_helper(HALF_BELOW_PI_FLOAT, "CEILING", 3.1415927f);
@@ -1145,7 +1179,6 @@ public class RationalTest {
         floatValue_RoundingMode_helper(HALF_BELOW_PI_FLOAT, "HALF_DOWN", 3.1415925f);
         floatValue_RoundingMode_helper(HALF_BELOW_PI_FLOAT, "HALF_UP", 3.1415927f);
         floatValue_RoundingMode_helper(HALF_BELOW_PI_FLOAT, "HALF_EVEN", 3.1415925f);
-        floatValue_RoundingMode_fail_helper(HALF_BELOW_PI_FLOAT, "UNNECESSARY");
 
         floatValue_RoundingMode_helper(JUST_ABOVE_PI_FLOAT, "FLOOR", 3.1415927f);
         floatValue_RoundingMode_helper(JUST_ABOVE_PI_FLOAT, "CEILING", 3.141593f);
@@ -1154,7 +1187,6 @@ public class RationalTest {
         floatValue_RoundingMode_helper(JUST_ABOVE_PI_FLOAT, "HALF_DOWN", 3.1415927f);
         floatValue_RoundingMode_helper(JUST_ABOVE_PI_FLOAT, "HALF_UP", 3.1415927f);
         floatValue_RoundingMode_helper(JUST_ABOVE_PI_FLOAT, "HALF_EVEN", 3.1415927f);
-        floatValue_RoundingMode_fail_helper(JUST_ABOVE_PI_FLOAT, "UNNECESSARY");
 
         floatValue_RoundingMode_helper(JUST_BELOW_PI_FLOAT, "FLOOR", 3.1415925f);
         floatValue_RoundingMode_helper(JUST_BELOW_PI_FLOAT, "CEILING", 3.1415927f);
@@ -1163,7 +1195,6 @@ public class RationalTest {
         floatValue_RoundingMode_helper(JUST_BELOW_PI_FLOAT, "HALF_DOWN", 3.1415927f);
         floatValue_RoundingMode_helper(JUST_BELOW_PI_FLOAT, "HALF_UP", 3.1415927f);
         floatValue_RoundingMode_helper(JUST_BELOW_PI_FLOAT, "HALF_EVEN", 3.1415927f);
-        floatValue_RoundingMode_fail_helper(JUST_BELOW_PI_FLOAT, "UNNECESSARY");
 
         floatValue_RoundingMode_helper(SUBNORMAL_FLOAT, "FLOOR", 1.0E-40f);
         floatValue_RoundingMode_helper(SUBNORMAL_FLOAT, "CEILING", 1.0E-40f);
@@ -1181,7 +1212,6 @@ public class RationalTest {
         floatValue_RoundingMode_helper(HALF_ABOVE_SUBNORMAL_FLOAT, "HALF_DOWN", 1.0E-40f);
         floatValue_RoundingMode_helper(HALF_ABOVE_SUBNORMAL_FLOAT, "HALF_UP", 1.00001E-40f);
         floatValue_RoundingMode_helper(HALF_ABOVE_SUBNORMAL_FLOAT, "HALF_EVEN", 1.0E-40f);
-        floatValue_RoundingMode_fail_helper(HALF_ABOVE_SUBNORMAL_FLOAT, "UNNECESSARY");
 
         floatValue_RoundingMode_helper(HALF_BELOW_SUBNORMAL_FLOAT, "FLOOR", 9.9998E-41f);
         floatValue_RoundingMode_helper(HALF_BELOW_SUBNORMAL_FLOAT, "CEILING", 1.0E-40f);
@@ -1190,7 +1220,6 @@ public class RationalTest {
         floatValue_RoundingMode_helper(HALF_BELOW_SUBNORMAL_FLOAT, "HALF_DOWN", 9.9998E-41f);
         floatValue_RoundingMode_helper(HALF_BELOW_SUBNORMAL_FLOAT, "HALF_UP", 1.0E-40f);
         floatValue_RoundingMode_helper(HALF_BELOW_SUBNORMAL_FLOAT, "HALF_EVEN", 1.0E-40f);
-        floatValue_RoundingMode_fail_helper(HALF_BELOW_SUBNORMAL_FLOAT, "UNNECESSARY");
 
         floatValue_RoundingMode_helper(JUST_ABOVE_SUBNORMAL_FLOAT, "FLOOR", 1.0E-40f);
         floatValue_RoundingMode_helper(JUST_ABOVE_SUBNORMAL_FLOAT, "CEILING", 1.00001E-40f);
@@ -1199,7 +1228,6 @@ public class RationalTest {
         floatValue_RoundingMode_helper(JUST_ABOVE_SUBNORMAL_FLOAT, "HALF_DOWN", 1.0E-40f);
         floatValue_RoundingMode_helper(JUST_ABOVE_SUBNORMAL_FLOAT, "HALF_UP", 1.0E-40f);
         floatValue_RoundingMode_helper(JUST_ABOVE_SUBNORMAL_FLOAT, "HALF_EVEN", 1.0E-40f);
-        floatValue_RoundingMode_fail_helper(JUST_ABOVE_SUBNORMAL_FLOAT, "UNNECESSARY");
 
         floatValue_RoundingMode_helper(JUST_BELOW_SUBNORMAL_FLOAT, "FLOOR", 9.9998E-41f);
         floatValue_RoundingMode_helper(JUST_BELOW_SUBNORMAL_FLOAT, "CEILING", 1.0E-40f);
@@ -1208,7 +1236,6 @@ public class RationalTest {
         floatValue_RoundingMode_helper(JUST_BELOW_SUBNORMAL_FLOAT, "HALF_DOWN", 1.0E-40f);
         floatValue_RoundingMode_helper(JUST_BELOW_SUBNORMAL_FLOAT, "HALF_UP", 1.0E-40f);
         floatValue_RoundingMode_helper(JUST_BELOW_SUBNORMAL_FLOAT, "HALF_EVEN", 1.0E-40f);
-        floatValue_RoundingMode_fail_helper(JUST_BELOW_SUBNORMAL_FLOAT, "UNNECESSARY");
 
         floatValue_RoundingMode_helper(BELOW_NEGATIVE_MAX_FLOAT, "FLOOR", Float.NEGATIVE_INFINITY);
         floatValue_RoundingMode_helper(BELOW_NEGATIVE_MAX_FLOAT, "CEILING", -3.4028235E38f);
@@ -1217,7 +1244,6 @@ public class RationalTest {
         floatValue_RoundingMode_helper(BELOW_NEGATIVE_MAX_FLOAT, "HALF_DOWN", -3.4028235E38f);
         floatValue_RoundingMode_helper(BELOW_NEGATIVE_MAX_FLOAT, "HALF_UP", Float.NEGATIVE_INFINITY);
         floatValue_RoundingMode_helper(BELOW_NEGATIVE_MAX_FLOAT, "HALF_EVEN", Float.NEGATIVE_INFINITY);
-        floatValue_RoundingMode_fail_helper(BELOW_NEGATIVE_MAX_FLOAT, "UNNECESSARY");
 
         floatValue_RoundingMode_helper(HALF_ABOVE_NEGATIVE_MAX_FLOAT, "FLOOR", -3.4028235E38f);
         floatValue_RoundingMode_helper(HALF_ABOVE_NEGATIVE_MAX_FLOAT, "CEILING", -3.4028233E38f);
@@ -1226,7 +1252,6 @@ public class RationalTest {
         floatValue_RoundingMode_helper(HALF_ABOVE_NEGATIVE_MAX_FLOAT, "HALF_DOWN", -3.4028233E38f);
         floatValue_RoundingMode_helper(HALF_ABOVE_NEGATIVE_MAX_FLOAT, "HALF_UP", -3.4028235E38f);
         floatValue_RoundingMode_helper(HALF_ABOVE_NEGATIVE_MAX_FLOAT, "HALF_EVEN", -3.4028233E38f);
-        floatValue_RoundingMode_fail_helper(HALF_ABOVE_NEGATIVE_MAX_FLOAT, "UNNECESSARY");
 
         floatValue_RoundingMode_helper(JUST_ABOVE_NEGATIVE_MAX_FLOAT, "FLOOR", -3.4028235E38f);
         floatValue_RoundingMode_helper(JUST_ABOVE_NEGATIVE_MAX_FLOAT, "CEILING", -3.4028233E38f);
@@ -1235,7 +1260,6 @@ public class RationalTest {
         floatValue_RoundingMode_helper(JUST_ABOVE_NEGATIVE_MAX_FLOAT, "HALF_DOWN", -3.4028235E38f);
         floatValue_RoundingMode_helper(JUST_ABOVE_NEGATIVE_MAX_FLOAT, "HALF_UP", -3.4028235E38f);
         floatValue_RoundingMode_helper(JUST_ABOVE_NEGATIVE_MAX_FLOAT, "HALF_EVEN", -3.4028235E38f);
-        floatValue_RoundingMode_fail_helper(JUST_ABOVE_NEGATIVE_MAX_FLOAT, "UNNECESSARY");
 
         floatValue_RoundingMode_helper(ABOVE_MAX_FLOAT, "FLOOR", 3.4028235E38f);
         floatValue_RoundingMode_helper(ABOVE_MAX_FLOAT, "CEILING", Float.POSITIVE_INFINITY);
@@ -1244,7 +1268,6 @@ public class RationalTest {
         floatValue_RoundingMode_helper(ABOVE_MAX_FLOAT, "HALF_DOWN", 3.4028235E38f);
         floatValue_RoundingMode_helper(ABOVE_MAX_FLOAT, "HALF_UP", Float.POSITIVE_INFINITY);
         floatValue_RoundingMode_helper(ABOVE_MAX_FLOAT, "HALF_EVEN", Float.POSITIVE_INFINITY);
-        floatValue_RoundingMode_fail_helper(ABOVE_MAX_FLOAT, "UNNECESSARY");
 
         floatValue_RoundingMode_helper(HALF_BELOW_MAX_FLOAT, "FLOOR", 3.4028233E38f);
         floatValue_RoundingMode_helper(HALF_BELOW_MAX_FLOAT, "CEILING", 3.4028235E38f);
@@ -1253,7 +1276,6 @@ public class RationalTest {
         floatValue_RoundingMode_helper(HALF_BELOW_MAX_FLOAT, "HALF_DOWN", 3.4028233E38f);
         floatValue_RoundingMode_helper(HALF_BELOW_MAX_FLOAT, "HALF_UP", 3.4028235E38f);
         floatValue_RoundingMode_helper(HALF_BELOW_MAX_FLOAT, "HALF_EVEN", 3.4028233E38f);
-        floatValue_RoundingMode_fail_helper(HALF_BELOW_MAX_FLOAT, "UNNECESSARY");
 
         floatValue_RoundingMode_helper(JUST_BELOW_MAX_FLOAT, "FLOOR", 3.4028233E38f);
         floatValue_RoundingMode_helper(JUST_BELOW_MAX_FLOAT, "CEILING", 3.4028235E38f);
@@ -1262,7 +1284,6 @@ public class RationalTest {
         floatValue_RoundingMode_helper(JUST_BELOW_MAX_FLOAT, "HALF_DOWN", 3.4028235E38f);
         floatValue_RoundingMode_helper(JUST_BELOW_MAX_FLOAT, "HALF_UP", 3.4028235E38f);
         floatValue_RoundingMode_helper(JUST_BELOW_MAX_FLOAT, "HALF_EVEN", 3.4028235E38f);
-        floatValue_RoundingMode_fail_helper(JUST_BELOW_MAX_FLOAT, "UNNECESSARY");
 
         floatValue_RoundingMode_helper(HALF_BELOW_ZERO_FLOAT, "FLOOR", -1.4E-45f);
         floatValue_RoundingMode_helper(HALF_BELOW_ZERO_FLOAT, "CEILING", -0.0f);
@@ -1271,7 +1292,6 @@ public class RationalTest {
         floatValue_RoundingMode_helper(HALF_BELOW_ZERO_FLOAT, "HALF_DOWN", -0.0f);
         floatValue_RoundingMode_helper(HALF_BELOW_ZERO_FLOAT, "HALF_UP", -1.4E-45f);
         floatValue_RoundingMode_helper(HALF_BELOW_ZERO_FLOAT, "HALF_EVEN", -0.0f);
-        floatValue_RoundingMode_fail_helper(HALF_BELOW_ZERO_FLOAT, "UNNECESSARY");
 
         floatValue_RoundingMode_helper(JUST_BELOW_ZERO_FLOAT, "FLOOR", -1.4E-45f);
         floatValue_RoundingMode_helper(JUST_BELOW_ZERO_FLOAT, "CEILING", -0.0f);
@@ -1280,7 +1300,6 @@ public class RationalTest {
         floatValue_RoundingMode_helper(JUST_BELOW_ZERO_FLOAT, "HALF_DOWN", -0.0f);
         floatValue_RoundingMode_helper(JUST_BELOW_ZERO_FLOAT, "HALF_UP", -0.0f);
         floatValue_RoundingMode_helper(JUST_BELOW_ZERO_FLOAT, "HALF_EVEN", -0.0f);
-        floatValue_RoundingMode_fail_helper(JUST_BELOW_ZERO_FLOAT, "UNNECESSARY");
 
         floatValue_RoundingMode_helper(HALF_ABOVE_ZERO_FLOAT, "FLOOR", 0.0f);
         floatValue_RoundingMode_helper(HALF_ABOVE_ZERO_FLOAT, "CEILING", 1.4E-45f);
@@ -1289,7 +1308,6 @@ public class RationalTest {
         floatValue_RoundingMode_helper(HALF_ABOVE_ZERO_FLOAT, "HALF_DOWN", 0.0f);
         floatValue_RoundingMode_helper(HALF_ABOVE_ZERO_FLOAT, "HALF_UP", 1.4E-45f);
         floatValue_RoundingMode_helper(HALF_ABOVE_ZERO_FLOAT, "HALF_EVEN", 0.0f);
-        floatValue_RoundingMode_fail_helper(HALF_ABOVE_ZERO_FLOAT, "UNNECESSARY");
 
         floatValue_RoundingMode_helper(JUST_ABOVE_ZERO_FLOAT, "FLOOR", 0.0f);
         floatValue_RoundingMode_helper(JUST_ABOVE_ZERO_FLOAT, "CEILING", 1.4E-45f);
@@ -1298,7 +1316,6 @@ public class RationalTest {
         floatValue_RoundingMode_helper(JUST_ABOVE_ZERO_FLOAT, "HALF_DOWN", 0.0f);
         floatValue_RoundingMode_helper(JUST_ABOVE_ZERO_FLOAT, "HALF_UP", 0.0f);
         floatValue_RoundingMode_helper(JUST_ABOVE_ZERO_FLOAT, "HALF_EVEN", 0.0f);
-        floatValue_RoundingMode_fail_helper(JUST_ABOVE_ZERO_FLOAT, "UNNECESSARY");
 
         floatValue_RoundingMode_helper(BOUNDARY_FLOAT, "FLOOR", 1.1754942E-38f);
         floatValue_RoundingMode_helper(BOUNDARY_FLOAT, "CEILING", 1.17549435E-38f);
@@ -1307,7 +1324,6 @@ public class RationalTest {
         floatValue_RoundingMode_helper(BOUNDARY_FLOAT, "HALF_DOWN", 1.1754942E-38f);
         floatValue_RoundingMode_helper(BOUNDARY_FLOAT, "HALF_UP", 1.17549435E-38f);
         floatValue_RoundingMode_helper(BOUNDARY_FLOAT, "HALF_EVEN", 1.17549435E-38f);
-        floatValue_RoundingMode_fail_helper(BOUNDARY_FLOAT, "UNNECESSARY");
 
         floatValue_RoundingMode_helper(JUST_BELOW_BOUNDARY_FLOAT, "FLOOR", 1.1754942E-38f);
         floatValue_RoundingMode_helper(JUST_BELOW_BOUNDARY_FLOAT, "CEILING", 1.17549435E-38f);
@@ -1316,7 +1332,6 @@ public class RationalTest {
         floatValue_RoundingMode_helper(JUST_BELOW_BOUNDARY_FLOAT, "HALF_DOWN", 1.1754942E-38f);
         floatValue_RoundingMode_helper(JUST_BELOW_BOUNDARY_FLOAT, "HALF_UP", 1.1754942E-38f);
         floatValue_RoundingMode_helper(JUST_BELOW_BOUNDARY_FLOAT, "HALF_EVEN", 1.1754942E-38f);
-        floatValue_RoundingMode_fail_helper(JUST_BELOW_BOUNDARY_FLOAT, "UNNECESSARY");
 
         floatValue_RoundingMode_helper(JUST_ABOVE_BOUNDARY_FLOAT, "FLOOR", 1.1754942E-38f);
         floatValue_RoundingMode_helper(JUST_ABOVE_BOUNDARY_FLOAT, "CEILING", 1.17549435E-38f);
@@ -1325,6 +1340,31 @@ public class RationalTest {
         floatValue_RoundingMode_helper(JUST_ABOVE_BOUNDARY_FLOAT, "HALF_DOWN", 1.17549435E-38f);
         floatValue_RoundingMode_helper(JUST_ABOVE_BOUNDARY_FLOAT, "HALF_UP", 1.17549435E-38f);
         floatValue_RoundingMode_helper(JUST_ABOVE_BOUNDARY_FLOAT, "HALF_EVEN", 1.17549435E-38f);
+
+        floatValue_RoundingMode_fail_helper("1/3", "UNNECESSARY");
+        floatValue_RoundingMode_fail_helper("-1/3", "UNNECESSARY");
+        floatValue_RoundingMode_fail_helper(ALMOST_ONE, "UNNECESSARY");
+        floatValue_RoundingMode_fail_helper(TRILLION, "UNNECESSARY");
+        floatValue_RoundingMode_fail_helper(HALF_ABOVE_PI_FLOAT, "UNNECESSARY");
+        floatValue_RoundingMode_fail_helper(HALF_BELOW_PI_FLOAT, "UNNECESSARY");
+        floatValue_RoundingMode_fail_helper(JUST_ABOVE_PI_FLOAT, "UNNECESSARY");
+        floatValue_RoundingMode_fail_helper(JUST_BELOW_PI_FLOAT, "UNNECESSARY");
+        floatValue_RoundingMode_fail_helper(HALF_ABOVE_SUBNORMAL_FLOAT, "UNNECESSARY");
+        floatValue_RoundingMode_fail_helper(HALF_BELOW_SUBNORMAL_FLOAT, "UNNECESSARY");
+        floatValue_RoundingMode_fail_helper(JUST_ABOVE_SUBNORMAL_FLOAT, "UNNECESSARY");
+        floatValue_RoundingMode_fail_helper(JUST_BELOW_SUBNORMAL_FLOAT, "UNNECESSARY");
+        floatValue_RoundingMode_fail_helper(BELOW_NEGATIVE_MAX_FLOAT, "UNNECESSARY");
+        floatValue_RoundingMode_fail_helper(HALF_ABOVE_NEGATIVE_MAX_FLOAT, "UNNECESSARY");
+        floatValue_RoundingMode_fail_helper(JUST_ABOVE_NEGATIVE_MAX_FLOAT, "UNNECESSARY");
+        floatValue_RoundingMode_fail_helper(ABOVE_MAX_FLOAT, "UNNECESSARY");
+        floatValue_RoundingMode_fail_helper(HALF_BELOW_MAX_FLOAT, "UNNECESSARY");
+        floatValue_RoundingMode_fail_helper(JUST_BELOW_MAX_FLOAT, "UNNECESSARY");
+        floatValue_RoundingMode_fail_helper(HALF_BELOW_ZERO_FLOAT, "UNNECESSARY");
+        floatValue_RoundingMode_fail_helper(JUST_BELOW_ZERO_FLOAT, "UNNECESSARY");
+        floatValue_RoundingMode_fail_helper(HALF_ABOVE_ZERO_FLOAT, "UNNECESSARY");
+        floatValue_RoundingMode_fail_helper(JUST_ABOVE_ZERO_FLOAT, "UNNECESSARY");
+        floatValue_RoundingMode_fail_helper(BOUNDARY_FLOAT, "UNNECESSARY");
+        floatValue_RoundingMode_fail_helper(JUST_BELOW_BOUNDARY_FLOAT, "UNNECESSARY");
         floatValue_RoundingMode_fail_helper(JUST_ABOVE_BOUNDARY_FLOAT, "UNNECESSARY");
     }
 
@@ -1394,16 +1434,17 @@ public class RationalTest {
         floatValueExact_helper("0", 0.0f);
         floatValueExact_helper("1", 1.0f);
         floatValueExact_helper("1/2", 0.5f);
+        floatValueExact_helper(PI_FLOAT, 3.1415927f);
+        floatValueExact_helper(SUBNORMAL_FLOAT, 1.0E-40f);
+
         floatValueExact_fail_helper("1/3");
         floatValueExact_fail_helper("-1/3");
         floatValueExact_fail_helper(ALMOST_ONE);
         floatValueExact_fail_helper(TRILLION);
-        floatValueExact_helper(PI_FLOAT, 3.1415927f);
         floatValueExact_fail_helper(HALF_ABOVE_PI_FLOAT);
         floatValueExact_fail_helper(HALF_BELOW_PI_FLOAT);
         floatValueExact_fail_helper(JUST_ABOVE_PI_FLOAT);
         floatValueExact_fail_helper(JUST_BELOW_PI_FLOAT);
-        floatValueExact_helper(SUBNORMAL_FLOAT, 1.0E-40f);
         floatValueExact_fail_helper(HALF_ABOVE_SUBNORMAL_FLOAT);
         floatValueExact_fail_helper(HALF_BELOW_SUBNORMAL_FLOAT);
         floatValueExact_fail_helper(JUST_ABOVE_SUBNORMAL_FLOAT);
