@@ -17,7 +17,6 @@ import static mho.qbar.objects.Rational.*;
 import static mho.qbar.objects.Rational.sum;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.*;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 public class RationalTest {
@@ -1527,7 +1526,6 @@ public class RationalTest {
         doubleValue_RoundingMode_helper("1/3", "HALF_DOWN", 0.3333333333333333);
         doubleValue_RoundingMode_helper("1/3", "HALF_UP", 0.3333333333333333);
         doubleValue_RoundingMode_helper("1/3", "HALF_EVEN", 0.3333333333333333);
-        doubleValue_RoundingMode_fail_helper("1/3", "UNNECESSARY");
 
         doubleValue_RoundingMode_helper("-1/3", "FLOOR", -0.33333333333333337);
         doubleValue_RoundingMode_helper("-1/3", "CEILING", -0.3333333333333333);
@@ -1536,7 +1534,6 @@ public class RationalTest {
         doubleValue_RoundingMode_helper("-1/3", "HALF_DOWN", -0.3333333333333333);
         doubleValue_RoundingMode_helper("-1/3", "HALF_UP", -0.3333333333333333);
         doubleValue_RoundingMode_helper("-1/3", "HALF_EVEN", -0.3333333333333333);
-        doubleValue_RoundingMode_fail_helper("-1/3", "UNNECESSARY");
 
         doubleValue_RoundingMode_helper(ALMOST_ONE, "FLOOR", 0.9999999999999999);
         doubleValue_RoundingMode_helper(ALMOST_ONE, "CEILING", 1.0);
@@ -1545,7 +1542,6 @@ public class RationalTest {
         doubleValue_RoundingMode_helper(ALMOST_ONE, "HALF_DOWN", 1.0);
         doubleValue_RoundingMode_helper(ALMOST_ONE, "HALF_UP", 1.0);
         doubleValue_RoundingMode_helper(ALMOST_ONE, "HALF_EVEN", 1.0);
-        doubleValue_RoundingMode_fail_helper(ALMOST_ONE, "UNNECESSARY");
 
         doubleValue_RoundingMode_helper(GOOGOL, "FLOOR", 9.999999999999998E99);
         doubleValue_RoundingMode_helper(GOOGOL, "CEILING", 1.0E100);
@@ -1554,7 +1550,6 @@ public class RationalTest {
         doubleValue_RoundingMode_helper(GOOGOL, "HALF_DOWN", 1.0E100);
         doubleValue_RoundingMode_helper(GOOGOL, "HALF_UP", 1.0E100);
         doubleValue_RoundingMode_helper(GOOGOL, "HALF_EVEN", 1.0E100);
-        doubleValue_RoundingMode_fail_helper(GOOGOL, "UNNECESSARY");
 
         doubleValue_RoundingMode_helper(PI_DOUBLE, "FLOOR", 3.141592653589793);
         doubleValue_RoundingMode_helper(PI_DOUBLE, "CEILING", 3.141592653589793);
@@ -1572,7 +1567,6 @@ public class RationalTest {
         doubleValue_RoundingMode_helper(HALF_ABOVE_PI_DOUBLE, "HALF_DOWN", 3.141592653589793);
         doubleValue_RoundingMode_helper(HALF_ABOVE_PI_DOUBLE, "HALF_UP", 3.1415926535897936);
         doubleValue_RoundingMode_helper(HALF_ABOVE_PI_DOUBLE, "HALF_EVEN", 3.141592653589793);
-        doubleValue_RoundingMode_fail_helper(HALF_ABOVE_PI_DOUBLE, "UNNECESSARY");
 
         doubleValue_RoundingMode_helper(HALF_BELOW_PI_DOUBLE, "FLOOR", 3.1415926535897927);
         doubleValue_RoundingMode_helper(HALF_BELOW_PI_DOUBLE, "CEILING", 3.141592653589793);
@@ -1581,7 +1575,6 @@ public class RationalTest {
         doubleValue_RoundingMode_helper(HALF_BELOW_PI_DOUBLE, "HALF_DOWN", 3.1415926535897927);
         doubleValue_RoundingMode_helper(HALF_BELOW_PI_DOUBLE, "HALF_UP", 3.141592653589793);
         doubleValue_RoundingMode_helper(HALF_BELOW_PI_DOUBLE, "HALF_EVEN", 3.141592653589793);
-        doubleValue_RoundingMode_fail_helper(HALF_BELOW_PI_DOUBLE, "UNNECESSARY");
 
         doubleValue_RoundingMode_helper(JUST_ABOVE_PI_DOUBLE, "FLOOR", 3.141592653589793);
         doubleValue_RoundingMode_helper(JUST_ABOVE_PI_DOUBLE, "CEILING", 3.1415926535897936);
@@ -1590,7 +1583,6 @@ public class RationalTest {
         doubleValue_RoundingMode_helper(JUST_ABOVE_PI_DOUBLE, "HALF_DOWN", 3.141592653589793);
         doubleValue_RoundingMode_helper(JUST_ABOVE_PI_DOUBLE, "HALF_UP", 3.141592653589793);
         doubleValue_RoundingMode_helper(JUST_ABOVE_PI_DOUBLE, "HALF_EVEN", 3.141592653589793);
-        doubleValue_RoundingMode_fail_helper(JUST_ABOVE_PI_DOUBLE, "UNNECESSARY");
 
         doubleValue_RoundingMode_helper(JUST_BELOW_PI_DOUBLE, "FLOOR", 3.1415926535897927);
         doubleValue_RoundingMode_helper(JUST_BELOW_PI_DOUBLE, "CEILING", 3.141592653589793);
@@ -1599,7 +1591,6 @@ public class RationalTest {
         doubleValue_RoundingMode_helper(JUST_BELOW_PI_DOUBLE, "HALF_DOWN", 3.141592653589793);
         doubleValue_RoundingMode_helper(JUST_BELOW_PI_DOUBLE, "HALF_UP", 3.141592653589793);
         doubleValue_RoundingMode_helper(JUST_BELOW_PI_DOUBLE, "HALF_EVEN", 3.141592653589793);
-        doubleValue_RoundingMode_fail_helper(JUST_BELOW_PI_DOUBLE, "UNNECESSARY");
 
         doubleValue_RoundingMode_helper(SUBNORMAL_DOUBLE, "FLOOR", 1.0E-310);
         doubleValue_RoundingMode_helper(SUBNORMAL_DOUBLE, "CEILING", 1.0E-310);
@@ -1617,7 +1608,6 @@ public class RationalTest {
         doubleValue_RoundingMode_helper(HALF_ABOVE_SUBNORMAL_DOUBLE, "HALF_DOWN", 1.0E-310);
         doubleValue_RoundingMode_helper(HALF_ABOVE_SUBNORMAL_DOUBLE, "HALF_UP", 1.00000000000005E-310);
         doubleValue_RoundingMode_helper(HALF_ABOVE_SUBNORMAL_DOUBLE, "HALF_EVEN", 1.00000000000005E-310);
-        doubleValue_RoundingMode_fail_helper(HALF_ABOVE_SUBNORMAL_DOUBLE, "UNNECESSARY");
 
         doubleValue_RoundingMode_helper(HALF_BELOW_SUBNORMAL_DOUBLE, "FLOOR", 9.9999999999995E-311);
         doubleValue_RoundingMode_helper(HALF_BELOW_SUBNORMAL_DOUBLE, "CEILING", 1.0E-310);
@@ -1626,7 +1616,6 @@ public class RationalTest {
         doubleValue_RoundingMode_helper(HALF_BELOW_SUBNORMAL_DOUBLE, "HALF_DOWN", 9.9999999999995E-311);
         doubleValue_RoundingMode_helper(HALF_BELOW_SUBNORMAL_DOUBLE, "HALF_UP", 1.0E-310);
         doubleValue_RoundingMode_helper(HALF_BELOW_SUBNORMAL_DOUBLE, "HALF_EVEN", 9.9999999999995E-311);
-        doubleValue_RoundingMode_fail_helper(HALF_BELOW_SUBNORMAL_DOUBLE, "UNNECESSARY");
 
         doubleValue_RoundingMode_helper(JUST_ABOVE_SUBNORMAL_DOUBLE, "FLOOR", 1.0E-310);
         doubleValue_RoundingMode_helper(JUST_ABOVE_SUBNORMAL_DOUBLE, "CEILING", 1.00000000000005E-310);
@@ -1635,7 +1624,6 @@ public class RationalTest {
         doubleValue_RoundingMode_helper(JUST_ABOVE_SUBNORMAL_DOUBLE, "HALF_DOWN", 1.0E-310);
         doubleValue_RoundingMode_helper(JUST_ABOVE_SUBNORMAL_DOUBLE, "HALF_UP", 1.0E-310);
         doubleValue_RoundingMode_helper(JUST_ABOVE_SUBNORMAL_DOUBLE, "HALF_EVEN", 1.0E-310);
-        doubleValue_RoundingMode_fail_helper(JUST_ABOVE_SUBNORMAL_DOUBLE, "UNNECESSARY");
 
         doubleValue_RoundingMode_helper(JUST_BELOW_SUBNORMAL_DOUBLE, "FLOOR", 9.9999999999995E-311);
         doubleValue_RoundingMode_helper(JUST_BELOW_SUBNORMAL_DOUBLE, "CEILING", 1.0E-310);
@@ -1644,7 +1632,6 @@ public class RationalTest {
         doubleValue_RoundingMode_helper(JUST_BELOW_SUBNORMAL_DOUBLE, "HALF_DOWN", 1.0E-310);
         doubleValue_RoundingMode_helper(JUST_BELOW_SUBNORMAL_DOUBLE, "HALF_UP", 1.0E-310);
         doubleValue_RoundingMode_helper(JUST_BELOW_SUBNORMAL_DOUBLE, "HALF_EVEN", 1.0E-310);
-        doubleValue_RoundingMode_fail_helper(JUST_BELOW_SUBNORMAL_DOUBLE, "UNNECESSARY");
 
         doubleValue_RoundingMode_helper(BELOW_NEGATIVE_MAX_DOUBLE, "FLOOR", Double.NEGATIVE_INFINITY);
         doubleValue_RoundingMode_helper(BELOW_NEGATIVE_MAX_DOUBLE, "CEILING", -1.7976931348623157E308);
@@ -1653,7 +1640,6 @@ public class RationalTest {
         doubleValue_RoundingMode_helper(BELOW_NEGATIVE_MAX_DOUBLE, "HALF_DOWN", -1.7976931348623157E308);
         doubleValue_RoundingMode_helper(BELOW_NEGATIVE_MAX_DOUBLE, "HALF_UP", Double.NEGATIVE_INFINITY);
         doubleValue_RoundingMode_helper(BELOW_NEGATIVE_MAX_DOUBLE, "HALF_EVEN", Double.NEGATIVE_INFINITY);
-        doubleValue_RoundingMode_fail_helper(BELOW_NEGATIVE_MAX_DOUBLE, "UNNECESSARY");
 
         doubleValue_RoundingMode_helper(HALF_ABOVE_NEGATIVE_MAX_DOUBLE, "FLOOR", -1.7976931348623157E308);
         doubleValue_RoundingMode_helper(HALF_ABOVE_NEGATIVE_MAX_DOUBLE, "CEILING", -1.7976931348623155E308);
@@ -1662,7 +1648,6 @@ public class RationalTest {
         doubleValue_RoundingMode_helper(HALF_ABOVE_NEGATIVE_MAX_DOUBLE, "HALF_DOWN", -1.7976931348623155E308);
         doubleValue_RoundingMode_helper(HALF_ABOVE_NEGATIVE_MAX_DOUBLE, "HALF_UP", -1.7976931348623157E308);
         doubleValue_RoundingMode_helper(HALF_ABOVE_NEGATIVE_MAX_DOUBLE, "HALF_EVEN", -1.7976931348623155E308);
-        doubleValue_RoundingMode_fail_helper(HALF_ABOVE_NEGATIVE_MAX_DOUBLE, "UNNECESSARY");
 
         doubleValue_RoundingMode_helper(JUST_ABOVE_NEGATIVE_MAX_DOUBLE, "FLOOR", -1.7976931348623157E308);
         doubleValue_RoundingMode_helper(JUST_ABOVE_NEGATIVE_MAX_DOUBLE, "CEILING", -1.7976931348623155E308);
@@ -1671,7 +1656,6 @@ public class RationalTest {
         doubleValue_RoundingMode_helper(JUST_ABOVE_NEGATIVE_MAX_DOUBLE, "HALF_DOWN", -1.7976931348623157E308);
         doubleValue_RoundingMode_helper(JUST_ABOVE_NEGATIVE_MAX_DOUBLE, "HALF_UP", -1.7976931348623157E308);
         doubleValue_RoundingMode_helper(JUST_ABOVE_NEGATIVE_MAX_DOUBLE, "HALF_EVEN", -1.7976931348623157E308);
-        doubleValue_RoundingMode_fail_helper(JUST_ABOVE_NEGATIVE_MAX_DOUBLE, "UNNECESSARY");
 
         doubleValue_RoundingMode_helper(ABOVE_MAX_DOUBLE, "FLOOR", 1.7976931348623157E308);
         doubleValue_RoundingMode_helper(ABOVE_MAX_DOUBLE, "CEILING", Double.POSITIVE_INFINITY);
@@ -1680,7 +1664,6 @@ public class RationalTest {
         doubleValue_RoundingMode_helper(ABOVE_MAX_DOUBLE, "HALF_DOWN", 1.7976931348623157E308);
         doubleValue_RoundingMode_helper(ABOVE_MAX_DOUBLE, "HALF_UP", Double.POSITIVE_INFINITY);
         doubleValue_RoundingMode_helper(ABOVE_MAX_DOUBLE, "HALF_EVEN", Double.POSITIVE_INFINITY);
-        doubleValue_RoundingMode_fail_helper(ABOVE_MAX_DOUBLE, "UNNECESSARY");
 
         doubleValue_RoundingMode_helper(HALF_BELOW_MAX_DOUBLE, "FLOOR", 1.7976931348623155E308);
         doubleValue_RoundingMode_helper(HALF_BELOW_MAX_DOUBLE, "CEILING", 1.7976931348623157E308);
@@ -1689,7 +1672,6 @@ public class RationalTest {
         doubleValue_RoundingMode_helper(HALF_BELOW_MAX_DOUBLE, "HALF_DOWN", 1.7976931348623155E308);
         doubleValue_RoundingMode_helper(HALF_BELOW_MAX_DOUBLE, "HALF_UP", 1.7976931348623157E308);
         doubleValue_RoundingMode_helper(HALF_BELOW_MAX_DOUBLE, "HALF_EVEN", 1.7976931348623155E308);
-        doubleValue_RoundingMode_fail_helper(HALF_BELOW_MAX_DOUBLE, "UNNECESSARY");
 
         doubleValue_RoundingMode_helper(JUST_BELOW_MAX_DOUBLE, "FLOOR", 1.7976931348623155E308);
         doubleValue_RoundingMode_helper(JUST_BELOW_MAX_DOUBLE, "CEILING", 1.7976931348623157E308);
@@ -1698,7 +1680,6 @@ public class RationalTest {
         doubleValue_RoundingMode_helper(JUST_BELOW_MAX_DOUBLE, "HALF_DOWN", 1.7976931348623157E308);
         doubleValue_RoundingMode_helper(JUST_BELOW_MAX_DOUBLE, "HALF_UP", 1.7976931348623157E308);
         doubleValue_RoundingMode_helper(JUST_BELOW_MAX_DOUBLE, "HALF_EVEN", 1.7976931348623157E308);
-        doubleValue_RoundingMode_fail_helper(JUST_BELOW_MAX_DOUBLE, "UNNECESSARY");
 
         doubleValue_RoundingMode_helper(HALF_BELOW_ZERO_DOUBLE, "FLOOR", -4.9E-324);
         doubleValue_RoundingMode_helper(HALF_BELOW_ZERO_DOUBLE, "CEILING", -0.0);
@@ -1707,7 +1688,6 @@ public class RationalTest {
         doubleValue_RoundingMode_helper(HALF_BELOW_ZERO_DOUBLE, "HALF_DOWN", -0.0);
         doubleValue_RoundingMode_helper(HALF_BELOW_ZERO_DOUBLE, "HALF_UP", -4.9E-324);
         doubleValue_RoundingMode_helper(HALF_BELOW_ZERO_DOUBLE, "HALF_EVEN", -0.0);
-        doubleValue_RoundingMode_fail_helper(HALF_BELOW_ZERO_DOUBLE, "UNNECESSARY");
 
         doubleValue_RoundingMode_helper(JUST_BELOW_ZERO_DOUBLE, "FLOOR", -4.9E-324);
         doubleValue_RoundingMode_helper(JUST_BELOW_ZERO_DOUBLE, "CEILING", -0.0);
@@ -1716,7 +1696,6 @@ public class RationalTest {
         doubleValue_RoundingMode_helper(JUST_BELOW_ZERO_DOUBLE, "HALF_DOWN", -0.0);
         doubleValue_RoundingMode_helper(JUST_BELOW_ZERO_DOUBLE, "HALF_UP", -0.0);
         doubleValue_RoundingMode_helper(JUST_BELOW_ZERO_DOUBLE, "HALF_EVEN", -0.0);
-        doubleValue_RoundingMode_fail_helper(JUST_BELOW_ZERO_DOUBLE, "UNNECESSARY");
 
         doubleValue_RoundingMode_helper(HALF_ABOVE_ZERO_DOUBLE, "FLOOR", 0.0);
         doubleValue_RoundingMode_helper(HALF_ABOVE_ZERO_DOUBLE, "CEILING", 4.9E-324);
@@ -1725,7 +1704,6 @@ public class RationalTest {
         doubleValue_RoundingMode_helper(HALF_ABOVE_ZERO_DOUBLE, "HALF_DOWN", 0.0);
         doubleValue_RoundingMode_helper(HALF_ABOVE_ZERO_DOUBLE, "HALF_UP", 4.9E-324);
         doubleValue_RoundingMode_helper(HALF_ABOVE_ZERO_DOUBLE, "HALF_EVEN", 0.0);
-        doubleValue_RoundingMode_fail_helper(HALF_ABOVE_ZERO_DOUBLE, "UNNECESSARY");
 
         doubleValue_RoundingMode_helper(JUST_ABOVE_ZERO_DOUBLE, "FLOOR", 0.0);
         doubleValue_RoundingMode_helper(JUST_ABOVE_ZERO_DOUBLE, "CEILING", 4.9E-324);
@@ -1734,7 +1712,6 @@ public class RationalTest {
         doubleValue_RoundingMode_helper(JUST_ABOVE_ZERO_DOUBLE, "HALF_DOWN", 0.0);
         doubleValue_RoundingMode_helper(JUST_ABOVE_ZERO_DOUBLE, "HALF_UP", 0.0);
         doubleValue_RoundingMode_helper(JUST_ABOVE_ZERO_DOUBLE, "HALF_EVEN", 0.0);
-        doubleValue_RoundingMode_fail_helper(JUST_ABOVE_ZERO_DOUBLE, "UNNECESSARY");
 
         doubleValue_RoundingMode_helper(BOUNDARY_DOUBLE, "FLOOR", 2.225073858507201E-308);
         doubleValue_RoundingMode_helper(BOUNDARY_DOUBLE, "CEILING", 2.2250738585072014E-308);
@@ -1743,7 +1720,6 @@ public class RationalTest {
         doubleValue_RoundingMode_helper(BOUNDARY_DOUBLE, "HALF_DOWN", 2.225073858507201E-308);
         doubleValue_RoundingMode_helper(BOUNDARY_DOUBLE, "HALF_UP", 2.2250738585072014E-308);
         doubleValue_RoundingMode_helper(BOUNDARY_DOUBLE, "HALF_EVEN", 2.2250738585072014E-308);
-        doubleValue_RoundingMode_fail_helper(BOUNDARY_DOUBLE, "UNNECESSARY");
 
         doubleValue_RoundingMode_helper(JUST_BELOW_BOUNDARY_DOUBLE, "FLOOR", 2.225073858507201E-308);
         doubleValue_RoundingMode_helper(JUST_BELOW_BOUNDARY_DOUBLE, "CEILING", 2.2250738585072014E-308);
@@ -1752,7 +1728,6 @@ public class RationalTest {
         doubleValue_RoundingMode_helper(JUST_BELOW_BOUNDARY_DOUBLE, "HALF_DOWN", 2.225073858507201E-308);
         doubleValue_RoundingMode_helper(JUST_BELOW_BOUNDARY_DOUBLE, "HALF_UP", 2.225073858507201E-308);
         doubleValue_RoundingMode_helper(JUST_BELOW_BOUNDARY_DOUBLE, "HALF_EVEN", 2.225073858507201E-308);
-        doubleValue_RoundingMode_fail_helper(JUST_BELOW_BOUNDARY_DOUBLE, "UNNECESSARY");
 
         doubleValue_RoundingMode_helper(JUST_ABOVE_BOUNDARY_DOUBLE, "FLOOR", 2.225073858507201E-308);
         doubleValue_RoundingMode_helper(JUST_ABOVE_BOUNDARY_DOUBLE, "CEILING", 2.2250738585072014E-308);
@@ -1761,6 +1736,31 @@ public class RationalTest {
         doubleValue_RoundingMode_helper(JUST_ABOVE_BOUNDARY_DOUBLE, "HALF_DOWN", 2.2250738585072014E-308);
         doubleValue_RoundingMode_helper(JUST_ABOVE_BOUNDARY_DOUBLE, "HALF_UP", 2.2250738585072014E-308);
         doubleValue_RoundingMode_helper(JUST_ABOVE_BOUNDARY_DOUBLE, "HALF_EVEN", 2.2250738585072014E-308);
+
+        doubleValue_RoundingMode_fail_helper("1/3", "UNNECESSARY");
+        doubleValue_RoundingMode_fail_helper("-1/3", "UNNECESSARY");
+        doubleValue_RoundingMode_fail_helper(ALMOST_ONE, "UNNECESSARY");
+        doubleValue_RoundingMode_fail_helper(GOOGOL, "UNNECESSARY");
+        doubleValue_RoundingMode_fail_helper(HALF_ABOVE_PI_DOUBLE, "UNNECESSARY");
+        doubleValue_RoundingMode_fail_helper(HALF_BELOW_PI_DOUBLE, "UNNECESSARY");
+        doubleValue_RoundingMode_fail_helper(JUST_ABOVE_PI_DOUBLE, "UNNECESSARY");
+        doubleValue_RoundingMode_fail_helper(JUST_BELOW_PI_DOUBLE, "UNNECESSARY");
+        doubleValue_RoundingMode_fail_helper(HALF_ABOVE_SUBNORMAL_DOUBLE, "UNNECESSARY");
+        doubleValue_RoundingMode_fail_helper(HALF_BELOW_SUBNORMAL_DOUBLE, "UNNECESSARY");
+        doubleValue_RoundingMode_fail_helper(JUST_ABOVE_SUBNORMAL_DOUBLE, "UNNECESSARY");
+        doubleValue_RoundingMode_fail_helper(JUST_BELOW_SUBNORMAL_DOUBLE, "UNNECESSARY");
+        doubleValue_RoundingMode_fail_helper(BELOW_NEGATIVE_MAX_DOUBLE, "UNNECESSARY");
+        doubleValue_RoundingMode_fail_helper(HALF_ABOVE_NEGATIVE_MAX_DOUBLE, "UNNECESSARY");
+        doubleValue_RoundingMode_fail_helper(JUST_ABOVE_NEGATIVE_MAX_DOUBLE, "UNNECESSARY");
+        doubleValue_RoundingMode_fail_helper(ABOVE_MAX_DOUBLE, "UNNECESSARY");
+        doubleValue_RoundingMode_fail_helper(HALF_BELOW_MAX_DOUBLE, "UNNECESSARY");
+        doubleValue_RoundingMode_fail_helper(JUST_BELOW_MAX_DOUBLE, "UNNECESSARY");
+        doubleValue_RoundingMode_fail_helper(HALF_BELOW_ZERO_DOUBLE, "UNNECESSARY");
+        doubleValue_RoundingMode_fail_helper(JUST_BELOW_ZERO_DOUBLE, "UNNECESSARY");
+        doubleValue_RoundingMode_fail_helper(HALF_ABOVE_ZERO_DOUBLE, "UNNECESSARY");
+        doubleValue_RoundingMode_fail_helper(JUST_ABOVE_ZERO_DOUBLE, "UNNECESSARY");
+        doubleValue_RoundingMode_fail_helper(BOUNDARY_DOUBLE, "UNNECESSARY");
+        doubleValue_RoundingMode_fail_helper(JUST_BELOW_BOUNDARY_DOUBLE, "UNNECESSARY");
         doubleValue_RoundingMode_fail_helper(JUST_ABOVE_BOUNDARY_DOUBLE, "UNNECESSARY");
     }
 
@@ -1830,16 +1830,17 @@ public class RationalTest {
         doubleValueExact_helper("0", 0.0);
         doubleValueExact_helper("1", 1.0);
         doubleValueExact_helper("1/2", 0.5);
+        doubleValueExact_helper(PI_DOUBLE, 3.141592653589793);
+        doubleValueExact_helper(SUBNORMAL_DOUBLE, 1.0E-310);
+
         doubleValueExact_fail_helper("1/3");
         doubleValueExact_fail_helper("-1/3");
         doubleValueExact_fail_helper(ALMOST_ONE);
         doubleValueExact_fail_helper(GOOGOL);
-        doubleValueExact_helper(PI_DOUBLE, 3.141592653589793);
         doubleValueExact_fail_helper(HALF_ABOVE_PI_DOUBLE);
         doubleValueExact_fail_helper(HALF_BELOW_PI_DOUBLE);
         doubleValueExact_fail_helper(JUST_ABOVE_PI_DOUBLE);
         doubleValueExact_fail_helper(JUST_BELOW_PI_DOUBLE);
-        doubleValueExact_helper(SUBNORMAL_DOUBLE, 1.0E-310);
         doubleValueExact_fail_helper(HALF_ABOVE_SUBNORMAL_DOUBLE);
         doubleValueExact_fail_helper(HALF_BELOW_SUBNORMAL_DOUBLE);
         doubleValueExact_fail_helper(JUST_ABOVE_SUBNORMAL_DOUBLE);
@@ -2049,7 +2050,6 @@ public class RationalTest {
         bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 1, "HALF_DOWN", "0.02");
         bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 1, "HALF_UP", "0.02");
         bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 1, "HALF_EVEN", "0.02");
-        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("1/64", 1, "UNNECESSARY");
 
         bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 2, "FLOOR", "0.015");
         bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 2, "CEILING", "0.016");
@@ -2058,7 +2058,6 @@ public class RationalTest {
         bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 2, "HALF_DOWN", "0.016");
         bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 2, "HALF_UP", "0.016");
         bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 2, "HALF_EVEN", "0.016");
-        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("1/64", 2, "UNNECESSARY");
 
         bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 3, "FLOOR", "0.0156");
         bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 3, "CEILING", "0.0157");
@@ -2067,7 +2066,6 @@ public class RationalTest {
         bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 3, "HALF_DOWN", "0.0156");
         bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 3, "HALF_UP", "0.0156");
         bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 3, "HALF_EVEN", "0.0156");
-        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("1/64", 3, "UNNECESSARY");
 
         bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 4, "FLOOR", "0.01562");
         bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 4, "CEILING", "0.01563");
@@ -2076,7 +2074,6 @@ public class RationalTest {
         bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 4, "HALF_DOWN", "0.01562");
         bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 4, "HALF_UP", "0.01563");
         bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 4, "HALF_EVEN", "0.01562");
-        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("1/64", 4, "UNNECESSARY");
 
         bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 5, "FLOOR", "0.015625");
         bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 5, "CEILING", "0.015625");
@@ -2096,15 +2093,6 @@ public class RationalTest {
         bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 6, "HALF_EVEN", "0.0156250");
         bigDecimalValueByPrecision_int_RoundingMode_helper("1/64", 6, "UNNECESSARY", "0.0156250");
 
-        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("-1/3", 0, "FLOOR");
-        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("-1/3", 0, "CEILING");
-        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("-1/3", 0, "DOWN");
-        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("-1/3", 0, "UP");
-        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("-1/3", 0, "HALF_DOWN");
-        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("-1/3", 0, "HALF_UP");
-        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("-1/3", 0, "HALF_EVEN");
-        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("-1/3", 0, "UNNECESSARY");
-
         bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 1, "FLOOR", "-0.4");
         bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 1, "CEILING", "-0.3");
         bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 1, "DOWN", "-0.3");
@@ -2112,7 +2100,6 @@ public class RationalTest {
         bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 1, "HALF_DOWN", "-0.3");
         bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 1, "HALF_UP", "-0.3");
         bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 1, "HALF_EVEN", "-0.3");
-        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("-1/3", 1, "UNNECESSARY");
 
         bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 2, "FLOOR", "-0.34");
         bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 2, "CEILING", "-0.33");
@@ -2121,7 +2108,6 @@ public class RationalTest {
         bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 2, "HALF_DOWN", "-0.33");
         bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 2, "HALF_UP", "-0.33");
         bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 2, "HALF_EVEN", "-0.33");
-        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("-1/3", 2, "UNNECESSARY");
 
         bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 3, "FLOOR", "-0.334");
         bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 3, "CEILING", "-0.333");
@@ -2130,7 +2116,6 @@ public class RationalTest {
         bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 3, "HALF_DOWN", "-0.333");
         bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 3, "HALF_UP", "-0.333");
         bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 3, "HALF_EVEN", "-0.333");
-        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("-1/3", 3, "UNNECESSARY");
 
         bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 4, "FLOOR", "-0.3334");
         bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 4, "CEILING", "-0.3333");
@@ -2139,7 +2124,6 @@ public class RationalTest {
         bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 4, "HALF_DOWN", "-0.3333");
         bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 4, "HALF_UP", "-0.3333");
         bigDecimalValueByPrecision_int_RoundingMode_helper("-1/3", 4, "HALF_EVEN", "-0.3333");
-        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("-1/3", 4, "UNNECESSARY");
 
         bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 0, "FLOOR", "6789");
         bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 0, "CEILING", "6789");
@@ -2157,7 +2141,6 @@ public class RationalTest {
         bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 1, "HALF_DOWN", "7E+3");
         bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 1, "HALF_UP", "7E+3");
         bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 1, "HALF_EVEN", "7E+3");
-        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("6789", 1, "UNNECESSARY");
 
         bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 2, "FLOOR", "6.7E+3");
         bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 2, "CEILING", "6.8E+3");
@@ -2166,7 +2149,6 @@ public class RationalTest {
         bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 2, "HALF_DOWN", "6.8E+3");
         bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 2, "HALF_UP", "6.8E+3");
         bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 2, "HALF_EVEN", "6.8E+3");
-        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("6789", 2, "UNNECESSARY");
 
         bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 3, "FLOOR", "6.78E+3");
         bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 3, "CEILING", "6.79E+3");
@@ -2175,7 +2157,6 @@ public class RationalTest {
         bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 3, "HALF_DOWN", "6.79E+3");
         bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 3, "HALF_UP", "6.79E+3");
         bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 3, "HALF_EVEN", "6.79E+3");
-        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("6789", 3, "UNNECESSARY");
 
         bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 4, "FLOOR", "6789");
         bigDecimalValueByPrecision_int_RoundingMode_helper("6789", 4, "CEILING", "6789");
@@ -2211,7 +2192,6 @@ public class RationalTest {
         bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 1, "HALF_DOWN", "0.9");
         bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 1, "HALF_UP", "1");
         bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 1, "HALF_EVEN", "1");
-        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("19/20", 1, "UNNECESSARY");
 
         bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 2, "FLOOR", "0.95");
         bigDecimalValueByPrecision_int_RoundingMode_helper("19/20", 2, "CEILING", "0.95");
@@ -2265,7 +2245,6 @@ public class RationalTest {
         bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 1, "HALF_DOWN", "1");
         bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 1, "HALF_UP", "1");
         bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 1, "HALF_EVEN", "1");
-        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("199/200", 1, "UNNECESSARY");
 
         bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 2, "FLOOR", "0.99");
         bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 2, "CEILING", "1.0");
@@ -2274,7 +2253,6 @@ public class RationalTest {
         bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 2, "HALF_DOWN", "0.99");
         bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 2, "HALF_UP", "1.0");
         bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 2, "HALF_EVEN", "1.0");
-        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("199/200", 2, "UNNECESSARY");
 
         bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 3, "FLOOR", "0.995");
         bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 3, "CEILING", "0.995");
@@ -2302,6 +2280,31 @@ public class RationalTest {
         bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 5, "HALF_UP", "0.99500");
         bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 5, "HALF_EVEN", "0.99500");
         bigDecimalValueByPrecision_int_RoundingMode_helper("199/200", 5, "UNNECESSARY", "0.99500");
+
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("1/64", 1, "UNNECESSARY");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("1/64", 2, "UNNECESSARY");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("1/64", 3, "UNNECESSARY");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("1/64", 4, "UNNECESSARY");
+
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("-1/3", 0, "FLOOR");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("-1/3", 0, "CEILING");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("-1/3", 0, "DOWN");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("-1/3", 0, "UP");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("-1/3", 0, "HALF_DOWN");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("-1/3", 0, "HALF_UP");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("-1/3", 0, "HALF_EVEN");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("-1/3", 0, "UNNECESSARY");
+
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("-1/3", 1, "UNNECESSARY");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("-1/3", 2, "UNNECESSARY");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("-1/3", 3, "UNNECESSARY");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("-1/3", 4, "UNNECESSARY");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("6789", 1, "UNNECESSARY");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("6789", 2, "UNNECESSARY");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("6789", 3, "UNNECESSARY");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("19/20", 1, "UNNECESSARY");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("199/200", 1, "UNNECESSARY");
+        bigDecimalValueByPrecision_int_RoundingMode_fail_helper("199/200", 2, "UNNECESSARY");
 
         bigDecimalValueByPrecision_int_RoundingMode_fail_helper("5", -1, "FLOOR");
         bigDecimalValueByPrecision_int_RoundingMode_fail_helper("5", -1, "CEILING");
@@ -2390,7 +2393,6 @@ public class RationalTest {
         bigDecimalValueByScale_int_RoundingMode_helper("1", -3, "HALF_DOWN", "0E+3");
         bigDecimalValueByScale_int_RoundingMode_helper("1", -3, "HALF_UP", "0E+3");
         bigDecimalValueByScale_int_RoundingMode_helper("1", -3, "HALF_EVEN", "0E+3");
-        bigDecimalValueByScale_int_RoundingMode_fail_helper("1", -3, "UNNECESSARY");
 
         bigDecimalValueByScale_int_RoundingMode_helper("1/2", 0, "FLOOR", "0");
         bigDecimalValueByScale_int_RoundingMode_helper("1/2", 0, "CEILING", "1");
@@ -2399,7 +2401,6 @@ public class RationalTest {
         bigDecimalValueByScale_int_RoundingMode_helper("1/2", 0, "HALF_DOWN", "0");
         bigDecimalValueByScale_int_RoundingMode_helper("1/2", 0, "HALF_UP", "1");
         bigDecimalValueByScale_int_RoundingMode_helper("1/2", 0, "HALF_EVEN", "0");
-        bigDecimalValueByScale_int_RoundingMode_fail_helper("1/2", 0, "UNNECESSARY");
 
         bigDecimalValueByScale_int_RoundingMode_helper("1/2", 1, "FLOOR", "0.5");
         bigDecimalValueByScale_int_RoundingMode_helper("1/2", 1, "CEILING", "0.5");
@@ -2426,7 +2427,6 @@ public class RationalTest {
         bigDecimalValueByScale_int_RoundingMode_helper("1/64", 0, "HALF_DOWN", "0");
         bigDecimalValueByScale_int_RoundingMode_helper("1/64", 0, "HALF_UP", "0");
         bigDecimalValueByScale_int_RoundingMode_helper("1/64", 0, "HALF_EVEN", "0");
-        bigDecimalValueByScale_int_RoundingMode_fail_helper("1/64", 0, "UNNECESSARY");
 
         bigDecimalValueByScale_int_RoundingMode_helper("1/64", 1, "FLOOR", "0.0");
         bigDecimalValueByScale_int_RoundingMode_helper("1/64", 1, "CEILING", "0.1");
@@ -2435,7 +2435,6 @@ public class RationalTest {
         bigDecimalValueByScale_int_RoundingMode_helper("1/64", 1, "HALF_DOWN", "0.0");
         bigDecimalValueByScale_int_RoundingMode_helper("1/64", 1, "HALF_UP", "0.0");
         bigDecimalValueByScale_int_RoundingMode_helper("1/64", 1, "HALF_EVEN", "0.0");
-        bigDecimalValueByScale_int_RoundingMode_fail_helper("1/64", 1, "UNNECESSARY");
 
         bigDecimalValueByScale_int_RoundingMode_helper("1/64", 2, "FLOOR", "0.01");
         bigDecimalValueByScale_int_RoundingMode_helper("1/64", 2, "CEILING", "0.02");
@@ -2444,7 +2443,6 @@ public class RationalTest {
         bigDecimalValueByScale_int_RoundingMode_helper("1/64", 2, "HALF_DOWN", "0.02");
         bigDecimalValueByScale_int_RoundingMode_helper("1/64", 2, "HALF_UP", "0.02");
         bigDecimalValueByScale_int_RoundingMode_helper("1/64", 2, "HALF_EVEN", "0.02");
-        bigDecimalValueByScale_int_RoundingMode_fail_helper("1/64", 2, "UNNECESSARY");
 
         bigDecimalValueByScale_int_RoundingMode_helper("1/64", 3, "FLOOR", "0.015");
         bigDecimalValueByScale_int_RoundingMode_helper("1/64", 3, "CEILING", "0.016");
@@ -2453,7 +2451,6 @@ public class RationalTest {
         bigDecimalValueByScale_int_RoundingMode_helper("1/64", 3, "HALF_DOWN", "0.016");
         bigDecimalValueByScale_int_RoundingMode_helper("1/64", 3, "HALF_UP", "0.016");
         bigDecimalValueByScale_int_RoundingMode_helper("1/64", 3, "HALF_EVEN", "0.016");
-        bigDecimalValueByScale_int_RoundingMode_fail_helper("1/64", 3, "UNNECESSARY");
 
         bigDecimalValueByScale_int_RoundingMode_helper("1/64", 4, "FLOOR", "0.0156");
         bigDecimalValueByScale_int_RoundingMode_helper("1/64", 4, "CEILING", "0.0157");
@@ -2462,7 +2459,6 @@ public class RationalTest {
         bigDecimalValueByScale_int_RoundingMode_helper("1/64", 4, "HALF_DOWN", "0.0156");
         bigDecimalValueByScale_int_RoundingMode_helper("1/64", 4, "HALF_UP", "0.0156");
         bigDecimalValueByScale_int_RoundingMode_helper("1/64", 4, "HALF_EVEN", "0.0156");
-        bigDecimalValueByScale_int_RoundingMode_fail_helper("1/64", 4, "UNNECESSARY");
 
         bigDecimalValueByScale_int_RoundingMode_helper("1/64", 5, "FLOOR", "0.01562");
         bigDecimalValueByScale_int_RoundingMode_helper("1/64", 5, "CEILING", "0.01563");
@@ -2471,7 +2467,6 @@ public class RationalTest {
         bigDecimalValueByScale_int_RoundingMode_helper("1/64", 5, "HALF_DOWN", "0.01562");
         bigDecimalValueByScale_int_RoundingMode_helper("1/64", 5, "HALF_UP", "0.01563");
         bigDecimalValueByScale_int_RoundingMode_helper("1/64", 5, "HALF_EVEN", "0.01562");
-        bigDecimalValueByScale_int_RoundingMode_fail_helper("1/64", 5, "UNNECESSARY");
 
         bigDecimalValueByScale_int_RoundingMode_helper("1/64", 6, "FLOOR", "0.015625");
         bigDecimalValueByScale_int_RoundingMode_helper("1/64", 6, "CEILING", "0.015625");
@@ -2489,7 +2484,6 @@ public class RationalTest {
         bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 0, "HALF_DOWN", "0");
         bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 0, "HALF_UP", "0");
         bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 0, "HALF_EVEN", "0");
-        bigDecimalValueByScale_int_RoundingMode_fail_helper("-1/3", 0, "UNNECESSARY");
 
         bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 1, "FLOOR", "-0.4");
         bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 1, "CEILING", "-0.3");
@@ -2498,7 +2492,6 @@ public class RationalTest {
         bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 1, "HALF_DOWN", "-0.3");
         bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 1, "HALF_UP", "-0.3");
         bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 1, "HALF_EVEN", "-0.3");
-        bigDecimalValueByScale_int_RoundingMode_fail_helper("-1/3", 1, "UNNECESSARY");
 
         bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 2, "FLOOR", "-0.34");
         bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 2, "CEILING", "-0.33");
@@ -2507,7 +2500,6 @@ public class RationalTest {
         bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 2, "HALF_DOWN", "-0.33");
         bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 2, "HALF_UP", "-0.33");
         bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 2, "HALF_EVEN", "-0.33");
-        bigDecimalValueByScale_int_RoundingMode_fail_helper("-1/3", 2, "UNNECESSARY");
 
         bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 3, "FLOOR", "-0.334");
         bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 3, "CEILING", "-0.333");
@@ -2516,7 +2508,6 @@ public class RationalTest {
         bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 3, "HALF_DOWN", "-0.333");
         bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 3, "HALF_UP", "-0.333");
         bigDecimalValueByScale_int_RoundingMode_helper("-1/3", 3, "HALF_EVEN", "-0.333");
-        bigDecimalValueByScale_int_RoundingMode_fail_helper("-1/3", 3, "UNNECESSARY");
 
         bigDecimalValueByScale_int_RoundingMode_helper("6789", 0, "FLOOR", "6789");
         bigDecimalValueByScale_int_RoundingMode_helper("6789", 0, "CEILING", "6789");
@@ -2534,7 +2525,6 @@ public class RationalTest {
         bigDecimalValueByScale_int_RoundingMode_helper("6789", -1, "HALF_DOWN", "6.79E+3");
         bigDecimalValueByScale_int_RoundingMode_helper("6789", -1, "HALF_UP", "6.79E+3");
         bigDecimalValueByScale_int_RoundingMode_helper("6789", -1, "HALF_EVEN", "6.79E+3");
-        bigDecimalValueByScale_int_RoundingMode_fail_helper("6789", -1, "UNNECESSARY");
 
         bigDecimalValueByScale_int_RoundingMode_helper("6789", -2, "FLOOR", "6.7E+3");
         bigDecimalValueByScale_int_RoundingMode_helper("6789", -2, "CEILING", "6.8E+3");
@@ -2543,7 +2533,6 @@ public class RationalTest {
         bigDecimalValueByScale_int_RoundingMode_helper("6789", -2, "HALF_DOWN", "6.8E+3");
         bigDecimalValueByScale_int_RoundingMode_helper("6789", -2, "HALF_UP", "6.8E+3");
         bigDecimalValueByScale_int_RoundingMode_helper("6789", -2, "HALF_EVEN", "6.8E+3");
-        bigDecimalValueByScale_int_RoundingMode_fail_helper("6789", -2, "UNNECESSARY");
 
         bigDecimalValueByScale_int_RoundingMode_helper("6789", -3, "FLOOR", "6E+3");
         bigDecimalValueByScale_int_RoundingMode_helper("6789", -3, "CEILING", "7E+3");
@@ -2552,7 +2541,6 @@ public class RationalTest {
         bigDecimalValueByScale_int_RoundingMode_helper("6789", -3, "HALF_DOWN", "7E+3");
         bigDecimalValueByScale_int_RoundingMode_helper("6789", -3, "HALF_UP", "7E+3");
         bigDecimalValueByScale_int_RoundingMode_helper("6789", -3, "HALF_EVEN", "7E+3");
-        bigDecimalValueByScale_int_RoundingMode_fail_helper("6789", -3, "UNNECESSARY");
 
         bigDecimalValueByScale_int_RoundingMode_helper("6789", -4, "FLOOR", "0E+4");
         bigDecimalValueByScale_int_RoundingMode_helper("6789", -4, "CEILING", "1E+4");
@@ -2561,7 +2549,6 @@ public class RationalTest {
         bigDecimalValueByScale_int_RoundingMode_helper("6789", -4, "HALF_DOWN", "1E+4");
         bigDecimalValueByScale_int_RoundingMode_helper("6789", -4, "HALF_UP", "1E+4");
         bigDecimalValueByScale_int_RoundingMode_helper("6789", -4, "HALF_EVEN", "1E+4");
-        bigDecimalValueByScale_int_RoundingMode_fail_helper("6789", -4, "UNNECESSARY");
 
         bigDecimalValueByScale_int_RoundingMode_helper("6789", -5, "FLOOR", "0E+5");
         bigDecimalValueByScale_int_RoundingMode_helper("6789", -5, "CEILING", "1E+5");
@@ -2570,6 +2557,23 @@ public class RationalTest {
         bigDecimalValueByScale_int_RoundingMode_helper("6789", -5, "HALF_DOWN", "0E+5");
         bigDecimalValueByScale_int_RoundingMode_helper("6789", -5, "HALF_UP", "0E+5");
         bigDecimalValueByScale_int_RoundingMode_helper("6789", -5, "HALF_EVEN", "0E+5");
+
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("1", -3, "UNNECESSARY");
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("1/2", 0, "UNNECESSARY");
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("1/64", 0, "UNNECESSARY");
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("1/64", 1, "UNNECESSARY");
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("1/64", 2, "UNNECESSARY");
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("1/64", 3, "UNNECESSARY");
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("1/64", 4, "UNNECESSARY");
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("1/64", 5, "UNNECESSARY");
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("-1/3", 0, "UNNECESSARY");
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("-1/3", 1, "UNNECESSARY");
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("-1/3", 2, "UNNECESSARY");
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("-1/3", 3, "UNNECESSARY");
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("6789", -1, "UNNECESSARY");
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("6789", -2, "UNNECESSARY");
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("6789", -3, "UNNECESSARY");
+        bigDecimalValueByScale_int_RoundingMode_fail_helper("6789", -4, "UNNECESSARY");
         bigDecimalValueByScale_int_RoundingMode_fail_helper("6789", -5, "UNNECESSARY");
     }
 
@@ -2608,7 +2612,6 @@ public class RationalTest {
         bigDecimalValueByPrecision_int_helper("1/64", 5, "0.015625");
         bigDecimalValueByPrecision_int_helper("1/64", 6, "0.0156250");
 
-        bigDecimalValueByPrecision_int_fail_helper("-1/3", 0);
         bigDecimalValueByPrecision_int_helper("-1/3", 1, "-0.3");
         bigDecimalValueByPrecision_int_helper("-1/3", 2, "-0.33");
         bigDecimalValueByPrecision_int_helper("-1/3", 3, "-0.333");
@@ -2636,6 +2639,7 @@ public class RationalTest {
         bigDecimalValueByPrecision_int_helper("199/200", 5, "0.99500");
 
         bigDecimalValueByPrecision_int_fail_helper("5", -1);
+        bigDecimalValueByPrecision_int_fail_helper("-1/3", 0);
     }
 
     private static void bigDecimalValueByScale_int_helper(@NotNull String r, int scale, @NotNull String output) {
@@ -2720,6 +2724,7 @@ public class RationalTest {
                 "171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075" +
                 "868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026" +
                 "184124858368");
+
         bigDecimalValueExact_fail_helper("1/3");
     }
 
@@ -2738,7 +2743,9 @@ public class RationalTest {
     }
 
     private static void add_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(readStrict(a).get().add(readStrict(b).get()), output);
+        Rational r = readStrict(a).get().add(readStrict(b).get());
+        r.validate();
+        aeq(r, output);
     }
 
     @Test
@@ -2768,7 +2775,9 @@ public class RationalTest {
     }
 
     private static void negate_helper(@NotNull String input, @NotNull String output) {
-        aeq(readStrict(input).get().negate(), readStrict(output).get());
+        Rational r = readStrict(input).get().negate();
+        r.validate();
+        aeq(r, readStrict(output).get());
     }
 
     @Test
@@ -2783,7 +2792,9 @@ public class RationalTest {
     }
 
     private static void abs_helper(@NotNull String input, @NotNull String output) {
-        aeq(readStrict(input).get().abs(), readStrict(output).get());
+        Rational r = readStrict(input).get().abs();
+        r.validate();
+        aeq(r, readStrict(output).get());
     }
 
     @Test
@@ -2813,7 +2824,9 @@ public class RationalTest {
     }
 
     private static void subtract_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(readStrict(a).get().subtract(readStrict(b).get()), output);
+        Rational r = readStrict(a).get().subtract(readStrict(b).get());
+        r.validate();
+        aeq(r, output);
     }
 
     @Test
@@ -2843,7 +2856,9 @@ public class RationalTest {
     }
 
     private static void multiply_Rational_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(readStrict(a).get().multiply(readStrict(b).get()), output);
+        Rational r = readStrict(a).get().multiply(readStrict(b).get());
+        r.validate();
+        aeq(r, output);
     }
 
     @Test
@@ -2873,7 +2888,9 @@ public class RationalTest {
     }
 
     private static void multiply_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(readStrict(a).get().multiply(Readers.readBigIntegerStrict(b).get()), output);
+        Rational r = readStrict(a).get().multiply(Readers.readBigIntegerStrict(b).get());
+        r.validate();
+        aeq(r, output);
     }
 
     @Test
@@ -2893,7 +2910,9 @@ public class RationalTest {
     }
 
     private static void multiply_int_helper(@NotNull String a, int b, @NotNull String output) {
-        aeq(readStrict(a).get().multiply(b), output);
+        Rational r = readStrict(a).get().multiply(b);
+        r.validate();
+        aeq(r, output);
     }
 
     @Test
@@ -2913,7 +2932,9 @@ public class RationalTest {
     }
 
     private static void invert_helper(@NotNull String input, @NotNull String output) {
-        aeq(readStrict(input).get().invert(), output);
+        Rational r = readStrict(input).get().invert();
+        r.validate();
+        aeq(r, output);
     }
 
     private static void invert_fail_helper(@NotNull String input) {
@@ -2931,11 +2952,14 @@ public class RationalTest {
         invert_helper("1/4", "4");
         invert_helper("1", "1");
         invert_helper("-1", "-1");
+
         invert_fail_helper("0");
     }
 
     private static void divide_Rational_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(readStrict(a).get().divide(readStrict(b).get()), output);
+        Rational r = readStrict(a).get().divide(readStrict(b).get());
+        r.validate();
+        aeq(r, output);
     }
 
     private static void divide_Rational_fail_helper(@NotNull String a, @NotNull String b) {
@@ -2966,6 +2990,7 @@ public class RationalTest {
         divide_Rational_helper("-2/3", "1", "-2/3");
         divide_Rational_helper("0", "1", "0");
         divide_Rational_helper("1", "1", "1");
+
         divide_Rational_fail_helper("2/3", "0");
         divide_Rational_fail_helper("3", "0");
         divide_Rational_fail_helper("1", "0");
@@ -2973,7 +2998,9 @@ public class RationalTest {
     }
 
     private static void divide_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(readStrict(a).get().divide(Readers.readBigIntegerStrict(b).get()), output);
+        Rational r = readStrict(a).get().divide(Readers.readBigIntegerStrict(b).get());
+        r.validate();
+        aeq(r, output);
     }
 
     private static void divide_BigInteger_fail_helper(@NotNull String a, @NotNull String b) {
@@ -2997,11 +3024,14 @@ public class RationalTest {
         divide_BigInteger_helper("0", "3", "0");
         divide_BigInteger_helper("5", "5", "1");
         divide_BigInteger_helper("-5", "-5", "1");
+
         divide_BigInteger_fail_helper("2/3", "0");
     }
 
     private static void divide_int_helper(@NotNull String a, int b, @NotNull String output) {
-        aeq(readStrict(a).get().divide(b), output);
+        Rational r = readStrict(a).get().divide(b);
+        r.validate();
+        aeq(r, output);
     }
 
     private static void divide_int_fail_helper(@NotNull String a, int b) {
@@ -3025,11 +3055,14 @@ public class RationalTest {
         divide_int_helper("0", 3, "0");
         divide_int_helper("5", 5, "1");
         divide_int_helper("-5", -5, "1");
+
         divide_int_fail_helper("2/3", 0);
     }
 
     private static void shiftLeft_helper(@NotNull String r, int bits, @NotNull String output) {
-        aeq(readStrict(r).get().shiftLeft(bits), output);
+        Rational s = readStrict(r).get().shiftLeft(bits);
+        s.validate();
+        aeq(s, output);
     }
 
     @Test
@@ -3088,7 +3121,9 @@ public class RationalTest {
     }
 
     private static void shiftRight_helper(@NotNull String r, int bits, @NotNull String output) {
-        aeq(readStrict(r).get().shiftRight(bits), output);
+        Rational s = readStrict(r).get().shiftRight(bits);
+        s.validate();
+        aeq(s, output);
     }
 
     @Test
@@ -3147,7 +3182,9 @@ public class RationalTest {
     }
 
     private static void sum_helper(@NotNull String input, @NotNull String output) {
-        aeq(sum(readRationalList(input)), output);
+        Rational r = sum(readRationalList(input));
+        r.validate();
+        aeq(r, output);
     }
 
     private static void sum_fail_helper(@NotNull String input) {
@@ -3164,11 +3201,14 @@ public class RationalTest {
         sum_helper("[-4/5]", "-4/5");
         sum_helper("[10, 21/2, 11]", "63/2");
         sum_helper("[-4, 6, -8]", "-6");
+
         sum_fail_helper("[10, null, 11]");
     }
 
     private static void product_helper(@NotNull String input, @NotNull String output) {
-        aeq(product(readRationalList(input)), output);
+        Rational r = product(readRationalList(input));
+        r.validate();
+        aeq(r, output);
     }
 
     private static void product_fail_helper(@NotNull String input) {
@@ -3185,6 +3225,7 @@ public class RationalTest {
         product_helper("[-4/5]", "-4/5");
         product_helper("[10, 21/2, 11]", "1155");
         product_helper("[-4, 6, -8]", "192");
+
         product_fail_helper("[10, null, 11]");
     }
 
@@ -3208,11 +3249,14 @@ public class RationalTest {
         sumSign_helper("[-4, 11, -8]", -1);
         sumSign_helper("[-4, 12, -8]", 0);
         sumSign_helper("[-4, 13, -8]", 1);
+
         sumSign_fail_helper("[10, null, 11]");
     }
 
     private static void delta_helper(@NotNull Iterable<Rational> input, @NotNull String output) {
-        aeqitLimit(TINY_LIMIT, delta(input), output);
+        Iterable<Rational> rs = delta(input);
+        take(TINY_LIMIT, rs).forEach(Rational::validate);
+        aeqitLimit(TINY_LIMIT, rs, output);
     }
 
     private static void delta_helper(@NotNull String input, @NotNull String output) {
@@ -3233,12 +3277,15 @@ public class RationalTest {
         delta_helper(map(i -> of(i).invert(), ExhaustiveProvider.INSTANCE.positiveIntegers()),
                 "[-1/2, -1/6, -1/12, -1/20, -1/30, -1/42, -1/56, -1/72, -1/90, -1/110, -1/132, -1/156, -1/182," +
                 " -1/210, -1/240, -1/272, -1/306, -1/342, -1/380, -1/420, ...]");
+
         delta_fail_helper("[]");
         delta_fail_helper("[10, null, 12]");
     }
 
     private static void harmonicNumber_helper(int input, @NotNull String output) {
-        aeq(harmonicNumber(input), output);
+        Rational r = harmonicNumber(input);
+        r.validate();
+        aeq(r, output);
     }
 
     private static void harmonicNumber_fail_helper(int input) {
@@ -3253,12 +3300,15 @@ public class RationalTest {
         harmonicNumber_helper(1, "1");
         harmonicNumber_helper(5, "137/60");
         harmonicNumber_helper(10, "7381/2520");
+
         harmonicNumber_fail_helper(0);
         harmonicNumber_fail_helper(-5);
     }
 
     private static void pow_helper(@NotNull String r, int p, @NotNull String output) {
-        aeq(readStrict(r).get().pow(p), output);
+        Rational s = readStrict(r).get().pow(p);
+        s.validate();
+        aeq(s, output);
     }
 
     private static void pow_fail_helper(@NotNull String r, int p) {
@@ -3321,7 +3371,9 @@ public class RationalTest {
     }
 
     private static void fractionalPart_helper(@NotNull String input, @NotNull String output) {
-        aeq(readStrict(input).get().fractionalPart(), output);
+        Rational r = readStrict(input).get().fractionalPart();
+        r.validate();
+        aeq(r, output);
     }
 
     @Test
@@ -3390,6 +3442,7 @@ public class RationalTest {
         roundToDenominator_helper(PI_DOUBLE, "100", "HALF_EVEN", "157/50");
         roundToDenominator_helper(PI_DOUBLE, "1000", "HALF_EVEN", "1571/500");
         roundToDenominator_helper("3/10", "30", "UNNECESSARY", "3/10");
+
         roundToDenominator_fail_helper(PI_DOUBLE, "0", "HALF_EVEN");
         roundToDenominator_fail_helper(PI_DOUBLE, "-1", "HALF_EVEN");
         roundToDenominator_fail_helper(PI_DOUBLE, "7", "UNNECESSARY");
@@ -3432,7 +3485,9 @@ public class RationalTest {
     }
 
     private static void fromContinuedFraction_helper(@NotNull String input, @NotNull String output) {
-        aeq(fromContinuedFraction(readBigIntegerList(input)), output);
+        Rational r = fromContinuedFraction(readBigIntegerList(input));
+        r.validate();
+        aeq(r, output);
     }
 
     private static void fromContinuedFraction_fail_helper(@NotNull String input) {
@@ -3450,11 +3505,14 @@ public class RationalTest {
         fromContinuedFraction_helper("[4, 2, 6, 7]", "415/93");
         fromContinuedFraction_helper("[-5, 1, 1, 6, 7]", "-415/93");
         aeqf(fromContinuedFraction(readBigIntegerList("[0, 1, 2, 3, 4, 5, 6, 7, 8]")).floatValue(), 0.69777465f);
+
         fromContinuedFraction_fail_helper("[]");
     }
 
     private static void convergentsHelper(@NotNull String x, @NotNull String output) {
-        aeqit(readStrict(x).get().convergents(), output);
+        Iterable<Rational> rs = readStrict(x).get().convergents();
+        rs.forEach(Rational::validate);
+        aeqit(rs, output);
     }
 
     private static void convergentsHelper(double x, @NotNull String output) {
@@ -3661,15 +3719,14 @@ public class RationalTest {
             @NotNull String repeating,
             @NotNull Object output
     ) {
-        aeq(
-                fromPositionalNotation(
-                        Readers.readBigIntegerStrict(base).get(),
-                        readBigIntegerList(beforeDecimalPoint),
-                        readBigIntegerList(nonrepeating),
-                        readBigIntegerList(repeating)
-                ),
-                output
+        Rational r = fromPositionalNotation(
+                Readers.readBigIntegerStrict(base).get(),
+                readBigIntegerList(beforeDecimalPoint),
+                readBigIntegerList(nonrepeating),
+                readBigIntegerList(repeating)
         );
+        r.validate();
+        aeq(r, output);
     }
 
     private static void fromPositionalNotation_fail_helper(
@@ -3810,7 +3867,7 @@ public class RationalTest {
         fromPositionalNotation_fail_helper("2", "[1, 0, 1]", "[0, 1, 0]", "[]");
     }
 
-    private static void digitsHelper(
+    private static void digits_helper(
             @NotNull Rational r,
             @NotNull String base,
             @NotNull String beforeDecimal,
@@ -3821,16 +3878,16 @@ public class RationalTest {
         aeqitLimit(TINY_LIMIT, digits.b, afterDecimal);
     }
 
-    private static void digitsHelper(
+    private static void digits_helper(
             @NotNull String r,
             @NotNull String base,
             @NotNull String beforeDecimal,
             @NotNull String afterDecimal
     ) {
-        digitsHelper(readStrict(r).get(), base, beforeDecimal, afterDecimal);
+        digits_helper(readStrict(r).get(), base, beforeDecimal, afterDecimal);
     }
 
-    private static void digitsFail(@NotNull String r, @NotNull String base) {
+    private static void digits_fail_helper(@NotNull String r, @NotNull String base) {
         try {
             readStrict(r).get().digits(Readers.readBigIntegerStrict(base).get());
             fail();
@@ -3839,144 +3896,144 @@ public class RationalTest {
 
     @Test
     public void testDigits() {
-        digitsHelper("0", "2", "[]", "[]");
-        digitsHelper("0", "3", "[]", "[]");
-        digitsHelper("0", "4", "[]", "[]");
-        digitsHelper("0", "10", "[]", "[]");
-        digitsHelper("0", "16", "[]", "[]");
-        digitsHelper("0", "83", "[]", "[]");
-        digitsHelper("0", "100", "[]", "[]");
+        digits_helper("0", "2", "[]", "[]");
+        digits_helper("0", "3", "[]", "[]");
+        digits_helper("0", "4", "[]", "[]");
+        digits_helper("0", "10", "[]", "[]");
+        digits_helper("0", "16", "[]", "[]");
+        digits_helper("0", "83", "[]", "[]");
+        digits_helper("0", "100", "[]", "[]");
 
-        digitsHelper("1", "2", "[1]", "[]");
-        digitsHelper("1", "3", "[1]", "[]");
-        digitsHelper("1", "4", "[1]", "[]");
-        digitsHelper("1", "10", "[1]", "[]");
-        digitsHelper("1", "16", "[1]", "[]");
-        digitsHelper("1", "83", "[1]", "[]");
-        digitsHelper("1", "100", "[1]", "[]");
+        digits_helper("1", "2", "[1]", "[]");
+        digits_helper("1", "3", "[1]", "[]");
+        digits_helper("1", "4", "[1]", "[]");
+        digits_helper("1", "10", "[1]", "[]");
+        digits_helper("1", "16", "[1]", "[]");
+        digits_helper("1", "83", "[1]", "[]");
+        digits_helper("1", "100", "[1]", "[]");
 
-        digitsHelper("1/2", "2", "[]", "[1]");
-        digitsHelper("1/2", "3", "[]", "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...]");
-        digitsHelper("1/2", "4", "[]", "[2]");
-        digitsHelper("1/2", "10", "[]", "[5]");
-        digitsHelper("1/2", "16", "[]", "[8]");
-        digitsHelper(
+        digits_helper("1/2", "2", "[]", "[1]");
+        digits_helper("1/2", "3", "[]", "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...]");
+        digits_helper("1/2", "4", "[]", "[2]");
+        digits_helper("1/2", "10", "[]", "[5]");
+        digits_helper("1/2", "16", "[]", "[8]");
+        digits_helper(
                 "1/2",
                 "83",
                 "[]",
                 "[41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, ...]"
         );
 
-        digitsHelper("1/2", "100", "[]", "[50]");
-        digitsHelper("1/3", "2", "[]", "[0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, ...]");
-        digitsHelper("1/3", "3", "[]", "[1]");
-        digitsHelper("1/3", "4", "[]", "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...]");
-        digitsHelper("1/3", "10", "[]", "[3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, ...]");
-        digitsHelper("1/3", "16", "[]", "[5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, ...]");
-        digitsHelper(
+        digits_helper("1/2", "100", "[]", "[50]");
+        digits_helper("1/3", "2", "[]", "[0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, ...]");
+        digits_helper("1/3", "3", "[]", "[1]");
+        digits_helper("1/3", "4", "[]", "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...]");
+        digits_helper("1/3", "10", "[]", "[3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, ...]");
+        digits_helper("1/3", "16", "[]", "[5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, ...]");
+        digits_helper(
                 "1/3",
                 "83",
                 "[]",
                 "[27, 55, 27, 55, 27, 55, 27, 55, 27, 55, 27, 55, 27, 55, 27, 55, 27, 55, 27, 55, ...]"
         );
-        digitsHelper(
+        digits_helper(
                 "1/3",
                 "100",
                 "[]",
                 "[33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, ...]"
         );
 
-        digitsHelper("1/7", "2", "[]", "[0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, ...]");
-        digitsHelper("1/7", "3", "[]", "[0, 1, 0, 2, 1, 2, 0, 1, 0, 2, 1, 2, 0, 1, 0, 2, 1, 2, 0, 1, ...]");
-        digitsHelper("1/7", "4", "[]", "[0, 2, 1, 0, 2, 1, 0, 2, 1, 0, 2, 1, 0, 2, 1, 0, 2, 1, 0, 2, ...]");
-        digitsHelper("1/7", "10", "[]", "[1, 4, 2, 8, 5, 7, 1, 4, 2, 8, 5, 7, 1, 4, 2, 8, 5, 7, 1, 4, ...]");
-        digitsHelper("1/7", "16", "[]", "[2, 4, 9, 2, 4, 9, 2, 4, 9, 2, 4, 9, 2, 4, 9, 2, 4, 9, 2, 4, ...]");
-        digitsHelper(
+        digits_helper("1/7", "2", "[]", "[0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, ...]");
+        digits_helper("1/7", "3", "[]", "[0, 1, 0, 2, 1, 2, 0, 1, 0, 2, 1, 2, 0, 1, 0, 2, 1, 2, 0, 1, ...]");
+        digits_helper("1/7", "4", "[]", "[0, 2, 1, 0, 2, 1, 0, 2, 1, 0, 2, 1, 0, 2, 1, 0, 2, 1, 0, 2, ...]");
+        digits_helper("1/7", "10", "[]", "[1, 4, 2, 8, 5, 7, 1, 4, 2, 8, 5, 7, 1, 4, 2, 8, 5, 7, 1, 4, ...]");
+        digits_helper("1/7", "16", "[]", "[2, 4, 9, 2, 4, 9, 2, 4, 9, 2, 4, 9, 2, 4, 9, 2, 4, 9, 2, 4, ...]");
+        digits_helper(
                 "1/7",
                 "83",
                 "[]",
                 "[11, 71, 11, 71, 11, 71, 11, 71, 11, 71, 11, 71, 11, 71, 11, 71, 11, 71, 11, 71, ...]"
         );
-        digitsHelper(
+        digits_helper(
                 "1/7",
                 "100",
                 "[]",
                 "[14, 28, 57, 14, 28, 57, 14, 28, 57, 14, 28, 57, 14, 28, 57, 14, 28, 57, 14, 28, ...]"
         );
 
-        digitsHelper("415/93", "2", "[1, 0, 0]", "[0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, ...]");
-        digitsHelper("415/93", "3", "[1, 1]", "[1, 1, 0, 1, 1, 1, 0, 0, 1, 2, 0, 2, 0, 0, 0, 2, 1, 2, 1, 1, ...]");
-        digitsHelper("415/93", "4", "[1, 0]", "[1, 3, 1, 2, 1, 1, 3, 1, 2, 1, 1, 3, 1, 2, 1, 1, 3, 1, 2, 1, ...]");
-        digitsHelper("415/93", "10", "[4]", "[4, 6, 2, 3, 6, 5, 5, 9, 1, 3, 9, 7, 8, 4, 9, 4, 6, 2, 3, 6, ...]");
-        digitsHelper("415/93", "16", "[4]", "[7, 6, 5, 13, 9, 7, 6, 5, 13, 9, 7, 6, 5, 13, 9, 7, 6, 5, 13, 9, ...]");
-        digitsHelper(
+        digits_helper("415/93", "2", "[1, 0, 0]", "[0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, ...]");
+        digits_helper("415/93", "3", "[1, 1]", "[1, 1, 0, 1, 1, 1, 0, 0, 1, 2, 0, 2, 0, 0, 0, 2, 1, 2, 1, 1, ...]");
+        digits_helper("415/93", "4", "[1, 0]", "[1, 3, 1, 2, 1, 1, 3, 1, 2, 1, 1, 3, 1, 2, 1, 1, 3, 1, 2, 1, ...]");
+        digits_helper("415/93", "10", "[4]", "[4, 6, 2, 3, 6, 5, 5, 9, 1, 3, 9, 7, 8, 4, 9, 4, 6, 2, 3, 6, ...]");
+        digits_helper("415/93", "16", "[4]", "[7, 6, 5, 13, 9, 7, 6, 5, 13, 9, 7, 6, 5, 13, 9, 7, 6, 5, 13, 9, ...]");
+        digits_helper(
                 "415/93",
                 "83",
                 "[4]",
                 "[38, 31, 19, 52, 54, 36, 49, 7, 11, 49, 81, 17, 70, 41, 78, 44, 51, 63, 30, 28, ...]"
         );
-        digitsHelper(
+        digits_helper(
                 "415/93",
                 "100",
                 "[4]",
                 "[46, 23, 65, 59, 13, 97, 84, 94, 62, 36, 55, 91, 39, 78, 49, 46, 23, 65, 59, 13, ...]"
         );
 
-        digitsHelper(PI_DOUBLE, "2", "[1, 1]", "[0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, ...]");
-        digitsHelper(PI_DOUBLE, "3", "[1, 0]", "[0, 1, 0, 2, 1, 1, 0, 1, 2, 2, 2, 2, 0, 1, 0, 2, 1, 1, 0, 0, ...]");
-        digitsHelper(PI_DOUBLE, "4", "[3]", "[0, 2, 1, 0, 0, 3, 3, 3, 1, 2, 2, 2, 2, 0, 2, 0, 2, 0, 1, 1, ...]");
-        digitsHelper(PI_DOUBLE, "10", "[3]", "[1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9, 7, 9, 3, 1, 1, 5, 9, 9, ...]");
-        digitsHelper(PI_DOUBLE, "16", "[3]", "[2, 4, 3, 15, 6, 10, 8, 8, 8, 5, 10, 3]");
-        digitsHelper(
+        digits_helper(PI_DOUBLE, "2", "[1, 1]", "[0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, ...]");
+        digits_helper(PI_DOUBLE, "3", "[1, 0]", "[0, 1, 0, 2, 1, 1, 0, 1, 2, 2, 2, 2, 0, 1, 0, 2, 1, 1, 0, 0, ...]");
+        digits_helper(PI_DOUBLE, "4", "[3]", "[0, 2, 1, 0, 0, 3, 3, 3, 1, 2, 2, 2, 2, 0, 2, 0, 2, 0, 1, 1, ...]");
+        digits_helper(PI_DOUBLE, "10", "[3]", "[1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9, 7, 9, 3, 1, 1, 5, 9, 9, ...]");
+        digits_helper(PI_DOUBLE, "16", "[3]", "[2, 4, 3, 15, 6, 10, 8, 8, 8, 5, 10, 3]");
+        digits_helper(
                 PI_DOUBLE,
                 "83",
                 "[3]",
                 "[11, 62, 35, 69, 50, 19, 79, 18, 11, 8, 60, 35, 10, 62, 20, 58, 42, 14, 31, 34, ...]"
         );
-        digitsHelper(
+        digits_helper(
                 PI_DOUBLE,
                 "100",
                 "[3]",
                 "[14, 15, 92, 65, 35, 89, 79, 31, 15, 99, 79, 63, 46, 85, 44, 18, 51, 61, 59, 5, ...]"
         );
 
-        digitsHelper("299/56", "2", "[1, 0, 1]", "[0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, ...]");
-        digitsHelper("405/26", "3", "[1, 2, 0]", "[1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, ...]");
-        digitsHelper(
+        digits_helper("299/56", "2", "[1, 0, 1]", "[0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, ...]");
+        digits_helper("405/26", "3", "[1, 2, 0]", "[1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, ...]");
+        digits_helper(
                 "15613/576",
                 "4",
                 "[1, 2, 3]",
                 "[0, 1, 2, 3, 0, 1, 3, 0, 1, 3, 0, 1, 3, 0, 1, 3, 0, 1, 3, 0, ...]"
         );
-        digitsHelper(
+        digits_helper(
                 "41111111/333000",
                 "10",
                 "[1, 2, 3]",
                 "[4, 5, 6, 7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, ...]"
         );
-        digitsHelper(
+        digits_helper(
                 "1628508433/5591040",
                 "16",
                 "[1, 2, 3]",
                 "[4, 5, 6, 7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, ...]"
         );
-        digitsHelper(
+        digits_helper(
                 "1153778558235787/163469900791",
                 "83",
                 "[1, 2, 3]",
                 "[4, 5, 6, 7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, ...]"
         );
-        digitsHelper(
+        digits_helper(
                 "3401010101010101/333333000000",
                 "100",
                 "[1, 2, 3]",
                 "[4, 5, 6, 7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, ...]"
         );
 
-        digitsFail("-1/2", "2");
-        digitsFail("1/2", "1");
-        digitsFail("1/2", "0");
-        digitsFail("1/2", "-1");
+        digits_fail_helper("-1/2", "2");
+        digits_fail_helper("1/2", "1");
+        digits_fail_helper("1/2", "0");
+        digits_fail_helper("1/2", "-1");
     }
 
     private static void commonLeadingDigits_helper(
@@ -4189,7 +4246,9 @@ public class RationalTest {
     }
 
     private static void fromStringBase_helper(@NotNull String s, @NotNull String base, @NotNull Object output) {
-        aeq(fromStringBase(s, Readers.readBigIntegerStrict(base).get()), output);
+        Rational r = fromStringBase(s, Readers.readBigIntegerStrict(base).get());
+        r.validate();
+        aeq(r, output);
     }
 
     private static void fromStringBase_fail_helper(@NotNull String s, @NotNull String base) {
@@ -4297,6 +4356,7 @@ public class RationalTest {
         cancelDenominators_helper("[1, -2/3]", "[3, -2]");
         cancelDenominators_helper("[4, -4, 5/12, 0, 1]", "[48, -48, 5, 0, 12]");
         cancelDenominators_helper("[1, 1/2, 1/3, 1/4, 1/5]", "[60, 30, 20, 15, 12]");
+
         cancelDenominators_fail_helper("[1, null, 0]");
     }
 
@@ -4327,46 +4387,47 @@ public class RationalTest {
         testCompareToHelper(readRationalList("[-4, -5/12, 0, 5/12, 1, 4]"));
     }
 
-    private static void readStrict_helper(@NotNull String input) {
-        aeq(readStrict(input).get(), input);
-    }
-
-    private static void readStrict_fail_helper(@NotNull String input) {
-        assertFalse(readStrict(input).isPresent());
+    private static void readStrict_helper(@NotNull String input, @NotNull String output) {
+        Optional<Rational> or = readStrict(input);
+        if (or.isPresent()) {
+            or.get().validate();
+        }
+        aeq(or, output);
     }
 
     @Test
     public void testReadStrict() {
-        readStrict_helper("0");
-        readStrict_helper("1");
-        readStrict_helper("3");
-        readStrict_helper("-3");
-        readStrict_helper("5/12");
-        readStrict_helper("-5/12");
-        readStrict_fail_helper("2/0");
-        readStrict_fail_helper("");
-        readStrict_fail_helper(" ");
-        readStrict_fail_helper("1 ");
-        readStrict_fail_helper("01");
-        readStrict_fail_helper("-");
-        readStrict_fail_helper("-0");
-        readStrict_fail_helper("--5");
-        readStrict_fail_helper("0.1");
-        readStrict_fail_helper("/1");
-        readStrict_fail_helper("/");
-        readStrict_fail_helper("2//3");
-        readStrict_fail_helper("2/");
-        readStrict_fail_helper("2 /3");
-        readStrict_fail_helper("2/ 3");
-        readStrict_fail_helper("2 / 3");
-        readStrict_fail_helper("a");
-        readStrict_fail_helper("2-3");
-        readStrict_fail_helper("0x12");
-        readStrict_fail_helper("12/3a");
-        readStrict_fail_helper("12/6");
-        readStrict_fail_helper("12/-6");
-        readStrict_fail_helper("6/8");
-        readStrict_fail_helper("4/1");
+        readStrict_helper("0", "Optional[0]");
+        readStrict_helper("1", "Optional[1]");
+        readStrict_helper("3", "Optional[3]");
+        readStrict_helper("-3", "Optional[-3]");
+        readStrict_helper("5/12", "Optional[5/12]");
+        readStrict_helper("-5/12", "Optional[-5/12]");
+
+        readStrict_helper("2/0", "Optional.empty");
+        readStrict_helper("", "Optional.empty");
+        readStrict_helper(" ", "Optional.empty");
+        readStrict_helper("1 ", "Optional.empty");
+        readStrict_helper("01", "Optional.empty");
+        readStrict_helper("-", "Optional.empty");
+        readStrict_helper("-0", "Optional.empty");
+        readStrict_helper("--5", "Optional.empty");
+        readStrict_helper("0.1", "Optional.empty");
+        readStrict_helper("/1", "Optional.empty");
+        readStrict_helper("/", "Optional.empty");
+        readStrict_helper("2//3", "Optional.empty");
+        readStrict_helper("2/", "Optional.empty");
+        readStrict_helper("2 /3", "Optional.empty");
+        readStrict_helper("2/ 3", "Optional.empty");
+        readStrict_helper("2 / 3", "Optional.empty");
+        readStrict_helper("a", "Optional.empty");
+        readStrict_helper("2-3", "Optional.empty");
+        readStrict_helper("0x12", "Optional.empty");
+        readStrict_helper("12/3a", "Optional.empty");
+        readStrict_helper("12/6", "Optional.empty");
+        readStrict_helper("12/-6", "Optional.empty");
+        readStrict_helper("6/8", "Optional.empty");
+        readStrict_helper("4/1", "Optional.empty");
     }
 
     private static @NotNull List<BigInteger> readBigIntegerList(@NotNull String s) {
