@@ -476,17 +476,17 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * Returns the sum of all the {@code RationalVector}s in {@code xs}.
      *
      * <ul>
-     *  <li>{@code xs} must be finite and non-empty, and may not contain any nulls. Every {@code RationalVector} in
-     *  {@code xs} must have the same dimension.</li>
+     *  <li>{@code xs} must be non-empty, and may not contain any nulls. Every {@code RationalVector} in {@code xs}
+     *  must have the same dimension.</li>
      *  <li>The result may be any {@code RationalVector}.</li>
      * </ul>
      *
      * Length is dim(head({@code xs}))
      *
-     * @param xs an {@code Iterable} of {@code RationalVector}s.
+     * @param xs a {@code List} of {@code RationalVector}s.
      * @return Σxs
      */
-    public static @NotNull RationalVector sum(@NotNull Iterable<RationalVector> xs) {
+    public static @NotNull RationalVector sum(@NotNull List<RationalVector> xs) {
         if (isEmpty(xs)) {
             throw new IllegalArgumentException("xs cannot be empty.");
         } else if (!same(map(RationalVector::dimension, xs))) {
