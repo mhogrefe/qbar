@@ -372,17 +372,17 @@ public final class Vector implements Comparable<Vector>, Iterable<BigInteger> {
      * Returns the sum of all the {@code Vector}s in {@code xs}.
      *
      * <ul>
-     *  <li>{@code xs} must be finite and non-empty, and may not contain any nulls. Every {@code Vector} in {@code xs}
-     *  must have the same dimension.</li>
+     *  <li>{@code xs} must be non-empty, and may not contain any nulls. Every {@code Vector} in {@code xs} must have
+     *  the same dimension.</li>
      *  <li>The result may be any {@code Vector}.</li>
      * </ul>
      *
      * Length is dim(head({@code xs}))
      *
-     * @param xs an {@code Iterable} of {@code Vector}s.
+     * @param xs a {@code List} of {@code Vector}s.
      * @return Σxs
      */
-    public static @NotNull Vector sum(@NotNull Iterable<Vector> xs) {
+    public static @NotNull Vector sum(@NotNull List<Vector> xs) {
         if (isEmpty(xs)) {
             throw new IllegalArgumentException("xs cannot be empty.");
         } else if (!same(map(Vector::dimension, xs))) {

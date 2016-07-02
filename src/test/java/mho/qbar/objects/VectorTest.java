@@ -8,18 +8,23 @@ import org.junit.Test;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static mho.qbar.objects.Vector.*;
 import static mho.qbar.objects.Vector.sum;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.*;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 public class VectorTest {
+    private static void constant_helper(@NotNull Vector input, @NotNull String output) {
+        input.validate();
+        aeq(input, output);
+    }
+
     @Test
     public void testConstants() {
-        aeq(ZERO_DIMENSIONAL, "[]");
+        constant_helper(ZERO_DIMENSIONAL, "[]");
     }
 
     private static void iterator_helper(@NotNull String input) {
@@ -61,13 +66,16 @@ public class VectorTest {
         get_helper("[5, -4, 23]", 0, "5");
         get_helper("[5, -4, 23]", 1, "-4");
         get_helper("[5, -4, 23]", 2, "23");
+
         get_fail_helper("[5, -4, 23]", 4);
         get_fail_helper("[2]", 3);
         get_fail_helper("[]", 0);
     }
 
     private static void of_List_BigInteger_helper(@NotNull String input) {
-        aeq(of(readBigIntegerList(input)), input);
+        Vector v = of(readBigIntegerList(input));
+        v.validate();
+        aeq(v, input);
     }
 
     private static void of_List_BigInteger_fail_helper(@NotNull String input) {
@@ -81,11 +89,14 @@ public class VectorTest {
         of_List_BigInteger_helper("[]");
         of_List_BigInteger_helper("[2]");
         of_List_BigInteger_helper("[5, -4, 23]");
+
         of_List_BigInteger_fail_helper("[3, null, 23]");
     }
 
     private static void of_BigInteger_helper(@NotNull String input, @NotNull String output) {
-        aeq(of(Readers.readBigIntegerStrict(input).get()), output);
+        Vector v = of(Readers.readBigIntegerStrict(input).get());
+        v.validate();
+        aeq(v, output);
     }
 
     @Test
@@ -132,7 +143,9 @@ public class VectorTest {
     }
 
     private static void zero_helper(int dimension, @NotNull String output) {
-        aeq(zero(dimension), output);
+        Vector v = zero(dimension);
+        v.validate();
+        aeq(v, output);
     }
 
     private static void zero_fail_helper(int dimension) {
@@ -148,11 +161,14 @@ public class VectorTest {
         zero_helper(1, "[0]");
         zero_helper(3, "[0, 0, 0]");
         zero_helper(10, "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]");
+
         zero_fail_helper(-1);
     }
 
     private void standard_helper(int dimension, int i, @NotNull String output) {
-        aeq(standard(dimension, i), output);
+        Vector v = standard(dimension, i);
+        v.validate();
+        aeq(v, output);
     }
 
     private void standard_fail_helper(int dimension, int i) {
@@ -169,6 +185,7 @@ public class VectorTest {
         standard_helper(3, 1, "[0, 1, 0]");
         standard_helper(3, 2, "[0, 0, 1]");
         standard_helper(10, 6, "[0, 0, 0, 0, 0, 0, 1, 0, 0, 0]");
+
         standard_fail_helper(2, -4);
         standard_fail_helper(-3, -4);
         standard_fail_helper(2, 3);
@@ -176,7 +193,9 @@ public class VectorTest {
     }
 
     private static void add_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(readStrict(a).get().add(readStrict(b).get()), output);
+        Vector v = readStrict(a).get().add(readStrict(b).get());
+        v.validate();
+        aeq(v, output);
     }
 
     private static void add_fail_helper(@NotNull String a, @NotNull String b) {
@@ -193,13 +212,16 @@ public class VectorTest {
         add_helper("[5, 4, 0]", "[-2, 1, 3]", "[3, 5, 3]");
         add_helper("[5, 4, 0]", "[0, 0, 0]", "[5, 4, 0]");
         add_helper("[5, 4, 0]", "[-5, -4, 0]", "[0, 0, 0]");
+
         add_fail_helper("[]", "[2]");
         add_fail_helper("[2]", "[]");
         add_fail_helper("[2, 4, -4]", "[6, 3]");
     }
 
     private static void negate_helper(@NotNull String input, @NotNull String output) {
-        aeq(readStrict(input).get().negate(), output);
+        Vector v = readStrict(input).get().negate();
+        v.validate();
+        aeq(v, output);
     }
 
     @Test
@@ -210,7 +232,9 @@ public class VectorTest {
     }
 
     private static void subtract_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(readStrict(a).get().subtract(readStrict(b).get()), output);
+        Vector v = readStrict(a).get().subtract(readStrict(b).get());
+        v.validate();
+        aeq(v, output);
     }
 
     private static void subtract_fail_helper(@NotNull String a, @NotNull String b) {
@@ -228,13 +252,16 @@ public class VectorTest {
         subtract_helper("[5, 4, 0]", "[0, 0, 0]", "[5, 4, 0]");
         subtract_helper("[5, 4, 0]", "[5, 4, 0]", "[0, 0, 0]");
         subtract_helper("[0, 0, 0]", "[5, 4, 0]", "[-5, -4, 0]");
+
         subtract_fail_helper("[]", "[2]");
         subtract_fail_helper("[2]", "[]");
         subtract_fail_helper("[2, 4, -4]", "[6, 3]");
     }
 
     private static void multiply_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(readStrict(a).get().multiply(Readers.readBigIntegerStrict(b).get()), output);
+        Vector v = readStrict(a).get().multiply(Readers.readBigIntegerStrict(b).get());
+        v.validate();
+        aeq(v, output);
     }
 
     @Test
@@ -253,7 +280,9 @@ public class VectorTest {
     }
 
     private static void multiply_int_helper(@NotNull String a, int b, @NotNull String output) {
-        aeq(readStrict(a).get().multiply(b), output);
+        Vector v = readStrict(a).get().multiply(b);
+        v.validate();
+        aeq(v, output);
     }
 
     @Test
@@ -272,7 +301,9 @@ public class VectorTest {
     }
 
     private static void shiftLeft_helper(@NotNull String a, int bits, @NotNull String output) {
-        aeq(readStrict(a).get().shiftLeft(bits), output);
+        Vector v = readStrict(a).get().shiftLeft(bits);
+        v.validate();
+        aeq(v, output);
     }
 
     private static void shiftLeft_fail_helper(@NotNull String a, int bits) {
@@ -307,7 +338,9 @@ public class VectorTest {
     }
 
     private static void sum_helper(@NotNull String input, @NotNull String output) {
-        aeq(sum(readVectorList(input)), output);
+        Vector v = sum(readVectorList(input));
+        v.validate();
+        aeq(v, output);
     }
 
     private static void sum_fail_helper(@NotNull String input) {
@@ -324,13 +357,16 @@ public class VectorTest {
         sum_helper("[[5, 4, 23]]", "[5, 4, 23]");
         sum_helper("[[5, 4, 23], [0, 3, -8], [32, -45, 9]]", "[37, -38, 24]");
         sum_helper("[[2], [3], [4]]", "[9]");
+
         sum_fail_helper("[]");
         sum_fail_helper("[[2, 3], null]");
         sum_fail_helper("[[2], [3, 4]]");
     }
 
     private static void delta_helper(@NotNull Iterable<Vector> input, @NotNull String output) {
-        aeqitLimit(TINY_LIMIT, delta(input), output);
+        Iterable<Vector> vs = delta(input);
+        take(TINY_LIMIT, vs).forEach(Vector::validate);
+        aeqitLimit(TINY_LIMIT, vs, output);
     }
 
     private static void delta_helper(@NotNull String input, @NotNull String output) {
@@ -358,6 +394,7 @@ public class VectorTest {
                 " [1, 17, 217], [1, 19, 271], [1, 21, 331], [1, 23, 397], [1, 25, 469], [1, 27, 547], [1, 29, 631]," +
                 " [1, 31, 721], [1, 33, 817], [1, 35, 919], [1, 37, 1027], [1, 39, 1141], [1, 41, 1261], ...]"
         );
+
         delta_fail_helper("[]");
         delta_fail_helper("[[2, 3], null]");
         delta_fail_helper("[[2], [3, 4]]");
@@ -381,6 +418,7 @@ public class VectorTest {
         dot_helper("[5, 4, 0]", "[-2, 1, 3]", "-6");
         dot_helper("[5, 4, 0]", "[0, 0, 0]", "0");
         dot_helper("[5, 4, 0]", "[-5, -4, 0]", "-41");
+
         dot_fail_helper("[]", "[2]");
         dot_fail_helper("[2]", "[]");
         dot_fail_helper("[2, 4, -4]", "[6, 3]");
@@ -408,6 +446,7 @@ public class VectorTest {
         rightAngleCompare_helper("[5, 4, 0]", "[-2, 1, 3]", ">");
         rightAngleCompare_helper("[5, 4, 0]", "[0, 0, 0]", "=");
         rightAngleCompare_helper("[5, 4, 0]", "[-5, -4, 0]", ">");
+
         rightAngleCompare_fail_helper("[]", "[2]");
         rightAngleCompare_fail_helper("[2]", "[]");
         rightAngleCompare_fail_helper("[2, 4, -4]", "[6, 3]");
@@ -428,22 +467,19 @@ public class VectorTest {
     }
 
     private static void pivot_helper(@NotNull String input, @NotNull String output) {
-        aeq(readStrict(input).get().pivot().get(), output);
-    }
-
-    private static void pivot_empty_helper(@NotNull String input) {
-        assertFalse(readStrict(input).get().pivot().isPresent());
+        aeq(readStrict(input).get().pivot(), output);
     }
 
     @Test
     public void testPivot() {
-        pivot_helper("[3]", "3");
-        pivot_helper("[1, -3]", "1");
-        pivot_helper("[0, 1, -3]", "1");
-        pivot_helper("[0, 0, -3]", "-3");
-        pivot_empty_helper("[]");
-        pivot_empty_helper("[0]");
-        pivot_empty_helper("[0, 0, 0]");
+        pivot_helper("[3]", "Optional[3]");
+        pivot_helper("[1, -3]", "Optional[1]");
+        pivot_helper("[0, 1, -3]", "Optional[1]");
+        pivot_helper("[0, 0, -3]", "Optional[-3]");
+
+        pivot_helper("[]", "Optional.empty");
+        pivot_helper("[0]", "Optional.empty");
+        pivot_helper("[0, 0, 0]", "Optional.empty");
     }
 
     private static void isReduced_helper(@NotNull String input, boolean output) {
@@ -527,27 +563,28 @@ public class VectorTest {
         testCompareToHelper(readVectorList("[[], [2], [5, -4, 23], [5, 4, 23]]"));
     }
 
-    private static void readStrict_helper(@NotNull String input) {
-        aeq(readStrict(input).get(), input);
-    }
-
-    private static void readStrict_fail_helper(@NotNull String input) {
-        assertFalse(readStrict(input).isPresent());
+    private static void readStrict_helper(@NotNull String input, @NotNull String output) {
+        Optional<Vector> ov = readStrict(input);
+        if (ov.isPresent()) {
+            ov.get().validate();
+        }
+        aeq(ov, output);
     }
 
     @Test
     public void testReadStrict() {
-        readStrict_helper("[]");
-        readStrict_helper("[2]");
-        readStrict_helper("[0, -23, 7]");
-        readStrict_fail_helper("");
-        readStrict_fail_helper("[ 1]");
-        readStrict_fail_helper("[1/3, 1/2]");
-        readStrict_fail_helper("[4, -5/3]");
-        readStrict_fail_helper("hello");
-        readStrict_fail_helper("][");
-        readStrict_fail_helper("1, 3");
-        readStrict_fail_helper("vfbdb ds");
+        readStrict_helper("[]", "Optional[[]]");
+        readStrict_helper("[2]", "Optional[[2]]");
+        readStrict_helper("[0, -23, 7]", "Optional[[0, -23, 7]]");
+
+        readStrict_helper("", "Optional.empty");
+        readStrict_helper("[ 1]", "Optional.empty");
+        readStrict_helper("[1/3, 1/2]", "Optional.empty");
+        readStrict_helper("[4, -5/3]", "Optional.empty");
+        readStrict_helper("hello", "Optional.empty");
+        readStrict_helper("][", "Optional.empty");
+        readStrict_helper("1, 3", "Optional.empty");
+        readStrict_helper("vfbdb ds", "Optional.empty");
     }
 
     private static @NotNull List<BigInteger> readBigIntegerList(@NotNull String s) {
