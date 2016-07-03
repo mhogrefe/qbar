@@ -81,16 +81,24 @@ public class QBarExhaustiveProviderTest {
         simpleProviderHelper(QEP.range(Rational.readStrict(a).get(), Rational.readStrict(b).get()), output);
     }
 
+    private static void range_Rational_Rational_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            QEP.range(Rational.readStrict(a).get(), Rational.readStrict(b).get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
     @Test
     public void testRange_Rational_Rational() {
-        range_Rational_Rational_helper("1", "0", "QBarExhaustiveProvider_range_Rational_Rational_i");
-        range_Rational_Rational_helper("1/2", "1/3", "QBarExhaustiveProvider_range_Rational_Rational_ii");
-        range_Rational_Rational_helper("0", "0", "QBarExhaustiveProvider_range_Rational_Rational_iii");
-        range_Rational_Rational_helper("5/3", "5/3", "QBarExhaustiveProvider_range_Rational_Rational_iv");
-        range_Rational_Rational_helper("0", "1", "QBarExhaustiveProvider_range_Rational_Rational_v");
-        range_Rational_Rational_helper("-1", "0", "QBarExhaustiveProvider_range_Rational_Rational_vi");
-        range_Rational_Rational_helper("1/3", "1/2", "QBarExhaustiveProvider_range_Rational_Rational_vii");
-        range_Rational_Rational_helper("-1", "5/3", "QBarExhaustiveProvider_range_Rational_Rational_viii");
+        range_Rational_Rational_helper("0", "0", "QBarExhaustiveProvider_range_Rational_Rational_i");
+        range_Rational_Rational_helper("5/3", "5/3", "QBarExhaustiveProvider_range_Rational_Rational_ii");
+        range_Rational_Rational_helper("0", "1", "QBarExhaustiveProvider_range_Rational_Rational_iii");
+        range_Rational_Rational_helper("-1", "0", "QBarExhaustiveProvider_range_Rational_Rational_iv");
+        range_Rational_Rational_helper("1/3", "1/2", "QBarExhaustiveProvider_range_Rational_Rational_v");
+        range_Rational_Rational_helper("-1", "5/3", "QBarExhaustiveProvider_range_Rational_Rational_vi");
+
+        range_Rational_Rational_fail_helper("1", "0");
+        range_Rational_Rational_fail_helper("1/2", "1/3");
     }
 
     @Test

@@ -195,7 +195,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
 
     private void propertiesRange_Rational_Rational() {
         initialize("range(Rational, Rational)");
-        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+        for (Pair<Rational, Rational> p : take(LIMIT, P.bagPairs(P.rationals()))) {
             Iterable<Rational> rs = QEP.range(p.a, p.b);
             simpleTest(p, rs, r -> ge(r, p.a) && le(r, p.b));
             assertEquals(p, gt(p.a, p.b), isEmpty(rs));
@@ -206,6 +206,13 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
 
         for (Rational r : take(LIMIT, P.rationals())) {
             aeqit(r, QEP.range(r, r), Collections.singletonList(r));
+        }
+
+        for (Pair<Rational, Rational> p : take(LIMIT, P.subsetPairs(P.rationals()))) {
+            try {
+                QEP.range(p.b, p.a);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 

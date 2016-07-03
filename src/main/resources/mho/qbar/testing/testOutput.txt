@@ -899,17 +899,13 @@ QBarExhaustiveProvider_rangeDown_Rational_vi list 51
 -61/33
 ...
 
-QBarExhaustiveProvider_range_Rational_Rational_i list 0
-
-QBarExhaustiveProvider_range_Rational_Rational_ii list 0
-
-QBarExhaustiveProvider_range_Rational_Rational_iii list 1
+QBarExhaustiveProvider_range_Rational_Rational_i list 1
 0
 
-QBarExhaustiveProvider_range_Rational_Rational_iv list 1
+QBarExhaustiveProvider_range_Rational_Rational_ii list 1
 5/3
 
-QBarExhaustiveProvider_range_Rational_Rational_v list 51
+QBarExhaustiveProvider_range_Rational_Rational_iii list 51
 0
 1
 1/2
@@ -962,7 +958,7 @@ QBarExhaustiveProvider_range_Rational_Rational_v list 51
 3/13
 ...
 
-QBarExhaustiveProvider_range_Rational_Rational_vi list 51
+QBarExhaustiveProvider_range_Rational_Rational_iv list 51
 -1
 0
 -1/2
@@ -1015,7 +1011,7 @@ QBarExhaustiveProvider_range_Rational_Rational_vi list 51
 -10/13
 ...
 
-QBarExhaustiveProvider_range_Rational_Rational_vii list 51
+QBarExhaustiveProvider_range_Rational_Rational_v list 51
 1/3
 1/2
 5/12
@@ -1068,7 +1064,7 @@ QBarExhaustiveProvider_range_Rational_Rational_vii list 51
 29/78
 ...
 
-QBarExhaustiveProvider_range_Rational_Rational_viii list 51
+QBarExhaustiveProvider_range_Rational_Rational_vi list 51
 -1
 5/3
 1/3

@@ -33,7 +33,7 @@ public class QBarExhaustiveProviderDemos extends QBarDemos {
     }
 
     private void demoRange_Rational_Rational() {
-        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+        for (Pair<Rational, Rational> p : take(MEDIUM_LIMIT, P.bagPairs(P.rationals()))) {
             System.out.println("range(" + p.a + ", " + p.b + ") = " + its(QEP.range(p.a, p.b)));
         }
     }
