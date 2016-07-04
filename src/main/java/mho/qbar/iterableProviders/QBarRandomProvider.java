@@ -411,7 +411,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      *  <li>{@code this} must have a {@code scale} of at least 4.</li>
      *  <li>{@code a} cannot be null.</li>
      *  <li>{@code b} cannot be null.</li>
-     *  <li>{@code a} cannot be greater than {@code b}.</li>
+     *  <li>{@code a} must be less than or equal to {@code b}.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Rational}s.</li>
      * </ul>
      *
@@ -428,8 +428,8 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
             throw new IllegalStateException("this must have a scale of at least 4. Invalid scale: " + scale);
         }
         switch (Ordering.compare(a, b)) {
-            case GT: throw new IllegalArgumentException("a cannot be greater than b. Invalid a: " +
-                    a + ", and invalid b: " + b);
+            case GT: throw new IllegalArgumentException("a must be less than or equal to b. Invalid a: " +
+                    a + ", invalid b: " + b);
             case EQ: return repeat(a);
             case LT:
                 Rational diameter = b.subtract(a);

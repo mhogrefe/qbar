@@ -2,6 +2,8 @@ package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.*;
 import mho.wheels.io.Readers;
+import mho.wheels.iterables.ExhaustiveProvider;
+import mho.wheels.random.IsaacPRNG;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,10 +19,180 @@ import static org.junit.Assert.fail;
 
 public class QBarRandomProviderTest {
     private static QBarRandomProvider P;
+    private static QBarRandomProvider Q;
+    private static QBarRandomProvider R;
 
     @Before
     public void initialize() {
         P = QBarRandomProvider.example();
+        Q = new QBarRandomProvider(toList(replicate(IsaacPRNG.SIZE, 0)));
+        R = new QBarRandomProvider(toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(1, IsaacPRNG.SIZE)));
+    }
+
+    @Test
+    public void testConstructor() {
+        QBarRandomProvider rp = new QBarRandomProvider();
+        rp.validate();
+        aeq(rp.getScale(), 32);
+        aeq(rp.getSecondaryScale(), 8);
+        aeq(rp.getTertiaryScale(), 2);
+    }
+
+    private static void constructor_List_Integer_helper(@NotNull List<Integer> input, @NotNull String output) {
+        QBarRandomProvider rp = new QBarRandomProvider(input);
+        rp.validate();
+        aeq(rp, output);
+    }
+
+    private static void constructor_List_Integer_fail_helper(@NotNull String input) {
+        try {
+            new QBarRandomProvider(readIntegerListWithNulls(input));
+            fail();
+        } catch (IllegalArgumentException | NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testConstructor_List_Integer() {
+        constructor_List_Integer_helper(toList(replicate(IsaacPRNG.SIZE, 0)),
+                "QBarRandomProvider[@-7948823947390831374, 32, 8, 2]");
+        constructor_List_Integer_helper(toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(1, IsaacPRNG.SIZE)),
+                "QBarRandomProvider[@2449928962525148503, 32, 8, 2]");
+        constructor_List_Integer_helper(toList(ExhaustiveProvider.INSTANCE.rangeDecreasing(-IsaacPRNG.SIZE, -1)),
+                "QBarRandomProvider[@3417306423260907531, 32, 8, 2]");
+
+        constructor_List_Integer_fail_helper("[]");
+        constructor_List_Integer_fail_helper("[1, 2, 3]");
+    }
+
+    @Test
+    public void testExample() {
+        QBarRandomProvider rp = QBarRandomProvider.example();
+        rp.validate();
+        aeq(rp, "QBarRandomProvider[@-8800290164235921060, 32, 8, 2]");
+    }
+
+    private static void getScale_helper(@NotNull QBarRandomProvider rp, int scale) {
+        aeq(rp.getScale(), scale);
+    }
+
+    private static void getScale_helper(int scale) {
+        aeq(((QBarRandomProvider) new QBarRandomProvider().withScale(scale)).getScale(), scale);
+    }
+
+    @Test
+    public void testGetScale() {
+        getScale_helper(P, 32);
+        getScale_helper(100);
+        getScale_helper(3);
+        getScale_helper(-3);
+    }
+
+    private static void getSecondaryScale_helper(@NotNull QBarRandomProvider rp, int secondaryScale) {
+        aeq(rp.getSecondaryScale(), secondaryScale);
+    }
+
+    private static void getSecondaryScale_helper(int secondaryScale) {
+        aeq(
+                ((QBarRandomProvider) new QBarRandomProvider().withSecondaryScale(secondaryScale)).getSecondaryScale(),
+                secondaryScale
+        );
+    }
+
+    @Test
+    public void testGetSecondaryScale() {
+        getSecondaryScale_helper(P, 8);
+        getSecondaryScale_helper(100);
+        getSecondaryScale_helper(3);
+        getSecondaryScale_helper(-3);
+    }
+
+    private static void getTertiaryScale_helper(@NotNull QBarRandomProvider rp, int tertiaryScale) {
+        aeq(rp.getTertiaryScale(), tertiaryScale);
+    }
+
+    private static void getTertiaryScale_helper(int tertiaryScale) {
+        aeq(
+                ((QBarRandomProvider) new QBarRandomProvider().withTertiaryScale(tertiaryScale)).getTertiaryScale(),
+                tertiaryScale
+        );
+    }
+
+    @Test
+    public void testGetTertiaryScale() {
+        getTertiaryScale_helper(P, 2);
+        getTertiaryScale_helper(100);
+        getTertiaryScale_helper(3);
+        getTertiaryScale_helper(-3);
+    }
+
+    private static void getSeed_helper(@NotNull QBarRandomProvider rp, @NotNull String seed) {
+        aeq(rp.getSeed(), seed);
+    }
+
+    @Test
+    public void testGetSeed() {
+        getSeed_helper(
+                P,
+                "[-1740315277, -1661427768, 842676458, -1268128447, -121858045, 1559496322, -581535260, -1819723670," +
+                " -334232530, 244755020, -534964695, 301563516, -1795957210, 1451814771, 1299826235, -666749112," +
+                " -1729602324, -565031294, 1897952431, 1118663606, -299718943, -1499922009, -837624734, 1439650052," +
+                " 312777359, -1140199484, 688524765, 739702138, 1480517762, 1622590976, 835969782, -204259962," +
+                " -606452012, -1671898934, 368548728, -333429570, -1477682221, -638975525, -402896626, 1106834480," +
+                " -1454735450, 1532680389, 1878326075, 1597781004, 619389131, -898266263, 1900039432, 1228960795," +
+                " 1091764975, -1435988581, 1465994011, -241076337, 980038049, -821307198, -25801148, -1278802989," +
+                " -290171171, 1063693093, 1718162965, -297113539, -1723402396, 1063795076, 1779331877, 1606303707," +
+                " 1342330210, -2115595746, -718013617, 889248973, 1553964562, -2000156621, 1009070370, 998677106," +
+                " 309828058, -816607592, 347096084, -565436493, -1836536982, -39909763, -1384351460, 586300570," +
+                " -1545743273, -118730601, -1026888351, -643914920, 159473612, -509882909, 2003784095, -1582123439," +
+                " 1199200850, -980627072, 589064158, 1351400003, 1083549876, -1039880174, 1634495699, -1583272739," +
+                " 1765688283, -316629870, 577895752, -145082312, -645859550, 1496562313, 1970005163, -104842168," +
+                " 285710655, 970623004, 375952155, -1114509491, 9760898, 272385973, 1160942220, 79933456, 642681904," +
+                " -1291288677, -238849129, 1196057424, -587416967, -2000013062, 953214572, -2003974223, -179005208," +
+                " -1599818904, 1963556499, -1494628627, 293535669, -1033907228, 1690848472, 1958730707, 1679864529," +
+                " -450182832, -1398178560, 2092043951, 892850383, 662556689, -1954880564, -1297875796, -562200510," +
+                " 1753810661, 612072956, -1182875, 294510681, -485063306, 1608426289, 1466734719, 2978810," +
+                " -2134449847, 855495682, -1563923271, -306227772, 147934567, 926758908, 1903257258, 1602676310," +
+                " -1151393146, 303067731, -1371065668, 1908028886, -425534720, 1241120323, -2101606174, 545122109," +
+                " 1781213901, -146337786, -1205949803, -235261172, 1019855899, -193216104, -1286568040, -294909212," +
+                " 1086948319, 1903298288, 2119132684, -581936319, -2070422261, 2086926428, -1303966999, -1365365119," +
+                " -1891227288, 346044744, 488440551, -790513873, -2045294651, -1270631847, -2126290563, -1816128137," +
+                " 1473769929, 784925032, 292983675, -325413283, -2117417065, 1156099828, -1188576148, -1134724577," +
+                " 937972245, -924106996, 1553688888, 324720865, 2001615528, 998833644, 137816765, 1901776632," +
+                " 2000206935, 942793606, -1742718537, 1909590681, -1332632806, -1355397404, 152253803, -193623640," +
+                " 1601921213, -427930872, 1154642563, 1204629137, 581648332, 1921167008, 2054160403, -1709752639," +
+                " -402951456, 1597748885, 351809052, -1039041413, 1958075309, 1071372680, 1249922658, -2077011328," +
+                " -2088560037, 643876593, -691661336, 2124992669, -534970427, 1061266818, -1731083093, 195764083," +
+                " 1773077546, 304479557, 244603812, 834384133, 1684120407, 1493413139, 1731211584, -2062213553," +
+                " -270682579, 44310291, 564559440, 957643125, 1374924466, 962420298, 1319979537, 1206138289," +
+                " -948832823, -909756549, -664108386, -1355112330, -125435854, -1502071736, -790593389]"
+        );
+        getSeed_helper(
+                Q,
+                "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0," +
+                " 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0," +
+                " 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0," +
+                " 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0," +
+                " 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0," +
+                " 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0," +
+                " 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0," +
+                " 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]"
+        );
+        getSeed_helper(
+                R,
+                "[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27," +
+                " 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51," +
+                " 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75," +
+                " 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99," +
+                " 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118," +
+                " 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137," +
+                " 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156," +
+                " 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175," +
+                " 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194," +
+                " 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213," +
+                " 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232," +
+                " 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251," +
+                " 252, 253, 254, 255, 256]"
+        );
     }
 
     private static void rationals_helper(
@@ -7899,6 +8071,10 @@ public class QBarRandomProviderTest {
     private static double meanOfAlgebraics(@NotNull List<Algebraic> xs) {
         int size = xs.size();
         return sumDouble(toList(map(r -> r.doubleValue() / size, xs)));
+    }
+
+    private static @NotNull List<Integer> readIntegerListWithNulls(@NotNull String s) {
+        return Readers.readListWithNullsStrict(Readers::readIntegerStrict).apply(s).get();
     }
 
     private static @NotNull List<Variable> readVariableList(@NotNull String s) {
