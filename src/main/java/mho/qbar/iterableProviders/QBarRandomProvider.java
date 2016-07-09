@@ -188,7 +188,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * @return A copy of {@code this} with a new scale
      */
     @Override
-    public @NotNull QBarIterableProvider withScale(int scale) {
+    public @NotNull QBarRandomProvider withScale(int scale) {
         return new QBarRandomProvider((RandomProvider) wheelsProvider.withScale(scale));
     }
 
@@ -205,7 +205,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * @return A copy of {@code this} with a new secondary scale
      */
     @Override
-    public @NotNull QBarIterableProvider withSecondaryScale(int secondaryScale) {
+    public @NotNull QBarRandomProvider withSecondaryScale(int secondaryScale) {
         return new QBarRandomProvider((RandomProvider) wheelsProvider.withSecondaryScale(secondaryScale));
     }
 
@@ -222,7 +222,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * @return A copy of {@code this} with a new tertiary scale
      */
     @Override
-    public @NotNull QBarIterableProvider withTertiaryScale(int tertiaryScale) {
+    public @NotNull QBarRandomProvider withTertiaryScale(int tertiaryScale) {
         return new QBarRandomProvider((RandomProvider) wheelsProvider.withTertiaryScale(tertiaryScale));
     }
 
@@ -898,7 +898,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
             throw new IllegalStateException("this must have a secondaryScale of at least 2. Invalid secondaryScale: " +
                     secondaryScale);
         }
-        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
+        QBarRandomProvider dimensionProvider = withScale(
                 MathUtils.ceilingRoot(2, BigInteger.valueOf(secondaryScale)).intValueExact()
         );
         return chooseLogarithmicOrder(
@@ -939,7 +939,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
             throw new IllegalStateException("this must have a secondaryScale of at least 2. Invalid secondaryScale: " +
                     secondaryScale);
         }
-        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
+        QBarRandomProvider dimensionProvider = withScale(
                 MathUtils.ceilingRoot(2, BigInteger.valueOf(secondaryScale)).intValueExact()
         );
         return withElement(
@@ -1005,7 +1005,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
             throw new IllegalStateException("this must have a secondaryScale of at least 2. Invalid secondaryScale: " +
                     secondaryScale);
         }
-        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
+        QBarRandomProvider dimensionProvider = withScale(
                 MathUtils.ceilingRoot(2, BigInteger.valueOf(secondaryScale)).intValueExact()
         );
         return chooseLogarithmicOrder(
@@ -1047,7 +1047,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
             throw new IllegalStateException("this must have a secondaryScale of at least 2. Invalid secondaryScale: " +
                     secondaryScale);
         }
-        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
+        QBarRandomProvider dimensionProvider = withScale(
                 MathUtils.ceilingRoot(2, BigInteger.valueOf(secondaryScale)).intValueExact()
         );
         return withElement(
@@ -1123,7 +1123,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
             throw new IllegalStateException("this must have a tertiaryScale of at least 2. Invalid tertiaryScale: " +
                     tertiaryScale);
         }
-        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
+        QBarRandomProvider dimensionProvider = withScale(
                 MathUtils.ceilingRoot(2, BigInteger.valueOf(tertiaryScale)).intValueExact()
         );
         return chooseLogarithmicOrder(
@@ -1169,7 +1169,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
             throw new IllegalStateException("this must have a tertiaryScale of at least 2. Invalid tertiaryScale: " +
                     tertiaryScale);
         }
-        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
+        QBarRandomProvider dimensionProvider = withScale(
                 MathUtils.ceilingRoot(2, BigInteger.valueOf(tertiaryScale)).intValueExact()
         );
         return withElement(
@@ -1251,7 +1251,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
             throw new IllegalStateException("this must have a tertiaryScale of at least 2. Invalid tertiaryScale: " +
                     tertiaryScale);
         }
-        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
+        QBarRandomProvider dimensionProvider = withScale(
                 MathUtils.ceilingRoot(2, BigInteger.valueOf(tertiaryScale)).intValueExact()
         );
         return chooseLogarithmicOrder(
@@ -1301,7 +1301,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
             throw new IllegalStateException("this must have a tertiaryScale of at least 2. Invalid tertiaryScale: " +
                     tertiaryScale);
         }
-        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
+        QBarRandomProvider dimensionProvider = withScale(
                 MathUtils.ceilingRoot(2, BigInteger.valueOf(tertiaryScale)).intValueExact()
         );
         return withElement(
@@ -1844,7 +1844,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         if (scale < 1) {
             throw new IllegalStateException("this must have a positive scale. Invalid scale: " + scale);
         }
-        QBarRandomProvider variableCountProvider = (QBarRandomProvider) withScale(
+        QBarRandomProvider variableCountProvider = withScale(
                 MathUtils.ceilingRoot(2, BigInteger.valueOf(scale)).intValueExact()
         );
         return map(

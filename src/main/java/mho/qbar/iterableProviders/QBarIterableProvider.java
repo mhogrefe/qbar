@@ -4133,7 +4133,7 @@ public strictfp abstract class QBarIterableProvider {
             int tertiaryScale
     ) {
         return map(
-                rp -> (QBarRandomProvider) new QBarRandomProvider(rp.getSeed())
+                rp -> new QBarRandomProvider(rp.getSeed())
                         .withScale(scale).withSecondaryScale(secondaryScale).withTertiaryScale(tertiaryScale),
                 wheelsProvider.randomProvidersDefault()
         );
@@ -4145,14 +4145,14 @@ public strictfp abstract class QBarIterableProvider {
 
     public @NotNull Iterable<QBarRandomProvider> qbarRandomProvidersDefaultSecondaryAndTertiaryScale() {
         return map(
-                rp -> (QBarRandomProvider) new QBarRandomProvider(rp.getSeed()).withScale(rp.getScale()),
+                rp -> new QBarRandomProvider(rp.getSeed()).withScale(rp.getScale()),
                 wheelsProvider.randomProvidersDefaultSecondaryAndTertiaryScale()
         );
     }
 
     public @NotNull Iterable<QBarRandomProvider> qbarRandomProvidersDefaultTertiaryScale() {
         return map(
-                rp -> (QBarRandomProvider) new QBarRandomProvider(rp.getSeed()).withScale(rp.getScale())
+                rp -> new QBarRandomProvider(rp.getSeed()).withScale(rp.getScale())
                         .withSecondaryScale(rp.getSecondaryScale()),
                 wheelsProvider.randomProvidersDefaultTertiaryScale()
         );
@@ -4160,7 +4160,7 @@ public strictfp abstract class QBarIterableProvider {
 
     public @NotNull Iterable<QBarRandomProvider> qbarRandomProviders() {
         return map(
-                rp -> (QBarRandomProvider) new QBarRandomProvider(rp.getSeed())
+                rp -> new QBarRandomProvider(rp.getSeed())
                         .withScale(rp.getScale()).withSecondaryScale(rp.getSecondaryScale())
                         .withTertiaryScale(rp.getTertiaryScale()),
                 wheelsProvider.randomProviders()

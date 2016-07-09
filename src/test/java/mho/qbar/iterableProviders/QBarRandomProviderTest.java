@@ -9,12 +9,16 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.List;
 
 import static mho.qbar.testing.QBarTesting.aeqMapQBarLog;
 import static mho.qbar.testing.QBarTesting.aeqitLimitQBarLog;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 public class QBarRandomProviderTest {
@@ -76,7 +80,7 @@ public class QBarRandomProviderTest {
     }
 
     private static void getScale_helper(int scale) {
-        aeq(((QBarRandomProvider) new QBarRandomProvider().withScale(scale)).getScale(), scale);
+        aeq(new QBarRandomProvider().withScale(scale).getScale(), scale);
     }
 
     @Test
@@ -92,10 +96,7 @@ public class QBarRandomProviderTest {
     }
 
     private static void getSecondaryScale_helper(int secondaryScale) {
-        aeq(
-                ((QBarRandomProvider) new QBarRandomProvider().withSecondaryScale(secondaryScale)).getSecondaryScale(),
-                secondaryScale
-        );
+        aeq(new QBarRandomProvider().withSecondaryScale(secondaryScale).getSecondaryScale(), secondaryScale);
     }
 
     @Test
@@ -111,10 +112,7 @@ public class QBarRandomProviderTest {
     }
 
     private static void getTertiaryScale_helper(int tertiaryScale) {
-        aeq(
-                ((QBarRandomProvider) new QBarRandomProvider().withTertiaryScale(tertiaryScale)).getTertiaryScale(),
-                tertiaryScale
-        );
+        aeq(new QBarRandomProvider().withTertiaryScale(tertiaryScale).getTertiaryScale(), tertiaryScale);
     }
 
     @Test
@@ -195,6 +193,103 @@ public class QBarRandomProviderTest {
         );
     }
 
+    private static void withScale_helper(@NotNull QBarRandomProvider rp, int scale, @NotNull String output) {
+        QBarRandomProvider s = rp.withScale(scale);
+        s.validate();
+        aeq(s, output);
+    }
+
+    @Test
+    public void testWithScale() {
+        withScale_helper(P, 100, "QBarRandomProvider[@-8800290164235921060, 100, 8, 2]");
+        withScale_helper(Q, 3, "QBarRandomProvider[@-7948823947390831374, 3, 8, 2]");
+        withScale_helper(R, 0, "QBarRandomProvider[@2449928962525148503, 0, 8, 2]");
+        withScale_helper(R, -3, "QBarRandomProvider[@2449928962525148503, -3, 8, 2]");
+    }
+
+    private static void withSecondaryScale_helper(
+            @NotNull QBarRandomProvider rp,
+            int secondaryScale,
+            @NotNull String output
+    ) {
+        QBarRandomProvider s = rp.withSecondaryScale(secondaryScale);
+        s.validate();
+        aeq(s, output);
+    }
+
+    @Test
+    public void testWithSecondaryScale() {
+        withSecondaryScale_helper(P, 100, "QBarRandomProvider[@-8800290164235921060, 32, 100, 2]");
+        withSecondaryScale_helper(Q, 3, "QBarRandomProvider[@-7948823947390831374, 32, 3, 2]");
+        withSecondaryScale_helper(R, 0, "QBarRandomProvider[@2449928962525148503, 32, 0, 2]");
+        withSecondaryScale_helper(R, -3, "QBarRandomProvider[@2449928962525148503, 32, -3, 2]");
+    }
+
+    private static void withTertiaryScale_helper(
+            @NotNull QBarRandomProvider rp,
+            int tertiaryScale,
+            @NotNull String output
+    ) {
+        QBarRandomProvider s = rp.withTertiaryScale(tertiaryScale);
+        s.validate();
+        aeq(s, output);
+    }
+
+    @Test
+    public void testWithTertiaryScale() {
+        withTertiaryScale_helper(P, 100, "QBarRandomProvider[@-8800290164235921060, 32, 8, 100]");
+        withTertiaryScale_helper(Q, 3, "QBarRandomProvider[@-7948823947390831374, 32, 8, 3]");
+        withTertiaryScale_helper(R, 0, "QBarRandomProvider[@2449928962525148503, 32, 8, 0]");
+        withTertiaryScale_helper(R, -3, "QBarRandomProvider[@2449928962525148503, 32, 8, -3]");
+    }
+
+    @Test
+    public void testCopy() {
+        QBarRandomProvider copy = P.copy();
+        copy.validate();
+        assertEquals(P, copy);
+        head(P.integers());
+        assertEquals(P, copy);
+    }
+
+    @Test
+    public void testDeepCopy() {
+        QBarRandomProvider copy = P.deepCopy();
+        copy.validate();
+        assertEquals(P, copy);
+        head(P.integers());
+        assertNotEquals(P, copy);
+    }
+
+    @Test
+    public void testReset() {
+        QBarRandomProvider PDependent = P.withScale(10);
+        QBarRandomProvider original = P.deepCopy();
+        QBarRandomProvider dependent = original.withScale(10);
+        assertEquals(PDependent, dependent);
+        head(P.integers());
+        assertNotEquals(P, original);
+        assertNotEquals(PDependent, dependent);
+        P.reset();
+        P.validate();
+        assertEquals(P, original);
+        assertEquals(PDependent, dependent);
+    }
+
+    private static void getId_helper(@NotNull QBarRandomProvider rp, long id) {
+        aeq(rp.getId(), id);
+    }
+
+    @Test
+    public void testGetId() {
+        getId_helper(P, -8800290164235921060L);
+        head(P.integers()); // change P state
+        getId_helper(P, -6220528511995005615L);
+        getId_helper(Q, -7948823947390831374L);
+        getId_helper(R, 2449928962525148503L);
+        P.reset();
+    }
+
     private static void rationals_helper(
             @NotNull Iterable<Rational> xs,
             @NotNull String output,
@@ -243,6 +338,7 @@ public class QBarRandomProviderTest {
                 9.896359254271288E54,
                 30.97147700002087
         );
+
         positiveRationals_fail_helper(3);
         positiveRationals_fail_helper(0);
         positiveRationals_fail_helper(-1);
@@ -283,6 +379,7 @@ public class QBarRandomProviderTest {
                 -9.896359254271288E54,
                 30.97147700002087
         );
+
         negativeRationals_fail_helper(3);
         negativeRationals_fail_helper(0);
         negativeRationals_fail_helper(-1);
@@ -323,6 +420,7 @@ public class QBarRandomProviderTest {
                 -3.8257920286392754E59,
                 30.96837000002125
         );
+
         nonzeroRationals_fail_helper(3);
         nonzeroRationals_fail_helper(0);
         nonzeroRationals_fail_helper(-1);
@@ -353,6 +451,7 @@ public class QBarRandomProviderTest {
         rationals_helper(3, "QBarRandomProvider_rationals_i", -0.4022959305532067, 2.779838999989692);
         rationals_helper(16, "QBarRandomProvider_rationals_ii", 1.6133070384934913E30, 15.814283999994494);
         rationals_helper(32, "QBarRandomProvider_rationals_iii", -3.784942556617747E71, 31.82849000002398);
+
         rationals_fail_helper(2);
         rationals_fail_helper(0);
         rationals_fail_helper(-1);
@@ -398,6 +497,7 @@ public class QBarRandomProviderTest {
                 0.4684325154820962,
                 30.684408000047792
         );
+
         nonNegativeRationalsLessThanOne_fail_helper(3);
         nonNegativeRationalsLessThanOne_fail_helper(0);
         nonNegativeRationalsLessThanOne_fail_helper(-1);
@@ -504,6 +604,7 @@ public class QBarRandomProviderTest {
                 2.30035078376369E59,
                 39.967830000046504
         );
+
         rangeUp_Rational_fail_helper(3, "0");
         rangeUp_Rational_fail_helper(-1, "0");
     }
@@ -615,6 +716,7 @@ public class QBarRandomProviderTest {
                 -2.30035078376369E59,
                 40.232672000039464
         );
+
         rangeDown_Rational_fail_helper(3, "0");
         rangeDown_Rational_fail_helper(-1, "0");
     }
@@ -744,6 +846,7 @@ public class QBarRandomProviderTest {
                 0.29486629632591527,
                 31.072729000007964
         );
+
         range_Rational_Rational_fail_helper(3, "0", "1");
         range_Rational_Rational_fail_helper(-1, "0", "1");
         range_Rational_Rational_fail_helper(4, "1", "0");
@@ -777,6 +880,7 @@ public class QBarRandomProviderTest {
         finitelyBoundedIntervals_helper(6, "QBarRandomProvider_finitelyBoundedIntervals_i", 5.139956999987673);
         finitelyBoundedIntervals_helper(16, "QBarRandomProvider_finitelyBoundedIntervals_ii", 15.568145999994938);
         finitelyBoundedIntervals_helper(32, "QBarRandomProvider_finitelyBoundedIntervals_iii", 31.618885000011975);
+
         finitelyBoundedIntervals_fail_helper(5);
         finitelyBoundedIntervals_fail_helper(0);
         finitelyBoundedIntervals_fail_helper(-1);
@@ -802,6 +906,7 @@ public class QBarRandomProviderTest {
         intervals_helper(6, "QBarRandomProvider_intervals_i", 3.146318999988329);
         intervals_helper(16, "QBarRandomProvider_intervals_ii", 12.45336999999764);
         intervals_helper(32, "QBarRandomProvider_intervals_iii", 28.10473700001665);
+
         intervals_fail_helper(5);
         intervals_fail_helper(0);
         intervals_fail_helper(-1);
@@ -907,6 +1012,7 @@ public class QBarRandomProviderTest {
                 2.30035078376369E59,
                 38.21444000001194
         );
+
         rationalsIn_fail_helper(3, "[0, 0]");
         rationalsIn_fail_helper(-1, "[0, 0]");
     }
@@ -1009,6 +1115,7 @@ public class QBarRandomProviderTest {
                 -2.30035078376369E59,
                 39.096911000018515
         );
+
         rationalsNotIn_fail_helper(3, "[0, 0]");
         rationalsNotIn_fail_helper(-1, "[0, 0]");
         rationalsNotIn_fail_helper(4, "(-Infinity, Infinity)");
@@ -1053,6 +1160,7 @@ public class QBarRandomProviderTest {
         vectors_int_helper(1, 0, "QBarRandomProvider_vectors_int_i", 0.0, 0.0);
         vectors_int_helper(5, 3, "QBarRandomProvider_vectors_int_ii", 2.9999999999775233, 4.884982000065708);
         vectors_int_helper(10, 8, "QBarRandomProvider_vectors_int_iii", 8.000000000063345, 9.922074749910346);
+
         vectors_int_fail_helper(1, -1);
         vectors_int_fail_helper(0, 0);
     }
@@ -1087,6 +1195,7 @@ public class QBarRandomProviderTest {
         vectors_helper(1, 1, "QBarRandomProvider_vectors_i", 1.0006929999977097, 0.8337352214893942);
         vectors_helper(5, 3, "QBarRandomProvider_vectors_ii", 3.00101199999147, 4.8827315585850855);
         vectors_helper(32, 8, "QBarRandomProvider_vectors_iii", 8.007115000016897, 31.973857750448634);
+
         vectors_fail_helper(0, 1);
         vectors_fail_helper(1, 0);
     }
@@ -1126,6 +1235,7 @@ public class QBarRandomProviderTest {
         vectorsAtLeast_helper(10, 8, 0, "QBarRandomProvider_vectorsAtLeast_v", 7.983070000016452, 9.924974853054824);
         vectorsAtLeast_helper(10, 8, 3, "QBarRandomProvider_vectorsAtLeast_vi", 8.003411000000233, 9.922824405726274);
         vectorsAtLeast_helper(10, 8, 7, "QBarRandomProvider_vectorsAtLeast_vii", 8.00086800006071, 9.92217406943892);
+
         vectorsAtLeast_fail_helper(1, 1, 1);
         vectorsAtLeast_fail_helper(1, 1, 2);
         vectorsAtLeast_fail_helper(0, 1, 0);
@@ -1188,6 +1298,7 @@ public class QBarRandomProviderTest {
                 8.000000000063345,
                 9.833448374912013
         );
+
         rationalVectors_int_fail_helper(3, -1);
         rationalVectors_int_fail_helper(2, 0);
     }
@@ -1222,6 +1333,7 @@ public class QBarRandomProviderTest {
         rationalVectors_helper(3, 1, "QBarRandomProvider_rationalVectors_i", 0.9992619999977276, 2.7824344366226037);
         rationalVectors_helper(5, 3, "QBarRandomProvider_rationalVectors_ii", 3.0012729999915444, 4.8070228865365285);
         rationalVectors_helper(32, 8, "QBarRandomProvider_rationalVectors_iii", 7.994579000016383, 31.793640290456956);
+
         rationalVectors_fail_helper(2, 1);
         rationalVectors_fail_helper(3, 0);
     }
@@ -1310,6 +1422,7 @@ public class QBarRandomProviderTest {
                 8.001091000060933,
                 9.833612191283711
         );
+
         rationalVectorsAtLeast_fail_helper(3, 1, 1);
         rationalVectorsAtLeast_fail_helper(3, 1, 2);
         rationalVectorsAtLeast_fail_helper(2, 1, 0);
@@ -1365,6 +1478,7 @@ public class QBarRandomProviderTest {
                 8.000000000063345,
                 16.692675999563708
         );
+
         reducedRationalVectors_int_fail_helper(1, -1);
         reducedRationalVectors_int_fail_helper(0, 0);
     }
@@ -1417,6 +1531,7 @@ public class QBarRandomProviderTest {
                 8.044995000003032,
                 56.723622948818225
         );
+
         reducedRationalVectors_fail_helper(0, 1);
         reducedRationalVectors_fail_helper(1, 0);
     }
@@ -1505,6 +1620,7 @@ public class QBarRandomProviderTest {
                 8.00514600006095,
                 16.693559867603597
         );
+
         reducedRationalVectorsAtLeast_fail_helper(1, 1, 1);
         reducedRationalVectorsAtLeast_fail_helper(1, 1, 2);
         reducedRationalVectorsAtLeast_fail_helper(0, 1, 0);
@@ -1570,6 +1686,7 @@ public class QBarRandomProviderTest {
                 2.841233333337271,
                 5.0814477988870035
         );
+
         polynomialVectors_int_fail_helper(0, 0, 2);
         polynomialVectors_int_fail_helper(1, -1, 2);
         polynomialVectors_int_fail_helper(1, 0, -1);
@@ -1624,6 +1741,7 @@ public class QBarRandomProviderTest {
                 2.863313465336309,
                 5.084824254831631
         );
+
         polynomialVectors_fail_helper(0, 0, 1);
         polynomialVectors_fail_helper(1, -1, 1);
         polynomialVectors_fail_helper(1, 0, 0);
@@ -1707,6 +1825,7 @@ public class QBarRandomProviderTest {
                 2.8498517485643293,
                 5.080032535425985
         );
+
         polynomialVectorsAtLeast_fail_helper(0, 0, 1, 0);
         polynomialVectorsAtLeast_fail_helper(1, -1, 1, 0);
         polynomialVectorsAtLeast_fail_helper(1, 0, 0, -1);
@@ -1780,6 +1899,7 @@ public class QBarRandomProviderTest {
                 2.856606666670599,
                 4.960392642253054
         );
+
         rationalPolynomialVectors_int_fail_helper(2, 0, 2);
         rationalPolynomialVectors_int_fail_helper(3, -1, 2);
         rationalPolynomialVectors_int_fail_helper(3, 0, -1);
@@ -1835,6 +1955,7 @@ public class QBarRandomProviderTest {
                 2.85786568996148,
                 4.961487419860152
         );
+
         rationalPolynomialVectors_fail_helper(2, 0, 1);
         rationalPolynomialVectors_fail_helper(3, -1, 1);
         rationalPolynomialVectors_fail_helper(3, 0, 0);
@@ -1918,6 +2039,7 @@ public class QBarRandomProviderTest {
                 2.852697600166462,
                 4.962965333734074
         );
+
         rationalPolynomialVectorsAtLeast_fail_helper(2, 0, 1, 0);
         rationalPolynomialVectorsAtLeast_fail_helper(3, -1, 1, 0);
         rationalPolynomialVectorsAtLeast_fail_helper(3, 0, 0, -1);
@@ -2052,6 +2174,7 @@ public class QBarRandomProviderTest {
                 11.999999999910093,
                 9.92268041633897
         );
+
         matrices_int_int_fail_helper(0, 0, 0);
         matrices_int_int_fail_helper(0, 0, 1);
         matrices_int_int_fail_helper(0, 1, 0);
@@ -2093,6 +2216,7 @@ public class QBarRandomProviderTest {
         matrices_helper(1, 2, "QBarRandomProvider_matrices_i", 1.9983549999915837, 0.8338733608407535);
         matrices_helper(5, 3, "QBarRandomProvider_matrices_ii", 3.3335839999865646, 4.882194059052771);
         matrices_helper(10, 8, "QBarRandomProvider_matrices_iii", 8.189681000015133, 9.921846650751569);
+
         matrices_fail_helper(0, 2);
         matrices_fail_helper(1, 1);
         matrices_fail_helper(1, -1);
@@ -2128,6 +2252,7 @@ public class QBarRandomProviderTest {
         squareMatrices_helper(2, 2, "QBarRandomProvider_squareMatrices_i", 3.0031260000035953, 1.833468525820871);
         squareMatrices_helper(5, 3, "QBarRandomProvider_squareMatrices_ii", 4.821780000018768, 4.883059368202011);
         squareMatrices_helper(10, 8, "QBarRandomProvider_squareMatrices_iii", 13.49856700000753, 9.923964892149032);
+
         squareMatrices_fail_helper(1, 2);
         squareMatrices_fail_helper(2, 1);
         squareMatrices_fail_helper(2, -1);
@@ -2174,6 +2299,7 @@ public class QBarRandomProviderTest {
                 5.099691000015061,
                 4.999944310336789
         );
+
         invertibleMatrices_fail_helper(1, 2);
         invertibleMatrices_fail_helper(2, 1);
         invertibleMatrices_fail_helper(2, -1);
@@ -2305,6 +2431,7 @@ public class QBarRandomProviderTest {
                 12.000000000020316,
                 9.83849583331666
         );
+
         rationalMatrices_int_int_fail_helper(2, 0, 0);
         rationalMatrices_int_int_fail_helper(2, 0, 1);
         rationalMatrices_int_int_fail_helper(2, 1, 0);
@@ -2346,6 +2473,7 @@ public class QBarRandomProviderTest {
         rationalMatrices_helper(3, 2, "QBarRandomProvider_rationalMatrices_i", 3.0089700000010176, 2.781300577932931);
         rationalMatrices_helper(5, 3, "QBarRandomProvider_rationalMatrices_ii", 3.362760000001472, 4.8159131189959234);
         rationalMatrices_helper(10, 8, "QBarRandomProvider_rationalMatrices_iii", 8.16995000000032, 9.840558387733228);
+
         rationalMatrices_fail_helper(2, 2);
         rationalMatrices_fail_helper(3, 1);
         rationalMatrices_fail_helper(3, -1);
@@ -2399,6 +2527,7 @@ public class QBarRandomProviderTest {
                 13.395589999994662,
                 9.83388861560576
         );
+
         squareRationalMatrices_fail_helper(2, 2);
         squareRationalMatrices_fail_helper(3, 1);
         squareRationalMatrices_fail_helper(3, -1);
@@ -2445,6 +2574,7 @@ public class QBarRandomProviderTest {
                 5.094529999999642,
                 4.902308947073661
         );
+
         invertibleRationalMatrices_fail_helper(2, 2);
         invertibleRationalMatrices_fail_helper(3, 1);
         invertibleRationalMatrices_fail_helper(3, -1);
@@ -2635,6 +2765,7 @@ public class QBarRandomProviderTest {
                 1.8581416666733686,
                 5.124858226625802
         );
+
         polynomialMatrices_int_int_fail_helper(1, 0, 0, -1);
         polynomialMatrices_int_int_fail_helper(1, 0, -1, 0);
         polynomialMatrices_int_int_fail_helper(1, -1, 0, 0);
@@ -2952,6 +3083,7 @@ public class QBarRandomProviderTest {
                 1.856026666673493,
                 5.001508505901974
         );
+
         rationalPolynomialMatrices_int_int_fail_helper(3, 0, 0, -1);
         rationalPolynomialMatrices_int_int_fail_helper(3, 0, -1, 0);
         rationalPolynomialMatrices_int_int_fail_helper(3, -1, 0, 0);
@@ -3137,6 +3269,7 @@ public class QBarRandomProviderTest {
         polynomials_int_helper(1, -1, "QBarRandomProvider_polynomials_int_i", -1.000000000007918, 0.0);
         polynomials_int_helper(5, 3, "QBarRandomProvider_polynomials_int_ii", 2.9999999999775233, 5.125149750005694);
         polynomials_int_helper(10, 8, "QBarRandomProvider_polynomials_int_iii", 8.000000000063345, 10.031244555547099);
+
         polynomials_int_fail_helper(0, -1);
         polynomials_int_fail_helper(1, -2);
     }
@@ -3171,6 +3304,7 @@ public class QBarRandomProviderTest {
         polynomials_helper(1, 0, "QBarRandomProvider_polynomials_i", -0.33297599999650446, 1.2495277531222848);
         polynomials_helper(5, 3, "QBarRandomProvider_polynomials_ii", 2.850227999989568, 5.076649486766766);
         polynomials_helper(10, 8, "QBarRandomProvider_polynomials_iii", 7.919980000002783, 10.01935105242132);
+
         polynomials_fail_helper(0, 0);
         polynomials_fail_helper(1, -1);
     }
@@ -3259,6 +3393,7 @@ public class QBarRandomProviderTest {
                 8.000700000060865,
                 10.031968846717554
         );
+
         polynomialsAtLeast_fail_helper(0, 0, -1);
         polynomialsAtLeast_fail_helper(1, -1, -1);
         polynomialsAtLeast_fail_helper(1, 3, 3);
@@ -3320,6 +3455,7 @@ public class QBarRandomProviderTest {
                 8.000000000063345,
                 10.031551999991857
         );
+
         primitivePolynomials_int_fail_helper(0, 0);
         primitivePolynomials_int_fail_helper(1, -1);
     }
@@ -3372,6 +3508,7 @@ public class QBarRandomProviderTest {
                 9.45433400000822,
                 10.00177486274624
         );
+
         primitivePolynomials_fail_helper(0, 1);
         primitivePolynomials_fail_helper(1, 0);
     }
@@ -3468,6 +3605,7 @@ public class QBarRandomProviderTest {
                 8.002345000060796,
                 10.03215340004299
         );
+
         primitivePolynomialsAtLeast_fail_helper(1, 0, -1);
         primitivePolynomialsAtLeast_fail_helper(0, 1, -1);
         primitivePolynomialsAtLeast_fail_helper(1, 0, 0);
@@ -3531,6 +3669,7 @@ public class QBarRandomProviderTest {
                 8.000000000063345,
                 10.042622555550155
         );
+
         positivePrimitivePolynomials_int_fail_helper(0, 0);
         positivePrimitivePolynomials_int_fail_helper(1, -1);
     }
@@ -3583,6 +3722,7 @@ public class QBarRandomProviderTest {
                 9.446762000009086,
                 10.014196839384036
         );
+
         positivePrimitivePolynomials_fail_helper(0, 1);
         positivePrimitivePolynomials_fail_helper(1, 0);
     }
@@ -3679,6 +3819,7 @@ public class QBarRandomProviderTest {
                 8.001185000061044,
                 10.047496746236824
         );
+
         positivePrimitivePolynomialsAtLeast_fail_helper(1, 0, -1);
         positivePrimitivePolynomialsAtLeast_fail_helper(0, 1, -1);
         positivePrimitivePolynomialsAtLeast_fail_helper(1, 0, 0);
@@ -3933,6 +4074,7 @@ public class QBarRandomProviderTest {
                 3.000000000005079,
                 5.200314999992706
         );
+
         squareFreePolynomials_int_fail_helper(0, 0);
         squareFreePolynomials_int_fail_helper(1, -1);
     }
@@ -3979,6 +4121,7 @@ public class QBarRandomProviderTest {
                 3.9696700000014955,
                 5.119983821854156
         );
+
         squareFreePolynomials_fail_helper(0, 0);
         squareFreePolynomials_fail_helper(1, -1);
     }
@@ -4052,6 +4195,7 @@ public class QBarRandomProviderTest {
                 3.006200000001613,
                 5.203389745910559
         );
+
         squareFreePolynomialsAtLeast_fail_helper(1, -1, -1);
         squareFreePolynomialsAtLeast_fail_helper(0, 0, -1);
         squareFreePolynomialsAtLeast_fail_helper(1, -1, -1);
@@ -4109,6 +4253,7 @@ public class QBarRandomProviderTest {
                 3.000000000005079,
                 5.233984999991867
         );
+
         positivePrimitiveSquareFreePolynomials_int_fail_helper(0, 0);
         positivePrimitiveSquareFreePolynomials_int_fail_helper(1, -1);
     }
@@ -4155,6 +4300,7 @@ public class QBarRandomProviderTest {
                 4.111800000001742,
                 5.070521147155589
         );
+
         positivePrimitiveSquareFreePolynomials_fail_helper(0, 0);
         positivePrimitiveSquareFreePolynomials_fail_helper(1, -1);
     }
@@ -4234,6 +4380,7 @@ public class QBarRandomProviderTest {
                 3.0810300000016992,
                 5.204828192899828
         );
+
         positivePrimitiveSquareFreePolynomialsAtLeast_fail_helper(1, 0, -1);
         positivePrimitiveSquareFreePolynomialsAtLeast_fail_helper(0, 1, -1);
         positivePrimitiveSquareFreePolynomialsAtLeast_fail_helper(1, -1, -1);
@@ -4291,6 +4438,7 @@ public class QBarRandomProviderTest {
                 3.000000000005079,
                 5.445429999991603
         );
+
         irreduciblePolynomials_int_fail_helper(0, 0);
         irreduciblePolynomials_int_fail_helper(1, -1);
     }
@@ -4337,6 +4485,7 @@ public class QBarRandomProviderTest {
                 2.4175200000008608,
                 5.069922048738439
         );
+
         irreduciblePolynomials_fail_helper(1, 2);
         irreduciblePolynomials_fail_helper(2, 1);
     }
@@ -4414,6 +4563,7 @@ public class QBarRandomProviderTest {
                 2.997899999999992,
                 5.4128167287826034
         );
+
         irreduciblePolynomialsAtLeast_fail_helper(2, 1, -1);
         irreduciblePolynomialsAtLeast_fail_helper(1, 2, -1);
         irreduciblePolynomialsAtLeast_fail_helper(0, 2, 1);
@@ -4484,6 +4634,7 @@ public class QBarRandomProviderTest {
                 7.99999999998467,
                 9.892031111041902
         );
+
         rationalPolynomials_int_fail_helper(2, -1);
         rationalPolynomials_int_fail_helper(1, -2);
     }
@@ -4536,6 +4687,7 @@ public class QBarRandomProviderTest {
                 7.88165000000161,
                 9.88691740842155
         );
+
         rationalPolynomials_fail_helper(2, 0);
         rationalPolynomials_fail_helper(1, -1);
     }
@@ -4624,6 +4776,7 @@ public class QBarRandomProviderTest {
                 8.000649999998087,
                 9.892801075463433
         );
+
         rationalPolynomialsAtLeast_fail_helper(2, 0, -1);
         rationalPolynomialsAtLeast_fail_helper(3, -1, -1);
         rationalPolynomialsAtLeast_fail_helper(3, 3, 3);
@@ -4685,6 +4838,7 @@ public class QBarRandomProviderTest {
                 7.99999999998467,
                 17.083579999891224
         );
+
         monicRationalPolynomials_int_fail_helper(0, 0);
         monicRationalPolynomials_int_fail_helper(1, -1);
     }
@@ -4737,6 +4891,7 @@ public class QBarRandomProviderTest {
                 9.458719999998882,
                 17.390248519873563
         );
+
         monicRationalPolynomials_fail_helper(0, 1);
         monicRationalPolynomials_fail_helper(1, 0);
     }
@@ -4833,6 +4988,7 @@ public class QBarRandomProviderTest {
                 8.002689999998019,
                 17.146973848853506
         );
+
         monicRationalPolynomialsAtLeast_fail_helper(1, 0, -1);
         monicRationalPolynomialsAtLeast_fail_helper(0, 1, -1);
         monicRationalPolynomialsAtLeast_fail_helper(1, 0, 0);
@@ -4863,6 +5019,7 @@ public class QBarRandomProviderTest {
         variables_helper(1, "QBarRandomProvider_variables_i");
         variables_helper(10, "QBarRandomProvider_variables_ii");
         variables_helper(100, "QBarRandomProvider_variables_iii");
+
         variables_fail_helper(0);
         variables_fail_helper(-1);
         variables_fail_helper(Integer.MAX_VALUE);
@@ -4907,6 +5064,7 @@ public class QBarRandomProviderTest {
         monomials_helper(1, "QBarRandomProvider_monomials_i", 1.0010019999980002);
         monomials_helper(8, "QBarRandomProvider_monomials_ii", 24.01019300000956);
         monomials_helper(32, "QBarRandomProvider_monomials_iii", 192.2389910000015);
+
         monomials_fail_helper(0);
         monomials_fail_helper(-1);
     }
@@ -4961,6 +5119,7 @@ public class QBarRandomProviderTest {
                 "QBarRandomProvider_monomials_List_Variable_viii",
                 23.976022000016762
         );
+
         monomials_List_Variable_fail_helper(0, "[a, b]");
         monomials_List_Variable_fail_helper(-1, "[a, b]");
         monomials_List_Variable_fail_helper(1, "[a, a]");
@@ -5168,6 +5327,7 @@ public class QBarRandomProviderTest {
                 43.42678999999441,
                 9.902224558273495
         );
+
         multivariatePolynomials_List_Variable_fail_helper(1, 1, 2, "[]");
         multivariatePolynomials_List_Variable_fail_helper(2, 0, 2, "[]");
         multivariatePolynomials_List_Variable_fail_helper(2, 1, 1, "[]");
@@ -5483,6 +5643,7 @@ public class QBarRandomProviderTest {
                 5.455049999999257,
                 8.64470511038894E8
         );
+
         positiveAlgebraics_int_fail_helper(0, 1);
         positiveAlgebraics_int_fail_helper(1, 0);
     }
@@ -5533,6 +5694,7 @@ public class QBarRandomProviderTest {
                 5.409729729729074,
                 5.1291800819379814E10
         );
+
         positiveAlgebraics_fail_helper(0, 4);
         positiveAlgebraics_fail_helper(1, 3);
     }
@@ -5615,6 +5777,7 @@ public class QBarRandomProviderTest {
                 5.495149999999198,
                 -8.64470511038894E8
         );
+
         negativeAlgebraics_int_fail_helper(0, 1);
         negativeAlgebraics_int_fail_helper(1, 0);
     }
@@ -5665,6 +5828,7 @@ public class QBarRandomProviderTest {
                 5.447316153362046,
                 -5.1291800819379814E10
         );
+
         negativeAlgebraics_fail_helper(0, 4);
         negativeAlgebraics_fail_helper(1, 3);
     }
@@ -5747,6 +5911,7 @@ public class QBarRandomProviderTest {
                 5.427124999999181,
                 -3.996771507650188E9
         );
+
         nonzeroAlgebraics_int_fail_helper(0, 1);
         nonzeroAlgebraics_int_fail_helper(1, 0);
     }
@@ -5797,6 +5962,7 @@ public class QBarRandomProviderTest {
                 5.422050683809328,
                 1.069223599469271E15
         );
+
         nonzeroAlgebraics_fail_helper(0, 4);
         nonzeroAlgebraics_fail_helper(1, 3);
     }
@@ -5879,6 +6045,7 @@ public class QBarRandomProviderTest {
                 5.427124999999181,
                 -3.996771507650188E9
         );
+
         algebraics_int_fail_helper(0, 1);
         algebraics_int_fail_helper(1, 0);
     }
@@ -5929,6 +6096,7 @@ public class QBarRandomProviderTest {
                 5.37798421736037,
                 1.0692235994147452E15
         );
+
         algebraics_fail_helper(0, 4);
         algebraics_fail_helper(1, 3);
     }
@@ -6011,6 +6179,7 @@ public class QBarRandomProviderTest {
                 5.384199999999304,
                 0.2333289111213644
         );
+
         nonNegativeAlgebraicsLessThanOne_int_fail_helper(0, 1);
         nonNegativeAlgebraicsLessThanOne_int_fail_helper(1, 0);
     }
@@ -6061,6 +6230,7 @@ public class QBarRandomProviderTest {
                 5.271704301752999,
                 0.20190432263300273
         );
+
         nonNegativeAlgebraicsLessThanOne_fail_helper(0, 4);
         nonNegativeAlgebraicsLessThanOne_fail_helper(1, 3);
     }
@@ -8056,6 +8226,60 @@ public class QBarRandomProviderTest {
         algebraicsNotIn_Interval_fail_helper(1, 4, "[1/2, Infinity)");
         algebraicsNotIn_Interval_fail_helper(2, 3, "[1/2, Infinity)");
         algebraicsNotIn_Interval_fail_helper(2, 4, "(-Infinity, Infinity)");
+    }
+
+    @Test
+    public void testEquals() {
+        List<QBarRandomProvider> xs = Arrays.asList(
+                QBarRandomProvider.example(),
+                Q.withScale(3).withSecondaryScale(0).withTertiaryScale(-1),
+                R.withScale(0).withSecondaryScale(10).withTertiaryScale(5)
+        );
+        List<QBarRandomProvider> ys = Arrays.asList(
+                QBarRandomProvider.example(),
+                Q.withScale(3).withSecondaryScale(0).withTertiaryScale(-1),
+                R.withScale(0).withSecondaryScale(10).withTertiaryScale(5)
+        );
+        testEqualsHelper(xs, ys);
+        //noinspection EqualsBetweenInconvertibleTypes
+        assertFalse(P.equals("hello"));
+    }
+
+    private static void hashCode_helper(
+            @NotNull QBarRandomProvider rp,
+            int scale,
+            int secondaryScale,
+            int tertiaryScale,
+            int output
+    ) {
+        aeq(
+                rp.withScale(scale).withSecondaryScale(secondaryScale).withTertiaryScale(tertiaryScale).hashCode(),
+                output
+        );
+    }
+
+    @Test
+    public void testHashCode() {
+        hashCode_helper(P, 32, 8, 2, -1291053760);
+        hashCode_helper(Q, 3, 0, -1, 1656156693);
+        hashCode_helper(R, 0, 10, 5, -453720855);
+    }
+
+    private static void toString_helper(
+            @NotNull QBarRandomProvider rp,
+            int scale,
+            int secondaryScale,
+            int tertiaryScale,
+            @NotNull String output
+    ) {
+        aeq(rp.withScale(scale).withSecondaryScale(secondaryScale).withTertiaryScale(tertiaryScale), output);
+    }
+
+    @Test
+    public void testToString() {
+        toString_helper(P, 32, 8, 2, "QBarRandomProvider[@-8800290164235921060, 32, 8, 2]");
+        toString_helper(Q, 3, 0, -1, "QBarRandomProvider[@-7948823947390831374, 3, 0, -1]");
+        toString_helper(R, 0, 10, 5, "QBarRandomProvider[@2449928962525148503, 0, 10, 5]");
     }
 
     private static double meanOfIntegers(@NotNull List<Integer> xs) {
