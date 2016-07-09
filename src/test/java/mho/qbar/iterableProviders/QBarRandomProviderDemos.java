@@ -5,12 +5,14 @@ import mho.qbar.objects.Interval;
 import mho.qbar.objects.Rational;
 import mho.qbar.objects.Variable;
 import mho.qbar.testing.QBarDemos;
+import mho.wheels.random.IsaacPRNG;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Quadruple;
 import mho.wheels.structures.Triple;
 
 import java.util.List;
 
+import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.iterables.IterableUtils.filterInfinite;
 import static mho.wheels.iterables.IterableUtils.take;
 import static mho.wheels.ordering.Ordering.le;
@@ -21,6 +23,90 @@ import static mho.wheels.testing.Testing.*;
 public class QBarRandomProviderDemos extends QBarDemos {
     public QBarRandomProviderDemos(boolean useRandom) {
         super(useRandom);
+    }
+
+    private void demoConstructor() {
+        for (Void v : take(LIMIT, repeat((Void) null))) {
+            System.out.println("QBarRandomProvider() = " + new QBarRandomProvider());
+        }
+    }
+
+    private void demoConstructor_List_Integer() {
+        for (List<Integer> is : take(SMALL_LIMIT, P.lists(IsaacPRNG.SIZE, P.integers()))) {
+            System.out.println("QBarRandomProvider(" + is + ") = " + new QBarRandomProvider(is));
+        }
+    }
+
+    private void demoGetScale() {
+        for (QBarRandomProvider rp : take(LIMIT, P.qbarRandomProviders())) {
+            System.out.println("getScale(" + rp + ") = " + rp.getScale());
+        }
+    }
+
+    private void demoGetSecondaryScale() {
+        for (QBarRandomProvider rp : take(LIMIT, P.qbarRandomProviders())) {
+            System.out.println("getSecondaryScale(" + rp + ") = " + rp.getSecondaryScale());
+        }
+    }
+
+    private void demoGetTertiaryScale() {
+        for (QBarRandomProvider rp : take(LIMIT, P.qbarRandomProviders())) {
+            System.out.println("getTertiaryScale(" + rp + ") = " + rp.getTertiaryScale());
+        }
+    }
+
+    private void demoGetSeed() {
+        for (QBarRandomProvider rp : take(SMALL_LIMIT, P.qbarRandomProviders())) {
+            System.out.println("getSeed(" + rp + ") = " + rp.getSeed());
+        }
+    }
+
+    private void demoWithScale() {
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairs(P.qbarRandomProviders(), P.naturalIntegers());
+        for (Pair<QBarRandomProvider, Integer> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("withScale(" + p.a + ", " + p.b + ") = " + p.a.withScale(p.b));
+        }
+    }
+
+    private void demoWithSecondaryScale() {
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairs(P.qbarRandomProviders(), P.naturalIntegers());
+        for (Pair<QBarRandomProvider, Integer> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("withSecondaryScale(" + p.a + ", " + p.b + ") = " + p.a.withSecondaryScale(p.b));
+        }
+    }
+
+    private void demoWithTertiaryScale() {
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairs(P.qbarRandomProviders(), P.naturalIntegers());
+        for (Pair<QBarRandomProvider, Integer> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("withTertiaryScale(" + p.a + ", " + p.b + ") = " + p.a.withTertiaryScale(p.b));
+        }
+    }
+
+    private void demoCopy() {
+        for (QBarRandomProvider rp : take(MEDIUM_LIMIT, P.qbarRandomProviders())) {
+            System.out.println("copy(" + rp + ") = " + rp.copy());
+        }
+    }
+
+    private void demoDeepCopy() {
+        for (QBarRandomProvider rp : take(MEDIUM_LIMIT, P.qbarRandomProviders())) {
+            System.out.println("deepCopy(" + rp + ") = " + rp.deepCopy());
+        }
+    }
+
+    private void demoReset() {
+        for (QBarRandomProvider rp : take(MEDIUM_LIMIT, P.qbarRandomProviders())) {
+            head(rp.integers());
+            QBarRandomProvider beforeReset = rp.deepCopy();
+            rp.reset();
+            System.out.println("reset(" + beforeReset + ") => " + rp);
+        }
+    }
+
+    private void demoGetId() {
+        for (QBarRandomProvider rp : take(LIMIT, P.qbarRandomProviders())) {
+            System.out.println("getId(" + rp + ") = " + rp.getId());
+        }
     }
 
     private void demoPositiveRationals() {
@@ -1236,6 +1322,31 @@ public class QBarRandomProviderDemos extends QBarDemos {
         );
         for (Pair<QBarRandomProvider, Interval> p : take(MEDIUM_LIMIT, ps)) {
             System.out.println("algebraicsNotIn(" + p.a + ", " + p.b + ") = " + its(p.a.algebraicsNotIn(p.b)));
+        }
+    }
+
+    private void demoEquals_QBarRandomProvider() {
+        for (Pair<QBarRandomProvider, QBarRandomProvider> p : take(LIMIT, P.pairs(P.qbarRandomProviders()))) {
+            System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);
+        }
+    }
+
+    private void demoEquals_null() {
+        for (QBarRandomProvider rp : take(LIMIT, P.qbarRandomProviders())) {
+            //noinspection ObjectEqualsNull
+            System.out.println(rp + (rp.equals(null) ? " = " : " ≠ ") + null);
+        }
+    }
+
+    private void demoHashCode() {
+        for (QBarRandomProvider rp : take(LIMIT, P.qbarRandomProviders())) {
+            System.out.println("hashCode(" + rp + ") = " + rp.hashCode());
+        }
+    }
+
+    private void demoToString() {
+        for (QBarRandomProvider rp : take(LIMIT, P.qbarRandomProviders())) {
+            System.out.println(rp);
         }
     }
 }
