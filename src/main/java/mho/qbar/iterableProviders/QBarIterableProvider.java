@@ -4127,6 +4127,14 @@ public strictfp abstract class QBarIterableProvider {
      */
     public abstract @NotNull Iterable<Algebraic> algebraicsNotIn(@NotNull Interval a);
 
+    /**
+     * Generates all {@code QBarRandomProvider}s with a fixed {@code scale}, {@code secondaryScale}, and
+     * {@code tertiaryScale}.
+     *
+     * @param scale the {@code scale} of the generated {@code QBarRandomProvider}s
+     * @param secondaryScale the {@code secondaryScale} of the generated {@code QBarRandomProvider}s
+     * @param tertiaryScale the {@code tertiaryScale} of the generated {@code QBarRandomProvider}s
+     */
     public @NotNull Iterable<QBarRandomProvider> qbarRandomProvidersFixedScales(
             int scale,
             int secondaryScale,
@@ -4139,10 +4147,17 @@ public strictfp abstract class QBarIterableProvider {
         );
     }
 
+    /**
+     * Generates all {@code QBarRandomProvider}s with the default {@code scale}, {@code secondaryScale}, and
+     * {@code tertiaryScale}.
+     */
     public @NotNull Iterable<QBarRandomProvider> qbarRandomProvidersDefault() {
         return map(rp -> new QBarRandomProvider(rp.getSeed()), wheelsProvider.randomProvidersDefault());
     }
 
+    /**
+     * Generates all {@code QBarRandomProvider}s with the default {@code secondaryScale} and {@code tertiaryScale}.
+     */
     public @NotNull Iterable<QBarRandomProvider> qbarRandomProvidersDefaultSecondaryAndTertiaryScale() {
         return map(
                 rp -> new QBarRandomProvider(rp.getSeed()).withScale(rp.getScale()),
@@ -4150,6 +4165,9 @@ public strictfp abstract class QBarIterableProvider {
         );
     }
 
+    /**
+     * Generates all {@code QBarRandomProvider}s with the default {@code tertiaryScale}.
+     */
     public @NotNull Iterable<QBarRandomProvider> qbarRandomProvidersDefaultTertiaryScale() {
         return map(
                 rp -> new QBarRandomProvider(rp.getSeed()).withScale(rp.getScale())
@@ -4158,6 +4176,9 @@ public strictfp abstract class QBarIterableProvider {
         );
     }
 
+    /**
+     * Generates all {@code QBarRandomProvider}s.
+     */
     public @NotNull Iterable<QBarRandomProvider> qbarRandomProviders() {
         return map(
                 rp -> new QBarRandomProvider(rp.getSeed())
