@@ -2,6 +2,8 @@ package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.*;
 import mho.qbar.testing.QBarTestProperties;
+import mho.qbar.testing.QBarTesting;
+import mho.wheels.random.IsaacPRNG;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Quadruple;
 import mho.wheels.structures.Triple;
@@ -15,12 +17,27 @@ import static mho.wheels.ordering.Ordering.*;
 import static mho.wheels.testing.Testing.*;
 
 public class QBarRandomProviderProperties extends QBarTestProperties {
+    private static final String QBAR_RANDOM_PROVIDER_CHARS = " ,-0123456789@BPQR[]adeimnorv";
+
     public QBarRandomProviderProperties() {
         super("QBarRandomProvider");
     }
 
     @Override
     protected void testBothModes() {
+        propertiesConstructor();
+        propertiesConstructor_List_Integer();
+        propertiesGetScale();
+        propertiesGetSecondaryScale();
+        propertiesGetTertiaryScale();
+        propertiesGetSeed();
+        propertiesWithScale();
+        propertiesWithSecondaryScale();
+        propertiesWithTertiaryScale();
+        propertiesCopy();
+        propertiesDeepCopy();
+        propertiesReset();
+        propertiesGetId();
         propertiesPositiveRationals();
         propertiesNegativeRationals();
         propertiesNonzeroRationals();
@@ -117,6 +134,9 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         propertiesAlgebraicsIn_Interval();
         propertiesAlgebraicsNotIn_int_Interval();
         propertiesAlgebraicsNotIn_Interval();
+        propertiesEquals();
+        propertiesHashCode();
+        propertiesToString();
     }
 
     private static <T> void simpleTestWithNulls(
@@ -136,6 +156,177 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
             @NotNull Predicate<T> predicate
     ) {
         simpleTestWithNulls(rp, xs, x -> x != null && predicate.test(x));
+    }
+
+    private void propertiesConstructor() {
+        initialize("QBarRandomProvider()");
+        //noinspection unused
+        for (Void v : take(LIMIT, repeat((Void) null))) {
+            QBarRandomProvider rp = new QBarRandomProvider();
+            rp.validate();
+        }
+    }
+
+    private void propertiesConstructor_List_Integer() {
+        initialize("QBarRandomProvider(List<Integer>)");
+        for (List<Integer> is : take(LIMIT, P.lists(IsaacPRNG.SIZE, P.integers()))) {
+            QBarRandomProvider rp = new QBarRandomProvider(is);
+            rp.validate();
+            assertEquals(is, rp.getScale(), 32);
+            assertEquals(is, rp.getSecondaryScale(), 8);
+            assertEquals(is, rp.getTertiaryScale(), 2);
+        }
+
+        Iterable<List<Integer>> isFail = filterInfinite(js -> js.size() != IsaacPRNG.SIZE, P.lists(P.integers()));
+        for (List<Integer> is : take(LIMIT, isFail)) {
+            try {
+                new QBarRandomProvider(is);
+                fail(is);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesGetScale() {
+        initialize("getScale()");
+        for (QBarRandomProvider rp : take(LIMIT, P.qbarRandomProviders())) {
+            int scale = rp.getScale();
+            assertEquals(rp, rp.withScale(scale), rp);
+        }
+    }
+
+    private void propertiesGetSecondaryScale() {
+        initialize("getSecondaryScale()");
+        for (QBarRandomProvider rp : take(LIMIT, P.qbarRandomProviders())) {
+            int secondaryScale = rp.getSecondaryScale();
+            assertEquals(rp, rp.withSecondaryScale(secondaryScale), rp);
+        }
+    }
+
+    private void propertiesGetTertiaryScale() {
+        initialize("getTertiaryScale()");
+        for (QBarRandomProvider rp : take(LIMIT, P.qbarRandomProviders())) {
+            int tertiaryScale = rp.getTertiaryScale();
+            assertEquals(rp, rp.withTertiaryScale(tertiaryScale), rp);
+        }
+    }
+
+    private void propertiesGetSeed() {
+        initialize("getSeed()");
+        for (QBarRandomProvider rp : take(LIMIT, P.qbarRandomProviders())) {
+            List<Integer> seed = rp.getSeed();
+            assertEquals(rp, seed.size(), IsaacPRNG.SIZE);
+            assertEquals(
+                    rp,
+                    new QBarRandomProvider(seed).withScale(rp.getScale()).withSecondaryScale(rp.getSecondaryScale())
+                            .withTertiaryScale(rp.getTertiaryScale()),
+                    rp
+            );
+        }
+    }
+
+    private void propertiesWithScale() {
+        initialize("withScale(int)");
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairs(P.qbarRandomProviders(), P.naturalIntegers());
+        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, ps)) {
+            QBarRandomProvider rp = p.a.withScale(p.b);
+            rp.validate();
+            assertEquals(p, rp.getScale(), p.b);
+            assertEquals(p, rp.getSecondaryScale(), p.a.getSecondaryScale());
+            assertEquals(p, rp.getTertiaryScale(), p.a.getTertiaryScale());
+            assertEquals(p, rp.getSeed(), p.a.getSeed());
+            inverse(x -> x.withScale(p.b), (QBarRandomProvider y) -> y.withScale(p.a.getScale()), p.a);
+        }
+
+        for (QBarRandomProvider rp : take(LIMIT, P.qbarRandomProviders())) {
+            idempotent(x -> x.withScale(rp.getScale()), rp);
+        }
+    }
+
+    private void propertiesWithSecondaryScale() {
+        initialize("withSecondaryScale(int)");
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairs(P.qbarRandomProviders(), P.naturalIntegers());
+        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, ps)) {
+            QBarRandomProvider rp = p.a.withSecondaryScale(p.b);
+            rp.validate();
+            assertEquals(p, rp.getScale(), p.a.getScale());
+            assertEquals(p, rp.getSecondaryScale(), p.b);
+            assertEquals(p, rp.getTertiaryScale(), p.a.getTertiaryScale());
+            assertEquals(p, rp.getSeed(), p.a.getSeed());
+            inverse(
+                    x -> x.withSecondaryScale(p.b),
+                    (QBarRandomProvider y) -> y.withSecondaryScale(p.a.getSecondaryScale()),
+                    p.a
+            );
+        }
+
+        for (QBarRandomProvider rp : take(LIMIT, P.qbarRandomProviders())) {
+            idempotent(x -> x.withSecondaryScale(rp.getSecondaryScale()), rp);
+        }
+    }
+
+    private void propertiesWithTertiaryScale() {
+        initialize("withTertiaryScale(int)");
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairs(P.qbarRandomProviders(), P.naturalIntegers());
+        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, ps)) {
+            QBarRandomProvider rp = p.a.withTertiaryScale(p.b);
+            rp.validate();
+            assertEquals(p, rp.getScale(), p.a.getScale());
+            assertEquals(p, rp.getSecondaryScale(), p.a.getSecondaryScale());
+            assertEquals(p, rp.getTertiaryScale(), p.b);
+            assertEquals(p, rp.getSeed(), p.a.getSeed());
+            inverse(
+                    x -> x.withTertiaryScale(p.b),
+                    (QBarRandomProvider y) -> y.withTertiaryScale(p.a.getTertiaryScale()),
+                    p.a
+            );
+        }
+
+        for (QBarRandomProvider rp : take(LIMIT, P.qbarRandomProviders())) {
+            idempotent(x -> x.withTertiaryScale(rp.getTertiaryScale()), rp);
+        }
+    }
+
+    private void propertiesCopy() {
+        initialize("copy()");
+        for (QBarRandomProvider rp : take(LIMIT, P.qbarRandomProviders())) {
+            QBarRandomProvider copy = rp.copy();
+            assertEquals(rp, rp, copy);
+            head(rp.integers());
+            assertEquals(rp, rp, copy);
+        }
+    }
+
+    private void propertiesDeepCopy() {
+        initialize("deepCopy()");
+        for (QBarRandomProvider rp : take(LIMIT, P.qbarRandomProviders())) {
+            QBarRandomProvider copy = rp.deepCopy();
+            assertEquals(rp, rp, copy);
+            head(rp.integers());
+            assertNotEquals(rp, rp, copy);
+        }
+    }
+
+    private void propertiesReset() {
+        initialize("reset()");
+        for (QBarRandomProvider rp : take(LIMIT, P.qbarRandomProviders())) {
+            QBarRandomProvider rpDependent = rp.withScale(10);
+            QBarRandomProvider original = rp.deepCopy();
+            QBarRandomProvider dependent = original.withScale(10);
+            assertEquals(rp, rpDependent, dependent);
+            head(rp.integers());
+            assertNotEquals(rp, rp, original);
+            assertNotEquals(rp, rpDependent, dependent);
+            rp.reset();
+            assertEquals(rp, rp, original);
+            assertEquals(rp, rpDependent, dependent);
+        }
+    }
+
+    private void propertiesGetId() {
+        initialize("getId()");
+        for (QBarRandomProvider rp : take(LIMIT, P.qbarRandomProviders())) {
+            rp.getId();
+        }
     }
 
     private void propertiesPositiveRationals() {
@@ -4370,6 +4561,24 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
                 rp.algebraicsNotIn(Interval.ALL);
                 fail(rp);
             } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesEquals() {
+        initialize("equals(Object)");
+        QBarTesting.propertiesEqualsHelper(LIMIT, P, QBarIterableProvider::qbarRandomProviders);
+    }
+
+    private void propertiesHashCode() {
+        initialize("hashCode()");
+        QBarTesting.propertiesHashCodeHelper(LIMIT, P, QBarIterableProvider::qbarRandomProviders);
+    }
+
+    private void propertiesToString() {
+        initialize("toString()");
+        for (QBarRandomProvider rp : take(LIMIT, P.qbarRandomProviders())) {
+            String s = rp.toString();
+            assertTrue(rp, isSubsetOf(s, QBAR_RANDOM_PROVIDER_CHARS));
         }
     }
 }
