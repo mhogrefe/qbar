@@ -8251,7 +8251,11 @@ public class QBarRandomProviderTest {
     }
 
     private static void qbarRandomProvidersDefaultSecondaryAndTertiaryScale_helper(int scale, @NotNull String output) {
-        aeqitLimitQBarLog(TINY_LIMIT, P.withScale(scale).qbarRandomProvidersDefaultSecondaryAndTertiaryScale(), output);
+        aeqitLimitQBarLog(
+                TINY_LIMIT,
+                P.withScale(scale).qbarRandomProvidersDefaultSecondaryAndTertiaryScale(),
+                output
+        );
     }
 
     private static void qbarRandomProvidersDefaultSecondaryAndTertiaryScale_fail_helper(int scale) {
