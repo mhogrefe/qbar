@@ -5,6 +5,7 @@ import mho.qbar.objects.Interval;
 import mho.qbar.objects.Rational;
 import mho.qbar.objects.Variable;
 import mho.wheels.io.Readers;
+import mho.wheels.iterables.IterableUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -12,6 +13,7 @@ import java.util.List;
 
 import static mho.qbar.testing.QBarTesting.QEP;
 import static mho.qbar.testing.QBarTesting.aeqitLimitQBarLog;
+import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -1778,6 +1780,52 @@ public class QBarExhaustiveProviderTest {
         algebraicsNotIn_Interval_helper("[1, 4]", "QBarExhaustiveProvider_algebraicsNotIn_Interval_iv");
         algebraicsNotIn_Interval_helper("(-Infinity, 1/2]", "QBarExhaustiveProvider_algebraicsNotIn_Interval_v");
         algebraicsNotIn_Interval_helper("[1/2, Infinity)", "QBarExhaustiveProvider_algebraicsNotIn_Interval_vi");
+    }
+
+    private static void qbarRandomProvidersFixedScales_helper(
+            int scale,
+            int secondaryScale,
+            int tertiaryScale,
+            @NotNull String output
+    ) {
+        Iterable<QBarRandomProvider> rps = QEP.qbarRandomProvidersFixedScales(scale, secondaryScale, tertiaryScale);
+        take(TINY_LIMIT, rps).forEach(QBarRandomProvider::validate);
+        simpleProviderHelper(rps, output);
+    }
+
+    @Test
+    public void testQBarRandomProvidersFixedScales() {
+        qbarRandomProvidersFixedScales_helper(8, 32, 2, "QBarExhaustiveProvider_qbarRandomProvidersFixedScales_i");
+        qbarRandomProvidersFixedScales_helper(0, 0, 0, "QBarExhaustiveProvider_qbarRandomProvidersFixedScales_ii");
+        qbarRandomProvidersFixedScales_helper(-5, -10, -1, "QBarExhaustiveProvider_qbarRandomProvidersFixedScales_iii");
+    }
+
+    @Test
+    public void testQBarRandomProvidersDefault() {
+        Iterable<QBarRandomProvider> rps = QEP.qbarRandomProvidersDefault();
+        take(TINY_LIMIT, rps).forEach(QBarRandomProvider::validate);
+        simpleProviderHelper(rps, "QBarExhaustiveProvider_qbarRandomProvidersDefault");
+    }
+
+    @Test
+    public void testQBarRandomProvidersDefaultSecondaryAndTertiaryScale() {
+        Iterable<QBarRandomProvider> rps = QEP.qbarRandomProvidersDefaultSecondaryAndTertiaryScale();
+        take(TINY_LIMIT, rps).forEach(QBarRandomProvider::validate);
+        simpleProviderHelper(rps, "QBarExhaustiveProvider_qbarRandomProviderDefaultSecondaryAndTertiaryScale");
+    }
+
+    @Test
+    public void testQBarRandomProvidersDefaultTertiaryScale() {
+        Iterable<QBarRandomProvider> rps = QEP.qbarRandomProvidersDefaultTertiaryScale();
+        take(TINY_LIMIT, rps).forEach(QBarRandomProvider::validate);
+        simpleProviderHelper(rps, "QBarExhaustiveProvider_qbarRandomProvidersDefaultTertiaryScale");
+    }
+
+    @Test
+    public void testQBarRandomProviders() {
+        Iterable<QBarRandomProvider> rps = QEP.qbarRandomProviders();
+        take(TINY_LIMIT, rps).forEach(QBarRandomProvider::validate);
+        simpleProviderHelper(rps, "QBarExhaustiveProvider_qbarRandomProviders");
     }
 
     @Test
