@@ -63,6 +63,10 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesNonzeroAlgebraics();
         propertiesAlgebraics();
         propertiesNonNegativeAlgebraicsLessThanOne();
+        propertiesQBarRandomProvidersDefault();
+        propertiesQBarRandomProvidersDefaultSecondaryAndTertiaryScale();
+        propertiesQBarRandomProvidersDefaultTertiaryScale();
+        propertiesQBarRandomProviders();
     }
 
     @Override
@@ -122,6 +126,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesAlgebraicsIn_Interval();
         propertiesAlgebraicsNotIn_int_Interval();
         propertiesAlgebraicsNotIn_Interval();
+        propertiesQBarRandomProvidersFixedScales();
     }
 
     private static <T> void test_helper(
@@ -1265,5 +1270,60 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
             Iterable<Algebraic> xs = QEP.algebraicsNotIn(a);
             simpleTest(a, xs, x -> !a.contains(x));
         }
+    }
+
+    private void propertiesQBarRandomProvidersFixedScales() {
+        initialize("qbarRandomProvidersFixedScales(int, int, int)");
+        for (Triple<Integer, Integer, Integer> t : take(MEDIUM_LIMIT, P.triples(P.integersGeometric()))) {
+            Iterable<QBarRandomProvider> rps = QEP.qbarRandomProvidersFixedScales(t.a, t.b, t.c);
+            testNoRemove(TINY_LIMIT, rps);
+            List<QBarRandomProvider> rpsList = toList(take(TINY_LIMIT, rps));
+            for (QBarRandomProvider rp : rpsList) {
+                rp.validate();
+            }
+            take(TINY_LIMIT, rpsList).forEach(QBarRandomProvider::validate);
+            assertTrue(
+                    t,
+                    all(
+                            rp -> rp.getScale() == t.a && rp.getSecondaryScale() == t.b &&
+                                    rp.getTertiaryScale() == t.c,
+                            rpsList
+                    )
+            );
+            assertTrue(t, unique(rpsList));
+        }
+    }
+
+    private void propertiesQBarRandomProvidersDefault() {
+        initializeConstant("qbarRandomProvidersDefault()");
+        biggerTest(
+                QEP,
+                QEP.qbarRandomProvidersDefault(),
+                rp -> rp.getScale() == 32 && rp.getSecondaryScale() == 8 && rp.getTertiaryScale() == 2
+        );
+        take(LARGE_LIMIT, QEP.qbarRandomProvidersDefault()).forEach(QBarRandomProvider::validate);
+    }
+
+    private void propertiesQBarRandomProvidersDefaultSecondaryAndTertiaryScale() {
+        initializeConstant("qbarRandomProvidersDefaulSecondaryAndTertiaryScale()");
+        biggerTest(
+                QEP,
+                QEP.qbarRandomProvidersDefaultSecondaryAndTertiaryScale(),
+                rp -> rp.getSecondaryScale() == 8 && rp.getTertiaryScale() == 2
+        );
+        take(LARGE_LIMIT, QEP.qbarRandomProvidersDefaultSecondaryAndTertiaryScale())
+                .forEach(QBarRandomProvider::validate);
+    }
+
+    private void propertiesQBarRandomProvidersDefaultTertiaryScale() {
+        initializeConstant("qbarRandomProvidersDefaulTertiaryScale()");
+        biggerTest(QEP, QEP.qbarRandomProvidersDefaultTertiaryScale(), rp -> rp.getTertiaryScale() == 2);
+        take(LARGE_LIMIT, QEP.qbarRandomProvidersDefaultTertiaryScale()).forEach(QBarRandomProvider::validate);
+    }
+
+    private void propertiesQBarRandomProviders() {
+        initializeConstant("qbarRandomProviders()");
+        biggerTest(QEP, QEP.qbarRandomProviders(), rp -> true);
+        take(LARGE_LIMIT, QEP.qbarRandomProviders()).forEach(QBarRandomProvider::validate);
     }
 }
