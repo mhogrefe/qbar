@@ -1325,6 +1325,57 @@ public class QBarRandomProviderDemos extends QBarDemos {
         }
     }
 
+    private void demoQBarRandomProvidersFixedScales() {
+        Iterable<Quadruple<QBarRandomProvider, Integer, Integer, Integer>> qs = P.quadruples(
+                P.qbarRandomProvidersDefault(),
+                P.integersGeometric(),
+                P.integersGeometric(),
+                P.integersGeometric()
+        );
+        for (Quadruple<QBarRandomProvider, Integer, Integer, Integer> q : take(SMALL_LIMIT, qs)) {
+            System.out.println("qbarRandomProvidersFixedScales(" + q.a + ", " + q.b + ", " + q.c + ") = " +
+                    its(q.a.qbarRandomProvidersFixedScales(q.b, q.c, q.d)));
+        }
+    }
+
+    private void demoQBarRandomProvidersDefault() {
+        for (QBarRandomProvider rp : take(SMALL_LIMIT, P.qbarRandomProvidersDefault())) {
+            System.out.println("qbarRandomProvidersDefault(" + rp + ") = " + its(rp.qbarRandomProvidersDefault()));
+        }
+    }
+
+    private void demoQBarRandomProvidersDefaultSecondaryAndTertiaryScale() {
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() > 0,
+                P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
+            System.out.println("qbarRandomProvidersDefaultSecondaryAndTertiaryScale(" + rp + ") = " +
+                    its(rp.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()));
+        }
+    }
+
+    private void demoQBarRandomProvidersDefaultTertiaryScale() {
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() > 0,
+                P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
+            System.out.println("qbarRandomProvidersDefaultTertiaryScale(" + rp + ") = " +
+                    its(rp.qbarRandomProvidersDefaultTertiaryScale()));
+        }
+    }
+
+    private void demoQBarRandomProviders() {
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() > 0,
+                P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
+            System.out.println("qbarRandomProviders(" + rp + ") = " + its(rp.qbarRandomProviders()));
+        }
+    }
+
     private void demoEquals_QBarRandomProvider() {
         for (Pair<QBarRandomProvider, QBarRandomProvider> p : take(LIMIT, P.pairs(P.qbarRandomProviders()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);

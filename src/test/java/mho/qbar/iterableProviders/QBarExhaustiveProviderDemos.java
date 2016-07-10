@@ -386,4 +386,11 @@ public class QBarExhaustiveProviderDemos extends QBarDemos {
             System.out.println("algebraicsNotIn(" + a + ") = " + its(QEP.algebraicsNotIn(a)));
         }
     }
+
+    private void demoQBarRandomProvidersFixedScales() {
+        for (Triple<Integer, Integer, Integer> t : take(SMALL_LIMIT, P.triples(P.integersGeometric()))) {
+            System.out.println("qbarRandomProvidersFixedScales(" + t.a + ", " + t.b + ", " + t.c + ") = " +
+                    its(P.qbarRandomProvidersFixedScales(t.a, t.b, t.c)));
+        }
+    }
 }
