@@ -8228,6 +8228,115 @@ public class QBarRandomProviderTest {
         algebraicsNotIn_Interval_fail_helper(2, 4, "(-Infinity, Infinity)");
     }
 
+    private static void qbarRandomProvidersFixedScales_helper(
+            int scale,
+            int secondaryScale,
+            int tertiaryScale,
+            @NotNull String output
+    ) {
+        aeqitLimitQBarLog(TINY_LIMIT, P.qbarRandomProvidersFixedScales(scale, secondaryScale, tertiaryScale), output);
+        P.reset();
+    }
+
+    @Test
+    public void testQBarRandomProvidersFixedScales() {
+        qbarRandomProvidersFixedScales_helper(8, 32, 2, "QBarRandomProvider_qbarRandomProvidersFixedScales_i");
+        qbarRandomProvidersFixedScales_helper(0, 0, 0, "QBarRandomProvider_qbarRandomProvidersFixedScales_ii");
+        qbarRandomProvidersFixedScales_helper(-5, -10, -1, "QBarRandomProvider_qbarRandomProvidersFixedScales_iii");
+    }
+
+    @Test
+    public void testQBarRandomProvidersDefault() {
+        aeqitLimitQBarLog(TINY_LIMIT, P.qbarRandomProvidersDefault(), "QBarRandomProvider_qbarRandomProvidersDefault");
+    }
+
+    private static void qbarRandomProvidersDefaultSecondaryAndTertiaryScale_helper(int scale, @NotNull String output) {
+        aeqitLimitQBarLog(TINY_LIMIT, P.withScale(scale).qbarRandomProvidersDefaultSecondaryAndTertiaryScale(), output);
+    }
+
+    private static void qbarRandomProvidersDefaultSecondaryAndTertiaryScale_fail_helper(int scale) {
+        try {
+            P.withScale(scale).qbarRandomProvidersDefaultSecondaryAndTertiaryScale();
+            fail();
+        } catch (IllegalStateException ignored) {}
+        finally{
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testQBarRandomProvidersDefaultSecondaryAndTertiaryScale() {
+        qbarRandomProvidersDefaultSecondaryAndTertiaryScale_helper(1,
+                "QBarRandomProvider_qbarRandomProvidersDefaultSecondaryAndTertiaryScale_i");
+        qbarRandomProvidersDefaultSecondaryAndTertiaryScale_helper(8,
+                "QBarRandomProvider_qbarRandomProvidersDefaultSecondaryAndTertiaryScale_ii");
+
+        qbarRandomProvidersDefaultSecondaryAndTertiaryScale_fail_helper(0);
+        qbarRandomProvidersDefaultSecondaryAndTertiaryScale_fail_helper(-1);
+    }
+
+    private static void qbarRandomProvidersDefaultTertiaryScale_helper(
+            int scale,
+            int secondaryScale,
+            @NotNull String output
+    ) {
+        aeqitLimitQBarLog(
+                TINY_LIMIT,
+                P.withScale(scale).withSecondaryScale(secondaryScale).qbarRandomProvidersDefaultTertiaryScale(),
+                output
+        );
+    }
+
+    private static void qbarRandomProvidersDefaultTertiaryScale_fail_helper(int scale, int secondaryScale) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).qbarRandomProvidersDefaultTertiaryScale();
+            fail();
+        } catch (IllegalStateException ignored) {}
+        finally{
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testRandomProvidersDefaultTertiaryScale() {
+        qbarRandomProvidersDefaultTertiaryScale_helper(
+                1,
+                10,
+                "QBarRandomProvider_qbarRandomProvidersDefaultTertiaryScale_i"
+        );
+        qbarRandomProvidersDefaultTertiaryScale_helper(
+                8,
+                5,
+                "QBarRandomProvider_qbarRandomProvidersDefaultTertiaryScale_ii"
+        );
+
+        qbarRandomProvidersDefaultTertiaryScale_fail_helper(0, -5);
+        qbarRandomProvidersDefaultTertiaryScale_fail_helper(-1, 5);
+    }
+
+    private static void qbarRandomProviders_helper(int scale, @NotNull String output) {
+        aeqitLimitQBarLog(TINY_LIMIT, P.withScale(scale).qbarRandomProviders(), output);
+    }
+
+    private static void qbarRandomProviders_fail_helper(int scale) {
+        try {
+            P.withScale(scale).qbarRandomProviders();
+            fail();
+        } catch (IllegalStateException ignored) {}
+        finally{
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testQBarRandomProviders() {
+        qbarRandomProviders_helper(1, "QBarRandomProvider_qbarRandomProviders_i");
+        qbarRandomProviders_helper(8, "QBarRandomProvider_qbarRandomProviders_ii");
+
+        qbarRandomProviders_fail_helper(0);
+        qbarRandomProviders_fail_helper(-1);
+    }
+
     @Test
     public void testEquals() {
         List<QBarRandomProvider> xs = Arrays.asList(
