@@ -134,6 +134,11 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         propertiesAlgebraicsIn_Interval();
         propertiesAlgebraicsNotIn_int_Interval();
         propertiesAlgebraicsNotIn_Interval();
+        propertiesQBarRandomProvidersFixedScales();
+        propertiesQBarRandomProvidersDefault();
+        propertiesQBarRandomProvidersDefaultSecondaryAndTertiaryScale();
+        propertiesQBarRandomProvidersDefaultTertiaryScale();
+        propertiesQBarRandomProviders();
         propertiesEquals();
         propertiesHashCode();
         propertiesToString();
@@ -4561,6 +4566,119 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
                 rp.algebraicsNotIn(Interval.ALL);
                 fail(rp);
             } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesQBarRandomProvidersFixedScales() {
+        initialize("qbarRandomProvidersFixedScales(int, int, int)");
+        Iterable<Quadruple<QBarRandomProvider, Integer, Integer, Integer>> ts = P.quadruples(
+                P.qbarRandomProvidersDefault(),
+                P.integersGeometric(),
+                P.integersGeometric(),
+                P.integersGeometric()
+        );
+        for (Quadruple<QBarRandomProvider, Integer, Integer, Integer> q : take(LIMIT, ts)) {
+            simpleTest(
+                    q.a,
+                    q.a.randomProvidersFixedScales(q.b, q.c, q.d),
+                    rp -> rp.getScale() == q.b && rp.getSecondaryScale() == q.c && rp.getTertiaryScale() == q.d
+            );
+            for (QBarRandomProvider rp : take(TINY_LIMIT, q.a.qbarRandomProvidersFixedScales(q.b, q.c, q.d))) {
+                rp.validate();
+            }
+        }
+    }
+
+    private void propertiesQBarRandomProvidersDefault() {
+        initialize("qbarRandomProvidersDefault()");
+        for (QBarRandomProvider rp : take(LIMIT, P.qbarRandomProvidersDefault())) {
+            simpleTest(
+                    rp,
+                    rp.qbarRandomProvidersDefault(),
+                    s -> s.getScale() == 32 && s.getSecondaryScale() == 8 && s.getTertiaryScale() == 2
+            );
+            for (QBarRandomProvider s : take(TINY_LIMIT, rp.qbarRandomProvidersDefault())) {
+                s.validate();
+            }
+        }
+    }
+
+    private void propertiesQBarRandomProvidersDefaultSecondaryAndTertiaryScale() {
+        initialize("qbarRandomProvidersDefaultSecondaryAndTertiaryScale()");
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() > 0,
+                P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rps)) {
+            simpleTest(
+                    rp,
+                    rp.qbarRandomProvidersDefaultSecondaryAndTertiaryScale(),
+                    s -> s.getSecondaryScale() == 8 && s.getTertiaryScale() == 2
+            );
+            for (QBarRandomProvider s : take(TINY_LIMIT, rp.qbarRandomProvidersDefaultSecondaryAndTertiaryScale())) {
+                s.validate();
+            }
+        }
+
+        Iterable<QBarRandomProvider> rpsFail = filterInfinite(
+                rp -> rp.getScale() <= 0,
+                P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.qbarRandomProvidersDefaultSecondaryAndTertiaryScale();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+    }
+
+    private void propertiesQBarRandomProvidersDefaultTertiaryScale() {
+        initialize("qbarRandomProvidersDefaultTertiaryScale()");
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() > 0,
+                P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rps)) {
+            simpleTest(rp, rp.randomProvidersDefaultTertiaryScale(), s -> s.getTertiaryScale() == 2);
+            for (QBarRandomProvider s : take(TINY_LIMIT, rp.qbarRandomProvidersDefaultTertiaryScale())) {
+                s.validate();
+            }
+        }
+
+        Iterable<QBarRandomProvider> rpsFail = filterInfinite(
+                rp -> rp.getScale() <= 0,
+                P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.qbarRandomProvidersDefaultTertiaryScale();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+    }
+
+    private void propertiesQBarRandomProviders() {
+        initialize("qbarRandomProviders()");
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() > 0,
+                P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rps)) {
+            simpleTest(rp, rp.qbarRandomProviders(), s -> true);
+            for (QBarRandomProvider s : take(TINY_LIMIT, rp.qbarRandomProviders())) {
+                s.validate();
+            }
+        }
+
+        Iterable<QBarRandomProvider> rpsFail = filterInfinite(
+                rp -> rp.getScale() <= 0,
+                P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.qbarRandomProviders();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
         }
     }
 

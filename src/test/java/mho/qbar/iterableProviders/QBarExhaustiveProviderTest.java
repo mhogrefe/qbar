@@ -1796,7 +1796,12 @@ public class QBarExhaustiveProviderTest {
     public void testQBarRandomProvidersFixedScales() {
         qbarRandomProvidersFixedScales_helper(8, 32, 2, "QBarExhaustiveProvider_qbarRandomProvidersFixedScales_i");
         qbarRandomProvidersFixedScales_helper(0, 0, 0, "QBarExhaustiveProvider_qbarRandomProvidersFixedScales_ii");
-        qbarRandomProvidersFixedScales_helper(-5, -10, -1, "QBarExhaustiveProvider_qbarRandomProvidersFixedScales_iii");
+        qbarRandomProvidersFixedScales_helper(
+                -5,
+                -10,
+                -1,
+                "QBarExhaustiveProvider_qbarRandomProvidersFixedScales_iii"
+        );
     }
 
     @Test

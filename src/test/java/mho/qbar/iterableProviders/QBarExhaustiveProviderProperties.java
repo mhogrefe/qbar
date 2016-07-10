@@ -1278,9 +1278,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
             Iterable<QBarRandomProvider> rps = QEP.qbarRandomProvidersFixedScales(t.a, t.b, t.c);
             testNoRemove(TINY_LIMIT, rps);
             List<QBarRandomProvider> rpsList = toList(take(TINY_LIMIT, rps));
-            for (QBarRandomProvider rp : rpsList) {
-                rp.validate();
-            }
+            rpsList.forEach(QBarRandomProvider::validate);
             take(TINY_LIMIT, rpsList).forEach(QBarRandomProvider::validate);
             assertTrue(
                     t,
