@@ -77,7 +77,7 @@ public enum MonomialOrder implements Comparator<Monomial> {
     },
 
     /**
-     * Graded reverse lexicographic order. The default for {@code Monomial}s
+     * Graded reverse lexicographic order. The default for {@code Monomial}s.
      */
     GREVLEX {
         /**
@@ -99,14 +99,15 @@ public enum MonomialOrder implements Comparator<Monomial> {
         @Override
         public int compare(@NotNull Monomial a, @NotNull Monomial b) {
             if (a == b) return 0;
-            int thisDegree = a.degree();
-            int thatDegree = b.degree();
-            if (thisDegree > thatDegree) return 1;
-            if (thisDegree < thatDegree) return -1;
-            int size = b.size();
-            if (a.size() > b.size()) return -1;
-            if (b.size() < a.size()) return 1;
-            for (int i = size - 1; i >= 0; i--) {
+            int aDegree = a.degree();
+            int bDegree = b.degree();
+            if (aDegree > bDegree) return 1;
+            if (aDegree < bDegree) return -1;
+            int aSize = a.size();
+            int bSize = b.size();
+            if (aSize > bSize) return -1;
+            if (aSize < bSize) return 1;
+            for (int i = aSize - 1; i >= 0; i--) {
                 Variable v = Variable.of(i);
                 int thisExponent = a.exponent(v);
                 int thatExponent = b.exponent(v);
