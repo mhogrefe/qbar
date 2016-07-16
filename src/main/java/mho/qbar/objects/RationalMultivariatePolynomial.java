@@ -806,6 +806,54 @@ public final class RationalMultivariatePolynomial implements
         return sum(toList(map(t -> multiply(t.a, t.b), that.terms)));
     }
 
+    /**
+     * Returns the quotient of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code int} {@code this} is divided by
+     * @return {@code this}/{@code that}
+     */
+    public @NotNull RationalMultivariatePolynomial divide(int that) {
+        return multiply(Rational.of(1, that));
+    }
+
+    /**
+     * Returns the quotient of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code BigInteger} {@code this} is divided by
+     * @return {@code this}/{@code that}
+     */
+    public @NotNull RationalMultivariatePolynomial divide(@NotNull BigInteger that) {
+        return multiply(Rational.of(BigInteger.ONE, that));
+    }
+
+    /**
+     * Returns the quotient of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code Rational} {@code this} is divided by
+     * @return {@code this}/{@code that}
+     */
+    public @NotNull RationalMultivariatePolynomial divide(@NotNull Rational that) {
+        return multiply(that.invert());
+    }
+
     //todo
     public @NotNull Pair<Rational, MultivariatePolynomial> constantFactor() {
         if (this == ZERO) {

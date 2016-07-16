@@ -845,6 +845,746 @@ public class RationalMultivariatePolynomialTest {
         negate_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "-x*y^2*z-x^2*z^2-x^3-22/7*z^2");
     }
 
+    private static void subtract_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        RationalMultivariatePolynomial p = readStrict(a).get().subtract(readStrict(b).get());
+        p.validate();
+        aeq(p, output);
+    }
+
+    @Test
+    public void testSubtract() {
+        subtract_helper("0", "0", "0");
+        subtract_helper("0", "1", "-1");
+        subtract_helper("0", "-4/3", "4/3");
+        subtract_helper("0", "ooo", "-ooo");
+        subtract_helper("0", "a*b*c", "-a*b*c");
+        subtract_helper("0", "x^2-7/4*x+1/3", "-x^2+7/4*x-1/3");
+        subtract_helper("0", "x^2+1/2*x*y+y^2", "-x^2-1/2*x*y-y^2");
+        subtract_helper("0", "a+b+c+d+e+f", "-a-b-c-d-e-f");
+        subtract_helper("0", "x*y^2*z+x^2*z^2+x^3+22/7*z^2", "-x*y^2*z-x^2*z^2-x^3-22/7*z^2");
+
+        subtract_helper("1", "0", "1");
+        subtract_helper("1", "1", "0");
+        subtract_helper("1", "-4/3", "7/3");
+        subtract_helper("1", "ooo", "-ooo+1");
+        subtract_helper("1", "a*b*c", "-a*b*c+1");
+        subtract_helper("1", "x^2-7/4*x+1/3", "-x^2+7/4*x+2/3");
+        subtract_helper("1", "x^2+1/2*x*y+y^2", "-x^2-1/2*x*y-y^2+1");
+        subtract_helper("1", "a+b+c+d+e+f", "-a-b-c-d-e-f+1");
+        subtract_helper("1", "x*y^2*z+x^2*z^2+x^3+22/7*z^2", "-x*y^2*z-x^2*z^2-x^3-22/7*z^2+1");
+
+        subtract_helper("-4/3", "0", "-4/3");
+        subtract_helper("-4/3", "1", "-7/3");
+        subtract_helper("-4/3", "-4/3", "0");
+        subtract_helper("-4/3", "ooo", "-ooo-4/3");
+        subtract_helper("-4/3", "a*b*c", "-a*b*c-4/3");
+        subtract_helper("-4/3", "x^2-7/4*x+1/3", "-x^2+7/4*x-5/3");
+        subtract_helper("-4/3", "x^2+1/2*x*y+y^2", "-x^2-1/2*x*y-y^2-4/3");
+        subtract_helper("-4/3", "a+b+c+d+e+f", "-a-b-c-d-e-f-4/3");
+        subtract_helper("-4/3", "x*y^2*z+x^2*z^2+x^3+22/7*z^2", "-x*y^2*z-x^2*z^2-x^3-22/7*z^2-4/3");
+
+        subtract_helper("ooo", "0", "ooo");
+        subtract_helper("ooo", "1", "ooo-1");
+        subtract_helper("ooo", "-4/3", "ooo+4/3");
+        subtract_helper("ooo", "ooo", "0");
+        subtract_helper("ooo", "a*b*c", "-a*b*c+ooo");
+        subtract_helper("ooo", "x^2-7/4*x+1/3", "-x^2+7/4*x+ooo-1/3");
+        subtract_helper("ooo", "x^2+1/2*x*y+y^2", "-x^2-1/2*x*y-y^2+ooo");
+        subtract_helper("ooo", "a+b+c+d+e+f", "-a-b-c-d-e-f+ooo");
+        subtract_helper("ooo", "x*y^2*z+x^2*z^2+x^3+22/7*z^2", "-x*y^2*z-x^2*z^2-x^3-22/7*z^2+ooo");
+
+        subtract_helper("a*b*c", "0", "a*b*c");
+        subtract_helper("a*b*c", "1", "a*b*c-1");
+        subtract_helper("a*b*c", "-4/3", "a*b*c+4/3");
+        subtract_helper("a*b*c", "ooo", "a*b*c-ooo");
+        subtract_helper("a*b*c", "a*b*c", "0");
+        subtract_helper("a*b*c", "x^2-7/4*x+1/3", "a*b*c-x^2+7/4*x-1/3");
+        subtract_helper("a*b*c", "x^2+1/2*x*y+y^2", "a*b*c-x^2-1/2*x*y-y^2");
+        subtract_helper("a*b*c", "a+b+c+d+e+f", "a*b*c-a-b-c-d-e-f");
+        subtract_helper("a*b*c", "x*y^2*z+x^2*z^2+x^3+22/7*z^2", "-x*y^2*z-x^2*z^2+a*b*c-x^3-22/7*z^2");
+
+        subtract_helper("x^2-7/4*x+1/3", "0", "x^2-7/4*x+1/3");
+        subtract_helper("x^2-7/4*x+1/3", "1", "x^2-7/4*x-2/3");
+        subtract_helper("x^2-7/4*x+1/3", "-4/3", "x^2-7/4*x+5/3");
+        subtract_helper("x^2-7/4*x+1/3", "ooo", "x^2-7/4*x-ooo+1/3");
+        subtract_helper("x^2-7/4*x+1/3", "a*b*c", "-a*b*c+x^2-7/4*x+1/3");
+        subtract_helper("x^2-7/4*x+1/3", "x^2-7/4*x+1/3", "0");
+        subtract_helper("x^2-7/4*x+1/3", "x^2+1/2*x*y+y^2", "-1/2*x*y-y^2-7/4*x+1/3");
+        subtract_helper("x^2-7/4*x+1/3", "a+b+c+d+e+f", "x^2-a-b-c-d-e-f-7/4*x+1/3");
+        subtract_helper("x^2-7/4*x+1/3", "x*y^2*z+x^2*z^2+x^3+22/7*z^2",
+                "-x*y^2*z-x^2*z^2-x^3+x^2-22/7*z^2-7/4*x+1/3");
+
+        subtract_helper("x^2+1/2*x*y+y^2", "0", "x^2+1/2*x*y+y^2");
+        subtract_helper("x^2+1/2*x*y+y^2", "1", "x^2+1/2*x*y+y^2-1");
+        subtract_helper("x^2+1/2*x*y+y^2", "-4/3", "x^2+1/2*x*y+y^2+4/3");
+        subtract_helper("x^2+1/2*x*y+y^2", "ooo", "x^2+1/2*x*y+y^2-ooo");
+        subtract_helper("x^2+1/2*x*y+y^2", "a*b*c", "-a*b*c+x^2+1/2*x*y+y^2");
+        subtract_helper("x^2+1/2*x*y+y^2", "x^2-7/4*x+1/3", "1/2*x*y+y^2+7/4*x-1/3");
+        subtract_helper("x^2+1/2*x*y+y^2", "x^2+1/2*x*y+y^2", "0");
+        subtract_helper("x^2+1/2*x*y+y^2", "a+b+c+d+e+f", "x^2+1/2*x*y+y^2-a-b-c-d-e-f");
+        subtract_helper("x^2+1/2*x*y+y^2", "x*y^2*z+x^2*z^2+x^3+22/7*z^2",
+                "-x*y^2*z-x^2*z^2-x^3+x^2+1/2*x*y+y^2-22/7*z^2");
+
+        subtract_helper("a+b+c+d+e+f", "0", "a+b+c+d+e+f");
+        subtract_helper("a+b+c+d+e+f", "1", "a+b+c+d+e+f-1");
+        subtract_helper("a+b+c+d+e+f", "-4/3", "a+b+c+d+e+f+4/3");
+        subtract_helper("a+b+c+d+e+f", "ooo", "a+b+c+d+e+f-ooo");
+        subtract_helper("a+b+c+d+e+f", "a*b*c", "-a*b*c+a+b+c+d+e+f");
+        subtract_helper("a+b+c+d+e+f", "x^2-7/4*x+1/3", "-x^2+a+b+c+d+e+f+7/4*x-1/3");
+        subtract_helper("a+b+c+d+e+f", "x^2+1/2*x*y+y^2", "-x^2-1/2*x*y-y^2+a+b+c+d+e+f");
+        subtract_helper("a+b+c+d+e+f", "a+b+c+d+e+f", "0");
+        subtract_helper("a+b+c+d+e+f", "x*y^2*z+x^2*z^2+x^3+22/7*z^2", "-x*y^2*z-x^2*z^2-x^3-22/7*z^2+a+b+c+d+e+f");
+
+        subtract_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "0", "x*y^2*z+x^2*z^2+x^3+22/7*z^2");
+        subtract_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "1", "x*y^2*z+x^2*z^2+x^3+22/7*z^2-1");
+        subtract_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "-4/3", "x*y^2*z+x^2*z^2+x^3+22/7*z^2+4/3");
+        subtract_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "ooo", "x*y^2*z+x^2*z^2+x^3+22/7*z^2-ooo");
+        subtract_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "a*b*c", "x*y^2*z+x^2*z^2-a*b*c+x^3+22/7*z^2");
+        subtract_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "x^2-7/4*x+1/3", "x*y^2*z+x^2*z^2+x^3-x^2+22/7*z^2+7/4*x-1/3");
+        subtract_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "x^2+1/2*x*y+y^2",
+                "x*y^2*z+x^2*z^2+x^3-x^2-1/2*x*y-y^2+22/7*z^2");
+        subtract_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "a+b+c+d+e+f", "x*y^2*z+x^2*z^2+x^3+22/7*z^2-a-b-c-d-e-f");
+        subtract_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "x*y^2*z+x^2*z^2+x^3+22/7*z^2", "0");
+
+        subtract_helper("a*b*c", "a*b*c-1", "1");
+    }
+
+    private static void multiply_int_helper(@NotNull String a, int b, @NotNull String output) {
+        RationalMultivariatePolynomial p = readStrict(a).get().multiply(b);
+        p.validate();
+        aeq(p, output);
+    }
+
+    @Test
+    public void testMultiply_int() {
+        multiply_int_helper("0", 0, "0");
+        multiply_int_helper("0", 1, "0");
+        multiply_int_helper("0", -3, "0");
+        multiply_int_helper("0", 4, "0");
+
+        multiply_int_helper("1", 0, "0");
+        multiply_int_helper("1", 1, "1");
+        multiply_int_helper("1", -3, "-3");
+        multiply_int_helper("1", 4, "4");
+
+        multiply_int_helper("-4/3", 0, "0");
+        multiply_int_helper("-4/3", 1, "-4/3");
+        multiply_int_helper("-4/3", -3, "4");
+        multiply_int_helper("-4/3", 4, "-16/3");
+
+        multiply_int_helper("ooo", 0, "0");
+        multiply_int_helper("ooo", 1, "ooo");
+        multiply_int_helper("ooo", -3, "-3*ooo");
+        multiply_int_helper("ooo", 4, "4*ooo");
+
+        multiply_int_helper("a*b*c", 0, "0");
+        multiply_int_helper("a*b*c", 1, "a*b*c");
+        multiply_int_helper("a*b*c", -3, "-3*a*b*c");
+        multiply_int_helper("a*b*c", 4, "4*a*b*c");
+
+        multiply_int_helper("x^2-7/4*x+1/3", 0, "0");
+        multiply_int_helper("x^2-7/4*x+1/3", 1, "x^2-7/4*x+1/3");
+        multiply_int_helper("x^2-7/4*x+1/3", -3, "-3*x^2+21/4*x-1");
+        multiply_int_helper("x^2-7/4*x+1/3", 4, "4*x^2-7*x+4/3");
+
+        multiply_int_helper("x^2+1/2*x*y+y^2", 0, "0");
+        multiply_int_helper("x^2+1/2*x*y+y^2", 1, "x^2+1/2*x*y+y^2");
+        multiply_int_helper("x^2+1/2*x*y+y^2", -3, "-3*x^2-3/2*x*y-3*y^2");
+        multiply_int_helper("x^2+1/2*x*y+y^2", 4, "4*x^2+2*x*y+4*y^2");
+
+        multiply_int_helper("a+b+c+d+e+f", 0, "0");
+        multiply_int_helper("a+b+c+d+e+f", 1, "a+b+c+d+e+f");
+        multiply_int_helper("a+b+c+d+e+f", -3, "-3*a-3*b-3*c-3*d-3*e-3*f");
+        multiply_int_helper("a+b+c+d+e+f", 4, "4*a+4*b+4*c+4*d+4*e+4*f");
+
+        multiply_int_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", 0, "0");
+        multiply_int_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", 1, "x*y^2*z+x^2*z^2+x^3+22/7*z^2");
+        multiply_int_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", -3, "-3*x*y^2*z-3*x^2*z^2-3*x^3-66/7*z^2");
+        multiply_int_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", 4, "4*x*y^2*z+4*x^2*z^2+4*x^3+88/7*z^2");
+    }
+
+    private static void multiply_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        RationalMultivariatePolynomial p = readStrict(a).get().multiply(Readers.readBigIntegerStrict(b).get());
+        p.validate();
+        aeq(p, output);
+    }
+
+    @Test
+    public void testMultiply_BigInteger() {
+        multiply_BigInteger_helper("0", "0", "0");
+        multiply_BigInteger_helper("0", "1", "0");
+        multiply_BigInteger_helper("0", "-3", "0");
+        multiply_BigInteger_helper("0", "4", "0");
+
+        multiply_BigInteger_helper("1", "0", "0");
+        multiply_BigInteger_helper("1", "1", "1");
+        multiply_BigInteger_helper("1", "-3", "-3");
+        multiply_BigInteger_helper("1", "4", "4");
+
+        multiply_BigInteger_helper("-4/3", "0", "0");
+        multiply_BigInteger_helper("-4/3", "1", "-4/3");
+        multiply_BigInteger_helper("-4/3", "-3", "4");
+        multiply_BigInteger_helper("-4/3", "4", "-16/3");
+
+        multiply_BigInteger_helper("ooo", "0", "0");
+        multiply_BigInteger_helper("ooo", "1", "ooo");
+        multiply_BigInteger_helper("ooo", "-3", "-3*ooo");
+        multiply_BigInteger_helper("ooo", "4", "4*ooo");
+
+        multiply_BigInteger_helper("a*b*c", "0", "0");
+        multiply_BigInteger_helper("a*b*c", "1", "a*b*c");
+        multiply_BigInteger_helper("a*b*c", "-3", "-3*a*b*c");
+        multiply_BigInteger_helper("a*b*c", "4", "4*a*b*c");
+
+        multiply_BigInteger_helper("x^2-7/4*x+1/3", "0", "0");
+        multiply_BigInteger_helper("x^2-7/4*x+1/3", "1", "x^2-7/4*x+1/3");
+        multiply_BigInteger_helper("x^2-7/4*x+1/3", "-3", "-3*x^2+21/4*x-1");
+        multiply_BigInteger_helper("x^2-7/4*x+1/3", "4", "4*x^2-7*x+4/3");
+
+        multiply_BigInteger_helper("x^2+1/2*x*y+y^2", "0", "0");
+        multiply_BigInteger_helper("x^2+1/2*x*y+y^2", "1", "x^2+1/2*x*y+y^2");
+        multiply_BigInteger_helper("x^2+1/2*x*y+y^2", "-3", "-3*x^2-3/2*x*y-3*y^2");
+        multiply_BigInteger_helper("x^2+1/2*x*y+y^2", "4", "4*x^2+2*x*y+4*y^2");
+
+        multiply_BigInteger_helper("a+b+c+d+e+f", "0", "0");
+        multiply_BigInteger_helper("a+b+c+d+e+f", "1", "a+b+c+d+e+f");
+        multiply_BigInteger_helper("a+b+c+d+e+f", "-3", "-3*a-3*b-3*c-3*d-3*e-3*f");
+        multiply_BigInteger_helper("a+b+c+d+e+f", "4", "4*a+4*b+4*c+4*d+4*e+4*f");
+
+        multiply_BigInteger_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "0", "0");
+        multiply_BigInteger_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "1", "x*y^2*z+x^2*z^2+x^3+22/7*z^2");
+        multiply_BigInteger_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "-3", "-3*x*y^2*z-3*x^2*z^2-3*x^3-66/7*z^2");
+        multiply_BigInteger_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "4", "4*x*y^2*z+4*x^2*z^2+4*x^3+88/7*z^2");
+    }
+
+    private static void multiply_Rational_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        RationalMultivariatePolynomial p = readStrict(a).get().multiply(Rational.readStrict(b).get());
+        p.validate();
+        aeq(p, output);
+    }
+
+    @Test
+    public void testMultiply_Rational() {
+        multiply_Rational_helper("0", "0", "0");
+        multiply_Rational_helper("0", "1", "0");
+        multiply_Rational_helper("0", "-3", "0");
+        multiply_Rational_helper("0", "4/5", "0");
+
+        multiply_Rational_helper("1", "0", "0");
+        multiply_Rational_helper("1", "1", "1");
+        multiply_Rational_helper("1", "-3", "-3");
+        multiply_Rational_helper("1", "4/5", "4/5");
+
+        multiply_Rational_helper("-4/3", "0", "0");
+        multiply_Rational_helper("-4/3", "1", "-4/3");
+        multiply_Rational_helper("-4/3", "-3", "4");
+        multiply_Rational_helper("-4/3", "4/5", "-16/15");
+
+        multiply_Rational_helper("ooo", "0", "0");
+        multiply_Rational_helper("ooo", "1", "ooo");
+        multiply_Rational_helper("ooo", "-3", "-3*ooo");
+        multiply_Rational_helper("ooo", "4/5", "4/5*ooo");
+
+        multiply_Rational_helper("a*b*c", "0", "0");
+        multiply_Rational_helper("a*b*c", "1", "a*b*c");
+        multiply_Rational_helper("a*b*c", "-3", "-3*a*b*c");
+        multiply_Rational_helper("a*b*c", "4/5", "4/5*a*b*c");
+
+        multiply_Rational_helper("x^2-7/4*x+1/3", "0", "0");
+        multiply_Rational_helper("x^2-7/4*x+1/3", "1", "x^2-7/4*x+1/3");
+        multiply_Rational_helper("x^2-7/4*x+1/3", "-3", "-3*x^2+21/4*x-1");
+        multiply_Rational_helper("x^2-7/4*x+1/3", "4/5", "4/5*x^2-7/5*x+4/15");
+
+        multiply_Rational_helper("x^2+1/2*x*y+y^2", "0", "0");
+        multiply_Rational_helper("x^2+1/2*x*y+y^2", "1", "x^2+1/2*x*y+y^2");
+        multiply_Rational_helper("x^2+1/2*x*y+y^2", "-3", "-3*x^2-3/2*x*y-3*y^2");
+        multiply_Rational_helper("x^2+1/2*x*y+y^2", "4/5", "4/5*x^2+2/5*x*y+4/5*y^2");
+
+        multiply_Rational_helper("a+b+c+d+e+f", "0", "0");
+        multiply_Rational_helper("a+b+c+d+e+f", "1", "a+b+c+d+e+f");
+        multiply_Rational_helper("a+b+c+d+e+f", "-3", "-3*a-3*b-3*c-3*d-3*e-3*f");
+        multiply_Rational_helper("a+b+c+d+e+f", "4/5", "4/5*a+4/5*b+4/5*c+4/5*d+4/5*e+4/5*f");
+
+        multiply_Rational_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "0", "0");
+        multiply_Rational_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "1", "x*y^2*z+x^2*z^2+x^3+22/7*z^2");
+        multiply_Rational_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "-3", "-3*x*y^2*z-3*x^2*z^2-3*x^3-66/7*z^2");
+        multiply_Rational_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "4/5", "4/5*x*y^2*z+4/5*x^2*z^2+4/5*x^3+88/35*z^2");
+    }
+
+    private static void multiply_Monomial_Rational_helper(
+            @NotNull String p,
+            @NotNull String ev,
+            @NotNull String c,
+            @NotNull String output
+    ) {
+        RationalMultivariatePolynomial q = readStrict(p).get()
+                .multiply(Monomial.readStrict(ev).get(), Rational.readStrict(c).get());
+        q.validate();
+        aeq(q, output);
+    }
+
+    @Test
+    public void testMultiply_Monomial_Rational() {
+        multiply_Monomial_Rational_helper("0", "1", "0", "0");
+        multiply_Monomial_Rational_helper("0", "1", "1", "0");
+        multiply_Monomial_Rational_helper("0", "ooo", "2", "0");
+        multiply_Monomial_Rational_helper("0", "a*b*c", "-2/3", "0");
+
+        multiply_Monomial_Rational_helper("1", "1", "0", "0");
+        multiply_Monomial_Rational_helper("1", "1", "1", "1");
+        multiply_Monomial_Rational_helper("1", "ooo", "2", "2*ooo");
+        multiply_Monomial_Rational_helper("1", "a*b*c", "-2/3", "-2/3*a*b*c");
+
+        multiply_Monomial_Rational_helper("-4/3", "1", "0", "0");
+        multiply_Monomial_Rational_helper("-4/3", "1", "1", "-4/3");
+        multiply_Monomial_Rational_helper("-4/3", "ooo", "2", "-8/3*ooo");
+        multiply_Monomial_Rational_helper("-4/3", "a*b*c", "-2/3", "8/9*a*b*c");
+
+        multiply_Monomial_Rational_helper("ooo", "1", "0", "0");
+        multiply_Monomial_Rational_helper("ooo", "1", "1", "ooo");
+        multiply_Monomial_Rational_helper("ooo", "ooo", "2", "2*ooo^2");
+        multiply_Monomial_Rational_helper("ooo", "a*b*c", "-2/3", "-2/3*a*b*c*ooo");
+
+        multiply_Monomial_Rational_helper("a*b*c", "1", "0", "0");
+        multiply_Monomial_Rational_helper("a*b*c", "1", "1", "a*b*c");
+        multiply_Monomial_Rational_helper("a*b*c", "ooo", "2", "2*a*b*c*ooo");
+        multiply_Monomial_Rational_helper("a*b*c", "a*b*c", "-2/3", "-2/3*a^2*b^2*c^2");
+
+        multiply_Monomial_Rational_helper("x^2-7/4*x+1/3", "1", "0", "0");
+        multiply_Monomial_Rational_helper("x^2-7/4*x+1/3", "1", "1", "x^2-7/4*x+1/3");
+        multiply_Monomial_Rational_helper("x^2-7/4*x+1/3", "ooo", "2", "2*x^2*ooo-7/2*x*ooo+2/3*ooo");
+        multiply_Monomial_Rational_helper("x^2-7/4*x+1/3", "a*b*c", "-2/3", "-2/3*a*b*c*x^2+7/6*a*b*c*x-2/9*a*b*c");
+
+        multiply_Monomial_Rational_helper("x^2+1/2*x*y+y^2", "1", "0", "0");
+        multiply_Monomial_Rational_helper("x^2+1/2*x*y+y^2", "1", "1", "x^2+1/2*x*y+y^2");
+        multiply_Monomial_Rational_helper("x^2+1/2*x*y+y^2", "ooo", "2", "2*x^2*ooo+x*y*ooo+2*y^2*ooo");
+        multiply_Monomial_Rational_helper("x^2+1/2*x*y+y^2", "a*b*c", "-2/3",
+                "-2/3*a*b*c*x^2-1/3*a*b*c*x*y-2/3*a*b*c*y^2");
+
+        multiply_Monomial_Rational_helper("a+b+c+d+e+f", "1", "0", "0");
+        multiply_Monomial_Rational_helper("a+b+c+d+e+f", "1", "1", "a+b+c+d+e+f");
+        multiply_Monomial_Rational_helper("a+b+c+d+e+f", "ooo", "2",
+                "2*a*ooo+2*b*ooo+2*c*ooo+2*d*ooo+2*e*ooo+2*f*ooo");
+        multiply_Monomial_Rational_helper("a+b+c+d+e+f", "a*b*c", "-2/3",
+                "-2/3*a^2*b*c-2/3*a*b^2*c-2/3*a*b*c^2-2/3*a*b*c*d-2/3*a*b*c*e-2/3*a*b*c*f");
+
+        multiply_Monomial_Rational_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "1", "0", "0");
+        multiply_Monomial_Rational_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "1", "1", "x*y^2*z+x^2*z^2+x^3+22/7*z^2");
+        multiply_Monomial_Rational_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "ooo", "2",
+                "2*x*y^2*z*ooo+2*x^2*z^2*ooo+2*x^3*ooo+44/7*z^2*ooo");
+        multiply_Monomial_Rational_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "a*b*c", "-2/3",
+                "-2/3*a*b*c*x*y^2*z-2/3*a*b*c*x^2*z^2-2/3*a*b*c*x^3-44/21*a*b*c*z^2");
+    }
+
+    private static void multiply_RationalMultivariatePolynomial_helper(
+            @NotNull String a,
+            @NotNull String b,
+            @NotNull String output
+    ) {
+        RationalMultivariatePolynomial p = readStrict(a).get().multiply(readStrict(b).get());
+        p.validate();
+        aeq(p, output);
+    }
+
+    @Test
+    public void testMultiply_MultivariatePolynomial() {
+        multiply_RationalMultivariatePolynomial_helper("0", "0", "0");
+        multiply_RationalMultivariatePolynomial_helper("0", "1", "0");
+        multiply_RationalMultivariatePolynomial_helper("0", "-4/3", "0");
+        multiply_RationalMultivariatePolynomial_helper("0", "ooo", "0");
+        multiply_RationalMultivariatePolynomial_helper("0", "a*b*c", "0");
+        multiply_RationalMultivariatePolynomial_helper("0", "x^2-7/4*x+1/3", "0");
+        multiply_RationalMultivariatePolynomial_helper("0", "x^2+1/2*x*y+y^2", "0");
+        multiply_RationalMultivariatePolynomial_helper("0", "a+b+c+d+e+f", "0");
+        multiply_RationalMultivariatePolynomial_helper("0", "x*y^2*z+x^2*z^2+x^3+22/7*z^2", "0");
+
+        multiply_RationalMultivariatePolynomial_helper("1", "0", "0");
+        multiply_RationalMultivariatePolynomial_helper("1", "1", "1");
+        multiply_RationalMultivariatePolynomial_helper("1", "-4/3", "-4/3");
+        multiply_RationalMultivariatePolynomial_helper("1", "ooo", "ooo");
+        multiply_RationalMultivariatePolynomial_helper("1", "a*b*c", "a*b*c");
+        multiply_RationalMultivariatePolynomial_helper("1", "x^2-7/4*x+1/3", "x^2-7/4*x+1/3");
+        multiply_RationalMultivariatePolynomial_helper("1", "x^2+1/2*x*y+y^2", "x^2+1/2*x*y+y^2");
+        multiply_RationalMultivariatePolynomial_helper("1", "a+b+c+d+e+f", "a+b+c+d+e+f");
+        multiply_RationalMultivariatePolynomial_helper("1", "x*y^2*z+x^2*z^2+x^3+22/7*z^2",
+                "x*y^2*z+x^2*z^2+x^3+22/7*z^2");
+
+        multiply_RationalMultivariatePolynomial_helper("-4/3", "0", "0");
+        multiply_RationalMultivariatePolynomial_helper("-4/3", "1", "-4/3");
+        multiply_RationalMultivariatePolynomial_helper("-4/3", "-4/3", "16/9");
+        multiply_RationalMultivariatePolynomial_helper("-4/3", "ooo", "-4/3*ooo");
+        multiply_RationalMultivariatePolynomial_helper("-4/3", "a*b*c", "-4/3*a*b*c");
+        multiply_RationalMultivariatePolynomial_helper("-4/3", "x^2-7/4*x+1/3", "-4/3*x^2+7/3*x-4/9");
+        multiply_RationalMultivariatePolynomial_helper("-4/3", "x^2+1/2*x*y+y^2", "-4/3*x^2-2/3*x*y-4/3*y^2");
+        multiply_RationalMultivariatePolynomial_helper("-4/3", "a+b+c+d+e+f", "-4/3*a-4/3*b-4/3*c-4/3*d-4/3*e-4/3*f");
+        multiply_RationalMultivariatePolynomial_helper("-4/3", "x*y^2*z+x^2*z^2+x^3+22/7*z^2",
+                "-4/3*x*y^2*z-4/3*x^2*z^2-4/3*x^3-88/21*z^2");
+
+        multiply_RationalMultivariatePolynomial_helper("ooo", "0", "0");
+        multiply_RationalMultivariatePolynomial_helper("ooo", "1", "ooo");
+        multiply_RationalMultivariatePolynomial_helper("ooo", "-4/3", "-4/3*ooo");
+        multiply_RationalMultivariatePolynomial_helper("ooo", "ooo", "ooo^2");
+        multiply_RationalMultivariatePolynomial_helper("ooo", "a*b*c", "a*b*c*ooo");
+        multiply_RationalMultivariatePolynomial_helper("ooo", "x^2-7/4*x+1/3", "x^2*ooo-7/4*x*ooo+1/3*ooo");
+        multiply_RationalMultivariatePolynomial_helper("ooo", "x^2+1/2*x*y+y^2", "x^2*ooo+1/2*x*y*ooo+y^2*ooo");
+        multiply_RationalMultivariatePolynomial_helper("ooo", "a+b+c+d+e+f", "a*ooo+b*ooo+c*ooo+d*ooo+e*ooo+f*ooo");
+        multiply_RationalMultivariatePolynomial_helper("ooo", "x*y^2*z+x^2*z^2+x^3+22/7*z^2",
+                "x*y^2*z*ooo+x^2*z^2*ooo+x^3*ooo+22/7*z^2*ooo");
+
+        multiply_RationalMultivariatePolynomial_helper("a*b*c", "0", "0");
+        multiply_RationalMultivariatePolynomial_helper("a*b*c", "1", "a*b*c");
+        multiply_RationalMultivariatePolynomial_helper("a*b*c", "-4/3", "-4/3*a*b*c");
+        multiply_RationalMultivariatePolynomial_helper("a*b*c", "ooo", "a*b*c*ooo");
+        multiply_RationalMultivariatePolynomial_helper("a*b*c", "a*b*c", "a^2*b^2*c^2");
+        multiply_RationalMultivariatePolynomial_helper("a*b*c", "x^2-7/4*x+1/3", "a*b*c*x^2-7/4*a*b*c*x+1/3*a*b*c");
+        multiply_RationalMultivariatePolynomial_helper("a*b*c", "x^2+1/2*x*y+y^2",
+                "a*b*c*x^2+1/2*a*b*c*x*y+a*b*c*y^2");
+        multiply_RationalMultivariatePolynomial_helper("a*b*c", "a+b+c+d+e+f",
+                "a^2*b*c+a*b^2*c+a*b*c^2+a*b*c*d+a*b*c*e+a*b*c*f");
+        multiply_RationalMultivariatePolynomial_helper("a*b*c", "x*y^2*z+x^2*z^2+x^3+22/7*z^2",
+                "a*b*c*x*y^2*z+a*b*c*x^2*z^2+a*b*c*x^3+22/7*a*b*c*z^2");
+
+        multiply_RationalMultivariatePolynomial_helper("x^2-7/4*x+1/3", "0", "0");
+        multiply_RationalMultivariatePolynomial_helper("x^2-7/4*x+1/3", "1", "x^2-7/4*x+1/3");
+        multiply_RationalMultivariatePolynomial_helper("x^2-7/4*x+1/3", "-4/3", "-4/3*x^2+7/3*x-4/9");
+        multiply_RationalMultivariatePolynomial_helper("x^2-7/4*x+1/3", "ooo", "x^2*ooo-7/4*x*ooo+1/3*ooo");
+        multiply_RationalMultivariatePolynomial_helper("x^2-7/4*x+1/3", "a*b*c", "a*b*c*x^2-7/4*a*b*c*x+1/3*a*b*c");
+        multiply_RationalMultivariatePolynomial_helper("x^2-7/4*x+1/3", "x^2-7/4*x+1/3",
+                "x^4-7/2*x^3+179/48*x^2-7/6*x+1/9");
+        multiply_RationalMultivariatePolynomial_helper("x^2-7/4*x+1/3", "x^2+1/2*x*y+y^2",
+                "x^4+1/2*x^3*y+x^2*y^2-7/4*x^3-7/8*x^2*y-7/4*x*y^2+1/3*x^2+1/6*x*y+1/3*y^2");
+        multiply_RationalMultivariatePolynomial_helper("x^2-7/4*x+1/3", "a+b+c+d+e+f",
+                "a*x^2+b*x^2+c*x^2+d*x^2+e*x^2+f*x^2-7/4*a*x-7/4*b*x-7/4*c*x-7/4*d*x-7/4*e*x-7/4*f*x+1/3*a+1/3*b+" +
+                "1/3*c+1/3*d+1/3*e+1/3*f");
+        multiply_RationalMultivariatePolynomial_helper("x^2-7/4*x+1/3", "x*y^2*z+x^2*z^2+x^3+22/7*z^2",
+                "x^3*y^2*z+x^4*z^2+x^5-7/4*x^2*y^2*z-7/4*x^3*z^2-7/4*x^4+1/3*x*y^2*z+73/21*x^2*z^2+1/3*x^3-" +
+                "11/2*x*z^2+22/21*z^2");
+
+        multiply_RationalMultivariatePolynomial_helper("x^2+1/2*x*y+y^2", "0", "0");
+        multiply_RationalMultivariatePolynomial_helper("x^2+1/2*x*y+y^2", "1", "x^2+1/2*x*y+y^2");
+        multiply_RationalMultivariatePolynomial_helper("x^2+1/2*x*y+y^2", "-4/3", "-4/3*x^2-2/3*x*y-4/3*y^2");
+        multiply_RationalMultivariatePolynomial_helper("x^2+1/2*x*y+y^2", "ooo", "x^2*ooo+1/2*x*y*ooo+y^2*ooo");
+        multiply_RationalMultivariatePolynomial_helper("x^2+1/2*x*y+y^2", "a*b*c",
+                "a*b*c*x^2+1/2*a*b*c*x*y+a*b*c*y^2");
+        multiply_RationalMultivariatePolynomial_helper("x^2+1/2*x*y+y^2", "x^2-7/4*x+1/3",
+                "x^4+1/2*x^3*y+x^2*y^2-7/4*x^3-7/8*x^2*y-7/4*x*y^2+1/3*x^2+1/6*x*y+1/3*y^2");
+        multiply_RationalMultivariatePolynomial_helper("x^2+1/2*x*y+y^2", "x^2+1/2*x*y+y^2",
+                "x^4+x^3*y+9/4*x^2*y^2+x*y^3+y^4");
+        multiply_RationalMultivariatePolynomial_helper("x^2+1/2*x*y+y^2", "a+b+c+d+e+f",
+                "a*x^2+b*x^2+c*x^2+d*x^2+e*x^2+f*x^2+1/2*a*x*y+1/2*b*x*y+1/2*c*x*y+1/2*d*x*y+1/2*e*x*y+1/2*f*x*y+" +
+                "a*y^2+b*y^2+c*y^2+d*y^2+e*y^2+f*y^2");
+        multiply_RationalMultivariatePolynomial_helper("x^2+1/2*x*y+y^2", "x*y^2*z+x^2*z^2+x^3+22/7*z^2",
+                "x^3*y^2*z+1/2*x^2*y^3*z+x*y^4*z+x^4*z^2+1/2*x^3*y*z^2+x^2*y^2*z^2+x^5+1/2*x^4*y+x^3*y^2+" +
+                "22/7*x^2*z^2+11/7*x*y*z^2+22/7*y^2*z^2");
+
+        multiply_RationalMultivariatePolynomial_helper("a+b+c+d+e+f", "0", "0");
+        multiply_RationalMultivariatePolynomial_helper("a+b+c+d+e+f", "1", "a+b+c+d+e+f");
+        multiply_RationalMultivariatePolynomial_helper("a+b+c+d+e+f", "-4/3", "-4/3*a-4/3*b-4/3*c-4/3*d-4/3*e-4/3*f");
+        multiply_RationalMultivariatePolynomial_helper("a+b+c+d+e+f", "ooo", "a*ooo+b*ooo+c*ooo+d*ooo+e*ooo+f*ooo");
+        multiply_RationalMultivariatePolynomial_helper("a+b+c+d+e+f", "a*b*c",
+                "a^2*b*c+a*b^2*c+a*b*c^2+a*b*c*d+a*b*c*e+a*b*c*f");
+        multiply_RationalMultivariatePolynomial_helper("a+b+c+d+e+f", "x^2-7/4*x+1/3",
+                "a*x^2+b*x^2+c*x^2+d*x^2+e*x^2+f*x^2-7/4*a*x-7/4*b*x-7/4*c*x-7/4*d*x-7/4*e*x-7/4*f*x+1/3*a+1/3*b+" +
+                "1/3*c+1/3*d+1/3*e+1/3*f");
+        multiply_RationalMultivariatePolynomial_helper("a+b+c+d+e+f", "x^2+1/2*x*y+y^2",
+                "a*x^2+b*x^2+c*x^2+d*x^2+e*x^2+f*x^2+1/2*a*x*y+1/2*b*x*y+1/2*c*x*y+1/2*d*x*y+1/2*e*x*y+1/2*f*x*y+" +
+                "a*y^2+b*y^2+c*y^2+d*y^2+e*y^2+f*y^2");
+        multiply_RationalMultivariatePolynomial_helper("a+b+c+d+e+f", "a+b+c+d+e+f",
+                "a^2+2*a*b+b^2+2*a*c+2*b*c+c^2+2*a*d+2*b*d+2*c*d+d^2+2*a*e+2*b*e+2*c*e+2*d*e+e^2+2*a*f+2*b*f+2*c*f+" +
+                "2*d*f+2*e*f+f^2");
+        multiply_RationalMultivariatePolynomial_helper("a+b+c+d+e+f", "x*y^2*z+x^2*z^2+x^3+22/7*z^2",
+                "a*x*y^2*z+b*x*y^2*z+c*x*y^2*z+d*x*y^2*z+e*x*y^2*z+f*x*y^2*z+a*x^2*z^2+b*x^2*z^2+c*x^2*z^2+" +
+                "d*x^2*z^2+e*x^2*z^2+f*x^2*z^2+a*x^3+b*x^3+c*x^3+d*x^3+e*x^3+f*x^3+22/7*a*z^2+22/7*b*z^2+22/7*c*z^2+" +
+                "22/7*d*z^2+22/7*e*z^2+22/7*f*z^2");
+
+        multiply_RationalMultivariatePolynomial_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "0", "0");
+        multiply_RationalMultivariatePolynomial_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "1",
+                "x*y^2*z+x^2*z^2+x^3+22/7*z^2");
+        multiply_RationalMultivariatePolynomial_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "-4/3",
+                "-4/3*x*y^2*z-4/3*x^2*z^2-4/3*x^3-88/21*z^2");
+        multiply_RationalMultivariatePolynomial_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "ooo",
+                "x*y^2*z*ooo+x^2*z^2*ooo+x^3*ooo+22/7*z^2*ooo");
+        multiply_RationalMultivariatePolynomial_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "a*b*c",
+                "a*b*c*x*y^2*z+a*b*c*x^2*z^2+a*b*c*x^3+22/7*a*b*c*z^2");
+        multiply_RationalMultivariatePolynomial_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "x^2-7/4*x+1/3",
+                "x^3*y^2*z+x^4*z^2+x^5-7/4*x^2*y^2*z-7/4*x^3*z^2-7/4*x^4+1/3*x*y^2*z+73/21*x^2*z^2+1/3*x^3-" +
+                "11/2*x*z^2+22/21*z^2");
+        multiply_RationalMultivariatePolynomial_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "x^2+1/2*x*y+y^2",
+                "x^3*y^2*z+1/2*x^2*y^3*z+x*y^4*z+x^4*z^2+1/2*x^3*y*z^2+x^2*y^2*z^2+x^5+1/2*x^4*y+x^3*y^2+" +
+                "22/7*x^2*z^2+11/7*x*y*z^2+22/7*y^2*z^2");
+        multiply_RationalMultivariatePolynomial_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "a+b+c+d+e+f",
+                "a*x*y^2*z+b*x*y^2*z+c*x*y^2*z+d*x*y^2*z+e*x*y^2*z+f*x*y^2*z+a*x^2*z^2+b*x^2*z^2+c*x^2*z^2+" +
+                "d*x^2*z^2+e*x^2*z^2+f*x^2*z^2+a*x^3+b*x^3+c*x^3+d*x^3+e*x^3+f*x^3+22/7*a*z^2+22/7*b*z^2+22/7*c*z^2+" +
+                "22/7*d*z^2+22/7*e*z^2+22/7*f*z^2");
+        multiply_RationalMultivariatePolynomial_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "x*y^2*z+x^2*z^2+x^3+22/7*z^2",
+                "x^2*y^4*z^2+2*x^3*y^2*z^3+x^4*z^4+2*x^4*y^2*z+2*x^5*z^2+x^6+44/7*x*y^2*z^3+44/7*x^2*z^4+" +
+                "44/7*x^3*z^2+484/49*z^4");
+    }
+
+    private static void divide_int_helper(@NotNull String a, int b, @NotNull String output) {
+        RationalMultivariatePolynomial p = readStrict(a).get().divide(b);
+        p.validate();
+        aeq(p, output);
+    }
+
+    private static void divide_int_fail_helper(@NotNull String a, int b) {
+        try {
+            readStrict(a).get().divide(b);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDivide_int() {
+        divide_int_helper("0", 1, "0");
+        divide_int_helper("0", -3, "0");
+        divide_int_helper("0", 4, "0");
+
+        divide_int_helper("1", 1, "1");
+        divide_int_helper("1", -3, "-1/3");
+        divide_int_helper("1", 4, "1/4");
+
+        divide_int_helper("-4/3", 1, "-4/3");
+        divide_int_helper("-4/3", -3, "4/9");
+        divide_int_helper("-4/3", 4, "-1/3");
+
+        divide_int_helper("ooo", 1, "ooo");
+        divide_int_helper("ooo", -3, "-1/3*ooo");
+        divide_int_helper("ooo", 4, "1/4*ooo");
+
+        divide_int_helper("a*b*c", 1, "a*b*c");
+        divide_int_helper("a*b*c", -3, "-1/3*a*b*c");
+        divide_int_helper("a*b*c", 4, "1/4*a*b*c");
+
+        divide_int_helper("x^2-7/4*x+1/3", 1, "x^2-7/4*x+1/3");
+        divide_int_helper("x^2-7/4*x+1/3", -3, "-1/3*x^2+7/12*x-1/9");
+        divide_int_helper("x^2-7/4*x+1/3", 4, "1/4*x^2-7/16*x+1/12");
+
+        divide_int_helper("x^2+1/2*x*y+y^2", 1, "x^2+1/2*x*y+y^2");
+        divide_int_helper("x^2+1/2*x*y+y^2", -3, "-1/3*x^2-1/6*x*y-1/3*y^2");
+        divide_int_helper("x^2+1/2*x*y+y^2", 4, "1/4*x^2+1/8*x*y+1/4*y^2");
+
+        divide_int_helper("a+b+c+d+e+f", 1, "a+b+c+d+e+f");
+        divide_int_helper("a+b+c+d+e+f", -3, "-1/3*a-1/3*b-1/3*c-1/3*d-1/3*e-1/3*f");
+        divide_int_helper("a+b+c+d+e+f", 4, "1/4*a+1/4*b+1/4*c+1/4*d+1/4*e+1/4*f");
+
+        divide_int_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", 1, "x*y^2*z+x^2*z^2+x^3+22/7*z^2");
+        divide_int_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", -3, "-1/3*x*y^2*z-1/3*x^2*z^2-1/3*x^3-22/21*z^2");
+        divide_int_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", 4, "1/4*x*y^2*z+1/4*x^2*z^2+1/4*x^3+11/14*z^2");
+
+        divide_int_fail_helper("0", 0);
+        divide_int_fail_helper("1/3*ooo", 0);
+    }
+
+    private static void divide_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        RationalMultivariatePolynomial p = readStrict(a).get().divide(Readers.readBigIntegerStrict(b).get());
+        p.validate();
+        aeq(p, output);
+    }
+
+    private static void divide_BigInteger_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            readStrict(a).get().divide(Readers.readBigIntegerStrict(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDivide_BigInteger() {
+        divide_BigInteger_helper("0", "1", "0");
+        divide_BigInteger_helper("0", "-3", "0");
+        divide_BigInteger_helper("0", "4", "0");
+
+        divide_BigInteger_helper("1", "1", "1");
+        divide_BigInteger_helper("1", "-3", "-1/3");
+        divide_BigInteger_helper("1", "4", "1/4");
+
+        divide_BigInteger_helper("-4/3", "1", "-4/3");
+        divide_BigInteger_helper("-4/3", "-3", "4/9");
+        divide_BigInteger_helper("-4/3", "4", "-1/3");
+
+        divide_BigInteger_helper("ooo", "1", "ooo");
+        divide_BigInteger_helper("ooo", "-3", "-1/3*ooo");
+        divide_BigInteger_helper("ooo", "4", "1/4*ooo");
+
+        divide_BigInteger_helper("a*b*c", "1", "a*b*c");
+        divide_BigInteger_helper("a*b*c", "-3", "-1/3*a*b*c");
+        divide_BigInteger_helper("a*b*c", "4", "1/4*a*b*c");
+
+        divide_BigInteger_helper("x^2-7/4*x+1/3", "1", "x^2-7/4*x+1/3");
+        divide_BigInteger_helper("x^2-7/4*x+1/3", "-3", "-1/3*x^2+7/12*x-1/9");
+        divide_BigInteger_helper("x^2-7/4*x+1/3", "4", "1/4*x^2-7/16*x+1/12");
+
+        divide_BigInteger_helper("x^2+1/2*x*y+y^2", "1", "x^2+1/2*x*y+y^2");
+        divide_BigInteger_helper("x^2+1/2*x*y+y^2", "-3", "-1/3*x^2-1/6*x*y-1/3*y^2");
+        divide_BigInteger_helper("x^2+1/2*x*y+y^2", "4", "1/4*x^2+1/8*x*y+1/4*y^2");
+
+        divide_BigInteger_helper("a+b+c+d+e+f", "1", "a+b+c+d+e+f");
+        divide_BigInteger_helper("a+b+c+d+e+f", "-3", "-1/3*a-1/3*b-1/3*c-1/3*d-1/3*e-1/3*f");
+        divide_BigInteger_helper("a+b+c+d+e+f", "4", "1/4*a+1/4*b+1/4*c+1/4*d+1/4*e+1/4*f");
+
+        divide_BigInteger_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "1", "x*y^2*z+x^2*z^2+x^3+22/7*z^2");
+        divide_BigInteger_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "-3", "-1/3*x*y^2*z-1/3*x^2*z^2-1/3*x^3-22/21*z^2");
+        divide_BigInteger_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "4", "1/4*x*y^2*z+1/4*x^2*z^2+1/4*x^3+11/14*z^2");
+
+        divide_BigInteger_fail_helper("0", "0");
+        divide_BigInteger_fail_helper("1/3*ooo", "0");
+    }
+
+    private static void divide_Rational_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        RationalMultivariatePolynomial p = readStrict(a).get().divide(Rational.readStrict(b).get());
+        p.validate();
+        aeq(p, output);
+    }
+
+    private static void divide_Rational_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            readStrict(a).get().divide(Rational.readStrict(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDivide_Rational() {
+        divide_Rational_helper("0", "1", "0");
+        divide_Rational_helper("0", "-3", "0");
+        divide_Rational_helper("0", "4/5", "0");
+
+        divide_Rational_helper("1", "1", "1");
+        divide_Rational_helper("1", "-3", "-1/3");
+        divide_Rational_helper("1", "4/5", "5/4");
+
+        divide_Rational_helper("-4/3", "1", "-4/3");
+        divide_Rational_helper("-4/3", "-3", "4/9");
+        divide_Rational_helper("-4/3", "4/5", "-5/3");
+
+        divide_Rational_helper("ooo", "1", "ooo");
+        divide_Rational_helper("ooo", "-3", "-1/3*ooo");
+        divide_Rational_helper("ooo", "4/5", "5/4*ooo");
+
+        divide_Rational_helper("a*b*c", "1", "a*b*c");
+        divide_Rational_helper("a*b*c", "-3", "-1/3*a*b*c");
+        divide_Rational_helper("a*b*c", "4/5", "5/4*a*b*c");
+
+        divide_Rational_helper("x^2-7/4*x+1/3", "1", "x^2-7/4*x+1/3");
+        divide_Rational_helper("x^2-7/4*x+1/3", "-3", "-1/3*x^2+7/12*x-1/9");
+        divide_Rational_helper("x^2-7/4*x+1/3", "4/5", "5/4*x^2-35/16*x+5/12");
+
+        divide_Rational_helper("x^2+1/2*x*y+y^2", "1", "x^2+1/2*x*y+y^2");
+        divide_Rational_helper("x^2+1/2*x*y+y^2", "-3", "-1/3*x^2-1/6*x*y-1/3*y^2");
+        divide_Rational_helper("x^2+1/2*x*y+y^2", "4/5", "5/4*x^2+5/8*x*y+5/4*y^2");
+
+        divide_Rational_helper("a+b+c+d+e+f", "1", "a+b+c+d+e+f");
+        divide_Rational_helper("a+b+c+d+e+f", "-3", "-1/3*a-1/3*b-1/3*c-1/3*d-1/3*e-1/3*f");
+        divide_Rational_helper("a+b+c+d+e+f", "4/5", "5/4*a+5/4*b+5/4*c+5/4*d+5/4*e+5/4*f");
+
+        divide_Rational_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "1", "x*y^2*z+x^2*z^2+x^3+22/7*z^2");
+        divide_Rational_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "-3", "-1/3*x*y^2*z-1/3*x^2*z^2-1/3*x^3-22/21*z^2");
+        divide_Rational_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "4/5", "5/4*x*y^2*z+5/4*x^2*z^2+5/4*x^3+55/14*z^2");
+
+        divide_Rational_fail_helper("0", "0");
+        divide_Rational_fail_helper("1/3*ooo", "0");
+    }
+
+    private static void shiftLeft_helper(@NotNull String p, int bits, @NotNull String output) {
+        RationalMultivariatePolynomial q = readStrict(p).get().shiftLeft(bits);
+        q.validate();
+        aeq(q, output);
+    }
+
+    @Test
+    public void testShiftLeft() {
+        shiftLeft_helper("0", 0, "0");
+        shiftLeft_helper("0", 1, "0");
+        shiftLeft_helper("0", 2, "0");
+        shiftLeft_helper("0", 3, "0");
+        shiftLeft_helper("0", 4, "0");
+        shiftLeft_helper("0", -1, "0");
+        shiftLeft_helper("0", -2, "0");
+        shiftLeft_helper("0", -3, "0");
+        shiftLeft_helper("0", -4, "0");
+
+        shiftLeft_helper("1", 0, "1");
+        shiftLeft_helper("1", 1, "2");
+        shiftLeft_helper("1", 2, "4");
+        shiftLeft_helper("1", 3, "8");
+        shiftLeft_helper("1", 4, "16");
+        shiftLeft_helper("1", -1, "1/2");
+        shiftLeft_helper("1", -2, "1/4");
+        shiftLeft_helper("1", -3, "1/8");
+        shiftLeft_helper("1", -4, "1/16");
+
+        shiftLeft_helper("-4/3", 0, "-4/3");
+        shiftLeft_helper("-4/3", 1, "-8/3");
+        shiftLeft_helper("-4/3", 2, "-16/3");
+        shiftLeft_helper("-4/3", 3, "-32/3");
+        shiftLeft_helper("-4/3", 4, "-64/3");
+        shiftLeft_helper("-4/3", -1, "-2/3");
+        shiftLeft_helper("-4/3", -2, "-1/3");
+        shiftLeft_helper("-4/3", -3, "-1/6");
+        shiftLeft_helper("-4/3", -4, "-1/12");
+
+        shiftLeft_helper("ooo", 0, "ooo");
+        shiftLeft_helper("ooo", 1, "2*ooo");
+        shiftLeft_helper("ooo", 2, "4*ooo");
+        shiftLeft_helper("ooo", 3, "8*ooo");
+        shiftLeft_helper("ooo", 4, "16*ooo");
+        shiftLeft_helper("ooo", -1, "1/2*ooo");
+        shiftLeft_helper("ooo", -2, "1/4*ooo");
+        shiftLeft_helper("ooo", -3, "1/8*ooo");
+        shiftLeft_helper("ooo", -4, "1/16*ooo");
+
+        shiftLeft_helper("a*b*c", 0, "a*b*c");
+        shiftLeft_helper("a*b*c", 1, "2*a*b*c");
+        shiftLeft_helper("a*b*c", 2, "4*a*b*c");
+        shiftLeft_helper("a*b*c", 3, "8*a*b*c");
+        shiftLeft_helper("a*b*c", 4, "16*a*b*c");
+        shiftLeft_helper("a*b*c", -1, "1/2*a*b*c");
+        shiftLeft_helper("a*b*c", -2, "1/4*a*b*c");
+        shiftLeft_helper("a*b*c", -3, "1/8*a*b*c");
+        shiftLeft_helper("a*b*c", -4, "1/16*a*b*c");
+
+        shiftLeft_helper("x^2-7/4*x+1/3", 0, "x^2-7/4*x+1/3");
+        shiftLeft_helper("x^2-7/4*x+1/3", 1, "2*x^2-7/2*x+2/3");
+        shiftLeft_helper("x^2-7/4*x+1/3", 2, "4*x^2-7*x+4/3");
+        shiftLeft_helper("x^2-7/4*x+1/3", 3, "8*x^2-14*x+8/3");
+        shiftLeft_helper("x^2-7/4*x+1/3", 4, "16*x^2-28*x+16/3");
+        shiftLeft_helper("x^2-7/4*x+1/3", -1, "1/2*x^2-7/8*x+1/6");
+        shiftLeft_helper("x^2-7/4*x+1/3", -2, "1/4*x^2-7/16*x+1/12");
+        shiftLeft_helper("x^2-7/4*x+1/3", -3, "1/8*x^2-7/32*x+1/24");
+        shiftLeft_helper("x^2-7/4*x+1/3", -4, "1/16*x^2-7/64*x+1/48");
+
+        shiftLeft_helper("x^2+1/2*x*y+y^2", 0, "x^2+1/2*x*y+y^2");
+        shiftLeft_helper("x^2+1/2*x*y+y^2", 1, "2*x^2+x*y+2*y^2");
+        shiftLeft_helper("x^2+1/2*x*y+y^2", 2, "4*x^2+2*x*y+4*y^2");
+        shiftLeft_helper("x^2+1/2*x*y+y^2", 3, "8*x^2+4*x*y+8*y^2");
+        shiftLeft_helper("x^2+1/2*x*y+y^2", 4, "16*x^2+8*x*y+16*y^2");
+        shiftLeft_helper("x^2+1/2*x*y+y^2", -1, "1/2*x^2+1/4*x*y+1/2*y^2");
+        shiftLeft_helper("x^2+1/2*x*y+y^2", -2, "1/4*x^2+1/8*x*y+1/4*y^2");
+        shiftLeft_helper("x^2+1/2*x*y+y^2", -3, "1/8*x^2+1/16*x*y+1/8*y^2");
+        shiftLeft_helper("x^2+1/2*x*y+y^2", -4, "1/16*x^2+1/32*x*y+1/16*y^2");
+
+        shiftLeft_helper("a+b+c+d+e+f", 0, "a+b+c+d+e+f");
+        shiftLeft_helper("a+b+c+d+e+f", 1, "2*a+2*b+2*c+2*d+2*e+2*f");
+        shiftLeft_helper("a+b+c+d+e+f", 2, "4*a+4*b+4*c+4*d+4*e+4*f");
+        shiftLeft_helper("a+b+c+d+e+f", 3, "8*a+8*b+8*c+8*d+8*e+8*f");
+        shiftLeft_helper("a+b+c+d+e+f", 4, "16*a+16*b+16*c+16*d+16*e+16*f");
+        shiftLeft_helper("a+b+c+d+e+f", -1, "1/2*a+1/2*b+1/2*c+1/2*d+1/2*e+1/2*f");
+        shiftLeft_helper("a+b+c+d+e+f", -2, "1/4*a+1/4*b+1/4*c+1/4*d+1/4*e+1/4*f");
+        shiftLeft_helper("a+b+c+d+e+f", -3, "1/8*a+1/8*b+1/8*c+1/8*d+1/8*e+1/8*f");
+        shiftLeft_helper("a+b+c+d+e+f", -4, "1/16*a+1/16*b+1/16*c+1/16*d+1/16*e+1/16*f");
+
+        shiftLeft_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", 0, "x*y^2*z+x^2*z^2+x^3+22/7*z^2");
+        shiftLeft_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", 1, "2*x*y^2*z+2*x^2*z^2+2*x^3+44/7*z^2");
+        shiftLeft_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", 2, "4*x*y^2*z+4*x^2*z^2+4*x^3+88/7*z^2");
+        shiftLeft_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", 3, "8*x*y^2*z+8*x^2*z^2+8*x^3+176/7*z^2");
+        shiftLeft_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", 4, "16*x*y^2*z+16*x^2*z^2+16*x^3+352/7*z^2");
+        shiftLeft_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", -1, "1/2*x*y^2*z+1/2*x^2*z^2+1/2*x^3+11/7*z^2");
+        shiftLeft_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", -2, "1/4*x*y^2*z+1/4*x^2*z^2+1/4*x^3+11/14*z^2");
+        shiftLeft_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", -3, "1/8*x*y^2*z+1/8*x^2*z^2+1/8*x^3+11/28*z^2");
+        shiftLeft_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", -4, "1/16*x*y^2*z+1/16*x^2*z^2+1/16*x^3+11/56*z^2");
+    }
+
     private static @NotNull List<Pair<Monomial, Rational>> readMonomialRationalPairList(
             @NotNull String s
     ) {
