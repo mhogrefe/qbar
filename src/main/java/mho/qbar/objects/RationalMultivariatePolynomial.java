@@ -501,7 +501,7 @@ public final class RationalMultivariatePolynomial implements
      *  <li>{@code order} cannot be null.</li>
      *  <li>The result is a {@code List} of pairs such that no variable in any first element is in any of the second
      *  elements and no variable in any second element is in any of the first elements. The first elements are unique
-     *  and in ascending order according to {@code Order}. None of the second elements is zero.</li>
+     *  and in ascending order according to {@code order}. None of the second elements is zero.</li>
      * </ul>
      *
      * @param variables the {@code Variable}s to group
