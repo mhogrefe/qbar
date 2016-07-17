@@ -1,12 +1,15 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.iterables.ExhaustiveProvider;
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.structures.NullableOptional;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Map;
 
 import static mho.qbar.objects.RationalMultivariatePolynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
@@ -1585,6 +1588,350 @@ public class RationalMultivariatePolynomialTest {
         shiftLeft_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", -4, "1/16*x*y^2*z+1/16*x^2*z^2+1/16*x^3+11/56*z^2");
     }
 
+    private static void shiftRight_helper(@NotNull String p, int bits, @NotNull String output) {
+        RationalMultivariatePolynomial q = readStrict(p).get().shiftRight(bits);
+        q.validate();
+        aeq(q, output);
+    }
+
+    @Test
+    public void testShiftRight() {
+        shiftRight_helper("0", 0, "0");
+        shiftRight_helper("0", 1, "0");
+        shiftRight_helper("0", 2, "0");
+        shiftRight_helper("0", 3, "0");
+        shiftRight_helper("0", 4, "0");
+        shiftRight_helper("0", -1, "0");
+        shiftRight_helper("0", -2, "0");
+        shiftRight_helper("0", -3, "0");
+        shiftRight_helper("0", -4, "0");
+
+        shiftRight_helper("1", 0, "1");
+        shiftRight_helper("1", 1, "1/2");
+        shiftRight_helper("1", 2, "1/4");
+        shiftRight_helper("1", 3, "1/8");
+        shiftRight_helper("1", 4, "1/16");
+        shiftRight_helper("1", -1, "2");
+        shiftRight_helper("1", -2, "4");
+        shiftRight_helper("1", -3, "8");
+        shiftRight_helper("1", -4, "16");
+
+        shiftRight_helper("-4/3", 0, "-4/3");
+        shiftRight_helper("-4/3", 1, "-2/3");
+        shiftRight_helper("-4/3", 2, "-1/3");
+        shiftRight_helper("-4/3", 3, "-1/6");
+        shiftRight_helper("-4/3", 4, "-1/12");
+        shiftRight_helper("-4/3", -1, "-8/3");
+        shiftRight_helper("-4/3", -2, "-16/3");
+        shiftRight_helper("-4/3", -3, "-32/3");
+        shiftRight_helper("-4/3", -4, "-64/3");
+
+        shiftRight_helper("ooo", 0, "ooo");
+        shiftRight_helper("ooo", 1, "1/2*ooo");
+        shiftRight_helper("ooo", 2, "1/4*ooo");
+        shiftRight_helper("ooo", 3, "1/8*ooo");
+        shiftRight_helper("ooo", 4, "1/16*ooo");
+        shiftRight_helper("ooo", -1, "2*ooo");
+        shiftRight_helper("ooo", -2, "4*ooo");
+        shiftRight_helper("ooo", -3, "8*ooo");
+        shiftRight_helper("ooo", -4, "16*ooo");
+
+        shiftRight_helper("a*b*c", 0, "a*b*c");
+        shiftRight_helper("a*b*c", 1, "1/2*a*b*c");
+        shiftRight_helper("a*b*c", 2, "1/4*a*b*c");
+        shiftRight_helper("a*b*c", 3, "1/8*a*b*c");
+        shiftRight_helper("a*b*c", 4, "1/16*a*b*c");
+        shiftRight_helper("a*b*c", -1, "2*a*b*c");
+        shiftRight_helper("a*b*c", -2, "4*a*b*c");
+        shiftRight_helper("a*b*c", -3, "8*a*b*c");
+        shiftRight_helper("a*b*c", -4, "16*a*b*c");
+
+        shiftRight_helper("x^2-7/4*x+1/3", 0, "x^2-7/4*x+1/3");
+        shiftRight_helper("x^2-7/4*x+1/3", 1, "1/2*x^2-7/8*x+1/6");
+        shiftRight_helper("x^2-7/4*x+1/3", 2, "1/4*x^2-7/16*x+1/12");
+        shiftRight_helper("x^2-7/4*x+1/3", 3, "1/8*x^2-7/32*x+1/24");
+        shiftRight_helper("x^2-7/4*x+1/3", 4, "1/16*x^2-7/64*x+1/48");
+        shiftRight_helper("x^2-7/4*x+1/3", -1, "2*x^2-7/2*x+2/3");
+        shiftRight_helper("x^2-7/4*x+1/3", -2, "4*x^2-7*x+4/3");
+        shiftRight_helper("x^2-7/4*x+1/3", -3, "8*x^2-14*x+8/3");
+        shiftRight_helper("x^2-7/4*x+1/3", -4, "16*x^2-28*x+16/3");
+
+        shiftRight_helper("x^2+1/2*x*y+y^2", 0, "x^2+1/2*x*y+y^2");
+        shiftRight_helper("x^2+1/2*x*y+y^2", 1, "1/2*x^2+1/4*x*y+1/2*y^2");
+        shiftRight_helper("x^2+1/2*x*y+y^2", 2, "1/4*x^2+1/8*x*y+1/4*y^2");
+        shiftRight_helper("x^2+1/2*x*y+y^2", 3, "1/8*x^2+1/16*x*y+1/8*y^2");
+        shiftRight_helper("x^2+1/2*x*y+y^2", 4, "1/16*x^2+1/32*x*y+1/16*y^2");
+        shiftRight_helper("x^2+1/2*x*y+y^2", -1, "2*x^2+x*y+2*y^2");
+        shiftRight_helper("x^2+1/2*x*y+y^2", -2, "4*x^2+2*x*y+4*y^2");
+        shiftRight_helper("x^2+1/2*x*y+y^2", -3, "8*x^2+4*x*y+8*y^2");
+        shiftRight_helper("x^2+1/2*x*y+y^2", -4, "16*x^2+8*x*y+16*y^2");
+
+        shiftRight_helper("a+b+c+d+e+f", 0, "a+b+c+d+e+f");
+        shiftRight_helper("a+b+c+d+e+f", 1, "1/2*a+1/2*b+1/2*c+1/2*d+1/2*e+1/2*f");
+        shiftRight_helper("a+b+c+d+e+f", 2, "1/4*a+1/4*b+1/4*c+1/4*d+1/4*e+1/4*f");
+        shiftRight_helper("a+b+c+d+e+f", 3, "1/8*a+1/8*b+1/8*c+1/8*d+1/8*e+1/8*f");
+        shiftRight_helper("a+b+c+d+e+f", 4, "1/16*a+1/16*b+1/16*c+1/16*d+1/16*e+1/16*f");
+        shiftRight_helper("a+b+c+d+e+f", -1, "2*a+2*b+2*c+2*d+2*e+2*f");
+        shiftRight_helper("a+b+c+d+e+f", -2, "4*a+4*b+4*c+4*d+4*e+4*f");
+        shiftRight_helper("a+b+c+d+e+f", -3, "8*a+8*b+8*c+8*d+8*e+8*f");
+        shiftRight_helper("a+b+c+d+e+f", -4, "16*a+16*b+16*c+16*d+16*e+16*f");
+
+        shiftRight_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", 0, "x*y^2*z+x^2*z^2+x^3+22/7*z^2");
+        shiftRight_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", 1, "1/2*x*y^2*z+1/2*x^2*z^2+1/2*x^3+11/7*z^2");
+        shiftRight_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", 2, "1/4*x*y^2*z+1/4*x^2*z^2+1/4*x^3+11/14*z^2");
+        shiftRight_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", 3, "1/8*x*y^2*z+1/8*x^2*z^2+1/8*x^3+11/28*z^2");
+        shiftRight_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", 4, "1/16*x*y^2*z+1/16*x^2*z^2+1/16*x^3+11/56*z^2");
+        shiftRight_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", -1, "2*x*y^2*z+2*x^2*z^2+2*x^3+44/7*z^2");
+        shiftRight_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", -2, "4*x*y^2*z+4*x^2*z^2+4*x^3+88/7*z^2");
+        shiftRight_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", -3, "8*x*y^2*z+8*x^2*z^2+8*x^3+176/7*z^2");
+        shiftRight_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", -4, "16*x*y^2*z+16*x^2*z^2+16*x^3+352/7*z^2");
+    }
+
+    private static void sum_helper(@NotNull String input, @NotNull String output) {
+        RationalMultivariatePolynomial p = sum(readRationalMultivariatePolynomialList(input));
+        p.validate();
+        aeq(p, output);
+    }
+
+    private static void sum_fail_helper(@NotNull String input) {
+        try {
+            sum(readRationalMultivariatePolynomialListWithNulls(input));
+            fail();
+        } catch (NullPointerException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testSum() {
+        sum_helper("[]", "0");
+        sum_helper("[1]", "1");
+        sum_helper("[-4/3]", "-4/3");
+        sum_helper("[-4/3, ooo, a*b*c, x^2-7/4*x+1/3, x^2+1/2*x*y+y^2]", "a*b*c+2*x^2+1/2*x*y+y^2-7/4*x+ooo-1");
+
+        sum_fail_helper("[-4/3, null, a*b*c, x^2-7/4*x+1/3, x^2+1/2*x*y+y^2]");
+    }
+
+    private static void product_helper(@NotNull String input, @NotNull String output) {
+        RationalMultivariatePolynomial p = product(readRationalMultivariatePolynomialList(input));
+        p.validate();
+        aeq(p, output);
+    }
+
+    private static void product_fail_helper(@NotNull String input) {
+        try {
+            product(readRationalMultivariatePolynomialListWithNulls(input));
+            fail();
+        } catch (NullPointerException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testProduct() {
+        product_helper("[]", "1");
+        product_helper("[1]", "1");
+        product_helper("[-4/3]", "-4/3");
+        product_helper("[-4/3, ooo, a*b*c, x^2-7/4*x+1/3, x^2+1/2*x*y+y^2]",
+                "-4/3*a*b*c*x^4*ooo-2/3*a*b*c*x^3*y*ooo-4/3*a*b*c*x^2*y^2*ooo+7/3*a*b*c*x^3*ooo+7/6*a*b*c*x^2*y*ooo+" +
+                "7/3*a*b*c*x*y^2*ooo-4/9*a*b*c*x^2*ooo-2/9*a*b*c*x*y*ooo-4/9*a*b*c*y^2*ooo");
+
+        product_fail_helper("[-4/3, null, a*b*c, x^2-7/4*x+1/3, x^2+1/2*x*y+y^2]");
+    }
+
+    private static void delta_helper(@NotNull Iterable<RationalMultivariatePolynomial> input, @NotNull String output) {
+        Iterable<RationalMultivariatePolynomial> ps = delta(input);
+        take(TINY_LIMIT, ps).forEach(RationalMultivariatePolynomial::validate);
+        aeqitLimit(TINY_LIMIT, ps, output);
+    }
+
+    private static void delta_helper(@NotNull String input, @NotNull String output) {
+        delta_helper(readRationalMultivariatePolynomialList(input), output);
+    }
+
+    private static void delta_fail_helper(@NotNull String input) {
+        try {
+            toList(delta(readRationalMultivariatePolynomialListWithNulls(input)));
+            fail();
+        } catch (IllegalArgumentException | NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testDelta() {
+        delta_helper("[-4/3]", "[]");
+        delta_helper("[-4/3, ooo]", "[ooo+4/3]");
+        delta_helper("[-4/3, ooo, a*b*c, x^2-7/4*x+1/3, x^2+1/2*x*y+y^2]",
+                "[ooo+4/3, a*b*c-ooo, -a*b*c+x^2-7/4*x+1/3, 1/2*x*y+y^2+7/4*x-1/3]");
+        RationalMultivariatePolynomial seed = readStrict("x+1/2*y").get();
+        delta_helper(map(seed::pow, ExhaustiveProvider.INSTANCE.naturalIntegers()),
+                "[x+1/2*y-1, x^2+x*y+1/4*y^2-x-1/2*y, x^3+3/2*x^2*y+3/4*x*y^2+1/8*y^3-x^2-x*y-1/4*y^2," +
+                " x^4+2*x^3*y+3/2*x^2*y^2+1/2*x*y^3+1/16*y^4-x^3-3/2*x^2*y-3/4*x*y^2-1/8*y^3," +
+                " x^5+5/2*x^4*y+5/2*x^3*y^2+5/4*x^2*y^3+5/16*x*y^4+1/32*y^5-x^4-2*x^3*y-3/2*x^2*y^2-1/2*x*y^3-" +
+                "1/16*y^4," +
+                " x^6+3*x^5*y+15/4*x^4*y^2+5/2*x^3*y^3+15/16*x^2*y^4+3/16*x*y^5+1/64*y^6-x^5-5/2*x^4*y-5/2*x^3*y^2-" +
+                "5/4*x^2*y^3-5/16*x*y^4-1/32*y^5," +
+                " x^7+7/2*x^6*y+21/4*x^5*y^2+35/8*x^4*y^3+35/16*x^3*y^4+21/32*x^2*y^5+7/64*x*y^6+1/128*y^7-x^6-" +
+                "3*x^5*y-15/4*x^4*y^2-5/2*x^3*y^3-15/16*x^2*y^4-3/16*x*y^5-1/64*y^6," +
+                " x^8+4*x^7*y+7*x^6*y^2+7*x^5*y^3+35/8*x^4*y^4+7/4*x^3*y^5+7/16*x^2*y^6+1/16*x*y^7+1/256*y^8-x^7-" +
+                "7/2*x^6*y-21/4*x^5*y^2-35/8*x^4*y^3-35/16*x^3*y^4-21/32*x^2*y^5-7/64*x*y^6-1/128*y^7," +
+                " x^9+9/2*x^8*y+9*x^7*y^2+21/2*x^6*y^3+63/8*x^5*y^4+63/16*x^4*y^5+21/16*x^3*y^6+9/32*x^2*y^7+" +
+                "9/256*x*y^8+1/512*y^9-x^8-4*x^7*y-7*x^6*y^2-7*x^5*y^3-35/8*x^4*y^4-7/4*x^3*y^5-7/16*x^2*y^6-" +
+                "1/16*x*y^7-1/256*y^8," +
+                " x^10+5*x^9*y+45/4*x^8*y^2+15*x^7*y^3+105/8*x^6*y^4+63/8*x^5*y^5+105/32*x^4*y^6+15/16*x^3*y^7+" +
+                "45/256*x^2*y^8+5/256*x*y^9+1/1024*y^10-x^9-9/2*x^8*y-9*x^7*y^2-21/2*x^6*y^3-63/8*x^5*y^4-" +
+                "63/16*x^4*y^5-21/16*x^3*y^6-9/32*x^2*y^7-9/256*x*y^8-1/512*y^9," +
+                " x^11+11/2*x^10*y+55/4*x^9*y^2+165/8*x^8*y^3+165/8*x^7*y^4+231/16*x^6*y^5+231/32*x^5*y^6+" +
+                "165/64*x^4*y^7+165/256*x^3*y^8+55/512*x^2*y^9+11/1024*x*y^10+1/2048*y^11-x^10-5*x^9*y-45/4*x^8*y^2-" +
+                "15*x^7*y^3-105/8*x^6*y^4-63/8*x^5*y^5-105/32*x^4*y^6-15/16*x^3*y^7-45/256*x^2*y^8-5/256*x*y^9-" +
+                "1/1024*y^10," +
+                " x^12+6*x^11*y+33/2*x^10*y^2+55/2*x^9*y^3+495/16*x^8*y^4+99/4*x^7*y^5+231/16*x^6*y^6+99/16*x^5*y^7+" +
+                "495/256*x^4*y^8+55/128*x^3*y^9+33/512*x^2*y^10+3/512*x*y^11+1/4096*y^12-x^11-11/2*x^10*y-" +
+                "55/4*x^9*y^2-165/8*x^8*y^3-165/8*x^7*y^4-231/16*x^6*y^5-231/32*x^5*y^6-165/64*x^4*y^7-" +
+                "165/256*x^3*y^8-55/512*x^2*y^9-11/1024*x*y^10-1/2048*y^11," +
+                " x^13+13/2*x^12*y+39/2*x^11*y^2+143/4*x^10*y^3+715/16*x^9*y^4+1287/32*x^8*y^5+429/16*x^7*y^6+" +
+                "429/32*x^6*y^7+1287/256*x^5*y^8+715/512*x^4*y^9+143/512*x^3*y^10+39/1024*x^2*y^11+13/4096*x*y^12+" +
+                "1/8192*y^13-x^12-6*x^11*y-33/2*x^10*y^2-55/2*x^9*y^3-495/16*x^8*y^4-99/4*x^7*y^5-231/16*x^6*y^6-" +
+                "99/16*x^5*y^7-495/256*x^4*y^8-55/128*x^3*y^9-33/512*x^2*y^10-3/512*x*y^11-1/4096*y^12," +
+                " x^14+7*x^13*y+91/4*x^12*y^2+91/2*x^11*y^3+1001/16*x^10*y^4+1001/16*x^9*y^5+3003/64*x^8*y^6+" +
+                "429/16*x^7*y^7+3003/256*x^6*y^8+1001/256*x^5*y^9+1001/1024*x^4*y^10+91/512*x^3*y^11+" +
+                "91/4096*x^2*y^12+7/4096*x*y^13+1/16384*y^14-x^13-13/2*x^12*y-39/2*x^11*y^2-143/4*x^10*y^3-" +
+                "715/16*x^9*y^4-1287/32*x^8*y^5-429/16*x^7*y^6-429/32*x^6*y^7-1287/256*x^5*y^8-715/512*x^4*y^9-" +
+                "143/512*x^3*y^10-39/1024*x^2*y^11-13/4096*x*y^12-1/8192*y^13," +
+                " x^15+15/2*x^14*y+105/4*x^13*y^2+455/8*x^12*y^3+1365/16*x^11*y^4+3003/32*x^10*y^5+5005/64*x^9*y^6+" +
+                "6435/128*x^8*y^7+6435/256*x^7*y^8+5005/512*x^6*y^9+3003/1024*x^5*y^10+1365/2048*x^4*y^11+" +
+                "455/4096*x^3*y^12+105/8192*x^2*y^13+15/16384*x*y^14+1/32768*y^15-x^14-7*x^13*y-91/4*x^12*y^2-" +
+                "91/2*x^11*y^3-1001/16*x^10*y^4-1001/16*x^9*y^5-3003/64*x^8*y^6-429/16*x^7*y^7-3003/256*x^6*y^8-" +
+                "1001/256*x^5*y^9-1001/1024*x^4*y^10-91/512*x^3*y^11-91/4096*x^2*y^12-7/4096*x*y^13-1/16384*y^14," +
+                " x^16+8*x^15*y+30*x^14*y^2+70*x^13*y^3+455/4*x^12*y^4+273/2*x^11*y^5+1001/8*x^10*y^6+715/8*x^9*y^7+" +
+                "6435/128*x^8*y^8+715/32*x^7*y^9+1001/128*x^6*y^10+273/128*x^5*y^11+455/1024*x^4*y^12+" +
+                "35/512*x^3*y^13+15/2048*x^2*y^14+1/2048*x*y^15+1/65536*y^16-x^15-15/2*x^14*y-105/4*x^13*y^2-" +
+                "455/8*x^12*y^3-1365/16*x^11*y^4-3003/32*x^10*y^5-5005/64*x^9*y^6-6435/128*x^8*y^7-6435/256*x^7*y^8-" +
+                "5005/512*x^6*y^9-3003/1024*x^5*y^10-1365/2048*x^4*y^11-455/4096*x^3*y^12-105/8192*x^2*y^13-" +
+                "15/16384*x*y^14-1/32768*y^15, x^17+17/2*x^16*y+34*x^15*y^2+85*x^14*y^3+595/4*x^13*y^4+" +
+                "1547/8*x^12*y^5+1547/8*x^11*y^6+2431/16*x^10*y^7+12155/128*x^9*y^8+" +
+                "12155/256*x^8*y^9+2431/128*x^7*y^10+1547/256*x^6*y^11+1547/1024*x^5*y^12+595/2048*x^4*y^13+" +
+                "85/2048*x^3*y^14+17/4096*x^2*y^15+17/65536*x*y^16+1/131072*y^17-x^16-8*x^15*y-30*x^14*y^2-" +
+                "70*x^13*y^3-455/4*x^12*y^4-273/2*x^11*y^5-1001/8*x^10*y^6-715/8*x^9*y^7-6435/128*x^8*y^8-" +
+                "715/32*x^7*y^9-1001/128*x^6*y^10-273/128*x^5*y^11-455/1024*x^4*y^12-35/512*x^3*y^13-" +
+                "15/2048*x^2*y^14-1/2048*x*y^15-1/65536*y^16, x^18+9*x^17*y+153/4*x^16*y^2+102*x^15*y^3+" +
+                "765/4*x^14*y^4+1071/4*x^13*y^5+4641/16*x^12*y^6+1989/8*x^11*y^7+21879/128*x^10*y^8+" +
+                "12155/128*x^9*y^9+21879/512*x^8*y^10+1989/128*x^7*y^11+4641/1024*x^6*y^12+1071/1024*x^5*y^13+" +
+                "765/4096*x^4*y^14+51/2048*x^3*y^15+153/65536*x^2*y^16+9/65536*x*y^17+1/262144*y^18-x^17-" +
+                "17/2*x^16*y-34*x^15*y^2-85*x^14*y^3-595/4*x^13*y^4-1547/8*x^12*y^5-1547/8*x^11*y^6-" +
+                "2431/16*x^10*y^7-12155/128*x^9*y^8-12155/256*x^8*y^9-2431/128*x^7*y^10-1547/256*x^6*y^11-" +
+                "1547/1024*x^5*y^12-595/2048*x^4*y^13-85/2048*x^3*y^14-17/4096*x^2*y^15-17/65536*x*y^16-" +
+                "1/131072*y^17," +
+                " x^19+19/2*x^18*y+171/4*x^17*y^2+969/8*x^16*y^3+969/4*x^15*y^4+2907/8*x^14*y^5+6783/16*x^13*y^6+" +
+                "12597/32*x^12*y^7+37791/128*x^11*y^8+46189/256*x^10*y^9+46189/512*x^9*y^10+37791/1024*x^8*y^11+" +
+                "12597/1024*x^7*y^12+6783/2048*x^6*y^13+2907/4096*x^5*y^14+969/8192*x^4*y^15+969/65536*x^3*y^16+" +
+                "171/131072*x^2*y^17+19/262144*x*y^18+1/524288*y^19-x^18-9*x^17*y-153/4*x^16*y^2-102*x^15*y^3-" +
+                "765/4*x^14*y^4-1071/4*x^13*y^5-4641/16*x^12*y^6-1989/8*x^11*y^7-21879/128*x^10*y^8-" +
+                "12155/128*x^9*y^9-21879/512*x^8*y^10-1989/128*x^7*y^11-4641/1024*x^6*y^12-1071/1024*x^5*y^13-" +
+                "765/4096*x^4*y^14-51/2048*x^3*y^15-153/65536*x^2*y^16-9/65536*x*y^17-1/262144*y^18," +
+                " x^20+10*x^19*y+95/2*x^18*y^2+285/2*x^17*y^3+4845/16*x^16*y^4+969/2*x^15*y^5+4845/8*x^14*y^6+" +
+                "4845/8*x^13*y^7+62985/128*x^12*y^8+20995/64*x^11*y^9+46189/256*x^10*y^10+20995/256*x^9*y^11+" +
+                "62985/2048*x^8*y^12+4845/512*x^7*y^13+4845/2048*x^6*y^14+969/2048*x^5*y^15+4845/65536*x^4*y^16+" +
+                "285/32768*x^3*y^17+95/131072*x^2*y^18+5/131072*x*y^19+1/1048576*y^20-x^19-19/2*x^18*y-" +
+                "171/4*x^17*y^2-969/8*x^16*y^3-969/4*x^15*y^4-2907/8*x^14*y^5-6783/16*x^13*y^6-12597/32*x^12*y^7-" +
+                "37791/128*x^11*y^8-46189/256*x^10*y^9-46189/512*x^9*y^10-37791/1024*x^8*y^11-12597/1024*x^7*y^12-" +
+                "6783/2048*x^6*y^13-2907/4096*x^5*y^14-969/8192*x^4*y^15-969/65536*x^3*y^16-171/131072*x^2*y^17-" +
+                "19/262144*x*y^18-1/524288*y^19, ...]");
+
+        delta_fail_helper("[]");
+        delta_fail_helper("[-17, null, a*b*c, x^2-4*x+7, x^2+2*x*y+y^2]");
+    }
+
+    private static void pow_helper(@NotNull String p, int exponent, @NotNull String output) {
+        RationalMultivariatePolynomial q = readStrict(p).get().pow(exponent);
+        q.validate();
+        aeq(q, output);
+    }
+
+    private static void pow_fail_helper(@NotNull String p, int exponent) {
+        try {
+            readStrict(p).get().pow(exponent);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testPow() {
+        pow_helper("0", 0, "1");
+        pow_helper("0", 1, "0");
+        pow_helper("0", 2, "0");
+        pow_helper("0", 3, "0");
+
+        pow_helper("1", 0, "1");
+        pow_helper("1", 1, "1");
+        pow_helper("1", 2, "1");
+        pow_helper("1", 3, "1");
+
+        pow_helper("-4/3", 0, "1");
+        pow_helper("-4/3", 1, "-4/3");
+        pow_helper("-4/3", 2, "16/9");
+        pow_helper("-4/3", 3, "-64/27");
+
+        pow_helper("ooo", 0, "1");
+        pow_helper("ooo", 1, "ooo");
+        pow_helper("ooo", 2, "ooo^2");
+        pow_helper("ooo", 3, "ooo^3");
+
+        pow_helper("a*b*c", 0, "1");
+        pow_helper("a*b*c", 1, "a*b*c");
+        pow_helper("a*b*c", 2, "a^2*b^2*c^2");
+        pow_helper("a*b*c", 3, "a^3*b^3*c^3");
+
+        pow_helper("x^2-7/4*x+1/3", 0, "1");
+        pow_helper("x^2-7/4*x+1/3", 1, "x^2-7/4*x+1/3");
+        pow_helper("x^2-7/4*x+1/3", 2, "x^4-7/2*x^3+179/48*x^2-7/6*x+1/9");
+        pow_helper("x^2-7/4*x+1/3", 3, "x^6-21/4*x^5+163/16*x^4-567/64*x^3+163/48*x^2-7/12*x+1/27");
+
+        pow_helper("x^2+1/2*x*y+y^2", 0, "1");
+        pow_helper("x^2+1/2*x*y+y^2", 1, "x^2+1/2*x*y+y^2");
+        pow_helper("x^2+1/2*x*y+y^2", 2, "x^4+x^3*y+9/4*x^2*y^2+x*y^3+y^4");
+        pow_helper("x^2+1/2*x*y+y^2", 3, "x^6+3/2*x^5*y+15/4*x^4*y^2+25/8*x^3*y^3+15/4*x^2*y^4+3/2*x*y^5+y^6");
+
+        pow_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", 0, "1");
+        pow_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", 1, "x*y^2*z+x^2*z^2+x^3+22/7*z^2");
+        pow_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", 2,
+                "x^2*y^4*z^2+2*x^3*y^2*z^3+x^4*z^4+2*x^4*y^2*z+2*x^5*z^2+x^6+44/7*x*y^2*z^3+44/7*x^2*z^4+" +
+                "44/7*x^3*z^2+484/49*z^4");
+        pow_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", 3,
+                "x^3*y^6*z^3+3*x^4*y^4*z^4+3*x^5*y^2*z^5+x^6*z^6+3*x^5*y^4*z^2+6*x^6*y^2*z^3+3*x^7*z^4+3*x^7*y^2*z+" +
+                "3*x^8*z^2+66/7*x^2*y^4*z^4+132/7*x^3*y^2*z^5+66/7*x^4*z^6+x^9+132/7*x^4*y^2*z^3+132/7*x^5*z^4+" +
+                "66/7*x^6*z^2+1452/49*x*y^2*z^5+1452/49*x^2*z^6+1452/49*x^3*z^4+10648/343*z^6");
+
+        pow_fail_helper("a*b*c", -1);
+        pow_fail_helper("0", -1);
+        pow_fail_helper("1", -1);
+    }
+
+    private static void apply_Rational_helper(@NotNull String p, @NotNull String xs, @NotNull String output) {
+        aeq(readStrict(p).get().applyRational(readVariableRationalMap(xs)), output);
+    }
+
+    private static void apply_Rational_fail_helper(@NotNull String p, @NotNull String xs) {
+        try {
+            readStrict(p).get().applyRational(readVariableRationalMapWithNulls(xs));
+            fail();
+        } catch (IllegalArgumentException | NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testApplyRational() {
+        apply_Rational_helper("1", "[]", "1");
+        apply_Rational_helper("1", "[(a, 0)]", "1");
+        apply_Rational_helper("1", "[(x, -1/2), (y, 4/5)]", "1");
+        apply_Rational_helper("a", "[(a, 0)]", "0");
+        apply_Rational_helper("a", "[(a, -5/3)]", "-5/3");
+        apply_Rational_helper("a", "[(a, -5/3), (b, 2/7)]", "-5/3");
+        apply_Rational_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "[(x, -5/3), (y, 1/2), (z, 3)]", "35839/756");
+        apply_Rational_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "[(x, -5/3), (y, 0), (z, 3), (ooo, 3)]", "9196/189");
+        apply_Rational_helper("a+b+c", "[(a, 1), (b, 1/2), (c, 1/3)]", "11/6");
+
+        apply_Rational_fail_helper("a", "[]");
+        apply_Rational_fail_helper("a", "[(b, 1/2)]");
+        apply_Rational_fail_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "[(x, -5/3), (y, 1/2)]");
+        apply_Rational_fail_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "[(x, -5/3), (y, 1/2), (z, null)]");
+        apply_Rational_fail_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "[(x, -5/3), (y, 1/2), (null, 1)]");
+    }
+
     private static @NotNull List<Pair<Monomial, Rational>> readMonomialRationalPairList(
             @NotNull String s
     ) {
@@ -1614,5 +1961,41 @@ public class RationalMultivariatePolynomialTest {
 
     private static @NotNull List<Variable> readVariableListWithNulls(@NotNull String s) {
         return Readers.readListWithNullsStrict(Variable::readStrict).apply(s).get();
+    }
+
+    private static @NotNull List<RationalMultivariatePolynomial> readRationalMultivariatePolynomialList(
+            @NotNull String s
+    ) {
+        return Readers.readListStrict(RationalMultivariatePolynomial::readStrict).apply(s).get();
+    }
+
+    private static @NotNull List<RationalMultivariatePolynomial> readRationalMultivariatePolynomialListWithNulls(
+            @NotNull String s
+    ) {
+        return Readers.readListWithNullsStrict(RationalMultivariatePolynomial::readStrict).apply(s).get();
+    }
+
+    private static @NotNull Map<Variable, Rational> readVariableRationalMap(@NotNull String s) {
+        return IterableUtils.toMap(
+                Readers.readListStrict(
+                        u -> Pair.readStrict(
+                                u,
+                                t -> NullableOptional.fromOptional(Variable.readStrict(t)),
+                                t -> NullableOptional.fromOptional(Rational.readStrict(t))
+                        )
+                ).apply(s).get()
+        );
+    }
+
+    private static @NotNull Map<Variable, Rational> readVariableRationalMapWithNulls(@NotNull String s) {
+        return IterableUtils.toMap(
+                Readers.readListStrict(
+                        u -> Pair.readStrict(
+                                u,
+                                Readers.readWithNullsStrict(Variable::readStrict),
+                                Readers.readWithNullsStrict(Rational::readStrict)
+                        )
+                ).apply(s).get()
+        );
     }
 }
