@@ -87,15 +87,15 @@ public class MultivariatePolynomialDemos extends QBarDemos {
         }
     }
 
-    private void demoOf_Polynomial_Variable() {
-        for (Pair<Polynomial, Variable> p : take(LIMIT, P.pairs(P.withScale(4).polynomials(), P.variables()))) {
-            System.out.println("of(" + p.a + ", " + p.b + ") = " + of(p.a, p.b));
-        }
-    }
-
     private void demoOf_Variable() {
         for (Variable v : take(MEDIUM_LIMIT, P.variables())) {
             System.out.println("of(" + v + ") = " + of(v));
+        }
+    }
+
+    private void demoOf_Polynomial_Variable() {
+        for (Pair<Polynomial, Variable> p : take(LIMIT, P.pairs(P.withScale(4).polynomials(), P.variables()))) {
+            System.out.println("of(" + p.a + ", " + p.b + ") = " + of(p.a, p.b));
         }
     }
 
