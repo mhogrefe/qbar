@@ -2,6 +2,7 @@ package mho.qbar.objects;
 
 import mho.qbar.testing.QBarDemos;
 import mho.wheels.structures.Pair;
+import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
@@ -144,6 +145,73 @@ public class RationalMultivariatePolynomialDemos  extends QBarDemos {
     private void demoVariableCount() {
         for (RationalMultivariatePolynomial p : take(LIMIT, P.withScale(4).rationalMultivariatePolynomials())) {
             System.out.println("variableCount(" + p + ") = " + p.variableCount());
+        }
+    }
+
+    private void demoTermCount() {
+        for (RationalMultivariatePolynomial p : take(LIMIT, P.withScale(4).rationalMultivariatePolynomials())) {
+            System.out.println("termCount(" + p + ") = " + p.termCount());
+        }
+    }
+
+    private void demoMaxCoefficientBitLength() {
+        for (RationalMultivariatePolynomial p : take(LIMIT, P.withScale(4).rationalMultivariatePolynomials())) {
+            System.out.println("maxCoefficientBitLength(" + p + ") = " + p.maxCoefficientBitLength());
+        }
+    }
+
+    private void demoDegree() {
+        for (RationalMultivariatePolynomial p : take(LIMIT, P.withScale(4).rationalMultivariatePolynomials())) {
+            System.out.println("degree(" + p + ") = " + p.degree());
+        }
+    }
+
+    private void demoDegree_Variable() {
+        Iterable<Pair<RationalMultivariatePolynomial, Variable>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).rationalMultivariatePolynomials(),
+                P.withScale(4).variables()
+        );
+        for (Pair<RationalMultivariatePolynomial, Variable> p : take(LIMIT, ps)) {
+            System.out.println("degree(" + p.a + ", " + p.b + ") = " + p.a.degree(p.b));
+        }
+    }
+
+    private void demoIsHomogeneous() {
+        for (RationalMultivariatePolynomial p : take(LIMIT, P.withScale(4).rationalMultivariatePolynomials())) {
+            System.out.println(p + " is " + (p.isHomogeneous() ? "" : "not ") + "homogeneous");
+        }
+    }
+
+    private void demoCoefficientsOfVariable() {
+        Iterable<Pair<RationalMultivariatePolynomial, Variable>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).rationalMultivariatePolynomials(),
+                P.withScale(4).variables()
+        );
+        for (Pair<RationalMultivariatePolynomial, Variable> p : take(LIMIT, ps)) {
+            System.out.println("coefficientsOfVariable(" + p.a + ", " + p.b + ") = " +
+                    p.a.coefficientsOfVariable(p.b));
+        }
+    }
+
+    private void demoGroupVariables_List_Variable_MonomialOrder() {
+        Iterable<Triple<RationalMultivariatePolynomial, List<Variable>, MonomialOrder>> ts = P.triples(
+                P.withScale(4).rationalMultivariatePolynomials(),
+                P.withScale(4).lists(P.withScale(4).variables()),
+                P.monomialOrders()
+        );
+        for (Triple<RationalMultivariatePolynomial, List<Variable>, MonomialOrder> t : take(LIMIT, ts)) {
+            System.out.println("groupVariables(" + t.a + ", " + t.b + ", " + t.c + ") = " +
+                    t.a.groupVariables(t.b, t.c));
+        }
+    }
+
+    private void demoGroupVariables_List_Variable() {
+        Iterable<Pair<RationalMultivariatePolynomial, List<Variable>>> ps = P.pairs(
+                P.withScale(4).rationalMultivariatePolynomials(),
+                P.withScale(4).lists(P.withScale(4).variables())
+        );
+        for (Pair<RationalMultivariatePolynomial, List<Variable>> p : take(LIMIT, ps)) {
+            System.out.println("groupVariables(" + p.a + ", " + p.b + ") = " + p.a.groupVariables(p.b));
         }
     }
 
