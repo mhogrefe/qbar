@@ -215,6 +215,110 @@ public class RationalMultivariatePolynomialDemos  extends QBarDemos {
         }
     }
 
+    private void demoAdd() {
+        Iterable<Pair<RationalMultivariatePolynomial, RationalMultivariatePolynomial>> ps = P.pairs(
+                P.withScale(4).rationalMultivariatePolynomials()
+        );
+        for (Pair<RationalMultivariatePolynomial, RationalMultivariatePolynomial> p : take(LIMIT, ps)) {
+            System.out.println("(" + p.a + ") + (" + p.b + ") = " + p.a.add(p.b));
+        }
+    }
+
+    private void demoNegate() {
+        for (RationalMultivariatePolynomial p : take(LIMIT, P.withScale(4).rationalMultivariatePolynomials())) {
+            System.out.println("-(" + p + ") = " + p.negate());
+        }
+    }
+
+    private void demoSubtract() {
+        Iterable<Pair<RationalMultivariatePolynomial, RationalMultivariatePolynomial>> ps = P.pairs(
+                P.withScale(4).rationalMultivariatePolynomials()
+        );
+        for (Pair<RationalMultivariatePolynomial, RationalMultivariatePolynomial> p : take(LIMIT, ps)) {
+            System.out.println("(" + p.a + ") - (" + p.b + ") = " + p.a.subtract(p.b));
+        }
+    }
+
+    private void demoMultiply_int() {
+        Iterable<Pair<RationalMultivariatePolynomial, Integer>> ps = P.pairs(
+                P.withScale(4).rationalMultivariatePolynomials(),
+                P.integers()
+        );
+        for (Pair<RationalMultivariatePolynomial, Integer> p : take(LIMIT, ps)) {
+            System.out.println("(" + p.a + ") * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoMultiply_BigInteger() {
+        Iterable<Pair<RationalMultivariatePolynomial, BigInteger>> ps = P.pairs(
+                P.withScale(4).rationalMultivariatePolynomials(),
+                P.bigIntegers()
+        );
+        for (Pair<RationalMultivariatePolynomial, BigInteger> p : take(LIMIT, ps)) {
+            System.out.println("(" + p.a + ") * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoMultiply_Rational() {
+        Iterable<Pair<RationalMultivariatePolynomial, Rational>> ps = P.pairs(
+                P.withScale(4).rationalMultivariatePolynomials(),
+                P.rationals()
+        );
+        for (Pair<RationalMultivariatePolynomial, Rational> p : take(LIMIT, ps)) {
+            System.out.println("(" + p.a + ") * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoMultiply_Monomial_Rational() {
+        Iterable<Triple<RationalMultivariatePolynomial, Monomial, Rational>> ts = P.triples(
+                P.withScale(4).rationalMultivariatePolynomials(),
+                P.withScale(4).monomials(),
+                P.rationals()
+        );
+        for (Triple<RationalMultivariatePolynomial, Monomial, Rational> t : take(LIMIT, ts)) {
+            System.out.println("(" + t.a + ") * (" + t.b + ") * " + t.c + " = " + t.a.multiply(t.b, t.c));
+        }
+    }
+
+    private void demoMultiply_RationalMultivariatePolynomial() {
+        Iterable<Pair<RationalMultivariatePolynomial, RationalMultivariatePolynomial>> ps = P.pairs(
+                P.withScale(4).rationalMultivariatePolynomials()
+        );
+        for (Pair<RationalMultivariatePolynomial, RationalMultivariatePolynomial> p : take(LIMIT, ps)) {
+            System.out.println("(" + p.a + ") * (" + p.b + ") = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoDivide_int() {
+        Iterable<Pair<RationalMultivariatePolynomial, Integer>> ps = P.pairs(
+                P.withScale(4).rationalMultivariatePolynomials(),
+                P.nonzeroIntegers()
+        );
+        for (Pair<RationalMultivariatePolynomial, Integer> p : take(LIMIT, ps)) {
+            System.out.println("(" + p.a + ") / " + p.b + " = " + p.a.divide(p.b));
+        }
+    }
+
+    private void demoDivide_BigInteger() {
+        Iterable<Pair<RationalMultivariatePolynomial, BigInteger>> ps = P.pairs(
+                P.withScale(4).rationalMultivariatePolynomials(),
+                P.nonzeroBigIntegers()
+        );
+        for (Pair<RationalMultivariatePolynomial, BigInteger> p : take(LIMIT, ps)) {
+            System.out.println("(" + p.a + ") / " + p.b + " = " + p.a.divide(p.b));
+        }
+    }
+
+    private void demoDivide_Rational() {
+        Iterable<Pair<RationalMultivariatePolynomial, Rational>> ps = P.pairs(
+                P.withScale(4).rationalMultivariatePolynomials(),
+                P.nonzeroRationals()
+        );
+        for (Pair<RationalMultivariatePolynomial, Rational> p : take(LIMIT, ps)) {
+            System.out.println("(" + p.a + ") / " + p.b + " = " + p.a.divide(p.b));
+        }
+    }
+
     private void demoToString() {
         for (RationalMultivariatePolynomial p : take(LIMIT, P.withScale(4).rationalMultivariatePolynomials())) {
             System.out.println(p);

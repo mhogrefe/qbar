@@ -613,7 +613,7 @@ public final class RationalMultivariatePolynomial implements
                 }
             }
         }
-        if (sumTerms.size() == 0) return ZERO;
+        if (sumTerms.isEmpty()) return ZERO;
         if (sumTerms.size() == 1) {
             Pair<Monomial, Rational> term = sumTerms.get(0);
             if (term.a == Monomial.ONE && term.b == Rational.ONE) return ONE;
@@ -685,7 +685,7 @@ public final class RationalMultivariatePolynomial implements
                 }
             }
         }
-        if (differenceTerms.size() == 0) return ZERO;
+        if (differenceTerms.isEmpty()) return ZERO;
         if (differenceTerms.size() == 1) {
             Pair<Monomial, Rational> term = differenceTerms.get(0);
             if (term.a == Monomial.ONE && term.b == Rational.ONE) return ONE;
