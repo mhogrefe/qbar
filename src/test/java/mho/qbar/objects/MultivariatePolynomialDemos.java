@@ -424,7 +424,7 @@ public class MultivariatePolynomialDemos extends QBarDemos {
             );
         }
         for (Pair<MultivariatePolynomial, Map<Variable, Rational>> p : take(LIMIT, ps)) {
-            System.out.println("applyBigInteger(" + p.a + ", " + p.b + ") = " + p.a.applyRational(p.b));
+            System.out.println("applyRational(" + p.a + ", " + p.b + ") = " + p.a.applyRational(p.b));
         }
     }
 

@@ -1,5 +1,6 @@
 package mho.qbar.objects;
 
+import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.testing.QBarDemos;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
@@ -8,9 +9,12 @@ import org.jetbrains.annotations.NotNull;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import static mho.qbar.objects.RationalMultivariatePolynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.testing.Testing.*;
 import static mho.wheels.testing.Testing.MEDIUM_LIMIT;
 
 @SuppressWarnings("UnusedDeclaration")
@@ -316,6 +320,172 @@ public class RationalMultivariatePolynomialDemos  extends QBarDemos {
         );
         for (Pair<RationalMultivariatePolynomial, Rational> p : take(LIMIT, ps)) {
             System.out.println("(" + p.a + ") / " + p.b + " = " + p.a.divide(p.b));
+        }
+    }
+
+    private void demoShiftLeft() {
+        Iterable<Pair<RationalMultivariatePolynomial, Integer>> ps = P.pairs(
+                P.withScale(4).rationalMultivariatePolynomials(),
+                P.withScale(4).integersGeometric()
+        );
+        for (Pair<RationalMultivariatePolynomial, Integer> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " << " + p.b + " = " + p.a.shiftLeft(p.b));
+        }
+    }
+
+    private void demoShiftRight() {
+        Iterable<Pair<RationalMultivariatePolynomial, Integer>> ps = P.pairs(
+                P.withScale(4).rationalMultivariatePolynomials(),
+                P.withScale(4).integersGeometric()
+        );
+        for (Pair<RationalMultivariatePolynomial, Integer> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " >> " + p.b + " = " + p.a.shiftRight(p.b));
+        }
+    }
+
+    private void demoSum() {
+        Iterable<List<RationalMultivariatePolynomial>> pss = P.withScale(4).lists(
+                P.withScale(4).rationalMultivariatePolynomials()
+        );
+        for (List<RationalMultivariatePolynomial> ps : take(LIMIT, pss)) {
+            System.out.println("Σ(" + middle(ps.toString()) + ") = " + sum(ps));
+        }
+    }
+
+    private void demoProduct() {
+        Iterable<List<RationalMultivariatePolynomial>> pss = P.withScale(4).lists(
+                P.withScale(4).rationalMultivariatePolynomials()
+        );
+        for (List<RationalMultivariatePolynomial> ps : take(LIMIT, pss)) {
+            System.out.println("Π(" + middle(ps.toString()) + ") = " + product(ps));
+        }
+    }
+
+    private void demoDelta() {
+        Iterable<List<RationalMultivariatePolynomial>> pss =
+                P.withScale(4).listsAtLeast(1, P.withScale(4).rationalMultivariatePolynomials());
+        for (List<RationalMultivariatePolynomial> ps : take(LIMIT, pss)) {
+            System.out.println("Δ(" + middle(ps.toString()) + ") = " + its(delta(ps)));
+        }
+    }
+
+    private void demoPow() {
+        Iterable<Pair<RationalMultivariatePolynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).rationalMultivariatePolynomials(),
+                P.withScale(1).naturalIntegersGeometric()
+        );
+        for (Pair<RationalMultivariatePolynomial, Integer> p : take(SMALL_LIMIT, ps)) {
+            System.out.println("(" + p.a + ") ^ " + p.b + " = " + p.a.pow(p.b));
+        }
+    }
+
+    private void demoApplyRational() {
+        Iterable<Pair<RationalMultivariatePolynomial, Map<Variable, Rational>>> ps;
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = P.choose(
+                    map(i -> new Pair<>(of(i), new TreeMap<>()), P.withScale(4).bigIntegers()),
+                    P.dependentPairsInfiniteSquareRootOrder(
+                            filterInfinite(r -> r.degree() > 0, P.rationalMultivariatePolynomials()),
+                            q -> {
+                                List<Variable> us = toList(q.variables());
+                                return map(
+                                        p -> p.b,
+                                        P.dependentPairsInfiniteLogarithmicOrder(
+                                                nub(map(vs -> sort(nub(concat(vs, us))), P.subsets(P.variables()))),
+                                                ws -> P.maps(ws, P.rationals())
+                                        )
+                                );
+                            }
+                    )
+            );
+        } else {
+            ps = P.choose(
+                    P.dependentPairsInfinite(
+                            filterInfinite(r -> r.degree() > 0, P.withScale(4).rationalMultivariatePolynomials()),
+                            q -> {
+                                List<Variable> us = toList(q.variables());
+                                return map(
+                                        p -> p.b,
+                                        P.dependentPairsInfiniteLogarithmicOrder(
+                                                map(
+                                                        vs -> sort(nub(concat(vs, us))),
+                                                        P.withScale(4).subsets(P.variables())
+                                                ),
+                                                ws -> P.maps(ws, P.rationals())
+                                        )
+                                );
+                            }
+                    ),
+                    map(i -> new Pair<>(of(i), new TreeMap<>()), P.withScale(4).bigIntegers())
+            );
+        }
+        for (Pair<RationalMultivariatePolynomial, Map<Variable, Rational>> p : take(LIMIT, ps)) {
+            System.out.println("applyRational(" + p.a + ", " + p.b + ") = " + p.a.applyRational(p.b));
+        }
+    }
+
+    private void demoSubstituteMonomial() {
+        Iterable<Pair<RationalMultivariatePolynomial, Map<Variable, Monomial>>> ps = P.pairsSquareRootOrder(
+                P.withScale(4).rationalMultivariatePolynomials(),
+                P.withElement(
+                        new TreeMap<>(),
+                        map(
+                                p -> p.b,
+                                P.dependentPairsInfiniteLogarithmicOrder(
+                                        P.withScale(4).subsetsAtLeast(1, P.withScale(4).variables()),
+                                        vs -> P.maps(vs, P.withScale(4).monomials())
+                                )
+                        )
+                )
+        );
+        for (Pair<RationalMultivariatePolynomial, Map<Variable, Monomial>> p : take(LIMIT, ps)) {
+            System.out.println("substituteMonomial(" + p.a + ", " + p.b + ") = " + p.a.substituteMonomial(p.b));
+        }
+    }
+
+    private void demoSubstitute() {
+        Iterable<Pair<RationalMultivariatePolynomial, Map<Variable, RationalMultivariatePolynomial>>> ps =
+                P.pairsSquareRootOrder(
+                        P.withScale(4).withSecondaryScale(1).rationalMultivariatePolynomials(),
+                        P.withElement(
+                                new TreeMap<>(),
+                                map(
+                                        p -> p.b,
+                                        P.dependentPairsInfiniteLogarithmicOrder(
+                                                P.withScale(4).subsetsAtLeast(1, P.withScale(4).variables()),
+                                                vs -> P.maps(
+                                                        vs,
+                                                        P.withScale(4).withSecondaryScale(1)
+                                                                .rationalMultivariatePolynomials()
+                                                )
+                                        )
+                                )
+                        )
+                );
+        for (Pair<RationalMultivariatePolynomial, Map<Variable, RationalMultivariatePolynomial>> p : take(LIMIT, ps)) {
+            System.out.println("substitute(" + p.a + ", " + p.b + ") = " + p.a.substitute(p.b));
+        }
+    }
+
+    private void demoPowerReduce() {
+        Iterable<Pair<RationalMultivariatePolynomial, Map<Variable, RationalPolynomial>>> ps = P.pairsSquareRootOrder(
+                P.withScale(4).withSecondaryScale(1).rationalMultivariatePolynomials(),
+                P.withElement(
+                        new TreeMap<>(),
+                        map(
+                                p -> p.b,
+                                P.dependentPairsInfiniteLogarithmicOrder(
+                                        P.withScale(4).subsetsAtLeast(1, P.withScale(4).variables()),
+                                        vs -> P.maps(
+                                                vs,
+                                                P.withScale(4).withSecondaryScale(2).monicRationalPolynomialsAtLeast(1)
+                                        )
+                                )
+                        )
+                )
+        );
+        for (Pair<RationalMultivariatePolynomial, Map<Variable, RationalPolynomial>> p : take(LIMIT, ps)) {
+            System.out.println("powerReduce(" + p.a + ", " + p.b + ") = " + p.a.powerReduce(p.b));
         }
     }
 
