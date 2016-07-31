@@ -2,6 +2,7 @@ package mho.qbar.objects;
 
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.testing.QBarDemos;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
@@ -486,6 +487,83 @@ public class RationalMultivariatePolynomialDemos  extends QBarDemos {
         );
         for (Pair<RationalMultivariatePolynomial, Map<Variable, RationalPolynomial>> p : take(LIMIT, ps)) {
             System.out.println("powerReduce(" + p.a + ", " + p.b + ") = " + p.a.powerReduce(p.b));
+        }
+    }
+
+    private void demoEquals_RationalMultivariatePolynomial() {
+        Iterable<Pair<RationalMultivariatePolynomial, RationalMultivariatePolynomial>> ps = P.pairs(
+                P.withScale(4).rationalMultivariatePolynomials()
+        );
+        for (Pair<RationalMultivariatePolynomial, RationalMultivariatePolynomial> p : take(LIMIT, ps)) {
+            System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);
+        }
+    }
+
+    private void demoEquals_null() {
+        for (RationalMultivariatePolynomial p : take(LIMIT, P.withScale(4).rationalMultivariatePolynomials())) {
+            //noinspection ObjectEqualsNull
+            System.out.println(p + (p.equals(null) ? " = " : " ≠ ") + null);
+        }
+    }
+
+    private void demoHashCode() {
+        for (RationalMultivariatePolynomial p : take(LIMIT, P.withScale(4).rationalMultivariatePolynomials())) {
+            System.out.println("hashCode(" + p + ") = " + p.hashCode());
+        }
+    }
+
+    private void demoCompareTo() {
+        Iterable<Pair<RationalMultivariatePolynomial, RationalMultivariatePolynomial>> ps = P.pairs(
+                P.withScale(4).rationalMultivariatePolynomials()
+        );
+        for (Pair<RationalMultivariatePolynomial, RationalMultivariatePolynomial> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " " + Ordering.compare(p.a, p.b) + " " + p.b);
+        }
+    }
+
+    private void demoReadStrict_String_MonomialOrder() {
+        for (Pair<String, MonomialOrder> p : take(LIMIT, P.pairsLogarithmicOrder(P.strings(), P.monomialOrders()))) {
+            System.out.println("readStrict(" + nicePrint(p.a) + ", " + p.b + ") = " + readStrict(p.a, p.b));
+        }
+    }
+
+    private void demoReadStrict_String_MonomialOrder_targeted() {
+        Iterable<Pair<String, MonomialOrder>> ps = P.pairsLogarithmicOrder(
+                P.strings(RATIONAL_MULTIVARIATE_POLYNOMIAL_CHARS),
+                P.monomialOrders()
+        );
+        for (Pair<String, MonomialOrder> p : take(LIMIT, ps)) {
+            System.out.println("readStrict(" + p.a + ", " + p.b + ") = " + readStrict(p.a, p.b));
+        }
+    }
+
+    private void demoReadStrict_String() {
+        for (String s : take(LIMIT, P.strings())) {
+            System.out.println("readStrict(" + nicePrint(s) + ") = " + readStrict(s));
+        }
+    }
+
+    private static boolean onlyNumeric(String s) {
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if ((c < '0' || c > '9') && c != '-' && c != '/') return false;
+        }
+        return true;
+    }
+
+    private void demoReadStrict_String_targeted() {
+        for (String s : take(LIMIT, P.strings(RATIONAL_MULTIVARIATE_POLYNOMIAL_CHARS))) {
+            System.out.println("readStrict(" + s + ") = " + readStrict(s));
+        }
+    }
+
+    private void demoToString_MonomialOrder() {
+        Iterable<Pair<RationalMultivariatePolynomial, MonomialOrder>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).rationalMultivariatePolynomials(),
+                P.monomialOrders()
+        );
+        for (Pair<RationalMultivariatePolynomial, MonomialOrder> p : take(LIMIT, ps)) {
+            System.out.println("toString(" + p.a + ", " + p.b + ") = " + p.a.toString(p.b));
         }
     }
 
