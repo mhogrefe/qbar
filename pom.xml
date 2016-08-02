@@ -57,6 +57,7 @@
                         <include>**/RationalMatrixTest.java</include>
                         <include>**/RationalMatrixProperties.java</include>
                         <include>**/RationalMultivariatePolynomialTest.java</include>
+                        <include>**/RationalMultivariatePolynomialProperties.java</include>
                         <include>**/RationalPolynomialMatrixTest.java</include>
                         <include>**/RationalPolynomialMatrixProperties.java</include>
                         <include>**/RationalPolynomialTest.java</include>
