@@ -346,8 +346,8 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
             assertTrue(p, p.degree() < 1);
         }
 
-        Variable a = Variable.of(0);
-        for (MultivariatePolynomial p : take(LIMIT, P.multivariatePolynomials(Collections.singletonList(a)))) {
+        Iterable<MultivariatePolynomial> ps = P.multivariatePolynomials(Collections.singletonList(Variable.of(0)));
+        for (MultivariatePolynomial p : take(LIMIT, ps)) {
             assertEquals(p, p.degree(), p.toPolynomial().degree());
         }
     }
