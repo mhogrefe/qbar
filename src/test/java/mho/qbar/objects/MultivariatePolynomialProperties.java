@@ -681,7 +681,7 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
             product.validate();
             assertTrue(p, p.b == 0 || product.degree() == p.a.degree());
             assertEquals(p, product, p.a.multiply(of(BigInteger.valueOf(p.b))));
-            assertEquals(p, product, of(BigInteger.valueOf(p.b)).multiply(p.a));
+            assertEquals(p, product, of(p.b).multiply(p.a));
         }
 
         ps = P.pairs(P.multivariatePolynomials(), P.nonzeroIntegers());

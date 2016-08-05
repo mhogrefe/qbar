@@ -708,10 +708,15 @@ public final class RationalMultivariatePolynomial implements
     public @NotNull RationalMultivariatePolynomial multiply(int that) {
         if (this == ZERO || that == 0) return ZERO;
         if (this == ONE && that == 1) return ONE;
-        if (that == -1 && terms.size() == 1) {
+        if (terms.size() == 1) {
             Pair<Monomial, Rational> term = terms.get(0);
-            if (term.a == Monomial.ONE && term.b.equals(Rational.NEGATIVE_ONE)) {
-                return ONE;
+            if (term.a == Monomial.ONE) {
+                Rational product = term.b.multiply(that);
+                return product == Rational.ONE ?
+                        ONE :
+                        new RationalMultivariatePolynomial(
+                                Collections.singletonList(new Pair<>(Monomial.ONE, product))
+                        );
             }
         }
         return new RationalMultivariatePolynomial(toList(map(t -> new Pair<>(t.a, t.b.multiply(that)), terms)));
@@ -732,10 +737,15 @@ public final class RationalMultivariatePolynomial implements
     public @NotNull RationalMultivariatePolynomial multiply(@NotNull BigInteger that) {
         if (this == ZERO || that.equals(BigInteger.ZERO)) return ZERO;
         if (this == ONE && that.equals(BigInteger.ONE)) return ONE;
-        if (terms.size() == 1 && that.equals(IntegerUtils.NEGATIVE_ONE)) {
+        if (terms.size() == 1) {
             Pair<Monomial, Rational> term = terms.get(0);
-            if (term.a == Monomial.ONE && term.b.equals(Rational.NEGATIVE_ONE)) {
-                return ONE;
+            if (term.a == Monomial.ONE) {
+                Rational product = term.b.multiply(that);
+                return product == Rational.ONE ?
+                        ONE :
+                        new RationalMultivariatePolynomial(
+                                Collections.singletonList(new Pair<>(Monomial.ONE, product))
+                        );
             }
         }
         return new RationalMultivariatePolynomial(toList(map(t -> new Pair<>(t.a, t.b.multiply(that)), terms)));
@@ -756,10 +766,15 @@ public final class RationalMultivariatePolynomial implements
     public @NotNull RationalMultivariatePolynomial multiply(@NotNull Rational that) {
         if (this == ZERO || that == Rational.ZERO) return ZERO;
         if (this == ONE && that == Rational.ONE) return ONE;
-        if (terms.size() == 1 && that.equals(Rational.NEGATIVE_ONE)) {
+        if (terms.size() == 1) {
             Pair<Monomial, Rational> term = terms.get(0);
-            if (term.a == Monomial.ONE && term.b.equals(Rational.NEGATIVE_ONE)) {
-                return ONE;
+            if (term.a == Monomial.ONE) {
+                Rational product = term.b.multiply(that);
+                return product == Rational.ONE ?
+                        ONE :
+                        new RationalMultivariatePolynomial(
+                                Collections.singletonList(new Pair<>(Monomial.ONE, product))
+                        );
             }
         }
         return new RationalMultivariatePolynomial(toList(map(t -> new Pair<>(t.a, t.b.multiply(that)), terms)));
