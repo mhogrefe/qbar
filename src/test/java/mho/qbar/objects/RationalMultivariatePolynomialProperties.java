@@ -64,6 +64,13 @@ public class RationalMultivariatePolynomialProperties extends QBarTestProperties
         propertiesMultiply_int();
         propertiesMultiply_BigInteger();
         propertiesMultiply_Rational();
+        propertiesDivide_int();
+        propertiesDivide_BigInteger();
+        propertiesDivide_Rational();
+        propertiesShiftLeft();
+        compareImplementationsShiftLeft();
+        propertiesShiftRight();
+        compareImplementationsShiftRight();
     }
 
     private void propertiesIterable() {
@@ -782,7 +789,7 @@ public class RationalMultivariatePolynomialProperties extends QBarTestProperties
         );
         for (Triple<RationalMultivariatePolynomial, Integer, Map<Variable, Rational>> t : take(LIMIT, ts3)) {
             RationalMultivariatePolynomial product = t.a.multiply(t.b);
-            assertEquals(t, t.a.applyRational(t.c).multiply(BigInteger.valueOf(t.b)), product.applyRational(t.c));
+            assertEquals(t, t.a.applyRational(t.c).multiply(t.b), product.applyRational(t.c));
         }
     }
 
@@ -920,5 +927,326 @@ public class RationalMultivariatePolynomialProperties extends QBarTestProperties
             RationalMultivariatePolynomial product = t.a.multiply(t.b);
             assertEquals(t, t.a.applyRational(t.c).multiply(t.b), product.applyRational(t.c));
         }
+    }
+
+    private void propertiesDivide_int() {
+        initialize("divide(int)");
+        Iterable<Pair<RationalMultivariatePolynomial, Integer>> ps = P.pairs(
+                P.rationalMultivariatePolynomials(),
+                P.nonzeroIntegers()
+        );
+        for (Pair<RationalMultivariatePolynomial, Integer> p : take(LIMIT, ps)) {
+            RationalMultivariatePolynomial quotient = p.a.divide(p.b);
+            quotient.validate();
+            assertTrue(p, quotient.degree() == p.a.degree());
+            inverse(q -> q.divide(p.b), (RationalMultivariatePolynomial q) -> q.multiply(p.b), p.a);
+        }
+
+        Iterable<Triple<RationalPolynomial, Integer, Rational>> ts = P.triples(
+                P.rationalPolynomials(),
+                P.nonzeroIntegers(),
+                P.rationals()
+        );
+        for (Triple<RationalPolynomial, Integer, Rational> t : take(LIMIT, ts)) {
+            assertEquals(t, t.a.divide(t.b).apply(t.c), t.a.apply(t.c).divide(t.b));
+        }
+
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroIntegers()))) {
+            homomorphic(
+                    RationalMultivariatePolynomial::of,
+                    Function.identity(),
+                    RationalMultivariatePolynomial::of,
+                    Rational::divide,
+                    RationalMultivariatePolynomial::divide,
+                    p
+            );
+        }
+
+        Iterable<Triple<RationalMultivariatePolynomial, RationalMultivariatePolynomial, Integer>> ts2 = P.triples(
+                P.rationalMultivariatePolynomials(),
+                P.rationalMultivariatePolynomials(),
+                P.nonzeroIntegers()
+        );
+        for (Triple<RationalMultivariatePolynomial, RationalMultivariatePolynomial, Integer> t : take(LIMIT, ts2)) {
+            RationalMultivariatePolynomial expression1 = t.a.add(t.b).divide(t.c);
+            RationalMultivariatePolynomial expression2 = t.a.divide(t.c).add(t.b.divide(t.c));
+            assertEquals(t, expression1, expression2);
+        }
+
+        for (RationalMultivariatePolynomial p : take(LIMIT, P.rationalMultivariatePolynomials())) {
+            fixedPoint(q -> q.divide(1), p);
+        }
+
+        for (int i : take(LIMIT, P.nonzeroIntegers())) {
+            fixedPoint(p -> p.divide(i), ZERO);
+        }
+
+        Iterable<Triple<RationalMultivariatePolynomial, Integer, Map<Variable, Rational>>> ts3 = map(
+                r -> new Triple<>(r.a.a, r.b, r.a.b),
+                P.pairs(
+                        P.dependentPairsInfinite(
+                                filterInfinite(q -> q.degree() > 0, P.rationalMultivariatePolynomials()),
+                                p -> P.maps(p.variables(), P.rationals())
+                        ),
+                        P.nonzeroIntegers()
+                )
+        );
+        for (Triple<RationalMultivariatePolynomial, Integer, Map<Variable, Rational>> t : take(LIMIT, ts3)) {
+            RationalMultivariatePolynomial quotient = t.a.divide(t.b);
+            assertEquals(t, t.a.applyRational(t.c).divide(t.b), quotient.applyRational(t.c));
+        }
+
+        for (RationalMultivariatePolynomial p : take(LIMIT, P.rationalMultivariatePolynomials())) {
+            try {
+                p.divide(0);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesDivide_BigInteger() {
+        initialize("divide(BigInteger)");
+        Iterable<Pair<RationalMultivariatePolynomial, BigInteger>> ps = P.pairs(
+                P.rationalMultivariatePolynomials(),
+                P.nonzeroBigIntegers()
+        );
+        for (Pair<RationalMultivariatePolynomial, BigInteger> p : take(LIMIT, ps)) {
+            RationalMultivariatePolynomial quotient = p.a.divide(p.b);
+            quotient.validate();
+            assertTrue(p, quotient.degree() == p.a.degree());
+            inverse(q -> q.divide(p.b), (RationalMultivariatePolynomial q) -> q.multiply(p.b), p.a);
+        }
+
+        Iterable<Triple<RationalPolynomial, BigInteger, Rational>> ts = P.triples(
+                P.rationalPolynomials(),
+                P.nonzeroBigIntegers(),
+                P.rationals()
+        );
+        for (Triple<RationalPolynomial, BigInteger, Rational> t : take(LIMIT, ts)) {
+            assertEquals(t, t.a.divide(t.b).apply(t.c), t.a.apply(t.c).divide(t.b));
+        }
+
+        for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroBigIntegers()))) {
+            homomorphic(
+                    RationalMultivariatePolynomial::of,
+                    Function.identity(),
+                    RationalMultivariatePolynomial::of,
+                    Rational::divide,
+                    RationalMultivariatePolynomial::divide,
+                    p
+            );
+        }
+
+        Iterable<Triple<RationalMultivariatePolynomial, RationalMultivariatePolynomial, BigInteger>> ts2 = P.triples(
+                P.rationalMultivariatePolynomials(),
+                P.rationalMultivariatePolynomials(),
+                P.nonzeroBigIntegers()
+        );
+        for (Triple<RationalMultivariatePolynomial, RationalMultivariatePolynomial, BigInteger> t : take(LIMIT, ts2)) {
+            RationalMultivariatePolynomial expression1 = t.a.add(t.b).divide(t.c);
+            RationalMultivariatePolynomial expression2 = t.a.divide(t.c).add(t.b.divide(t.c));
+            assertEquals(t, expression1, expression2);
+        }
+
+        for (RationalMultivariatePolynomial p : take(LIMIT, P.rationalMultivariatePolynomials())) {
+            fixedPoint(q -> q.divide(BigInteger.ONE), p);
+        }
+
+        for (BigInteger i : take(LIMIT, P.nonzeroBigIntegers())) {
+            fixedPoint(p -> p.divide(i), ZERO);
+        }
+
+        Iterable<Triple<RationalMultivariatePolynomial, BigInteger, Map<Variable, Rational>>> ts3 = map(
+                r -> new Triple<>(r.a.a, r.b, r.a.b),
+                P.pairs(
+                        P.dependentPairsInfinite(
+                                filterInfinite(q -> q.degree() > 0, P.rationalMultivariatePolynomials()),
+                                p -> P.maps(p.variables(), P.rationals())
+                        ),
+                        P.nonzeroBigIntegers()
+                )
+        );
+        for (Triple<RationalMultivariatePolynomial, BigInteger, Map<Variable, Rational>> t : take(LIMIT, ts3)) {
+            RationalMultivariatePolynomial quotient = t.a.divide(t.b);
+            assertEquals(t, t.a.applyRational(t.c).divide(t.b), quotient.applyRational(t.c));
+        }
+
+        for (RationalMultivariatePolynomial p : take(LIMIT, P.rationalMultivariatePolynomials())) {
+            try {
+                p.divide(BigInteger.ZERO);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesDivide_Rational() {
+        initialize("divide(Rational)");
+        Iterable<Pair<RationalMultivariatePolynomial, Rational>> ps = P.pairs(
+                P.rationalMultivariatePolynomials(),
+                P.nonzeroRationals()
+        );
+        for (Pair<RationalMultivariatePolynomial, Rational> p : take(LIMIT, ps)) {
+            RationalMultivariatePolynomial quotient = p.a.divide(p.b);
+            quotient.validate();
+            assertTrue(p, quotient.degree() == p.a.degree());
+            inverse(q -> q.divide(p.b), (RationalMultivariatePolynomial q) -> q.multiply(p.b), p.a);
+        }
+
+        Iterable<Triple<RationalPolynomial, Rational, Rational>> ts = P.triples(
+                P.rationalPolynomials(),
+                P.nonzeroRationals(),
+                P.rationals()
+        );
+        for (Triple<RationalPolynomial, Rational, Rational> t : take(LIMIT, ts)) {
+            assertEquals(t, t.a.divide(t.b).apply(t.c), t.a.apply(t.c).divide(t.b));
+        }
+
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroRationals()))) {
+            homomorphic(
+                    RationalMultivariatePolynomial::of,
+                    Function.identity(),
+                    RationalMultivariatePolynomial::of,
+                    Rational::divide,
+                    RationalMultivariatePolynomial::divide,
+                    p
+            );
+        }
+
+        Iterable<Triple<RationalMultivariatePolynomial, RationalMultivariatePolynomial, Rational>> ts2 = P.triples(
+                P.rationalMultivariatePolynomials(),
+                P.rationalMultivariatePolynomials(),
+                P.nonzeroRationals()
+        );
+        for (Triple<RationalMultivariatePolynomial, RationalMultivariatePolynomial, Rational> t : take(LIMIT, ts2)) {
+            RationalMultivariatePolynomial expression1 = t.a.add(t.b).divide(t.c);
+            RationalMultivariatePolynomial expression2 = t.a.divide(t.c).add(t.b.divide(t.c));
+            assertEquals(t, expression1, expression2);
+        }
+
+        for (RationalMultivariatePolynomial p : take(LIMIT, P.rationalMultivariatePolynomials())) {
+            fixedPoint(q -> q.divide(Rational.ONE), p);
+        }
+
+        for (Rational r : take(LIMIT, P.nonzeroRationals())) {
+            fixedPoint(p -> p.divide(r), ZERO);
+        }
+
+        Iterable<Triple<RationalMultivariatePolynomial, Rational, Map<Variable, Rational>>> ts3 = map(
+                r -> new Triple<>(r.a.a, r.b, r.a.b),
+                P.pairs(
+                        P.dependentPairsInfinite(
+                                filterInfinite(q -> q.degree() > 0, P.rationalMultivariatePolynomials()),
+                                p -> P.maps(p.variables(), P.rationals())
+                        ),
+                        P.nonzeroRationals()
+                )
+        );
+        for (Triple<RationalMultivariatePolynomial, Rational, Map<Variable, Rational>> t : take(LIMIT, ts3)) {
+            RationalMultivariatePolynomial quotient = t.a.divide(t.b);
+            assertEquals(t, t.a.applyRational(t.c).divide(t.b), quotient.applyRational(t.c));
+        }
+
+        for (RationalMultivariatePolynomial p : take(LIMIT, P.rationalMultivariatePolynomials())) {
+            try {
+                p.divide(Rational.ZERO);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private static @NotNull RationalMultivariatePolynomial shiftLeft_simplest(
+            @NotNull RationalMultivariatePolynomial p,
+            int bits
+    ) {
+        if (bits >= 0) {
+            return p.multiply(BigInteger.ONE.shiftLeft(bits));
+        } else {
+            return p.divide(BigInteger.ONE.shiftLeft(-bits));
+        }
+    }
+
+    private void propertiesShiftLeft() {
+        initialize("shiftLeft(int)");
+        Iterable<Pair<RationalMultivariatePolynomial, Integer>> ps = P.pairs(
+                P.rationalMultivariatePolynomials(),
+                P.integersGeometric()
+        );
+        for (Pair<RationalMultivariatePolynomial, Integer> p : take(LIMIT, ps)) {
+            RationalMultivariatePolynomial shifted = p.a.shiftLeft(p.b);
+            shifted.validate();
+            assertEquals(p, shifted.degree(), p.a.degree());
+            assertEquals(p, shifted, shiftLeft_simplest(p.a, p.b));
+            aeqit(p.toString(), map(t -> t.b.signum(), p.a), map(t -> t.b.signum(), shifted));
+            assertEquals(p, p.a.degree(), shifted.degree());
+            assertEquals(p, p.a.negate().shiftLeft(p.b), shifted.negate());
+            assertEquals(p, p.a.shiftRight(-p.b), shifted);
+        }
+
+        for (RationalMultivariatePolynomial p : take(LIMIT, P.rationalMultivariatePolynomials())) {
+            fixedPoint(q -> q.shiftLeft(0), p);
+        }
+    }
+
+    private void compareImplementationsShiftLeft() {
+        Map<
+                String,
+                Function<Pair<RationalMultivariatePolynomial, Integer>, RationalMultivariatePolynomial>
+        > functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> shiftLeft_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.shiftLeft(p.b));
+        compareImplementations(
+                "shiftLeft(int)",
+                take(LIMIT, P.pairs(P.rationalMultivariatePolynomials(), P.integersGeometric())),
+                functions,
+                v -> P.reset()
+        );
+    }
+
+    private static @NotNull RationalMultivariatePolynomial shiftRight_simplest(
+            @NotNull RationalMultivariatePolynomial p,
+            int bits
+    ) {
+        if (bits >= 0) {
+            return p.divide(BigInteger.ONE.shiftLeft(bits));
+        } else {
+            return p.multiply(BigInteger.ONE.shiftLeft(-bits));
+        }
+    }
+
+    private void propertiesShiftRight() {
+        initialize("shiftRight(int)");
+        Iterable<Pair<RationalMultivariatePolynomial, Integer>> ps = P.pairs(
+                P.rationalMultivariatePolynomials(),
+                P.integersGeometric()
+        );
+        for (Pair<RationalMultivariatePolynomial, Integer> p : take(LIMIT, ps)) {
+            RationalMultivariatePolynomial shifted = p.a.shiftRight(p.b);
+            shifted.validate();
+            assertEquals(p, shifted.degree(), p.a.degree());
+            assertEquals(p, shifted, shiftRight_simplest(p.a, p.b));
+            aeqit(p.toString(), map(t -> t.b.signum(), p.a), map(t -> t.b.signum(), shifted));
+            assertEquals(p, p.a.degree(), shifted.degree());
+            assertEquals(p, p.a.negate().shiftRight(p.b), shifted.negate());
+            assertEquals(p, p.a.shiftLeft(-p.b), shifted);
+        }
+
+        for (RationalMultivariatePolynomial p : take(LIMIT, P.rationalMultivariatePolynomials())) {
+            fixedPoint(q -> q.shiftRight(0), p);
+        }
+    }
+
+    private void compareImplementationsShiftRight() {
+        Map<
+                String,
+                Function<Pair<RationalMultivariatePolynomial, Integer>, RationalMultivariatePolynomial>
+        > functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> shiftRight_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.shiftRight(p.b));
+        compareImplementations(
+                "shiftRight(int)",
+                take(LIMIT, P.pairs(P.rationalMultivariatePolynomials(), P.integersGeometric())),
+                functions,
+                v -> P.reset()
+        );
     }
 }

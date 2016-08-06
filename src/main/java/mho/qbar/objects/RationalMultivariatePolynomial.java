@@ -899,6 +899,12 @@ public final class RationalMultivariatePolynomial implements
     public @NotNull RationalMultivariatePolynomial shiftLeft(int bits) {
         if (this == ZERO || bits == 0) return this;
         List<Pair<Monomial, Rational>> shiftedTerms = toList(map(t -> new Pair<>(t.a, t.b.shiftLeft(bits)), terms));
+        if (shiftedTerms.size() == 1) {
+            Pair<Monomial, Rational> term = shiftedTerms.get(0);
+            if (term.a == Monomial.ONE && term.b == Rational.ONE) {
+                return ONE;
+            }
+        }
         return new RationalMultivariatePolynomial(shiftedTerms);
     }
 
@@ -917,6 +923,12 @@ public final class RationalMultivariatePolynomial implements
     public @NotNull RationalMultivariatePolynomial shiftRight(int bits) {
         if (this == ZERO || bits == 0) return this;
         List<Pair<Monomial, Rational>> shiftedTerms = toList(map(t -> new Pair<>(t.a, t.b.shiftRight(bits)), terms));
+        if (shiftedTerms.size() == 1) {
+            Pair<Monomial, Rational> term = shiftedTerms.get(0);
+            if (term.a == Monomial.ONE && term.b == Rational.ONE) {
+                return ONE;
+            }
+        }
         return new RationalMultivariatePolynomial(shiftedTerms);
     }
 
