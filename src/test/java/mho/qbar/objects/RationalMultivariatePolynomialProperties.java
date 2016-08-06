@@ -1,8 +1,12 @@
 package mho.qbar.objects;
 
+import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.testing.QBarTestProperties;
+import mho.qbar.testing.QBarTesting;
 import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.IterableUtils;
+import mho.wheels.numberUtils.IntegerUtils;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
@@ -71,6 +75,16 @@ public class RationalMultivariatePolynomialProperties extends QBarTestProperties
         compareImplementationsShiftLeft();
         propertiesShiftRight();
         compareImplementationsShiftRight();
+        propertiesSum();
+        compareImplementationsSum();
+        propertiesProduct();
+        compareImplementationsProduct();
+        propertiesDelta();
+        propertiesPow();
+        compareImplementationsPow();
+        propertiesApplyRational();
+        propertiesSubstituteMonomial();
+        propertiesSubstitute();
     }
 
     private void propertiesIterable() {
@@ -1248,5 +1262,463 @@ public class RationalMultivariatePolynomialProperties extends QBarTestProperties
                 functions,
                 v -> P.reset()
         );
+    }
+
+    private static @NotNull RationalMultivariatePolynomial sum_simplest(
+            @NotNull List<RationalMultivariatePolynomial> xs
+    ) {
+        return of(toList(concat(map(p -> (Iterable<Pair<Monomial, Rational>>) p, xs))));
+    }
+
+    private static @NotNull RationalMultivariatePolynomial sum_alt(@NotNull List<RationalMultivariatePolynomial> xs) {
+        List<Pair<Monomial, Rational>> sumTerms = new ArrayList<>();
+        List<Iterator<Pair<Monomial, Rational>>> inputTermsIterators =
+                toList(map(RationalMultivariatePolynomial::iterator, xs));
+        List<Pair<Monomial, Rational>> inputTerms =
+                toList(map(it -> it.hasNext() ? it.next() : null, inputTermsIterators));
+        while (true) {
+            Monomial lowestMonomial = null;
+            List<Integer> lowestIndices = new ArrayList<>();
+            for (int i = 0; i < inputTerms.size(); i++) {
+                Pair<Monomial, Rational> p = inputTerms.get(i);
+                if (p == null) continue;
+                if (lowestMonomial == null || Ordering.lt(p.a, lowestMonomial)) {
+                    lowestMonomial = p.a;
+                    lowestIndices.clear();
+                    lowestIndices.add(i);
+                } else if (p.a.equals(lowestMonomial)) {
+                    lowestIndices.add(i);
+                }
+            }
+            if (lowestMonomial == null) {
+                break;
+            }
+            Rational coefficient = Rational.ZERO;
+            for (int index : lowestIndices) {
+                coefficient = coefficient.add(inputTerms.get(index).b);
+                Iterator<Pair<Monomial, Rational>> it = inputTermsIterators.get(index);
+                inputTerms.set(index, it.hasNext() ? it.next() : null);
+            }
+            if (coefficient != Rational.ZERO) {
+                sumTerms.add(new Pair<>(lowestMonomial, coefficient));
+            }
+        }
+        if (sumTerms.size() == 0) return ZERO;
+        if (sumTerms.size() == 1) {
+            Pair<Monomial, Rational> term = sumTerms.get(0);
+            if (term.a == Monomial.ONE && term.b.equals(Rational.ONE)) return ONE;
+        }
+        return of(sumTerms);
+    }
+
+    private void propertiesSum() {
+        initialize("sum(List<RationalMultivariatePolynomial>)");
+        propertiesFoldHelper(
+                LIMIT,
+                P.getWheelsProvider(),
+                P.rationalMultivariatePolynomials(),
+                RationalMultivariatePolynomial::add,
+                RationalMultivariatePolynomial::sum,
+                RationalMultivariatePolynomial::validate,
+                true,
+                true
+        );
+
+        for (List<RationalMultivariatePolynomial> ps : take(LIMIT, P.lists(P.rationalMultivariatePolynomials()))) {
+            RationalMultivariatePolynomial sum = sum(ps);
+            sum.validate();
+            assertEquals(ps, sum, sum_simplest(ps));
+            assertEquals(ps, sum, sum_alt(ps));
+            //noinspection RedundantCast
+            assertTrue(
+                    ps,
+                    ps.isEmpty() ||
+                            sum.degree() <=
+                                    maximum((Iterable<Integer>) map(RationalMultivariatePolynomial::degree, ps))
+            );
+        }
+
+        Iterable<Pair<List<RationalMultivariatePolynomial>, Map<Variable, Rational>>> ps = P.dependentPairsInfinite(
+                filterInfinite(
+                        qs -> any(q -> q.degree() > 0, qs),
+                        P.withScale(1).lists(P.rationalMultivariatePolynomials())
+                ),
+                ns -> P.maps(sort(nub(concat(map(RationalMultivariatePolynomial::variables, ns)))), P.rationals())
+        );
+        for (Pair<List<RationalMultivariatePolynomial>, Map<Variable, Rational>> p : take(LIMIT, ps)) {
+            RationalMultivariatePolynomial sum = sum(p.a);
+            assertEquals(p, Rational.sum(toList(map(m -> m.applyRational(p.b), p.a))), sum.applyRational(p.b));
+        }
+    }
+
+    private void compareImplementationsSum() {
+        Map<String, Function<List<RationalMultivariatePolynomial>, RationalMultivariatePolynomial>> functions =
+                new LinkedHashMap<>();
+        functions.put("simplest", RationalMultivariatePolynomialProperties::sum_simplest);
+        functions.put("alt", RationalMultivariatePolynomialProperties::sum_alt);
+        functions.put("standard", RationalMultivariatePolynomial::sum);
+        Iterable<List<RationalMultivariatePolynomial>> pss = P.lists(P.rationalMultivariatePolynomials());
+        compareImplementations(
+                "sum(List<RationalMultivariatePolynomial>)",
+                take(LIMIT, pss),
+                functions,
+                v -> P.reset()
+        );
+    }
+
+    private static @NotNull RationalMultivariatePolynomial product_alt(
+            @NotNull List<RationalMultivariatePolynomial> xs
+    ) {
+        if (any(x -> x == null, xs)) {
+            throw new NullPointerException();
+        }
+        if (any(x -> x == ZERO, xs)) {
+            return ZERO;
+        }
+        return foldl(RationalMultivariatePolynomial::multiply, ONE, sort(TERM_SHORTLEX_COMPARATOR, xs));
+    }
+
+    private static @NotNull RationalMultivariatePolynomial product_alt2(
+            @NotNull List<RationalMultivariatePolynomial> xs
+    ) {
+        if (any(x -> x == ZERO, xs)) return ZERO;
+        SortedMap<Monomial, Rational> termMap = new TreeMap<>();
+        for (List<Pair<Monomial, Rational>> terms : EP.cartesianProduct(toList(map(IterableUtils::toList, xs)))) {
+            Monomial termProduct = Monomial.product(toList(map(t -> t.a, terms)));
+            Rational coefficientProduct = Rational.product(toList(map(t -> t.b, terms)));
+            Rational coefficient = termMap.get(termProduct);
+            if (coefficient == null) {
+                coefficient = Rational.ZERO;
+            }
+            coefficient = coefficient.add(coefficientProduct);
+            termMap.put(termProduct, coefficient);
+        }
+        return of(toList(fromMap(termMap)));
+    }
+
+    private void propertiesProduct() {
+        initialize("product(Iterable<RationalMultivariatePolynomial>)");
+        propertiesFoldHelper(
+                LIMIT,
+                P.getWheelsProvider(),
+                P.withScale(4).rationalMultivariatePolynomials(),
+                RationalMultivariatePolynomial::multiply,
+                RationalMultivariatePolynomial::product,
+                RationalMultivariatePolynomial::validate,
+                true,
+                true
+        );
+
+        Iterable<List<RationalMultivariatePolynomial>> pss = P.withScale(1).lists(P.rationalMultivariatePolynomials());
+        for (List<RationalMultivariatePolynomial> ps : take(LIMIT, pss)) {
+            RationalMultivariatePolynomial product = product(ps);
+            assertTrue(
+                    ps,
+                    any(p -> p == ZERO, ps) ||
+                            product.degree() ==
+                                    IterableUtils.sumInteger(toList(map(RationalMultivariatePolynomial::degree, ps)))
+            );
+        }
+
+        Iterable<List<RationalMultivariatePolynomial>> pss2 = P.withScale(1).lists(
+                P.rationalMultivariatePolynomials()
+        );
+        for (List<RationalMultivariatePolynomial> ps : take(LIMIT, pss2)) {
+            RationalMultivariatePolynomial product = product(ps);
+            assertEquals(ps, product, product_alt(ps));
+            assertEquals(ps, product, product_alt2(ps));
+        }
+
+        Iterable<Pair<List<RationalMultivariatePolynomial>, Map<Variable, Rational>>> ps = P.dependentPairsInfinite(
+                filterInfinite(
+                        qs -> any(q -> q.degree() > 0, qs),
+                        P.withScale(1).lists(P.rationalMultivariatePolynomials())
+                ),
+                ns -> P.maps(sort(nub(concat(map(RationalMultivariatePolynomial::variables, ns)))), P.rationals())
+        );
+        for (Pair<List<RationalMultivariatePolynomial>, Map<Variable, Rational>> p : take(LIMIT, ps)) {
+            RationalMultivariatePolynomial product = product(p.a);
+            assertEquals(p, Rational.product(toList(map(m -> m.applyRational(p.b), p.a))), product.applyRational(p.b));
+        }
+    }
+
+    private void compareImplementationsProduct() {
+        Map<String, Function<List<RationalMultivariatePolynomial>, RationalMultivariatePolynomial>> functions =
+                new LinkedHashMap<>();
+        functions.put("alt", RationalMultivariatePolynomialProperties::product_alt);
+        functions.put("alt2", RationalMultivariatePolynomialProperties::product_alt2);
+        functions.put("standard", RationalMultivariatePolynomial::product);
+        compareImplementations(
+                "product(Iterable<RationalMultivariatePolynomial>)",
+                take(LIMIT, P.withScale(1).lists(P.rationalMultivariatePolynomials())),
+                functions,
+                v -> P.reset()
+        );
+    }
+
+    private void propertiesDelta() {
+        initialize("delta(Iterable<RationalMultivariatePolynomial>)");
+        propertiesDeltaHelper(
+                LIMIT,
+                P.getWheelsProvider(),
+                QBarTesting.QEP.rationalMultivariatePolynomials(),
+                P.rationalMultivariatePolynomials(),
+                RationalMultivariatePolynomial::negate,
+                RationalMultivariatePolynomial::subtract,
+                RationalMultivariatePolynomial::delta,
+                RationalMultivariatePolynomial::validate
+        );
+
+        Iterable<Pair<List<RationalMultivariatePolynomial>, Map<Variable, Rational>>> ps = P.dependentPairsInfinite(
+                filterInfinite(
+                        qs -> any(q -> q.degree() > 0, qs),
+                        P.withScale(1).lists(P.rationalMultivariatePolynomials())
+                ),
+                ns -> P.maps(sort(nub(concat(map(RationalMultivariatePolynomial::variables, ns)))), P.rationals())
+        );
+        for (Pair<List<RationalMultivariatePolynomial>, Map<Variable, Rational>> p : take(LIMIT, ps)) {
+            List<RationalMultivariatePolynomial> delta = toList(delta(p.a));
+            assertEquals(
+                    p,
+                    toList(Rational.delta(map(m -> m.applyRational(p.b), p.a))),
+                    toList(map(q -> q.applyRational(p.b), delta))
+            );
+        }
+    }
+
+    private static @NotNull RationalMultivariatePolynomial pow_alt(
+            @NotNull RationalMultivariatePolynomial a,
+            int p
+    ) {
+        if (p < 0) {
+            throw new ArithmeticException("p cannot be negative. Invalid p: " + p);
+        }
+        if (p == 0 || a == ONE) return ONE;
+        if (a == ZERO) return ZERO;
+        if (a.termCount() == 1) {
+            Pair<Monomial, Rational> term = head(a);
+            if (term.a == Monomial.ONE) {
+                return of(term.b.pow(p));
+            } else {
+                return of(Collections.singletonList(new Pair<>(term.a.pow(p), term.b.pow(p))));
+            }
+        }
+        RationalMultivariatePolynomial result = ONE;
+        RationalMultivariatePolynomial powerPower = null; // p^2^i
+        for (boolean bit : IntegerUtils.bits(p)) {
+            powerPower = powerPower == null ? a : powerPower.multiply(powerPower);
+            if (bit) result = result.multiply(powerPower);
+        }
+        return result;
+    }
+
+    private void propertiesPow() {
+        initialize("pow(int)");
+        Iterable<Pair<RationalMultivariatePolynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).rationalMultivariatePolynomials(),
+                P.withScale(1).naturalIntegersGeometric()
+        );
+        for (Pair<RationalMultivariatePolynomial, Integer> p : take(LIMIT, ps)) {
+            RationalMultivariatePolynomial q = p.a.pow(p.b);
+            q.validate();
+            assertTrue(p, p.a == ZERO || q.degree() == p.a.degree() * p.b);
+            assertEquals(p, q, pow_alt(p.a, p.b));
+        }
+
+        for (int i : take(LIMIT, P.withScale(4).positiveIntegersGeometric())) {
+            fixedPoint(p -> p.pow(i), ZERO);
+        }
+
+        for (RationalMultivariatePolynomial p : take(LIMIT, P.withScale(4).rationalMultivariatePolynomials())) {
+            assertTrue(p, p.pow(0) == ONE);
+            fixedPoint(q -> q.pow(1), p);
+            assertEquals(p, p.pow(2), p.multiply(p));
+        }
+
+        Iterable<Triple<RationalMultivariatePolynomial, Integer, Integer>> ts2 = map(
+                p -> new Triple<>(p.a, p.b.a, p.b.b),
+                P.pairsSquareRootOrder(
+                        P.withScale(4).withSecondaryScale(4).rationalMultivariatePolynomials(),
+                        P.pairs(P.withScale(1).naturalIntegersGeometric())
+                )
+        );
+        for (Triple<RationalMultivariatePolynomial, Integer, Integer> t : take(LIMIT, ts2)) {
+            RationalMultivariatePolynomial expression1 = t.a.pow(t.b).multiply(t.a.pow(t.c));
+            RationalMultivariatePolynomial expression2 = t.a.pow(t.b + t.c);
+            assertEquals(t, expression1, expression2);
+            RationalMultivariatePolynomial expression5 = t.a.pow(t.b).pow(t.c);
+            RationalMultivariatePolynomial expression6 = t.a.pow(t.b * t.c);
+            assertEquals(t, expression5, expression6);
+        }
+
+        Iterable<Triple<RationalMultivariatePolynomial, RationalMultivariatePolynomial, Integer>> ts3 = map(
+                p -> new Triple<>(p.a.a, p.a.b, p.b),
+                P.pairsLogarithmicOrder(
+                        P.pairs(P.withScale(4).withSecondaryScale(1).rationalMultivariatePolynomials()),
+                        P.withScale(1).naturalIntegersGeometric()
+                )
+        );
+        for (Triple<RationalMultivariatePolynomial, RationalMultivariatePolynomial, Integer> t : take(LIMIT, ts3)) {
+            RationalMultivariatePolynomial expression1 = t.a.multiply(t.b).pow(t.c);
+            RationalMultivariatePolynomial expression2 = t.a.pow(t.c).multiply(t.b.pow(t.c));
+            assertEquals(t, expression1, expression2);
+        }
+
+        Iterable<Triple<RationalMultivariatePolynomial, Integer, Map<Variable, Rational>>> ts4 = map(
+                p -> new Triple<>(p.a.a, p.b, p.a.b),
+                P.pairsLogarithmicOrder(
+                        P.dependentPairsInfinite(
+                                filterInfinite(p -> p.degree() > 0, P.withScale(4).rationalMultivariatePolynomials()),
+                                n -> P.maps(n.variables(), P.rationals())
+                        ),
+                        P.withScale(1).naturalIntegersGeometric()
+                )
+        );
+        for (Triple<RationalMultivariatePolynomial, Integer, Map<Variable, Rational>> t : take(LIMIT, ts4)) {
+            RationalMultivariatePolynomial p = t.a.pow(t.b);
+            assertEquals(t, t.a.applyRational(t.c).pow(t.b), p.applyRational(t.c));
+        }
+
+        Iterable<Pair<RationalMultivariatePolynomial, Integer>> psFail = P.pairs(
+                P.rationalMultivariatePolynomials(),
+                P.negativeIntegers()
+        );
+        for (Pair<RationalMultivariatePolynomial, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.pow(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void compareImplementationsPow() {
+        Map<
+                String,
+                Function<Pair<RationalMultivariatePolynomial, Integer>, RationalMultivariatePolynomial>
+        > functions = new LinkedHashMap<>();
+        functions.put("alt", p -> pow_alt(p.a, p.b));
+        functions.put("standard", p -> p.a.pow(p.b));
+        Iterable<Pair<RationalMultivariatePolynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).rationalMultivariatePolynomials(),
+                P.withScale(1).naturalIntegersGeometric()
+        );
+        compareImplementations("pow(int)", take(LIMIT, ps), functions, v -> P.reset());
+    }
+
+    private void propertiesApplyRational() {
+        initialize("applyRational(Map<Variable, Rational>)");
+        Iterable<Pair<RationalMultivariatePolynomial, Map<Variable, Rational>>> ps;
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = P.choose(
+                    map(i -> new Pair<>(of(i), new TreeMap<>()), P.withScale(4).rationals()),
+                    P.dependentPairsInfiniteSquareRootOrder(
+                            filterInfinite(r -> r.degree() > 0, P.rationalMultivariatePolynomials()),
+                            q -> {
+                                List<Variable> us = toList(q.variables());
+                                return map(
+                                        p -> p.b,
+                                        P.dependentPairsInfiniteLogarithmicOrder(
+                                                nub(map(vs -> sort(nub(concat(vs, us))), P.subsets(P.variables()))),
+                                                ws -> P.maps(ws, P.rationals())
+                                        )
+                                );
+                            }
+                    )
+            );
+        } else {
+            ps = P.choose(
+                    P.dependentPairsInfinite(
+                            filterInfinite(r -> r.degree() > 0, P.withScale(4).rationalMultivariatePolynomials()),
+                            q -> {
+                                List<Variable> us = toList(q.variables());
+                                return map(
+                                        p -> p.b,
+                                        P.dependentPairsInfiniteLogarithmicOrder(
+                                                map(
+                                                        vs -> sort(nub(concat(vs, us))),
+                                                        P.withScale(4).subsets(P.variables())
+                                                ),
+                                                ws -> P.maps(ws, P.rationals())
+                                        )
+                                );
+                            }
+                    ),
+                    map(i -> new Pair<>(of(i), new TreeMap<>()), P.withScale(4).rationals())
+            );
+        }
+        for (Pair<RationalMultivariatePolynomial, Map<Variable, Rational>> p : take(LIMIT, ps)) {
+            p.a.applyRational(p.b);
+        }
+
+        Iterable<Pair<RationalMultivariatePolynomial, Map<Variable, Rational>>> psFail =
+                P.dependentPairsInfiniteSquareRootOrder(
+                        filterInfinite(p -> p.degree() > 0, P.rationalMultivariatePolynomials()),
+                        m -> {
+                            List<Variable> us = toList(m.variables());
+                            return map(
+                                    p -> p.b,
+                                    P.dependentPairsInfiniteLogarithmicOrder(
+                                            filterInfinite(
+                                                    vs -> !isSubsetOf(us, vs),
+                                                    P.subsetsAtLeast(1, P.variables())
+                                            ),
+                                            ws -> P.maps(ws, P.rationals())
+                                    )
+                            );
+                        }
+                );
+        for (Pair<RationalMultivariatePolynomial, Map<Variable, Rational>> p : take(LIMIT, psFail)) {
+            try {
+                p.a.applyRational(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesSubstituteMonomial() {
+        initialize("substituteMonomial(Map<Variable, Monomial>)");
+        Iterable<Pair<RationalMultivariatePolynomial, Map<Variable, Monomial>>> ps = P.pairsSquareRootOrder(
+                P.withScale(4).rationalMultivariatePolynomials(),
+                P.withElement(
+                        new TreeMap<>(),
+                        map(
+                                p -> p.b,
+                                P.dependentPairsInfiniteLogarithmicOrder(
+                                        P.withScale(4).subsetsAtLeast(1, P.withScale(4).variables()),
+                                        vs -> P.maps(vs, P.withScale(4).monomials())
+                                )
+                        )
+                )
+        );
+        for (Pair<RationalMultivariatePolynomial, Map<Variable, Monomial>> p : take(LIMIT, ps)) {
+            RationalMultivariatePolynomial q = p.a.substituteMonomial(p.b);
+            q.validate();
+        }
+    }
+
+    private void propertiesSubstitute() {
+        initialize("substitute(Map<Variable, RationalMultivariatePolynomial>)");
+        Iterable<Pair<RationalMultivariatePolynomial, Map<Variable, RationalMultivariatePolynomial>>> ps =
+                P.pairsSquareRootOrder(
+                        P.withScale(4).withSecondaryScale(1).rationalMultivariatePolynomials(),
+                        P.withElement(
+                                new TreeMap<>(),
+                                map(
+                                        p -> p.b,
+                                        P.dependentPairsInfiniteLogarithmicOrder(
+                                                P.withScale(4).subsetsAtLeast(1, P.withScale(4).variables()),
+                                                vs -> P.maps(
+                                                        vs,
+                                                        P.withScale(4).withSecondaryScale(1)
+                                                                .rationalMultivariatePolynomials()
+                                                )
+                                        )
+                                )
+                        )
+                );
+        for (Pair<RationalMultivariatePolynomial, Map<Variable, RationalMultivariatePolynomial>> p : take(LIMIT, ps)) {
+            RationalMultivariatePolynomial q = p.a.substitute(p.b);
+            q.validate();
+        }
     }
 }

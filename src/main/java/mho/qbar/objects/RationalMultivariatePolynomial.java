@@ -1,7 +1,6 @@
 package mho.qbar.objects;
 
 import mho.wheels.iterables.NoRemoveIterable;
-import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
@@ -1013,25 +1012,7 @@ public final class RationalMultivariatePolynomial implements
         if (p < 0) {
             throw new ArithmeticException("p cannot be negative. Invalid p: " + p);
         }
-        if (p == 0 || this == ONE) return ONE;
-        if (this == ZERO) return ZERO;
-        if (terms.size() == 1) {
-            Pair<Monomial, Rational> term = terms.get(0);
-            if (term.a == Monomial.ONE) {
-                return of(term.b.pow(p));
-            } else {
-                return new RationalMultivariatePolynomial(
-                        Collections.singletonList(new Pair<>(term.a.pow(p), term.b.pow(p)))
-                );
-            }
-        }
-        RationalMultivariatePolynomial result = ONE;
-        RationalMultivariatePolynomial powerPower = null; // p^2^i
-        for (boolean bit : IntegerUtils.bits(p)) {
-            powerPower = powerPower == null ? this : powerPower.multiply(powerPower);
-            if (bit) result = result.multiply(powerPower);
-        }
-        return result;
+        return product(toList(replicate(p, this)));
     }
 
     /**

@@ -1137,7 +1137,7 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         functions.put("alt", MultivariatePolynomialProperties::sum_alt);
         functions.put("standard", MultivariatePolynomial::sum);
         Iterable<List<MultivariatePolynomial>> pss = P.lists(P.multivariatePolynomials());
-        compareImplementations("sum(List<Polynomial>)", take(LIMIT, pss), functions, v -> P.reset());
+        compareImplementations("sum(List<MultivariatePolynomial>)", take(LIMIT, pss), functions, v -> P.reset());
     }
 
     private static @NotNull MultivariatePolynomial product_alt(@NotNull List<MultivariatePolynomial> xs) {
