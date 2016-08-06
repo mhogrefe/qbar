@@ -361,6 +361,41 @@ public class QBarTesting {
         }
     }
 
+    public static <T> void propertiesCompareToHelper(
+            int limit,
+            @NotNull QBarIterableProvider ip,
+            @NotNull Comparator<T> comparator,
+            @NotNull Function<QBarIterableProvider, Iterable<T>> fxs
+    ) {
+        QBarIterableProvider iq = ip.deepCopy();
+        QBarIterableProvider ir = ip.deepCopy();
+        for (Pair<T, T> p : take(limit, zip(fxs.apply(ip), fxs.apply(iq)))) {
+            assertTrue(p, eq(comparator, p.a, p.b));
+        }
+
+        ip.reset();
+        iq.reset();
+        for (Pair<T, T> p : take(limit, ExhaustiveProvider.INSTANCE.pairs(fxs.apply(ip), fxs.apply(iq)))) {
+            int compare = comparator.compare(p.a, p.b);
+            assertTrue(p, compare == 0 || compare == 1 || compare == -1);
+            antiSymmetric((x, y) -> le(comparator, x, y), p);
+            assertTrue(p, le(comparator, p.a, p.b) || le(comparator, p.b, p.a));
+            antiCommutative(comparator::compare, c -> -c, p);
+        }
+
+        ip.reset();
+        iq.reset();
+        ir.reset();
+        Iterable<Triple<T, T, T>> ts = ExhaustiveProvider.INSTANCE.triples(
+                fxs.apply(ip),
+                fxs.apply(iq),
+                fxs.apply(ir)
+        );
+        for (Triple<T, T, T> t : take(limit, ts)) {
+            transitive((x, y) -> le(comparator, x, y), t);
+        }
+    }
+
     public static <T> void propertiesReadHelper(
             int limit,
             @NotNull QBarIterableProvider P,
