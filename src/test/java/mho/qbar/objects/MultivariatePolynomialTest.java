@@ -422,6 +422,174 @@ public class MultivariatePolynomialTest {
         isHomogeneous_helper("x*y^2*z+x^2*z^2+x^3+z^2", false);
     }
 
+    private static void leadingTerm_MonomialOrder_helper(
+            @NotNull String p,
+            @NotNull String o,
+            @NotNull String output
+    ) {
+        aeq(readStrict(p).get().leadingTerm(MonomialOrder.readStrict(o).get()), output);
+    }
+
+    @Test
+    public void testLeadingTerm_MonomialOrder() {
+        leadingTerm_MonomialOrder_helper("0", "LEX", "Optional.empty");
+        leadingTerm_MonomialOrder_helper("0", "GRLEX", "Optional.empty");
+        leadingTerm_MonomialOrder_helper("0", "GREVLEX", "Optional.empty");
+        leadingTerm_MonomialOrder_helper("1", "LEX", "Optional[(1, 1)]");
+        leadingTerm_MonomialOrder_helper("1", "GRLEX", "Optional[(1, 1)]");
+        leadingTerm_MonomialOrder_helper("1", "GREVLEX", "Optional[(1, 1)]");
+        leadingTerm_MonomialOrder_helper("-17", "LEX", "Optional[(1, -17)]");
+        leadingTerm_MonomialOrder_helper("-17", "GRLEX", "Optional[(1, -17)]");
+        leadingTerm_MonomialOrder_helper("-17", "GREVLEX", "Optional[(1, -17)]");
+        leadingTerm_MonomialOrder_helper("ooo", "LEX", "Optional[(ooo, 1)]");
+        leadingTerm_MonomialOrder_helper("ooo", "GRLEX", "Optional[(ooo, 1)]");
+        leadingTerm_MonomialOrder_helper("ooo", "GREVLEX", "Optional[(ooo, 1)]");
+        leadingTerm_MonomialOrder_helper("a*b*c", "LEX", "Optional[(a*b*c, 1)]");
+        leadingTerm_MonomialOrder_helper("a*b*c", "GRLEX", "Optional[(a*b*c, 1)]");
+        leadingTerm_MonomialOrder_helper("a*b*c", "GREVLEX", "Optional[(a*b*c, 1)]");
+        leadingTerm_MonomialOrder_helper("x^2-4*x+7", "LEX", "Optional[(x^2, 1)]");
+        leadingTerm_MonomialOrder_helper("x^2-4*x+7", "GRLEX", "Optional[(x^2, 1)]");
+        leadingTerm_MonomialOrder_helper("x^2-4*x+7", "GREVLEX", "Optional[(x^2, 1)]");
+        leadingTerm_MonomialOrder_helper("x^2+2*x*y+y^2", "LEX", "Optional[(x^2, 1)]");
+        leadingTerm_MonomialOrder_helper("x^2+2*x*y+y^2", "GRLEX", "Optional[(x^2, 1)]");
+        leadingTerm_MonomialOrder_helper("x^2+2*x*y+y^2", "GREVLEX", "Optional[(x^2, 1)]");
+        leadingTerm_MonomialOrder_helper("a+b+c+d+e+f", "LEX", "Optional[(a, 1)]");
+        leadingTerm_MonomialOrder_helper("a+b+c+d+e+f", "GRLEX", "Optional[(a, 1)]");
+        leadingTerm_MonomialOrder_helper("a+b+c+d+e+f", "GREVLEX", "Optional[(a, 1)]");
+        leadingTerm_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "LEX", "Optional[(x^3, 1)]");
+        leadingTerm_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "GRLEX", "Optional[(x^2*z^2, 1)]");
+        leadingTerm_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "GREVLEX", "Optional[(x*y^2*z, 1)]");
+    }
+
+    private static void leadingTerm_helper(@NotNull String input, @NotNull String output) {
+        aeq(readStrict(input).get().leadingTerm(), output);
+    }
+
+    @Test
+    public void testLeadingTerm() {
+        leadingTerm_helper("0", "Optional.empty");
+        leadingTerm_helper("1", "Optional[(1, 1)]");
+        leadingTerm_helper("-17", "Optional[(1, -17)]");
+        leadingTerm_helper("ooo", "Optional[(ooo, 1)]");
+        leadingTerm_helper("a*b*c", "Optional[(a*b*c, 1)]");
+        leadingTerm_helper("x^2-4*x+7", "Optional[(x^2, 1)]");
+        leadingTerm_helper("x^2+2*x*y+y^2", "Optional[(x^2, 1)]");
+        leadingTerm_helper("a+b+c+d+e+f", "Optional[(a, 1)]");
+        leadingTerm_helper("x*y^2*z+x^2*z^2+x^3+z^2", "Optional[(x*y^2*z, 1)]");
+    }
+
+    private static void leadingCoefficient_MonomialOrder_helper(
+            @NotNull String p,
+            @NotNull String o,
+            @NotNull String output
+    ) {
+        aeq(readStrict(p).get().leadingCoefficient(MonomialOrder.readStrict(o).get()), output);
+    }
+
+    @Test
+    public void testLeadingCoefficient_MonomialOrder() {
+        leadingCoefficient_MonomialOrder_helper("0", "LEX", "Optional.empty");
+        leadingCoefficient_MonomialOrder_helper("0", "GRLEX", "Optional.empty");
+        leadingCoefficient_MonomialOrder_helper("0", "GREVLEX", "Optional.empty");
+        leadingCoefficient_MonomialOrder_helper("1", "LEX", "Optional[1]");
+        leadingCoefficient_MonomialOrder_helper("1", "GRLEX", "Optional[1]");
+        leadingCoefficient_MonomialOrder_helper("1", "GREVLEX", "Optional[1]");
+        leadingCoefficient_MonomialOrder_helper("-17", "LEX", "Optional[-17]");
+        leadingCoefficient_MonomialOrder_helper("-17", "GRLEX", "Optional[-17]");
+        leadingCoefficient_MonomialOrder_helper("-17", "GREVLEX", "Optional[-17]");
+        leadingCoefficient_MonomialOrder_helper("ooo", "LEX", "Optional[1]");
+        leadingCoefficient_MonomialOrder_helper("ooo", "GRLEX", "Optional[1]");
+        leadingCoefficient_MonomialOrder_helper("ooo", "GREVLEX", "Optional[1]");
+        leadingCoefficient_MonomialOrder_helper("a*b*c", "LEX", "Optional[1]");
+        leadingCoefficient_MonomialOrder_helper("a*b*c", "GRLEX", "Optional[1]");
+        leadingCoefficient_MonomialOrder_helper("a*b*c", "GREVLEX", "Optional[1]");
+        leadingCoefficient_MonomialOrder_helper("x^2-4*x+7", "LEX", "Optional[1]");
+        leadingCoefficient_MonomialOrder_helper("x^2-4*x+7", "GRLEX", "Optional[1]");
+        leadingCoefficient_MonomialOrder_helper("x^2-4*x+7", "GREVLEX", "Optional[1]");
+        leadingCoefficient_MonomialOrder_helper("x^2+2*x*y+y^2", "LEX", "Optional[1]");
+        leadingCoefficient_MonomialOrder_helper("x^2+2*x*y+y^2", "GRLEX", "Optional[1]");
+        leadingCoefficient_MonomialOrder_helper("x^2+2*x*y+y^2", "GREVLEX", "Optional[1]");
+        leadingCoefficient_MonomialOrder_helper("a+b+c+d+e+f", "LEX", "Optional[1]");
+        leadingCoefficient_MonomialOrder_helper("a+b+c+d+e+f", "GRLEX", "Optional[1]");
+        leadingCoefficient_MonomialOrder_helper("a+b+c+d+e+f", "GREVLEX", "Optional[1]");
+        leadingCoefficient_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "LEX", "Optional[1]");
+        leadingCoefficient_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "GRLEX", "Optional[1]");
+        leadingCoefficient_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "GREVLEX", "Optional[1]");
+    }
+
+    private static void leadingCoefficient_helper(@NotNull String input, @NotNull String output) {
+        aeq(readStrict(input).get().leadingCoefficient(), output);
+    }
+
+    @Test
+    public void testLeadingCoefficient() {
+        leadingCoefficient_helper("0", "Optional.empty");
+        leadingCoefficient_helper("1", "Optional[1]");
+        leadingCoefficient_helper("-17", "Optional[-17]");
+        leadingCoefficient_helper("ooo", "Optional[1]");
+        leadingCoefficient_helper("a*b*c", "Optional[1]");
+        leadingCoefficient_helper("x^2-4*x+7", "Optional[1]");
+        leadingCoefficient_helper("x^2+2*x*y+y^2", "Optional[1]");
+        leadingCoefficient_helper("a+b+c+d+e+f", "Optional[1]");
+        leadingCoefficient_helper("x*y^2*z+x^2*z^2+x^3+z^2", "Optional[1]");
+    }
+
+    private static void leadingMonomial_MonomialOrder_helper(
+            @NotNull String p,
+            @NotNull String o,
+            @NotNull String output
+    ) {
+        aeq(readStrict(p).get().leadingMonomial(MonomialOrder.readStrict(o).get()), output);
+    }
+
+    @Test
+    public void testLeadingMonomial_MonomialOrder() {
+        leadingMonomial_MonomialOrder_helper("0", "LEX", "Optional.empty");
+        leadingMonomial_MonomialOrder_helper("0", "GRLEX", "Optional.empty");
+        leadingMonomial_MonomialOrder_helper("0", "GREVLEX", "Optional.empty");
+        leadingMonomial_MonomialOrder_helper("1", "LEX", "Optional[1]");
+        leadingMonomial_MonomialOrder_helper("1", "GRLEX", "Optional[1]");
+        leadingMonomial_MonomialOrder_helper("1", "GREVLEX", "Optional[1]");
+        leadingMonomial_MonomialOrder_helper("-17", "LEX", "Optional[1]");
+        leadingMonomial_MonomialOrder_helper("-17", "GRLEX", "Optional[1]");
+        leadingMonomial_MonomialOrder_helper("-17", "GREVLEX", "Optional[1]");
+        leadingMonomial_MonomialOrder_helper("ooo", "LEX", "Optional[ooo]");
+        leadingMonomial_MonomialOrder_helper("ooo", "GRLEX", "Optional[ooo]");
+        leadingMonomial_MonomialOrder_helper("ooo", "GREVLEX", "Optional[ooo]");
+        leadingMonomial_MonomialOrder_helper("a*b*c", "LEX", "Optional[a*b*c]");
+        leadingMonomial_MonomialOrder_helper("a*b*c", "GRLEX", "Optional[a*b*c]");
+        leadingMonomial_MonomialOrder_helper("a*b*c", "GREVLEX", "Optional[a*b*c]");
+        leadingMonomial_MonomialOrder_helper("x^2-4*x+7", "LEX", "Optional[x^2]");
+        leadingMonomial_MonomialOrder_helper("x^2-4*x+7", "GRLEX", "Optional[x^2]");
+        leadingMonomial_MonomialOrder_helper("x^2-4*x+7", "GREVLEX", "Optional[x^2]");
+        leadingMonomial_MonomialOrder_helper("x^2+2*x*y+y^2", "LEX", "Optional[x^2]");
+        leadingMonomial_MonomialOrder_helper("x^2+2*x*y+y^2", "GRLEX", "Optional[x^2]");
+        leadingMonomial_MonomialOrder_helper("x^2+2*x*y+y^2", "GREVLEX", "Optional[x^2]");
+        leadingMonomial_MonomialOrder_helper("a+b+c+d+e+f", "LEX", "Optional[a]");
+        leadingMonomial_MonomialOrder_helper("a+b+c+d+e+f", "GRLEX", "Optional[a]");
+        leadingMonomial_MonomialOrder_helper("a+b+c+d+e+f", "GREVLEX", "Optional[a]");
+        leadingMonomial_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "LEX", "Optional[x^3]");
+        leadingMonomial_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "GRLEX", "Optional[x^2*z^2]");
+        leadingMonomial_MonomialOrder_helper("x*y^2*z+x^2*z^2+x^3+z^2", "GREVLEX", "Optional[x*y^2*z]");
+    }
+
+    private static void leadingMonomial_helper(@NotNull String input, @NotNull String output) {
+        aeq(readStrict(input).get().leadingMonomial(), output);
+    }
+
+    @Test
+    public void testLeadingMonomial() {
+        leadingMonomial_helper("0", "Optional.empty");
+        leadingMonomial_helper("1", "Optional[1]");
+        leadingMonomial_helper("-17", "Optional[1]");
+        leadingMonomial_helper("ooo", "Optional[ooo]");
+        leadingMonomial_helper("a*b*c", "Optional[a*b*c]");
+        leadingMonomial_helper("x^2-4*x+7", "Optional[x^2]");
+        leadingMonomial_helper("x^2+2*x*y+y^2", "Optional[x^2]");
+        leadingMonomial_helper("a+b+c+d+e+f", "Optional[a]");
+        leadingMonomial_helper("x*y^2*z+x^2*z^2+x^3+z^2", "Optional[x*y^2*z]");
+    }
+
     private void coefficientsOfVariable_helper(@NotNull String p, @NotNull String v, @NotNull String output) {
         List<MultivariatePolynomial> ps = readStrict(p).get().coefficientsOfVariable(Variable.readStrict(v).get());
         ps.forEach(MultivariatePolynomial::validate);
