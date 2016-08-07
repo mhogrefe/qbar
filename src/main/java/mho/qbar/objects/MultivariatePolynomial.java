@@ -418,6 +418,106 @@ public final class MultivariatePolynomial implements
     }
 
     /**
+     * The leading (greatest) term of {@code this}, according to a particular {@code MonomialOrder}. Zero has no
+     * leading term, so for zero the result is empty.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code o} may be any {@code MonomialOrder}.</li>
+     *  <li>Neither element of the result is null, and the second element is nonzero.</li>
+     * </ul>
+     *
+     * @param o the {@code MonomialOrder} used to determine which term is leading.
+     * @return LT<sub>{@code o}</sub>({@code this})
+     */
+    public @NotNull Optional<Pair<Monomial, BigInteger>> leadingTerm(@NotNull MonomialOrder o) {
+        if (o == DEFAULT_ORDER) {
+            return leadingTerm();
+        } else {
+            return this == ZERO ? Optional.empty() : Optional.of(argmax(o, t -> t.a, terms));
+        }
+    }
+
+    /**
+     * The leading (greatest) term of {@code this}, according to the default {@code MonomialOrder} (grevlex). Zero has
+     * no leading term, so for zero the result is empty.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>Neither element of the result is null, and the second element is nonzero.</li>
+     * </ul>
+     *
+     * @return LT<sub>{@code GREVLEX}</sub>({@code this})
+     */
+    public @NotNull Optional<Pair<Monomial, BigInteger>> leadingTerm() {
+        return this == ZERO ? Optional.empty() : Optional.of(last(terms));
+    }
+
+    /**
+     * The coefficient of the leading (greatest) term of {@code this}, according to a particular {@code MonomialOrder}.
+     * Zero has no leading term, so for zero the result is empty.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code o} may be any {@code MonomialOrder}.</li>
+     *  <li>The result may be any nonzero {@code BigInteger}, or empty.</li>
+     * </ul>
+     *
+     * @param o the {@code MonomialOrder} used to determine which term is leading.
+     * @return LC<sub>{@code o}</sub>({@code this})
+     */
+    public @NotNull Optional<BigInteger> leadingCoefficient(@NotNull MonomialOrder o) {
+        return leadingTerm(o).map(t -> t.b);
+    }
+
+    /**
+     * The coefficient of the leading (greatest) term of {@code this}, according to the default {@code MonomialOrder}
+     * (grevlex). Zero has no leading term, so for zero the result is empty.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>The result may be any nonzero {@code BigInteger}, or empty.</li>
+     * </ul>
+     *
+     * @return LC<sub>{@code GREVLEX}</sub>({@code this})
+     */
+    public @NotNull Optional<BigInteger> leadingCoefficient() {
+        return this == ZERO ? Optional.empty() : Optional.of(last(terms).b);
+    }
+
+    /**
+     * The monomial of the leading (greatest) term of {@code this}, according to a particular {@code MonomialOrder}.
+     * Zero has no leading term, so for zero the result is empty.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code o} may be any {@code MonomialOrder}.</li>
+     *  <li>The result may be any {@code Monomial}, or empty.</li>
+     * </ul>
+     *
+     * @param o the {@code MonomialOrder} used to determine which term is leading.
+     * @return LM<sub>{@code o}</sub>({@code this})
+     */
+    public @NotNull Optional<Monomial> leadingMonomial(@NotNull MonomialOrder o) {
+        return leadingTerm(o).map(t -> t.a);
+    }
+
+    /**
+     * The monomial of the leading (greatest) term of {@code this}, according to the default {@code MonomialOrder}
+     * (grevlex). Zero has no leading term, so for zero the result is empty.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>The result may be any {@code Monomial}, or empty.</li>
+     * </ul>
+     *
+     * @return LM<sub>{@code GREVLEX}</sub>({@code this})
+     */
+    public @NotNull Optional<Monomial> leadingMonomial() {
+        return this == ZERO ? Optional.empty() : Optional.of(last(terms).a);
+    }
+
+    /**
      * Expresses {@code this} as c<sub>0</sub>{@code v}<sup>0</sup>+c<sub>1</sub>{@code v}<sup>1</sup>+...+
      * c<sub>n</sub>{@code v}<sup>n</sup> and returns the coefficients c<sub>0</sub>, c<sub>1</sub>, ...,
      * c<sub>n</sub>.
