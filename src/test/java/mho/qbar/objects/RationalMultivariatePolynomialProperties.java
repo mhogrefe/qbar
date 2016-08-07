@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
+import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
 import mho.wheels.iterables.ExhaustiveProvider;
@@ -17,6 +18,7 @@ import java.util.function.Function;
 
 import static mho.qbar.objects.RationalMultivariatePolynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.ordering.Ordering.compare;
 import static mho.wheels.ordering.Ordering.max;
 import static mho.wheels.testing.Testing.*;
 
@@ -85,6 +87,14 @@ public class RationalMultivariatePolynomialProperties extends QBarTestProperties
         propertiesApplyRational();
         propertiesSubstituteMonomial();
         propertiesSubstitute();
+        propertiesPowerReduce();
+        propertiesEquals();
+        propertiesHashCode();
+        propertiesCompareTo();
+        propertiesReadStrict_String_MonomialOrder();
+        propertiesReadStrict_String();
+        propertiesToString_MonomialOrder();
+        propertiesToString();
     }
 
     private void propertiesIterable() {
@@ -1720,5 +1730,152 @@ public class RationalMultivariatePolynomialProperties extends QBarTestProperties
             RationalMultivariatePolynomial q = p.a.substitute(p.b);
             q.validate();
         }
+    }
+
+    private void propertiesPowerReduce() {
+        initialize("powerReduce(Map<Variable, Polynomial>");
+        Iterable<Pair<RationalMultivariatePolynomial, Map<Variable, RationalPolynomial>>> ps = P.pairsSquareRootOrder(
+                P.withScale(4).rationalMultivariatePolynomials(),
+                P.withElement(
+                        new TreeMap<>(),
+                        map(
+                                p -> p.b,
+                                P.dependentPairsInfiniteLogarithmicOrder(
+                                        P.withScale(4).subsetsAtLeast(1, P.withScale(4).variables()),
+                                        vs -> P.maps(vs, P.withScale(4).monicRationalPolynomialsAtLeast(1))
+                                )
+                        )
+                )
+        );
+        for (Pair<RationalMultivariatePolynomial, Map<Variable, RationalPolynomial>> p : take(LIMIT, ps)) {
+            RationalMultivariatePolynomial q = p.a.powerReduce(p.b);
+            q.validate();
+            //noinspection Convert2streamapi
+            for (Variable v : p.a.variables()) {
+                if (p.b.containsKey(v)) {
+                    assertTrue(p, q.degree(v) < p.b.get(v).degree());
+                }
+            }
+        }
+
+        for (RationalMultivariatePolynomial p : take(LIMIT, P.rationalMultivariatePolynomials())) {
+            fixedPoint(q -> q.powerReduce(Collections.emptyMap()), p);
+        }
+
+        Iterable<Pair<Rational, Map<Variable, RationalPolynomial>>> ps2 = P.pairs(
+                P.rationals(),
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.withScale(4).subsetsAtLeast(1, P.withScale(4).variables()),
+                                vs -> P.maps(vs, P.withScale(4).monicRationalPolynomialsAtLeast(1))
+                        )
+                )
+        );
+        for (Pair<Rational, Map<Variable, RationalPolynomial>> p : take(LIMIT, ps2)) {
+            RationalMultivariatePolynomial q = of(p.a);
+            fixedPoint(r -> r.powerReduce(p.b), q);
+        }
+
+        Iterable<Pair<RationalMultivariatePolynomial, Map<Variable, RationalPolynomial>>> psFail =
+                P.pairsSquareRootOrder(
+                        P.withScale(4).rationalMultivariatePolynomials(),
+                        map(
+                                p -> p.b,
+                                P.dependentPairsInfiniteLogarithmicOrder(
+                                        P.withScale(4).subsetsAtLeast(1, P.withScale(4).variables()),
+                                        vs -> filterInfinite(
+                                                m -> any(q -> q.degree() < 1 || !q.isMonic(), m.values()),
+                                                P.maps(vs, P.withScale(4).rationalPolynomials())
+                                        )
+                                )
+                        )
+                );
+        for (Pair<RationalMultivariatePolynomial, Map<Variable, RationalPolynomial>> p : take(LIMIT, psFail)) {
+            try {
+                p.a.powerReduce(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesEquals() {
+        initialize("equals(Object)");
+        QBarTesting.propertiesEqualsHelper(LIMIT, P, QBarIterableProvider::rationalMultivariatePolynomials);
+    }
+
+    private void propertiesHashCode() {
+        initialize("hashCode()");
+        QBarTesting.propertiesHashCodeHelper(LIMIT, P, QBarIterableProvider::rationalMultivariatePolynomials);
+    }
+
+    private void propertiesCompareTo() {
+        initialize("compareTo(RationalMultivariatePolynomial)");
+        QBarTesting.propertiesCompareToHelper(LIMIT, P, QBarIterableProvider::rationalMultivariatePolynomials);
+
+        Iterable<Pair<RationalMultivariatePolynomial, RationalMultivariatePolynomial>> ps = filterInfinite(
+                p -> p.a.degree() != p.b.degree(),
+                P.pairs(P.rationalMultivariatePolynomials())
+        );
+        for (Pair<RationalMultivariatePolynomial, RationalMultivariatePolynomial> p : take(LIMIT, ps)) {
+            assertEquals(p, compare(p.a, p.b), compare(p.a.degree(), p.b.degree()));
+        }
+    }
+
+    private void propertiesReadStrict_String_MonomialOrder() {
+        initialize("readStrict(String, MonomialOrder)");
+        for (Pair<String, MonomialOrder> p : take(LIMIT, P.pairsLogarithmicOrder(P.strings(), P.monomialOrders()))) {
+            readStrict(p.a, p.b);
+        }
+
+        Iterable<Pair<RationalMultivariatePolynomial, MonomialOrder>> ps = P.pairsLogarithmicOrder(
+                P.rationalMultivariatePolynomials(),
+                P.monomialOrders()
+        );
+        for (Pair<RationalMultivariatePolynomial, MonomialOrder> p : take(LIMIT, ps)) {
+            Optional<RationalMultivariatePolynomial> op = readStrict(p.a.toString(p.b), p.b);
+            RationalMultivariatePolynomial q = op.get();
+            q.validate();
+            assertEquals(p, p.a, q);
+        }
+    }
+
+    private void propertiesReadStrict_String() {
+        initialize("readStrict(String)");
+        QBarTesting.propertiesReadHelper(
+                LIMIT,
+                P,
+                RATIONAL_MULTIVARIATE_POLYNOMIAL_CHARS,
+                P.rationalMultivariatePolynomials(),
+                RationalMultivariatePolynomial::readStrict,
+                RationalMultivariatePolynomial::validate,
+                false,
+                true
+        );
+    }
+
+    private void propertiesToString_MonomialOrder() {
+        initialize("toString(MonomialOrder)");
+        Iterable<Pair<RationalMultivariatePolynomial, MonomialOrder>> ps = P.pairsLogarithmicOrder(
+                P.rationalMultivariatePolynomials(),
+                P.monomialOrders()
+        );
+        for (Pair<RationalMultivariatePolynomial, MonomialOrder> p : take(LIMIT, ps)) {
+            String s = p.a.toString(p.b);
+            assertTrue(p, isSubsetOf(s, RATIONAL_MULTIVARIATE_POLYNOMIAL_CHARS));
+            Optional<RationalMultivariatePolynomial> op = readStrict(s, p.b);
+            assertTrue(p, op.isPresent());
+            assertEquals(p, op.get(), p.a);
+        }
+    }
+
+    private void propertiesToString() {
+        initialize("toString()");
+        propertiesToStringHelper(
+                LIMIT,
+                RATIONAL_MULTIVARIATE_POLYNOMIAL_CHARS,
+                P.rationalMultivariatePolynomials(),
+                RationalMultivariatePolynomial::readStrict
+        );
     }
 }
