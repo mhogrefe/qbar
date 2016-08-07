@@ -168,6 +168,54 @@ public class MultivariatePolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoLeadingTerm_MonomialOrder() {
+        Iterable<Pair<MultivariatePolynomial, MonomialOrder>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).multivariatePolynomials(),
+                P.monomialOrders()
+        );
+        for (Pair<MultivariatePolynomial, MonomialOrder> p : take(LIMIT, ps)) {
+            System.out.println("LT(" + p.a + ", " + p.b + ") = " + p.a.leadingTerm(p.b));
+        }
+    }
+
+    private void demoLeadingTerm() {
+        for (MultivariatePolynomial p : take(LIMIT, P.multivariatePolynomials())) {
+            System.out.println("LT(" + p + ") = " + p.leadingTerm());
+        }
+    }
+
+    private void demoLeadingCoefficient_MonomialOrder() {
+        Iterable<Pair<MultivariatePolynomial, MonomialOrder>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).multivariatePolynomials(),
+                P.monomialOrders()
+        );
+        for (Pair<MultivariatePolynomial, MonomialOrder> p : take(LIMIT, ps)) {
+            System.out.println("LC(" + p.a + ", " + p.b + ") = " + p.a.leadingCoefficient(p.b));
+        }
+    }
+
+    private void demoLeadingCoefficient() {
+        for (MultivariatePolynomial p : take(LIMIT, P.multivariatePolynomials())) {
+            System.out.println("LC(" + p + ") = " + p.leadingCoefficient());
+        }
+    }
+
+    private void demoLeadingMonomial_MonomialOrder() {
+        Iterable<Pair<MultivariatePolynomial, MonomialOrder>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).multivariatePolynomials(),
+                P.monomialOrders()
+        );
+        for (Pair<MultivariatePolynomial, MonomialOrder> p : take(LIMIT, ps)) {
+            System.out.println("LM(" + p.a + ", " + p.b + ") = " + p.a.leadingMonomial(p.b));
+        }
+    }
+
+    private void demoLeadingMonomial() {
+        for (MultivariatePolynomial p : take(LIMIT, P.multivariatePolynomials())) {
+            System.out.println("LM(" + p + ") = " + p.leadingMonomial());
+        }
+    }
+
     private void demoCoefficientsOfVariable() {
         Iterable<Pair<MultivariatePolynomial, Variable>> ps = P.pairsLogarithmicOrder(
                 P.withScale(4).multivariatePolynomials(),
