@@ -57,6 +57,12 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         propertiesDegree();
         propertiesDegree_Variable();
         propertiesIsHomogeneous();
+        propertiesLeadingTerm_MonomialOrder();
+        propertiesLeadingTerm();
+        propertiesLeadingCoefficient_MonomialOrder();
+        propertiesLeadingCoefficient();
+        propertiesLeadingMonomial_MonomialOrder();
+        propertiesLeadingMonomial();
         propertiesCoefficientsOfVariable();
         propertiesGroupVariables_List_Variable_MonomialOrder();
         propertiesGroupVariables_List_Variable();
@@ -381,6 +387,112 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         }
     }
 
+    private void propertiesLeadingTerm_MonomialOrder() {
+        initialize("leadingTerm(MonomialOrder)");
+        Iterable<Pair<MultivariatePolynomial, MonomialOrder>> ps = P.pairsLogarithmicOrder(
+                P.multivariatePolynomials(),
+                P.monomialOrders()
+        );
+        for (Pair<MultivariatePolynomial, MonomialOrder> p : take(LIMIT, ps)) {
+            p.a.leadingTerm(p.b);
+        }
+
+        Iterable<Pair<MultivariatePolynomial, MonomialOrder>> ps2 = P.pairsLogarithmicOrder(
+                filterInfinite(p -> p != ZERO, P.multivariatePolynomials()),
+                P.monomialOrders()
+        );
+        for (Pair<MultivariatePolynomial, MonomialOrder> p : take(LIMIT, ps2)) {
+            Pair<Monomial, BigInteger> term = p.a.leadingTerm(p.b).get();
+            assertNotEquals(p, term.b, BigInteger.ZERO);
+        }
+
+        for (MultivariatePolynomial p : take(LIMIT, P.multivariatePolynomials())) {
+            assertEquals(p, p.leadingTerm(MonomialOrder.GREVLEX), p.leadingTerm());
+        }
+    }
+
+    private void propertiesLeadingTerm() {
+        initialize("leadingTerm()");
+        for (MultivariatePolynomial p : take(LIMIT, P.multivariatePolynomials())) {
+            p.leadingTerm();
+        }
+
+        for (MultivariatePolynomial p : take(LIMIT, filterInfinite(q -> q != ZERO, P.multivariatePolynomials()))) {
+            Pair<Monomial, BigInteger> term = p.leadingTerm().get();
+            assertNotEquals(p, term.b, BigInteger.ZERO);
+        }
+    }
+
+    private void propertiesLeadingCoefficient_MonomialOrder() {
+        initialize("leadingCoefficient(MonomialOrder)");
+        Iterable<Pair<MultivariatePolynomial, MonomialOrder>> ps = P.pairsLogarithmicOrder(
+                P.multivariatePolynomials(),
+                P.monomialOrders()
+        );
+        for (Pair<MultivariatePolynomial, MonomialOrder> p : take(LIMIT, ps)) {
+            p.a.leadingCoefficient(p.b);
+        }
+
+        Iterable<Pair<MultivariatePolynomial, MonomialOrder>> ps2 = P.pairsLogarithmicOrder(
+                filterInfinite(p -> p != ZERO, P.multivariatePolynomials()),
+                P.monomialOrders()
+        );
+        for (Pair<MultivariatePolynomial, MonomialOrder> p : take(LIMIT, ps2)) {
+            BigInteger coefficient = p.a.leadingCoefficient(p.b).get();
+            assertNotEquals(p, coefficient, BigInteger.ZERO);
+        }
+
+        for (MultivariatePolynomial p : take(LIMIT, P.multivariatePolynomials())) {
+            assertEquals(p, p.leadingCoefficient(MonomialOrder.GREVLEX), p.leadingCoefficient());
+        }
+    }
+
+    private void propertiesLeadingCoefficient() {
+        initialize("leadingCoefficient()");
+        for (MultivariatePolynomial p : take(LIMIT, P.multivariatePolynomials())) {
+            p.leadingCoefficient();
+        }
+
+        for (MultivariatePolynomial p : take(LIMIT, filterInfinite(q -> q != ZERO, P.multivariatePolynomials()))) {
+            BigInteger coefficient = p.leadingCoefficient().get();
+            assertNotEquals(p, coefficient, BigInteger.ZERO);
+        }
+    }
+
+    private void propertiesLeadingMonomial_MonomialOrder() {
+        initialize("leadingMonomial(MonomialOrder)");
+        Iterable<Pair<MultivariatePolynomial, MonomialOrder>> ps = P.pairsLogarithmicOrder(
+                P.multivariatePolynomials(),
+                P.monomialOrders()
+        );
+        for (Pair<MultivariatePolynomial, MonomialOrder> p : take(LIMIT, ps)) {
+            p.a.leadingMonomial(p.b);
+        }
+
+        Iterable<Pair<MultivariatePolynomial, MonomialOrder>> ps2 = P.pairsLogarithmicOrder(
+                filterInfinite(p -> p != ZERO, P.multivariatePolynomials()),
+                P.monomialOrders()
+        );
+        for (Pair<MultivariatePolynomial, MonomialOrder> p : take(LIMIT, ps2)) {
+            assertTrue(p, p.a.leadingMonomial(p.b).isPresent());
+        }
+
+        for (MultivariatePolynomial p : take(LIMIT, P.multivariatePolynomials())) {
+            assertEquals(p, p.leadingMonomial(MonomialOrder.GREVLEX), p.leadingMonomial());
+        }
+    }
+
+    private void propertiesLeadingMonomial() {
+        initialize("leadingMonomial()");
+        for (MultivariatePolynomial p : take(LIMIT, P.multivariatePolynomials())) {
+            p.leadingMonomial();
+        }
+
+        for (MultivariatePolynomial p : take(LIMIT, filterInfinite(q -> q != ZERO, P.multivariatePolynomials()))) {
+            assertTrue(p, p.leadingMonomial().isPresent());
+        }
+    }
+
     private void propertiesCoefficientsOfVariable() {
         initialize("coefficientsOfVariable(Variable)");
         Iterable<Pair<MultivariatePolynomial, Variable>> ps = P.pairsLogarithmicOrder(
@@ -466,6 +578,14 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
                     ),
                     t.a
             );
+        }
+
+        Iterable<Pair<MultivariatePolynomial, List<Variable>>> ps = P.pairs(
+                P.multivariatePolynomials(),
+                P.lists(P.variables())
+        );
+        for (Pair<MultivariatePolynomial, List<Variable>> p : take(LIMIT, ps)) {
+            assertEquals(p, p.a.groupVariables(p.b, MonomialOrder.GREVLEX), p.a.groupVariables(p.b));
         }
 
         Iterable<Triple<MultivariatePolynomial, Variable, MonomialOrder>> ts2 = P.triples(
@@ -1867,6 +1987,10 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
             readStrict(p.a, p.b);
         }
 
+        for (String s : take(LIMIT, P.strings())) {
+            assertEquals(s, readStrict(s, MonomialOrder.GREVLEX), readStrict(s));
+        }
+
         Iterable<Pair<MultivariatePolynomial, MonomialOrder>> ps = P.pairsLogarithmicOrder(
                 P.multivariatePolynomials(),
                 P.monomialOrders()
@@ -1905,6 +2029,10 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
             Optional<MultivariatePolynomial> op = readStrict(s, p.b);
             assertTrue(p, op.isPresent());
             assertEquals(p, op.get(), p.a);
+        }
+
+        for (MultivariatePolynomial p : take(LIMIT, P.multivariatePolynomials())) {
+            assertEquals(p, p.toString(MonomialOrder.GREVLEX), p.toString());
         }
     }
 

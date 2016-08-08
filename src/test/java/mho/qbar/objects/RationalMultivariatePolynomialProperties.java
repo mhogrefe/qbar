@@ -59,6 +59,12 @@ public class RationalMultivariatePolynomialProperties extends QBarTestProperties
         propertiesDegree();
         propertiesDegree_Variable();
         propertiesIsHomogeneous();
+        propertiesLeadingTerm_MonomialOrder();
+        propertiesLeadingTerm();
+        propertiesLeadingCoefficient_MonomialOrder();
+        propertiesLeadingCoefficient();
+        propertiesLeadingMonomial_MonomialOrder();
+        propertiesLeadingMonomial();
         propertiesCoefficientsOfVariable();
         propertiesGroupVariables_List_Variable_MonomialOrder();
         propertiesGroupVariables_List_Variable();
@@ -433,6 +439,124 @@ public class RationalMultivariatePolynomialProperties extends QBarTestProperties
         }
     }
 
+    private void propertiesLeadingTerm_MonomialOrder() {
+        initialize("leadingTerm(MonomialOrder)");
+        Iterable<Pair<RationalMultivariatePolynomial, MonomialOrder>> ps = P.pairsLogarithmicOrder(
+                P.rationalMultivariatePolynomials(),
+                P.monomialOrders()
+        );
+        for (Pair<RationalMultivariatePolynomial, MonomialOrder> p : take(LIMIT, ps)) {
+            p.a.leadingTerm(p.b);
+        }
+
+        Iterable<Pair<RationalMultivariatePolynomial, MonomialOrder>> ps2 = P.pairsLogarithmicOrder(
+                filterInfinite(p -> p != ZERO, P.rationalMultivariatePolynomials()),
+                P.monomialOrders()
+        );
+        for (Pair<RationalMultivariatePolynomial, MonomialOrder> p : take(LIMIT, ps2)) {
+            Pair<Monomial, Rational> term = p.a.leadingTerm(p.b).get();
+            assertNotEquals(p, term.b, Rational.ZERO);
+        }
+
+        for (RationalMultivariatePolynomial p : take(LIMIT, P.rationalMultivariatePolynomials())) {
+            assertEquals(p, p.leadingTerm(MonomialOrder.GREVLEX), p.leadingTerm());
+        }
+    }
+
+    private void propertiesLeadingTerm() {
+        initialize("leadingTerm()");
+        for (RationalMultivariatePolynomial p : take(LIMIT, P.rationalMultivariatePolynomials())) {
+            p.leadingTerm();
+        }
+
+        Iterable<RationalMultivariatePolynomial> ps = filterInfinite(
+                q -> q != ZERO,
+                P.rationalMultivariatePolynomials()
+        );
+        for (RationalMultivariatePolynomial p : take(LIMIT, ps)) {
+            Pair<Monomial, Rational> term = p.leadingTerm().get();
+            assertNotEquals(p, term.b, Rational.ZERO);
+        }
+    }
+
+    private void propertiesLeadingCoefficient_MonomialOrder() {
+        initialize("leadingCoefficient(MonomialOrder)");
+        Iterable<Pair<RationalMultivariatePolynomial, MonomialOrder>> ps = P.pairsLogarithmicOrder(
+                P.rationalMultivariatePolynomials(),
+                P.monomialOrders()
+        );
+        for (Pair<RationalMultivariatePolynomial, MonomialOrder> p : take(LIMIT, ps)) {
+            p.a.leadingCoefficient(p.b);
+        }
+
+        Iterable<Pair<RationalMultivariatePolynomial, MonomialOrder>> ps2 = P.pairsLogarithmicOrder(
+                filterInfinite(p -> p != ZERO, P.rationalMultivariatePolynomials()),
+                P.monomialOrders()
+        );
+        for (Pair<RationalMultivariatePolynomial, MonomialOrder> p : take(LIMIT, ps2)) {
+            Rational coefficient = p.a.leadingCoefficient(p.b).get();
+            assertNotEquals(p, coefficient, Rational.ZERO);
+        }
+
+        for (RationalMultivariatePolynomial p : take(LIMIT, P.rationalMultivariatePolynomials())) {
+            assertEquals(p, p.leadingCoefficient(MonomialOrder.GREVLEX), p.leadingCoefficient());
+        }
+    }
+
+    private void propertiesLeadingCoefficient() {
+        initialize("leadingCoefficient()");
+        for (RationalMultivariatePolynomial p : take(LIMIT, P.rationalMultivariatePolynomials())) {
+            p.leadingCoefficient();
+        }
+
+        Iterable<RationalMultivariatePolynomial> ps = filterInfinite(
+                q -> q != ZERO,
+                P.rationalMultivariatePolynomials()
+        );
+        for (RationalMultivariatePolynomial p : take(LIMIT, ps)) {
+            Rational coefficient = p.leadingCoefficient().get();
+            assertNotEquals(p, coefficient, Rational.ZERO);
+        }
+    }
+
+    private void propertiesLeadingMonomial_MonomialOrder() {
+        initialize("leadingMonomial(MonomialOrder)");
+        Iterable<Pair<RationalMultivariatePolynomial, MonomialOrder>> ps = P.pairsLogarithmicOrder(
+                P.rationalMultivariatePolynomials(),
+                P.monomialOrders()
+        );
+        for (Pair<RationalMultivariatePolynomial, MonomialOrder> p : take(LIMIT, ps)) {
+            p.a.leadingMonomial(p.b);
+        }
+
+        Iterable<Pair<RationalMultivariatePolynomial, MonomialOrder>> ps2 = P.pairsLogarithmicOrder(
+                filterInfinite(p -> p != ZERO, P.rationalMultivariatePolynomials()),
+                P.monomialOrders()
+        );
+        for (Pair<RationalMultivariatePolynomial, MonomialOrder> p : take(LIMIT, ps2)) {
+            assertTrue(p, p.a.leadingMonomial(p.b).isPresent());
+        }
+
+        for (RationalMultivariatePolynomial p : take(LIMIT, P.rationalMultivariatePolynomials())) {
+            assertEquals(p, p.leadingMonomial(MonomialOrder.GREVLEX), p.leadingMonomial());
+        }
+    }
+
+    private void propertiesLeadingMonomial() {
+        initialize("leadingMonomial()");
+        for (RationalMultivariatePolynomial p : take(LIMIT, P.rationalMultivariatePolynomials())) {
+            p.leadingMonomial();
+        }
+
+        Iterable<RationalMultivariatePolynomial> ps = filterInfinite(
+                q -> q != ZERO,
+                P.rationalMultivariatePolynomials()
+        );
+        for (RationalMultivariatePolynomial p : take(LIMIT, ps)) {
+            assertTrue(p, p.leadingMonomial().isPresent());
+        }
+    }
+
     private void propertiesCoefficientsOfVariable() {
         initialize("coefficientsOfVariable(Variable)");
         Iterable<Pair<RationalMultivariatePolynomial, Variable>> ps = P.pairsLogarithmicOrder(
@@ -518,6 +642,14 @@ public class RationalMultivariatePolynomialProperties extends QBarTestProperties
                     ),
                     t.a
             );
+        }
+
+        Iterable<Pair<RationalMultivariatePolynomial, List<Variable>>> ps = P.pairs(
+                P.rationalMultivariatePolynomials(),
+                P.lists(P.variables())
+        );
+        for (Pair<RationalMultivariatePolynomial, List<Variable>> p : take(LIMIT, ps)) {
+            assertEquals(p, p.a.groupVariables(p.b, MonomialOrder.GREVLEX), p.a.groupVariables(p.b));
         }
 
         Iterable<Triple<RationalMultivariatePolynomial, Variable, MonomialOrder>> ts2 = P.triples(
@@ -1828,6 +1960,10 @@ public class RationalMultivariatePolynomialProperties extends QBarTestProperties
             readStrict(p.a, p.b);
         }
 
+        for (String s : take(LIMIT, P.strings())) {
+            assertEquals(s, readStrict(s, MonomialOrder.GREVLEX), readStrict(s));
+        }
+
         Iterable<Pair<RationalMultivariatePolynomial, MonomialOrder>> ps = P.pairsLogarithmicOrder(
                 P.rationalMultivariatePolynomials(),
                 P.monomialOrders()
@@ -1866,6 +2002,10 @@ public class RationalMultivariatePolynomialProperties extends QBarTestProperties
             Optional<RationalMultivariatePolynomial> op = readStrict(s, p.b);
             assertTrue(p, op.isPresent());
             assertEquals(p, op.get(), p.a);
+        }
+
+        for (RationalMultivariatePolynomial p : take(LIMIT, P.rationalMultivariatePolynomials())) {
+            assertEquals(p, p.toString(MonomialOrder.GREVLEX), p.toString());
         }
     }
 
