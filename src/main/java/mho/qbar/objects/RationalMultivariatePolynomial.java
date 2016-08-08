@@ -976,10 +976,11 @@ public final class RationalMultivariatePolynomial implements
         MultivariatePolynomial positivePrimitive = MultivariatePolynomial.of(
                 toList(zip(map(t -> t.a, terms), Rational.cancelDenominators(toList(map(t -> t.b, terms)))))
         );
-        if (leadingCoefficient().get().signum() == -1) {
+        Rational leadingCoefficient = leadingCoefficient().get();
+        if (leadingCoefficient.signum() == -1) {
             positivePrimitive = positivePrimitive.negate();
         }
-        return new Pair<>(last(terms).b.divide(last(positivePrimitive).b), positivePrimitive);
+        return new Pair<>(leadingCoefficient.divide(last(positivePrimitive).b), positivePrimitive);
     }
 
     /**
