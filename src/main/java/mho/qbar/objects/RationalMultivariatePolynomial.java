@@ -452,7 +452,7 @@ public final class RationalMultivariatePolynomial implements
      *
      * <ul>
      *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
-     *  <li>{@code o} may be any {@code MonomialOrder}.</li>
+     *  <li>{@code o} cannot be null.</li>
      *  <li>Neither element of the result is null, and the second element is nonzero.</li>
      * </ul>
      *
@@ -488,7 +488,7 @@ public final class RationalMultivariatePolynomial implements
      *
      * <ul>
      *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
-     *  <li>{@code o} may be any {@code MonomialOrder}.</li>
+     *  <li>{@code o} cannot be null.</li>
      *  <li>The result may be any nonzero {@code Rational}, or empty.</li>
      * </ul>
      *
@@ -520,7 +520,7 @@ public final class RationalMultivariatePolynomial implements
      *
      * <ul>
      *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
-     *  <li>{@code o} may be any {@code MonomialOrder}.</li>
+     *  <li>{@code o} cannot be null.</li>
      *  <li>The result may be any {@code Monomial}, or empty.</li>
      * </ul>
      *
@@ -968,21 +968,6 @@ public final class RationalMultivariatePolynomial implements
         return multiply(that.invert());
     }
 
-    //todo
-    public @NotNull Pair<Rational, MultivariatePolynomial> constantFactor() {
-        if (this == ZERO) {
-            throw new ArithmeticException("this cannot be zero.");
-        }
-        MultivariatePolynomial positivePrimitive = MultivariatePolynomial.of(
-                toList(zip(map(t -> t.a, terms), Rational.cancelDenominators(toList(map(t -> t.b, terms)))))
-        );
-        Rational leadingCoefficient = leadingCoefficient().get();
-        if (leadingCoefficient.signum() == -1) {
-            positivePrimitive = positivePrimitive.negate();
-        }
-        return new Pair<>(leadingCoefficient.divide(last(positivePrimitive).b), positivePrimitive);
-    }
-
     /**
      * Returns the left shift of {@code this} by {@code bits}; {@code this}×2<sup>{@code bits}</sup>.
      *
@@ -1187,6 +1172,61 @@ public final class RationalMultivariatePolynomial implements
             result = result.add(product);
         }
         return result;
+    }
+
+    /**
+     * Returns a {@code Pair} containing a constant and an integer-coefficient polynomial whose product is
+     * {@code this}, such that the leading coefficient of the polynomial part (with respect to a particular monomial
+     * order) is positive and the GCD of its coefficients is 1.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>The result is a {@code Pair} whose first element is nonzero and whose second element has a positive leading
+     *  coefficient with respect to one of three {@code MonomialOrder}s and no invertible integral constant
+     *  factors.</li>
+     * </ul>
+     *
+     * @return a constant factor of {@code this} and {@code this} divided by the factor
+     */
+    public @NotNull Pair<Rational, MultivariatePolynomial> constantFactor(@NotNull MonomialOrder o) {
+        if (this == ZERO) {
+            throw new ArithmeticException("this cannot be zero.");
+        }
+        MultivariatePolynomial positivePrimitive = MultivariatePolynomial.of(
+                toList(zip(map(t -> t.a, terms), Rational.cancelDenominators(toList(map(t -> t.b, terms)))))
+        );
+        Rational leadingCoefficient = leadingCoefficient(o).get();
+        if (leadingCoefficient.signum() == -1) {
+            positivePrimitive = positivePrimitive.negate();
+        }
+        return new Pair<>(leadingCoefficient.divide(positivePrimitive.leadingCoefficient().get()), positivePrimitive);
+    }
+
+    /**
+     * Returns a {@code Pair} containing a constant and an integer-coefficient polynomial whose product is
+     * {@code this}, such that the leading coefficient of the polynomial part (with respect to grevlex order) is
+     * positive and the GCD of its coefficients is 1.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>The result is a {@code Pair} whose first element is nonzero and whose second element has a positive leading
+     *  coefficient with respect to grevlex order and no invertible integral constant factors.</li>
+     * </ul>
+     *
+     * @return a constant factor of {@code this} and {@code this} divided by the factor
+     */
+    public @NotNull Pair<Rational, MultivariatePolynomial> constantFactor() {
+        if (this == ZERO) {
+            throw new ArithmeticException("this cannot be zero.");
+        }
+        MultivariatePolynomial positivePrimitive = MultivariatePolynomial.of(
+                toList(zip(map(t -> t.a, terms), Rational.cancelDenominators(toList(map(t -> t.b, terms)))))
+        );
+        Rational leadingCoefficient = leadingCoefficient().get();
+        if (leadingCoefficient.signum() == -1) {
+            positivePrimitive = positivePrimitive.negate();
+        }
+        return new Pair<>(leadingCoefficient.divide(positivePrimitive.leadingCoefficient().get()), positivePrimitive);
     }
 
     /**

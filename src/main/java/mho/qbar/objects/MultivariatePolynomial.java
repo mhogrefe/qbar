@@ -423,7 +423,7 @@ public final class MultivariatePolynomial implements
      *
      * <ul>
      *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
-     *  <li>{@code o} may be any {@code MonomialOrder}.</li>
+     *  <li>{@code o} cannot be null.</li>
      *  <li>Neither element of the result is null, and the second element is nonzero.</li>
      * </ul>
      *
@@ -459,7 +459,7 @@ public final class MultivariatePolynomial implements
      *
      * <ul>
      *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
-     *  <li>{@code o} may be any {@code MonomialOrder}.</li>
+     *  <li>{@code o} cannot be null.</li>
      *  <li>The result may be any nonzero {@code BigInteger}, or empty.</li>
      * </ul>
      *
@@ -491,7 +491,7 @@ public final class MultivariatePolynomial implements
      *
      * <ul>
      *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
-     *  <li>{@code o} may be any {@code MonomialOrder}.</li>
+     *  <li>{@code o} cannot be null.</li>
      *  <li>The result may be any {@code Monomial}, or empty.</li>
      * </ul>
      *
@@ -1180,6 +1180,57 @@ public final class MultivariatePolynomial implements
             result = result.add(product);
         }
         return result;
+    }
+
+    /**
+     * Returns a {@code Pair} containing a constant and polynomial whose product is {@code this}, such that the leading
+     * coefficient of the polynomial part (with respect to a particular monomial order) is positive and the GCD of its
+     * coefficients is 1.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>{@code this} cannot be null.</li>
+     *  <li>The result is a {@code Pair} whose first element is nonzero and whose second element has a positive leading
+     *  coefficient with respect to one of three {@code MonomialOrder}s and no invertible constant factors.</li>
+     * </ul>
+     *
+     * @return the constant integral factor of {@code this} with the same sign as {@code this} (according to some
+     * monomial order) and the largest possible absolute value, along with {@code this} divided by that factor
+     */
+    public @NotNull Pair<BigInteger, MultivariatePolynomial> constantFactor(@NotNull MonomialOrder o) {
+        if (this == ZERO) {
+            throw new ArithmeticException("this cannot be zero.");
+        }
+        BigInteger gcd = MathUtils.gcd(toList(map(t -> t.b, terms)));
+        if (leadingCoefficient(o).get().signum() == -1) {
+            gcd = gcd.negate();
+        }
+        return new Pair<>(gcd, divideExact(gcd));
+    }
+
+    /**
+     * Returns a {@code Pair} containing a constant and polynomial whose product is {@code this}, such that the leading
+     * coefficient of the polynomial part (with respect to grevlex order) is positive and the GCD of its coefficients
+     * is 1.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>The result is a {@code Pair} whose first element is nonzero and whose second element has a positive leading
+     *  coefficient with respect to grevlex order and no invertible constant factors.</li>
+     * </ul>
+     *
+     * @return the constant integral factor of {@code this} with the same sign as {@code this} (according to grevlex
+     * order) and the largest possible absolute value, along with {@code this} divided by that factor
+     */
+    public @NotNull Pair<BigInteger, MultivariatePolynomial> constantFactor() {
+        if (this == ZERO) {
+            throw new ArithmeticException("this cannot be zero.");
+        }
+        BigInteger gcd = MathUtils.gcd(toList(map(t -> t.b, terms)));
+        if (leadingCoefficient().get().signum() == -1) {
+            gcd = gcd.negate();
+        }
+        return new Pair<>(gcd, divideExact(gcd));
     }
 
     /**

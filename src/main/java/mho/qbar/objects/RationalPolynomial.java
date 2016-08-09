@@ -841,8 +841,8 @@ public final class RationalPolynomial implements
      *
      * <ul>
      *  <li>{@code this} cannot be zero.</li>
-     *  <li>The result is a {@code Pair} both of whose elements are not null and whose last element has a positive
-     *  leading coefficient and no invertible integral constant factors.</li>
+     *  <li>The result is a {@code Pair} whose first element is nonzero and whose second element has a positive leading
+     *  coefficient and no invertible integral constant factors.</li>
      * </ul>
      *
      * @return a constant factor of {@code this} and {@code this} divided by the factor

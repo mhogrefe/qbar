@@ -735,6 +735,7 @@ public final class Polynomial implements
      * @return Σxs
      */
     public static @NotNull Polynomial sum(@NotNull List<Polynomial> xs) {
+        //noinspection RedundantCast
         return of(
                 toList(
                         map(
@@ -938,12 +939,12 @@ public final class Polynomial implements
      *
      * <ul>
      *  <li>{@code this} cannot be zero.</li>
-     *  <li>The result is a {@code Pair} both of whose elements are not null and whose last element has a positive
-     *  leading coefficient and no invertible constant factors.</li>
+     *  <li>The result is a {@code Pair} whose first element is nonzero and whose second element has a positive leading
+     *  coefficient and no invertible constant factors.</li>
      * </ul>
      *
      * @return the constant integral factor of {@code this} with the same sign as {@code this} and the largest possible
-     * absolute value
+     * absolute value, along with {@code this} divided by that factor
      */
     public @NotNull Pair<BigInteger, Polynomial> constantFactor() {
         if (this == ZERO) {
