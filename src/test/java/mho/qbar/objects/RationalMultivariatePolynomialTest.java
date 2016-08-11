@@ -2170,6 +2170,86 @@ public class RationalMultivariatePolynomialTest {
         substitute_fail_helper("x*y^2*z+x^2*z^2+x^3+22/7*z^2", "[(x, b^2+a), (y, c), (null, 2*d+1)]");
     }
 
+    private static void constantFactor_MonomialOrder_helper(
+            @NotNull String p,
+            @NotNull String o,
+            @NotNull String output
+    ) {
+        Pair<Rational, MultivariatePolynomial> result = readStrict(p).get()
+                .constantFactor(MonomialOrder.readStrict(o).get());
+        result.b.validate();
+        aeq(result, output);
+    }
+
+    private static void constantFactor_MonomialOrder_fail_helper(@NotNull String p, @NotNull String o) {
+        try {
+            readStrict(p).get().constantFactor(MonomialOrder.readStrict(o).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testConstantFactor_MonomialOrder() {
+        constantFactor_MonomialOrder_helper("1", "LEX", "(1, 1)");
+        constantFactor_MonomialOrder_helper("1", "GRLEX", "(1, 1)");
+        constantFactor_MonomialOrder_helper("1", "GREVLEX", "(1, 1)");
+        constantFactor_MonomialOrder_helper("-4/3", "LEX", "(-4/3, 1)");
+        constantFactor_MonomialOrder_helper("-4/3", "GRLEX", "(-4/3, 1)");
+        constantFactor_MonomialOrder_helper("-4/3", "GREVLEX", "(-4/3, 1)");
+        constantFactor_MonomialOrder_helper("ooo", "LEX", "(1, ooo)");
+        constantFactor_MonomialOrder_helper("ooo", "GRLEX", "(1, ooo)");
+        constantFactor_MonomialOrder_helper("ooo", "GREVLEX", "(1, ooo)");
+        constantFactor_MonomialOrder_helper("a*b*c", "LEX", "(1, a*b*c)");
+        constantFactor_MonomialOrder_helper("a*b*c", "GRLEX", "(1, a*b*c)");
+        constantFactor_MonomialOrder_helper("a*b*c", "GREVLEX", "(1, a*b*c)");
+        constantFactor_MonomialOrder_helper("x^2-7/4*x+1/3", "LEX", "(1/12, 12*x^2-21*x+4)");
+        constantFactor_MonomialOrder_helper("x^2-7/4*x+1/3", "GRLEX", "(1/12, 12*x^2-21*x+4)");
+        constantFactor_MonomialOrder_helper("x^2-7/4*x+1/3", "GREVLEX", "(1/12, 12*x^2-21*x+4)");
+        constantFactor_MonomialOrder_helper("x^2+2*x*y+y^2", "LEX", "(1, x^2+2*x*y+y^2)");
+        constantFactor_MonomialOrder_helper("x^2+2*x*y+y^2", "GRLEX", "(1, x^2+2*x*y+y^2)");
+        constantFactor_MonomialOrder_helper("x^2+2*x*y+y^2", "GREVLEX", "(1, x^2+2*x*y+y^2)");
+        constantFactor_MonomialOrder_helper("a+b+c+d+e+f", "LEX", "(1, a+b+c+d+e+f)");
+        constantFactor_MonomialOrder_helper("a+b+c+d+e+f", "GRLEX", "(1, a+b+c+d+e+f)");
+        constantFactor_MonomialOrder_helper("a+b+c+d+e+f", "GREVLEX", "(1, a+b+c+d+e+f)");
+        constantFactor_MonomialOrder_helper("-x*y^2*z+x^2*z^2+x^3+22/7*z^2", "LEX",
+                "(1/7, -7*x*y^2*z+7*x^2*z^2+7*x^3+22*z^2)");
+        constantFactor_MonomialOrder_helper("-x*y^2*z+x^2*z^2+x^3+22/7*z^2", "GRLEX",
+                "(1/7, -7*x*y^2*z+7*x^2*z^2+7*x^3+22*z^2)");
+        constantFactor_MonomialOrder_helper("-x*y^2*z+x^2*z^2+x^3+22/7*z^2", "GREVLEX",
+                "(-1/7, 7*x*y^2*z-7*x^2*z^2-7*x^3-22*z^2)");
+
+        constantFactor_MonomialOrder_fail_helper("0", "LEX");
+        constantFactor_MonomialOrder_fail_helper("0", "GRLEX");
+        constantFactor_MonomialOrder_fail_helper("0", "GREVLEX");
+    }
+
+    private static void constantFactor_helper(@NotNull String input, @NotNull String output) {
+        Pair<Rational, MultivariatePolynomial> result = readStrict(input).get().constantFactor();
+        result.b.validate();
+        aeq(result, output);
+    }
+
+    private static void constantFactor_fail_helper(@NotNull String input) {
+        try {
+            readStrict(input).get().constantFactor();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testConstantFactor() {
+        constantFactor_helper("1", "(1, 1)");
+        constantFactor_helper("-4/3", "(-4/3, 1)");
+        constantFactor_helper("ooo", "(1, ooo)");
+        constantFactor_helper("a*b*c", "(1, a*b*c)");
+        constantFactor_helper("x^2-7/4*x+1/3", "(1/12, 12*x^2-21*x+4)");
+        constantFactor_helper("x^2+2*x*y+y^2", "(1, x^2+2*x*y+y^2)");
+        constantFactor_helper("a+b+c+d+e+f", "(1, a+b+c+d+e+f)");
+        constantFactor_helper("-x*y^2*z+x^2*z^2+x^3+22/7*z^2", "(-1/7, 7*x*y^2*z-7*x^2*z^2-7*x^3-22*z^2)");
+
+        constantFactor_fail_helper("0");
+    }
+
     private static void powerReduce_helper(
             @NotNull String p,
             @NotNull String minimalPolynomials,

@@ -1199,7 +1199,7 @@ public final class RationalMultivariatePolynomial implements
         if (leadingCoefficient.signum() == -1) {
             positivePrimitive = positivePrimitive.negate();
         }
-        return new Pair<>(leadingCoefficient.divide(positivePrimitive.leadingCoefficient().get()), positivePrimitive);
+        return new Pair<>(leadingCoefficient.divide(positivePrimitive.leadingCoefficient(o).get()), positivePrimitive);
     }
 
     /**
