@@ -516,6 +516,26 @@ public class RationalMultivariatePolynomialDemos  extends QBarDemos {
         }
     }
 
+    private void demoConstantFactor_MonomialOrder() {
+        Iterable<Pair<RationalMultivariatePolynomial, MonomialOrder>> ps = P.pairsLogarithmicOrder(
+                filterInfinite(p -> p != ZERO, P.withScale(4).rationalMultivariatePolynomials()),
+                P.monomialOrders()
+        );
+        for (Pair<RationalMultivariatePolynomial, MonomialOrder> p : take(LIMIT, ps)) {
+            System.out.println("constantFactor(" + p.a + ", " + p.b + ") = " + p.a.constantFactor(p.b));
+        }
+    }
+
+    private void demoConstantFactor() {
+        Iterable<RationalMultivariatePolynomial> ps = filterInfinite(
+                q -> q != ZERO,
+                P.withScale(4).rationalMultivariatePolynomials()
+        );
+        for (RationalMultivariatePolynomial p : take(LIMIT, ps)) {
+            System.out.println("constantFactor(" + p + ") = " + p.constantFactor());
+        }
+    }
+
     private void demoPowerReduce() {
         Iterable<Pair<RationalMultivariatePolynomial, Map<Variable, RationalPolynomial>>> ps = P.pairsSquareRootOrder(
                 P.withScale(4).withSecondaryScale(1).rationalMultivariatePolynomials(),

@@ -517,6 +517,23 @@ public class MultivariatePolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoConstantFactor_MonomialOrder() {
+        Iterable<Pair<MultivariatePolynomial, MonomialOrder>> ps = P.pairsLogarithmicOrder(
+                filterInfinite(p -> p != ZERO, P.withScale(4).multivariatePolynomials()),
+                P.monomialOrders()
+        );
+        for (Pair<MultivariatePolynomial, MonomialOrder> p : take(LIMIT, ps)) {
+            System.out.println("constantFactor(" + p.a + ", " + p.b + ") = " + p.a.constantFactor(p.b));
+        }
+    }
+
+    private void demoConstantFactor() {
+        Iterable<MultivariatePolynomial> ps = filterInfinite(q -> q != ZERO, P.withScale(4).multivariatePolynomials());
+        for (MultivariatePolynomial p : take(LIMIT, ps)) {
+            System.out.println("constantFactor(" + p + ") = " + p.constantFactor());
+        }
+    }
+
     private void demoSylvesterMatrix() {
         Iterable<Triple<MultivariatePolynomial, MultivariatePolynomial, Variable>> ts;
         if (P instanceof QBarExhaustiveProvider) {
