@@ -6,6 +6,7 @@ import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
 import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.IterableUtils;
+import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
@@ -93,6 +94,8 @@ public class RationalMultivariatePolynomialProperties extends QBarTestProperties
         propertiesApplyRational();
         propertiesSubstituteMonomial();
         propertiesSubstitute();
+        propertiesConstantFactor_MonomialOrder();
+        propertiesConstantFactor();
         propertiesPowerReduce();
         propertiesEquals();
         propertiesHashCode();
@@ -1861,6 +1864,67 @@ public class RationalMultivariatePolynomialProperties extends QBarTestProperties
         for (Pair<RationalMultivariatePolynomial, Map<Variable, RationalMultivariatePolynomial>> p : take(LIMIT, ps)) {
             RationalMultivariatePolynomial q = p.a.substitute(p.b);
             q.validate();
+        }
+    }
+
+    private void propertiesConstantFactor_MonomialOrder() {
+        initialize("constantFactor(MonomialOrder)");
+        Iterable<Pair<RationalMultivariatePolynomial, MonomialOrder>> ps = P.pairsLogarithmicOrder(
+                filterInfinite(p -> p != ZERO, P.rationalMultivariatePolynomials()),
+                P.monomialOrders()
+        );
+        for (Pair<RationalMultivariatePolynomial, MonomialOrder> p : take(LIMIT, ps)) {
+            Pair<Rational, MultivariatePolynomial> factors = p.a.constantFactor(p.b);
+            Rational constantFactor = factors.a;
+            assertNotNull(p, constantFactor);
+            MultivariatePolynomial polynomialFactor = factors.b;
+            assertNotNull(p, polynomialFactor);
+            polynomialFactor.validate();
+            assertEquals(p, polynomialFactor.degree(), p.a.degree());
+            assertNotEquals(p, constantFactor, BigInteger.ZERO);
+            BigInteger coefficientGcd = MathUtils.gcd(toList(map(t -> t.b, polynomialFactor)));
+            assertEquals(p, coefficientGcd, BigInteger.ONE);
+            assertEquals(p, polynomialFactor.toRationalMultivariatePolynomial().multiply(constantFactor), p.a);
+            assertEquals(p, polynomialFactor.leadingCoefficient(p.b).get().signum(), 1);
+            idempotent(q -> q.constantFactor(p.b).b.toRationalMultivariatePolynomial(), p.a);
+        }
+
+        Iterable<RationalMultivariatePolynomial> ps2 = filterInfinite(
+                q -> q != ZERO,
+                P.rationalMultivariatePolynomials()
+        );
+        for (RationalMultivariatePolynomial p : take(LIMIT, ps2)) {
+            assertEquals(p, p.constantFactor(MonomialOrder.GREVLEX), p.constantFactor());
+        }
+
+        for (MonomialOrder o : take(LIMIT, P.monomialOrders())) {
+            try {
+                ZERO.constantFactor(o);
+                fail(o);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesConstantFactor() {
+        initialize("constantFactor()");
+        Iterable<RationalMultivariatePolynomial> ps = filterInfinite(
+                q -> q != ZERO,
+                P.rationalMultivariatePolynomials()
+        );
+        for (RationalMultivariatePolynomial p : take(LIMIT, ps)) {
+            Pair<Rational, MultivariatePolynomial> factors = p.constantFactor();
+            Rational constantFactor = factors.a;
+            assertNotNull(p, constantFactor);
+            MultivariatePolynomial polynomialFactor = factors.b;
+            assertNotNull(p, polynomialFactor);
+            polynomialFactor.validate();
+            assertEquals(p, polynomialFactor.degree(), p.degree());
+            assertNotEquals(p, constantFactor, BigInteger.ZERO);
+            BigInteger coefficientGcd = MathUtils.gcd(toList(map(t -> t.b, polynomialFactor)));
+            assertEquals(p, coefficientGcd, BigInteger.ONE);
+            assertEquals(p, polynomialFactor.toRationalMultivariatePolynomial().multiply(constantFactor), p);
+            assertEquals(p, polynomialFactor.leadingCoefficient().get().signum(), 1);
+            idempotent(q -> q.constantFactor().b.toRationalMultivariatePolynomial(), p);
         }
     }
 

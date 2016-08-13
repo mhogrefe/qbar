@@ -6,6 +6,7 @@ import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
 import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.IterableUtils;
+import mho.wheels.math.MathUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Quadruple;
@@ -93,6 +94,8 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         propertiesApplyRational();
         propertiesSubstituteMonomial();
         propertiesSubstitute();
+        propertiesConstantFactor_MonomialOrder();
+        propertiesConstantFactor();
         propertiesSylvesterMatrix();
         propertiesResultant();
         propertiesPowerReduce();
@@ -1724,6 +1727,59 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         for (Pair<MultivariatePolynomial, Map<Variable, MultivariatePolynomial>> p : take(LIMIT, ps)) {
             MultivariatePolynomial q = p.a.substitute(p.b);
             q.validate();
+        }
+    }
+
+    private void propertiesConstantFactor_MonomialOrder() {
+        initialize("constantFactor(MonomialOrder)");
+        Iterable<Pair<MultivariatePolynomial, MonomialOrder>> ps = P.pairsLogarithmicOrder(
+                filterInfinite(p -> p != ZERO, P.multivariatePolynomials()),
+                P.monomialOrders()
+        );
+        for (Pair<MultivariatePolynomial, MonomialOrder> p : take(LIMIT, ps)) {
+            Pair<BigInteger, MultivariatePolynomial> factors = p.a.constantFactor(p.b);
+            BigInteger constantFactor = factors.a;
+            assertNotNull(p, constantFactor);
+            MultivariatePolynomial polynomialFactor = factors.b;
+            assertNotNull(p, polynomialFactor);
+            polynomialFactor.validate();
+            assertEquals(p, polynomialFactor.degree(), p.a.degree());
+            assertNotEquals(p, constantFactor, BigInteger.ZERO);
+            BigInteger coefficientGcd = MathUtils.gcd(toList(map(t -> t.b, polynomialFactor)));
+            assertEquals(p, coefficientGcd, BigInteger.ONE);
+            assertEquals(p, polynomialFactor.multiply(constantFactor), p.a);
+            assertEquals(p, polynomialFactor.leadingCoefficient(p.b).get().signum(), 1);
+            idempotent(q -> q.constantFactor(p.b).b, p.a);
+        }
+
+        for (MultivariatePolynomial p : take(LIMIT, filterInfinite(q -> q != ZERO, P.multivariatePolynomials()))) {
+            assertEquals(p, p.constantFactor(MonomialOrder.GREVLEX), p.constantFactor());
+        }
+
+        for (MonomialOrder o : take(LIMIT, P.monomialOrders())) {
+            try {
+                ZERO.constantFactor(o);
+                fail(o);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesConstantFactor() {
+        initialize("constantFactor()");
+        for (MultivariatePolynomial p : take(LIMIT, filterInfinite(q -> q != ZERO, P.multivariatePolynomials()))) {
+            Pair<BigInteger, MultivariatePolynomial> factors = p.constantFactor();
+            BigInteger constantFactor = factors.a;
+            assertNotNull(p, constantFactor);
+            MultivariatePolynomial polynomialFactor = factors.b;
+            assertNotNull(p, polynomialFactor);
+            polynomialFactor.validate();
+            assertEquals(p, polynomialFactor.degree(), p.degree());
+            assertNotEquals(p, constantFactor, BigInteger.ZERO);
+            BigInteger coefficientGcd = MathUtils.gcd(toList(map(t -> t.b, polynomialFactor)));
+            assertEquals(p, coefficientGcd, BigInteger.ONE);
+            assertEquals(p, polynomialFactor.multiply(constantFactor), p);
+            assertEquals(p, polynomialFactor.leadingCoefficient().get().signum(), 1);
+            idempotent(q -> q.constantFactor().b, p);
         }
     }
 
