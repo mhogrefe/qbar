@@ -124,6 +124,7 @@ public class AlgebraicProperties extends QBarTestProperties {
         propertiesCbrt();
         propertiesPow_Rational();
         compareImplementationsPow_Rational();
+        propertiesFractionalPart();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -376,18 +377,17 @@ public class AlgebraicProperties extends QBarTestProperties {
             assertTrue(x, le(x.subtract(of(x.bigIntegerValue(RoundingMode.HALF_EVEN))).abs(), ONE_HALF));
         }
 
-        //todo
-//        for (Algebraic x : take(LIMIT, filterInfinite(s -> lt(s.abs().fractionalPart(), ONE_HALF), P.algebraics()))) {
-//            assertEquals(r, r.bigIntegerValue(RoundingMode.HALF_DOWN), r.bigIntegerValue(RoundingMode.DOWN));
-//            assertEquals(r, r.bigIntegerValue(RoundingMode.HALF_UP), r.bigIntegerValue(RoundingMode.DOWN));
-//            assertEquals(r, r.bigIntegerValue(RoundingMode.HALF_EVEN), r.bigIntegerValue(RoundingMode.DOWN));
-//        }
-//
-//        for (Rational r : take(LIMIT, filterInfinite(s -> gt(s.abs().fractionalPart(), ONE_HALF), P.rationals()))) {
-//            assertEquals(r, r.bigIntegerValue(RoundingMode.HALF_DOWN), r.bigIntegerValue(RoundingMode.UP));
-//            assertEquals(r, r.bigIntegerValue(RoundingMode.HALF_UP), r.bigIntegerValue(RoundingMode.UP));
-//            assertEquals(r, r.bigIntegerValue(RoundingMode.HALF_EVEN), r.bigIntegerValue(RoundingMode.UP));
-//        }
+        for (Algebraic x : take(LIMIT, filterInfinite(s -> lt(s.abs().fractionalPart(), ONE_HALF), P.algebraics()))) {
+            assertEquals(x, x.bigIntegerValue(RoundingMode.HALF_DOWN), x.bigIntegerValue(RoundingMode.DOWN));
+            assertEquals(x, x.bigIntegerValue(RoundingMode.HALF_UP), x.bigIntegerValue(RoundingMode.DOWN));
+            assertEquals(x, x.bigIntegerValue(RoundingMode.HALF_EVEN), x.bigIntegerValue(RoundingMode.DOWN));
+        }
+
+        for (Algebraic x : take(LIMIT, filterInfinite(s -> gt(s.abs().fractionalPart(), ONE_HALF), P.algebraics()))) {
+            assertEquals(x, x.bigIntegerValue(RoundingMode.HALF_DOWN), x.bigIntegerValue(RoundingMode.UP));
+            assertEquals(x, x.bigIntegerValue(RoundingMode.HALF_UP), x.bigIntegerValue(RoundingMode.UP));
+            assertEquals(x, x.bigIntegerValue(RoundingMode.HALF_EVEN), x.bigIntegerValue(RoundingMode.UP));
+        }
 
         //odd multiples of 1/2
         Iterable<Algebraic> xs = map(
@@ -416,14 +416,13 @@ public class AlgebraicProperties extends QBarTestProperties {
             assertTrue(x, le(x.subtract(of(x.bigIntegerValue())).abs(), ONE_HALF));
         }
 
-        //todo
-//        for (Rational r : take(LIMIT, filterInfinite(s -> lt(s.abs().fractionalPart(), ONE_HALF), P.rationals()))) {
-//            assertEquals(r, r.bigIntegerValue(), r.bigIntegerValue(RoundingMode.DOWN));
-//        }
-//
-//        for (Rational r : take(LIMIT, filterInfinite(s -> gt(s.abs().fractionalPart(), ONE_HALF), P.rationals()))) {
-//            assertEquals(r, r.bigIntegerValue(), r.bigIntegerValue(RoundingMode.UP));
-//        }
+        for (Algebraic x : take(LIMIT, filterInfinite(s -> lt(s.abs().fractionalPart(), ONE_HALF), P.algebraics()))) {
+            assertEquals(x, x.bigIntegerValue(), x.bigIntegerValue(RoundingMode.DOWN));
+        }
+
+        for (Algebraic x : take(LIMIT, filterInfinite(s -> gt(s.abs().fractionalPart(), ONE_HALF), P.algebraics()))) {
+            assertEquals(x, x.bigIntegerValue(), x.bigIntegerValue(RoundingMode.UP));
+        }
 
         //odd multiples of 1/2
         Iterable<Algebraic> xs = map(
@@ -3358,6 +3357,21 @@ public class AlgebraicProperties extends QBarTestProperties {
         Polynomial.USE_FACTOR_CACHE = true;
         Algebraic.USE_SUM_CACHE = true;
         Algebraic.USE_PRODUCT_CACHE = true;
+    }
+
+    private void propertiesFractionalPart() {
+        initialize("fractionalPart()");
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            Algebraic fractionalPart = x.fractionalPart();
+            fractionalPart.validate();
+            assertTrue(x, ge(fractionalPart, ZERO));
+            assertTrue(x, lt(fractionalPart, ONE));
+            assertEquals(x, of(x.floor()).add(fractionalPart), x);
+        }
+
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            assertEquals(i, of(i).fractionalPart(), ZERO);
+        }
     }
 
     private void propertiesEquals() {

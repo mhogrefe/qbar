@@ -2421,6 +2421,25 @@ public final class Algebraic implements Comparable<Algebraic> {
     }
 
     /**
+     * Returns the fractional part of {@code this}; {@code this}–⌊{@code this}⌋.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>The result is an {@code Algebraic} x such that 0≤x{@literal <}1.</li>
+     * </ul>
+     *
+     * @return the fractional part of {@code this}
+     */
+    public @NotNull Algebraic fractionalPart() {
+        if (rational.isPresent()) {
+            Rational fp = rational.get().fractionalPart();
+            return fp == Rational.ZERO ? ZERO : new Algebraic(fp);
+        } else {
+            return subtract(floor());
+        }
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>

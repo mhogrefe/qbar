@@ -4,7 +4,6 @@ import mho.qbar.testing.QBarDemos;
 import mho.qbar.testing.QBarTesting;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.numberUtils.FloatingPointUtils;
-import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
@@ -611,6 +610,12 @@ public class AlgebraicDemos extends QBarDemos {
         );
         for (Pair<Algebraic, Rational> p : take(SMALL_LIMIT, ps)) {
             System.out.println("(" + p.a + ") ^ (" + p.b + ") = " + p.a.pow(p.b));
+        }
+    }
+
+    private void demoFractionalPart() {
+        for (Algebraic x : take(LIMIT, P.withScale(4).algebraics())) {
+            System.out.println("fractionalPart(" + x + ") = " + x.fractionalPart());
         }
     }
 

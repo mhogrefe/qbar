@@ -3974,6 +3974,24 @@ public class AlgebraicTest {
         pow_Rational_fail_helper("0", "-100000000000000000000");
     }
 
+    private static void fractionalPart_helper(@NotNull String input, @NotNull String output) {
+        Algebraic x = readStrict(input).get().fractionalPart();
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testFractionalPart() {
+        fractionalPart_helper("0", "0");
+        fractionalPart_helper("1", "0");
+        fractionalPart_helper("1/2", "1/2");
+        fractionalPart_helper("-4/3", "2/3");
+        fractionalPart_helper("sqrt(2)", "-1+sqrt(2)");
+        fractionalPart_helper("-sqrt(2)", "2-sqrt(2)");
+        fractionalPart_helper("(1+sqrt(5))/2", "(-1+sqrt(5))/2");
+        fractionalPart_helper("root 0 of x^5-x-1", "root 0 of x^5+5*x^4+10*x^3+10*x^2+4*x-1");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(
