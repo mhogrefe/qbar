@@ -2395,6 +2395,32 @@ public final class Algebraic implements Comparable<Algebraic> {
     }
 
     /**
+     * Returns {@code this} raised to the power of {@code p}. 0<sup>0</sup> yields 1. If {@code p} has an even
+     * denominator, the principal (non-negative) root is chosen.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>{@code p} must have a numerator greater than or equal to –2<sup>31</sup> and less than 2<sup>31</sup> and
+     *  a denominator less than 2<sup>31</sup>.</li>
+     *  <li>If {@code p} is negative, {@code this} cannot be 0.</li>
+     *  <li>If {@code p} has an even denominator, {@code this} cannot be negative.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param p the power that {@code this} is raised to
+     * @return {@code this}<sup>{@code p}</sup>
+     */
+    public @NotNull Algebraic pow(@NotNull Rational p) {
+        if (p.getDenominator().and(BigInteger.ONE).equals(BigInteger.ZERO) && signum() == -1) {
+            throw new ArithmeticException("If p has an even denominator, this cannot be negative. this: " +
+                    this + ", p: " + p);
+        }
+        int n = p.getNumerator().intValueExact();
+        int d = p.getDenominator().intValueExact();
+        return pow(n).root(d);
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>

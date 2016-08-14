@@ -117,11 +117,13 @@ public class AlgebraicProperties extends QBarTestProperties {
         propertiesSumSign();
         compareImplementationsSumSign();
         propertiesDelta();
-        propertiesPow();
-        compareImplementationsPow();
+        propertiesPow_int();
+        compareImplementationsPow_int();
         propertiesRoot();
         propertiesSqrt();
         propertiesCbrt();
+        propertiesPow_Rational();
+        compareImplementationsPow_Rational();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -331,9 +333,9 @@ public class AlgebraicProperties extends QBarTestProperties {
             assertTrue(bd, x.hasTerminatingBaseExpansion(BigInteger.TEN));
         }
 
-//        for (BigDecimal bd : take(LIMIT, P.canonicalBigDecimals())) {
-//            inverse(Algebraic::of, Algebraic::bigDecimalValueExact, bd);
-//        }
+        for (BigDecimal bd : take(LIMIT, P.canonicalBigDecimals())) {
+            inverse(Algebraic::of, Algebraic::bigDecimalValueExact, bd);
+        }
     }
 
     private void propertiesIsInteger() {
@@ -2885,10 +2887,10 @@ public class AlgebraicProperties extends QBarTestProperties {
         }
     }
 
-    private static @NotNull Algebraic pow_alt(@NotNull Algebraic x, int p) {
+    private static @NotNull Algebraic pow_int_alt(@NotNull Algebraic x, int p) {
         if (p == 0 || x == ONE) return ONE;
         if (p == 1) return x;
-        if (p < 0) return pow_alt(x.invert(), -p);
+        if (p < 0) return pow_int_alt(x.invert(), -p);
         if (x == ZERO) return x;
         if (p % 2 == 0 && x.equals(NEGATIVE_ONE)) return ONE;
         if (x.isRational()) {
@@ -2918,10 +2920,10 @@ public class AlgebraicProperties extends QBarTestProperties {
         }
     }
 
-    private static @NotNull Algebraic pow_alt2(@NotNull Algebraic x, int p) {
+    private static @NotNull Algebraic pow_int_alt2(@NotNull Algebraic x, int p) {
         if (p == 0 || x == ONE) return ONE;
         if (p == 1) return x;
-        if (p < 0) return pow_alt2(x.invert(), -p);
+        if (p < 0) return pow_int_alt2(x.invert(), -p);
         if (x == ZERO) return x;
         if (p % 2 == 0 && x.equals(NEGATIVE_ONE)) return ONE;
         if (x.isRational()) {
@@ -2945,11 +2947,11 @@ public class AlgebraicProperties extends QBarTestProperties {
 
         Map<String, Function<Pair<Algebraic, Integer>, Algebraic>> implementations = new HashMap<>();
         implementations.put("reducing", q -> q.a.pow(q.b));
-        implementations.put("halving", q -> pow_alt(q.a, q.b));
+        implementations.put("halving", q -> pow_int_alt(q.a, q.b));
         return ConcurrencyUtils.evaluateFastest(implementations, new Pair<>(x, p)).b;
     }
 
-    private void propertiesPow() {
+    private void propertiesPow_int() {
         initialize("pow(int)");
         Iterable<Pair<Algebraic, Integer>> ps = filterInfinite(
                 p -> p.a != ZERO || p.b >= 0,
@@ -2964,8 +2966,8 @@ public class AlgebraicProperties extends QBarTestProperties {
             if (p.b != 0 && ((p.b & 1) == 1 || p.a.signum() != -1)) {
                 inverse(y -> y.pow(p.b), (Algebraic y) -> y.root(p.b), p.a);
             }
-            assertEquals(p, x, pow_alt(p.a, p.b));
-            assertEquals(p, x, pow_alt2(p.a, p.b));
+            assertEquals(p, x, pow_int_alt(p.a, p.b));
+            assertEquals(p, x, pow_int_alt2(p.a, p.b));
         }
 
         ps = P.pairs(P.withScale(1).withSecondaryScale(4).nonzeroAlgebraics(), P.withScale(1).integersGeometric());
@@ -3055,13 +3057,13 @@ public class AlgebraicProperties extends QBarTestProperties {
         }
     }
 
-    private void compareImplementationsPow() {
+    private void compareImplementationsPow_int() {
         Polynomial.USE_FACTOR_CACHE = false;
         Algebraic.USE_SUM_CACHE = false;
         Algebraic.USE_PRODUCT_CACHE = false;
         Map<String, Function<Pair<Algebraic, Integer>, Algebraic>> functions = new LinkedHashMap<>();
-        functions.put("alt", p -> pow_alt(p.a, p.b));
-        functions.put("alt2", p -> pow_alt2(p.a, p.b));
+        functions.put("alt", p -> pow_int_alt(p.a, p.b));
+        functions.put("alt2", p -> pow_int_alt2(p.a, p.b));
         functions.put("standard", p -> p.a.pow(p.b));
         Iterable<Pair<Algebraic, Integer>> ps = filterInfinite(
                 p -> p.a != ZERO || p.b >= 0,
@@ -3171,6 +3173,191 @@ public class AlgebraicProperties extends QBarTestProperties {
         for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.pairs(P.withScale(4).algebraics()))) {
             assertEquals(p, p.a.compareTo(p.b), p.a.cbrt().compareTo(p.b.cbrt()));
         }
+    }
+
+    private static @NotNull Algebraic pow_Rational_alt(@NotNull Algebraic x, @NotNull Rational p) {
+        return x.root(p.getDenominator().intValueExact()).pow(p.getNumerator().intValueExact());
+    }
+
+    private void propertiesPow_Rational() {
+        initialize("pow(Rational)");
+        BigInteger lower = BigInteger.valueOf(Integer.MIN_VALUE);
+        BigInteger upper = BigInteger.valueOf(Integer.MAX_VALUE);
+        Iterable<Rational> rs = filterInfinite(
+                r -> ge(r.getNumerator(), lower) && le(r.getNumerator(), upper) && le(r.getDenominator(), upper),
+                P.withScale(3).rationals()
+        );
+        Iterable<Pair<Algebraic, Rational>> ps = filterInfinite(
+                p -> (p.a != ZERO || p.b.signum() != -1) &&
+                        (p.a.signum() != -1 || !p.b.getDenominator().and(BigInteger.ONE).equals(BigInteger.ZERO)),
+                P.pairsSquareRootOrder(P.withScale(1).withSecondaryScale(4).algebraics(), rs)
+        );
+        for (Pair<Algebraic, Rational> p : take(SMALL_LIMIT, ps)) {
+            Algebraic x = p.a.pow(p.b);
+            x.validate();
+        }
+
+        BigInteger five = BigInteger.valueOf(5);
+        Iterable<Rational> simpleRs = filterInfinite(
+                r -> le(r.getNumerator().abs(), five) && le(r.getDenominator(), five),
+                P.withScale(3).rationals()
+        );
+        ps = filterInfinite(
+                p -> (p.a != ZERO || p.b.signum() != -1) &&
+                        (p.a.signum() != -1 || !p.b.getDenominator().and(BigInteger.ONE).equals(BigInteger.ZERO)),
+                P.pairsSquareRootOrder(P.withScale(1).withSecondaryScale(4).algebraics(), simpleRs)
+        );
+        for (Pair<Algebraic, Rational> p : take(SMALL_LIMIT, ps)) {
+            assertEquals(p, p.a.pow(p.b), pow_Rational_alt(p.a, p.b));
+            if (p.b != Rational.ZERO &&
+                    (p.b.getNumerator().and(BigInteger.ONE).equals(BigInteger.ONE) || p.a.signum() != -1)) {
+                inverse(y -> y.pow(p.b), (Algebraic y) -> y.pow(p.b.invert()), p.a);
+            }
+        }
+
+        ps = filterInfinite(
+                p -> p.b.getDenominator().and(BigInteger.ONE).equals(BigInteger.ONE) || p.a.signum() == 1,
+                P.pairs(P.withScale(1).withSecondaryScale(4).nonzeroAlgebraics(), simpleRs)
+        );
+        for (Pair<Algebraic, Rational> p : take(SMALL_LIMIT, ps)) {
+            homomorphic(Function.identity(), Rational::negate, Algebraic::invert, Algebraic::pow, Algebraic::pow, p);
+            homomorphic(Algebraic::invert, Rational::negate, Function.identity(), Algebraic::pow, Algebraic::pow, p);
+        }
+
+        Iterable<Rational> positiveRs = filterInfinite(
+                r -> ge(r.getNumerator(), lower) && le(r.getNumerator(), upper) && le(r.getDenominator(), upper),
+                P.withScale(4).positiveRationals()
+        );
+        for (Rational r : take(LIMIT, positiveRs)) {
+            fixedPoint(j -> j.pow(r), ZERO);
+        }
+
+        for (Algebraic x : take(MEDIUM_LIMIT, P.withScale(1).withSecondaryScale(4).algebraics())) {
+            assertTrue(x, x.pow(Rational.ZERO) == ONE);
+            fixedPoint(y -> y.pow(Rational.ONE), x);
+            assertEquals(x, x.pow(Rational.TWO), x.multiply(x));
+        }
+
+        for (Algebraic x : take(LIMIT, P.nonzeroAlgebraics())) {
+            assertEquals(x, x.pow(Rational.NEGATIVE_ONE), x.invert());
+        }
+
+        Iterable<Triple<Algebraic, Rational, Rational>> ts = filterInfinite(
+                t -> (t.a != ZERO || (t.b.signum() != -1 && t.c.signum() != -1)),
+                P.triples(
+                        filterInfinite(x -> x.degree() < 5, P.withScale(1).withSecondaryScale(4).positiveAlgebraics()),
+                        simpleRs,
+                        simpleRs
+                )
+        );
+        for (Triple<Algebraic, Rational, Rational> t : take(SMALL_LIMIT, ts)) {
+            Algebraic expression1 = t.a.pow(t.b).multiply(t.a.pow(t.c));
+            Algebraic expression2 = t.a.pow(t.b.add(t.c));
+            assertEquals(t, expression1, expression2);
+            Algebraic expression3 = t.a.pow(t.b).pow(t.c);
+            Algebraic expression4 = t.a.pow(t.b.multiply(t.c));
+            assertEquals(t, expression3, expression4);
+        }
+
+        ts = filterInfinite(
+                t -> t.a != ZERO || (t.c == Rational.ZERO && t.b.signum() != -1),
+                P.triples(
+                        filterInfinite(x -> x.degree() < 5, P.withScale(1).withSecondaryScale(4).positiveAlgebraics()),
+                        simpleRs,
+                        simpleRs
+                )
+        );
+        for (Triple<Algebraic, Rational, Rational> t : take(SMALL_LIMIT, ts)) {
+            Algebraic expression1 = t.a.pow(t.b).divide(t.a.pow(t.c));
+            Algebraic expression2 = t.a.pow(t.b.subtract(t.c));
+            assertEquals(t, expression1, expression2);
+        }
+
+        Iterable<Triple<Algebraic, Algebraic, Rational>> ts2 = P.triples(
+                filterInfinite(x -> x.degree() < 5, P.withScale(1).withSecondaryScale(4).positiveAlgebraics()),
+                filterInfinite(x -> x.degree() < 5, P.withScale(1).withSecondaryScale(4).positiveAlgebraics()),
+                simpleRs
+        );
+        for (Triple<Algebraic, Algebraic, Rational> t : take(TINY_LIMIT, ts2)) {
+            Algebraic expression1 = t.a.multiply(t.b).pow(t.c);
+            Algebraic expression2 = t.a.pow(t.c).multiply(t.b.pow(t.c));
+            assertEquals(t, expression1, expression2);
+        }
+
+        ts2 = P.triples(
+                filterInfinite(x -> x.degree() < 5, P.withScale(1).withSecondaryScale(4).positiveAlgebraics()),
+                filterInfinite(x -> x.degree() < 5, P.withScale(1).withSecondaryScale(4).positiveAlgebraics()),
+                simpleRs
+        );
+        for (Triple<Algebraic, Algebraic, Rational> t : take(SMALL_LIMIT, ts2)) {
+            Algebraic expression1 = t.a.divide(t.b).pow(t.c);
+            Algebraic expression2 = t.a.pow(t.c).divide(t.b.pow(t.c));
+            assertEquals(t, expression1, expression2);
+        }
+
+        for (int i : take(LIMIT, P.negativeIntegers())) {
+            try {
+                ZERO.pow(i);
+                fail(i);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<Pair<Algebraic, Rational>> psFail = P.pairs(
+                P.negativeAlgebraics(),
+                filterInfinite(r -> r.getDenominator().and(BigInteger.ONE).equals(BigInteger.ZERO), rs)
+        );
+        for (Pair<Algebraic, Rational> p : take(LIMIT, psFail)) {
+            try {
+                p.a.pow(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<Rational> rsFail = filterInfinite(
+                r -> lt(r.getNumerator(), lower) || gt(r.getNumerator(), upper) || gt(r.getDenominator(), upper),
+                map(
+                        p -> Rational.of(p.a, p.b),
+                        P.choose(
+                                P.pairs(P.bigIntegers(), P.withScale(33).rangeUp(upper.add(BigInteger.ONE))),
+                                P.pairs(
+                                        P.choose(
+                                                P.withScale(33).rangeDown(lower.subtract(BigInteger.ONE)),
+                                                P.withScale(33).rangeUp(upper.add(BigInteger.ONE))
+                                        ),
+                                        P.positiveBigIntegers()
+                                )
+                        )
+                )
+        );
+        for (Pair<Algebraic, Rational> p : take(LIMIT, P.pairs(P.algebraics(), rsFail))) {
+            try {
+                p.a.pow(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void compareImplementationsPow_Rational() {
+        Polynomial.USE_FACTOR_CACHE = false;
+        Algebraic.USE_SUM_CACHE = false;
+        Algebraic.USE_PRODUCT_CACHE = false;
+        Map<String, Function<Pair<Algebraic, Rational>, Algebraic>> functions = new LinkedHashMap<>();
+        functions.put("alt", p -> pow_Rational_alt(p.a, p.b));
+        functions.put("standard", p -> p.a.pow(p.b));
+        BigInteger five = BigInteger.valueOf(5);
+        Iterable<Rational> simpleRs = filterInfinite(
+                r -> le(r.getNumerator().abs(), five) && le(r.getDenominator(), five),
+                P.withScale(3).rationals()
+        );
+        Iterable<Pair<Algebraic, Rational>> ps = filterInfinite(
+                p -> (p.a != ZERO || p.b.signum() != -1) &&
+                        (p.a.signum() != -1 || !p.b.getDenominator().and(BigInteger.ONE).equals(BigInteger.ZERO)),
+                P.pairsSquareRootOrder(P.withScale(1).withSecondaryScale(4).algebraics(), simpleRs)
+        );
+        compareImplementations("pow(Rational)", take(SMALL_LIMIT, ps), functions, v -> P.reset());
+        Polynomial.USE_FACTOR_CACHE = true;
+        Algebraic.USE_SUM_CACHE = true;
+        Algebraic.USE_PRODUCT_CACHE = true;
     }
 
     private void propertiesEquals() {

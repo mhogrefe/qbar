@@ -3625,13 +3625,13 @@ public class AlgebraicTest {
         delta_fail_helper("[10, null, sqrt(2)]");
     }
 
-    private static void pow_helper(@NotNull String x, int p, @NotNull String output) {
+    private static void pow_int_helper(@NotNull String x, int p, @NotNull String output) {
         Algebraic y = readStrict(x).get().pow(p);
         y.validate();
         aeq(y, output);
     }
 
-    private static void pow_fail_helper(@NotNull String x, int p) {
+    private static void pow_int_fail_helper(@NotNull String x, int p) {
         try {
             readStrict(x).get().pow(p);
             fail();
@@ -3639,92 +3639,92 @@ public class AlgebraicTest {
     }
 
     @Test
-    public void testPow() {
-        pow_helper("0", 0, "1");
-        pow_helper("0", 1, "0");
-        pow_helper("0", 2, "0");
-        pow_helper("0", 3, "0");
-        pow_helper("0", 100, "0");
+    public void testPow_int() {
+        pow_int_helper("0", 0, "1");
+        pow_int_helper("0", 1, "0");
+        pow_int_helper("0", 2, "0");
+        pow_int_helper("0", 3, "0");
+        pow_int_helper("0", 100, "0");
 
-        pow_helper("1", 0, "1");
-        pow_helper("1", 1, "1");
-        pow_helper("1", 2, "1");
-        pow_helper("1", 3, "1");
-        pow_helper("1", 100, "1");
-        pow_helper("1", -1, "1");
-        pow_helper("1", -2, "1");
-        pow_helper("1", -3, "1");
-        pow_helper("1", -100, "1");
+        pow_int_helper("1", 0, "1");
+        pow_int_helper("1", 1, "1");
+        pow_int_helper("1", 2, "1");
+        pow_int_helper("1", 3, "1");
+        pow_int_helper("1", 100, "1");
+        pow_int_helper("1", -1, "1");
+        pow_int_helper("1", -2, "1");
+        pow_int_helper("1", -3, "1");
+        pow_int_helper("1", -100, "1");
 
-        pow_helper("1/2", 0, "1");
-        pow_helper("1/2", 1, "1/2");
-        pow_helper("1/2", 2, "1/4");
-        pow_helper("1/2", 3, "1/8");
-        pow_helper("1/2", 100, "1/1267650600228229401496703205376");
-        pow_helper("1/2", -1, "2");
-        pow_helper("1/2", -2, "4");
-        pow_helper("1/2", -3, "8");
-        pow_helper("1/2", -100, "1267650600228229401496703205376");
+        pow_int_helper("1/2", 0, "1");
+        pow_int_helper("1/2", 1, "1/2");
+        pow_int_helper("1/2", 2, "1/4");
+        pow_int_helper("1/2", 3, "1/8");
+        pow_int_helper("1/2", 100, "1/1267650600228229401496703205376");
+        pow_int_helper("1/2", -1, "2");
+        pow_int_helper("1/2", -2, "4");
+        pow_int_helper("1/2", -3, "8");
+        pow_int_helper("1/2", -100, "1267650600228229401496703205376");
 
-        pow_helper("-4/3", 0, "1");
-        pow_helper("-4/3", 1, "-4/3");
-        pow_helper("-4/3", 2, "16/9");
-        pow_helper("-4/3", 3, "-64/27");
-        pow_helper("-4/3", 100,
+        pow_int_helper("-4/3", 0, "1");
+        pow_int_helper("-4/3", 1, "-4/3");
+        pow_int_helper("-4/3", 2, "16/9");
+        pow_int_helper("-4/3", 3, "-64/27");
+        pow_int_helper("-4/3", 100,
                 "1606938044258990275541962092341162602522202993782792835301376/5153775207320113310364611297656212727" +
                 "02107522001");
-        pow_helper("-4/3", -1, "-3/4");
-        pow_helper("-4/3", -2, "9/16");
-        pow_helper("-4/3", -3, "-27/64");
-        pow_helper("-4/3", -100,
+        pow_int_helper("-4/3", -1, "-3/4");
+        pow_int_helper("-4/3", -2, "9/16");
+        pow_int_helper("-4/3", -3, "-27/64");
+        pow_int_helper("-4/3", -100,
                 "515377520732011331036461129765621272702107522001/16069380442589902755419620923411626025222029937827" +
                 "92835301376");
 
-        pow_helper("sqrt(2)", 0, "1");
-        pow_helper("sqrt(2)", 1, "sqrt(2)");
-        pow_helper("sqrt(2)", 2, "2");
-        pow_helper("sqrt(2)", 3, "2*sqrt(2)");
-        pow_helper("sqrt(2)", 100, "1125899906842624");
-        pow_helper("sqrt(2)", -1, "sqrt(2)/2");
-        pow_helper("sqrt(2)", -2, "1/2");
-        pow_helper("sqrt(2)", -3, "sqrt(2)/4");
-        pow_helper("sqrt(2)", -100, "1/1125899906842624");
+        pow_int_helper("sqrt(2)", 0, "1");
+        pow_int_helper("sqrt(2)", 1, "sqrt(2)");
+        pow_int_helper("sqrt(2)", 2, "2");
+        pow_int_helper("sqrt(2)", 3, "2*sqrt(2)");
+        pow_int_helper("sqrt(2)", 100, "1125899906842624");
+        pow_int_helper("sqrt(2)", -1, "sqrt(2)/2");
+        pow_int_helper("sqrt(2)", -2, "1/2");
+        pow_int_helper("sqrt(2)", -3, "sqrt(2)/4");
+        pow_int_helper("sqrt(2)", -100, "1/1125899906842624");
 
-        pow_helper("-sqrt(2)", 0, "1");
-        pow_helper("-sqrt(2)", 1, "-sqrt(2)");
-        pow_helper("-sqrt(2)", 2, "2");
-        pow_helper("-sqrt(2)", 3, "-2*sqrt(2)");
-        pow_helper("-sqrt(2)", 100, "1125899906842624");
-        pow_helper("-sqrt(2)", -1, "-sqrt(2)/2");
-        pow_helper("-sqrt(2)", -2, "1/2");
-        pow_helper("-sqrt(2)", -3, "-sqrt(2)/4");
-        pow_helper("-sqrt(2)", -100, "1/1125899906842624");
+        pow_int_helper("-sqrt(2)", 0, "1");
+        pow_int_helper("-sqrt(2)", 1, "-sqrt(2)");
+        pow_int_helper("-sqrt(2)", 2, "2");
+        pow_int_helper("-sqrt(2)", 3, "-2*sqrt(2)");
+        pow_int_helper("-sqrt(2)", 100, "1125899906842624");
+        pow_int_helper("-sqrt(2)", -1, "-sqrt(2)/2");
+        pow_int_helper("-sqrt(2)", -2, "1/2");
+        pow_int_helper("-sqrt(2)", -3, "-sqrt(2)/4");
+        pow_int_helper("-sqrt(2)", -100, "1/1125899906842624");
 
-        pow_helper("(1+sqrt(5))/2", 0, "1");
-        pow_helper("(1+sqrt(5))/2", 1, "(1+sqrt(5))/2");
-        pow_helper("(1+sqrt(5))/2", 2, "(3+sqrt(5))/2");
-        pow_helper("(1+sqrt(5))/2", 3, "2+sqrt(5)");
-        pow_helper("(1+sqrt(5))/2", 100, "root 1 of x^2-792070839848372253127*x+1");
-        pow_helper("(1+sqrt(5))/2", -1, "(-1+sqrt(5))/2");
-        pow_helper("(1+sqrt(5))/2", -2, "(3-sqrt(5))/2");
-        pow_helper("(1+sqrt(5))/2", -3, "-2+sqrt(5)");
-        pow_helper("(1+sqrt(5))/2", -100, "root 0 of x^2-792070839848372253127*x+1");
+        pow_int_helper("(1+sqrt(5))/2", 0, "1");
+        pow_int_helper("(1+sqrt(5))/2", 1, "(1+sqrt(5))/2");
+        pow_int_helper("(1+sqrt(5))/2", 2, "(3+sqrt(5))/2");
+        pow_int_helper("(1+sqrt(5))/2", 3, "2+sqrt(5)");
+        pow_int_helper("(1+sqrt(5))/2", 100, "root 1 of x^2-792070839848372253127*x+1");
+        pow_int_helper("(1+sqrt(5))/2", -1, "(-1+sqrt(5))/2");
+        pow_int_helper("(1+sqrt(5))/2", -2, "(3-sqrt(5))/2");
+        pow_int_helper("(1+sqrt(5))/2", -3, "-2+sqrt(5)");
+        pow_int_helper("(1+sqrt(5))/2", -100, "root 0 of x^2-792070839848372253127*x+1");
 
-        pow_helper("root 0 of x^5-x-1", 0, "1");
-        pow_helper("root 0 of x^5-x-1", 1, "root 0 of x^5-x-1");
-        pow_helper("root 0 of x^5-x-1", 2, "root 0 of x^5-2*x^3+x-1");
-        pow_helper("root 0 of x^5-x-1", 3, "root 0 of x^5-3*x^2-x-1");
-        pow_helper("root 0 of x^5-x-1", 100,
+        pow_int_helper("root 0 of x^5-x-1", 0, "1");
+        pow_int_helper("root 0 of x^5-x-1", 1, "root 0 of x^5-x-1");
+        pow_int_helper("root 0 of x^5-x-1", 2, "root 0 of x^5-2*x^3+x-1");
+        pow_int_helper("root 0 of x^5-x-1", 3, "root 0 of x^5-3*x^2-x-1");
+        pow_int_helper("root 0 of x^5-x-1", 100,
                 "root 0 of x^5-5212284*x^4-85855281194*x^3-827865826315124*x^2+40049481*x-1");
-        pow_helper("root 0 of x^5-x-1", -1, "root 0 of x^5+x^4-1");
-        pow_helper("root 0 of x^5-x-1", -2, "root 0 of x^5-x^4+2*x^2-1");
-        pow_helper("root 0 of x^5-x-1", -3, "root 0 of x^5+x^4+3*x^3-1");
-        pow_helper("root 0 of x^5-x-1", -100,
+        pow_int_helper("root 0 of x^5-x-1", -1, "root 0 of x^5+x^4-1");
+        pow_int_helper("root 0 of x^5-x-1", -2, "root 0 of x^5-x^4+2*x^2-1");
+        pow_int_helper("root 0 of x^5-x-1", -3, "root 0 of x^5+x^4+3*x^3-1");
+        pow_int_helper("root 0 of x^5-x-1", -100,
                 "root 0 of x^5-40049481*x^4+827865826315124*x^3+85855281194*x^2+5212284*x-1");
 
-        pow_fail_helper("0", -1);
-        pow_fail_helper("0", -2);
-        pow_fail_helper("0", -3);
+        pow_int_fail_helper("0", -1);
+        pow_int_fail_helper("0", -2);
+        pow_int_fail_helper("0", -3);
     }
 
     private static void root_helper(@NotNull String x, int r, @NotNull String output) {
@@ -3873,6 +3873,105 @@ public class AlgebraicTest {
         cbrt_helper("8", "2");
         cbrt_helper("1000/343", "10/7");
         cbrt_helper("2985984/13841287201", "144/2401");
+    }
+
+    private static void pow_Rational_helper(@NotNull String x, @NotNull String p, @NotNull String output) {
+        Algebraic y = readStrict(x).get().pow(Rational.readStrict(p).get());
+        y.validate();
+        aeq(y, output);
+    }
+
+    private static void pow_Rational_fail_helper(@NotNull String x, @NotNull String p) {
+        try {
+            readStrict(x).get().pow(Rational.readStrict(p).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testPow_Rational() {
+        pow_Rational_helper("0", "0", "1");
+        pow_Rational_helper("0", "1", "0");
+        pow_Rational_helper("0", "2", "0");
+        pow_Rational_helper("0", "5/2", "0");
+        pow_Rational_helper("0", "5/3", "0");
+
+        pow_Rational_helper("1", "0", "1");
+        pow_Rational_helper("1", "1", "1");
+        pow_Rational_helper("1", "-1", "1");
+        pow_Rational_helper("1", "2", "1");
+        pow_Rational_helper("1", "-2", "1");
+        pow_Rational_helper("1", "5/2", "1");
+        pow_Rational_helper("1", "-5/2", "1");
+        pow_Rational_helper("1", "5/3", "1");
+        pow_Rational_helper("1", "-5/3", "1");
+
+        pow_Rational_helper("1/2", "0", "1");
+        pow_Rational_helper("1/2", "1", "1/2");
+        pow_Rational_helper("1/2", "-1", "2");
+        pow_Rational_helper("1/2", "2", "1/4");
+        pow_Rational_helper("1/2", "-2", "4");
+        pow_Rational_helper("1/2", "5/2", "sqrt(2)/8");
+        pow_Rational_helper("1/2", "-5/2", "4*sqrt(2)");
+        pow_Rational_helper("1/2", "5/3", "root 0 of 32*x^3-1");
+        pow_Rational_helper("1/2", "-5/3", "root 0 of x^3-32");
+
+        pow_Rational_helper("-4/3", "0", "1");
+        pow_Rational_helper("-4/3", "1", "-4/3");
+        pow_Rational_helper("-4/3", "-1", "-3/4");
+        pow_Rational_helper("-4/3", "2", "16/9");
+        pow_Rational_helper("-4/3", "-2", "9/16");
+        pow_Rational_helper("-4/3", "5/3", "root 0 of 243*x^3+1024");
+        pow_Rational_helper("-4/3", "-5/3", "root 0 of 1024*x^3+243");
+
+        pow_Rational_helper("sqrt(2)", "0", "1");
+        pow_Rational_helper("sqrt(2)", "1", "sqrt(2)");
+        pow_Rational_helper("sqrt(2)", "-1", "sqrt(2)/2");
+        pow_Rational_helper("sqrt(2)", "2", "2");
+        pow_Rational_helper("sqrt(2)", "-2", "1/2");
+        pow_Rational_helper("sqrt(2)", "5/2", "root 1 of x^4-32");
+        pow_Rational_helper("sqrt(2)", "-5/2", "root 1 of 32*x^4-1");
+        pow_Rational_helper("sqrt(2)", "5/3", "root 1 of x^6-32");
+        pow_Rational_helper("sqrt(2)", "-5/3", "root 1 of 32*x^6-1");
+
+        pow_Rational_helper("-sqrt(2)", "0", "1");
+        pow_Rational_helper("-sqrt(2)", "1", "-sqrt(2)");
+        pow_Rational_helper("-sqrt(2)", "-1", "-sqrt(2)/2");
+        pow_Rational_helper("-sqrt(2)", "2", "2");
+        pow_Rational_helper("-sqrt(2)", "-2", "1/2");
+        pow_Rational_helper("-sqrt(2)", "5/3", "root 0 of x^6-32");
+        pow_Rational_helper("-sqrt(2)", "-5/3", "root 0 of 32*x^6-1");
+
+        pow_Rational_helper("(1+sqrt(5))/2", "0", "1");
+        pow_Rational_helper("(1+sqrt(5))/2", "1", "(1+sqrt(5))/2");
+        pow_Rational_helper("(1+sqrt(5))/2", "-1", "(-1+sqrt(5))/2");
+        pow_Rational_helper("(1+sqrt(5))/2", "2", "(3+sqrt(5))/2");
+        pow_Rational_helper("(1+sqrt(5))/2", "-2", "(3-sqrt(5))/2");
+        pow_Rational_helper("(1+sqrt(5))/2", "5/2", "root 1 of x^4-11*x^2-1");
+        pow_Rational_helper("(1+sqrt(5))/2", "-5/2", "root 1 of x^4+11*x^2-1");
+        pow_Rational_helper("(1+sqrt(5))/2", "5/3", "root 1 of x^6-11*x^3-1");
+        pow_Rational_helper("(1+sqrt(5))/2", "-5/3", "root 1 of x^6+11*x^3-1");
+
+        pow_Rational_helper("root 0 of x^5-x-1", "0", "1");
+        pow_Rational_helper("root 0 of x^5-x-1", "1", "root 0 of x^5-x-1");
+        pow_Rational_helper("root 0 of x^5-x-1", "-1", "root 0 of x^5+x^4-1");
+        pow_Rational_helper("root 0 of x^5-x-1", "2", "root 0 of x^5-2*x^3+x-1");
+        pow_Rational_helper("root 0 of x^5-x-1", "-2", "root 0 of x^5-x^4+2*x^2-1");
+        pow_Rational_helper("root 0 of x^5-x-1", "5/2", "root 1 of x^10-5*x^8+10*x^6-10*x^4+4*x^2-1");
+        pow_Rational_helper("root 0 of x^5-x-1", "-5/2", "root 1 of x^10-4*x^8+10*x^6-10*x^4+5*x^2-1");
+        pow_Rational_helper("root 0 of x^5-x-1", "5/3", "root 0 of x^15-5*x^12+10*x^9-10*x^6+4*x^3-1");
+        pow_Rational_helper("root 0 of x^5-x-1", "-5/3", "root 0 of x^15-4*x^12+10*x^9-10*x^6+5*x^3-1");
+
+        pow_Rational_fail_helper("0", "-1");
+        pow_Rational_fail_helper("0", "-2");
+        pow_Rational_fail_helper("0", "-5/2");
+        pow_Rational_fail_helper("0", "-5/3");
+        pow_Rational_fail_helper("-4/3", "5/2");
+        pow_Rational_fail_helper("-4/3", "-5/2");
+        pow_Rational_fail_helper("-sqrt(2)", "5/2");
+        pow_Rational_fail_helper("-sqrt(2)", "-5/2");
+        pow_Rational_fail_helper("0", "100000000000000000000");
+        pow_Rational_fail_helper("0", "-100000000000000000000");
     }
 
     @Test

@@ -16,6 +16,7 @@ import java.util.List;
 
 import static mho.qbar.objects.Algebraic.*;
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.ordering.Ordering.*;
 import static mho.wheels.testing.Testing.*;
 import static mho.wheels.testing.Testing.MEDIUM_LIMIT;
 import static mho.wheels.testing.Testing.nicePrint;
@@ -558,7 +559,7 @@ public class AlgebraicDemos extends QBarDemos {
         }
     }
 
-    private void demoPow() {
+    private void demoPow_int() {
         Iterable<Pair<Algebraic, Integer>> ps = filterInfinite(
                 p -> p.a != ZERO || p.b >= 0,
                 P.pairsSquareRootOrder(
@@ -593,6 +594,26 @@ public class AlgebraicDemos extends QBarDemos {
         }
     }
 
+    private void demoPow_Rational() {
+        BigInteger lower = BigInteger.valueOf(Integer.MIN_VALUE);
+        BigInteger upper = BigInteger.valueOf(Integer.MAX_VALUE);
+        Iterable<Pair<Algebraic, Rational>> ps = filterInfinite(
+                p -> (p.a != ZERO || p.b.signum() != -1) &&
+                        (p.a.signum() != -1 || !p.b.getDenominator().and(BigInteger.ONE).equals(BigInteger.ZERO)),
+                P.pairsSquareRootOrder(
+                        P.withScale(1).withSecondaryScale(4).algebraics(),
+                        filterInfinite(
+                                r -> ge(r.getNumerator(), lower) && le(r.getNumerator(), upper) &&
+                                        le(r.getDenominator(), upper),
+                                P.withScale(3).rationals()
+                        )
+                )
+        );
+        for (Pair<Algebraic, Rational> p : take(SMALL_LIMIT, ps)) {
+            System.out.println("(" + p.a + ") ^ (" + p.b + ") = " + p.a.pow(p.b));
+        }
+    }
+
     private void demoEquals_Algebraic() {
         for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.pairs(P.withScale(4).algebraics()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);
@@ -614,7 +635,7 @@ public class AlgebraicDemos extends QBarDemos {
 
     private void demoCompareTo() {
         for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.pairs(P.withScale(4).algebraics()))) {
-            System.out.println(p.a + " " + Ordering.compare(p.a, p.b) + " " + p.b);
+            System.out.println(p.a + " " + compare(p.a, p.b) + " " + p.b);
         }
     }
 
