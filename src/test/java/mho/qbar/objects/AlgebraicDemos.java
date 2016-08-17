@@ -619,6 +619,18 @@ public class AlgebraicDemos extends QBarDemos {
         }
     }
 
+    private void demoRoundToDenominator() {
+        Iterable<Triple<Algebraic, BigInteger, RoundingMode>> ts = filterInfinite(
+                p -> p.c != RoundingMode.UNNECESSARY ||
+                        p.a.isRational() && p.b.mod(p.a.rationalValueExact().getDenominator()).equals(BigInteger.ZERO),
+                P.triples(P.withScale(4).algebraics(), P.positiveBigIntegers(), P.roundingModes())
+        );
+        for (Triple<Algebraic, BigInteger, RoundingMode> t : take(LIMIT, ts)) {
+            System.out.println("roundToDenominator(" + t.a + ", " + t.b + ", " + t.c + ") = " +
+                    t.a.roundToDenominator(t.b, t.c));
+        }
+    }
+
     private void demoEquals_Algebraic() {
         for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.pairs(P.withScale(4).algebraics()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);

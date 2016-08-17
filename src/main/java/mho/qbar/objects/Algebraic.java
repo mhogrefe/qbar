@@ -2440,6 +2440,32 @@ public final class Algebraic implements Comparable<Algebraic> {
     }
 
     /**
+     * Rounds {@code this} to a rational number that is an integer multiple of 1/{@code denominator} according to
+     * {@code roundingMode}; see documentation for {@link java.math.RoundingMode} for details.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>{@code denominator} must be positive.</li>
+     *  <li>If {@code roundingMode} is {@code RoundingMode.UNNECESSARY}, {@code this} must be rational and its
+     *  denominator must divide {@code denominator}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param denominator the denominator which represents the precision that {@code this} is rounded to.
+     * @param roundingMode determines the way in which {@code this} is rounded. Options are {@code RoundingMode.UP},
+     *                     {@code RoundingMode.DOWN}, {@code RoundingMode.CEILING}, {@code RoundingMode.FLOOR},
+     *                     {@code RoundingMode.HALF_UP}, {@code RoundingMode.HALF_DOWN},
+     *                     {@code RoundingMode.HALF_EVEN}, and {@code RoundingMode.UNNECESSARY}.
+     * @return {@code this}, rounded to an integer multiple of 1/{@code denominator}
+     */
+    public @NotNull Rational roundToDenominator(@NotNull BigInteger denominator, @NotNull RoundingMode roundingMode) {
+        if (denominator.signum() != 1) {
+            throw new ArithmeticException("denominator must be positive. Invalid denominator: " + denominator);
+        }
+        return Rational.of(multiply(denominator).bigIntegerValue(roundingMode)).divide(denominator);
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>

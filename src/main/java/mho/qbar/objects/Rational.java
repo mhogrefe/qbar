@@ -1870,7 +1870,7 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * Rounds {@code this} a rational number that is an integer multiple of 1/{@code denominator} according to
+     * Rounds {@code this} a to rational number that is an integer multiple of 1/{@code denominator} according to
      * {@code roundingMode}; see documentation for {@link java.math.RoundingMode} for details.
      *
      * <ul>

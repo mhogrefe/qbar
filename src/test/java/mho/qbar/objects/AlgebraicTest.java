@@ -3992,6 +3992,65 @@ public class AlgebraicTest {
         fractionalPart_helper("root 0 of x^5-x-1", "root 0 of x^5+5*x^4+10*x^3+10*x^2+4*x-1");
     }
 
+    private static void roundToDenominator_helper(
+            @NotNull Algebraic x,
+            @NotNull String denominator,
+            @NotNull String roundingMode,
+            @NotNull String output
+    ) {
+        aeq(
+                x.roundToDenominator(
+                        Readers.readBigIntegerStrict(denominator).get(),
+                        Readers.readRoundingModeStrict(roundingMode).get()
+                ),
+                output
+        );
+    }
+
+    private static void roundToDenominator_helper(
+            @NotNull String x,
+            @NotNull String denominator,
+            @NotNull String roundingMode,
+            @NotNull String output
+    ) {
+        roundToDenominator_helper(readStrict(x).get(), denominator, roundingMode, output);
+    }
+
+    private static void roundToDenominator_fail_helper(
+            @NotNull Algebraic x,
+            @NotNull String denominator,
+            @NotNull String roundingMode
+    ) {
+        try {
+            x.roundToDenominator(
+                    Readers.readBigIntegerStrict(denominator).get(),
+                    Readers.readRoundingModeStrict(roundingMode).get()
+            );
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testRoundToDenominator() {
+        roundToDenominator_helper(SQRT_TWO, "1", "HALF_EVEN", "1");
+        roundToDenominator_helper(SQRT_TWO, "2", "HALF_EVEN", "3/2");
+        roundToDenominator_helper(SQRT_TWO, "3", "HALF_EVEN", "4/3");
+        roundToDenominator_helper(SQRT_TWO, "4", "HALF_EVEN", "3/2");
+        roundToDenominator_helper(SQRT_TWO, "5", "HALF_EVEN", "7/5");
+        roundToDenominator_helper(SQRT_TWO, "6", "HALF_EVEN", "4/3");
+        roundToDenominator_helper(SQRT_TWO, "7", "HALF_EVEN", "10/7");
+        roundToDenominator_helper(SQRT_TWO, "8", "HALF_EVEN", "11/8");
+        roundToDenominator_helper(SQRT_TWO, "9", "HALF_EVEN", "13/9");
+        roundToDenominator_helper(SQRT_TWO, "10", "HALF_EVEN", "7/5");
+        roundToDenominator_helper(SQRT_TWO, "100", "HALF_EVEN", "141/100");
+        roundToDenominator_helper(SQRT_TWO, "1000", "HALF_EVEN", "707/500");
+        roundToDenominator_helper("3/10", "30", "UNNECESSARY", "3/10");
+
+        roundToDenominator_fail_helper(SQRT_TWO, "0", "HALF_EVEN");
+        roundToDenominator_fail_helper(SQRT_TWO, "-1", "HALF_EVEN");
+        roundToDenominator_fail_helper(SQRT_TWO, "7", "UNNECESSARY");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

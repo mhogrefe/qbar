@@ -2913,7 +2913,6 @@ public class RationalProperties extends QBarTestProperties {
                 p -> lt(p.a.abs().multiply(p.b).fractionalPart(), ONE_HALF),
                 P.pairs(P.rationals(), P.positiveBigIntegers())
         );
-
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps2)) {
             Rational down = p.a.roundToDenominator(p.b, RoundingMode.DOWN);
             assertEquals(p, p.a.roundToDenominator(p.b, RoundingMode.HALF_DOWN), down);

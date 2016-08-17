@@ -125,6 +125,7 @@ public class AlgebraicProperties extends QBarTestProperties {
         propertiesPow_Rational();
         compareImplementationsPow_Rational();
         propertiesFractionalPart();
+        propertiesRoundToDenominator();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -3371,6 +3372,109 @@ public class AlgebraicProperties extends QBarTestProperties {
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
             assertEquals(i, of(i).fractionalPart(), ZERO);
+        }
+    }
+
+    private void propertiesRoundToDenominator() {
+        initialize("roundToDenominator(BigInteger, RoundingMode)");
+        Iterable<Triple<Algebraic, BigInteger, RoundingMode>> ts = filter(
+                p -> p.c != RoundingMode.UNNECESSARY ||
+                        p.a.isRational() && p.b.mod(p.a.rationalValueExact().getDenominator()).equals(BigInteger.ZERO),
+                P.triples(P.withScale(4).algebraics(), P.positiveBigIntegers(), P.roundingModes())
+        );
+        for (Triple<Algebraic, BigInteger, RoundingMode> t : take(LIMIT, ts)) {
+            Rational rounded = t.a.roundToDenominator(t.b, t.c);
+            rounded.validate();
+            assertEquals(t, t.b.mod(rounded.getDenominator()), BigInteger.ZERO);
+            assertTrue(t, rounded == Rational.ZERO || rounded.signum() == t.a.signum());
+            assertTrue(t, lt(t.a.subtract(rounded).abs(), of(Rational.of(BigInteger.ONE, t.b))));
+        }
+
+        Iterable<Pair<Algebraic, RoundingMode>> ps = filterInfinite(
+                p -> p.b != RoundingMode.UNNECESSARY || p.a.isInteger(),
+                P.pairs(P.algebraics(), P.roundingModes())
+        );
+        for (Pair<Algebraic, RoundingMode> p : take(LIMIT, ps)) {
+            Rational rounded = p.a.roundToDenominator(BigInteger.ONE, p.b);
+            assertEquals(p, rounded.getNumerator(), p.a.bigIntegerValue(p.b));
+            assertEquals(p, rounded.getDenominator(), BigInteger.ONE);
+        }
+
+        Iterable<Pair<Algebraic, BigInteger>> ps2 = filterInfinite(
+                p -> p.b.mod(p.a.rationalValueExact().getDenominator()).equals(BigInteger.ZERO),
+                P.pairs(P.algebraics(1), P.positiveBigIntegers())
+        );
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, ps2)) {
+            assertTrue(p, p.a.roundToDenominator(p.b, RoundingMode.UNNECESSARY).equals(p.a.rationalValueExact()));
+        }
+
+        ps2 = P.pairs(P.withScale(4).algebraics(), P.positiveBigIntegers());
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, ps2)) {
+            assertTrue(p, le(of(p.a.roundToDenominator(p.b, RoundingMode.FLOOR)), p.a));
+            assertTrue(p, ge(of(p.a.roundToDenominator(p.b, RoundingMode.CEILING)), p.a));
+            assertTrue(p, le(of(p.a.roundToDenominator(p.b, RoundingMode.DOWN).abs()), p.a.abs()));
+            assertTrue(p, ge(of(p.a.roundToDenominator(p.b, RoundingMode.UP).abs()), p.a.abs()));
+            Algebraic resolution = of(Rational.of(p.b).shiftLeft(1).invert());
+            assertTrue(p, le(p.a.subtract(p.a.roundToDenominator(p.b, RoundingMode.HALF_DOWN)).abs(), resolution));
+            assertTrue(p, le(p.a.subtract(p.a.roundToDenominator(p.b, RoundingMode.HALF_UP)).abs(), resolution));
+            assertTrue(p, le(p.a.subtract(p.a.roundToDenominator(p.b, RoundingMode.HALF_EVEN)).abs(), resolution));
+        }
+
+        ps2 = filterInfinite(
+                p -> lt(p.a.abs().multiply(p.b).fractionalPart(), ONE_HALF),
+                P.pairs(P.withScale(4).algebraics(), P.positiveBigIntegers())
+        );
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, ps2)) {
+            Rational down = p.a.roundToDenominator(p.b, RoundingMode.DOWN);
+            assertEquals(p, p.a.roundToDenominator(p.b, RoundingMode.HALF_DOWN), down);
+            assertEquals(p, p.a.roundToDenominator(p.b, RoundingMode.HALF_UP), down);
+            assertEquals(p, p.a.roundToDenominator(p.b, RoundingMode.HALF_EVEN), down);
+        }
+
+        ps2 = filterInfinite(
+                p -> gt(p.a.abs().multiply(p.b).fractionalPart(), ONE_HALF),
+                P.pairs(P.withScale(4).algebraics(), P.positiveBigIntegers())
+        );
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, ps2)) {
+            Rational up = p.a.roundToDenominator(p.b, RoundingMode.UP);
+            assertEquals(p, p.a.roundToDenominator(p.b, RoundingMode.HALF_DOWN), up);
+            assertEquals(p, p.a.roundToDenominator(p.b, RoundingMode.HALF_UP), up);
+            assertEquals(p, p.a.roundToDenominator(p.b, RoundingMode.HALF_EVEN), up);
+        }
+
+        for (Rational r : take(LIMIT, filterInfinite(s -> !s.getDenominator().testBit(0), P.rationals()))) {
+            Algebraic x = of(r);
+            BigInteger denominator = r.getDenominator().shiftRight(1);
+            assertEquals(x, x.abs().multiply(denominator).fractionalPart(), ONE_HALF);
+            Rational hd = x.roundToDenominator(denominator, RoundingMode.HALF_DOWN);
+            assertEquals(x, hd, x.roundToDenominator(denominator, RoundingMode.DOWN));
+            Rational hu = x.roundToDenominator(denominator, RoundingMode.HALF_UP);
+            assertEquals(x, hu, x.roundToDenominator(denominator, RoundingMode.UP));
+            Rational he = x.roundToDenominator(denominator, RoundingMode.HALF_EVEN);
+            assertFalse(r, he.multiply(denominator).getNumerator().testBit(0));
+        }
+
+        Iterable<Triple<Algebraic, BigInteger, RoundingMode>> tsFail = P.triples(
+                P.algebraics(),
+                P.withElement(BigInteger.ZERO, P.negativeBigIntegers()),
+                P.roundingModes()
+        );
+        for (Triple<Algebraic, BigInteger, RoundingMode> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.roundToDenominator(t.b, t.c);
+                fail(t);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<Pair<Algebraic, BigInteger>> psFail = filterInfinite(
+                p -> !p.a.isRational() || !p.b.mod(p.a.rationalValueExact().getDenominator()).equals(BigInteger.ZERO),
+                P.pairs(P.algebraics(), P.positiveBigIntegers())
+        );
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, psFail)) {
+            try {
+                p.a.roundToDenominator(p.b, RoundingMode.UNNECESSARY);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
         }
     }
 
