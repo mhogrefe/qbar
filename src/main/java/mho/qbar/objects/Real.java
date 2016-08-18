@@ -583,19 +583,18 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
         }
         return () -> new NoRemoveIterator<BigInteger>() {
             private final @NotNull List<BigInteger> termsSoFar = new ArrayList<>();
-            private final @NotNull List<Interval> intervalsSoFar = new ArrayList<>();
             private final @NotNull Iterator<Interval> is = intervals.iterator();
+            private @NotNull Interval lastInterval;
             private Rational lower;
             private Rational upper;
             private BigInteger lowerTerm;
             private BigInteger upperTerm;
             {
                 while (true) {
-                    Interval i = is.next();
-                    if (i.isFinitelyBounded()) {
-                        intervalsSoFar.add(i);
-                        lower = i.getLower().get();
-                        upper = i.getUpper().get();
+                    lastInterval = is.next();
+                    if (lastInterval.isFinitelyBounded()) {
+                        lower = lastInterval.getLower().get();
+                        upper = lastInterval.getUpper().get();
                         lowerTerm = lower.floor();
                         upperTerm = upper.floor();
                         break;
@@ -610,81 +609,62 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
 
             @Override
             public BigInteger next() {
-                if (termsSoFar.isEmpty()) {
-                    while (!lowerTerm.equals(upperTerm)) {
-                        Interval i = is.next();
-                        intervalsSoFar.add(i);
-                        Rational newLower = i.getLower().get();
-                        Rational newUpper = i.getUpper().get();
-                        if (newLower != lower) {
-                            lower = newLower;
-                            lowerTerm = lower.floor();
+                lower = null;
+                upper = null;
+                lowerTerm = null;
+                upperTerm = null;
+                Rational newLower = lastInterval.getLower().get();
+                Rational newUpper = lastInterval.getUpper().get();
+                boolean skip = false;
+                if (newLower != lower) {
+                    Optional<BigInteger> newLowerTerm = continuedFractionHelper(newLower, termsSoFar);
+                    if (newLowerTerm.isPresent()) {
+                        lowerTerm = newLowerTerm.get();
+                    } else {
+                        skip = true;
+                    }
+                }
+                if (!skip && newUpper != upper) {
+                    Optional<BigInteger> newUpperTerm = continuedFractionHelper(newUpper, termsSoFar);
+                    if (newUpperTerm.isPresent()) {
+                        upperTerm = newUpperTerm.get();
+                    } else {
+                        skip = true;
+                    }
+                }
+                if (!skip) {
+                    lower = newLower;
+                    upper = newUpper;
+                    if (lowerTerm.equals(upperTerm)) {
+                        termsSoFar.add(lowerTerm);
+                        return lowerTerm;
+                    }
+                }
+                while (true) {
+                    lastInterval = is.next();
+                    newLower = lastInterval.getLower().get();
+                    newUpper = lastInterval.getUpper().get();
+                    if (newLower != lower) {
+                        Optional<BigInteger> newLowerTerm = continuedFractionHelper(newLower, termsSoFar);
+                        if (newLowerTerm.isPresent()) {
+                            lowerTerm = newLowerTerm.get();
                         } else {
-                            upper = newUpper;
-                            upperTerm = upper.floor();
+                            continue;
                         }
                     }
-                    termsSoFar.add(lowerTerm);
-                    return lowerTerm;
-                } else {
-                    lower = null;
-                    upper = null;
-                    lowerTerm = null;
-                    upperTerm = null;
-                    for (Interval i : intervalsSoFar) {
-                        Rational newLower = i.getLower().get();
-                        Rational newUpper = i.getUpper().get();
-                        if (newLower != lower) {
-                            Optional<BigInteger> newLowerTerm = continuedFractionHelper(newLower, termsSoFar);
-                            if (newLowerTerm.isPresent()) {
-                                lowerTerm = newLowerTerm.get();
-                            } else {
-                                continue;
-                            }
-                        }
-                        if (newUpper != upper) {
-                            Optional<BigInteger> newUpperTerm = continuedFractionHelper(newUpper, termsSoFar);
-                            if (newUpperTerm.isPresent()) {
-                                upperTerm = newUpperTerm.get();
-                            } else {
-                                continue;
-                            }
-                        }
-                        lower = newLower;
-                        upper = newUpper;
-                        if (lowerTerm.equals(upperTerm)) {
-                            termsSoFar.add(lowerTerm);
-                            return lowerTerm;
+                    if (newUpper != upper) {
+                        Optional<BigInteger> newUpperTerm = continuedFractionHelper(newUpper, termsSoFar);
+                        if (newUpperTerm.isPresent()) {
+                            upperTerm = newUpperTerm.get();
+                        } else {
+                            continue;
                         }
                     }
-                    while (true) {
-                        Interval i = is.next();
-                        intervalsSoFar.clear();
-                        intervalsSoFar.add(i);
-                        Rational newLower = i.getLower().get();
-                        Rational newUpper = i.getUpper().get();
-                        if (newLower != lower) {
-                            Optional<BigInteger> newLowerTerm = continuedFractionHelper(newLower, termsSoFar);
-                            if (newLowerTerm.isPresent()) {
-                                lowerTerm = newLowerTerm.get();
-                            } else {
-                                continue;
-                            }
-                        }
-                        if (newUpper != upper) {
-                            Optional<BigInteger> newUpperTerm = continuedFractionHelper(newUpper, termsSoFar);
-                            if (newUpperTerm.isPresent()) {
-                                upperTerm = newUpperTerm.get();
-                            } else {
-                                continue;
-                            }
-                        }
-                        lower = newLower;
-                        upper = newUpper;
-                        if (lowerTerm.equals(upperTerm)) {
-                            termsSoFar.add(lowerTerm);
-                            return lowerTerm;
-                        }
+                    lower = newLower;
+                    upper = newUpper;
+                    if (lowerTerm.equals(upperTerm)) {
+                        termsSoFar.add(lowerTerm);
+                        return lowerTerm;
                     }
                 }
             }
