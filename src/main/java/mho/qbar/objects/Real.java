@@ -590,16 +590,9 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
             private BigInteger lowerTerm;
             private BigInteger upperTerm;
             {
-                while (true) {
+                do {
                     lastInterval = is.next();
-                    if (lastInterval.isFinitelyBounded()) {
-                        lower = lastInterval.getLower().get();
-                        upper = lastInterval.getUpper().get();
-                        lowerTerm = lower.floor();
-                        upperTerm = upper.floor();
-                        break;
-                    }
-                }
+                } while (!lastInterval.isFinitelyBounded());
             }
 
             @Override
@@ -613,42 +606,15 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
                 upper = null;
                 lowerTerm = null;
                 upperTerm = null;
-                Rational newLower = lastInterval.getLower().get();
-                Rational newUpper = lastInterval.getUpper().get();
-                boolean skip = false;
-                if (newLower != lower) {
-                    Optional<BigInteger> newLowerTerm = continuedFractionHelper(newLower, termsSoFar);
-                    if (newLowerTerm.isPresent()) {
-                        lowerTerm = newLowerTerm.get();
-                    } else {
-                        skip = true;
-                    }
-                }
-                if (!skip && newUpper != upper) {
-                    Optional<BigInteger> newUpperTerm = continuedFractionHelper(newUpper, termsSoFar);
-                    if (newUpperTerm.isPresent()) {
-                        upperTerm = newUpperTerm.get();
-                    } else {
-                        skip = true;
-                    }
-                }
-                if (!skip) {
-                    lower = newLower;
-                    upper = newUpper;
-                    if (lowerTerm.equals(upperTerm)) {
-                        termsSoFar.add(lowerTerm);
-                        return lowerTerm;
-                    }
-                }
                 while (true) {
-                    lastInterval = is.next();
-                    newLower = lastInterval.getLower().get();
-                    newUpper = lastInterval.getUpper().get();
+                    Rational newLower = lastInterval.getLower().get();
+                    Rational newUpper = lastInterval.getUpper().get();
                     if (newLower != lower) {
                         Optional<BigInteger> newLowerTerm = continuedFractionHelper(newLower, termsSoFar);
                         if (newLowerTerm.isPresent()) {
                             lowerTerm = newLowerTerm.get();
                         } else {
+                            lastInterval = is.next();
                             continue;
                         }
                     }
@@ -657,6 +623,7 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
                         if (newUpperTerm.isPresent()) {
                             upperTerm = newUpperTerm.get();
                         } else {
+                            lastInterval = is.next();
                             continue;
                         }
                     }
@@ -665,6 +632,8 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
                     if (lowerTerm.equals(upperTerm)) {
                         termsSoFar.add(lowerTerm);
                         return lowerTerm;
+                    } else {
+                        lastInterval = is.next();
                     }
                 }
             }
