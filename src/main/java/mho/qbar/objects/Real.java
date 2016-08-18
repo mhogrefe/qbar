@@ -585,10 +585,6 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
             private final @NotNull List<BigInteger> termsSoFar = new ArrayList<>();
             private final @NotNull Iterator<Interval> is = intervals.iterator();
             private @NotNull Interval lastInterval;
-            private Rational lower;
-            private Rational upper;
-            private BigInteger lowerTerm;
-            private BigInteger upperTerm;
             {
                 do {
                     lastInterval = is.next();
@@ -602,10 +598,10 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
 
             @Override
             public BigInteger next() {
-                lower = null;
-                upper = null;
-                lowerTerm = null;
-                upperTerm = null;
+                Rational lower = null;
+                Rational upper = null;
+                BigInteger lowerTerm = null;
+                BigInteger upperTerm = null;
                 while (true) {
                     Rational newLower = lastInterval.getLower().get();
                     Rational newUpper = lastInterval.getUpper().get();
@@ -629,6 +625,7 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
                     }
                     lower = newLower;
                     upper = newUpper;
+                    //noinspection ConstantConditions
                     if (lowerTerm.equals(upperTerm)) {
                         termsSoFar.add(lowerTerm);
                         return lowerTerm;

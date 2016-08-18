@@ -126,6 +126,7 @@ public class AlgebraicProperties extends QBarTestProperties {
         compareImplementationsPow_Rational();
         propertiesFractionalPart();
         propertiesRoundToDenominator();
+        propertiesContinuedFraction();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -3475,6 +3476,16 @@ public class AlgebraicProperties extends QBarTestProperties {
                 p.a.roundToDenominator(p.b, RoundingMode.UNNECESSARY);
                 fail(p);
             } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesContinuedFraction() {
+        initialize("continuedFraction()");
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            List<BigInteger> continuedFraction = toList(take(TINY_LIMIT, x.continuedFraction()));
+            assertFalse(x, continuedFraction.isEmpty());
+            assertTrue(x, all(i -> i != null, continuedFraction));
+            assertTrue(x, all(i -> i.signum() == 1, tail(continuedFraction)));
         }
     }
 
