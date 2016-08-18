@@ -2466,6 +2466,29 @@ public final class Algebraic implements Comparable<Algebraic> {
     }
 
     /**
+     * Finds the continued fraction of {@code this}. If we pretend that the result is an array called a of length n,
+     * then {@code this}=a[0]+1/(a[1]+1/(a[2]+...+1/a[n-1])...).
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>The result is non-null and non-empty. None of its elements are null. The first element may be any
+     *  {@code BigInteger}; the remaining elements, if any, are all positive. If the result is finite and has more than
+     *  one element, the last element is greater than 1.</li>
+     * </ul>
+     *
+     * Length is O(log({@code denominator})) if {@code this} is rational, infinite otherwise
+     *
+     * @return the continued-fraction-representation of {@code this}
+     */
+    public @NotNull Iterable<BigInteger> continuedFraction() {
+        if (rational.isPresent()) {
+            return rational.get().continuedFraction();
+        } else {
+            return realValue().continuedFraction();
+        }
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>

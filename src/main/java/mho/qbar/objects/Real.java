@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.iterables.ExhaustiveProvider;
+import mho.wheels.iterables.NoRemoveIterator;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.IntegerUtils;
@@ -560,6 +561,134 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
                 },
                 x
         );
+    }
+
+    private @NotNull Optional<BigInteger> continuedFractionHelper(
+            @NotNull Rational approx,
+            @NotNull List<BigInteger> termsSoFar
+    ) {
+        for (BigInteger term : termsSoFar) {
+            approx = approx.subtract(Rational.of(term));
+            if (approx.signum() != 1 || Ordering.ge(approx, Rational.ONE)) {
+                return Optional.empty();
+            }
+            approx = approx.invert();
+        }
+        return Optional.of(approx.floor());
+    }
+
+    public @NotNull Iterable<BigInteger> continuedFraction() {
+        if (this == ZERO) {
+            return Collections.singletonList(BigInteger.ZERO);
+        }
+        return () -> new NoRemoveIterator<BigInteger>() {
+            private final @NotNull List<BigInteger> termsSoFar = new ArrayList<>();
+            private final @NotNull List<Interval> intervalsSoFar = new ArrayList<>();
+            private final @NotNull Iterator<Interval> is = intervals.iterator();
+            private Rational lower;
+            private Rational upper;
+            private BigInteger lowerTerm;
+            private BigInteger upperTerm;
+            {
+                while (true) {
+                    Interval i = is.next();
+                    if (i.isFinitelyBounded()) {
+                        intervalsSoFar.add(i);
+                        lower = i.getLower().get();
+                        upper = i.getUpper().get();
+                        lowerTerm = lower.floor();
+                        upperTerm = upper.floor();
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public BigInteger next() {
+                if (termsSoFar.isEmpty()) {
+                    while (!lowerTerm.equals(upperTerm)) {
+                        Interval i = is.next();
+                        intervalsSoFar.add(i);
+                        Rational newLower = i.getLower().get();
+                        Rational newUpper = i.getUpper().get();
+                        if (newLower != lower) {
+                            lower = newLower;
+                            lowerTerm = lower.floor();
+                        } else {
+                            upper = newUpper;
+                            upperTerm = upper.floor();
+                        }
+                    }
+                    termsSoFar.add(lowerTerm);
+                    return lowerTerm;
+                } else {
+                    lower = null;
+                    upper = null;
+                    lowerTerm = null;
+                    upperTerm = null;
+                    for (Interval i : intervalsSoFar) {
+                        Rational newLower = i.getLower().get();
+                        Rational newUpper = i.getUpper().get();
+                        if (newLower != lower) {
+                            Optional<BigInteger> newLowerTerm = continuedFractionHelper(newLower, termsSoFar);
+                            if (newLowerTerm.isPresent()) {
+                                lowerTerm = newLowerTerm.get();
+                            } else {
+                                continue;
+                            }
+                        }
+                        if (newUpper != upper) {
+                            Optional<BigInteger> newUpperTerm = continuedFractionHelper(newUpper, termsSoFar);
+                            if (newUpperTerm.isPresent()) {
+                                upperTerm = newUpperTerm.get();
+                            } else {
+                                continue;
+                            }
+                        }
+                        lower = newLower;
+                        upper = newUpper;
+                        if (lowerTerm.equals(upperTerm)) {
+                            termsSoFar.add(lowerTerm);
+                            return lowerTerm;
+                        }
+                    }
+                    while (true) {
+                        Interval i = is.next();
+                        intervalsSoFar.clear();
+                        intervalsSoFar.add(i);
+                        Rational newLower = i.getLower().get();
+                        Rational newUpper = i.getUpper().get();
+                        if (newLower != lower) {
+                            Optional<BigInteger> newLowerTerm = continuedFractionHelper(newLower, termsSoFar);
+                            if (newLowerTerm.isPresent()) {
+                                lowerTerm = newLowerTerm.get();
+                            } else {
+                                continue;
+                            }
+                        }
+                        if (newUpper != upper) {
+                            Optional<BigInteger> newUpperTerm = continuedFractionHelper(newUpper, termsSoFar);
+                            if (newUpperTerm.isPresent()) {
+                                upperTerm = newUpperTerm.get();
+                            } else {
+                                continue;
+                            }
+                        }
+                        lower = newLower;
+                        upper = newUpper;
+                        if (lowerTerm.equals(upperTerm)) {
+                            termsSoFar.add(lowerTerm);
+                            return lowerTerm;
+                        }
+                    }
+                }
+            }
+        };
     }
 
     public @NotNull String toString() {

@@ -4051,6 +4051,25 @@ public class AlgebraicTest {
         roundToDenominator_fail_helper(SQRT_TWO, "7", "UNNECESSARY");
     }
 
+    private static void continuedFraction_helper(@NotNull String input, @NotNull String output) {
+        aeqitLimit(TINY_LIMIT, readStrict(input).get().continuedFraction(), output);
+    }
+
+    @Test
+    public void testContinuedFraction() {
+        continuedFraction_helper("0", "[0]");
+        continuedFraction_helper("1", "[1]");
+        continuedFraction_helper("1/2", "[0, 2]");
+        continuedFraction_helper("-4/3", "[-2, 1, 2]");
+        continuedFraction_helper("sqrt(2)", "[1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, ...]");
+        continuedFraction_helper("-sqrt(2)", "[-2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, ...]");
+        continuedFraction_helper("(1+sqrt(5))/2", "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...]");
+        continuedFraction_helper("root 0 of x^5-x-1",
+                "[1, 5, 1, 42, 1, 3, 24, 2, 2, 1, 16, 1, 11, 1, 1, 2, 31, 1, 12, 5, ...]");
+        continuedFraction_helper("root 0 of x^3-2",
+                "[1, 3, 1, 5, 1, 1, 4, 1, 1, 8, 1, 14, 1, 10, 2, 1, 4, 12, 2, 3, ...]");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(
