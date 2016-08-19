@@ -604,7 +604,7 @@ public class MatrixProperties extends QBarTestProperties {
                                 t -> P.pairs(P.matrices(t.a, t.c), P.matrices(t.b, t.c))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 p -> new Pair<>(zero(p.a, 0), zero(p.b, 0)),
                                 P.pairs(P.naturalIntegersGeometric())
@@ -657,7 +657,7 @@ public class MatrixProperties extends QBarTestProperties {
                                 t -> P.pairs(P.matrices(t.a, t.b), P.matrices(t.a, t.c))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(p -> new Pair<>(zero(0, p.a), zero(0, p.b)), P.pairs(P.naturalIntegersGeometric())),
                         map(
                                 i -> {
@@ -703,7 +703,7 @@ public class MatrixProperties extends QBarTestProperties {
                                 p -> P.pairs(P.matrices(p.a, p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> {
                                     Matrix m = zero(0, i);
@@ -810,7 +810,7 @@ public class MatrixProperties extends QBarTestProperties {
                                 p -> P.pairs(P.matrices(p.a, p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> {
                                     Matrix m = zero(0, i);
@@ -867,7 +867,7 @@ public class MatrixProperties extends QBarTestProperties {
                                 p -> P.pairs(P.matrices(p.a, p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> {
                                     Matrix m = zero(0, i);
@@ -943,7 +943,7 @@ public class MatrixProperties extends QBarTestProperties {
                                 p -> P.pairs(P.matrices(p.a, p.b), P.vectors(p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> new Pair<>(zero(i, 0), Vector.ZERO_DIMENSIONAL),
                                 P.naturalIntegersGeometric()
@@ -1019,7 +1019,7 @@ public class MatrixProperties extends QBarTestProperties {
                         )
                 ),
                 P.choose(
-                    P.choose(
+                    P.withScale(1).choose(
                             map(
                                     m -> new Pair<>(m, zero(m.width(), 0)),
                                     filterInfinite(
@@ -1078,7 +1078,7 @@ public class MatrixProperties extends QBarTestProperties {
                                 p -> P.pairs(P.matrices(p.a, p.b), P.vectors(p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> new Pair<>(zero(i, 0), Vector.ZERO_DIMENSIONAL),
                                 P.naturalIntegersGeometric()
@@ -1126,7 +1126,7 @@ public class MatrixProperties extends QBarTestProperties {
                         )
                 ),
                 P.choose(
-                        P.choose(
+                        P.withScale(1).choose(
                                 map(
                                         m -> new Pair<>(m, zero(m.width(), 0)),
                                         filterInfinite(
@@ -1488,7 +1488,7 @@ public class MatrixProperties extends QBarTestProperties {
                                 p -> P.pairs(P.withScale(4).matrices(p.a, p.b), P.withScale(4).vectors(p.a))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> new Pair<>(zero(0, i), Vector.ZERO_DIMENSIONAL),
                                 P.withScale(4).naturalIntegersGeometric()
@@ -1533,7 +1533,7 @@ public class MatrixProperties extends QBarTestProperties {
                                 p -> P.pairs(P.withScale(4).matrices(p.a, p.b), P.withScale(4).vectors(p.a))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> new Pair<>(zero(0, i), Vector.ZERO_DIMENSIONAL),
                                 P.withScale(4).naturalIntegersGeometric()
@@ -1554,7 +1554,7 @@ public class MatrixProperties extends QBarTestProperties {
                                 p -> P.pairs(P.withScale(4).matrices(p.a, p.b), P.withScale(4).vectors(p.a))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> new Pair<>(zero(0, i), Vector.ZERO_DIMENSIONAL),
                                 P.withScale(4).naturalIntegersGeometric()
@@ -1816,7 +1816,7 @@ public class MatrixProperties extends QBarTestProperties {
                                 p -> P.pairs(P.matrices(p.a, p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> {
                                     Matrix m = Matrix.zero(0, i);
@@ -1854,7 +1854,7 @@ public class MatrixProperties extends QBarTestProperties {
                         )
                 ),
                 P.choose(
-                    P.choose(
+                    P.withScale(1).choose(
                             map(
                                     m -> new Pair<>(m, zero(m.width(), 0)),
                                     filterInfinite(

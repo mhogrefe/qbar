@@ -208,7 +208,7 @@ public class MatrixDemos extends QBarDemos {
                                 t -> P.pairs(P.withScale(4).matrices(t.a, t.c), P.withScale(4).matrices(t.b, t.c))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 p -> new Pair<>(zero(p.a, 0), zero(p.b, 0)),
                                 P.pairs(P.withScale(4).naturalIntegersGeometric())
@@ -243,7 +243,7 @@ public class MatrixDemos extends QBarDemos {
                                 t -> P.pairs(P.withScale(4).matrices(t.a, t.b), P.withScale(4).matrices(t.a, t.c))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 p -> new Pair<>(zero(0, p.a), zero(0, p.b)),
                                 P.pairs(P.withScale(4).naturalIntegersGeometric())
@@ -271,7 +271,7 @@ public class MatrixDemos extends QBarDemos {
                                 p -> P.pairs(P.withScale(4).matrices(p.a, p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> {
                                     Matrix m = zero(0, i);
@@ -308,7 +308,7 @@ public class MatrixDemos extends QBarDemos {
                                 p -> P.pairs(P.withScale(4).matrices(p.a, p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> {
                                     Matrix m = zero(0, i);
@@ -356,7 +356,7 @@ public class MatrixDemos extends QBarDemos {
                                 )
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> new Pair<>(zero(i, 0), Vector.ZERO_DIMENSIONAL),
                                 P.withScale(4).naturalIntegersGeometric()
@@ -379,7 +379,7 @@ public class MatrixDemos extends QBarDemos {
                         )
                 ),
                 P.choose(
-                    P.choose(
+                    P.withScale(1).choose(
                             map(
                                     m -> new Pair<>(m, zero(m.width(), 0)),
                                     filterInfinite(m -> m.height() != 0 && m.width() != 0, P.withScale(4).matrices())
@@ -465,7 +465,7 @@ public class MatrixDemos extends QBarDemos {
                                 p -> P.pairs(P.withScale(4).matrices(p.a, p.b), P.withScale(4).vectors(p.a))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> new Pair<>(zero(0, i), Vector.ZERO_DIMENSIONAL),
                                 P.withScale(4).naturalIntegersGeometric()
@@ -487,7 +487,7 @@ public class MatrixDemos extends QBarDemos {
                                 p -> P.pairs(P.withScale(4).matrices(p.a, p.b), P.withScale(4).vectors(p.a))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> new Pair<>(zero(0, i), Vector.ZERO_DIMENSIONAL),
                                 P.withScale(4).naturalIntegersGeometric()

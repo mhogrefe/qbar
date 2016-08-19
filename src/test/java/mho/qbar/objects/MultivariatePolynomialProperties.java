@@ -1550,7 +1550,6 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         Iterable<Pair<MultivariatePolynomial, Map<Variable, BigInteger>>> ps;
         if (P instanceof QBarExhaustiveProvider) {
             ps = P.choose(
-                    map(i -> new Pair<>(of(i), new TreeMap<>()), P.withScale(4).bigIntegers()),
                     P.dependentPairsInfiniteSquareRootOrder(
                             filterInfinite(r -> r.degree() > 0, P.multivariatePolynomials()),
                             q -> {
@@ -1563,7 +1562,8 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
                                         )
                                 );
                             }
-                    )
+                    ),
+                    map(i -> new Pair<>(of(i), new TreeMap<>()), P.withScale(4).bigIntegers())
             );
         } else {
             ps = P.choose(
@@ -1620,7 +1620,6 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
         Iterable<Pair<MultivariatePolynomial, Map<Variable, Rational>>> ps;
         if (P instanceof QBarExhaustiveProvider) {
             ps = P.choose(
-                    map(i -> new Pair<>(of(i), new TreeMap<>()), P.withScale(4).bigIntegers()),
                     P.dependentPairsInfiniteSquareRootOrder(
                             filterInfinite(r -> r.degree() > 0, P.multivariatePolynomials()),
                             q -> {
@@ -1633,7 +1632,8 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
                                         )
                                 );
                             }
-                    )
+                    ),
+                    map(i -> new Pair<>(of(i), new TreeMap<>()), P.withScale(4).bigIntegers())
             );
         } else {
             ps = P.choose(

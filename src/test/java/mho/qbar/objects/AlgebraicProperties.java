@@ -3319,14 +3319,14 @@ public class AlgebraicProperties extends QBarTestProperties {
                 map(
                         p -> Rational.of(p.a, p.b),
                         P.choose(
-                                P.pairs(P.bigIntegers(), P.withScale(33).rangeUp(upper.add(BigInteger.ONE))),
                                 P.pairs(
-                                        P.choose(
+                                        P.withScale(1).choose(
                                                 P.withScale(33).rangeDown(lower.subtract(BigInteger.ONE)),
                                                 P.withScale(33).rangeUp(upper.add(BigInteger.ONE))
                                         ),
                                         P.positiveBigIntegers()
-                                )
+                                ),
+                                P.pairs(P.bigIntegers(), P.withScale(33).rangeUp(upper.add(BigInteger.ONE)))
                         )
                 )
         );

@@ -627,7 +627,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
                                 )
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 p -> new Pair<>(zero(p.a, 0), zero(p.b, 0)),
                                 P.pairs(P.naturalIntegersGeometric())
@@ -683,7 +683,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
                                 t -> P.pairs(P.rationalMatrices(t.a, t.b), P.rationalMatrices(t.a, t.c))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(p -> new Pair<>(zero(0, p.a), zero(0, p.b)), P.pairs(P.naturalIntegersGeometric())),
                         map(
                                 i -> {
@@ -729,7 +729,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
                                 p -> P.pairs(P.rationalMatrices(p.a, p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> {
                                     RationalMatrix m = zero(0, i);
@@ -769,7 +769,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
                                 p -> P.triples(P.rationalMatrices(p.a, p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> {
                                     RationalMatrix m = zero(0, i);
@@ -832,7 +832,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
                                 p -> P.pairs(P.rationalMatrices(p.a, p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> {
                                     RationalMatrix m = zero(0, i);
@@ -889,7 +889,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
                                 p -> P.pairs(P.rationalMatrices(p.a, p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> {
                                     RationalMatrix m = zero(0, i);
@@ -1092,7 +1092,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
                                 p -> P.pairs(P.rationalMatrices(p.a, p.b), P.rationalVectors(p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> new Pair<>(zero(i, 0), RationalVector.ZERO_DIMENSIONAL),
                                 P.naturalIntegersGeometric()
@@ -1177,7 +1177,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
                         )
                 ),
                 P.choose(
-                    P.choose(
+                    P.withScale(1).choose(
                             map(
                                     m -> new Pair<>(m, zero(m.width(), 0)),
                                     filterInfinite(
@@ -1230,7 +1230,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
                                 p -> P.pairs(P.rationalMatrices(p.a, p.b), P.rationalVectors(p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> new Pair<>(zero(i, 0), RationalVector.ZERO_DIMENSIONAL),
                                 P.naturalIntegersGeometric()
@@ -1281,7 +1281,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
                         )
                 ),
                 P.choose(
-                        P.choose(
+                        P.withScale(1).choose(
                                 map(
                                         m -> new Pair<>(m, zero(m.width(), 0)),
                                         filterInfinite(
@@ -1502,7 +1502,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
                                 p -> P.pairs(P.rationalMatrices(p.a, p.b), P.rationalVectors(p.a))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> new Pair<>(zero(0, i), RationalVector.ZERO_DIMENSIONAL),
                                 P.withScale(4).naturalIntegersGeometric()
@@ -1545,7 +1545,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
                                 )
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> new Pair<>(zero(0, i), RationalVector.ZERO_DIMENSIONAL),
                                 P.withScale(4).naturalIntegersGeometric()
@@ -1805,7 +1805,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
                                 p -> P.pairs(P.rationalMatrices(p.a, p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> {
                                     RationalMatrix m = RationalMatrix.zero(0, i);
@@ -1843,7 +1843,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
                         )
                 ),
                 P.choose(
-                    P.choose(
+                    P.withScale(1).choose(
                             map(
                                     m -> new Pair<>(m, zero(m.width(), 0)),
                                     filterInfinite(

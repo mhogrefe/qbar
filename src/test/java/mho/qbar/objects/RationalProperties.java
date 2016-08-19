@@ -3125,7 +3125,7 @@ public class RationalProperties extends QBarTestProperties {
                             P.listsWithSublists(
                                     map(
                                             Collections::singletonList,
-                                            P.choose(
+                                            P.withScale(1).choose(
                                                     P.negativeBigIntegers(),
                                                     P.withScale(IntegerUtils.ceilingLog2(b) + 2).rangeUp(b)
                                             )
@@ -3154,7 +3154,7 @@ public class RationalProperties extends QBarTestProperties {
                             P.listsWithSublists(
                                     map(
                                             Collections::singletonList,
-                                            P.choose(
+                                            P.withScale(1).choose(
                                                     P.negativeBigIntegers(),
                                                     P.withScale(IntegerUtils.ceilingLog2(b) + 2).rangeUp(b)
                                             )
@@ -3185,7 +3185,7 @@ public class RationalProperties extends QBarTestProperties {
                                     (Iterable<List<BigInteger>>) P.listsWithSublists(
                                             map(
                                                     Collections::singletonList,
-                                                    P.choose(
+                                                    P.withScale(1).choose(
                                                             P.negativeBigIntegers(),
                                                             P.withScale(IntegerUtils.ceilingLog2(b) + 2).rangeUp(b)
                                                     )

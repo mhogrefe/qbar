@@ -1755,7 +1755,6 @@ public class RationalMultivariatePolynomialProperties extends QBarTestProperties
         Iterable<Pair<RationalMultivariatePolynomial, Map<Variable, Rational>>> ps;
         if (P instanceof QBarExhaustiveProvider) {
             ps = P.choose(
-                    map(i -> new Pair<>(of(i), new TreeMap<>()), P.withScale(4).rationals()),
                     P.dependentPairsInfiniteSquareRootOrder(
                             filterInfinite(r -> r.degree() > 0, P.rationalMultivariatePolynomials()),
                             q -> {
@@ -1768,7 +1767,8 @@ public class RationalMultivariatePolynomialProperties extends QBarTestProperties
                                         )
                                 );
                             }
-                    )
+                    ),
+                    map(i -> new Pair<>(of(i), new TreeMap<>()), P.withScale(4).rationals())
             );
         } else {
             ps = P.choose(

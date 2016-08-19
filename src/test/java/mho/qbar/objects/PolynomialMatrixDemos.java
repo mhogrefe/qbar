@@ -216,7 +216,7 @@ public class PolynomialMatrixDemos extends QBarDemos {
                                 )
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 p -> new Pair<>(zero(p.a, 0), zero(p.b, 0)),
                                 P.pairs(P.withScale(4).naturalIntegersGeometric())
@@ -254,7 +254,7 @@ public class PolynomialMatrixDemos extends QBarDemos {
                                 )
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 p -> new Pair<>(zero(0, p.a), zero(0, p.b)),
                                 P.pairs(P.withScale(4).naturalIntegersGeometric())
@@ -282,7 +282,7 @@ public class PolynomialMatrixDemos extends QBarDemos {
                                 p -> P.pairs(P.withScale(4).withSecondaryScale(4).polynomialMatrices(p.a, p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> {
                                     PolynomialMatrix m = zero(0, i);
@@ -319,7 +319,7 @@ public class PolynomialMatrixDemos extends QBarDemos {
                                 p -> P.pairs(P.withScale(4).withSecondaryScale(4).polynomialMatrices(p.a, p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> {
                                     PolynomialMatrix m = zero(0, i);
@@ -380,7 +380,7 @@ public class PolynomialMatrixDemos extends QBarDemos {
                                 )
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> new Pair<>(zero(i, 0), PolynomialVector.ZERO_DIMENSIONAL),
                                 P.withScale(4).naturalIntegersGeometric()
@@ -409,7 +409,7 @@ public class PolynomialMatrixDemos extends QBarDemos {
                         )
                 ),
                 P.choose(
-                    P.choose(
+                    P.withScale(1).choose(
                             map(
                                     m -> new Pair<>(m, zero(m.width(), 0)),
                                     filterInfinite(

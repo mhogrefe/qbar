@@ -4052,6 +4052,42 @@ public class AlgebraicTest {
         roundToDenominator_fail_helper(SQRT_TWO, "7", "UNNECESSARY");
     }
 
+    private static void realConjugates_helper(@NotNull String input, @NotNull String output) {
+        List<Algebraic> conjugates = readStrict(input).get().realConjugates();
+        conjugates.forEach(Algebraic::validate);
+        aeq(conjugates, output);
+    }
+
+    @Test
+    public void testRealConjugates() {
+        realConjugates_helper("0", "[]");
+        realConjugates_helper("1", "[]");
+        realConjugates_helper("1/2", "[]");
+        realConjugates_helper("-4/3", "[]");
+        realConjugates_helper("sqrt(2)", "[-sqrt(2)]");
+        realConjugates_helper("-sqrt(2)", "[sqrt(2)]");
+        realConjugates_helper("(1+sqrt(5))/2", "[(1-sqrt(5))/2]");
+        realConjugates_helper("root 0 of x^5-x-1", "[]");
+        realConjugates_helper("root 0 of x^4-x^3-3*x^2+x+1",
+                "[root 1 of x^4-x^3-3*x^2+x+1, root 2 of x^4-x^3-3*x^2+x+1, root 3 of x^4-x^3-3*x^2+x+1]");
+    }
+
+    private static void isReducedSurd_helper(@NotNull String input, boolean output) {
+        aeq(readStrict(input).get().isReducedSurd(), output);
+    }
+
+    @Test
+    public void testIsReducedSurd() {
+        isReducedSurd_helper("0", false);
+        isReducedSurd_helper("1", false);
+        isReducedSurd_helper("1/2", false);
+        isReducedSurd_helper("-4/3", false);
+        isReducedSurd_helper("sqrt(2)", false);
+        isReducedSurd_helper("-sqrt(2)", false);
+        isReducedSurd_helper("(1+sqrt(5))/2", true);
+        isReducedSurd_helper("root 0 of x^5-x-1", false);
+    }
+
     private static void continuedFraction_helper(@NotNull String input, @NotNull String output) {
         aeqitLimit(TINY_LIMIT, readStrict(input).get().continuedFraction(), output);
     }
@@ -4135,6 +4171,8 @@ public class AlgebraicTest {
         fromContinuedFraction_helper("[-2, 1, 1]", "[2]", "-sqrt(2)");
         fromContinuedFraction_helper("[]", "[1]", "(1+sqrt(5))/2");
         fromContinuedFraction_helper("[-4, 1, 10]", "[3, 1, 3, 11]", "(-7-sqrt(133))/6");
+        fromContinuedFraction_helper("[-4, 1, 10]", "[3, 1, 3, 11, 3, 1, 3, 11]", "(-7-sqrt(133))/6");
+        fromContinuedFraction_helper("[-4, 1, 10, 3]", "[1, 3, 11, 3]", "(-7-sqrt(133))/6");
         fromContinuedFraction_helper("[1, 2, 3]", "[4, 5, 6]", "(2557-sqrt(18229))/1690");
 
         fromContinuedFraction_fail_helper("[]", "[]");

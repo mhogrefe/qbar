@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.util.Collections;
 import java.util.List;
 
 import static mho.qbar.objects.Algebraic.*;
@@ -631,9 +632,48 @@ public class AlgebraicDemos extends QBarDemos {
         }
     }
 
+    private void demoRealConjugates() {
+        for (Algebraic x : take(LIMIT, P.withScale(4).algebraics())) {
+            System.out.println("realConjugates(" + x + ") = " + x.realConjugates());
+        }
+    }
+
+    private void demoIsReducedSurd() {
+        for (Algebraic x : take(LIMIT, P.withScale(4).algebraics())) {
+            System.out.println(x + " is " + (x.isReducedSurd() ? "" : "not ") + "a reduced surd");
+        }
+    }
+
     private void demoContinuedFraction() {
         for (Algebraic x : take(LIMIT, P.withScale(4).algebraics())) {
             System.out.println("continuedFraction(" + x + ") = " + its(x.continuedFraction()));
+        }
+    }
+
+    private void demoRepeatedContinuedFraction() {
+        Iterable<Algebraic> xs = P.withScale(1).choose(P.withScale(4).algebraics(1), P.withScale(1).algebraics(2));
+        for (Algebraic x : take(LIMIT, xs)) {
+            System.out.println("repeatedContinuedFraction(" + x + ") = " + x.repeatedContinuedFraction());
+        }
+    }
+
+    private void demoFromContinuedFraction() {
+        Iterable<Pair<List<BigInteger>, List<BigInteger>>> ps = filterInfinite(
+                p -> !p.a.isEmpty() || !p.b.isEmpty(),
+                P.pairs(
+                        P.withElement(
+                                Collections.emptyList(),
+                                zipWith(
+                                        (i, is) -> toList(cons(i, is)),
+                                        P.withScale(1).bigIntegers(),
+                                        P.withScale(4).lists(P.withScale(2).positiveBigIntegers())
+                                )
+                        ),
+                        P.withScale(4).lists(P.withScale(2).positiveBigIntegers())
+                )
+        );
+        for (Pair<List<BigInteger>, List<BigInteger>> p : take(LIMIT, ps)) {
+            System.out.println("fromContinuedFraction(" + p.a + ", " + p.b + ") = " + fromContinuedFraction(p.a, p.b));
         }
     }
 

@@ -556,7 +556,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                 Rational x = complement.get(0).getUpper().get();
                 Rational y = complement.get(1).getLower().get();
                 //noinspection RedundantCast
-                return choose(
+                return withScale(1).choose(
                         filterInfinite(r -> !r.equals(x), rangeDown(x)),
                         filterInfinite(r -> !r.equals(y), rangeUp(y))
                 );
@@ -909,7 +909,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                                 p -> lists(p.a, vectors(p.b))
                         )
                 ),
-                choose(
+                withScale(1).choose(
                         map(i -> Matrix.zero(0, i), dimensionProvider.naturalIntegersGeometric()),
                         map(i -> Matrix.zero(i, 0), dimensionProvider.positiveIntegersGeometric())
                 )
@@ -1016,7 +1016,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                                 p -> lists(p.a, rationalVectors(p.b))
                         )
                 ),
-                choose(
+                withScale(1).choose(
                         map(i -> RationalMatrix.zero(0, i), dimensionProvider.naturalIntegersGeometric()),
                         map(i -> RationalMatrix.zero(i, 0), dimensionProvider.positiveIntegersGeometric())
                 )
@@ -1134,7 +1134,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                                 p -> lists(p.a, polynomialVectors(p.b))
                         )
                 ),
-                choose(
+                withScale(1).choose(
                         map(i -> PolynomialMatrix.zero(0, i), dimensionProvider.naturalIntegersGeometric()),
                         map(i -> PolynomialMatrix.zero(i, 0), dimensionProvider.positiveIntegersGeometric())
                 )
@@ -1262,7 +1262,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                                 p -> lists(p.a, rationalPolynomialVectors(p.b))
                         )
                 ),
-                choose(
+                withScale(1).choose(
                         map(i -> RationalPolynomialMatrix.zero(0, i), dimensionProvider.naturalIntegersGeometric()),
                         map(i -> RationalPolynomialMatrix.zero(i, 0), dimensionProvider.positiveIntegersGeometric())
                 )
@@ -2526,7 +2526,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                 Algebraic x = Algebraic.of(complement.get(0).getUpper().get());
                 Algebraic y = Algebraic.of(complement.get(1).getLower().get());
                 //noinspection RedundantCast
-                return choose(
+                return withScale(1).choose(
                         filterInfinite(r -> !r.equals(x), rangeDown(degree, x)),
                         filterInfinite(r -> !r.equals(y), rangeUp(degree, y))
                 );
@@ -2563,7 +2563,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                 Algebraic x = Algebraic.of(complement.get(0).getUpper().get());
                 Algebraic y = Algebraic.of(complement.get(1).getLower().get());
                 //noinspection RedundantCast
-                return choose(
+                return withScale(1).choose(
                         filterInfinite(r -> !r.equals(x), rangeDown(x)),
                         filterInfinite(r -> !r.equals(y), rangeUp(y))
                 );

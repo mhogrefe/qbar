@@ -432,7 +432,6 @@ public class RationalMultivariatePolynomialDemos  extends QBarDemos {
         Iterable<Pair<RationalMultivariatePolynomial, Map<Variable, Rational>>> ps;
         if (P instanceof QBarExhaustiveProvider) {
             ps = P.choose(
-                    map(i -> new Pair<>(of(i), new TreeMap<>()), P.withScale(4).bigIntegers()),
                     P.dependentPairsInfiniteSquareRootOrder(
                             filterInfinite(r -> r.degree() > 0, P.rationalMultivariatePolynomials()),
                             q -> {
@@ -445,7 +444,8 @@ public class RationalMultivariatePolynomialDemos  extends QBarDemos {
                                         )
                                 );
                             }
-                    )
+                    ),
+                    map(i -> new Pair<>(of(i), new TreeMap<>()), P.withScale(4).bigIntegers())
             );
         } else {
             ps = P.choose(
