@@ -1897,8 +1897,8 @@ public final class Rational implements Comparable<Rational> {
 
     /**
      * Finds the continued fraction of {@code this}. If we pretend that the result is an array called a of length n,
-     * then {@code this}=a[0]+1/(a[1]+1/(a[2]+...+1/a[n-1])...). Every rational number has two such representations;
-     * this method returns the shortest one.
+     * then {@code this}=a[0]+1/(a[1]+1/(a[2]+...+1/a[n-1])). Every rational number has two such representations; this
+     * method returns the shortest one.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Rational}.</li>

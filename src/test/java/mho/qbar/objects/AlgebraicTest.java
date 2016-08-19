@@ -5,6 +5,7 @@ import mho.wheels.math.BinaryFraction;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 
@@ -4064,10 +4065,80 @@ public class AlgebraicTest {
         continuedFraction_helper("sqrt(2)", "[1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, ...]");
         continuedFraction_helper("-sqrt(2)", "[-2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, ...]");
         continuedFraction_helper("(1+sqrt(5))/2", "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...]");
+        continuedFraction_helper("(-7-sqrt(133))/6",
+                "[-4, 1, 10, 3, 1, 3, 11, 3, 1, 3, 11, 3, 1, 3, 11, 3, 1, 3, 11, 3, ...]");
+        continuedFraction_helper("(2557-sqrt(18229))/1690",
+                "[1, 2, 3, 4, 5, 6, 4, 5, 6, 4, 5, 6, 4, 5, 6, 4, 5, 6, 4, 5, ...]");
         continuedFraction_helper("root 0 of x^5-x-1",
                 "[1, 5, 1, 42, 1, 3, 24, 2, 2, 1, 16, 1, 11, 1, 1, 2, 31, 1, 12, 5, ...]");
         continuedFraction_helper("root 0 of x^3-2",
                 "[1, 3, 1, 5, 1, 1, 4, 1, 1, 8, 1, 14, 1, 10, 2, 1, 4, 12, 2, 3, ...]");
+    }
+
+    private static void repeatedContinuedFraction_helper(@NotNull String input, @NotNull String output) {
+        aeq(readStrict(input).get().repeatedContinuedFraction(), output);
+    }
+
+    private static void repeatedContinuedFraction_fail_helper(@NotNull String input) {
+        try {
+            readStrict(input).get().repeatedContinuedFraction();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testRepeatedContinuedFraction() {
+        repeatedContinuedFraction_helper("0", "([0], [])");
+        repeatedContinuedFraction_helper("1", "([1], [])");
+        repeatedContinuedFraction_helper("1/2", "([0, 2], [])");
+        repeatedContinuedFraction_helper("-4/3", "([-2, 1, 2], [])");
+        repeatedContinuedFraction_helper("sqrt(2)", "([1], [2])");
+        repeatedContinuedFraction_helper("-sqrt(2)", "([-2, 1, 1], [2])");
+        repeatedContinuedFraction_helper("(1+sqrt(5))/2", "([], [1])");
+        repeatedContinuedFraction_helper("(-7-sqrt(133))/6", "([-4, 1, 10], [3, 1, 3, 11])");
+        repeatedContinuedFraction_helper("(2557-sqrt(18229))/1690", "([1, 2, 3], [4, 5, 6])");
+
+        repeatedContinuedFraction_fail_helper("root 0 of x^5-x-1");
+        repeatedContinuedFraction_fail_helper("root 0 of x^3-2");
+    }
+
+    private static void fromContinuedFraction_helper(
+            @NotNull String nonRepeatedPart,
+            @NotNull String repeatedPart,
+            @NotNull String output
+    ) {
+        Algebraic x = fromContinuedFraction(readBigIntegerList(nonRepeatedPart), readBigIntegerList(repeatedPart));
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void fromContinuedFraction_fail_helper(@NotNull String nonRepeatedPart, @NotNull String repeatedPart) {
+        try {
+            fromContinuedFraction(
+                    readBigIntegerListWithNulls(nonRepeatedPart),
+                    readBigIntegerListWithNulls(repeatedPart)
+            );
+            fail();
+        } catch (IllegalArgumentException | NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testFromContinuedFraction() {
+        fromContinuedFraction_helper("[0]", "[]", "0");
+        fromContinuedFraction_helper("[1]", "[]", "1");
+        fromContinuedFraction_helper("[0, 2]", "[]", "1/2");
+        fromContinuedFraction_helper("[-2, 1, 2]", "[]", "-4/3");
+        fromContinuedFraction_helper("[1]", "[2]", "sqrt(2)");
+        fromContinuedFraction_helper("[-2, 1, 1]", "[2]", "-sqrt(2)");
+        fromContinuedFraction_helper("[]", "[1]", "(1+sqrt(5))/2");
+        fromContinuedFraction_helper("[-4, 1, 10]", "[3, 1, 3, 11]", "(-7-sqrt(133))/6");
+        fromContinuedFraction_helper("[1, 2, 3]", "[4, 5, 6]", "(2557-sqrt(18229))/1690");
+
+        fromContinuedFraction_fail_helper("[]", "[]");
+        fromContinuedFraction_fail_helper("[-1, -2]", "[]");
+        fromContinuedFraction_fail_helper("[]", "[-1, 2]");
+        fromContinuedFraction_fail_helper("[1, null]", "[1]");
+        fromContinuedFraction_fail_helper("[1]", "[1, null]");
     }
 
     @Test
@@ -4239,6 +4310,14 @@ public class AlgebraicTest {
         readStrict_int_String_fail_helper(1, "sqrt(2)");
         readStrict_int_String_fail_helper(0, "sqrt(2)");
         readStrict_int_String_fail_helper(-1, "sqrt(2)");
+    }
+
+    private static @NotNull List<BigInteger> readBigIntegerList(@NotNull String s) {
+        return Readers.readListStrict(Readers::readBigIntegerStrict).apply(s).get();
+    }
+
+    private static @NotNull List<BigInteger> readBigIntegerListWithNulls(@NotNull String s) {
+        return Readers.readListWithNullsStrict(Readers::readBigIntegerStrict).apply(s).get();
     }
 
     private static @NotNull List<Algebraic> readAlgebraicList(@NotNull String s) {

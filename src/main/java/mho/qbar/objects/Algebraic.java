@@ -2466,8 +2466,8 @@ public final class Algebraic implements Comparable<Algebraic> {
     }
 
     /**
-     * Finds the continued fraction of {@code this}. If we pretend that the result is an array called a of length n,
-     * then {@code this}=a[0]+1/(a[1]+1/(a[2]+...+1/a[n-1])...).
+     * Finds the continued fraction of {@code this}. If we pretend that the result is an array called a, then
+     * {@code this}=a[0]+1/(a[1]+1/(a[2]+...+1/a[n-1])...).
      *
      * <ul>
      *  <li>{@code this} may be any {@code Rational}.</li>
@@ -2483,8 +2483,121 @@ public final class Algebraic implements Comparable<Algebraic> {
     public @NotNull Iterable<BigInteger> continuedFraction() {
         if (rational.isPresent()) {
             return rational.get().continuedFraction();
+        } else if (degree() == 2) {
+            return () -> new Iterator<BigInteger>() {
+                private List<BigInteger> terms = new ArrayList<>();
+                private Map<Algebraic, Integer> remainderMap = new HashMap<>();
+                private @NotNull Algebraic remainder = Algebraic.this;
+                private int index = 0;
+                private @NotNull List<BigInteger> repeatedPart = new ArrayList<>();
+
+                @Override
+                public boolean hasNext() {
+                    return true;
+                }
+
+                @Override
+                public BigInteger next() {
+                    if (remainderMap == null) {
+                        BigInteger term = repeatedPart.get(index);
+                        index++;
+                        if (index == repeatedPart.size()) {
+                            index = 0;
+                        }
+                        return term;
+                    } else {
+                        Integer previousIndex = remainderMap.get(remainder);
+                        if (previousIndex != null) {
+                            for (int i = previousIndex; i < terms.size(); i++) {
+                                repeatedPart.add(terms.get(i));
+                            }
+                            terms = null;
+                            remainderMap = null;
+                            index = repeatedPart.size() == 1 ? 0 : 1;
+                            return repeatedPart.get(0);
+                        } else {
+                            remainderMap.put(remainder, index);
+                            BigInteger term = remainder.floor();
+                            terms.add(term);
+                            remainder = remainder.subtract(term).invert();
+                            index++;
+                            return term;
+                        }
+                    }
+                }
+            };
         } else {
             return realValue().continuedFraction();
+        }
+    }
+
+    public @NotNull Pair<List<BigInteger>, List<BigInteger>> repeatedContinuedFraction() {
+        if (rational.isPresent()) {
+            return new Pair<>(toList(rational.get().continuedFraction()), Collections.emptyList());
+        } else if (degree() > 2) {
+            throw new ArithmeticException("this must have a degree less than 3. Invalid this: " + this);
+        } else {
+            List<BigInteger> terms = new ArrayList<>();
+            Map<Algebraic, Integer> remainderMap = new HashMap<>();
+            Algebraic remainder = this;
+            int index = 0;
+            while (true) {
+                Integer previousIndex = remainderMap.get(remainder);
+                if (previousIndex != null) {
+                    List<BigInteger> nonRepeatedPart = new ArrayList<>();
+                    for (int i = 0; i < previousIndex; i++) {
+                        nonRepeatedPart.add(terms.get(i));
+                    }
+                    List<BigInteger> repeatedPart = new ArrayList<>();
+                    for (int i = previousIndex; i < terms.size(); i++) {
+                        repeatedPart.add(terms.get(i));
+                    }
+                    return new Pair<>(nonRepeatedPart, repeatedPart);
+                } else {
+                    remainderMap.put(remainder, index);
+                    BigInteger term = remainder.floor();
+                    terms.add(term);
+                    remainder = remainder.subtract(term).invert();
+                    index++;
+                }
+            }
+        }
+    }
+
+    private static @NotNull Algebraic fromContinuedFraction(@NotNull List<BigInteger> repeatedPart) {
+        if (any(i -> i.signum() != 1, repeatedPart)) {
+            throw new IllegalArgumentException("Every element of repeatedPart must be positive. Invalid" +
+                    " repeatedPart: " + repeatedPart);
+        }
+        if (repeatedPart.size() == 1) {
+            BigInteger a = repeatedPart.get(0);
+            return of(a.pow(2).add(BigInteger.valueOf(4))).sqrt().add(a).shiftRight(1);
+        }
+        List<BigInteger> init = new ArrayList<>(repeatedPart);
+        init.remove(repeatedPart.size() - 1);
+        Rational r = Rational.fromContinuedFraction(repeatedPart);
+        Rational rInit = Rational.fromContinuedFraction(init);
+        BigInteger p = r.getNumerator();
+        BigInteger q = r.getDenominator();
+        BigInteger pInit = rInit.getNumerator();
+        BigInteger qInit = rInit.getDenominator();
+        BigInteger difference = qInit.subtract(p);
+        return of(difference.pow(2).add(q.multiply(pInit).shiftLeft(2))).sqrt().subtract(difference).shiftRight(1)
+                .divide(q);
+    }
+
+    public static @NotNull Algebraic fromContinuedFraction(
+            @NotNull List<BigInteger> nonRepeatedPart,
+            @NotNull List<BigInteger> repeatedPart
+    ) {
+        if (repeatedPart.isEmpty()) {
+            return of(Rational.fromContinuedFraction(nonRepeatedPart));
+        } else {
+            Algebraic a = fromContinuedFraction(repeatedPart);
+            for (int i = nonRepeatedPart.size() - 1; i >= 0; i--) {
+                a = a.invert().add(nonRepeatedPart.get(i));
+            }
+            return a;
         }
     }
 

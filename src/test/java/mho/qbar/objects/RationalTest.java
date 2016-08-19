@@ -3492,9 +3492,9 @@ public class RationalTest {
 
     private static void fromContinuedFraction_fail_helper(@NotNull String input) {
         try {
-            fromContinuedFraction(readBigIntegerList(input));
+            fromContinuedFraction(readBigIntegerListWithNulls(input));
             fail();
-        } catch (IllegalArgumentException ignored) {}
+        } catch (IllegalArgumentException | NullPointerException ignored) {}
     }
 
     @Test
@@ -3506,6 +3506,8 @@ public class RationalTest {
         fromContinuedFraction_helper("[-5, 1, 1, 6, 7]", "-415/93");
         aeqf(fromContinuedFraction(readBigIntegerList("[0, 1, 2, 3, 4, 5, 6, 7, 8]")).floatValue(), 0.69777465f);
 
+        fromContinuedFraction_fail_helper("[-1, -2]");
+        fromContinuedFraction_fail_helper("[1, null]");
         fromContinuedFraction_fail_helper("[]");
     }
 
@@ -4432,6 +4434,10 @@ public class RationalTest {
 
     private static @NotNull List<BigInteger> readBigIntegerList(@NotNull String s) {
         return Readers.readListStrict(Readers::readBigIntegerStrict).apply(s).get();
+    }
+
+    private static @NotNull List<BigInteger> readBigIntegerListWithNulls(@NotNull String s) {
+        return Readers.readListWithNullsStrict(Readers::readBigIntegerStrict).apply(s).get();
     }
 
     private static @NotNull List<Rational> readRationalList(@NotNull String s) {
