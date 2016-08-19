@@ -5,6 +5,7 @@ import mho.wheels.io.Readers;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.IntegerUtils;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
@@ -2466,11 +2467,54 @@ public final class Algebraic implements Comparable<Algebraic> {
     }
 
     /**
+     * Returns the real conjugates of {@code this}; that is, all real roots of the minimal polynomial of {@code this},
+     * apart from {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>The result is a list containing all but one real roots of an irreducible polynomial over the
+     *  rationals.</li>
+     * </ul>
+     *
+     * @return the real conjugates of {@code this}
+     */
+    public @NotNull List<Algebraic> realConjugates() {
+        if (rational.isPresent() || mpRootCount == 1) {
+            return Collections.emptyList();
+        }
+        List<Interval> isolatingIntervals = minimalPolynomial.powerOfTwoIsolatingIntervals();
+        List<Algebraic> realConjugates = new ArrayList<>();
+        for (int i = 0; i < mpRootCount; i++) {
+            if (i != rootIndex) {
+                realConjugates.add(new Algebraic(minimalPolynomial, i, isolatingIntervals.get(i), mpRootCount));
+            }
+        }
+        return realConjugates;
+    }
+
+    /**
+     * Determines whether {@code this} is a reduced surd–that is, whether {@code this} is a quadratic irrational
+     * greater than 1 whose conjugate is between –1 and 0. Reduced surds are precisely those {@code Algebraic}s whose
+     * continued fractions are purely periodic (have no repeated part).
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic.}</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is a reduced surd
+     */
+    public boolean isReducedSurd() {
+        return degree() == 2 && Ordering.gt(this, ONE) &&
+                Interval.of(Rational.NEGATIVE_ONE, Rational.ZERO).contains(realConjugates().get(0));
+    }
+
+    /**
      * Finds the continued fraction of {@code this}. If we pretend that the result is an array called a, then
      * {@code this}=a[0]+1/(a[1]+1/(a[2]+...+1/a[n-1])...).
      *
      * <ul>
-     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
      *  <li>The result is non-null and non-empty. None of its elements are null. The first element may be any
      *  {@code BigInteger}; the remaining elements, if any, are all positive. If the result is finite and has more than
      *  one element, the last element is greater than 1.</li>
@@ -2531,6 +2575,23 @@ public final class Algebraic implements Comparable<Algebraic> {
         }
     }
 
+    /**
+     * Returns the non-repeated and repeated parts of the continued fraction of {@code this}. If the result is
+     * [(a, b, c), (x, y)], that means that the actual continued fraction is [a, b, c, x, y, x, y, x, y, ...]. If
+     * {@code this} is rational, the repeated part is empty and the entire continued fraction is in the non-repeated
+     * part. If {@code this}'s degree is greater than two, the continued fraction does not repeat and an exception is
+     * thrown.
+     *
+     * <ul>
+     *  <li>{@code this} must have a degree less than 3.</li>
+     *  <li>Neither element of the result is null or contains nulls. All elements of the first part, except possibly
+     *  the first element of the first part, are positive. All elements of the second part are positive. At least one
+     *  of the two parts is nonempty. The two elements of the result are minimal; see
+     *  {@link mho.wheels.iterables.IterableUtils#minimize(List, List)}</li>
+     * </ul>
+     *
+     * @return the repeated continued-fraction-representation of {@code this}
+     */
     public @NotNull Pair<List<BigInteger>, List<BigInteger>> repeatedContinuedFraction() {
         if (rational.isPresent()) {
             return new Pair<>(toList(rational.get().continuedFraction()), Collections.emptyList());
@@ -2564,6 +2625,19 @@ public final class Algebraic implements Comparable<Algebraic> {
         }
     }
 
+    /**
+     * Given a repeated continued fraction, where [x, y] means [x, y, x, y, x, y, ...], returns the quadratic
+     * {@code Algebraic} equal to it.
+     *
+     * <ul>
+     *  <li>{@code repeatedPart} cannot be empty, and each of its elements must be positive.</li>
+     *  <li>The result has degree 2 and is a reduced surd; that is, it is greater than 1 and its conjugate is greater
+     *  than –1 and less than 0.</li>
+     * </ul>
+     *
+     * @param repeatedPart the repeated portion of the purely periodic continued fraction of a number
+     * @return the number equal to the continued fraction represented by {@code repeatedPart}
+     */
     private static @NotNull Algebraic fromContinuedFraction(@NotNull List<BigInteger> repeatedPart) {
         if (any(i -> i.signum() != 1, repeatedPart)) {
             throw new IllegalArgumentException("Every element of repeatedPart must be positive. Invalid" +
@@ -2586,6 +2660,24 @@ public final class Algebraic implements Comparable<Algebraic> {
                 .divide(q);
     }
 
+    /**
+     * Given a repeated fraction, returns the {@code Algebraic} equal to it. If the non-repeated part is [a, b, c] and
+     * the repeated part is [x, y], that represents the continued fraction [a, b, c, x, y, x, y, x, y, ...]. If the
+     * repeated part is empty, the non-repeated part is taken to be the entire continued fraction, and it is equal to
+     * a rational number.
+     *
+     * <ul>
+     *  <li>{@code nonRepeatedPart} cannot contains nulls, and every element, except possibly the first, must be
+     *  positive.</li>
+     *  <li>Every element of {@code repeatedPart} must be positive.</li>
+     *  <li>{@code nonRepeatedPart} and {@code repeatedPart} cannot both be empty.</li>
+     *  <li>The result has degree less than 3.</li>
+     * </ul>
+     *
+     * @param nonRepeatedPart the non-repeating portion of the continued fraction
+     * @param repeatedPart the repeating portion of the continued fraction
+     * @return the {@code Algebraic} equal to the continued fraction
+     */
     public static @NotNull Algebraic fromContinuedFraction(
             @NotNull List<BigInteger> nonRepeatedPart,
             @NotNull List<BigInteger> repeatedPart

@@ -3026,23 +3026,6 @@ public class RationalProperties extends QBarTestProperties {
         }
     }
 
-    private static @NotNull <T> Pair<List<T>, List<T>> minimize(@NotNull List<T> a, @NotNull List<T> b) {
-        List<T> oldA = new ArrayList<>();
-        List<T> oldB = new ArrayList<>();
-        while (!a.equals(oldA) || !b.equals(oldB)) {
-            int longestCommonSuffixLength = 0;
-            for (int i = 0; i < min(a.size(), b.size()); i++) {
-                if (!a.get(a.size() - i - 1).equals(b.get(b.size() - i - 1))) break;
-                longestCommonSuffixLength++;
-            }
-            oldA = a;
-            oldB = b;
-            a = toList(take(a.size() - longestCommonSuffixLength, a));
-            b = unrepeat(rotateRight(longestCommonSuffixLength, b));
-        }
-        return new Pair<>(a, b);
-    }
-
     private void propertiesPositionalNotation() {
         initialize("positionalNotation(BigInteger)");
         Iterable<Pair<Rational, BigInteger>> ps = P.pairs(

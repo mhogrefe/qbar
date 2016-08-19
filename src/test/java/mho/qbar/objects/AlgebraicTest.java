@@ -4112,7 +4112,10 @@ public class AlgebraicTest {
         aeq(x, output);
     }
 
-    private static void fromContinuedFraction_fail_helper(@NotNull String nonRepeatedPart, @NotNull String repeatedPart) {
+    private static void fromContinuedFraction_fail_helper(
+            @NotNull String nonRepeatedPart,
+            @NotNull String repeatedPart
+    ) {
         try {
             fromContinuedFraction(
                     readBigIntegerListWithNulls(nonRepeatedPart),
