@@ -1077,15 +1077,15 @@ public class QBarRandomProviderTest {
                 4,
                 "[1, 4]",
                 "QBarRandomProvider_rationalsNotIn_v",
-                -69.41248621922566,
-                4.310511999997506
+                3.004670004193333,
+                4.971411999986513
         );
         rationalsNotIn_helper(
                 32,
                 "[1, 4]",
                 "QBarRandomProvider_rationalsNotIn_vi",
-                -4.8445650251622075E53,
-                38.611619000014095
+                3.8048541134432464E54,
+                39.223027000016735
         );
         rationalsNotIn_helper(
                 4,
@@ -2214,8 +2214,8 @@ public class QBarRandomProviderTest {
     @Test
     public void testMatrices() {
         matrices_helper(1, 2, "QBarRandomProvider_matrices_i", 1.9983549999915837, 0.8338733608407535);
-        matrices_helper(5, 3, "QBarRandomProvider_matrices_ii", 3.3335839999865646, 4.882194059052771);
-        matrices_helper(10, 8, "QBarRandomProvider_matrices_iii", 8.189681000015133, 9.921846650751569);
+        matrices_helper(5, 3, "QBarRandomProvider_matrices_ii", 3.334005999986525, 4.881701472651601);
+        matrices_helper(10, 8, "QBarRandomProvider_matrices_iii", 8.195871000014973, 9.921950699467155);
 
         matrices_fail_helper(0, 2);
         matrices_fail_helper(1, 1);
@@ -2470,9 +2470,15 @@ public class QBarRandomProviderTest {
 
     @Test
     public void testRationalMatrices() {
-        rationalMatrices_helper(3, 2, "QBarRandomProvider_rationalMatrices_i", 3.0089700000010176, 2.781300577932931);
-        rationalMatrices_helper(5, 3, "QBarRandomProvider_rationalMatrices_ii", 3.362760000001472, 4.8159131189959234);
-        rationalMatrices_helper(10, 8, "QBarRandomProvider_rationalMatrices_iii", 8.16995000000032, 9.840558387733228);
+        rationalMatrices_helper(3, 2, "QBarRandomProvider_rationalMatrices_i", 2.9944100000010234, 2.7801403281405648);
+        rationalMatrices_helper(5, 3, "QBarRandomProvider_rationalMatrices_ii", 3.354220000001478, 4.817525385922623);
+        rationalMatrices_helper(
+                10,
+                8,
+                "QBarRandomProvider_rationalMatrices_iii",
+                8.185990000000306,
+                9.839718836694068
+        );
 
         rationalMatrices_fail_helper(2, 2);
         rationalMatrices_fail_helper(3, 1);
@@ -2818,9 +2824,9 @@ public class QBarRandomProviderTest {
                 2,
                 3,
                 "QBarRandomProvider_polynomialMatrices_ii",
-                3.321210000001476,
-                1.858843614221727,
-                5.134214234689339
+                3.323790000001507,
+                1.8572803937689748,
+                5.135900810808894
         );
 
         polynomialMatrices_fail_helper(0, 0, 2);
@@ -3127,18 +3133,18 @@ public class QBarRandomProviderTest {
                 0,
                 2,
                 "QBarRandomProvider_rationalPolynomialMatrices_i",
-                3.029410000001085,
-                -0.2227958579398594,
-                3.277140927676659
+                3.0284200000010753,
+                -0.2231757814312546,
+                3.27688253171506
         );
         rationalPolynomialMatrices_helper(
                 5,
                 2,
                 3,
                 "QBarRandomProvider_rationalPolynomialMatrices_ii",
-                3.33301000000145,
-                1.8598624066504423,
-                5.000145825345007
+                3.3480400000014887,
+                1.8617459767527096,
+                4.999731767499666
         );
 
         rationalPolynomialMatrices_fail_helper(2, 0, 2);
@@ -8007,8 +8013,8 @@ public class QBarRandomProviderTest {
                 "[1, 4]",
                 "QBarRandomProvider_algebraicsNotIn_int_Interval_vii",
                 0.9999999999999062,
-                3.438100000000282,
-                -3108.748223724041
+                3.64290000000028,
+                -3106.0204557634843
         );
         algebraicsNotIn_int_Interval_helper(
                 3,
@@ -8016,8 +8022,8 @@ public class QBarRandomProviderTest {
                 "[1, 4]",
                 "QBarRandomProvider_algebraicsNotIn_int_Interval_viii",
                 1.9999999999998124,
-                5.809266666668504,
-                -3539.231983662671
+                6.159833333335214,
+                9533.928324339036
         );
         algebraicsNotIn_int_Interval_helper(
                 5,
@@ -8025,8 +8031,8 @@ public class QBarRandomProviderTest {
                 "[1, 4]",
                 "QBarRandomProvider_algebraicsNotIn_int_Interval_ix",
                 3.0000000000004805,
-                9.71932500000014,
-                -1.0504580850318748E11
+                10.391475000000362,
+                -1.0012459879156021E11
         );
         algebraicsNotIn_int_Interval_helper(
                 2,
@@ -8167,18 +8173,18 @@ public class QBarRandomProviderTest {
                 4,
                 "[1, 4]",
                 "QBarRandomProvider_algebraicsNotIn_Interval_v",
-                1.9910999999998333,
-                5.011066162948756,
-                -162.91159960084028
+                2.003799999999836,
+                5.438444636793514,
+                -242.69238783501697
         );
         algebraicsNotIn_Interval_helper(
                 5,
                 6,
                 "[1, 4]",
                 "QBarRandomProvider_algebraicsNotIn_Interval_vi",
-                2.9929000000001955,
-                11.208895790027752,
-                -8.119390882713261E9
+                3.0130000000002095,
+                12.416720657860973,
+                8.006181204601717E8
         );
         algebraicsNotIn_Interval_helper(
                 2,
