@@ -2,6 +2,7 @@ package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
 import mho.wheels.math.BinaryFraction;
+import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -4180,6 +4181,321 @@ public class AlgebraicTest {
         fromContinuedFraction_fail_helper("[]", "[-1, 2]");
         fromContinuedFraction_fail_helper("[1, null]", "[1]");
         fromContinuedFraction_fail_helper("[1]", "[1, null]");
+    }
+
+    private static void convergentsHelper(@NotNull String x, @NotNull String output) {
+        Iterable<Rational> rs = readStrict(x).get().convergents();
+        aeqitLimit(TINY_LIMIT, rs, output);
+    }
+
+    @Test
+    public void testConvergents() {
+        convergentsHelper("0", "[0]");
+        convergentsHelper("1", "[1]");
+        convergentsHelper("1/2", "[0, 1/2]");
+        convergentsHelper("-4/3", "[-2, -1, -4/3]");
+        convergentsHelper("sqrt(2)",
+                "[1, 3/2, 7/5, 17/12, 41/29, 99/70, 239/169, 577/408, 1393/985, 3363/2378, 8119/5741, 19601/13860," +
+                " 47321/33461, 114243/80782, 275807/195025, 665857/470832, 1607521/1136689, 3880899/2744210," +
+                " 9369319/6625109, 22619537/15994428, ...]");
+        convergentsHelper("-sqrt(2)",
+                "[-2, -1, -3/2, -7/5, -17/12, -41/29, -99/70, -239/169, -577/408, -1393/985, -3363/2378, -8119/5741," +
+                " -19601/13860, -47321/33461, -114243/80782, -275807/195025, -665857/470832, -1607521/1136689," +
+                " -3880899/2744210, -9369319/6625109, ...]");
+        convergentsHelper("(1+sqrt(5))/2",
+                "[1, 2, 3/2, 5/3, 8/5, 13/8, 21/13, 34/21, 55/34, 89/55, 144/89, 233/144, 377/233, 610/377, 987/610," +
+                " 1597/987, 2584/1597, 4181/2584, 6765/4181, 10946/6765, ...]");
+        convergentsHelper("root 0 of x^5-x-1",
+                "[1, 6/5, 7/6, 300/257, 307/263, 1221/1046, 29611/25367, 60443/51780, 150497/128927, 210940/180707," +
+                " 3525537/3020239, 3736477/3200946, 44626784/38230645, 48363261/41431591, 92990045/79662236," +
+                " 234343351/200756063, 7357633926/6303100189, 7591977277/6503856252, 98461361250/84349375213," +
+                " 499898783527/428250732317, ...]");
+    }
+
+    private static void digits_helper(
+            @NotNull Algebraic x,
+            @NotNull String base,
+            @NotNull String beforeDecimal,
+            @NotNull String afterDecimal
+    ) {
+        Pair<List<BigInteger>, Iterable<BigInteger>> digits = x.digits(Readers.readBigIntegerStrict(base).get());
+        aeq(digits.a, beforeDecimal);
+        aeqitLimit(TINY_LIMIT, digits.b, afterDecimal);
+    }
+
+    private static void digits_helper(
+            @NotNull String x,
+            @NotNull String base,
+            @NotNull String beforeDecimal,
+            @NotNull String afterDecimal
+    ) {
+        digits_helper(readStrict(x).get(), base, beforeDecimal, afterDecimal);
+    }
+
+    private static void digits_fail_helper(@NotNull String r, @NotNull String base) {
+        try {
+            readStrict(r).get().digits(Readers.readBigIntegerStrict(base).get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testDigits() {
+        digits_helper("0", "2", "[]", "[]");
+        digits_helper("0", "3", "[]", "[]");
+        digits_helper("0", "4", "[]", "[]");
+        digits_helper("0", "10", "[]", "[]");
+        digits_helper("0", "16", "[]", "[]");
+        digits_helper("0", "83", "[]", "[]");
+        digits_helper("0", "100", "[]", "[]");
+
+        digits_helper("1", "2", "[1]", "[]");
+        digits_helper("1", "3", "[1]", "[]");
+        digits_helper("1", "4", "[1]", "[]");
+        digits_helper("1", "10", "[1]", "[]");
+        digits_helper("1", "16", "[1]", "[]");
+        digits_helper("1", "83", "[1]", "[]");
+        digits_helper("1", "100", "[1]", "[]");
+
+        digits_helper("1/2", "2", "[]", "[1]");
+        digits_helper("1/2", "3", "[]", "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...]");
+        digits_helper("1/2", "4", "[]", "[2]");
+        digits_helper("1/2", "10", "[]", "[5]");
+        digits_helper("1/2", "16", "[]", "[8]");
+        digits_helper(
+                "1/2",
+                "83",
+                "[]",
+                "[41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, ...]"
+        );
+        digits_helper("1/2", "100", "[]", "[50]");
+
+        digits_helper("sqrt(2)", "2", "[1]", "[0, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, ...]");
+        digits_helper("sqrt(2)", "3", "[1]", "[1, 0, 2, 0, 1, 1, 2, 2, 1, 2, 2, 2, 0, 0, 1, 2, 1, 2, 2, 1, ...]");
+        digits_helper("sqrt(2)", "4", "[1]", "[1, 2, 2, 2, 0, 0, 2, 1, 3, 2, 1, 2, 1, 2, 1, 3, 3, 3, 0, 3, ...]");
+        digits_helper("sqrt(2)", "10", "[1]", "[4, 1, 4, 2, 1, 3, 5, 6, 2, 3, 7, 3, 0, 9, 5, 0, 4, 8, 8, 0, ...]");
+        digits_helper("sqrt(2)", "16", "[1]",
+                "[6, 10, 0, 9, 14, 6, 6, 7, 15, 3, 11, 12, 12, 9, 0, 8, 11, 2, 15, 11, ...]");
+        digits_helper("sqrt(2)", "83", "[1]",
+                "[34, 31, 42, 77, 17, 5, 63, 29, 10, 80, 25, 59, 49, 27, 71, 42, 9, 61, 69, 34, ...]");
+        digits_helper("sqrt(2)", "100", "[1]",
+                "[41, 42, 13, 56, 23, 73, 9, 50, 48, 80, 16, 88, 72, 42, 9, 69, 80, 78, 56, 96, ...]");
+
+        digits_helper("(1+sqrt(5))/2", "2", "[1]",
+                "[1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, ...]");
+        digits_helper("(1+sqrt(5))/2", "3", "[1]",
+                "[1, 2, 1, 2, 0, 0, 1, 1, 2, 2, 0, 2, 1, 2, 1, 0, 2, 0, 0, 1, ...]");
+        digits_helper("(1+sqrt(5))/2", "4", "[1]",
+                "[2, 1, 3, 2, 0, 3, 1, 3, 1, 3, 2, 1, 2, 3, 2, 1, 1, 3, 3, 3, ...]");
+        digits_helper("(1+sqrt(5))/2", "10", "[1]",
+                "[6, 1, 8, 0, 3, 3, 9, 8, 8, 7, 4, 9, 8, 9, 4, 8, 4, 8, 2, 0, ...]");
+        digits_helper("(1+sqrt(5))/2", "16", "[1]",
+                "[9, 14, 3, 7, 7, 9, 11, 9, 7, 15, 4, 10, 7, 12, 1, 5, 15, 3, 9, 12, ...]");
+        digits_helper("(1+sqrt(5))/2", "83", "[1]",
+                "[51, 24, 52, 66, 35, 36, 51, 58, 51, 46, 70, 10, 28, 62, 71, 13, 29, 59, 31, 4, ...]");
+        digits_helper("(1+sqrt(5))/2", "100", "[1]",
+                "[61, 80, 33, 98, 87, 49, 89, 48, 48, 20, 45, 86, 83, 43, 65, 63, 81, 17, 72, 3, ...]");
+
+        digits_helper("root 0 of x^5-x-1", "2", "[1]",
+                "[0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 0, ...]");
+        digits_helper("root 0 of x^5-x-1", "3", "[1]",
+                "[0, 1, 1, 1, 1, 1, 2, 2, 2, 0, 0, 1, 0, 1, 2, 0, 2, 0, 0, 0, ...]");
+        digits_helper("root 0 of x^5-x-1", "4", "[1]",
+                "[0, 2, 2, 2, 3, 1, 1, 0, 1, 2, 3, 2, 3, 3, 2, 3, 0, 1, 3, 3, ...]");
+        digits_helper("root 0 of x^5-x-1", "10", "[1]",
+                "[1, 6, 7, 3, 0, 3, 9, 7, 8, 2, 6, 1, 4, 1, 8, 6, 8, 4, 2, 5, ...]");
+        digits_helper("root 0 of x^5-x-1", "16", "[1]",
+                "[2, 10, 13, 4, 6, 14, 15, 11, 1, 15, 9, 12, 14, 11, 15, 14, 8, 2, 10, 2, ...]");
+        digits_helper("root 0 of x^5-x-1", "83", "[1]",
+                "[13, 73, 46, 19, 75, 8, 75, 25, 23, 21, 76, 62, 16, 9, 71, 46, 11, 13, 30, 30, ...]");
+        digits_helper("root 0 of x^5-x-1", "100", "[1]",
+                "[16, 73, 3, 97, 82, 61, 41, 86, 84, 25, 60, 45, 89, 98, 54, 84, 21, 80, 72, 5, ...]");
+
+        digits_fail_helper("-1/2", "2");
+        digits_fail_helper("1/2", "1");
+        digits_fail_helper("1/2", "0");
+        digits_fail_helper("1/2", "-1");
+        digits_fail_helper("-sqrt(2)", "2");
+        digits_fail_helper("sqrt(2)", "1");
+        digits_fail_helper("sqrt(2)", "0");
+        digits_fail_helper("sqrt(2)", "-1");
+    }
+
+    private static void commonLeadingDigits_helper(
+            @NotNull String base,
+            @NotNull String a,
+            @NotNull String b,
+            @NotNull String digits,
+            int offset
+    ) {
+        Pair<List<BigInteger>, Integer> cld = commonLeadingDigits(
+                Readers.readBigIntegerStrict(base).get(),
+                readStrict(a).get(),
+                readStrict(b).get()
+        );
+        aeq(cld.a, digits);
+        aeq(cld.b, offset);
+    }
+
+    private static void commonLeadingDigits_fail_helper(@NotNull String base, @NotNull String a, @NotNull String b) {
+        try {
+            commonLeadingDigits(Readers.readBigIntegerStrict(base).get(), readStrict(a).get(), readStrict(b).get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testCommonLeadingDigits() {
+        commonLeadingDigits_helper("2", "1/2", "1/3", "[]", 0);
+        commonLeadingDigits_helper("10", "1/2", "1/3", "[]", 0);
+        commonLeadingDigits_helper("2", "2", "3", "[1]", 1);
+        commonLeadingDigits_helper("10", "2", "3", "[]", 1);
+        commonLeadingDigits_helper("2", "22/7", "157/50", "[1, 1, 0, 0, 1, 0, 0]", -5);
+        commonLeadingDigits_helper("10", "22/7", "157/50", "[3, 1, 4]", -2);
+        commonLeadingDigits_helper("2", "123456", "123457", "[1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0]", 1);
+        commonLeadingDigits_helper("10", "123456", "123457", "[1, 2, 3, 4, 5]", 1);
+        commonLeadingDigits_helper("2", "222", "2222", "[]", 12);
+        commonLeadingDigits_helper("10", "222", "2222", "[]", 4);
+        commonLeadingDigits_helper("2", "1/10", "1/100", "[]", -3);
+        commonLeadingDigits_helper("10", "1/10", "1/100", "[]", 0);
+        commonLeadingDigits_helper("2", "sqrt(2)", "99/70", "[1, 0, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1]", -13);
+        commonLeadingDigits_helper("10", "sqrt(2)", "99/70", "[1, 4, 1, 4, 2]", -4);
+        commonLeadingDigits_helper("2", "-1+sqrt(7)", "(1+sqrt(5))/2", "[1, 1, 0]", -2);
+        commonLeadingDigits_helper("10", "-1+sqrt(7)", "(1+sqrt(5))/2", "[1, 6]", -1);
+
+        commonLeadingDigits_fail_helper("0", "1", "2");
+        commonLeadingDigits_fail_helper("-1", "1", "2");
+        commonLeadingDigits_fail_helper("2", "1", "1");
+        commonLeadingDigits_fail_helper("2", "-1", "1");
+        commonLeadingDigits_fail_helper("2", "1", "-1");
+        commonLeadingDigits_fail_helper("0", "sqrt(2)", "2");
+        commonLeadingDigits_fail_helper("-1", "sqrt(2)", "2");
+        commonLeadingDigits_fail_helper("2", "sqrt(2)", "sqrt(2)");
+        commonLeadingDigits_fail_helper("2", "-sqrt(2)", "1");
+        commonLeadingDigits_fail_helper("2", "sqrt(2)", "-1");
+    }
+
+    private static void toStringBase_BigInteger_int_helper(
+            @NotNull String x,
+            @NotNull String base,
+            int scale,
+            @NotNull String output
+    ) {
+        aeq(readStrict(x).get().toStringBase(Readers.readBigIntegerStrict(base).get(), scale), output);
+    }
+
+    private static void toStringBase_BigInteger_int_fail_helper(@NotNull String x, @NotNull String base, int scale) {
+        try {
+            readStrict(x).get().toStringBase(Readers.readBigIntegerStrict(base).get(), scale);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testToStringBase_BigInteger_int() {
+        toStringBase_BigInteger_int_helper("0", "10", 0, "0");
+        toStringBase_BigInteger_int_helper("0", "10", -1, "0");
+        toStringBase_BigInteger_int_helper("0", "10", 1, "0");
+        toStringBase_BigInteger_int_helper("0", "83", 0, "(0)");
+        toStringBase_BigInteger_int_helper("0", "83", -1, "(0)");
+        toStringBase_BigInteger_int_helper("0", "83", 1, "(0)");
+
+        toStringBase_BigInteger_int_helper("1", "10", 0, "1");
+        toStringBase_BigInteger_int_helper("1", "10", -1, "0");
+        toStringBase_BigInteger_int_helper("1", "10", 1, "1");
+        toStringBase_BigInteger_int_helper("1", "83", 0, "(1)");
+        toStringBase_BigInteger_int_helper("1", "83", -1, "(0)");
+        toStringBase_BigInteger_int_helper("1", "83", 1, "(1)");
+
+        toStringBase_BigInteger_int_helper("198", "10", 0, "198");
+        toStringBase_BigInteger_int_helper("198", "10", 1, "198");
+        toStringBase_BigInteger_int_helper("198", "10", -1, "190");
+        toStringBase_BigInteger_int_helper("198", "10", -2, "100");
+        toStringBase_BigInteger_int_helper("198", "10", -3, "0");
+        toStringBase_BigInteger_int_helper("198", "83", 0, "(2)(32)");
+        toStringBase_BigInteger_int_helper("198", "83", 1, "(2)(32)");
+        toStringBase_BigInteger_int_helper("198", "83", -1, "(2)(0)");
+        toStringBase_BigInteger_int_helper("198", "83", -2, "(0)");
+
+        toStringBase_BigInteger_int_helper("-1/7", "10", -1, "0");
+        toStringBase_BigInteger_int_helper("-1/7", "10", 0, "0");
+        toStringBase_BigInteger_int_helper("-1/7", "10", 5, "-0.14285...");
+        toStringBase_BigInteger_int_helper("-1/7", "10", 20, "-0.14285714285714285714...");
+        toStringBase_BigInteger_int_helper("-1/7", "83", -1, "(0)");
+        toStringBase_BigInteger_int_helper("-1/7", "83", 0, "(0)");
+        toStringBase_BigInteger_int_helper("-1/7", "83", 5, "-(0).(11)(71)(11)(71)(11)...");
+        toStringBase_BigInteger_int_helper("-1/7", "83", 20,
+                "-(0).(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)...");
+
+        toStringBase_BigInteger_int_helper("1/1000", "10", 0, "0");
+        toStringBase_BigInteger_int_helper("1/1000", "10", 1, "0.0...");
+        toStringBase_BigInteger_int_helper("1/1000", "10", 2, "0.00...");
+        toStringBase_BigInteger_int_helper("1/1000", "10", 3, "0.001");
+        toStringBase_BigInteger_int_helper("1/1000", "10", 4, "0.001");
+
+        toStringBase_BigInteger_int_helper("1001/10000", "10", 0, "0");
+        toStringBase_BigInteger_int_helper("1001/10000", "10", 1, "0.1...");
+        toStringBase_BigInteger_int_helper("1001/10000", "10", 2, "0.10...");
+        toStringBase_BigInteger_int_helper("1001/10000", "10", 3, "0.100...");
+        toStringBase_BigInteger_int_helper("1001/10000", "10", 4, "0.1001");
+        toStringBase_BigInteger_int_helper("1001/10000", "10", 5, "0.1001");
+
+        toStringBase_BigInteger_int_helper("1/1000000", "100", 0, "(0)");
+        toStringBase_BigInteger_int_helper("1/1000000", "100", 1, "(0).(0)...");
+        toStringBase_BigInteger_int_helper("1/1000000", "100", 2, "(0).(0)(0)...");
+        toStringBase_BigInteger_int_helper("1/1000000", "100", 3, "(0).(0)(0)(1)");
+        toStringBase_BigInteger_int_helper("1/1000000", "100", 4, "(0).(0)(0)(1)");
+
+        toStringBase_BigInteger_int_helper("1000001/10000000", "100", 0, "(0)");
+        toStringBase_BigInteger_int_helper("1000001/10000000", "100", 1, "(0).(10)...");
+        toStringBase_BigInteger_int_helper("1000001/10000000", "100", 2, "(0).(10)(0)...");
+        toStringBase_BigInteger_int_helper("1000001/10000000", "100", 3, "(0).(10)(0)(0)...");
+        toStringBase_BigInteger_int_helper("1000001/10000000", "100", 4, "(0).(10)(0)(0)(10)");
+        toStringBase_BigInteger_int_helper("1000001/10000000", "100", 5, "(0).(10)(0)(0)(10)");
+
+        toStringBase_BigInteger_int_helper("sqrt(2)", "10", -1, "0");
+        toStringBase_BigInteger_int_helper("sqrt(2)", "10", 0, "1");
+        toStringBase_BigInteger_int_helper("sqrt(2)", "10", 5, "1.41421...");
+        toStringBase_BigInteger_int_helper("sqrt(2)", "10", 20, "1.41421356237309504880...");
+        toStringBase_BigInteger_int_helper("sqrt(2)", "83", -1, "(0)");
+        toStringBase_BigInteger_int_helper("sqrt(2)", "83", 0, "(1)");
+        toStringBase_BigInteger_int_helper("sqrt(2)", "83", 5, "(1).(34)(31)(42)(77)(17)...");
+        toStringBase_BigInteger_int_helper("sqrt(2)", "83", 20,
+                "(1).(34)(31)(42)(77)(17)(5)(63)(29)(10)(80)(25)(59)(49)(27)(71)(42)(9)(61)(69)(34)...");
+
+        toStringBase_BigInteger_int_helper("-sqrt(2)", "10", -1, "0");
+        toStringBase_BigInteger_int_helper("-sqrt(2)", "10", 0, "-1");
+        toStringBase_BigInteger_int_helper("-sqrt(2)", "10", 5, "-1.41421...");
+        toStringBase_BigInteger_int_helper("-sqrt(2)", "10", 20, "-1.41421356237309504880...");
+        toStringBase_BigInteger_int_helper("-sqrt(2)", "83", -1, "(0)");
+        toStringBase_BigInteger_int_helper("-sqrt(2)", "83", 0, "-(1)");
+        toStringBase_BigInteger_int_helper("-sqrt(2)", "83", 5, "-(1).(34)(31)(42)(77)(17)...");
+        toStringBase_BigInteger_int_helper("-sqrt(2)", "83", 20,
+                "-(1).(34)(31)(42)(77)(17)(5)(63)(29)(10)(80)(25)(59)(49)(27)(71)(42)(9)(61)(69)(34)...");
+
+        toStringBase_BigInteger_int_helper("(1+sqrt(5))/2", "10", -1, "0");
+        toStringBase_BigInteger_int_helper("(1+sqrt(5))/2", "10", 0, "1");
+        toStringBase_BigInteger_int_helper("(1+sqrt(5))/2", "10", 5, "1.61803...");
+        toStringBase_BigInteger_int_helper("(1+sqrt(5))/2", "10", 20, "1.61803398874989484820...");
+        toStringBase_BigInteger_int_helper("(1+sqrt(5))/2", "83", -1, "(0)");
+        toStringBase_BigInteger_int_helper("(1+sqrt(5))/2", "83", 0, "(1)");
+        toStringBase_BigInteger_int_helper("(1+sqrt(5))/2", "83", 5, "(1).(51)(24)(52)(66)(35)...");
+        toStringBase_BigInteger_int_helper("(1+sqrt(5))/2", "83", 20,
+                "(1).(51)(24)(52)(66)(35)(36)(51)(58)(51)(46)(70)(10)(28)(62)(71)(13)(29)(59)(31)(4)...");
+
+        toStringBase_BigInteger_int_helper("root 0 of x^5-x-1", "10", -1, "0");
+        toStringBase_BigInteger_int_helper("root 0 of x^5-x-1", "10", 0, "1");
+        toStringBase_BigInteger_int_helper("root 0 of x^5-x-1", "10", 5, "1.16730...");
+        toStringBase_BigInteger_int_helper("root 0 of x^5-x-1", "10", 20, "1.16730397826141868425...");
+        toStringBase_BigInteger_int_helper("root 0 of x^5-x-1", "83", -1, "(0)");
+        toStringBase_BigInteger_int_helper("root 0 of x^5-x-1", "83", 0, "(1)");
+        toStringBase_BigInteger_int_helper("root 0 of x^5-x-1", "83", 5, "(1).(13)(73)(46)(19)(75)...");
+        toStringBase_BigInteger_int_helper("root 0 of x^5-x-1", "83", 20,
+                "(1).(13)(73)(46)(19)(75)(8)(75)(25)(23)(21)(76)(62)(16)(9)(71)(46)(11)(13)(30)(30)...");
+
+        toStringBase_BigInteger_int_fail_helper("-1/2", "1", 5);
+        toStringBase_BigInteger_int_fail_helper("-1/2", "0", 5);
+        toStringBase_BigInteger_int_fail_helper("-1/2", "-1", 5);
     }
 
     @Test

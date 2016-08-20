@@ -16,8 +16,7 @@ import java.util.*;
 import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.ordering.Ordering.gt;
-import static mho.wheels.ordering.Ordering.lt;
+import static mho.wheels.ordering.Ordering.*;
 import static mho.wheels.testing.Testing.assertEquals;
 import static mho.wheels.testing.Testing.assertTrue;
 
@@ -122,6 +121,11 @@ public final class Algebraic implements Comparable<Algebraic> {
         if (pCompare != 0) return pCompare;
         return Integer.compare(a.rootIndex, b.rootIndex);
     };
+
+    /**
+     * 36, the number of ASCII alphanumeric characters
+     */
+    private static final @NotNull BigInteger ASCII_ALPHANUMERIC_COUNT = BigInteger.valueOf(36);
 
     /**
      * The minimal polynomial of {@code this}; the unique primitive, irreducible polynomial of minimal degree with
@@ -2696,6 +2700,185 @@ public final class Algebraic implements Comparable<Algebraic> {
             }
             return a;
         }
+    }
+
+    /**
+     * Returns the convergents, or rational approximations of {@code this} formed by truncating its continued fraction
+     * at various points. The first element of the result is the floor of {@code this}. If {@code this} is rational,
+     * the last element of the result is {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>The result is a non-null, non-empty {@code Iterable} that consists of the convergents of some algebraic
+     *  number.</li>
+     * </ul>
+     *
+     * Length is O(log({@code denominator})) if {@code this} is rational, infinite otherwise.
+     *
+     * @return the convergents of {@code this}.
+     */
+    public @NotNull Iterable<Rational> convergents() {
+        return map(Rational::fromContinuedFraction, tail(inits(continuedFraction())));
+    }
+
+    /**
+     * Returns the digits of (non-negative) {@code this} in a given base. The return value is a pair consisting of the
+     * digits before the decimal point (in a list) and the digits after the decimal point (in a possibly-infinite
+     * {@code Iterable}). Trailing zeroes are not included.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be negative.</li>
+     *  <li>{@code base} must be at least 2.</li>
+     *  <li>Both of the result's elements are non-null. The first element does not begin with a zero.</li>
+     *  <li>All the elements of both of the result's elements only contain non-negative {@code BigInteger}s less than
+     *  {@code base}. The second element does not contain an infinite sequence of zeros or an infinite sequence of
+     *  {@code base}–1.</li>
+     * </ul>
+     *
+     * @param base the base of the digits
+     * @return a pair consisting of the digits before the decimal point and the digits after
+     */
+    public @NotNull Pair<List<BigInteger>, Iterable<BigInteger>> digits(@NotNull BigInteger base) {
+        if (signum() == -1) {
+            throw new IllegalArgumentException("this cannot be negative. Invalid this: " + this);
+        }
+        if (rational.isPresent()) {
+            return rational.get().digits(base);
+        } else {
+            return realValue().digits(base);
+        }
+    }
+
+    /**
+     * Given two {@code Algebraic}s {@code a} and {@code b}, returns a {@code Pair} containing their common leading
+     * digits (excluding leading zeros) in base {@code base} and the smallest integer p such that {@code a} and
+     * {@code b} have the same {@code base}<sup>x</sup>-place digits for all x≥p.
+     *
+     * For example, in base 10, 22/7 is 3.1428571428... and 157/50 is 3.14, so they share digits up to the hundredths
+     * (10<sup>–2</sup>) place. Thus, commonLeadingDigits(10, 22/7, 157/50) returns ([3, 1, 4], -2). On the other hand,
+     * 2 and 3 share no digits and are only equal up to the tens (10<sup>1</sup>) place, so
+     * commonLeadingDigits(10, 2, 3) returns ([], 1).
+     *
+     * <ul>
+     *  <li>{@code a} cannot be negative.</li>
+     *  <li>{@code b} cannot be negative.</li>
+     *  <li>{@code base} must be at least 2.</li>
+     *  <li>{@code a} and {@code b} cannot be equal.</li>
+     *  <li>The result is a pair whose first element contains no leading zeros and whose second element is not
+     *  null.</li>
+     * </ul>
+     *
+     * @param base the base of the digits we are considering
+     * @param a the first {@code Algebraic}
+     * @param b the second {@code Algebraic}
+     * @return the common leading digits of {@code a} and {@code b} and an offset specifying which digits they are
+     */
+    public static @NotNull Pair<List<BigInteger>, Integer> commonLeadingDigits(
+            @NotNull BigInteger base,
+            @NotNull Algebraic a,
+            @NotNull Algebraic b
+    ) {
+        if (a.signum() == -1) {
+            throw new IllegalArgumentException("a cannot be negative. Invalid a: " + a);
+        }
+        if (b.signum() == -1) {
+            throw new IllegalArgumentException("b cannot be negative. Invalid b: " + b);
+        }
+        if (a.equals(b)) {
+            throw new IllegalArgumentException("a and b cannot be equal. Invalid a and b: " + a);
+        }
+        Pair<List<BigInteger>, Iterable<BigInteger>> aDigits = a.digits(base);
+        Pair<List<BigInteger>, Iterable<BigInteger>> bDigits = b.digits(base);
+        List<BigInteger> aFloorDigits = aDigits.a;
+        List<BigInteger> bFloorDigits = bDigits.a;
+        if (aFloorDigits.size() != bFloorDigits.size()) {
+            return new Pair<>(Collections.emptyList(), max(aFloorDigits.size(), bFloorDigits.size()));
+        }
+        List<BigInteger> commonDigits = new ArrayList<>();
+        boolean seenNonzero = false;
+        for (int i = 0; i < aFloorDigits.size(); i++) {
+            BigInteger aDigit = aFloorDigits.get(i);
+            BigInteger bDigit = bFloorDigits.get(i);
+            if (!aDigit.equals(bDigit)) {
+                return new Pair<>(commonDigits, aFloorDigits.size() - i);
+            }
+            seenNonzero = seenNonzero || !aDigit.equals(BigInteger.ZERO);
+            commonDigits.add(aDigit);
+        }
+        Iterator<BigInteger> aFractionDigits = concat(aDigits.b, repeat(BigInteger.ZERO)).iterator();
+        Iterator<BigInteger> bFractionDigits = concat(bDigits.b, repeat(BigInteger.ZERO)).iterator();
+        for (int i = 0; ; i--) {
+            BigInteger aDigit = aFractionDigits.next();
+            BigInteger bDigit = bFractionDigits.next();
+            if (!aDigit.equals(bDigit)) {
+                return new Pair<>(commonDigits, i);
+            }
+            seenNonzero = seenNonzero || !aDigit.equals(BigInteger.ZERO);
+            if (seenNonzero) {
+                commonDigits.add(aDigit);
+            }
+        }
+    }
+
+    /**
+     * Converts {@code this} to a {@code String} in any base greater than 1, rounding to {@code scale} digits after the
+     * decimal point. A scale of 0 indicates rounding to an integer, and a negative scale indicates rounding to a
+     * positive power of {@code base}. All rounding is done towards 0 (truncation), so that the displayed digits are
+     * unaltered. If the result is an approximation (that is, not all digits are displayed) and the scale is positive,
+     * an ellipsis ("...") is appended. If the base is 36 or less, the digits are '0' through '9' followed by 'A'
+     * through 'Z'. If the base is greater than 36, the digits are written in decimal and each digit is surrounded by
+     * parentheses. If {@code this} has a fractional part, a decimal point is used. Zero is represented by "0" if the
+     * base is 36 or less, or "(0)" otherwise. There are no leading zeroes before the decimal point (unless
+     * {@code this} is less than 1, in which case there is exactly one zero) and no trailing zeroes after (unless an
+     * ellipsis is present, in which case there may be any number of trailing zeroes). Scientific notation is not used.
+     * If {@code this} is negative, the result will contain a leading '-'.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>{@code base} must be at least 2.</li>
+     *  <li>{@code scale} may be any {@code int}.</li>
+     *  <li>The result is a {@code String} representing an {@code Algebraic} in the manner previously described. See
+     *  the unit test and demo for further reference.</li>
+     * </ul>
+     *
+     * @param base the base of the output digits
+     * @param scale the maximum number of digits after the decimal point in the result. If {@code this} has a
+     *              terminating base-{@code base} expansion, the actual number of digits after the decimal point may be
+     *              less.
+     * @return a {@code String} representation of {@code this} in base {@code base}
+     */
+    public @NotNull String toStringBase(@NotNull BigInteger base, int scale) {
+        if (rational.isPresent()) {
+            return rational.get().toStringBase(base, scale);
+        }
+        if (lt(base, IntegerUtils.TWO)) {
+            throw new IllegalArgumentException("base must be at least 2. Invalid base: " + base);
+        }
+        BigInteger power = base.pow(scale >= 0 ? scale : -scale);
+        Algebraic scaled = scale >= 0 ? multiply(power) : divide(power);
+        Rational rounded = Rational.of(scaled.bigIntegerValue(RoundingMode.DOWN));
+        rounded = scale >= 0 ? rounded.divide(power) : rounded.multiply(power);
+        String result = rounded.toStringBase(base);
+        if (scale > 0 && !scaled.isInteger()) { //append ellipsis
+            //pad with trailing zeroes if necessary
+            int dotIndex = result.indexOf('.');
+            if (dotIndex == -1) {
+                dotIndex = result.length();
+                result = result + ".";
+            }
+            if (le(base, ASCII_ALPHANUMERIC_COUNT)) {
+                int missingZeroes = scale - result.length() + dotIndex + 1;
+                result += replicate(missingZeroes, '0');
+            } else {
+                int missingZeroes = scale;
+                for (int i = dotIndex + 1; i < result.length(); i++) {
+                    if (result.charAt(i) == '(') missingZeroes--;
+                }
+                result += concatStrings(replicate(missingZeroes, "(0)"));
+            }
+            result += "...";
+        }
+        return result;
     }
 
     /**

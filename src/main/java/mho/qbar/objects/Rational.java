@@ -2184,13 +2184,13 @@ public final class Rational implements Comparable<Rational> {
             @NotNull Rational b
     ) {
         if (a.signum() == -1) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("a cannot be negative. Invalid a: " + a);
         }
         if (b.signum() == -1) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("b cannot be negative. Invalid b: " + b);
         }
         if (a.equals(b)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("a and b cannot be equal. Invalid a and b: " + a);
         }
         Pair<List<BigInteger>, Iterable<BigInteger>> aDigits = a.digits(base);
         Pair<List<BigInteger>, Iterable<BigInteger>> bDigits = b.digits(base);
