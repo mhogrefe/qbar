@@ -2667,7 +2667,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      * a rational number.
      *
      * <ul>
-     *  <li>{@code nonRepeatedPart} cannot contains nulls, and every element, except possibly the first, must be
+     *  <li>{@code nonRepeatedPart} cannot contain nulls, and every element, except possibly the first, must be
      *  positive.</li>
      *  <li>Every element of {@code repeatedPart} must be positive.</li>
      *  <li>{@code nonRepeatedPart} and {@code repeatedPart} cannot both be empty.</li>
@@ -2687,6 +2687,11 @@ public final class Algebraic implements Comparable<Algebraic> {
         } else {
             Algebraic a = fromContinuedFraction(repeatedPart);
             for (int i = nonRepeatedPart.size() - 1; i >= 0; i--) {
+                BigInteger term = nonRepeatedPart.get(i);
+                if (i != 0 && term.signum() != 1) {
+                    throw new IllegalArgumentException("Every element in nonRepeatedPart, except possibly the first," +
+                            " must be positive. Invalid nonRepeatedPart: " + nonRepeatedPart);
+                }
                 a = a.invert().add(nonRepeatedPart.get(i));
             }
             return a;

@@ -126,7 +126,11 @@ public class AlgebraicProperties extends QBarTestProperties {
         compareImplementationsPow_Rational();
         propertiesFractionalPart();
         propertiesRoundToDenominator();
+        propertiesRealConjugates();
+        propertiesIsReducedSurd();
         propertiesContinuedFraction();
+        propertiesRepeatedContinuedFraction();
+        propertiesFromContinuedFraction();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -3479,6 +3483,33 @@ public class AlgebraicProperties extends QBarTestProperties {
         }
     }
 
+    private void propertiesRealConjugates() {
+        initialize("realConjugates()");
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            List<Algebraic> realConjugates = x.realConjugates();
+            assertEquals(x, realConjugates.size(), x.minimalPolynomialRootCount() - 1);
+            Polynomial mp = x.minimalPolynomial();
+            int rootIndex = x.rootIndex();
+            for (Algebraic realConjugate : realConjugates) {
+                realConjugate.validate();
+                assertEquals(x, realConjugate.minimalPolynomial(), mp);
+                assertNotEquals(x, realConjugate.rootIndex(), rootIndex);
+            }
+        }
+    }
+
+    private void propertiesIsReducedSurd() {
+        initialize("isReducedSurd()");
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            x.isReducedSurd();
+        }
+
+        Iterable<Algebraic> xs = P.withScale(1).choose(P.withScale(4).algebraics(1), P.withScale(1).algebraics(2));
+        for (Algebraic x : take(LIMIT, xs)) {
+            assertEquals(x, x.isReducedSurd(), x.repeatedContinuedFraction().a.isEmpty());
+        }
+    }
+
     private void propertiesContinuedFraction() {
         initialize("continuedFraction()");
         for (Algebraic x : take(LIMIT, P.algebraics())) {
@@ -3486,6 +3517,99 @@ public class AlgebraicProperties extends QBarTestProperties {
             assertFalse(x, continuedFraction.isEmpty());
             assertTrue(x, all(i -> i != null, continuedFraction));
             assertTrue(x, all(i -> i.signum() == 1, tail(continuedFraction)));
+        }
+    }
+
+    private void propertiesRepeatedContinuedFraction() {
+        initialize("repeatedContinuedFraction()");
+        Iterable<Algebraic> xs = P.withScale(1).choose(P.withScale(4).algebraics(1), P.withScale(1).algebraics(2));
+        for (Algebraic x : take(LIMIT, xs)) {
+            Pair<List<BigInteger>, List<BigInteger>> cf = x.repeatedContinuedFraction();
+            assertNotNull(x, cf.a);
+            assertNotNull(x, cf.b);
+            assertTrue(x, all(i -> i != null, cf.a));
+            if (!cf.a.isEmpty()) {
+                assertTrue(x, all(i -> i.signum() == 1, tail(cf.a)));
+            }
+            assertTrue(x, all(i -> i.signum() == 1, cf.b));
+            assertTrue(x, !cf.a.isEmpty() || !cf.b.isEmpty());
+            Pair<List<BigInteger>, List<BigInteger>> minimized = minimize(cf.a, cf.b);
+            assertEquals(x, minimized.a, cf.a);
+            assertEquals(x, minimized.b, cf.b);
+            assertEquals(x, cf.b.isEmpty(), x.isRational());
+            inverse(Algebraic::repeatedContinuedFraction, p -> fromContinuedFraction(p.a, p.b), x);
+        }
+
+        for (Algebraic x : take(LIMIT, filterInfinite(y -> y.degree() >= 3, P.algebraics()))) {
+            try {
+                x.repeatedContinuedFraction();
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesFromContinuedFraction() {
+        initialize("fromContinuedFraction(List<BigInteger>, List<BigInteger>)");
+        Iterable<Pair<List<BigInteger>, List<BigInteger>>> ps = filterInfinite(
+                p -> !p.a.isEmpty() || !p.b.isEmpty(),
+                P.pairs(
+                        P.withElement(
+                                Collections.emptyList(),
+                                zipWith(
+                                        (i, is) -> toList(cons(i, is)),
+                                        P.withScale(1).bigIntegers(),
+                                        P.withScale(4).lists(P.withScale(2).positiveBigIntegers())
+                                )
+                        ),
+                        P.withScale(4).lists(P.withScale(2).positiveBigIntegers())
+                )
+        );
+        for (Pair<List<BigInteger>, List<BigInteger>> p : take(LIMIT, ps)) {
+            Algebraic x = fromContinuedFraction(p.a, p.b);
+            x.validate();
+            assertEquals(p, x, fromContinuedFraction(p.a, toList(concat(p.b, p.b))));
+            if (!p.b.isEmpty()) {
+                assertEquals(
+                        p,
+                        x,
+                        fromContinuedFraction(
+                                toList(concat(p.a, Collections.singletonList(head(p.b)))), toList(rotateLeft(1, p.b))
+                        )
+                );
+            }
+        }
+
+        Iterable<Pair<List<BigInteger>, List<BigInteger>>> psFail = filterInfinite(
+                q -> (!q.a.isEmpty() && any(i -> i.signum() != 1, tail(q.a))) || any(i -> i.signum() != 1, q.b),
+                P.pairs(P.withScale(4).lists(P.withScale(1).bigIntegers()))
+        );
+        for (Pair<List<BigInteger>, List<BigInteger>> p : take(LIMIT, psFail)) {
+            try {
+                fromContinuedFraction(p.a, p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        psFail = filterInfinite(
+                p -> any(i -> i == null, p.a) || any(i -> i == null, p.b),
+                P.pairs(
+                        P.withElement(
+                                Collections.emptyList(),
+                                zipWith(
+                                        (i, is) -> toList(cons(i, is)),
+                                        P.withScale(1).bigIntegers(),
+                                        P.withScale(4)
+                                                .lists(P.withScale(4).withNull(P.withScale(2).positiveBigIntegers()))
+                                )
+                        ),
+                        P.withScale(4).lists(P.withScale(2).positiveBigIntegers())
+                )
+        );
+        for (Pair<List<BigInteger>, List<BigInteger>> p : take(LIMIT, psFail)) {
+            try {
+                fromContinuedFraction(p.a, p.b);
+                fail(p);
+            } catch (NullPointerException ignored) {}
         }
     }
 
