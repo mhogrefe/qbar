@@ -4375,7 +4375,7 @@ public class AlgebraicTest {
         commonLeadingDigits_fail_helper("2", "sqrt(2)", "-1");
     }
 
-    private static void toStringBase_BigInteger_int_helper(
+    private static void toStringBase_helper(
             @NotNull String x,
             @NotNull String base,
             int scale,
@@ -4384,7 +4384,7 @@ public class AlgebraicTest {
         aeq(readStrict(x).get().toStringBase(Readers.readBigIntegerStrict(base).get(), scale), output);
     }
 
-    private static void toStringBase_BigInteger_int_fail_helper(@NotNull String x, @NotNull String base, int scale) {
+    private static void toStringBase_fail_helper(@NotNull String x, @NotNull String base, int scale) {
         try {
             readStrict(x).get().toStringBase(Readers.readBigIntegerStrict(base).get(), scale);
             fail();
@@ -4392,110 +4392,110 @@ public class AlgebraicTest {
     }
 
     @Test
-    public void testToStringBase_BigInteger_int() {
-        toStringBase_BigInteger_int_helper("0", "10", 0, "0");
-        toStringBase_BigInteger_int_helper("0", "10", -1, "0");
-        toStringBase_BigInteger_int_helper("0", "10", 1, "0");
-        toStringBase_BigInteger_int_helper("0", "83", 0, "(0)");
-        toStringBase_BigInteger_int_helper("0", "83", -1, "(0)");
-        toStringBase_BigInteger_int_helper("0", "83", 1, "(0)");
+    public void testToStringBase() {
+        toStringBase_helper("0", "10", 0, "0");
+        toStringBase_helper("0", "10", -1, "0");
+        toStringBase_helper("0", "10", 1, "0");
+        toStringBase_helper("0", "83", 0, "(0)");
+        toStringBase_helper("0", "83", -1, "(0)");
+        toStringBase_helper("0", "83", 1, "(0)");
 
-        toStringBase_BigInteger_int_helper("1", "10", 0, "1");
-        toStringBase_BigInteger_int_helper("1", "10", -1, "0");
-        toStringBase_BigInteger_int_helper("1", "10", 1, "1");
-        toStringBase_BigInteger_int_helper("1", "83", 0, "(1)");
-        toStringBase_BigInteger_int_helper("1", "83", -1, "(0)");
-        toStringBase_BigInteger_int_helper("1", "83", 1, "(1)");
+        toStringBase_helper("1", "10", 0, "1");
+        toStringBase_helper("1", "10", -1, "0");
+        toStringBase_helper("1", "10", 1, "1");
+        toStringBase_helper("1", "83", 0, "(1)");
+        toStringBase_helper("1", "83", -1, "(0)");
+        toStringBase_helper("1", "83", 1, "(1)");
 
-        toStringBase_BigInteger_int_helper("198", "10", 0, "198");
-        toStringBase_BigInteger_int_helper("198", "10", 1, "198");
-        toStringBase_BigInteger_int_helper("198", "10", -1, "190");
-        toStringBase_BigInteger_int_helper("198", "10", -2, "100");
-        toStringBase_BigInteger_int_helper("198", "10", -3, "0");
-        toStringBase_BigInteger_int_helper("198", "83", 0, "(2)(32)");
-        toStringBase_BigInteger_int_helper("198", "83", 1, "(2)(32)");
-        toStringBase_BigInteger_int_helper("198", "83", -1, "(2)(0)");
-        toStringBase_BigInteger_int_helper("198", "83", -2, "(0)");
+        toStringBase_helper("198", "10", 0, "198");
+        toStringBase_helper("198", "10", 1, "198");
+        toStringBase_helper("198", "10", -1, "190");
+        toStringBase_helper("198", "10", -2, "100");
+        toStringBase_helper("198", "10", -3, "0");
+        toStringBase_helper("198", "83", 0, "(2)(32)");
+        toStringBase_helper("198", "83", 1, "(2)(32)");
+        toStringBase_helper("198", "83", -1, "(2)(0)");
+        toStringBase_helper("198", "83", -2, "(0)");
 
-        toStringBase_BigInteger_int_helper("-1/7", "10", -1, "0");
-        toStringBase_BigInteger_int_helper("-1/7", "10", 0, "0");
-        toStringBase_BigInteger_int_helper("-1/7", "10", 5, "-0.14285...");
-        toStringBase_BigInteger_int_helper("-1/7", "10", 20, "-0.14285714285714285714...");
-        toStringBase_BigInteger_int_helper("-1/7", "83", -1, "(0)");
-        toStringBase_BigInteger_int_helper("-1/7", "83", 0, "(0)");
-        toStringBase_BigInteger_int_helper("-1/7", "83", 5, "-(0).(11)(71)(11)(71)(11)...");
-        toStringBase_BigInteger_int_helper("-1/7", "83", 20,
+        toStringBase_helper("-1/7", "10", -1, "0");
+        toStringBase_helper("-1/7", "10", 0, "0");
+        toStringBase_helper("-1/7", "10", 5, "-0.14285...");
+        toStringBase_helper("-1/7", "10", 20, "-0.14285714285714285714...");
+        toStringBase_helper("-1/7", "83", -1, "(0)");
+        toStringBase_helper("-1/7", "83", 0, "(0)");
+        toStringBase_helper("-1/7", "83", 5, "-(0).(11)(71)(11)(71)(11)...");
+        toStringBase_helper("-1/7", "83", 20,
                 "-(0).(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)...");
 
-        toStringBase_BigInteger_int_helper("1/1000", "10", 0, "0");
-        toStringBase_BigInteger_int_helper("1/1000", "10", 1, "0.0...");
-        toStringBase_BigInteger_int_helper("1/1000", "10", 2, "0.00...");
-        toStringBase_BigInteger_int_helper("1/1000", "10", 3, "0.001");
-        toStringBase_BigInteger_int_helper("1/1000", "10", 4, "0.001");
+        toStringBase_helper("1/1000", "10", 0, "0");
+        toStringBase_helper("1/1000", "10", 1, "0.0...");
+        toStringBase_helper("1/1000", "10", 2, "0.00...");
+        toStringBase_helper("1/1000", "10", 3, "0.001");
+        toStringBase_helper("1/1000", "10", 4, "0.001");
 
-        toStringBase_BigInteger_int_helper("1001/10000", "10", 0, "0");
-        toStringBase_BigInteger_int_helper("1001/10000", "10", 1, "0.1...");
-        toStringBase_BigInteger_int_helper("1001/10000", "10", 2, "0.10...");
-        toStringBase_BigInteger_int_helper("1001/10000", "10", 3, "0.100...");
-        toStringBase_BigInteger_int_helper("1001/10000", "10", 4, "0.1001");
-        toStringBase_BigInteger_int_helper("1001/10000", "10", 5, "0.1001");
+        toStringBase_helper("1001/10000", "10", 0, "0");
+        toStringBase_helper("1001/10000", "10", 1, "0.1...");
+        toStringBase_helper("1001/10000", "10", 2, "0.10...");
+        toStringBase_helper("1001/10000", "10", 3, "0.100...");
+        toStringBase_helper("1001/10000", "10", 4, "0.1001");
+        toStringBase_helper("1001/10000", "10", 5, "0.1001");
 
-        toStringBase_BigInteger_int_helper("1/1000000", "100", 0, "(0)");
-        toStringBase_BigInteger_int_helper("1/1000000", "100", 1, "(0).(0)...");
-        toStringBase_BigInteger_int_helper("1/1000000", "100", 2, "(0).(0)(0)...");
-        toStringBase_BigInteger_int_helper("1/1000000", "100", 3, "(0).(0)(0)(1)");
-        toStringBase_BigInteger_int_helper("1/1000000", "100", 4, "(0).(0)(0)(1)");
+        toStringBase_helper("1/1000000", "100", 0, "(0)");
+        toStringBase_helper("1/1000000", "100", 1, "(0).(0)...");
+        toStringBase_helper("1/1000000", "100", 2, "(0).(0)(0)...");
+        toStringBase_helper("1/1000000", "100", 3, "(0).(0)(0)(1)");
+        toStringBase_helper("1/1000000", "100", 4, "(0).(0)(0)(1)");
 
-        toStringBase_BigInteger_int_helper("1000001/10000000", "100", 0, "(0)");
-        toStringBase_BigInteger_int_helper("1000001/10000000", "100", 1, "(0).(10)...");
-        toStringBase_BigInteger_int_helper("1000001/10000000", "100", 2, "(0).(10)(0)...");
-        toStringBase_BigInteger_int_helper("1000001/10000000", "100", 3, "(0).(10)(0)(0)...");
-        toStringBase_BigInteger_int_helper("1000001/10000000", "100", 4, "(0).(10)(0)(0)(10)");
-        toStringBase_BigInteger_int_helper("1000001/10000000", "100", 5, "(0).(10)(0)(0)(10)");
+        toStringBase_helper("1000001/10000000", "100", 0, "(0)");
+        toStringBase_helper("1000001/10000000", "100", 1, "(0).(10)...");
+        toStringBase_helper("1000001/10000000", "100", 2, "(0).(10)(0)...");
+        toStringBase_helper("1000001/10000000", "100", 3, "(0).(10)(0)(0)...");
+        toStringBase_helper("1000001/10000000", "100", 4, "(0).(10)(0)(0)(10)");
+        toStringBase_helper("1000001/10000000", "100", 5, "(0).(10)(0)(0)(10)");
 
-        toStringBase_BigInteger_int_helper("sqrt(2)", "10", -1, "0");
-        toStringBase_BigInteger_int_helper("sqrt(2)", "10", 0, "1");
-        toStringBase_BigInteger_int_helper("sqrt(2)", "10", 5, "1.41421...");
-        toStringBase_BigInteger_int_helper("sqrt(2)", "10", 20, "1.41421356237309504880...");
-        toStringBase_BigInteger_int_helper("sqrt(2)", "83", -1, "(0)");
-        toStringBase_BigInteger_int_helper("sqrt(2)", "83", 0, "(1)");
-        toStringBase_BigInteger_int_helper("sqrt(2)", "83", 5, "(1).(34)(31)(42)(77)(17)...");
-        toStringBase_BigInteger_int_helper("sqrt(2)", "83", 20,
+        toStringBase_helper("sqrt(2)", "10", -1, "0");
+        toStringBase_helper("sqrt(2)", "10", 0, "1");
+        toStringBase_helper("sqrt(2)", "10", 5, "1.41421...");
+        toStringBase_helper("sqrt(2)", "10", 20, "1.41421356237309504880...");
+        toStringBase_helper("sqrt(2)", "83", -1, "(0)");
+        toStringBase_helper("sqrt(2)", "83", 0, "(1)");
+        toStringBase_helper("sqrt(2)", "83", 5, "(1).(34)(31)(42)(77)(17)...");
+        toStringBase_helper("sqrt(2)", "83", 20,
                 "(1).(34)(31)(42)(77)(17)(5)(63)(29)(10)(80)(25)(59)(49)(27)(71)(42)(9)(61)(69)(34)...");
 
-        toStringBase_BigInteger_int_helper("-sqrt(2)", "10", -1, "0");
-        toStringBase_BigInteger_int_helper("-sqrt(2)", "10", 0, "-1");
-        toStringBase_BigInteger_int_helper("-sqrt(2)", "10", 5, "-1.41421...");
-        toStringBase_BigInteger_int_helper("-sqrt(2)", "10", 20, "-1.41421356237309504880...");
-        toStringBase_BigInteger_int_helper("-sqrt(2)", "83", -1, "(0)");
-        toStringBase_BigInteger_int_helper("-sqrt(2)", "83", 0, "-(1)");
-        toStringBase_BigInteger_int_helper("-sqrt(2)", "83", 5, "-(1).(34)(31)(42)(77)(17)...");
-        toStringBase_BigInteger_int_helper("-sqrt(2)", "83", 20,
+        toStringBase_helper("-sqrt(2)", "10", -1, "0");
+        toStringBase_helper("-sqrt(2)", "10", 0, "-1");
+        toStringBase_helper("-sqrt(2)", "10", 5, "-1.41421...");
+        toStringBase_helper("-sqrt(2)", "10", 20, "-1.41421356237309504880...");
+        toStringBase_helper("-sqrt(2)", "83", -1, "(0)");
+        toStringBase_helper("-sqrt(2)", "83", 0, "-(1)");
+        toStringBase_helper("-sqrt(2)", "83", 5, "-(1).(34)(31)(42)(77)(17)...");
+        toStringBase_helper("-sqrt(2)", "83", 20,
                 "-(1).(34)(31)(42)(77)(17)(5)(63)(29)(10)(80)(25)(59)(49)(27)(71)(42)(9)(61)(69)(34)...");
 
-        toStringBase_BigInteger_int_helper("(1+sqrt(5))/2", "10", -1, "0");
-        toStringBase_BigInteger_int_helper("(1+sqrt(5))/2", "10", 0, "1");
-        toStringBase_BigInteger_int_helper("(1+sqrt(5))/2", "10", 5, "1.61803...");
-        toStringBase_BigInteger_int_helper("(1+sqrt(5))/2", "10", 20, "1.61803398874989484820...");
-        toStringBase_BigInteger_int_helper("(1+sqrt(5))/2", "83", -1, "(0)");
-        toStringBase_BigInteger_int_helper("(1+sqrt(5))/2", "83", 0, "(1)");
-        toStringBase_BigInteger_int_helper("(1+sqrt(5))/2", "83", 5, "(1).(51)(24)(52)(66)(35)...");
-        toStringBase_BigInteger_int_helper("(1+sqrt(5))/2", "83", 20,
+        toStringBase_helper("(1+sqrt(5))/2", "10", -1, "0");
+        toStringBase_helper("(1+sqrt(5))/2", "10", 0, "1");
+        toStringBase_helper("(1+sqrt(5))/2", "10", 5, "1.61803...");
+        toStringBase_helper("(1+sqrt(5))/2", "10", 20, "1.61803398874989484820...");
+        toStringBase_helper("(1+sqrt(5))/2", "83", -1, "(0)");
+        toStringBase_helper("(1+sqrt(5))/2", "83", 0, "(1)");
+        toStringBase_helper("(1+sqrt(5))/2", "83", 5, "(1).(51)(24)(52)(66)(35)...");
+        toStringBase_helper("(1+sqrt(5))/2", "83", 20,
                 "(1).(51)(24)(52)(66)(35)(36)(51)(58)(51)(46)(70)(10)(28)(62)(71)(13)(29)(59)(31)(4)...");
 
-        toStringBase_BigInteger_int_helper("root 0 of x^5-x-1", "10", -1, "0");
-        toStringBase_BigInteger_int_helper("root 0 of x^5-x-1", "10", 0, "1");
-        toStringBase_BigInteger_int_helper("root 0 of x^5-x-1", "10", 5, "1.16730...");
-        toStringBase_BigInteger_int_helper("root 0 of x^5-x-1", "10", 20, "1.16730397826141868425...");
-        toStringBase_BigInteger_int_helper("root 0 of x^5-x-1", "83", -1, "(0)");
-        toStringBase_BigInteger_int_helper("root 0 of x^5-x-1", "83", 0, "(1)");
-        toStringBase_BigInteger_int_helper("root 0 of x^5-x-1", "83", 5, "(1).(13)(73)(46)(19)(75)...");
-        toStringBase_BigInteger_int_helper("root 0 of x^5-x-1", "83", 20,
+        toStringBase_helper("root 0 of x^5-x-1", "10", -1, "0");
+        toStringBase_helper("root 0 of x^5-x-1", "10", 0, "1");
+        toStringBase_helper("root 0 of x^5-x-1", "10", 5, "1.16730...");
+        toStringBase_helper("root 0 of x^5-x-1", "10", 20, "1.16730397826141868425...");
+        toStringBase_helper("root 0 of x^5-x-1", "83", -1, "(0)");
+        toStringBase_helper("root 0 of x^5-x-1", "83", 0, "(1)");
+        toStringBase_helper("root 0 of x^5-x-1", "83", 5, "(1).(13)(73)(46)(19)(75)...");
+        toStringBase_helper("root 0 of x^5-x-1", "83", 20,
                 "(1).(13)(73)(46)(19)(75)(8)(75)(25)(23)(21)(76)(62)(16)(9)(71)(46)(11)(13)(30)(30)...");
 
-        toStringBase_BigInteger_int_fail_helper("-1/2", "1", 5);
-        toStringBase_BigInteger_int_fail_helper("-1/2", "0", 5);
-        toStringBase_BigInteger_int_fail_helper("-1/2", "-1", 5);
+        toStringBase_fail_helper("-1/2", "1", 5);
+        toStringBase_fail_helper("-1/2", "0", 5);
+        toStringBase_fail_helper("-1/2", "-1", 5);
     }
 
     @Test

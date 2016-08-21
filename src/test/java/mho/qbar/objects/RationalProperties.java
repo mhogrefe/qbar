@@ -3255,7 +3255,7 @@ public class RationalProperties extends QBarTestProperties {
             aeqit(p.toString(), take(TINY_LIMIT, digits.b), take(TINY_LIMIT, alt.b));
         }
 
-        ps = filter(
+        ps = filterInfinite(
                 q -> q.a.hasTerminatingBaseExpansion(q.b),
                 P.pairsSquareRootOrder(
                         P.withElement(ZERO, P.positiveRationals()),

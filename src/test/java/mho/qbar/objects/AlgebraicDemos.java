@@ -677,6 +677,54 @@ public class AlgebraicDemos extends QBarDemos {
         }
     }
 
+    private void demoConvergents() {
+        for (Algebraic x : take(MEDIUM_LIMIT, P.withScale(4).algebraics())) {
+            System.out.println("convergents(" + x + ") = " + its(x.convergents()));
+        }
+    }
+
+    private void demoDigits() {
+        //noinspection Convert2MethodRef
+        Iterable<Pair<Algebraic, BigInteger>> ps = P.pairsSquareRootOrder(
+                P.withElement(ZERO, P.withScale(4).positiveAlgebraics()),
+                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
+        );
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, ps)) {
+            Pair<List<BigInteger>, Iterable<BigInteger>> digits = p.a.digits(p.b);
+            System.out.println("digits(" + p.a + ", " + p.b + ") = " + new Pair<>(digits.a.toString(), its(digits.b)));
+        }
+    }
+
+    private void demoCommonLeadingDigits() {
+        //noinspection Convert2MethodRef
+        Iterable<Triple<BigInteger, Algebraic, Algebraic>> ts = map(
+                p -> new Triple<>(p.b, p.a.a, p.a.b),
+                P.pairsSquareRootOrder(
+                        filterInfinite(
+                                p -> p.a != p.b,
+                                P.pairs(P.withElement(ZERO, P.withScale(4).positiveAlgebraics()))
+                        ),
+                        map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
+                )
+        );
+        for (Triple<BigInteger, Algebraic, Algebraic> t : take(LIMIT, ts)) {
+            System.out.println("commonLeadingDigits(" + t.a + ", " + t.b + ", " + t.c + ") = " +
+                    commonLeadingDigits(t.a, t.b, t.c));
+        }
+    }
+
+    private void demoToStringBase() {
+        //noinspection Convert2MethodRef
+        Iterable<Triple<Algebraic, BigInteger, Integer>> ts = P.triples(
+                P.withScale(4).algebraics(),
+                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2)),
+                P.withScale(16).integersGeometric()
+        );
+        for (Triple<Algebraic, BigInteger, Integer> t : take(LIMIT, ts)) {
+            System.out.println("toStringBase(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.toStringBase(t.b, t.c));
+        }
+    }
+
     private void demoEquals_Algebraic() {
         for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.pairs(P.withScale(4).algebraics()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);

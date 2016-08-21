@@ -4,6 +4,7 @@ import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
 import mho.wheels.concurrency.ConcurrencyUtils;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.math.MathUtils;
@@ -29,6 +30,7 @@ import static mho.wheels.testing.Testing.*;
 
 public class AlgebraicProperties extends QBarTestProperties {
     private static final @NotNull String ALGEBRAIC_CHARS = " ()*+-/0123456789^foqrstx";
+    private static final BigInteger ASCII_ALPHANUMERIC_COUNT = BigInteger.valueOf(36);
 
     public AlgebraicProperties() {
         super("Algebraic");
@@ -129,8 +131,13 @@ public class AlgebraicProperties extends QBarTestProperties {
         propertiesRealConjugates();
         propertiesIsReducedSurd();
         propertiesContinuedFraction();
+        compareImplementationsIsContinuedFraction();
         propertiesRepeatedContinuedFraction();
         propertiesFromContinuedFraction();
+        propertiesConvergents();
+        propertiesDigits();
+        propertiesCommonLeadingDigits();
+        propertiesToStringBase();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -3510,14 +3517,30 @@ public class AlgebraicProperties extends QBarTestProperties {
         }
     }
 
+    public static @NotNull Iterable<BigInteger> continuedFraction_alt(@NotNull Algebraic x) {
+        if (x.isRational()) {
+            return x.rationalValueExact().continuedFraction();
+        } else {
+            return x.realValue().continuedFraction();
+        }
+    }
+
     private void propertiesContinuedFraction() {
         initialize("continuedFraction()");
         for (Algebraic x : take(LIMIT, P.algebraics())) {
             List<BigInteger> continuedFraction = toList(take(TINY_LIMIT, x.continuedFraction()));
+            assertEquals(x, toList(take(TINY_LIMIT, continuedFraction_alt(x))), continuedFraction);
             assertFalse(x, continuedFraction.isEmpty());
             assertTrue(x, all(i -> i != null, continuedFraction));
             assertTrue(x, all(i -> i.signum() == 1, tail(continuedFraction)));
         }
+    }
+
+    private void compareImplementationsIsContinuedFraction() {
+        Map<String, Function<Algebraic, Iterable<BigInteger>>> functions = new LinkedHashMap<>();
+        functions.put("alt", AlgebraicProperties::continuedFraction_alt);
+        functions.put("standard", Algebraic::continuedFraction);
+        compareImplementations("continuedFraction()", take(LIMIT, P.algebraics()), functions, v -> P.reset());
     }
 
     private void propertiesRepeatedContinuedFraction() {
@@ -3610,6 +3633,212 @@ public class AlgebraicProperties extends QBarTestProperties {
                 fromContinuedFraction(p.a, p.b);
                 fail(p);
             } catch (NullPointerException ignored) {}
+        }
+    }
+
+    private void propertiesConvergents() {
+        initialize("convergents()");
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            List<Rational> convergents = toList(take(TINY_LIMIT, x.convergents()));
+            assertFalse(x, convergents.isEmpty());
+            assertTrue(x, all(s -> s != null, convergents));
+            assertEquals(x, head(convergents), Rational.of(x.floor()));
+            if (x.isRational()) {
+                assertEquals(x, last(x.convergents()), x.rationalValueExact());
+            }
+            assertTrue(x, zigzagging(convergents));
+            if (convergents.size() > 1) {
+                assertTrue(x, lt(convergents.get(0), convergents.get(1)));
+            }
+        }
+    }
+
+    private void propertiesDigits() {
+        initialize("digits(BigInteger)");
+        //noinspection Convert2MethodRef
+        Iterable<Pair<Algebraic, BigInteger>> ps = P.pairsSquareRootOrder(
+                P.withElement(ZERO, P.positiveAlgebraics()),
+                P.rangeUp(IntegerUtils.TWO)
+        );
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, ps)) {
+            Pair<List<BigInteger>, Iterable<BigInteger>> digits = p.a.digits(p.b);
+            assertTrue(p, digits.a.isEmpty() || !head(digits.a).equals(BigInteger.ZERO));
+            assertTrue(p, all(x -> x.signum() != -1 && lt(x, p.b), digits.a));
+            assertEquals(p, IntegerUtils.fromBigEndianDigits(p.b, digits.a), p.a.floor());
+        }
+
+        ps = filterInfinite(
+                q -> q.a.hasTerminatingBaseExpansion(q.b),
+                P.pairsSquareRootOrder(
+                        P.withElement(ZERO, P.positiveAlgebraics(1)),
+                        P.withScale(4).rangeUp(IntegerUtils.TWO)
+                )
+        );
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, ps)) {
+            toList(p.a.digits(p.b).b);
+        }
+
+        Iterable<Pair<Algebraic, BigInteger>> psFail = P.pairs(P.negativeAlgebraics(), P.rangeUp(IntegerUtils.TWO));
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, psFail)) {
+            try {
+                p.a.digits(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, P.pairs(P.algebraics(), P.rangeDown(BigInteger.ONE)))) {
+            try {
+                p.a.digits(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesCommonLeadingDigits() {
+        initialize("commonLeadingDigits(BigInteger, Algebraic, Algebraic)");
+        //noinspection Convert2MethodRef
+        Iterable<Triple<BigInteger, Algebraic, Algebraic>> ts = map(
+                p -> new Triple<>(p.b, p.a.a, p.a.b),
+                P.pairsSquareRootOrder(
+                        filterInfinite(p -> p.a != p.b, P.pairs(P.withElement(ZERO, P.positiveAlgebraics()))),
+                        map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
+                )
+        );
+        for (Triple<BigInteger, Algebraic, Algebraic> t : take(LIMIT, ts)) {
+            Pair<List<BigInteger>, Integer> cld = commonLeadingDigits(t.a, t.b, t.c);
+            assertNotEquals(t, cld.a, null);
+            assertNotEquals(t, cld.b, null);
+            assertTrue(t, cld.a.isEmpty() || !head(cld.a).equals(BigInteger.ZERO));
+            BigInteger approx = IntegerUtils.fromBigEndianDigits(t.a, cld.a);
+            Rational pow = Rational.of(t.a).pow(cld.b);
+            assertTrue(t, le(of(pow.multiply(approx)), t.b));
+            assertTrue(t, le(of(pow.multiply(approx)), t.c));
+            assertTrue(t, gt(of(pow.multiply(approx.add(BigInteger.ONE))), t.b));
+            assertTrue(t, gt(of(pow.multiply(approx.add(BigInteger.ONE))), t.c));
+        }
+
+        Iterable<Triple<BigInteger, Algebraic, Algebraic>> tsFail = map(
+                p -> new Triple<>(p.b, p.a.a, p.a.b),
+                P.pairsSquareRootOrder(
+                        filterInfinite(p -> p.a != p.b, P.pairs(P.withElement(ZERO, P.positiveAlgebraics()))),
+                        P.rangeDown(BigInteger.valueOf(-2))
+                )
+        );
+        for (Triple<BigInteger, Algebraic, Algebraic> t : take(LIMIT, tsFail)) {
+            try {
+                commonLeadingDigits(t.a, t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        //noinspection Convert2MethodRef
+        tsFail = map(
+                p -> new Triple<>(p.b, p.a.a, p.a.b),
+                P.pairsSquareRootOrder(
+                        P.pairs(P.withElement(ZERO, P.positiveAlgebraics()), P.negativeAlgebraics()),
+                        map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
+                )
+        );
+        for (Triple<BigInteger, Algebraic, Algebraic> t : take(LIMIT, tsFail)) {
+            try {
+                commonLeadingDigits(t.a, t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        //noinspection Convert2MethodRef
+        tsFail = map(
+                p -> new Triple<>(p.b, p.a.a, p.a.b),
+                P.pairsSquareRootOrder(
+                        P.pairs(P.negativeAlgebraics(), P.withElement(ZERO, P.positiveAlgebraics())),
+                        map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
+                )
+        );
+        for (Triple<BigInteger, Algebraic, Algebraic> t : take(LIMIT, tsFail)) {
+            try {
+                commonLeadingDigits(t.a, t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        //noinspection Convert2MethodRef
+        Iterable<Pair<Algebraic, BigInteger>> psFail = P.pairsSquareRootOrder(
+                P.withElement(ZERO, P.positiveAlgebraics()),
+                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
+        );
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, psFail)) {
+            try {
+                commonLeadingDigits(p.b, p.a, p.a);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesToStringBase() {
+        initialize("toStringBase(BigInteger, int)");
+        //noinspection Convert2MethodRef
+        Iterable<Triple<Algebraic, BigInteger, Integer>> ts = P.triples(
+                P.withScale(4).algebraics(),
+                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2)),
+                P.withScale(16).integersGeometric()
+        );
+        for (Triple<Algebraic, BigInteger, Integer> t : take(LIMIT, ts)) {
+            String s = t.a.toStringBase(t.b, t.c);
+            boolean ellipsis = s.endsWith("...");
+            if (ellipsis) s = take(s.length() - 3, s);
+            Algebraic error = t.a.subtract(Rational.fromStringBase(s, t.b)).abs();
+            assertTrue(t, lt(error, of(t.b).pow(-t.c)));
+            if (ellipsis) {
+                assertTrue(t, error != ZERO);
+            }
+        }
+
+        String smallBaseChars = charsToString(
+                concat(
+                        Arrays.asList(
+                                fromString("-."),
+                                ExhaustiveProvider.INSTANCE.rangeIncreasing('0', '9'),
+                                ExhaustiveProvider.INSTANCE.rangeIncreasing('A', 'Z')
+                        )
+                )
+        );
+        ts = P.triples(
+                P.withScale(4).algebraics(),
+                P.range(IntegerUtils.TWO, ASCII_ALPHANUMERIC_COUNT),
+                P.withScale(16).integersGeometric()
+        );
+        for (Triple<Algebraic, BigInteger, Integer> t : take(LIMIT, ts)) {
+            String s = t.a.toStringBase(t.b, t.c);
+            assertTrue(t, all(c -> elem(c, smallBaseChars), s));
+        }
+
+        String largeBaseChars = charsToString(
+                concat(fromString("-.()"), ExhaustiveProvider.INSTANCE.rangeIncreasing('0', '9'))
+        );
+        //noinspection Convert2MethodRef
+        ts = P.triples(
+                P.withScale(4).algebraics(),
+                map(
+                        i -> BigInteger.valueOf(i),
+                        P.withScale(64).rangeUpGeometric(ASCII_ALPHANUMERIC_COUNT.intValueExact() + 1)
+                ),
+                P.withScale(16).integersGeometric()
+        );
+        for (Triple<Algebraic, BigInteger, Integer> t : take(LIMIT, ts)) {
+            String s = t.a.toStringBase(t.b, t.c);
+            assertTrue(t, all(c -> elem(c, largeBaseChars), s));
+        }
+
+        Iterable<Triple<Algebraic, BigInteger, Integer>> tsFail = P.triples(
+                P.withScale(4).algebraics(),
+                P.rangeDown(BigInteger.ONE),
+                P.withScale(16).integers()
+        );
+        for (Triple<Algebraic, BigInteger, Integer> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.toStringBase(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 
