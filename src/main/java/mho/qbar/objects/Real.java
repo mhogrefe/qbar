@@ -42,7 +42,7 @@ import static mho.wheels.testing.Testing.assertTrue;
  * the {@code Real} is actually zero or just a negative number with a small magnitude. In fact, any fuzzy zero will
  * cause this problem.</p>
  *
- * <p>The above should make it clear that {@code Real}s are not user friendly. Make sure to read the documentation
+ * <p>The above should make it clear that {@code Real}s are not user-friendly. Make sure to read the documentation
  * carefully, and, whenever possible, use {@link Rational} or {@link Algebraic} instead.</p>
  */
 public final class Real implements Iterable<Interval>, Comparable<Real> {
@@ -67,6 +67,24 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
 
     public static @NotNull Real of(@NotNull BigInteger i) {
         return new Real(repeat(Interval.of(Rational.of(i))));
+    }
+
+    public static @NotNull Real fuzzyRepresentation(@NotNull Rational r) {
+        return new Real(() -> new Iterator<Interval>() {
+            private @NotNull Rational radius = Rational.ONE;
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public Interval next() {
+                Interval nextInterval = Interval.of(r.subtract(radius), r.add(radius));
+                radius = radius.shiftRight(1);
+                return nextInterval;
+            }
+        });
     }
 
     public static @NotNull Real root(

@@ -1175,11 +1175,6 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         );
     }
 
-    @Override
-    public @NotNull Iterable<Real> reals() {
-        return map(Algebraic::realValue, algebraics());
-    }
-
     /**
      * An {@code Iterable} that generates every positive {@link Algebraic}. Does not support removal.
      *

@@ -2020,19 +2020,6 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         );
     }
 
-    @Override
-    public @NotNull Iterable<Real> reals() {
-        int base = 1 << 30;
-        return map(
-                rp -> Real.fromDigits(
-                        BigInteger.valueOf(base),
-                        Collections.emptyList(),
-                        map(i -> BigInteger.valueOf(i & (base - 1)), rp.integers())
-                ),
-                randomProvidersDefault()
-        );
-    }
-
     /**
      * An {@code Iterable} that generates all positive {@code Algebraic}s. A larger {@code scale} corresponds to a
      * {@code Algebraic}s whose minimal polynomials have larger coefficients, and the {@code secondaryScale} is twice
