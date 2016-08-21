@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static mho.qbar.objects.Algebraic.*;
+import static mho.qbar.objects.Algebraic.sum;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.fail;

@@ -14,9 +14,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import static mho.qbar.objects.MultivariatePolynomial.*;
+import static mho.qbar.objects.MultivariatePolynomial.sum;
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.iterables.IterableUtils.take;
-import static mho.wheels.iterables.IterableUtils.toList;
 import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.fail;
 

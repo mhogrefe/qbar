@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static mho.qbar.objects.RationalMultivariatePolynomial.*;
+import static mho.qbar.objects.RationalMultivariatePolynomial.sum;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.fail;

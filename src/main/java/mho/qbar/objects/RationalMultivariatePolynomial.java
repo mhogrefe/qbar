@@ -8,7 +8,8 @@ import java.math.BigInteger;
 import java.util.*;
 
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.testing.Testing.*;
+import static mho.wheels.testing.Testing.assertEquals;
+import static mho.wheels.testing.Testing.assertTrue;
 
 /**
  * <p>A multivariate polynomial with {@link Rational} coefficients.</p>

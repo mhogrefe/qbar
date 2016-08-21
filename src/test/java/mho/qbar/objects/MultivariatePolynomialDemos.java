@@ -14,9 +14,9 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import static mho.qbar.objects.MultivariatePolynomial.*;
+import static mho.qbar.objects.MultivariatePolynomial.sum;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.*;
-import static mho.wheels.testing.Testing.nicePrint;
 
 @SuppressWarnings("UnusedDeclaration")
 public class MultivariatePolynomialDemos extends QBarDemos {

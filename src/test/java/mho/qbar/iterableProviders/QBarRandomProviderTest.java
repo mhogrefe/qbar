@@ -17,8 +17,8 @@ import static mho.qbar.testing.QBarTesting.aeqitLimitQBarLog;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.fail;
 
 public class QBarRandomProviderTest {

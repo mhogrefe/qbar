@@ -13,8 +13,6 @@ import mho.wheels.structures.Triple;
 import java.util.List;
 
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.iterables.IterableUtils.filterInfinite;
-import static mho.wheels.iterables.IterableUtils.take;
 import static mho.wheels.ordering.Ordering.le;
 import static mho.wheels.ordering.Ordering.lt;
 import static mho.wheels.testing.Testing.*;

@@ -10,7 +10,8 @@ import static mho.qbar.objects.Variable.of;
 import static mho.qbar.testing.QBarTesting.propertiesCompareToHelper;
 import static mho.qbar.testing.QBarTesting.propertiesEqualsHelper;
 import static mho.qbar.testing.QBarTesting.propertiesHashCodeHelper;
-import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.iterables.IterableUtils.charsToString;
+import static mho.wheels.iterables.IterableUtils.take;
 import static mho.wheels.testing.Testing.*;
 
 public class VariableProperties extends QBarTestProperties {

@@ -15,11 +15,10 @@ import java.util.Collections;
 import java.util.List;
 
 import static mho.qbar.objects.Algebraic.*;
+import static mho.qbar.objects.Algebraic.sum;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
 import static mho.wheels.testing.Testing.*;
-import static mho.wheels.testing.Testing.MEDIUM_LIMIT;
-import static mho.wheels.testing.Testing.nicePrint;
 
 @SuppressWarnings("UnusedDeclaration")
 public class AlgebraicDemos extends QBarDemos {

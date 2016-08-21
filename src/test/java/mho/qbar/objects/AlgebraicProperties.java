@@ -23,6 +23,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static mho.qbar.objects.Algebraic.*;
+import static mho.qbar.objects.Algebraic.sum;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.numberUtils.FloatingPointUtils.*;
 import static mho.wheels.ordering.Ordering.*;

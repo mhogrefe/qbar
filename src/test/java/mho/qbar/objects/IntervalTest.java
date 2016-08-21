@@ -10,9 +10,7 @@ import java.util.Optional;
 
 import static mho.qbar.objects.Interval.*;
 import static mho.qbar.objects.Interval.sum;
-import static mho.wheels.iterables.IterableUtils.iterate;
-import static mho.wheels.iterables.IterableUtils.take;
-import static mho.wheels.iterables.IterableUtils.toList;
+import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.fail;
 

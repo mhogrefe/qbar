@@ -8,7 +8,8 @@ import org.jetbrains.annotations.NotNull;
 
 import static mho.qbar.objects.Variable.of;
 import static mho.qbar.objects.Variable.readStrict;
-import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.iterables.IterableUtils.charsToString;
+import static mho.wheels.iterables.IterableUtils.take;
 import static mho.wheels.testing.Testing.MEDIUM_LIMIT;
 import static mho.wheels.testing.Testing.nicePrint;
 
