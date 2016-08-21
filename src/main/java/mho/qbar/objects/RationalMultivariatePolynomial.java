@@ -1030,6 +1030,9 @@ public final class RationalMultivariatePolynomial implements
      * @return Σxs
      */
     public static @NotNull RationalMultivariatePolynomial sum(@NotNull List<RationalMultivariatePolynomial> xs) {
+        if (any(x -> x == null, xs)) {
+            throw new NullPointerException();
+        }
         return foldl(RationalMultivariatePolynomial::add, ZERO, xs);
     }
 
