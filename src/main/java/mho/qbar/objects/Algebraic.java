@@ -1448,7 +1448,7 @@ public final class Algebraic implements Comparable<Algebraic> {
         if (rational.isPresent()) {
             return rational.get().signum();
         } else {
-            return realValue().signum();
+            return realValue().signumUnsafe();
         }
     }
 
@@ -2745,7 +2745,7 @@ public final class Algebraic implements Comparable<Algebraic> {
         if (rational.isPresent()) {
             return rational.get().digits(base);
         } else {
-            return realValue().digits(base);
+            return realValue().digitsUnsafe(base);
         }
     }
 

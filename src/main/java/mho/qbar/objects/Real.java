@@ -6,6 +6,7 @@ import mho.wheels.math.BinaryFraction;
 import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.Ordering;
+import mho.wheels.structures.NullableOptional;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,8 +19,7 @@ import java.util.function.Function;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.le;
 import static mho.wheels.ordering.Ordering.lt;
-import static mho.wheels.testing.Testing.TINY_LIMIT;
-import static mho.wheels.testing.Testing.assertTrue;
+import static mho.wheels.testing.Testing.*;
 
 /**
  * <p>The {@code Real} class represents real numbers as infinite, converging sequences of bounding intervals. Every
@@ -35,7 +35,10 @@ import static mho.wheels.testing.Testing.assertTrue;
  * is the case, that behavior is documented and the method is labeled unsafe. Often, a safe alternative that gives up
  * after some number of loops is provided.</p>
  *
- * <p>For example, consider the {@link Real#signum()}, which returns the sign of a {@code Real}: –1, 0, or 1. It works
+ * <p>Every {@code Real} is either irrational, exact, or fuzzy. Irrational or exact {@code Real}s are also called
+ * clean.</p>
+ *
+ * <p>For example, consider the {@link Real#signumUnsafe()}, which returns the sign of a {@code Real}: –1, 0, or 1. It works
  * by looking at the signs of the lower and upper bounds of the {@code Real}'s intervals, and returning when they are
  * equal. This will always work for irrational {@code Real}s and exact {@code Real}s, but will loop forever on a fuzzy
  * zero whose intervals are [–1, 0], [–1/2, 0], [–1/4, 0], [–1/8, 0], ..., because the method will never know whether
@@ -81,6 +84,42 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
             @Override
             public Interval next() {
                 Interval nextInterval = Interval.of(r.subtract(radius), r.add(radius));
+                radius = radius.shiftRight(1);
+                return nextInterval;
+            }
+        });
+    }
+
+    public static @NotNull Real leftFuzzyRepresentation(@NotNull Rational r) {
+        return new Real(() -> new Iterator<Interval>() {
+            private @NotNull Rational radius = Rational.ONE;
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public Interval next() {
+                Interval nextInterval = Interval.of(r.subtract(radius), r);
+                radius = radius.shiftRight(1);
+                return nextInterval;
+            }
+        });
+    }
+
+    public static @NotNull Real rightFuzzyRepresentation(@NotNull Rational r) {
+        return new Real(() -> new Iterator<Interval>() {
+            private @NotNull Rational radius = Rational.ONE;
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public Interval next() {
+                Interval nextInterval = Interval.of(r, r.add(radius));
                 radius = radius.shiftRight(1);
                 return nextInterval;
             }
@@ -203,7 +242,38 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
         }
     }
 
-    private <T> T limitValue(@NotNull Function<Rational, T> f) {
+    private <T> NullableOptional<T> limitValue(@NotNull Function<Rational, T> f, int maxLoops) {
+        Optional<Rational> previousLower = Optional.empty();
+        Optional<Rational> previousUpper = Optional.empty();
+        T lowerValue = null;
+        T upperValue = null;
+        int i = 0;
+        for (Interval a : intervals) {
+            if (Thread.interrupted()) return null;
+            if (a.isFinitelyBounded()) {
+                Rational lower = a.getLower().get();
+                Rational upper = a.getUpper().get();
+                if (!previousLower.isPresent() || !previousLower.get().equals(lower)) {
+                    lowerValue = f.apply(lower);
+                }
+                if (!previousUpper.isPresent() || !previousUpper.get().equals(upper)) {
+                    upperValue = f.apply(upper);
+                }
+                if (Objects.equals(lowerValue, upperValue)) {
+                    return NullableOptional.of(lowerValue);
+                }
+                previousLower = Optional.of(lower);
+                previousUpper = Optional.of(upper);
+            }
+            i++;
+            if (i == maxLoops) {
+                return NullableOptional.empty();
+            }
+        }
+        throw new IllegalStateException("unreachable");
+    }
+
+    private <T> T limitValueUnsafe(@NotNull Function<Rational, T> f) {
         Optional<Rational> previousLower = Optional.empty();
         Optional<Rational> previousUpper = Optional.empty();
         T lowerValue = null;
@@ -246,27 +316,51 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
         return new Real(zipWith(Interval::multiply, intervals, that.intervals));
     }
 
+    public @NotNull Real multiply(@NotNull Rational that) {
+        return new Real(map(i -> i.multiply(that), intervals));
+    }
+
+    public @NotNull Real multiply(@NotNull BigInteger that) {
+        return new Real(map(i -> i.multiply(that), intervals));
+    }
+
+    public @NotNull Real divide(@NotNull Rational that) {
+        return new Real(map(i -> i.divide(that), intervals));
+    }
+
+    public @NotNull Real divide(@NotNull BigInteger that) {
+        return new Real(map(i -> i.divide(that), intervals));
+    }
+
     public @NotNull Real shiftLeft(int bits) {
         return new Real(map(a -> a.shiftLeft(bits), intervals));
     }
 
-    public int signum() {
-        return limitValue(Rational::signum);
+    public int signumUnsafe() {
+        return limitValueUnsafe(Rational::signum);
+    }
+
+    public Optional<Integer> signum(int maxLoops) {
+        return limitValue(Rational::signum, maxLoops).toOptional();
     }
 
     public @NotNull Real abs() {
-        return signum() == -1 ? negate() : this;
+        return new Real(map(Interval::abs, intervals));
     }
 
-    public @NotNull BigInteger floor() {
-        return limitValue(Rational::floor);
+    public @NotNull BigInteger floorUnsafe() {
+        return limitValueUnsafe(Rational::floor);
     }
 
-    public @NotNull Pair<List<BigInteger>, Iterable<BigInteger>> digits(@NotNull BigInteger base) {
-        if (signum() == -1) {
+    public @NotNull Optional<BigInteger> floor(int maxLoops) {
+        return limitValue(Rational::floor, maxLoops).toOptional();
+    }
+
+    public @NotNull Pair<List<BigInteger>, Iterable<BigInteger>> digitsUnsafe(@NotNull BigInteger base) {
+        if (signumUnsafe() == -1) {
             throw new IllegalArgumentException("this cannot be negative. Invalid this: " + this);
         }
-        BigInteger floor = floor();
+        BigInteger floor = floorUnsafe();
         List<BigInteger> beforeDecimal = IntegerUtils.bigEndianDigits(base, floor);
         Iterable<BigInteger> afterDecimal = () -> new Iterator<BigInteger>() {
             Iterator<Interval> fractionIntervals = subtract(of(floor)).iterator();
@@ -302,7 +396,66 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
         return new Pair<>(beforeDecimal, afterDecimal);
     }
 
-    public @NotNull String toStringBase(@NotNull BigInteger base, int scale) {
+    public @NotNull Optional<Pair<List<BigInteger>, Iterable<BigInteger>>> digits(
+            @NotNull BigInteger base,
+            int maxLoops
+    ) {
+        Optional<Integer> oSignum = signum(maxLoops);
+        if (!oSignum.isPresent()) {
+            return Optional.empty();
+        }
+        int signum = oSignum.get();
+        if (signum == -1) {
+            throw new IllegalArgumentException("this cannot be negative. Invalid this: " + this);
+        }
+        Optional<BigInteger> oFloor = floor(maxLoops);
+        if (!oFloor.isPresent()) {
+            return Optional.empty();
+        }
+        BigInteger floor = oFloor.get();
+        List<BigInteger> beforeDecimal = IntegerUtils.bigEndianDigits(base, floor);
+        Iterable<BigInteger> afterDecimal = () -> new Iterator<BigInteger>() {
+            private final @NotNull  Iterator<Interval> fractionIntervals = subtract(of(floor)).iterator();
+            private BigInteger power = base;
+            private Interval interval;
+            boolean aborted = false;
+            {
+                do {
+                    interval = fractionIntervals.next();
+                } while (!interval.isFinitelyBounded());
+                interval = interval.multiply(power);
+            }
+
+            @Override
+            public boolean hasNext() {
+                return !aborted;
+            }
+
+            @Override
+            public @NotNull BigInteger next() {
+                int i = 0;
+                while (true) {
+                    BigInteger lowerFloor = interval.getLower().get().floor();
+                    BigInteger upperFloor = interval.getUpper().get().floor();
+                    if (lowerFloor.equals(upperFloor)) {
+                        power = power.multiply(base);
+                        interval = interval.multiply(base);
+                        return lowerFloor.mod(base);
+                    } else {
+                        interval = fractionIntervals.next().multiply(power);
+                    }
+                    i++;
+                    if (i == maxLoops) {
+                        aborted = true;
+                        return IntegerUtils.NEGATIVE_ONE;
+                    }
+                }
+            }
+        };
+        return Optional.of(new Pair<>(beforeDecimal, afterDecimal));
+    }
+
+    public @NotNull String toStringBaseUnsafe(@NotNull BigInteger base, int scale) {
         if (lt(base, IntegerUtils.TWO)) {
             throw new IllegalArgumentException("base must be at least 2. Invalid base: " + base);
         }
@@ -311,7 +464,7 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
             return or.get().toStringBase(base, scale);
         }
         boolean baseIsSmall = le(base, BigInteger.valueOf(36));
-        Pair<List<BigInteger>, Iterable<BigInteger>> digits = abs().digits(base);
+        Pair<List<BigInteger>, Iterable<BigInteger>> digits = abs().digitsUnsafe(base);
         Function<BigInteger, String> digitFunction = baseIsSmall ?
                 i -> Character.toString(IntegerUtils.toDigit(i.intValueExact())) :
                 i -> "(" + i + ")";
@@ -321,7 +474,79 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
         String result;
         String afterDecimal = concatStrings(map(digitFunction, take(scale, digits.b)));
         result = beforeDecimal + "." + afterDecimal;
-        return (signum() == -1 ? "-" + result : result) + "...";
+        return (signumUnsafe() == -1 ? "-" + result : result) + "...";
+    }
+
+    public @NotNull String toStringBase(@NotNull BigInteger base, int scale, int maxLoops) {
+        if (lt(base, IntegerUtils.TWO)) {
+            throw new IllegalArgumentException("base must be at least 2. Invalid base: " + base);
+        }
+        Optional<Rational> or = rationalValue();
+        if (or.isPresent()) {
+            return or.get().toStringBase(base, scale);
+        }
+        boolean baseIsSmall = le(base, BigInteger.valueOf(36));
+        Optional<Pair<List<BigInteger>, Iterable<BigInteger>>> oDigits = abs().digits(base, maxLoops);
+        if (!oDigits.isPresent()) {
+            Optional<Integer> oSignum = signum(maxLoops);
+            if (!oSignum.isPresent()) {
+                return "~0";
+            }
+            int signum = oSignum.get();
+            Iterator<Interval> is = iterator();
+            Interval firstInterval;
+            do {
+                firstInterval = is.next();
+            } while (!firstInterval.isFinitelyBounded());
+            Rational bound = Ordering.max(firstInterval.getLower().get().abs(), firstInterval.getUpper().get().abs());
+            int maxDigitsToTheLeft = 0;
+            Rational power = Rational.ONE;
+            while (le(power, bound)) {
+                power = power.multiply(base);
+                maxDigitsToTheLeft++;
+            }
+            power = Rational.ONE;
+            Optional<BigInteger> oFloor;
+            for (int i = 1; i <= maxDigitsToTheLeft; i++) {
+                power = power.multiply(base);
+                oFloor = abs().divide(power).floor(maxLoops);
+                if (oFloor.isPresent()) {
+                    BigInteger floor = oFloor.get();
+                    if (floor.equals(BigInteger.ZERO)) {
+                        break;
+                    }
+                    StringBuilder sb = new StringBuilder();
+                    if (signum == -1) {
+                        sb.append('-');
+                    }
+                    sb.append(IntegerUtils.toStringBase(base, floor));
+                    for (int j = 0; j < i; j++) {
+                        sb.append('?');
+                    }
+                    sb.append("....");
+                    return sb.toString();
+                }
+            }
+            if (signum == 1) {
+                return "+...";
+            } else {
+                return "-...";
+            }
+        }
+        Pair<List<BigInteger>, Iterable<BigInteger>> digits = oDigits.get();
+        Function<BigInteger, String> digitFunction = baseIsSmall ?
+                i -> Character.toString(IntegerUtils.toDigit(i.intValueExact())) :
+                i -> "(" + i + ")";
+        String beforeDecimal = digits.a.isEmpty() ?
+                (baseIsSmall ? "0" : "(0)") :
+                concatStrings(map(digitFunction, digits.a));
+        if (its(intervals).startsWith("[[-1/2, 1/2]")) {
+            int lll = 0;
+        }
+        String result;
+        String afterDecimal = concatStrings(map(digitFunction, filter(d -> d.signum() != -1, take(scale, digits.b))));
+        result = beforeDecimal + "." + afterDecimal;
+        return (signumUnsafe() == -1 ? "-" + result : result) + "...";
     }
 
     public @NotNull Optional<Rational> rationalValue() {
@@ -398,11 +623,11 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
     }
 
     public @NotNull BigInteger bigIntegerValue(@NotNull RoundingMode roundingMode) {
-        return limitValue(r -> r.bigIntegerValue(roundingMode));
+        return limitValueUnsafe(r -> r.bigIntegerValue(roundingMode));
     }
 
     public float floatValue(@NotNull RoundingMode roundingMode) {
-        return limitValue(r -> r.floatValue(roundingMode));
+        return limitValueUnsafe(r -> r.floatValue(roundingMode));
     }
 
     public float floatValue() {
@@ -410,7 +635,7 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
     }
 
     public double doubleValue(@NotNull RoundingMode roundingMode) {
-        return limitValue(r -> r.doubleValue(roundingMode));
+        return limitValueUnsafe(r -> r.doubleValue(roundingMode));
     }
 
     public double doubleValue() {
@@ -418,11 +643,11 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
     }
 
     public @NotNull BigDecimal bigDecimalValueByPrecision(int precision, @NotNull RoundingMode roundingMode) {
-        return limitValue(r -> r.bigDecimalValueByPrecision(precision, roundingMode));
+        return limitValueUnsafe(r -> r.bigDecimalValueByPrecision(precision, roundingMode));
     }
 
     public @NotNull BigDecimal bigDecimalValueByScale(int scale, @NotNull RoundingMode roundingMode) {
-        return limitValue(r -> r.bigDecimalValueByScale(scale, roundingMode));
+        return limitValueUnsafe(r -> r.bigDecimalValueByScale(scale, roundingMode));
     }
 
     public @NotNull BigDecimal bigDecimalValueByPrecision(int precision) {
@@ -655,8 +880,12 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
         };
     }
 
+    public @NotNull String toStringUnsafe() {
+        return toStringBaseUnsafe(BigInteger.TEN, TINY_LIMIT);
+    }
+
     public @NotNull String toString() {
-        return toStringBase(BigInteger.TEN, TINY_LIMIT);
+        return toStringBase(BigInteger.TEN, TINY_LIMIT, SMALL_LIMIT);
     }
 
     @Override

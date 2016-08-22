@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -3842,9 +3843,78 @@ public strictfp abstract class QBarIterableProvider {
     );
 
     /**
-     * Generates irrational or exact {@code Real}s.
+     * Generates positive clean {@code Real}s.
      */
-    public @NotNull Iterable<Real> nonFuzzyReals() {
+    public @NotNull Iterable<Real> positiveCleanReals() {
+        return map(Algebraic::realValue, positiveAlgebraics());
+    }
+
+    /**
+     * Generates positive {@code Real}s.
+     */
+    public @NotNull Iterable<Real> positiveReals() {
+        return withScale(1).choose(
+                map(Algebraic::realValue, positiveAlgebraics()),
+                choose(
+                        Arrays.asList(
+                                map(Real::leftFuzzyRepresentation, positiveRationals()),
+                                map(Real::rightFuzzyRepresentation, positiveRationals()),
+                                map(Real::fuzzyRepresentation, positiveRationals())
+                        )
+                )
+        );
+    }
+
+    /**
+     * Generates negative clean {@code Real}s.
+     */
+    public @NotNull Iterable<Real> negativeCleanReals() {
+        return map(Algebraic::realValue, negativeAlgebraics());
+    }
+
+    /**
+     * Generates negative {@code Real}s.
+     */
+    public @NotNull Iterable<Real> negativeReals() {
+        return withScale(1).choose(
+                map(Algebraic::realValue, negativeAlgebraics()),
+                choose(
+                        Arrays.asList(
+                                map(Real::leftFuzzyRepresentation, negativeRationals()),
+                                map(Real::rightFuzzyRepresentation, negativeRationals()),
+                                map(Real::fuzzyRepresentation, negativeRationals())
+                        )
+                )
+        );
+    }
+
+    /**
+     * Generates nonzero clean {@code Real}s.
+     */
+    public @NotNull Iterable<Real> nonzeroCleanReals() {
+        return map(Algebraic::realValue, nonzeroAlgebraics());
+    }
+
+    /**
+     * Generates negative {@code Real}s.
+     */
+    public @NotNull Iterable<Real> nonzeroReals() {
+        return withScale(1).choose(
+                map(Algebraic::realValue, nonzeroAlgebraics()),
+                choose(
+                        Arrays.asList(
+                                map(Real::leftFuzzyRepresentation, nonzeroRationals()),
+                                map(Real::rightFuzzyRepresentation, nonzeroRationals()),
+                                map(Real::fuzzyRepresentation, nonzeroRationals())
+                        )
+                )
+        );
+    }
+
+    /**
+     * Generates clean {@code Real}s.
+     */
+    public @NotNull Iterable<Real> cleanReals() {
         return map(Algebraic::realValue, algebraics());
     }
 
@@ -3852,7 +3922,16 @@ public strictfp abstract class QBarIterableProvider {
      * Generates {@code Real}s.
      */
     public @NotNull Iterable<Real> reals() {
-        return choose(map(Algebraic::realValue, algebraics()), map(Real::fuzzyRepresentation, rationals()));
+        return withScale(1).choose(
+                map(Algebraic::realValue, algebraics()),
+                choose(
+                        Arrays.asList(
+                                map(Real::leftFuzzyRepresentation, rationals()),
+                                map(Real::rightFuzzyRepresentation, rationals()),
+                                map(Real::fuzzyRepresentation, rationals())
+                        )
+                )
+        );
     }
 
     /**

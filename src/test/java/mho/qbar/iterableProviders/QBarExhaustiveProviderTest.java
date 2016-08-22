@@ -1,9 +1,6 @@
 package mho.qbar.iterableProviders;
 
-import mho.qbar.objects.Algebraic;
-import mho.qbar.objects.Interval;
-import mho.qbar.objects.Rational;
-import mho.qbar.objects.Variable;
+import mho.qbar.objects.*;
 import mho.wheels.io.Readers;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
@@ -1119,6 +1116,46 @@ public class QBarExhaustiveProviderTest {
         rationalMultivariatePolynomials_List_Variable_fail_helper("[a, a]");
         rationalMultivariatePolynomials_List_Variable_fail_helper("[b, a]");
         rationalMultivariatePolynomials_List_Variable_fail_helper("[a, null]");
+    }
+
+    @Test
+    public void testPositiveCleanReals() {
+        simpleProviderHelper(QEP.positiveCleanReals(), "QBarExhaustiveProvider_positiveCleanReals");
+    }
+
+    @Test
+    public void testPositiveReals() {
+        simpleProviderHelper(QEP.positiveReals(), "QBarExhaustiveProvider_positiveReals");
+    }
+
+    @Test
+    public void testNegativeCleanReals() {
+        simpleProviderHelper(QEP.negativeCleanReals(), "QBarExhaustiveProvider_negativeCleanReals");
+    }
+
+    @Test
+    public void testNegativeReals() {
+        simpleProviderHelper(QEP.negativeReals(), "QBarExhaustiveProvider_negativeReals");
+    }
+
+    @Test
+    public void testNonzeroCleanReals() {
+        simpleProviderHelper(QEP.nonzeroCleanReals(), "QBarExhaustiveProvider_nonzeroCleanReals");
+    }
+
+    @Test
+    public void testNonzeroReals() {
+        simpleProviderHelper(QEP.nonzeroReals(), "QBarExhaustiveProvider_nonzeroReals");
+    }
+
+    @Test
+    public void testCleanReals() {
+        simpleProviderHelper(QEP.cleanReals(), "QBarExhaustiveProvider_cleanReals");
+    }
+
+    @Test
+    public void testReals() {
+        simpleProviderHelper(QEP.reals(), "QBarExhaustiveProvider_reals");
     }
 
     private static void positiveAlgebraics_int_helper(int degree, @NotNull String output) {

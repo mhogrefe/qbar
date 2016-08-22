@@ -2767,7 +2767,7 @@ public class AlgebraicProperties extends QBarTestProperties {
                 return xs.get(0).signum();
             default:
                 Map<String, Function<Void, Integer>> implementations = new HashMap<>();
-                implementations.put("real", v -> Real.sum(toList(map(Algebraic::realValue, xs))).signum());
+                implementations.put("real", v -> Real.sum(toList(map(Algebraic::realValue, xs))).signumUnsafe());
                 implementations.put("algebraic", v -> {
                     List<Algebraic> positives = new ArrayList<>();
                     List<Algebraic> negatives = new ArrayList<>();
