@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.qbar.testing.QBarDemos;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -36,7 +37,7 @@ public class VectorDemos extends QBarDemos {
     private void demoGet() {
         Iterable<Pair<Vector, Integer>> ps = P.dependentPairs(
                 P.withScale(4).vectorsAtLeast(1),
-                v -> P.uniformSample(toList(range(0, v.dimension() - 1)))
+                v -> P.uniformSample(toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, v.dimension() - 1)))
         );
         for (Pair<Vector, Integer> p : take(LIMIT, ps)) {
             System.out.println("get(" + p.a + ", " + p.b + ") = " + p.a.get(p.b));
@@ -45,8 +46,7 @@ public class VectorDemos extends QBarDemos {
 
     private void demoOf_List_BigInteger() {
         for (List<BigInteger> is : take(LIMIT, P.withScale(4).lists(P.bigIntegers()))) {
-            String listString = tail(init(is.toString()));
-            System.out.println("of(" + listString + ") = " + of(is));
+            System.out.println("of(" + middle(is.toString()) + ") = " + of(is));
         }
     }
 
@@ -156,8 +156,7 @@ public class VectorDemos extends QBarDemos {
                 map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.withScale(4).positiveIntegersGeometric())
         );
         for (List<Vector> vs : take(LIMIT, vss)) {
-            String listString = tail(init(vs.toString()));
-            System.out.println("Σ(" + listString + ") = " + sum(vs));
+            System.out.println("Σ(" + middle(vs.toString()) + ") = " + sum(vs));
         }
     }
 
@@ -173,8 +172,7 @@ public class VectorDemos extends QBarDemos {
                 map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.withScale(4).positiveIntegersGeometric())
         );
         for (List<Vector> vs : take(LIMIT, vss)) {
-            String listString = tail(init(vs.toString()));
-            System.out.println("Δ(" + listString + ") = " + its(delta(vs)));
+            System.out.println("Δ(" + middle(vs.toString()) + ") = " + its(delta(vs)));
         }
     }
 
@@ -275,7 +273,7 @@ public class VectorDemos extends QBarDemos {
 
     private void demoCompareTo() {
         for (Pair<Vector, Vector> p : take(LIMIT, P.pairs(P.withScale(4).vectors()))) {
-            System.out.println(p.a + " " + Ordering.compare(p.a, p.b).toChar() + " " + p.b);
+            System.out.println(p.a + " " + Ordering.compare(p.a, p.b) + " " + p.b);
         }
     }
 

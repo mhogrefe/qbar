@@ -1,27 +1,32 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.structures.NullableOptional;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Optional;
 
 import static mho.qbar.objects.RationalPolynomial.*;
 import static mho.qbar.objects.RationalPolynomial.sum;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.*;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class RationalPolynomialTest {
+    private static void constant_helper(@NotNull RationalPolynomial input, @NotNull String output) {
+        input.validate();
+        aeq(input, output);
+    }
+
     @Test
     public void testConstants() {
-        aeq(ZERO, "0");
-        aeq(ONE, "1");
-        aeq(X, "x");
+        constant_helper(ZERO, "0");
+        constant_helper(ONE, "1");
+        constant_helper(X, "x");
     }
 
     private static void iterator_helper(@NotNull String x, @NotNull String output) {
@@ -39,53 +44,132 @@ public class RationalPolynomialTest {
         iterator_helper("1/2*x^10", "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1/2]");
     }
 
-    private static void apply_helper(@NotNull String p, @NotNull String x, @NotNull String output) {
+    private static void apply_Rational_helper(@NotNull String p, @NotNull String x, @NotNull String output) {
         aeq(readStrict(p).get().apply(Rational.readStrict(x).get()), output);
     }
 
     @Test
-    public void testApply() {
-        apply_helper("0", "0", "0");
-        apply_helper("0", "1", "0");
-        apply_helper("0", "-1", "0");
-        apply_helper("0", "4/5", "0");
-        apply_helper("0", "100", "0");
+    public void testApply_Rational() {
+        apply_Rational_helper("0", "0", "0");
+        apply_Rational_helper("0", "1", "0");
+        apply_Rational_helper("0", "-1", "0");
+        apply_Rational_helper("0", "4/5", "0");
+        apply_Rational_helper("0", "100", "0");
 
-        apply_helper("1", "0", "1");
-        apply_helper("1", "1", "1");
-        apply_helper("1", "-1", "1");
-        apply_helper("1", "4/5", "1");
-        apply_helper("1", "100", "1");
+        apply_Rational_helper("1", "0", "1");
+        apply_Rational_helper("1", "1", "1");
+        apply_Rational_helper("1", "-1", "1");
+        apply_Rational_helper("1", "4/5", "1");
+        apply_Rational_helper("1", "100", "1");
 
-        apply_helper("x", "0", "0");
-        apply_helper("x", "1", "1");
-        apply_helper("x", "-1", "-1");
-        apply_helper("x", "4/5", "4/5");
-        apply_helper("x", "100", "100");
+        apply_Rational_helper("x", "0", "0");
+        apply_Rational_helper("x", "1", "1");
+        apply_Rational_helper("x", "-1", "-1");
+        apply_Rational_helper("x", "4/5", "4/5");
+        apply_Rational_helper("x", "100", "100");
 
-        apply_helper("-4/3", "0", "-4/3");
-        apply_helper("-4/3", "1", "-4/3");
-        apply_helper("-4/3", "-1", "-4/3");
-        apply_helper("-4/3", "4/5", "-4/3");
-        apply_helper("-4/3", "100", "-4/3");
+        apply_Rational_helper("-4/3", "0", "-4/3");
+        apply_Rational_helper("-4/3", "1", "-4/3");
+        apply_Rational_helper("-4/3", "-1", "-4/3");
+        apply_Rational_helper("-4/3", "4/5", "-4/3");
+        apply_Rational_helper("-4/3", "100", "-4/3");
 
-        apply_helper("x^2-7/4*x+1/3", "0", "1/3");
-        apply_helper("x^2-7/4*x+1/3", "1", "-5/12");
-        apply_helper("x^2-7/4*x+1/3", "-1", "37/12");
-        apply_helper("x^2-7/4*x+1/3", "4/5", "-32/75");
-        apply_helper("x^2-7/4*x+1/3", "100", "29476/3");
+        apply_Rational_helper("x^2-7/4*x+1/3", "0", "1/3");
+        apply_Rational_helper("x^2-7/4*x+1/3", "1", "-5/12");
+        apply_Rational_helper("x^2-7/4*x+1/3", "-1", "37/12");
+        apply_Rational_helper("x^2-7/4*x+1/3", "4/5", "-32/75");
+        apply_Rational_helper("x^2-7/4*x+1/3", "100", "29476/3");
 
-        apply_helper("x^3-1", "0", "-1");
-        apply_helper("x^3-1", "1", "0");
-        apply_helper("x^3-1", "-1", "-2");
-        apply_helper("x^3-1", "4/5", "-61/125");
-        apply_helper("x^3-1", "100", "999999");
+        apply_Rational_helper("x^3-1", "0", "-1");
+        apply_Rational_helper("x^3-1", "1", "0");
+        apply_Rational_helper("x^3-1", "-1", "-2");
+        apply_Rational_helper("x^3-1", "4/5", "-61/125");
+        apply_Rational_helper("x^3-1", "100", "999999");
 
-        apply_helper("1/2*x^10", "0", "0");
-        apply_helper("1/2*x^10", "1", "1/2");
-        apply_helper("1/2*x^10", "-1", "1/2");
-        apply_helper("1/2*x^10", "4/5", "524288/9765625");
-        apply_helper("1/2*x^10", "100", "50000000000000000000");
+        apply_Rational_helper("1/2*x^10", "0", "0");
+        apply_Rational_helper("1/2*x^10", "1", "1/2");
+        apply_Rational_helper("1/2*x^10", "-1", "1/2");
+        apply_Rational_helper("1/2*x^10", "4/5", "524288/9765625");
+        apply_Rational_helper("1/2*x^10", "100", "50000000000000000000");
+    }
+
+    private static void apply_Algebraic_helper(@NotNull String p, @NotNull String x, @NotNull String output) {
+        aeq(readStrict(p).get().apply(Algebraic.readStrict(x).get()), output);
+    }
+
+    @Test
+    public void testApply_Algebraic() {
+        apply_Algebraic_helper("0", "0", "0");
+        apply_Algebraic_helper("0", "1", "0");
+        apply_Algebraic_helper("0", "1/2", "0");
+        apply_Algebraic_helper("0", "-4/3", "0");
+        apply_Algebraic_helper("0", "sqrt(2)", "0");
+        apply_Algebraic_helper("0", "-sqrt(2)", "0");
+        apply_Algebraic_helper("0", "(1+sqrt(5))/2", "0");
+        apply_Algebraic_helper("0", "root 0 of x^5-x-1", "0");
+
+        apply_Algebraic_helper("1", "0", "1");
+        apply_Algebraic_helper("1", "1", "1");
+        apply_Algebraic_helper("1", "1/2", "1");
+        apply_Algebraic_helper("1", "-4/3", "1");
+        apply_Algebraic_helper("1", "sqrt(2)", "1");
+        apply_Algebraic_helper("1", "-sqrt(2)", "1");
+        apply_Algebraic_helper("1", "(1+sqrt(5))/2", "1");
+        apply_Algebraic_helper("1", "root 0 of x^5-x-1", "1");
+
+        apply_Algebraic_helper("x", "0", "0");
+        apply_Algebraic_helper("x", "1", "1");
+        apply_Algebraic_helper("x", "1/2", "1/2");
+        apply_Algebraic_helper("x", "-4/3", "-4/3");
+        apply_Algebraic_helper("x", "sqrt(2)", "sqrt(2)");
+        apply_Algebraic_helper("x", "-sqrt(2)", "-sqrt(2)");
+        apply_Algebraic_helper("x", "(1+sqrt(5))/2", "(1+sqrt(5))/2");
+        apply_Algebraic_helper("x", "root 0 of x^5-x-1", "root 0 of x^5-x-1");
+
+        apply_Algebraic_helper("-17", "0", "-17");
+        apply_Algebraic_helper("-17", "1", "-17");
+        apply_Algebraic_helper("-17", "1/2", "-17");
+        apply_Algebraic_helper("-17", "-4/3", "-17");
+        apply_Algebraic_helper("-17", "sqrt(2)", "-17");
+        apply_Algebraic_helper("-17", "-sqrt(2)", "-17");
+        apply_Algebraic_helper("-17", "(1+sqrt(5))/2", "-17");
+        apply_Algebraic_helper("-17", "root 0 of x^5-x-1", "-17");
+
+        apply_Algebraic_helper("x^2-7/4*x+1/3", "0", "1/3");
+        apply_Algebraic_helper("x^2-7/4*x+1/3", "1", "-5/12");
+        apply_Algebraic_helper("x^2-7/4*x+1/3", "1/2", "-7/24");
+        apply_Algebraic_helper("x^2-7/4*x+1/3", "-4/3", "40/9");
+        apply_Algebraic_helper("x^2-7/4*x+1/3", "sqrt(2)", "(28-21*sqrt(2))/12");
+        apply_Algebraic_helper("x^2-7/4*x+1/3", "-sqrt(2)", "(28+21*sqrt(2))/12");
+        apply_Algebraic_helper("x^2-7/4*x+1/3", "(1+sqrt(5))/2", "(23-9*sqrt(5))/24");
+        apply_Algebraic_helper("x^2-7/4*x+1/3", "root 0 of x^5-x-1",
+                "root 0 of 248832*x^5-414720*x^4-221184*x^3-465408*x^2+5013060*x+1792793");
+
+        apply_Algebraic_helper("x^3-1", "0", "-1");
+        apply_Algebraic_helper("x^3-1", "1", "0");
+        apply_Algebraic_helper("x^3-1", "1/2", "-7/8");
+        apply_Algebraic_helper("x^3-1", "-4/3", "-91/27");
+        apply_Algebraic_helper("x^3-1", "sqrt(2)", "-1+2*sqrt(2)");
+        apply_Algebraic_helper("x^3-1", "-sqrt(2)", "-1-2*sqrt(2)");
+        apply_Algebraic_helper("x^3-1", "(1+sqrt(5))/2", "1+sqrt(5)");
+        apply_Algebraic_helper("x^3-1", "root 0 of x^5-x-1", "root 0 of x^5+5*x^4+10*x^3+7*x^2-2*x-4");
+
+        apply_Algebraic_helper("1/2*x^10", "0", "0");
+        apply_Algebraic_helper("1/2*x^10", "1", "1/2");
+        apply_Algebraic_helper("1/2*x^10", "-1", "1/2");
+        apply_Algebraic_helper("1/2*x^10", "4/5", "524288/9765625");
+        apply_Algebraic_helper("1/2*x^10", "sqrt(2)", "16");
+        apply_Algebraic_helper("1/2*x^10", "-sqrt(2)", "16");
+        apply_Algebraic_helper("1/2*x^10", "(1+sqrt(5))/2", "(123+55*sqrt(5))/4");
+        apply_Algebraic_helper("1/2*x^10", "root 0 of x^5-x-1", "root 0 of 32*x^5-80*x^4+64*x^3-120*x^2-8*x-1");
+
+        apply_Algebraic_helper("x-1", "1", "0");
+        apply_Algebraic_helper("2*x-1", "1/2", "0");
+        apply_Algebraic_helper("3*x+4", "-4/3", "0");
+        apply_Algebraic_helper("x^2-2", "sqrt(2)", "0");
+        apply_Algebraic_helper("x^2-2", "-sqrt(2)", "0");
+        apply_Algebraic_helper("x^2-x-1", "(1+sqrt(5))/2", "0");
+        apply_Algebraic_helper("x^5-x-1", "root 0 of x^5-x-1", "0");
     }
 
     private static void onlyHasIntegralCoefficients_helper(@NotNull String input, boolean output) {
@@ -126,6 +210,7 @@ public class RationalPolynomialTest {
         toPolynomial_helper("x^2-4*x+7");
         toPolynomial_helper("x^3-1");
         toPolynomial_helper("3*x^10");
+
         toPolynomial_fail_helper("-4/3");
         toPolynomial_fail_helper("x^2-7/4*x+1/3");
         toPolynomial_fail_helper("1/2*x^10");
@@ -160,11 +245,14 @@ public class RationalPolynomialTest {
         coefficient_helper("x^3-1", 2, "0");
         coefficient_helper("x^3-1", 3, "1");
         coefficient_helper("x^3-1", 4, "0");
+
         coefficient_fail_helper("x^3-1", -1);
     }
 
     private static void of_List_Rational_helper(@NotNull String input, @NotNull String output) {
-        aeq(of(readRationalList(input)), output);
+        RationalPolynomial p = of(readRationalList(input));
+        p.validate();
+        aeq(p, output);
     }
 
     private static void of_List_Rational_fail_helper(@NotNull String input) {
@@ -187,11 +275,14 @@ public class RationalPolynomialTest {
         of_List_Rational_helper("[1/3, -7/4, 1, 0]", "x^2-7/4*x+1/3");
         of_List_Rational_helper("[-1, 0, 0, 1]", "x^3-1");
         of_List_Rational_helper("[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1/2]", "1/2*x^10");
+
         of_List_Rational_fail_helper("[1/3, null, 1]");
     }
 
     private static void of_Rational_helper(@NotNull String input) {
-        aeq(of(Rational.readStrict(input).get()), input);
+        RationalPolynomial p = of(Rational.readStrict(input).get());
+        p.validate();
+        aeq(p, input);
     }
 
     @Test
@@ -203,7 +294,9 @@ public class RationalPolynomialTest {
     }
 
     private static void of_Rational_int_helper(@NotNull String input, int i, @NotNull String output) {
-        aeq(of(Rational.readStrict(input).get(), i), output);
+        RationalPolynomial p = of(Rational.readStrict(input).get(), i);
+        p.validate();
+        aeq(p, output);
     }
 
     private static void of_Rational_int_fail_helper(@NotNull String input, int i) {
@@ -239,6 +332,7 @@ public class RationalPolynomialTest {
         of_Rational_int_helper("-5/7", 1, "-5/7*x");
         of_Rational_int_helper("-5/7", 2, "-5/7*x^2");
         of_Rational_int_helper("-5/7", 3, "-5/7*x^3");
+
         of_Rational_int_fail_helper("-5/7", -1);
     }
 
@@ -273,20 +367,17 @@ public class RationalPolynomialTest {
     }
 
     private static void leading_helper(@NotNull String input, @NotNull String output) {
-        aeq(readStrict(input).get().leading().get(), output);
-    }
-
-    private static void leading_empty_helper(@NotNull String input) {
-        assertFalse(readStrict(input).get().leading().isPresent());
+        aeq(readStrict(input).get().leading(), output);
     }
 
     @Test
     public void testLeading() {
-        leading_helper("-4/3", "-4/3");
-        leading_helper("x^2-7/4*x+1/3", "1");
-        leading_helper("-x^3-1", "-1");
-        leading_helper("1/2*x^10", "1/2");
-        leading_empty_helper("0");
+        leading_helper("-4/3", "Optional[-4/3]");
+        leading_helper("x^2-7/4*x+1/3", "Optional[1]");
+        leading_helper("-x^3-1", "Optional[-1]");
+        leading_helper("1/2*x^10", "Optional[1/2]");
+
+        leading_helper("0", "Optional.empty");
     }
 
     private static void multiplyByPowerOfX_helper(@NotNull String a, int p, @NotNull String output) {
@@ -338,7 +429,9 @@ public class RationalPolynomialTest {
     }
 
     private static void add_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(readStrict(a).get().add(readStrict(b).get()), output);
+        RationalPolynomial p = readStrict(a).get().add(readStrict(b).get());
+        p.validate();
+        aeq(p, output);
     }
 
     @Test
@@ -404,7 +497,9 @@ public class RationalPolynomialTest {
     }
 
     private static void negate_helper(@NotNull String input, @NotNull String output) {
-        aeq(readStrict(input).get().negate(), output);
+        RationalPolynomial p = readStrict(input).get().negate();
+        p.validate();
+        aeq(p, output);
     }
 
     @Test
@@ -419,7 +514,9 @@ public class RationalPolynomialTest {
     }
 
     private static void abs_helper(@NotNull String input, @NotNull String output) {
-        aeq(readStrict(input).get().abs(), output);
+        RationalPolynomial p = readStrict(input).get().abs();
+        p.validate();
+        aeq(p, output);
     }
 
     @Test
@@ -498,7 +595,9 @@ public class RationalPolynomialTest {
     }
 
     private static void subtract_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(readStrict(a).get().subtract(readStrict(b).get()), output);
+        RationalPolynomial p = readStrict(a).get().subtract(readStrict(b).get());
+        p.validate();
+        aeq(p, output);
     }
 
     @Test
@@ -561,7 +660,9 @@ public class RationalPolynomialTest {
     }
 
     private static void multiply_Polynomial_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(readStrict(a).get().multiply(readStrict(b).get()), output);
+        RationalPolynomial p = readStrict(a).get().multiply(readStrict(b).get());
+        p.validate();
+        aeq(p, output);
     }
 
     @Test
@@ -624,7 +725,9 @@ public class RationalPolynomialTest {
     }
 
     private static void multiply_Rational_helper(@NotNull String p, @NotNull String r, @NotNull String output) {
-        aeq(readStrict(p).get().multiply(Rational.readStrict(r).get()), output);
+        RationalPolynomial q = readStrict(p).get().multiply(Rational.readStrict(r).get());
+        q.validate();
+        aeq(q, output);
     }
 
     @Test
@@ -668,7 +771,9 @@ public class RationalPolynomialTest {
     }
 
     private static void multiply_BigInteger_helper(@NotNull String p, @NotNull String i, @NotNull String output) {
-        aeq(readStrict(p).get().multiply(Readers.readBigIntegerStrict(i).get()), output);
+        RationalPolynomial q = readStrict(p).get().multiply(Readers.readBigIntegerStrict(i).get());
+        q.validate();
+        aeq(q, output);
     }
 
     @Test
@@ -712,7 +817,9 @@ public class RationalPolynomialTest {
     }
 
     private static void multiply_int_helper(@NotNull String p, int i, @NotNull String output) {
-        aeq(readStrict(p).get().multiply(i), output);
+        RationalPolynomial q = readStrict(p).get().multiply(i);
+        q.validate();
+        aeq(q, output);
     }
 
     @Test
@@ -756,7 +863,9 @@ public class RationalPolynomialTest {
     }
 
     private static void divide_Rational_helper(@NotNull String p, @NotNull String r, @NotNull String output) {
-        aeq(readStrict(p).get().divide(Rational.readStrict(r).get()), output);
+        RationalPolynomial q = readStrict(p).get().divide(Rational.readStrict(r).get());
+        q.validate();
+        aeq(q, output);
     }
 
     private static void divide_Rational_fail_helper(@NotNull String p, @NotNull String r) {
@@ -803,7 +912,9 @@ public class RationalPolynomialTest {
     }
 
     private static void divide_BigInteger_helper(@NotNull String p, @NotNull String i, @NotNull String output) {
-        aeq(readStrict(p).get().divide(Readers.readBigIntegerStrict(i).get()), output);
+        RationalPolynomial q = readStrict(p).get().divide(Readers.readBigIntegerStrict(i).get());
+        q.validate();
+        aeq(q, output);
     }
 
     private static void divide_BigInteger_fail_helper(@NotNull String p, @NotNull String i) {
@@ -850,7 +961,9 @@ public class RationalPolynomialTest {
     }
 
     private static void divide_int_helper(@NotNull String p, int i, @NotNull String output) {
-        aeq(readStrict(p).get().divide(i), output);
+        RationalPolynomial q = readStrict(p).get().divide(i);
+        q.validate();
+        aeq(q, output);
     }
 
     private static void divide_int_fail_helper(@NotNull String p, int i) {
@@ -897,7 +1010,9 @@ public class RationalPolynomialTest {
     }
 
     private static void shiftLeft_helper(@NotNull String p, int bits, @NotNull String output) {
-        aeq(readStrict(p).get().shiftLeft(bits), output);
+        RationalPolynomial q = readStrict(p).get().shiftLeft(bits);
+        q.validate();
+        aeq(q, output);
     }
 
     @Test
@@ -974,7 +1089,9 @@ public class RationalPolynomialTest {
     }
 
     private static void shiftRight_helper(@NotNull String p, int bits, @NotNull String output) {
-        aeq(readStrict(p).get().shiftRight(bits), output);
+        RationalPolynomial q = readStrict(p).get().shiftRight(bits);
+        q.validate();
+        aeq(q, output);
     }
 
     @Test
@@ -1051,7 +1168,9 @@ public class RationalPolynomialTest {
     }
 
     private static void sum_helper(@NotNull String input, @NotNull String output) {
-        aeq(sum(readRationalPolynomialList(input)), output);
+        RationalPolynomial p = sum(readRationalPolynomialList(input));
+        p.validate();
+        aeq(p, output);
     }
 
     private static void sum_fail_helper(@NotNull String input) {
@@ -1067,26 +1186,38 @@ public class RationalPolynomialTest {
         sum_helper("[1]", "1");
         sum_helper("[-4/3]", "-4/3");
         sum_helper("[-4/3, x^2-7/4*x+1/3, -x^3-1, 1/2*x^10]", "1/2*x^10-x^3+x^2-7/4*x-2");
+
         sum_fail_helper("[-4/3, null, -x^3-1, 1/2*x^10]");
     }
 
-    @Test
-    public void testProduct() {
-        assertTrue(product(readRationalPolynomialList("[]")) == ONE);
-        assertTrue(product(readRationalPolynomialList("[0]")) == ZERO);
-        aeq(product(readRationalPolynomialList("[-4/3]")), "-4/3");
-        aeq(
-                product(readRationalPolynomialList("[-4/3, x^2-7/4*x+1/3, -x^3-1, 1/2*x^10]")),
-                "2/3*x^15-7/6*x^14+2/9*x^13+2/3*x^12-7/6*x^11+2/9*x^10"
-        );
+    private static void product_helper(@NotNull String input, @NotNull String output) {
+        RationalPolynomial p = product(readRationalPolynomialList(input));
+        p.validate();
+        aeq(p, output);
+    }
+
+    private static void product_fail_helper(@NotNull String input) {
         try {
-            product(readRationalPolynomialListWithNulls("[-4/3, null, -x^3-1, 1/2*x^10]"));
+            product(readRationalPolynomialListWithNulls(input));
             fail();
         } catch (NullPointerException ignored) {}
     }
 
+    @Test
+    public void testProduct() {
+        product_helper("[]", "1");
+        product_helper("[0]", "0");
+        product_helper("[-4/3]", "-4/3");
+        product_helper("[-4/3, x^2-7/4*x+1/3, -x^3-1, 1/2*x^10]",
+                "2/3*x^15-7/6*x^14+2/9*x^13+2/3*x^12-7/6*x^11+2/9*x^10");
+
+        product_fail_helper("[-4/3, null, -x^3-1, 1/2*x^10]");
+    }
+
     private static void delta_helper(@NotNull Iterable<RationalPolynomial> input, @NotNull String output) {
-        aeqitLimit(TINY_LIMIT, delta(input), output);
+        Iterable<RationalPolynomial> ps = delta(input);
+        take(TINY_LIMIT, ps).forEach(RationalPolynomial::validate);
+        aeqitLimit(TINY_LIMIT, ps, output);
     }
 
     private static void delta_helper(@NotNull String input, @NotNull String output) {
@@ -1106,7 +1237,7 @@ public class RationalPolynomialTest {
         delta_helper("[-4/3, x^2-7/4*x+1/3]", "[x^2-7/4*x+5/3]");
         delta_helper("[-4/3, x^2-7/4*x+1/3, -x^3-1, 1/2*x^10]", "[x^2-7/4*x+5/3, -x^3-x^2+7/4*x-4/3, 1/2*x^10+x^3+1]");
         RationalPolynomial seed = readStrict("x+1/2").get();
-        delta_helper(map(seed::pow, rangeUp(0)),
+        delta_helper(map(seed::pow, ExhaustiveProvider.INSTANCE.naturalIntegers()),
                 "[x-1/2, x^2-1/4, x^3+1/2*x^2-1/4*x-1/8, x^4+x^3-1/4*x-1/16," +
                 " x^5+3/2*x^4+1/2*x^3-1/4*x^2-3/16*x-1/32, x^6+2*x^5+5/4*x^4-5/16*x^2-1/8*x-1/64," +
                 " x^7+5/2*x^6+9/4*x^5+5/8*x^4-5/16*x^3-9/32*x^2-5/64*x-1/128," +
@@ -1137,12 +1268,15 @@ public class RationalPolynomialTest {
                 "2907/16*x^16+969/4*x^15+969/4*x^14+2907/16*x^13+12597/128*x^12+4199/128*x^11-4199/512*x^9-" +
                 "12597/2048*x^8-2907/1024*x^7-969/1024*x^6-969/4096*x^5-2907/65536*x^4-399/65536*x^3-19/32768*x^2-" +
                 "9/262144*x-1/1048576, ...]");
+
         delta_fail_helper("[]");
         delta_fail_helper("[-4/3, null, -x^3-1, 1/2*x^10]");
     }
 
     private static void pow_helper(@NotNull String p, int exponent, @NotNull String output) {
-        aeq(readStrict(p).get().pow(exponent), output);
+        RationalPolynomial q = readStrict(p).get().pow(exponent);
+        q.validate();
+        aeq(q, output);
     }
 
     private static void pow_fail_helper(@NotNull String p, int exponent) {
@@ -1197,7 +1331,9 @@ public class RationalPolynomialTest {
     }
 
     private static void substitute_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(readStrict(a).get().substitute(readStrict(b).get()), output);
+        RationalPolynomial p = readStrict(a).get().substitute(readStrict(b).get());
+        p.validate();
+        aeq(p, output);
     }
 
     @Test
@@ -1265,7 +1401,9 @@ public class RationalPolynomialTest {
     }
 
     private static void differentiate_helper(@NotNull String input, @NotNull String output) {
-        aeq(readStrict(input).get().differentiate(), output);
+        RationalPolynomial p = readStrict(input).get().differentiate();
+        p.validate();
+        aeq(p, output);
     }
 
     @Test
@@ -1294,7 +1432,9 @@ public class RationalPolynomialTest {
     }
 
     private static void makeMonic_helper(@NotNull String input, @NotNull String output) {
-        aeq(readStrict(input).get().makeMonic(), output);
+        RationalPolynomial p = readStrict(input).get().makeMonic();
+        p.validate();
+        aeq(p, output);
     }
 
     private static void makeMonic_fail_helper(@NotNull String input) {
@@ -1313,6 +1453,7 @@ public class RationalPolynomialTest {
         makeMonic_helper("3*x^2-7/4*x+1/3", "x^2-7/12*x+1/9");
         makeMonic_helper("-x^3-1", "x^3+1");
         makeMonic_helper("1/2*x^10", "x^10");
+
         makeMonic_fail_helper("0");
     }
 
@@ -1343,6 +1484,7 @@ public class RationalPolynomialTest {
         constantFactor_helper("x^2-7/4*x+1/3", "1/12", "12*x^2-21*x+4");
         constantFactor_helper("-x^3-1", "-1", "x^3+1");
         constantFactor_helper("1/2*x^10", "1/2", "x^10");
+
         constantFactor_fail_helper("0");
     }
 
@@ -1353,6 +1495,8 @@ public class RationalPolynomialTest {
             @NotNull String remainder
     ) {
         Pair<RationalPolynomial, RationalPolynomial> result = readStrict(a).get().divide(readStrict(b).get());
+        result.a.validate();
+        result.b.validate();
         aeq(result.a, quotient);
         aeq(result.b, remainder);
     }
@@ -1471,7 +1615,9 @@ public class RationalPolynomialTest {
     }
 
     private static void remainderSequence_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(readStrict(a).get().remainderSequence(readStrict(b).get()), output);
+        List<RationalPolynomial> ps = readStrict(a).get().remainderSequence(readStrict(b).get());
+        ps.forEach(RationalPolynomial::validate);
+        aeq(ps, output);
     }
 
     private static void remainderSequence_fail_helper(@NotNull String a, @NotNull String b) {
@@ -1551,7 +1697,9 @@ public class RationalPolynomialTest {
     }
 
     private static void signedRemainderSequence_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeq(readStrict(a).get().signedRemainderSequence(readStrict(b).get()), output);
+        List<RationalPolynomial> ps = readStrict(a).get().signedRemainderSequence(readStrict(b).get());
+        ps.forEach(RationalPolynomial::validate);
+        aeq(ps, output);
     }
 
     private static void signedRemainderSequence_fail_helper(@NotNull String a, @NotNull String b) {
@@ -1693,7 +1841,9 @@ public class RationalPolynomialTest {
     }
 
     private static void fromPowerSums_helper(@NotNull String input, @NotNull String output) {
-        aeq(fromPowerSums(readRationalList(input)), output);
+        RationalPolynomial p = fromPowerSums(readRationalList(input));
+        p.validate();
+        aeq(p, output);
     }
 
     private static void fromPowerSums_fail_helper(@NotNull String input) {
@@ -1722,7 +1872,9 @@ public class RationalPolynomialTest {
     }
 
     private static void interpolate_helper(@NotNull String input, @NotNull String output) {
-        aeq(interpolate(readRationalPairList(input)), output);
+        RationalPolynomial p = interpolate(readRationalPairList(input));
+        p.validate();
+        aeq(p, output);
     }
 
     private static void interpolate_fail_helper(@NotNull String input) {
@@ -1801,7 +1953,9 @@ public class RationalPolynomialTest {
     }
 
     private static void reflect_helper(@NotNull String input, @NotNull String output) {
-        aeq(readStrict(input).get().reflect(), output);
+        RationalPolynomial p = readStrict(input).get().reflect();
+        p.validate();
+        aeq(p, output);
     }
 
     @Test
@@ -1816,7 +1970,9 @@ public class RationalPolynomialTest {
     }
 
     private static void translate_helper(@NotNull String p, @NotNull String t, @NotNull String output) {
-        aeq(readStrict(p).get().translate(Rational.readStrict(t).get()), output);
+        RationalPolynomial q = readStrict(p).get().translate(Rational.readStrict(t).get());
+        q.validate();
+        aeq(q, output);
     }
 
     @Test
@@ -1868,7 +2024,9 @@ public class RationalPolynomialTest {
     }
 
     private static void stretch_helper(@NotNull String p, @NotNull String f, @NotNull String output) {
-        aeq(readStrict(p).get().stretch(Rational.readStrict(f).get()), output);
+        RationalPolynomial q = readStrict(p).get().stretch(Rational.readStrict(f).get());
+        q.validate();
+        aeq(q, output);
     }
 
     private static void stretch_fail_helper(@NotNull String p, @NotNull String f) {
@@ -1924,7 +2082,9 @@ public class RationalPolynomialTest {
     }
 
     private static void powerTable_helper(@NotNull String p, int maxPower, @NotNull String output) {
-        aeq(readStrict(p).get().powerTable(maxPower), output);
+        List<RationalPolynomial> ps = readStrict(p).get().powerTable(maxPower);
+        ps.forEach(RationalPolynomial::validate);
+        aeq(ps, output);
     }
 
     private static void powerTable_fail_helper(@NotNull String p, int maxPower) {
@@ -1971,7 +2131,9 @@ public class RationalPolynomialTest {
     }
 
     private static void rootPower_helper(@NotNull String x, int p, @NotNull String output) {
-        aeq(readStrict(x).get().rootPower(p), output);
+        RationalPolynomial q = readStrict(x).get().rootPower(p);
+        q.validate();
+        aeq(q, output);
     }
 
     private static void rootPower_fail_helper(@NotNull String x, int p) {
@@ -2070,6 +2232,39 @@ public class RationalPolynomialTest {
         rootPower_fail_helper("x^2-2", -1);
     }
 
+    private static void realRoots_helper(@NotNull String polynomial, @NotNull String output) {
+        List<Algebraic> xs = RationalPolynomial.readStrict(polynomial).get().realRoots();
+        xs.forEach(Algebraic::validate);
+        aeq(xs, output);
+    }
+
+    private static void realRoots_fail_helper(@NotNull String polynomial) {
+        try {
+            RationalPolynomial.readStrict(polynomial).get().realRoots();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testRealRoots() {
+        realRoots_helper("1", "[]");
+        realRoots_helper("x", "[0]");
+        realRoots_helper("x-1", "[1]");
+        realRoots_helper("2*x-1", "[1/2]");
+        realRoots_helper("x^2-2*x+1", "[1]");
+        realRoots_helper("x^2-2", "[-sqrt(2), sqrt(2)]");
+        realRoots_helper("x^3-x^2-2*x+2", "[-sqrt(2), 1, sqrt(2)]");
+        realRoots_helper("x^2-4", "[-2, 2]");
+        realRoots_helper("x^2-x-1", "[(1-sqrt(5))/2, (1+sqrt(5))/2]");
+        realRoots_helper("x^5-x-1", "[root 0 of x^5-x-1]");
+        realRoots_helper("x^10", "[0]");
+
+        realRoots_helper("x-1/2", "[1/2]");
+        realRoots_helper("x^2-7/4*x+1/3", "[(21-sqrt(249))/24, (21+sqrt(249))/24]");
+
+        realRoots_fail_helper("0");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(
@@ -2098,85 +2293,86 @@ public class RationalPolynomialTest {
         testCompareToHelper(readRationalPolynomialList("[-x^3-1, -4/3, 0, 1, x, x^2-7/4*x+1/3, 1/2*x^10]"));
     }
 
-    private static void readStrict_String_helper(@NotNull String input) {
-        aeq(readStrict(input).get(), input);
-    }
-
-    private static void readStrict_String_fail_helper(@NotNull String input) {
-        assertFalse(readStrict(input).isPresent());
+    private static void readStrict_String_helper(@NotNull String input, @NotNull String output) {
+        Optional<RationalPolynomial> op = readStrict(input);
+        if (op.isPresent()) {
+            op.get().validate();
+        }
+        aeq(op, output);
     }
 
     @Test
     public void testReadStrict_String() {
-        readStrict_String_helper("0");
-        readStrict_String_helper("1");
-        readStrict_String_helper("x");
-        readStrict_String_helper("2");
-        readStrict_String_helper("-2");
-        readStrict_String_helper("4/3");
-        readStrict_String_helper("-4/3");
-        readStrict_String_helper("-x");
-        readStrict_String_helper("3*x");
-        readStrict_String_helper("-3*x");
-        readStrict_String_helper("x^2");
-        readStrict_String_helper("-x^2");
-        readStrict_String_helper("2*x^2");
-        readStrict_String_helper("-2*x^2");
-        readStrict_String_helper("x-1");
-        readStrict_String_helper("-x-1");
-        readStrict_String_helper("x^2-1");
-        readStrict_String_helper("x^2-7/4*x+1/3");
-        readStrict_String_helper("1/2*x^10");
-        readStrict_String_fail_helper("");
-        readStrict_String_fail_helper("+");
-        readStrict_String_fail_helper("-");
-        readStrict_String_fail_helper("-0");
-        readStrict_String_fail_helper("+0");
-        readStrict_String_fail_helper("--");
-        readStrict_String_fail_helper("+1");
-        readStrict_String_fail_helper("+x");
-        readStrict_String_fail_helper("+x^2");
-        readStrict_String_fail_helper("+x^2-x");
-        readStrict_String_fail_helper("x^1000000000000");
-        readStrict_String_fail_helper(" x");
-        readStrict_String_fail_helper("x ");
-        readStrict_String_fail_helper("X");
-        readStrict_String_fail_helper("x + 1");
-        readStrict_String_fail_helper("x^0");
-        readStrict_String_fail_helper("x^-1");
-        readStrict_String_fail_helper("x^1");
-        readStrict_String_fail_helper("1-2");
-        readStrict_String_fail_helper("1*x");
-        readStrict_String_fail_helper("-1*x");
-        readStrict_String_fail_helper("1*x^2");
-        readStrict_String_fail_helper("-1*x^2");
-        readStrict_String_fail_helper("x+x");
-        readStrict_String_fail_helper("x+x^2");
-        readStrict_String_fail_helper("1+x");
-        readStrict_String_fail_helper("x+0");
-        readStrict_String_fail_helper("0*x");
-        readStrict_String_fail_helper("-0*x");
-        readStrict_String_fail_helper("+0*x");
-        readStrict_String_fail_helper("2x");
-        readStrict_String_fail_helper("1/2x");
-        readStrict_String_fail_helper("x^2+1+x");
-        readStrict_String_fail_helper("x^2+3*x^2");
-        readStrict_String_fail_helper("2^x");
-        readStrict_String_fail_helper("abc");
-        readStrict_String_fail_helper("x+y");
-        readStrict_String_fail_helper("y");
-        readStrict_String_fail_helper("x/2");
+        readStrict_String_helper("0", "Optional[0]");
+        readStrict_String_helper("1", "Optional[1]");
+        readStrict_String_helper("x", "Optional[x]");
+        readStrict_String_helper("2", "Optional[2]");
+        readStrict_String_helper("-2", "Optional[-2]");
+        readStrict_String_helper("4/3", "Optional[4/3]");
+        readStrict_String_helper("-4/3", "Optional[-4/3]");
+        readStrict_String_helper("-x", "Optional[-x]");
+        readStrict_String_helper("3*x", "Optional[3*x]");
+        readStrict_String_helper("-3*x", "Optional[-3*x]");
+        readStrict_String_helper("x^2", "Optional[x^2]");
+        readStrict_String_helper("-x^2", "Optional[-x^2]");
+        readStrict_String_helper("2*x^2", "Optional[2*x^2]");
+        readStrict_String_helper("-2*x^2", "Optional[-2*x^2]");
+        readStrict_String_helper("x-1", "Optional[x-1]");
+        readStrict_String_helper("-x-1", "Optional[-x-1]");
+        readStrict_String_helper("x^2-1", "Optional[x^2-1]");
+        readStrict_String_helper("x^2-7/4*x+1/3", "Optional[x^2-7/4*x+1/3]");
+        readStrict_String_helper("1/2*x^10", "Optional[1/2*x^10]");
+
+        readStrict_String_helper("", "Optional.empty");
+        readStrict_String_helper("+", "Optional.empty");
+        readStrict_String_helper("-", "Optional.empty");
+        readStrict_String_helper("-0", "Optional.empty");
+        readStrict_String_helper("+0", "Optional.empty");
+        readStrict_String_helper("--", "Optional.empty");
+        readStrict_String_helper("+1", "Optional.empty");
+        readStrict_String_helper("+x", "Optional.empty");
+        readStrict_String_helper("+x^2", "Optional.empty");
+        readStrict_String_helper("+x^2-x", "Optional.empty");
+        readStrict_String_helper("x^1000000000000", "Optional.empty");
+        readStrict_String_helper(" x", "Optional.empty");
+        readStrict_String_helper("x ", "Optional.empty");
+        readStrict_String_helper("X", "Optional.empty");
+        readStrict_String_helper("x + 1", "Optional.empty");
+        readStrict_String_helper("x^0", "Optional.empty");
+        readStrict_String_helper("x^-1", "Optional.empty");
+        readStrict_String_helper("x^1", "Optional.empty");
+        readStrict_String_helper("1-2", "Optional.empty");
+        readStrict_String_helper("1*x", "Optional.empty");
+        readStrict_String_helper("-1*x", "Optional.empty");
+        readStrict_String_helper("1*x^2", "Optional.empty");
+        readStrict_String_helper("-1*x^2", "Optional.empty");
+        readStrict_String_helper("x+x", "Optional.empty");
+        readStrict_String_helper("x+x^2", "Optional.empty");
+        readStrict_String_helper("1+x", "Optional.empty");
+        readStrict_String_helper("x+0", "Optional.empty");
+        readStrict_String_helper("0*x", "Optional.empty");
+        readStrict_String_helper("-0*x", "Optional.empty");
+        readStrict_String_helper("+0*x", "Optional.empty");
+        readStrict_String_helper("2x", "Optional.empty");
+        readStrict_String_helper("1/2x", "Optional.empty");
+        readStrict_String_helper("x^2+1+x", "Optional.empty");
+        readStrict_String_helper("x^2+3*x^2", "Optional.empty");
+        readStrict_String_helper("2^x", "Optional.empty");
+        readStrict_String_helper("abc", "Optional.empty");
+        readStrict_String_helper("x+y", "Optional.empty");
+        readStrict_String_helper("y", "Optional.empty");
+        readStrict_String_helper("x/2", "Optional.empty");
     }
 
-    private static void readStrict_int_String_helper(int maxExponent, @NotNull String input) {
-        aeq(readStrict(maxExponent, input).get(), input);
+    private static void readStrict_int_String_helper(int maxExponent, @NotNull String input, @NotNull String output) {
+        Optional<RationalPolynomial> op = readStrict(maxExponent, input);
+        if (op.isPresent()) {
+            op.get().validate();
+        }
+        aeq(op, output);
     }
 
     private static void readStrict_int_String_fail_helper(int maxExponent, @NotNull String input) {
-        assertFalse(readStrict(maxExponent, input).isPresent());
-    }
-
-    private static void readStrict_int_String_bad_maxExponent_fail_helper(int maxExponent, @NotNull String input) {
         try {
             readStrict(maxExponent, input);
             fail();
@@ -2185,73 +2381,75 @@ public class RationalPolynomialTest {
 
     @Test
     public void testReadStrict_int_String() {
-        readStrict_int_String_helper(1, "0");
-        readStrict_int_String_helper(1, "1");
-        readStrict_int_String_helper(1, "x");
-        readStrict_int_String_helper(1, "2");
-        readStrict_int_String_helper(1, "-2");
-        readStrict_int_String_helper(1, "4/3");
-        readStrict_int_String_helper(1, "-4/3");
-        readStrict_int_String_helper(1, "-x");
-        readStrict_int_String_helper(1, "3*x");
-        readStrict_int_String_helper(1, "-3*x");
-        readStrict_int_String_helper(2, "x^2");
-        readStrict_int_String_helper(2, "-x^2");
-        readStrict_int_String_helper(2, "2*x^2");
-        readStrict_int_String_helper(2, "-2*x^2");
-        readStrict_int_String_helper(1, "x-1");
-        readStrict_int_String_helper(1, "-x-1");
-        readStrict_int_String_helper(2, "x^2-1");
-        readStrict_int_String_helper(2, "x^2-7/4*x+1/3");
-        readStrict_int_String_helper(10, "1/2*x^10");
-        readStrict_int_String_fail_helper(1, "x^2");
-        readStrict_int_String_fail_helper(1, "-x^2");
-        readStrict_int_String_fail_helper(1, "2*x^2");
-        readStrict_int_String_fail_helper(1, "-2*x^2");
-        readStrict_int_String_fail_helper(1, "x^2-1");
-        readStrict_int_String_fail_helper(1, "x^2-7/4*x+1/3");
-        readStrict_int_String_fail_helper(9, "1/2*x^10");
-        readStrict_int_String_fail_helper(10, "");
-        readStrict_int_String_fail_helper(10, "+");
-        readStrict_int_String_fail_helper(10, "-");
-        readStrict_int_String_fail_helper(10, "-0");
-        readStrict_int_String_fail_helper(10, "+0");
-        readStrict_int_String_fail_helper(10, "--");
-        readStrict_int_String_fail_helper(10, "+1");
-        readStrict_int_String_fail_helper(10, "+x");
-        readStrict_int_String_fail_helper(10, "+x^2");
-        readStrict_int_String_fail_helper(10, "+x^2-x");
-        readStrict_int_String_fail_helper(10, "x^1000000000000");
-        readStrict_int_String_fail_helper(10, " x");
-        readStrict_int_String_fail_helper(10, "x ");
-        readStrict_int_String_fail_helper(10, "X");
-        readStrict_int_String_fail_helper(10, "x + 1");
-        readStrict_int_String_fail_helper(10, "x^0");
-        readStrict_int_String_fail_helper(10, "x^-1");
-        readStrict_int_String_fail_helper(10, "x^1");
-        readStrict_int_String_fail_helper(10, "1-2");
-        readStrict_int_String_fail_helper(10, "1*x");
-        readStrict_int_String_fail_helper(10, "-1*x");
-        readStrict_int_String_fail_helper(10, "1*x^2");
-        readStrict_int_String_fail_helper(10, "-1*x^2");
-        readStrict_int_String_fail_helper(10, "x+x");
-        readStrict_int_String_fail_helper(10, "x+x^2");
-        readStrict_int_String_fail_helper(10, "1+x");
-        readStrict_int_String_fail_helper(10, "x+0");
-        readStrict_int_String_fail_helper(10, "0*x");
-        readStrict_int_String_fail_helper(10, "-0*x");
-        readStrict_int_String_fail_helper(10, "+0*x");
-        readStrict_int_String_fail_helper(10, "2x");
-        readStrict_int_String_fail_helper(10, "1/2x");
-        readStrict_int_String_fail_helper(10, "x^2+1+x");
-        readStrict_int_String_fail_helper(10, "x^2+3*x^2");
-        readStrict_int_String_fail_helper(10, "2^x");
-        readStrict_int_String_fail_helper(10, "abc");
-        readStrict_int_String_fail_helper(10, "x+y");
-        readStrict_int_String_fail_helper(10, "y");
-        readStrict_int_String_fail_helper(10, "x/2");
-        readStrict_int_String_bad_maxExponent_fail_helper(0, "1");
-        readStrict_int_String_bad_maxExponent_fail_helper(-1, "0");
+        readStrict_int_String_helper(1, "0", "Optional[0]");
+        readStrict_int_String_helper(1, "1", "Optional[1]");
+        readStrict_int_String_helper(1, "x", "Optional[x]");
+        readStrict_int_String_helper(1, "2", "Optional[2]");
+        readStrict_int_String_helper(1, "-2", "Optional[-2]");
+        readStrict_int_String_helper(1, "4/3", "Optional[4/3]");
+        readStrict_int_String_helper(1, "-4/3", "Optional[-4/3]");
+        readStrict_int_String_helper(1, "-x", "Optional[-x]");
+        readStrict_int_String_helper(1, "3*x", "Optional[3*x]");
+        readStrict_int_String_helper(1, "-3*x", "Optional[-3*x]");
+        readStrict_int_String_helper(2, "x^2", "Optional[x^2]");
+        readStrict_int_String_helper(2, "-x^2", "Optional[-x^2]");
+        readStrict_int_String_helper(2, "2*x^2", "Optional[2*x^2]");
+        readStrict_int_String_helper(2, "-2*x^2", "Optional[-2*x^2]");
+        readStrict_int_String_helper(1, "x-1", "Optional[x-1]");
+        readStrict_int_String_helper(1, "-x-1", "Optional[-x-1]");
+        readStrict_int_String_helper(2, "x^2-1", "Optional[x^2-1]");
+        readStrict_int_String_helper(2, "x^2-7/4*x+1/3", "Optional[x^2-7/4*x+1/3]");
+        readStrict_int_String_helper(10, "1/2*x^10", "Optional[1/2*x^10]");
+
+        readStrict_int_String_helper(1, "x^2", "Optional.empty");
+        readStrict_int_String_helper(1, "-x^2", "Optional.empty");
+        readStrict_int_String_helper(1, "2*x^2", "Optional.empty");
+        readStrict_int_String_helper(1, "-2*x^2", "Optional.empty");
+        readStrict_int_String_helper(1, "x^2-1", "Optional.empty");
+        readStrict_int_String_helper(1, "x^2-7/4*x+1/3", "Optional.empty");
+        readStrict_int_String_helper(9, "1/2*x^10", "Optional.empty");
+        readStrict_int_String_helper(10, "", "Optional.empty");
+        readStrict_int_String_helper(10, "+", "Optional.empty");
+        readStrict_int_String_helper(10, "-", "Optional.empty");
+        readStrict_int_String_helper(10, "-0", "Optional.empty");
+        readStrict_int_String_helper(10, "+0", "Optional.empty");
+        readStrict_int_String_helper(10, "--", "Optional.empty");
+        readStrict_int_String_helper(10, "+1", "Optional.empty");
+        readStrict_int_String_helper(10, "+x", "Optional.empty");
+        readStrict_int_String_helper(10, "+x^2", "Optional.empty");
+        readStrict_int_String_helper(10, "+x^2-x", "Optional.empty");
+        readStrict_int_String_helper(10, "x^1000000000000", "Optional.empty");
+        readStrict_int_String_helper(10, " x", "Optional.empty");
+        readStrict_int_String_helper(10, "x ", "Optional.empty");
+        readStrict_int_String_helper(10, "X", "Optional.empty");
+        readStrict_int_String_helper(10, "x + 1", "Optional.empty");
+        readStrict_int_String_helper(10, "x^0", "Optional.empty");
+        readStrict_int_String_helper(10, "x^-1", "Optional.empty");
+        readStrict_int_String_helper(10, "x^1", "Optional.empty");
+        readStrict_int_String_helper(10, "1-2", "Optional.empty");
+        readStrict_int_String_helper(10, "1*x", "Optional.empty");
+        readStrict_int_String_helper(10, "-1*x", "Optional.empty");
+        readStrict_int_String_helper(10, "1*x^2", "Optional.empty");
+        readStrict_int_String_helper(10, "-1*x^2", "Optional.empty");
+        readStrict_int_String_helper(10, "x+x", "Optional.empty");
+        readStrict_int_String_helper(10, "x+x^2", "Optional.empty");
+        readStrict_int_String_helper(10, "1+x", "Optional.empty");
+        readStrict_int_String_helper(10, "x+0", "Optional.empty");
+        readStrict_int_String_helper(10, "0*x", "Optional.empty");
+        readStrict_int_String_helper(10, "-0*x", "Optional.empty");
+        readStrict_int_String_helper(10, "+0*x", "Optional.empty");
+        readStrict_int_String_helper(10, "2x", "Optional.empty");
+        readStrict_int_String_helper(10, "1/2x", "Optional.empty");
+        readStrict_int_String_helper(10, "x^2+1+x", "Optional.empty");
+        readStrict_int_String_helper(10, "x^2+3*x^2", "Optional.empty");
+        readStrict_int_String_helper(10, "2^x", "Optional.empty");
+        readStrict_int_String_helper(10, "abc", "Optional.empty");
+        readStrict_int_String_helper(10, "x+y", "Optional.empty");
+        readStrict_int_String_helper(10, "y", "Optional.empty");
+        readStrict_int_String_helper(10, "x/2", "Optional.empty");
+
+        readStrict_int_String_fail_helper(0, "1");
+        readStrict_int_String_fail_helper(-1, "0");
     }
 
     private static @NotNull List<Rational> readRationalList(@NotNull String s) {
@@ -2272,7 +2470,7 @@ public class RationalPolynomialTest {
 
     private static @NotNull List<Pair<Rational, Rational>> readRationalPairList(@NotNull String s) {
         return Readers.readListStrict(
-                t -> Pair.read(
+                t -> Pair.readStrict(
                         t,
                         r -> NullableOptional.fromOptional(Rational.readStrict(r)),
                         r -> NullableOptional.fromOptional(Rational.readStrict(r))
@@ -2282,7 +2480,7 @@ public class RationalPolynomialTest {
 
     private static @NotNull List<Pair<Rational, Rational>> readRationalPairListWithNulls(@NotNull String s) {
         return Readers.readListWithNullsStrict(
-                t -> Pair.read(
+                t -> Pair.readStrict(
                         t,
                         Readers.readWithNullsStrict(Rational::readStrict),
                         Readers.readWithNullsStrict(Rational::readStrict)

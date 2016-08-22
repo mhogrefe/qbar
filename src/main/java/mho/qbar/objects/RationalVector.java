@@ -476,17 +476,17 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * Returns the sum of all the {@code RationalVector}s in {@code xs}.
      *
      * <ul>
-     *  <li>{@code xs} must be finite and non-empty, and may not contain any nulls. Every {@code RationalVector} in
-     *  {@code xs} must have the same dimension.</li>
+     *  <li>{@code xs} must be non-empty, and may not contain any nulls. Every {@code RationalVector} in {@code xs}
+     *  must have the same dimension.</li>
      *  <li>The result may be any {@code RationalVector}.</li>
      * </ul>
      *
      * Length is dim(head({@code xs}))
      *
-     * @param xs an {@code Iterable} of {@code RationalVector}s.
+     * @param xs a {@code List} of {@code RationalVector}s.
      * @return Σxs
      */
-    public static @NotNull RationalVector sum(@NotNull Iterable<RationalVector> xs) {
+    public static @NotNull RationalVector sum(@NotNull List<RationalVector> xs) {
         if (isEmpty(xs)) {
             throw new IllegalArgumentException("xs cannot be empty.");
         } else if (!same(map(RationalVector::dimension, xs))) {
@@ -541,7 +541,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
             throw new ArithmeticException("this and that must have the same dimension. this: " + this + ", that: " +
                     that);
         }
-        return Rational.sum(zipWith(Rational::multiply, coordinates, that.coordinates));
+        return Rational.sum(toList(zipWith(Rational::multiply, coordinates, that.coordinates)));
     }
 
     /**
@@ -556,8 +556,8 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * </ul>
      *
      * @param that the {@code RationalVector} which, along with {@code this}, creates the angle under consideration
-     * @return whether the angle between {@code this} and {@code that} is acute ({@code LT}), right ({@code EQ}), or
-     * obtuse ({@code GT}).
+     * @return whether the angle between {@code this} and {@code that} is acute ({@code <}), right ({@code =}), or
+     * obtuse ({@code >}).
      */
     public @NotNull Ordering rightAngleCompare(@NotNull RationalVector that) {
         if (coordinates.size() != that.coordinates.size()) {
@@ -580,7 +580,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * @return ‖{@code this}‖²
      */
     public @NotNull Rational squaredLength() {
-        return Rational.sum(map(x -> x.pow(2), coordinates));
+        return Rational.sum(toList(map(x -> x.pow(2), coordinates)));
     }
 
     /**

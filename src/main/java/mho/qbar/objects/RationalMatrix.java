@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.NoRemoveIterable;
 import mho.wheels.ordering.comparators.LexComparator;
@@ -419,8 +420,16 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
         if (dimension < 0) {
             throw new IllegalArgumentException("dimension cannot be negative. Invalid dimension: " + dimension);
         }
+        if (dimension == 0) {
+            return zero(0, 0);
+        }
         return new RationalMatrix(
-                toList(map(i -> RationalVector.standard(dimension, i), range(0, dimension - 1))),
+                toList(
+                        map(
+                                i -> RationalVector.standard(dimension, i),
+                                ExhaustiveProvider.INSTANCE.rangeIncreasing(0, dimension - 1)
+                        )
+                ),
                 dimension
         );
     }
@@ -502,7 +511,10 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
         }
         //noinspection SuspiciousNameCombination
         return new RationalMatrix(
-                toList(map(i -> RationalVector.of(Arrays.asList(elements[i])), range(0, width - 1))),
+                toList(
+                        map(i -> RationalVector.of(Arrays.asList(elements[i])),
+                        ExhaustiveProvider.INSTANCE.rangeIncreasing(0, width - 1))
+                ),
                 height
         );
     }
@@ -1054,6 +1066,9 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      * overdetermined, it may still be consistent. If the result is non-empty, it represents the values of the <i>m</i>
      * variables, and its <i>j</i>th element is the value of the <i>j</i>th variable.
      *
+     * This method differs from {@link RationalMatrix#solveLinearSystemPermissive(RationalVector)} in that it returns
+     * empty on underdetermined systems (systems with infinitely many solutions).
+     *
      * <ul>
      *  <li>{@code this} may be any {@code RationalMatrix}.</li>
      *  <li>{@code rhs} may be any {@code RationalVector}.</li>
@@ -1073,11 +1088,83 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
         }
         if (width > height()) return Optional.empty();
         RationalMatrix rref = augment(fromColumns(Collections.singletonList(rhs))).reducedRowEchelonForm();
-        RationalMatrix bottom = rref.submatrix(toList(range(width, height() - 1)), toList(range(0, width)));
+        RationalMatrix bottom;
+        if (width == height()) {
+            bottom = zero(0, width + 1);
+        } else {
+            bottom = rref.submatrix(
+                    toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(width, height() - 1)),
+                    toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, width))
+            );
+        }
         if (!bottom.isZero()) return Optional.empty();
-        RationalMatrix left = rref.submatrix(toList(range(0, width - 1)), toList(range(0, width - 1)));
+        if (width == 0) {
+            return Optional.of(RationalVector.ZERO_DIMENSIONAL);
+        }
+        RationalMatrix left = rref.submatrix(
+                toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, width - 1)),
+                toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, width - 1))
+        );
         if (!left.isIdentity()) return Optional.empty();
-        return Optional.of(rref.submatrix(toList(range(0, width - 1)), Collections.singletonList(width)).column(0));
+        return Optional.of(
+                rref.submatrix(
+                        toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, width - 1)),
+                        Collections.singletonList(width)
+                ).column(0)
+        );
+    }
+
+    /**
+     * Solves a linear system of equations. If this is a matrix with <i>n</i> rows and <i>m</i> columns, then the
+     * system contains <i>n</i> equations in <i>m</i> variables, and the entry (<i>i</i>, <i>j</i>) is the coefficient
+     * of the <i>j</i>th variable in the <i>i</i>th equation. The vector {@code rhs} represents the right-hand side of
+     * the equations, and its <i>i</i>th entry is the right-hand side of the <i>i</i>th equation. If the system is
+     * inconsistent, the result is empty; otherwise, it is non-empty. If the system is underdetermined, some solution
+     * is returned, usually with some variables set to zero. If the result is non-empty, it represents the values of
+     * the <i>m</i> variables, and its <i>j</i>th element is the value of the <i>j</i>th variable.
+     *
+     * This method differs from {@link RationalMatrix#solveLinearSystem(RationalVector)} in that when the system is
+     * underdetermined (has infinitely many solutions) one solution is returned.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>{@code rhs} may be any {@code RationalVector}.</li>
+     *  <li>The dimension of {@code rhs} must equal the height of {@code this}.</li>
+     *  <li>The result may be empty or any {@code RationalVector}.</li>
+     * </ul>
+     *
+     * Length is width({@code this})
+     *
+     * @param rhs the right-hand side of the system of equations
+     * @return The assignments to the variables in the equations
+     */
+    public @NotNull Optional<RationalVector> solveLinearSystemPermissive(@NotNull RationalVector rhs) {
+        if (height() != rhs.dimension()) {
+            throw new IllegalArgumentException("The dimension of rhs must equal the height of this. rhs: " +
+                    rhs + ", this: " + this);
+        }
+        RationalMatrix rref = augment(fromColumns(Collections.singletonList(rhs))).reducedRowEchelonForm();
+        RationalMatrix bottom;
+        if (width >= height()) {
+            bottom = zero(0, width + 1);
+        } else {
+            bottom = rref.submatrix(
+                    toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(width, height() - 1)),
+                    toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, width))
+            );
+        }
+        if (!bottom.isZero()) return Optional.empty();
+        List<Rational> result = toList(replicate(width, Rational.ZERO));
+        for (RationalVector row : rref.rows) {
+            Rational last = row.get(row.dimension() - 1);
+            Optional<Integer> firstIndex = findIndex(r -> r != Rational.ZERO, init(row));
+            if (firstIndex.isPresent()) {
+                result.set(firstIndex.get(), last);
+            } else if (last != Rational.ZERO) {
+                return Optional.empty();
+            }
+        }
+        return Optional.of(RationalVector.of(result));
     }
 
     /**
@@ -1097,9 +1184,19 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
             throw new IllegalArgumentException("this must be square. Invalid this: " + this);
         }
         RationalMatrix rref = augment(identity(width)).reducedRowEchelonForm();
-        RationalMatrix left = rref.submatrix(toList(range(0, width - 1)), toList(range(0, width - 1)));
+        List<Integer> range = width == 0 ?
+                Collections.emptyList() :
+                toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, width - 1));
+        RationalMatrix left = rref.submatrix(range, range);
         if (!left.isIdentity()) return Optional.empty();
-        return Optional.of(rref.submatrix(toList(range(0, width - 1)), toList(range(width, 2 * width - 1))));
+        return Optional.of(
+                rref.submatrix(
+                        range,
+                        width == 0 ?
+                                Collections.emptyList() :
+                                toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(width, 2 * width - 1))
+                )
+        );
     }
 
     /**
@@ -1266,6 +1363,20 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
             throw new IllegalArgumentException("that must be square. Invalid that: " + that);
         }
         return kroneckerMultiply(identity(that.width)).add(identity(width).kroneckerMultiply(that));
+    }
+
+    /**
+     * The real eigenvalues of {@code this} in increasing order.
+     *
+     * <ul>
+     *  <li>{@code this} must be square.</li>
+     *  <li>The result is increasing and has no duplicates.</li>
+     * </ul>
+     *
+     * @return the eigenvalues of {@code this}
+     */
+    public @NotNull List<Algebraic> realEigenvalues() {
+        return characteristicPolynomial().realRoots();
     }
 
     /**

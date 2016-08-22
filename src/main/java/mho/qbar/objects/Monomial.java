@@ -141,8 +141,7 @@ public final class Monomial implements Comparable<Monomial> {
      * @param exponents the exponents in this {@code Monomial}
      * @return the {@code Monomial} with the exponents in {@code exponents}
      */
-    public static @NotNull
-    Monomial of(@NotNull List<Integer> exponents) {
+    public static @NotNull Monomial of(@NotNull List<Integer> exponents) {
         if (any(v -> v < 0, exponents)) {
             throw new IllegalArgumentException("None of the elements in exponents may be negative. Invalid " +
                     "exponents: " + exponents);
@@ -155,6 +154,23 @@ public final class Monomial implements Comparable<Monomial> {
         }
         if (actualSize == 0) return ONE;
         return new Monomial(toList(take(actualSize, exponents)));
+    }
+
+    /**
+     * Creates a {@code Monomial} from a single {@code Variable}.
+     *
+     * <ul>
+     *  <li>{@code v} cannot be null.</li>
+     *  <li>The result contains a single variable.</li>
+     * </ul>
+     *
+     * @param v a {@code Variable}
+     * @return the {@code Monomial} equal to {@code v}
+     */
+    public static @NotNull Monomial of(@NotNull Variable v) {
+        List<Integer> exponentVector = toList(replicate(v.getIndex(), 0));
+        exponentVector.add(1);
+        return new Monomial(exponentVector);
     }
 
     /**
@@ -225,6 +241,24 @@ public final class Monomial implements Comparable<Monomial> {
     }
 
     /**
+     * Returns the number of variables in {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Monomial}.</li>
+     *  <li>The result is non-negative.</li>
+     * </ul>
+     *
+     * @return the number of variables in {@code this}
+     */
+    public int variableCount() {
+        int variableCount = 0;
+        for (int exponent : exponents) {
+            if (exponent != 0) variableCount++;
+        }
+        return variableCount;
+    }
+
+    /**
      * Removes a variable from {@code this}. Equivalently, substitutes the variable with 1.
      *
      * <ul>
@@ -264,6 +298,30 @@ public final class Monomial implements Comparable<Monomial> {
             removed = removed.removeVariable(v);
         }
         return removed;
+    }
+
+    /**
+     * Removes all variables from {@code this} except for a given set. Equivalently, sets all variables except those
+     * from the set to 1.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Monomial}.</li>
+     *  <li>{@code vs} cannot contain nulls.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param vs some {@code Variable}s
+     * @return {@code this} with only {@code vs}; {@code this} with every variable not in {@code vs} set to 1
+     */
+    public @NotNull Monomial retainVariables(@NotNull List<Variable> vs) {
+        if (any(v -> v == null, vs)) {
+            throw new NullPointerException();
+        }
+        List<Integer> retainedExponents = new ArrayList<>();
+        for (int i = 0; i < exponents.size(); i++) {
+            retainedExponents.add(vs.contains(Variable.of(i)) ? exponents.get(i) : 0);
+        }
+        return of(retainedExponents);
     }
 
     /**
@@ -399,29 +457,29 @@ public final class Monomial implements Comparable<Monomial> {
     }
 
     /**
-     * Substitutes variables in {@code this} with {@code Monomial}s specified by {@code evs}. Not every variable in
+     * Substitutes variables in {@code this} with {@code Monomial}s specified by {@code ms}. Not every variable in
      * {@code this} needs to have an associated {@code Monomial}. Unused variables are also allowed.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Monomial}.</li>
-     *  <li>{@code evs} may not have any null keys or values.</li>
+     *  <li>{@code ms} may not have any null keys or values.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
      * Length is 1 if {@code this}=0 or {@code that}=0, deg({@code this})×deg({@code that})+1 otherwise
      *
-     * @param evs the {@code Monomial}s to substitute for variables in {@code this}
-     * @return {@code this}({@code evs})
+     * @param ms the {@code Monomial}s to substitute for variables in {@code this}
+     * @return {@code this}({@code ms})
      */
-    public @NotNull Monomial substitute(@NotNull Map<Variable, Monomial> evs) {
-        for (Map.Entry<Variable, Monomial> entry : evs.entrySet()) {
+    public @NotNull Monomial substitute(@NotNull Map<Variable, Monomial> ms) {
+        for (Map.Entry<Variable, Monomial> entry : ms.entrySet()) {
             if (entry.getKey() == null || entry.getValue() == null) {
                 throw new NullPointerException();
             }
         }
         List<Monomial> factors = new ArrayList<>();
         for (Pair<Variable, Integer> term : terms()) {
-            Monomial value = evs.get(term.a);
+            Monomial value = ms.get(term.a);
             if (value == null) {
                 factors.add(fromTerms(Collections.singletonList(term)));
             } else {

@@ -3,6 +3,7 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
@@ -91,7 +92,7 @@ public class VectorProperties extends QBarTestProperties {
         initialize("get(int)");
         Iterable<Pair<Vector, Integer>> ps = P.dependentPairs(
                 P.vectorsAtLeast(1),
-                v -> P.uniformSample(toList(range(0, v.dimension() - 1)))
+                v -> P.uniformSample(toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, v.dimension() - 1)))
         );
         for (Pair<Vector, Integer> p : take(LIMIT, ps)) {
             BigInteger x = p.a.get(p.b);
@@ -358,7 +359,7 @@ public class VectorProperties extends QBarTestProperties {
                         )
                 )
         );
-        compareImplementations("subtract(Vector)", take(LIMIT, ps), functions);
+        compareImplementations("subtract(Vector)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private void propertiesMultiply_BigInteger() {
@@ -473,7 +474,7 @@ public class VectorProperties extends QBarTestProperties {
         functions.put("simplest", p -> shiftLeft_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.shiftLeft(p.b));
         Iterable<Pair<Vector, Integer>> ps = P.pairs(P.vectors(), P.naturalIntegersGeometric());
-        compareImplementations("shiftLeft(int)", take(LIMIT, ps), functions);
+        compareImplementations("shiftLeft(int)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull Vector sum_alt(@NotNull Iterable<Vector> xs) {
@@ -570,7 +571,7 @@ public class VectorProperties extends QBarTestProperties {
                 ),
                 map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.positiveIntegersGeometric())
         );
-        compareImplementations("sum(Iterable<Vector>)", take(LIMIT, vss), functions);
+        compareImplementations("sum(Iterable<Vector>)", take(LIMIT, vss), functions, v -> P.reset());
     }
 
     private void propertiesDelta() {
@@ -799,7 +800,7 @@ public class VectorProperties extends QBarTestProperties {
                         )
                 )
         );
-        compareImplementations("rightAngleCompare(Vector)", take(LIMIT, ps), functions);
+        compareImplementations("rightAngleCompare(Vector)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull BigInteger squaredLength_simplest(@NotNull Vector v) {
@@ -832,7 +833,7 @@ public class VectorProperties extends QBarTestProperties {
         Map<String, Function<Vector, BigInteger>> functions = new LinkedHashMap<>();
         functions.put("simplest", VectorProperties::squaredLength_simplest);
         functions.put("standard", Vector::squaredLength);
-        compareImplementations("squaredLength()", take(LIMIT, P.vectors()), functions);
+        compareImplementations("squaredLength()", take(LIMIT, P.vectors()), functions, v -> P.reset());
     }
 
     private void propertiesPivot() {

@@ -1216,17 +1216,16 @@ public final class Interval implements Comparable<Interval> {
      * Returns the sum of all the {@code Interval}s in {@code xs}. If {@code xs} is empty, [0, 0] is returned.
      *
      * <ul>
-     *  <li>{@code xs} must be finite and may not contain any nulls.</li>
+     *  <li>{@code xs} may not contain any nulls.</li>
      *  <li>The result may be any {@code Interval}.</li>
      * </ul>
      *
-     * @param xs an {@code Iterable} of {@code Interval}s.
+     * @param xs a {@code List} of {@code Interval}s
      * @return Σxs
      */
-    public static @NotNull Interval sum(@NotNull Iterable<Interval> xs) {
-        List<Interval> list = toList(xs);
-        List<Rational> lowers = toList(map(x -> x.lower, list));
-        List<Rational> uppers = toList(map(x -> x.upper, list));
+    public static @NotNull Interval sum(@NotNull List<Interval> xs) {
+        List<Rational> lowers = toList(map(x -> x.lower, xs));
+        List<Rational> uppers = toList(map(x -> x.upper, xs));
         return new Interval(
                 any(x -> x == null, lowers) ? null : Rational.sum(lowers),
                 any(x -> x == null, uppers) ? null : Rational.sum(uppers)
@@ -1237,22 +1236,21 @@ public final class Interval implements Comparable<Interval> {
      * Returns the product of all the {@code Interval}s in {@code xs}. If {@code xs} is empty, [1, 1] is returned.
      *
      * <ul>
-     *  <li>{@code xs} must be finite and may not contain any nulls.</li>
+     *  <li>{@code xs} may not contain any nulls.</li>
      *  <li>The result may be any {@code Interval}.</li>
      * </ul>
      *
-     * @param xs an {@code Iterable} of {@code Interval}s.
+     * @param xs a {@code List} of {@code Interval}s.
      * @return Πxs
      */
-    public static @NotNull Interval product(@NotNull Iterable<Interval> xs) {
-        List<Interval> list = toList(xs);
-        if (any(x -> x == null, list)) {
+    public static @NotNull Interval product(@NotNull List<Interval> xs) {
+        if (any(x -> x == null, xs)) {
             throw new NullPointerException();
         }
         if (any(x -> x.equals(ZERO), xs)) {
             return ZERO;
         }
-        return foldl(Interval::multiply, ONE, list);
+        return foldl(Interval::multiply, ONE, xs);
     }
 
     /**

@@ -57,11 +57,24 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesMonomialOrders();
         propertiesMonomials();
         propertiesMultivariatePolynomials();
+        propertiesRationalMultivariatePolynomials();
+        propertiesPositiveCleanReals();
+        propertiesPositiveReals();
+        propertiesNegativeCleanReals();
+        propertiesNegativeReals();
+        propertiesNonzeroCleanReals();
+        propertiesNonzeroReals();
+        propertiesCleanReals();
+        propertiesReals();
         propertiesPositiveAlgebraics();
         propertiesNegativeAlgebraics();
         propertiesNonzeroAlgebraics();
         propertiesAlgebraics();
         propertiesNonNegativeAlgebraicsLessThanOne();
+        propertiesQBarRandomProvidersDefault();
+        propertiesQBarRandomProvidersDefaultSecondaryAndTertiaryScale();
+        propertiesQBarRandomProvidersDefaultTertiaryScale();
+        propertiesQBarRandomProviders();
     }
 
     @Override
@@ -105,6 +118,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesMonicRationalPolynomialsAtLeast();
         propertiesMonomials_List_Variable();
         propertiesMultivariatePolynomials_List_Variable();
+        propertiesRationalMultivariatePolynomials_List_Variable();
         propertiesPositiveAlgebraics_int();
         propertiesNegativeAlgebraics_int();
         propertiesNonzeroAlgebraics_int();
@@ -120,6 +134,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesAlgebraicsIn_Interval();
         propertiesAlgebraicsNotIn_int_Interval();
         propertiesAlgebraicsNotIn_Interval();
+        propertiesQBarRandomProvidersFixedScales();
     }
 
     private static <T> void test_helper(
@@ -193,7 +208,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
 
     private void propertiesRange_Rational_Rational() {
         initialize("range(Rational, Rational)");
-        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+        for (Pair<Rational, Rational> p : take(LIMIT, P.bagPairs(P.rationals()))) {
             Iterable<Rational> rs = QEP.range(p.a, p.b);
             simpleTest(p, rs, r -> ge(r, p.a) && le(r, p.b));
             assertEquals(p, gt(p.a, p.b), isEmpty(rs));
@@ -204,6 +219,13 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
 
         for (Rational r : take(LIMIT, P.rationals())) {
             aeqit(r, QEP.range(r, r), Collections.singletonList(r));
+        }
+
+        for (Pair<Rational, Rational> p : take(LIMIT, P.subsetPairs(P.rationals()))) {
+            try {
+                QEP.range(p.b, p.a);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 
@@ -943,6 +965,77 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         }
     }
 
+    private void propertiesRationalMultivariatePolynomials() {
+        initializeConstant("rationalMultivariatePolynomials()");
+        biggerTest(QEP, QEP.rationalMultivariatePolynomials(), p -> true);
+    }
+
+    private void propertiesRationalMultivariatePolynomials_List_Variable() {
+        initialize("rationalMultivariatePolynomials(List<Variable>)");
+        for (List<Variable> vs : take(LIMIT, P.subsets(P.variables()))) {
+            Iterable<RationalMultivariatePolynomial> ps = QEP.rationalMultivariatePolynomials(vs);
+            simpleTest(vs, ps, p -> isSubsetOf(p.variables(), vs));
+        }
+
+        for (List<Variable> vs : take(LIMIT, filterInfinite(us -> !increasing(us), P.lists(P.variables())))) {
+            try {
+                QEP.rationalMultivariatePolynomials(vs);
+                fail(vs);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        Iterable<List<Variable>> vsFail = filterInfinite(
+                us -> increasing(filter(u -> u != null, us)),
+                P.listsWithElement(null, P.variables())
+        );
+        for (List<Variable> vs : take(LIMIT, vsFail)) {
+            try {
+                QEP.rationalMultivariatePolynomials(vs);
+                fail(vs);
+            } catch (NullPointerException ignored) {}
+        }
+    }
+
+    private void propertiesPositiveCleanReals() {
+        initializeConstant("positiveCleanReals()");
+        simpleTest(QEP, QEP.positiveCleanReals(), x -> x.signumUnsafe() == 1);
+    }
+
+    private void propertiesPositiveReals() {
+        initializeConstant("positiveReals()");
+        simpleTest(QEP, QEP.positiveReals(), x -> x.signumUnsafe() == 1);
+    }
+
+    private void propertiesNegativeCleanReals() {
+        initializeConstant("negativeCleanReals()");
+        simpleTest(QEP, QEP.negativeCleanReals(), x -> x.signumUnsafe() == -1);
+    }
+
+    private void propertiesNegativeReals() {
+        initializeConstant("negativeReals()");
+        simpleTest(QEP, QEP.negativeReals(), x -> x.signumUnsafe() == -1);
+    }
+
+    private void propertiesNonzeroCleanReals() {
+        initializeConstant("nonzeroCleanReals()");
+        simpleTest(QEP, QEP.nonzeroCleanReals(), x -> x.signumUnsafe() != 0);
+    }
+
+    private void propertiesNonzeroReals() {
+        initializeConstant("nonzeroReals()");
+        simpleTest(QEP, QEP.nonzeroReals(), x -> x.signumUnsafe() != 0);
+    }
+
+    private void propertiesCleanReals() {
+        initializeConstant("cleanReals()");
+        simpleTest(QEP, QEP.cleanReals(), x -> true);
+    }
+
+    private void propertiesReals() {
+        initializeConstant("reals()");
+        simpleTest(QEP, QEP.reals(), x -> true);
+    }
+
     private void propertiesPositiveAlgebraics_int() {
         initialize("positiveAlgebraics(int)");
         for (int i : take(TINY_LIMIT, P.withScale(2).positiveIntegersGeometric())) {
@@ -1225,5 +1318,58 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
             Iterable<Algebraic> xs = QEP.algebraicsNotIn(a);
             simpleTest(a, xs, x -> !a.contains(x));
         }
+    }
+
+    private void propertiesQBarRandomProvidersFixedScales() {
+        initialize("qbarRandomProvidersFixedScales(int, int, int)");
+        for (Triple<Integer, Integer, Integer> t : take(MEDIUM_LIMIT, P.triples(P.integersGeometric()))) {
+            Iterable<QBarRandomProvider> rps = QEP.qbarRandomProvidersFixedScales(t.a, t.b, t.c);
+            testNoRemove(TINY_LIMIT, rps);
+            List<QBarRandomProvider> rpsList = toList(take(TINY_LIMIT, rps));
+            rpsList.forEach(QBarRandomProvider::validate);
+            take(TINY_LIMIT, rpsList).forEach(QBarRandomProvider::validate);
+            assertTrue(
+                    t,
+                    all(
+                            rp -> rp.getScale() == t.a && rp.getSecondaryScale() == t.b &&
+                                    rp.getTertiaryScale() == t.c,
+                            rpsList
+                    )
+            );
+            assertTrue(t, unique(rpsList));
+        }
+    }
+
+    private void propertiesQBarRandomProvidersDefault() {
+        initializeConstant("qbarRandomProvidersDefault()");
+        biggerTest(
+                QEP,
+                QEP.qbarRandomProvidersDefault(),
+                rp -> rp.getScale() == 32 && rp.getSecondaryScale() == 8 && rp.getTertiaryScale() == 2
+        );
+        take(LARGE_LIMIT, QEP.qbarRandomProvidersDefault()).forEach(QBarRandomProvider::validate);
+    }
+
+    private void propertiesQBarRandomProvidersDefaultSecondaryAndTertiaryScale() {
+        initializeConstant("qbarRandomProvidersDefaulSecondaryAndTertiaryScale()");
+        biggerTest(
+                QEP,
+                QEP.qbarRandomProvidersDefaultSecondaryAndTertiaryScale(),
+                rp -> rp.getSecondaryScale() == 8 && rp.getTertiaryScale() == 2
+        );
+        take(LARGE_LIMIT, QEP.qbarRandomProvidersDefaultSecondaryAndTertiaryScale())
+                .forEach(QBarRandomProvider::validate);
+    }
+
+    private void propertiesQBarRandomProvidersDefaultTertiaryScale() {
+        initializeConstant("qbarRandomProvidersDefaulTertiaryScale()");
+        biggerTest(QEP, QEP.qbarRandomProvidersDefaultTertiaryScale(), rp -> rp.getTertiaryScale() == 2);
+        take(LARGE_LIMIT, QEP.qbarRandomProvidersDefaultTertiaryScale()).forEach(QBarRandomProvider::validate);
+    }
+
+    private void propertiesQBarRandomProviders() {
+        initializeConstant("qbarRandomProviders()");
+        biggerTest(QEP, QEP.qbarRandomProviders(), rp -> true);
+        take(LARGE_LIMIT, QEP.qbarRandomProviders()).forEach(QBarRandomProvider::validate);
     }
 }

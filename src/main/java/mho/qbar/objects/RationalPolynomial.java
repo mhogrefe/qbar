@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.NoRemoveIterable;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.comparators.ShortlexComparator;
@@ -108,6 +109,7 @@ public final class RationalPolynomial implements
      *
      * <ul>
      *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>{@code x} cannot be null.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
@@ -116,7 +118,31 @@ public final class RationalPolynomial implements
      */
     @Override
     public @NotNull Rational apply(@NotNull Rational x) {
+        if (this == ZERO) return Rational.ZERO;
+        if (degree() == 0) return coefficients.get(0);
         return foldr((c, y) -> y.multiply(x).add(c), Rational.ZERO, coefficients);
+    }
+
+    /**
+     * Evaluates {@code this} at {@code x}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param x the argument
+     * @return {@code this}({@code x})
+     */
+    public @NotNull Algebraic apply(@NotNull Algebraic x) {
+        if (this == ZERO) return Algebraic.ZERO;
+        if (degree() == 0) return Algebraic.of(coefficients.get(0));
+        if (x.isRational()) {
+            return Algebraic.of(apply(x.rationalValueExact()));
+        }
+        RationalPolynomial reduced = divide(x.minimalPolynomial().toRationalPolynomial()).b;
+        return foldr((c, y) -> y.multiply(x).add(c), Algebraic.ZERO, reduced.coefficients);
     }
 
     /**
@@ -631,33 +657,40 @@ public final class RationalPolynomial implements
      * Returns the sum of all the {@code RationalPolynomial}s in {@code xs}. If {@code xs} is empty, 0 is returned.
      *
      * <ul>
-     *  <li>{@code xs} must be finite and may not contain any nulls.</li>
+     *  <li>{@code xs} may not contain any nulls.</li>
      *  <li>The result may be any {@code RationalPolynomial}.</li>
      * </ul>
      *
      * Length is at most max({deg(p)|p∈{@code xs}})+1
      *
-     * @param xs an {@code Iterable} of {@code RationalPolynomial}s.
+     * @param xs a {@code List} of {@code RationalPolynomial}s.
      * @return Σxs
      */
-    public static @NotNull RationalPolynomial sum(@NotNull Iterable<RationalPolynomial> xs) {
-        return of(toList(map(Rational::sum, transposePadded(Rational.ZERO, map(p -> p, xs)))));
+    public static @NotNull RationalPolynomial sum(@NotNull List<RationalPolynomial> xs) {
+        return of(
+                toList(
+                        map(
+                                (Iterable<Rational> rs) -> Rational.sum(toList(rs)),
+                                transposePadded(Rational.ZERO, map(p -> p, xs))
+                        )
+                )
+        );
     }
 
     /**
      * Returns the product of all the {@code RationalPolynomial}s in {@code xs}. If {@code xs} is empty, 1 is returned.
      *
      * <ul>
-     *  <li>{@code xs} must be finite and may not contain any nulls.</li>
+     *  <li>{@code xs} may not contain any nulls.</li>
      *  <li>The result may be any {@code RationalPolynomial}.</li>
      * </ul>
      *
      * Length is at most sum({deg(p)|p∈{@code xs}})+1
      *
-     * @param xs an {@code Iterable} of {@code RationalPolynomial}s.
+     * @param xs an {@code List} of {@code RationalPolynomial}s.
      * @return Πxs
      */
-    public static @NotNull RationalPolynomial product(@NotNull Iterable<RationalPolynomial> xs) {
+    public static @NotNull RationalPolynomial product(@NotNull List<RationalPolynomial> xs) {
         if (any(x -> x == null, xs)) {
             throw new NullPointerException();
         }
@@ -710,8 +743,8 @@ public final class RationalPolynomial implements
         if (p < 0) {
             throw new ArithmeticException("p cannot be negative. Invalid p: " + p);
         }
-        if (p == 0) return ONE;
-        if (p == 1) return this;
+        if (p == 0 || this == ONE) return ONE;
+        if (this == ZERO) return ZERO;
         RationalPolynomial result = ONE;
         RationalPolynomial powerPower = null; // p^2^i
         for (boolean bit : IntegerUtils.bits(p)) {
@@ -756,7 +789,13 @@ public final class RationalPolynomial implements
             return ONE;
         } else {
             return new RationalPolynomial(
-                    toList(zipWith((c, i) -> c.multiply(BigInteger.valueOf(i)), tail(coefficients), rangeUp(1)))
+                    toList(
+                            zipWith(
+                                    (c, i) -> c.multiply(BigInteger.valueOf(i)),
+                                    tail(coefficients),
+                                    ExhaustiveProvider.INSTANCE.positiveIntegers()
+                            )
+                    )
             );
         }
     }
@@ -802,8 +841,8 @@ public final class RationalPolynomial implements
      *
      * <ul>
      *  <li>{@code this} cannot be zero.</li>
-     *  <li>The result is a {@code Pair} both of whose elements are not null and whose last element has a positive
-     *  leading coefficient and no invertible integral constant factors.</li>
+     *  <li>The result is a {@code Pair} whose first element is nonzero and whose second element has a positive leading
+     *  coefficient and no invertible integral constant factors.</li>
      * </ul>
      *
      * @return a constant factor of {@code this} and {@code this} divided by the factor
@@ -1248,6 +1287,20 @@ public final class RationalPolynomial implements
             power = power.divide(this).b;
         }
         return power;
+    }
+
+    /**
+     * The real roots of {@code this}, in ascending order.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>The result is increasing and has no duplicates.</li>
+     * </ul>
+     *
+     * @return all real x such that {@code this}(x)=0.
+     */
+    public @NotNull List<Algebraic> realRoots() {
+        return Algebraic.roots(constantFactor().b);
     }
 
     /**

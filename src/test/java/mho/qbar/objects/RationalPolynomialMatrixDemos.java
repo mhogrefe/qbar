@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.qbar.testing.QBarDemos;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
@@ -36,7 +37,7 @@ public class RationalPolynomialMatrixDemos extends QBarDemos {
     private void demoRow() {
         Iterable<Pair<RationalPolynomialMatrix, Integer>> ps = P.dependentPairs(
                 filterInfinite(m -> m.height() > 0, P.withScale(4).rationalPolynomialMatrices()),
-                m -> P.uniformSample(toList(range(0, m.height() - 1)))
+                m -> P.uniformSample(toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m.height() - 1)))
         );
         for (Pair<RationalPolynomialMatrix, Integer> p : take(LIMIT, ps)) {
             System.out.println("row(" + p.a + ", " + p.b + ") = " + p.a.row(p.b));
@@ -46,7 +47,7 @@ public class RationalPolynomialMatrixDemos extends QBarDemos {
     private void demoColumn() {
         Iterable<Pair<RationalPolynomialMatrix, Integer>> ps = P.dependentPairs(
                 filterInfinite(m -> m.width() > 0, P.withScale(4).rationalPolynomialMatrices()),
-                m -> P.uniformSample(toList(range(0, m.width() - 1)))
+                m -> P.uniformSample(toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m.width() - 1)))
         );
         for (Pair<RationalPolynomialMatrix, Integer> p : take(LIMIT, ps)) {
             System.out.println("column(" + p.a + ", " + p.b + ") = " + p.a.column(p.b));
@@ -79,7 +80,12 @@ public class RationalPolynomialMatrixDemos extends QBarDemos {
                                 P.withScale(4).rationalPolynomialMatrices()
                         ),
                         m -> P.uniformSample(
-                                toList(EP.pairsLex(range(0, m.height() - 1), toList(range(0, m.width() - 1))))
+                                toList(
+                                        EP.pairsLex(
+                                                ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m.height() - 1),
+                                                toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m.width() - 1))
+                                        )
+                                )
                         )
                 )
         );
@@ -103,8 +109,7 @@ public class RationalPolynomialMatrixDemos extends QBarDemos {
                 )
         );
         for (List<RationalPolynomialVector> vs : take(SMALL_LIMIT, vss)) {
-            String listString = tail(init(vs.toString()));
-            System.out.println("fromRows(" + listString + ") = " + fromRows(vs));
+            System.out.println("fromRows(" + middle(vs.toString()) + ") = " + fromRows(vs));
         }
     }
 
@@ -123,8 +128,7 @@ public class RationalPolynomialMatrixDemos extends QBarDemos {
                 )
         );
         for (List<RationalPolynomialVector> vs : take(SMALL_LIMIT, vss)) {
-            String listString = tail(init(vs.toString()));
-            System.out.println("fromColumns(" + listString + ") = " + fromColumns(vs));
+            System.out.println("fromColumns(" + middle(vs.toString()) + ") = " + fromColumns(vs));
         }
     }
 
@@ -227,7 +231,7 @@ public class RationalPolynomialMatrixDemos extends QBarDemos {
                                 )
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 p -> new Pair<>(zero(p.a, 0), zero(p.b, 0)),
                                 P.pairs(P.withScale(4).naturalIntegersGeometric())
@@ -265,7 +269,7 @@ public class RationalPolynomialMatrixDemos extends QBarDemos {
                                 )
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 p -> new Pair<>(zero(0, p.a), zero(0, p.b)),
                                 P.pairs(P.withScale(4).naturalIntegersGeometric())
@@ -293,7 +297,7 @@ public class RationalPolynomialMatrixDemos extends QBarDemos {
                                 p -> P.pairs(P.withScale(4).withSecondaryScale(4).rationalPolynomialMatrices(p.a, p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> {
                                     RationalPolynomialMatrix m = zero(0, i);
@@ -330,7 +334,7 @@ public class RationalPolynomialMatrixDemos extends QBarDemos {
                                 p -> P.pairs(P.withScale(4).withSecondaryScale(4).rationalPolynomialMatrices(p.a, p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> {
                                     RationalPolynomialMatrix m = zero(0, i);
@@ -434,7 +438,7 @@ public class RationalPolynomialMatrixDemos extends QBarDemos {
                                 )
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> new Pair<>(zero(i, 0), RationalPolynomialVector.ZERO_DIMENSIONAL),
                                 P.withScale(4).naturalIntegersGeometric()
@@ -463,7 +467,7 @@ public class RationalPolynomialMatrixDemos extends QBarDemos {
                         )
                 ),
                 P.choose(
-                    P.choose(
+                    P.withScale(1).choose(
                             map(
                                     m -> new Pair<>(m, zero(m.width(), 0)),
                                     filterInfinite(
@@ -545,7 +549,7 @@ public class RationalPolynomialMatrixDemos extends QBarDemos {
                 P.withScale(4).rationalPolynomialMatrices()
         );
         for (Pair<RationalPolynomialMatrix, RationalPolynomialMatrix> p : take(LIMIT, ps)) {
-            System.out.println(p.a + " " + Ordering.compare(p.a, p.b).toChar() + " " + p.b);
+            System.out.println(p.a + " " + Ordering.compare(p.a, p.b) + " " + p.b);
         }
     }
 

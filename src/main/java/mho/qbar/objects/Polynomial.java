@@ -3,7 +3,7 @@ package mho.qbar.objects;
 import jas.JasApi;
 import mho.wheels.concurrency.ResultCache;
 import mho.wheels.io.Readers;
-import mho.wheels.iterables.IterableUtils;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.NoRemoveIterable;
 import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.IntegerUtils;
@@ -76,6 +76,23 @@ public final class Polynomial implements
     };
 
     /**
+     * A {@code HashMap} used by {@link Polynomial#addRoots(Polynomial)}.
+     */
+    private static final @NotNull Map<Variable, MultivariatePolynomial> ADD_ROOTS_SUB_MAP;
+    static {
+        Variable a = Variable.of(0);
+        Variable b = Variable.of(1);
+        MultivariatePolynomial difference = MultivariatePolynomial.of(
+                Arrays.asList(
+                        new Pair<>(Monomial.of(b), BigInteger.ONE),
+                        new Pair<>(Monomial.of(a), IntegerUtils.NEGATIVE_ONE)
+                )
+        );
+        ADD_ROOTS_SUB_MAP = new HashMap<>();
+        ADD_ROOTS_SUB_MAP.put(a, difference);
+    }
+
+    /**
      * The polynomial's coefficients. The coefficient of x<sup>i</sup> is at the ith position.
      */
     private final @NotNull List<BigInteger> coefficients;
@@ -119,6 +136,7 @@ public final class Polynomial implements
      *
      * <ul>
      *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code x} cannot be null.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
@@ -134,6 +152,7 @@ public final class Polynomial implements
      *
      * <ul>
      *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code x} cannot be null.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
@@ -143,6 +162,7 @@ public final class Polynomial implements
     @Override
     public @NotNull Rational apply(@NotNull Rational x) {
         if (this == ZERO) return Rational.ZERO;
+        if (degree() == 0) return Rational.of(coefficients.get(0));
         return Rational.of(specialApply(x), x.getDenominator().pow(degree()));
     }
 
@@ -161,6 +181,7 @@ public final class Polynomial implements
      */
     public @NotNull BigInteger specialApply(@NotNull Rational x) {
         if (this == ZERO) return BigInteger.ZERO;
+        if (degree() == 0) return coefficients.get(0);
         BigInteger numerator = x.getNumerator();
         BigInteger denominator = x.getDenominator();
         BigInteger result = last(coefficients);
@@ -170,6 +191,27 @@ public final class Polynomial implements
             result = result.multiply(numerator).add(coefficients.get(i).multiply(multiplier));
         }
         return result;
+    }
+
+    /**
+     * Evaluates {@code this} at {@code x}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param x the argument
+     * @return {@code this}({@code x})
+     */
+    public @NotNull Algebraic apply(@NotNull Algebraic x) {
+        if (this == ZERO) return Algebraic.ZERO;
+        if (degree() == 0) return Algebraic.of(coefficients.get(0));
+        if (x.isRational()) {
+            return Algebraic.of(apply(x.rationalValueExact()));
+        }
+        return toRationalPolynomial().apply(x);
     }
 
     /**
@@ -683,33 +725,41 @@ public final class Polynomial implements
      * Returns the sum of all the {@code Polynomial}s in {@code xs}. If {@code xs} is empty, 0 is returned.
      *
      * <ul>
-     *  <li>{@code xs} must be finite and may not contain any nulls.</li>
+     *  <li>{@code xs} may not contain any nulls.</li>
      *  <li>The result may be any {@code Polynomial}.</li>
      * </ul>
      *
      * Length is at most max({deg(p)|p∈{@code xs}})+1
      *
-     * @param xs an {@code Iterable} of {@code Polynomial}s.
+     * @param xs a {@code List} of {@code Polynomial}s.
      * @return Σxs
      */
-    public static @NotNull Polynomial sum(@NotNull Iterable<Polynomial> xs) {
-        return of(toList(map(IterableUtils::sumBigInteger, transposePadded(BigInteger.ZERO, map(p -> p, xs)))));
+    public static @NotNull Polynomial sum(@NotNull List<Polynomial> xs) {
+        //noinspection RedundantCast
+        return of(
+                toList(
+                        map(
+                                is -> sumBigInteger(toList(is)),
+                                (Iterable<Iterable<BigInteger>>) transposePadded(BigInteger.ZERO, map(p -> p, xs))
+                        )
+                )
+        );
     }
 
     /**
      * Returns the product of all the {@code Polynomial}s in {@code xs}. If {@code xs} is empty, 1 is returned.
      *
      * <ul>
-     *  <li>{@code xs} must be finite and may not contain any nulls.</li>
+     *  <li>{@code xs} may not contain any nulls.</li>
      *  <li>The result may be any {@code Polynomial}.</li>
      * </ul>
      *
      * Length is at most sum({deg(p)|p∈{@code xs}})+1
      *
-     * @param xs an {@code Iterable} of {@code Polynomial}s.
+     * @param xs a {@code List} of {@code Polynomial}s.
      * @return Πxs
      */
-    public static @NotNull Polynomial product(@NotNull Iterable<Polynomial> xs) {
+    public static @NotNull Polynomial product(@NotNull List<Polynomial> xs) {
         if (any(x -> x == null, xs)) {
             throw new NullPointerException();
         }
@@ -761,7 +811,8 @@ public final class Polynomial implements
         if (p < 0) {
             throw new ArithmeticException("p cannot be negative. Invalid p: " + p);
         }
-        if (p == 0) return ONE;
+        if (p == 0 || this == ONE) return ONE;
+        if (this == ZERO) return ZERO;
         if (p == 1) return this;
         Polynomial result = ONE;
         Polynomial powerPower = null; // p^2^i
@@ -807,7 +858,13 @@ public final class Polynomial implements
             return ONE;
         } else {
             return new Polynomial(
-                    toList(zipWith((c, i) -> c.multiply(BigInteger.valueOf(i)), tail(coefficients), rangeUp(1)))
+                    toList(
+                            zipWith(
+                                    (c, i) -> c.multiply(BigInteger.valueOf(i)),
+                                    tail(coefficients),
+                                    ExhaustiveProvider.INSTANCE.positiveIntegers()
+                            )
+                    )
             );
         }
     }
@@ -882,12 +939,12 @@ public final class Polynomial implements
      *
      * <ul>
      *  <li>{@code this} cannot be zero.</li>
-     *  <li>The result is a {@code Pair} both of whose elements are not null and whose last element has a positive
-     *  leading coefficient and no invertible constant factors.</li>
+     *  <li>The result is a {@code Pair} whose first element is nonzero and whose second element has a positive leading
+     *  coefficient and no invertible constant factors.</li>
      * </ul>
      *
      * @return the constant integral factor of {@code this} with the same sign as {@code this} and the largest possible
-     * absolute value
+     * absolute value, along with {@code this} divided by that factor
      */
     public @NotNull Pair<BigInteger, Polynomial> constantFactor() {
         if (this == ZERO) {
@@ -1700,8 +1757,16 @@ public final class Polynomial implements
         if (ps.isEmpty()) return PolynomialMatrix.zero(0, 0);
         Matrix coefficientMatrix = coefficientMatrix(ps);
         int m = ps.size();
-        return PolynomialMatrix.of(coefficientMatrix.submatrix(toList(range(0, m - 1)), toList(range(0, m - 2))))
-                .augment(PolynomialMatrix.fromColumns(Collections.singletonList(PolynomialVector.of(ps))));
+        return PolynomialMatrix.of(
+                coefficientMatrix.submatrix(
+                        m == 0 ?
+                                Collections.emptyList() :
+                                toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m - 1)),
+                        m < 2 ?
+                                Collections.emptyList() :
+                                toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m - 2))
+                )
+        ).augment(PolynomialMatrix.fromColumns(Collections.singletonList(PolynomialVector.of(ps))));
     }
 
     /**
@@ -1724,8 +1789,15 @@ public final class Polynomial implements
         List<BigInteger> detCoefficients = new ArrayList<>();
         for (int i = 0; i <= n - m; i++) {
             Matrix sub = coefficientMatrix.submatrix(
-                    toList(range(0, m - 1)),
-                    toList(concat(range(0, m - 2), Collections.singletonList(n - i - 1)))
+                    toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m - 1)),
+                    toList(
+                            concat(
+                                    m < 2 ?
+                                            Collections.emptyList() :
+                                            ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m - 2),
+                                    Collections.singletonList(n - i - 1)
+                            )
+                    )
             );
             detCoefficients.add(sub.determinant());
         }
@@ -1896,7 +1968,9 @@ public final class Polynomial implements
             throw new IllegalArgumentException("j cannot be negative. Invalid j: " + j);
         } else if (j <= thatDegree) {
             Matrix sylvesterHabichtMatrix = sylvesterHabichtMatrix(that, j);
-            List<Integer> range = toList(range(0, sylvesterHabichtMatrix.height() - 1));
+            List<Integer> range = toList(
+                    ExhaustiveProvider.INSTANCE.rangeIncreasing(0, sylvesterHabichtMatrix.height() - 1)
+            );
             return sylvesterHabichtMatrix.submatrix(range, range).determinant();
         } else if (j < thisDegree - 1) {
             return BigInteger.ZERO;
@@ -1950,7 +2024,14 @@ public final class Polynomial implements
                     that);
         }
         Matrix shm = sylvesterHabichtMatrix(that, j);
-        Matrix left = shm.submatrix(toList(range(0, shm.height() - 1)), toList(range(0, shm.height() - 2)));
+        Matrix left = shm.submatrix(
+                shm.height() == 0 ?
+                        Collections.emptyList() :
+                        toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, shm.height() - 1)),
+                shm.height() < 2 ?
+                        Collections.emptyList() :
+                        toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, shm.height() - 2))
+        );
         List<Polynomial> ps = new ArrayList<>();
         for (int i = thatDegree - 1 - j; i >= 0; i--) {
             ps.add(multiplyByPowerOfX(i));
@@ -2197,7 +2278,7 @@ public final class Polynomial implements
         if (degree() == 0) {
             return Interval.of(Rational.NEGATIVE_ONE, Rational.ONE);
         }
-        return rootBoundHelper(Rational::roundUpToPowerOfTwo);
+        return rootBoundHelper(r -> Rational.of(r.roundUpToPowerOfTwo()));
     }
 
     /**
@@ -2733,6 +2814,62 @@ public final class Polynomial implements
     }
 
     /**
+     * Returns a {@code Polynomial} whose roots are the {@code r}th roots of the roots of {@code this}. If {@code this}
+     * has a positive leading coefficient, so does the result.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code r} must be positive.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param r the index of the root
+     * @return {@code this}(x<sup>{@code r}</sup>)
+     */
+    public @NotNull Polynomial rootRoots(int r) {
+        if (r < 1) {
+            throw new IllegalArgumentException();
+        }
+        if (r == 1 || degree() < 1) return this;
+        List<BigInteger> spacer = toList(replicate(r - 1, BigInteger.ZERO));
+        return of(toList(intercalate(spacer, map(Collections::singletonList, coefficients))));
+    }
+
+    /**
+     * Undoes the action of {@link Polynomial#rootRoots(int)}. If {@code this} is of the form p(x<sup>{@code r}</sup>),
+     * returns p; otherwise, returns empty.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code r} must be positive.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param r the index of the root
+     * @return p such that p(x<sup>{@code r}</sup>)={@code this}, if p exists
+     */
+    public @NotNull Optional<Polynomial> undoRootRoots(int r) {
+        if (r < 1) {
+            throw new IllegalArgumentException();
+        }
+        int degree = degree();
+        if (degree < 1 || r == 1) return Optional.of(this);
+        if (degree % r != 0) return Optional.empty();
+        List<BigInteger> resultCoefficients = new ArrayList<>();
+        int counter = 0;
+        for (BigInteger c : coefficients) {
+            if (counter == 0) {
+                resultCoefficients.add(c);
+                counter = r - 1;
+            } else {
+                if (!c.equals(BigInteger.ZERO)) return Optional.empty();
+                counter--;
+            }
+        }
+        return Optional.of(of(resultCoefficients));
+    }
+
+    /**
      * Returns a {@code Polynomial} whose roots are the sums of each pair of roots of {@code this} and {@code that}.
      *
      * <ul>
@@ -2746,15 +2883,9 @@ public final class Polynomial implements
      */
     public @NotNull Polynomial addRoots(@NotNull Polynomial that) {
         if (degree() < 1 || that.degree() < 1) return ONE;
-        if (isMonic() && that.isMonic()) {
-            return companionMatrix().kroneckerAdd(that.companionMatrix()).characteristicPolynomial();
-        } else {
-            RationalPolynomial rThis = toRationalPolynomial().makeMonic();
-            RationalPolynomial rThat = that.toRationalPolynomial().makeMonic();
-            RationalPolynomial cp = rThis.companionMatrix().kroneckerAdd(rThat.companionMatrix())
-                    .characteristicPolynomial();
-            return cp.constantFactor().b;
-        }
+        Variable a = Variable.of(0);
+        return MultivariatePolynomial.of(this, a)
+                .resultant(MultivariatePolynomial.of(that, a).substitute(ADD_ROOTS_SUB_MAP), a).constantFactor().b;
     }
 
     /**
@@ -2772,15 +2903,17 @@ public final class Polynomial implements
      */
     public @NotNull Polynomial multiplyRoots(@NotNull Polynomial that) {
         if (degree() < 1 || that.degree() < 1) return ONE;
-        if (isMonic() && that.isMonic()) {
-            return companionMatrix().kroneckerMultiply(that.companionMatrix()).characteristicPolynomial();
-        } else {
-            RationalPolynomial rThis = toRationalPolynomial().makeMonic();
-            RationalPolynomial rThat = that.toRationalPolynomial().makeMonic();
-            RationalPolynomial cp = rThis.companionMatrix().kroneckerMultiply(rThat.companionMatrix())
-                    .characteristicPolynomial();
-            return cp.constantFactor().b;
+        Variable a = Variable.of(0);
+        List<Pair<Monomial, BigInteger>> terms = new ArrayList<>();
+        List<Integer> exponentVector = new ArrayList<>();
+        exponentVector.add(that.coefficients.size());
+        exponentVector.add(-1);
+        for (BigInteger coefficient : that.coefficients) {
+            exponentVector.set(0, exponentVector.get(0) - 1);
+            exponentVector.set(1, exponentVector.get(1) + 1);
+            terms.add(new Pair<>(Monomial.of(exponentVector), coefficient));
         }
+        return MultivariatePolynomial.of(this, a).resultant(MultivariatePolynomial.of(terms), a).constantFactor().b;
     }
 
     /**
@@ -2868,6 +3001,20 @@ public final class Polynomial implements
             power = power.remainderExact(this);
         }
         return power;
+    }
+
+    /**
+     * The real roots of {@code this}, in ascending order.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>The result is increasing and has no duplicates.</li>
+     * </ul>
+     *
+     * @return all real x such that {@code this}(x)=0.
+     */
+    public @NotNull List<Algebraic> realRoots() {
+        return Algebraic.roots(this);
     }
 
     /**

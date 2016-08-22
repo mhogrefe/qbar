@@ -1,9 +1,6 @@
 package mho.qbar.objects;
 
-import mho.wheels.io.Readers;
 import mho.wheels.iterables.NoRemoveIterable;
-import mho.wheels.math.MathUtils;
-import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,26 +12,27 @@ import static mho.wheels.testing.Testing.assertEquals;
 import static mho.wheels.testing.Testing.assertTrue;
 
 /**
- * <p>A multivariate polynomial with {@link BigInteger} coefficients.</p>
+ * <p>A multivariate polynomial with {@link Rational} coefficients.</p>
  *
  * <p>There is only one instance of {@code ZERO}, and one instance of {@code ONE}, so these may be compared with other
- * {@code MultivariatePolynomial}s using {@code ==}.</p>
+ * {@code RationalMultivariatePolynomial}s using {@code ==}.</p>
  *
  * <p>This class is immutable.</p>
  */
-public final class MultivariatePolynomial implements
-        Comparable<MultivariatePolynomial>,
-        Iterable<Pair<Monomial, BigInteger>> {
+public final class RationalMultivariatePolynomial implements
+        Comparable<RationalMultivariatePolynomial>,
+        Iterable<Pair<Monomial, Rational>> {
     /**
      * 0
      */
-    public static final @NotNull MultivariatePolynomial ZERO = new MultivariatePolynomial(Collections.emptyList());
+    public static final @NotNull RationalMultivariatePolynomial ZERO =
+            new RationalMultivariatePolynomial(Collections.emptyList());
 
     /**
      * 1
      */
-    public static final @NotNull MultivariatePolynomial ONE =
-            new MultivariatePolynomial(Collections.singletonList(new Pair<>(Monomial.ONE, BigInteger.ONE)));
+    public static final @NotNull RationalMultivariatePolynomial ONE =
+            new RationalMultivariatePolynomial(Collections.singletonList(new Pair<>(Monomial.ONE, Rational.ONE)));
 
     /**
      * The default order of the {@code Monomial}s in {@code this}
@@ -42,41 +40,41 @@ public final class MultivariatePolynomial implements
     private static final @NotNull MonomialOrder DEFAULT_ORDER = MonomialOrder.GREVLEX;
 
     /**
-     * This {@code MultivariatePolynomial}'s terms. The second element of each pair is the coefficient of the
+     * This {@code RationalMultivariatePolynomial}'s terms. The second element of each pair is the coefficient of the
      * {@code Monomial} in the first slot. The terms are in grevlex order.
      */
-    private final @NotNull List<Pair<Monomial, BigInteger>> terms;
+    private final @NotNull List<Pair<Monomial, Rational>> terms;
 
     /**
-     * Private constructor for {@code MultivariatePolynomial}; assumes argument is valid
+     * Private constructor for {@code RationalMultivariatePolynomial}; assumes argument is valid
      *
      * <ul>
      *  <li>{@code terms} cannot have any null elements. The {@code Monomial}s must be unique and in grevlex
      *  order.</li>
-     *  <li>Any {@code MultivariatePolynomial} may be constructed with this constructor.</li>
+     *  <li>Any {@code RationalMultivariatePolynomial} may be constructed with this constructor.</li>
      * </ul>
      *
      * @param terms the polynomial's terms
      */
-    private MultivariatePolynomial(@NotNull List<Pair<Monomial, BigInteger>> terms) {
+    private RationalMultivariatePolynomial(@NotNull List<Pair<Monomial, Rational>> terms) {
         this.terms = terms;
     }
 
     /**
-     * Returns an {@code Iterable} over this {@code MultivariatePolynomial}'s terms, from lowest to highest with a
-     * given {@code MonomialOrder}. Does not support removal.
+     * Returns an {@code Iterable} over this {@code RationalMultivariatePolynomial}'s terms, from lowest to highest
+     * with a given {@code MonomialOrder}. Does not support removal.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
      *  <li>{@code order} is not null.</li>
      *  <li>The result is finite, and contains no nulls. The {@code Monomial}s are increasing with respect to
      *  {@code order}.</li>
      * </ul>
      *
      * @param order the monomial order with respect to which the terms descend
-     * @return an {@code Iterable} over this {@code MultivariatePolynomial}'s terms
+     * @return an {@code Iterable} over this {@code RationalMultivariatePolynomial}'s terms
      */
-    public @NotNull Iterable<Pair<Monomial, BigInteger>> iterable(@NotNull MonomialOrder order) {
+    public @NotNull Iterable<Pair<Monomial, Rational>> iterable(@NotNull MonomialOrder order) {
         if (order == DEFAULT_ORDER) {
             return new NoRemoveIterable<>(terms);
         } else {
@@ -85,42 +83,56 @@ public final class MultivariatePolynomial implements
     }
 
     /**
-     * Returns an {@code Iterator} over this {@code MultivariatePolynomial}'s terms, from lowest to highest in grevlex
-     * ordering. Does not support removal.
+     * Returns an {@code Iterator} over this {@code RationalMultivariatePolynomial}'s terms, from lowest to highest in
+     * grevlex ordering. Does not support removal.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
      *  <li>The result is finite, and contains no nulls. The {@code Monomial}s are in increasing grevlex order.</li>
      * </ul>
      *
-     * @return an {@code Iterator} over this {@code MultivariatePolynomial}'s terms
+     * @return an {@code Iterator} over this {@code RationalMultivariatePolynomial}'s terms
      */
     @Override
-    public @NotNull Iterator<Pair<Monomial, BigInteger>> iterator() {
+    public @NotNull Iterator<Pair<Monomial, Rational>> iterator() {
         return new NoRemoveIterable<>(terms).iterator();
     }
 
     /**
-     * Converts {@code this} to a {@code RationalMultivariatePolynomial}.
+     * Determines whether the coefficients of {@code this} are all integers.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
-     *  <li>The result is a {@code RationalMultivariatePolynomial} with integral coefficients.</li>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
      * </ul>
      *
-     * @return a {@code RationalMultivariatePolynomial} with the same value as {@code this}
+     * @return whether {@code this} has integral coefficients.
      */
-    public @NotNull RationalMultivariatePolynomial toRationalMultivariatePolynomial() {
-        if (this == ZERO) return RationalMultivariatePolynomial.ZERO;
-        if (this == ONE) return RationalMultivariatePolynomial.ONE;
-        return RationalMultivariatePolynomial.of(toList(map(t -> new Pair<>(t.a, Rational.of(t.b)), terms)));
+    public boolean onlyHasIntegralCoefficients() {
+        return all(t -> t.b.isInteger(), terms);
+    }
+
+    /**
+     * Converts {@code this} to a {@code MultivariatePolynomial}.
+     *
+     * <ul>
+     *  <li>{@code this} must only have integral coefficients.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return a {@code MultivariatePolynomial} with the same value as {@code this}
+     */
+    public @NotNull MultivariatePolynomial toMultivariatePolynomial() {
+        if (this == ZERO) return MultivariatePolynomial.ZERO;
+        if (this == ONE) return MultivariatePolynomial.ONE;
+        return MultivariatePolynomial.of(toList(map(t -> new Pair<>(t.a, t.b.bigIntegerValueExact()), terms)));
     }
 
     /**
      * Returns the coefficient of a given {@code monomial}. If the coefficient is not present, 0 is returned.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
      *  <li>{@code monomial} cannot be null.</li>
      *  <li>The result is not null.</li>
      * </ul>
@@ -128,13 +140,13 @@ public final class MultivariatePolynomial implements
      * @param monomial the {@code Monomial} that the coefficient belongs to
      * @return the coefficient of {@code monomial} in {@code this}
      */
-    public @NotNull BigInteger coefficient(@NotNull Monomial monomial) {
-        return lookupSorted(terms, monomial).orElse(BigInteger.ZERO);
+    public @NotNull Rational coefficient(@NotNull Monomial monomial) {
+        return lookupSorted(terms, monomial).orElse(Rational.ZERO);
     }
 
     /**
-     * Creates a {@code MultivariatePolynomial} from a list of terms. Throws an exception if any term is null. Makes a
-     * defensive copy of {@code terms}. Merges duplicates and throws out zero terms.
+     * Creates a {@code RationalMultivariatePolynomial} from a list of terms. Throws an exception if any term is null.
+     * Makes a defensive copy of {@code terms}. Merges duplicates and throws out zero terms.
      *
      * <ul>
      *  <li>{@code terms} cannot have any null elements.</li>
@@ -142,37 +154,38 @@ public final class MultivariatePolynomial implements
      * </ul>
      *
      * @param terms the polynomial's terms
-     * @return the {@code MultivariatePolynomial} with the specified terms
+     * @return the {@code RationalMultivariatePolynomial} with the specified terms
      */
-    public static @NotNull MultivariatePolynomial of(@NotNull List<Pair<Monomial, BigInteger>> terms) {
-        SortedMap<Monomial, BigInteger> termMap = new TreeMap<>();
-        for (Pair<Monomial, BigInteger> term : terms) {
+    public static @NotNull RationalMultivariatePolynomial of(@NotNull List<Pair<Monomial, Rational>> terms) {
+        SortedMap<Monomial, Rational> termMap = new TreeMap<>();
+        for (Pair<Monomial, Rational> term : terms) {
             if (term.a == null || term.b == null) {
                 throw new NullPointerException();
             }
-            BigInteger coefficient = termMap.get(term.a);
-            if (coefficient == null) coefficient = BigInteger.ZERO;
+            Rational coefficient = termMap.get(term.a);
+            if (coefficient == null) coefficient = Rational.ZERO;
             termMap.put(term.a, coefficient.add(term.b));
         }
-        List<Pair<Monomial, BigInteger>> sortedTerms = new ArrayList<>();
+        List<Pair<Monomial, Rational>> sortedTerms = new ArrayList<>();
         //noinspection Convert2streamapi
-        for (Map.Entry<Monomial, BigInteger> entry : termMap.entrySet()) {
-            if (!entry.getValue().equals(BigInteger.ZERO)) {
+        for (Map.Entry<Monomial, Rational> entry : termMap.entrySet()) {
+            if (entry.getValue() != Rational.ZERO) {
                 sortedTerms.add(new Pair<>(entry.getKey(), entry.getValue()));
             }
         }
         if (sortedTerms.isEmpty()) return ZERO;
         if (sortedTerms.size() == 1) {
-            Pair<Monomial, BigInteger> term = head(sortedTerms);
-            if (term.a == Monomial.ONE && term.b.equals(BigInteger.ONE)) {
+            Pair<Monomial, Rational> term = head(sortedTerms);
+            if (term.a == Monomial.ONE && term.b == Rational.ONE) {
                 return ONE;
             }
         }
-        return new MultivariatePolynomial(sortedTerms);
+        return new RationalMultivariatePolynomial(sortedTerms);
     }
 
     /**
-     * Creates a {@code MultivariatePolynomial} containing a single term (or zero terms if the coefficient is zero).
+     * Creates a {@code RationalMultivariatePolynomial} containing a single term (or zero terms if the coefficient is
+     * zero).
      *
      * <ul>
      *  <li>{@code m} cannot be null.</li>
@@ -182,16 +195,16 @@ public final class MultivariatePolynomial implements
      *
      * @param m an {@code Monomial}
      * @param c the coefficient of {@code m}
-     * @return a {@code MultivariatePolynomial} equal to {@code m} multiplied by {@code c}
+     * @return a {@code RationalMultivariatePolynomial} equal to {@code m} multiplied by {@code c}
      */
-    public static @NotNull MultivariatePolynomial of(@NotNull Monomial m, @NotNull BigInteger c) {
-        if (c.equals(BigInteger.ZERO)) return ZERO;
-        if (m == Monomial.ONE && c.equals(BigInteger.ONE)) return ONE;
-        return new MultivariatePolynomial(Collections.singletonList(new Pair<>(m, c)));
+    public static @NotNull RationalMultivariatePolynomial of(@NotNull Monomial m, @NotNull Rational c) {
+        if (c == Rational.ZERO) return ZERO;
+        if (m == Monomial.ONE && c == Rational.ONE) return ONE;
+        return new RationalMultivariatePolynomial(Collections.singletonList(new Pair<>(m, c)));
     }
 
     /**
-     * Creates a constant {@code MultivariatePolynomial} equal to a given {@code BigInteger}.
+     * Creates a constant {@code RationalMultivariatePolynomial} equal to a given {@code Rational}.
      *
      * <ul>
      *  <li>{@code c} cannot be null.</li>
@@ -199,16 +212,33 @@ public final class MultivariatePolynomial implements
      * </ul>
      *
      * @param c a constant
-     * @return the {@code MultivariatePolynomial} equal to c
+     * @return the {@code RationalMultivariatePolynomial} equal to c
      */
-    public static @NotNull MultivariatePolynomial of(@NotNull BigInteger c) {
-        if (c.equals(BigInteger.ZERO)) return ZERO;
-        if (c.equals(BigInteger.ONE)) return ONE;
-        return new MultivariatePolynomial(Collections.singletonList(new Pair<>(Monomial.ONE, c)));
+    public static @NotNull RationalMultivariatePolynomial of(@NotNull Rational c) {
+        if (c == Rational.ZERO) return ZERO;
+        if (c == Rational.ONE) return ONE;
+        return new RationalMultivariatePolynomial(Collections.singletonList(new Pair<>(Monomial.ONE, c)));
     }
 
     /**
-     * Creates a constant {@code MultivariatePolynomial} equal to a given {@code int}.
+     * Creates a constant {@code RationalMultivariatePolynomial} equal to a given {@code BigInteger}.
+     *
+     * <ul>
+     *  <li>{@code c} cannot be null.</li>
+     *  <li>The result is constant.</li>
+     * </ul>
+     *
+     * @param c a constant
+     * @return the {@code RationalMultivariatePolynomial} equal to c
+     */
+    public static @NotNull RationalMultivariatePolynomial of(@NotNull BigInteger c) {
+        if (c.equals(BigInteger.ZERO)) return ZERO;
+        if (c.equals(BigInteger.ONE)) return ONE;
+        return new RationalMultivariatePolynomial(Collections.singletonList(new Pair<>(Monomial.ONE, Rational.of(c))));
+    }
+
+    /**
+     * Creates a constant {@code RationalMultivariatePolynomial} equal to a given {@code int}.
      *
      * <ul>
      *  <li>{@code c} may be any {@code int}.</li>
@@ -216,18 +246,18 @@ public final class MultivariatePolynomial implements
      * </ul>
      *
      * @param c a constant
-     * @return the {@code MultivariatePolynomial} equal to c
+     * @return the {@code RationalMultivariatePolynomial} equal to c
      */
-    public static @NotNull MultivariatePolynomial of(int c) {
+    public static @NotNull RationalMultivariatePolynomial of(int c) {
         if (c == 0) return ZERO;
         if (c == 1) return ONE;
-        return new MultivariatePolynomial(
-                Collections.singletonList(new Pair<>(Monomial.ONE, BigInteger.valueOf(c)))
+        return new RationalMultivariatePolynomial(
+                Collections.singletonList(new Pair<>(Monomial.ONE, Rational.of(c)))
         );
     }
 
     /**
-     * Creates a {@code MultivariatePolynomial} from a single {@code Variable}.
+     * Creates a {@code RationalMultivariatePolynomial} from a single {@code Variable}.
      *
      * <ul>
      *  <li>{@code v} cannot be null.</li>
@@ -235,15 +265,15 @@ public final class MultivariatePolynomial implements
      * </ul>
      *
      * @param v a {@code Variable}
-     * @return the {@code MultivariatePolynomial} equal to {@code v}
+     * @return the {@code RationalMultivariatePolynomial} equal to {@code v}
      */
-    public static @NotNull MultivariatePolynomial of(@NotNull Variable v) {
-        return new MultivariatePolynomial(Collections.singletonList(new Pair<>(Monomial.of(v), BigInteger.ONE)));
+    public static @NotNull RationalMultivariatePolynomial of(@NotNull Variable v) {
+        return new RationalMultivariatePolynomial(Collections.singletonList(new Pair<>(Monomial.of(v), Rational.ONE)));
     }
 
     /**
-     * Given a (univariate) {@code Polynomial} and a variable, returns a {@code MultivariatePolynomial} equal to the
-     * polynomial applied to the variable.
+     * Given a (univariate) {@code RationalPolynomial} and a variable, returns a {@code RationalMultivariatePolynomial}
+     * equal to the polynomial applied to the variable.
      *
      * <ul>
      *  <li>{@code p} cannot be null.</li>
@@ -251,46 +281,46 @@ public final class MultivariatePolynomial implements
      *  <li>The result is univariate.</li>
      * </ul>
      *
-     * @param p a {@code Polynomial}
+     * @param p a {@code RationalPolynomial}
      * @param v the independent variable of the result
      * @return {@code p} with {@code v}
      */
-    public static @NotNull MultivariatePolynomial of(@NotNull Polynomial p, @NotNull Variable v) {
-        if (p == Polynomial.ZERO) return ZERO;
-        if (p == Polynomial.ONE) return ONE;
+    public static @NotNull RationalMultivariatePolynomial of(@NotNull RationalPolynomial p, @NotNull Variable v) {
+        if (p == RationalPolynomial.ZERO) return ZERO;
+        if (p == RationalPolynomial.ONE) return ONE;
         List<Integer> exponents = toList(replicate(v.getIndex() + 1, 0));
         int lastIndex = exponents.size() - 1;
-        List<Pair<Monomial, BigInteger>> terms = new ArrayList<>();
+        List<Pair<Monomial, Rational>> terms = new ArrayList<>();
         for (int i = 0; i <= p.degree(); i++) {
-            BigInteger coefficient = p.coefficient(i);
-            if (!coefficient.equals(BigInteger.ZERO)) {
+            Rational coefficient = p.coefficient(i);
+            if (coefficient != Rational.ZERO) {
                 exponents.set(lastIndex, i);
                 terms.add(new Pair<>(Monomial.of(exponents), p.coefficient(i)));
             }
         }
-        return new MultivariatePolynomial(terms);
+        return new RationalMultivariatePolynomial(terms);
     }
 
     /**
-     * Converts {@code this} to a univariate {@code Polynomial}.
+     * Converts {@code this} to a univariate {@code RationalPolynomial}.
      *
      * <ul>
      *  <li>{@code this} cannot have more than one variable.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @return a {@code Polynomial} equal to {@code this}
+     * @return a {@code RationalPolynomial} equal to {@code this}
      */
-    public @NotNull Polynomial toPolynomial() {
-        if (this == ZERO) return Polynomial.ZERO;
-        if (this == ONE) return Polynomial.ONE;
+    public @NotNull RationalPolynomial toRationalPolynomial() {
+        if (this == ZERO) return RationalPolynomial.ZERO;
+        if (this == ONE) return RationalPolynomial.ONE;
         List<Variable> variables = variables();
         if (variables.size() > 1) {
             throw new IllegalArgumentException("this cannot have more than one variable. Invalid this: " + this);
         }
         Optional<Variable> variable = variables.isEmpty() ? Optional.empty() : Optional.of(head(variables));
-        List<BigInteger> coefficients = toList(replicate(degree() + 1, BigInteger.ZERO));
-        for (Pair<Monomial, BigInteger> term : terms) {
+        List<Rational> coefficients = toList(replicate(degree() + 1, Rational.ZERO));
+        for (Pair<Monomial, Rational> term : terms) {
             if (term.a == Monomial.ONE) {
                 coefficients.set(0, term.b);
             } else {
@@ -298,14 +328,14 @@ public final class MultivariatePolynomial implements
                 coefficients.set(exponent, term.b);
             }
         }
-        return Polynomial.of(coefficients);
+        return RationalPolynomial.of(coefficients);
     }
 
     /**
      * Returns all the variables in {@code this}, in ascending order.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
      *  <li>The result is in ascending order and has no repetitions.</li>
      * </ul>
      *
@@ -313,7 +343,7 @@ public final class MultivariatePolynomial implements
      */
     public @NotNull List<Variable> variables() {
         SortedSet<Variable> variables = new TreeSet<>();
-        for (Pair<Monomial, BigInteger> term : terms) {
+        for (Pair<Monomial, Rational> term : terms) {
             variables.addAll(term.a.variables());
         }
         return toList(variables);
@@ -323,7 +353,7 @@ public final class MultivariatePolynomial implements
      * Returns the number of variables in {@code this}.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
      *  <li>The result is non-negative.</li>
      * </ul>
      *
@@ -337,7 +367,7 @@ public final class MultivariatePolynomial implements
      * Returns the number of terms in {@code this}.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
      *  <li>The result is non-negative.</li>
      * </ul>
      *
@@ -351,7 +381,7 @@ public final class MultivariatePolynomial implements
      * Returns the maximum bit length of any coefficient, or 0 if {@code this} is 0.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
      *  <li>The result is non-negative.</li>
      * </ul>
      *
@@ -360,7 +390,7 @@ public final class MultivariatePolynomial implements
     public int maxCoefficientBitLength() {
         if (this == ZERO) return 0;
         //noinspection RedundantCast
-        return maximum((Iterable<Integer>) map(t -> t.b.abs().bitLength(), terms));
+        return maximum((Iterable<Integer>) map(t -> t.b.bitLength(), terms));
     }
 
     /**
@@ -368,7 +398,7 @@ public final class MultivariatePolynomial implements
      * degree –1.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
      *  <li>The result is at least –1.</li>
      * </ul>
      *
@@ -384,7 +414,7 @@ public final class MultivariatePolynomial implements
      * is –1 if {@code this} is zero and 1 otherwise.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
      *  <li>{@code v} cannot be zero.</li>
      *  <li>The result is at least –1.</li>
      * </ul>
@@ -394,7 +424,7 @@ public final class MultivariatePolynomial implements
      */
     public int degree(@NotNull Variable v) {
         int degree = -1;
-        for (Pair<Monomial, BigInteger> term : terms) {
+        for (Pair<Monomial, Rational> term : terms) {
             int termDegree = term.a.exponent(v);
             if (termDegree > degree) {
                 degree = termDegree;
@@ -407,7 +437,7 @@ public final class MultivariatePolynomial implements
      * Whether {@code this} is homogeneous; whether the degrees of each {@code Monomial} are equal.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
      *  <li>The result may be either {@code boolean}.</li>
      * </ul>
      *
@@ -430,7 +460,7 @@ public final class MultivariatePolynomial implements
      * @param o the {@code MonomialOrder} used to determine which term is leading.
      * @return LT<sub>{@code o}</sub>({@code this})
      */
-    public @NotNull Optional<Pair<Monomial, BigInteger>> leadingTerm(@NotNull MonomialOrder o) {
+    public @NotNull Optional<Pair<Monomial, Rational>> leadingTerm(@NotNull MonomialOrder o) {
         if (o == DEFAULT_ORDER) {
             return leadingTerm();
         } else {
@@ -449,7 +479,7 @@ public final class MultivariatePolynomial implements
      *
      * @return LT<sub>{@code GREVLEX}</sub>({@code this})
      */
-    public @NotNull Optional<Pair<Monomial, BigInteger>> leadingTerm() {
+    public @NotNull Optional<Pair<Monomial, Rational>> leadingTerm() {
         return this == ZERO ? Optional.empty() : Optional.of(last(terms));
     }
 
@@ -460,13 +490,13 @@ public final class MultivariatePolynomial implements
      * <ul>
      *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
      *  <li>{@code o} cannot be null.</li>
-     *  <li>The result may be any nonzero {@code BigInteger}, or empty.</li>
+     *  <li>The result may be any nonzero {@code Rational}, or empty.</li>
      * </ul>
      *
      * @param o the {@code MonomialOrder} used to determine which term is leading.
      * @return LC<sub>{@code o}</sub>({@code this})
      */
-    public @NotNull Optional<BigInteger> leadingCoefficient(@NotNull MonomialOrder o) {
+    public @NotNull Optional<Rational> leadingCoefficient(@NotNull MonomialOrder o) {
         return leadingTerm(o).map(t -> t.b);
     }
 
@@ -476,12 +506,12 @@ public final class MultivariatePolynomial implements
      *
      * <ul>
      *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
-     *  <li>The result may be any nonzero {@code BigInteger}, or empty.</li>
+     *  <li>The result may be any nonzero {@code Rational}, or empty.</li>
      * </ul>
      *
      * @return LC<sub>{@code GREVLEX}</sub>({@code this})
      */
-    public @NotNull Optional<BigInteger> leadingCoefficient() {
+    public @NotNull Optional<Rational> leadingCoefficient() {
         return this == ZERO ? Optional.empty() : Optional.of(last(terms).b);
     }
 
@@ -523,7 +553,7 @@ public final class MultivariatePolynomial implements
      * c<sub>n</sub>.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
      *  <li>{@code v} cannot be null.</li>
      *  <li>The result contains no nulls.</li>
      * </ul>
@@ -531,13 +561,13 @@ public final class MultivariatePolynomial implements
      * @param v a {@code Variable}
      * @return {@code this} as coefficients of powers of {@code v}
      */
-    public @NotNull List<MultivariatePolynomial> coefficientsOfVariable(@NotNull Variable v) {
+    public @NotNull List<RationalMultivariatePolynomial> coefficientsOfVariable(@NotNull Variable v) {
         if (this == ZERO) return Collections.emptyList();
         if (this.degree() == 0) return Collections.singletonList(this);
-        Map<Integer, List<Pair<Monomial, BigInteger>>> coefficientMap = new HashMap<>();
-        for (Pair<Monomial, BigInteger> term : terms) {
+        Map<Integer, List<Pair<Monomial, Rational>>> coefficientMap = new HashMap<>();
+        for (Pair<Monomial, Rational> term : terms) {
             int vPower = term.a.exponent(v);
-            List<Pair<Monomial, BigInteger>> vPowerTerms = coefficientMap.get(vPower);
+            List<Pair<Monomial, Rational>> vPowerTerms = coefficientMap.get(vPower);
             if (vPowerTerms == null) {
                 vPowerTerms = new ArrayList<>();
                 coefficientMap.put(vPower, vPowerTerms);
@@ -548,9 +578,9 @@ public final class MultivariatePolynomial implements
         for (int power : coefficientMap.keySet()) {
             if (power > maxPower) maxPower = power;
         }
-        List<MultivariatePolynomial> coefficients = new ArrayList<>();
+        List<RationalMultivariatePolynomial> coefficients = new ArrayList<>();
         for (int i = 0; i <= maxPower; i++) {
-            List<Pair<Monomial, BigInteger>> powerTerms = coefficientMap.get(i);
+            List<Pair<Monomial, Rational>> powerTerms = coefficientMap.get(i);
             if (powerTerms == null) {
                 coefficients.add(ZERO);
             } else {
@@ -566,7 +596,7 @@ public final class MultivariatePolynomial implements
      * {@code variables}.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
      *  <li>{@code variables} cannot contain nulls.</li>
      *  <li>{@code order} cannot be null.</li>
      *  <li>The result is a {@code List} of pairs such that no variable in any first element is in any of the second
@@ -577,22 +607,22 @@ public final class MultivariatePolynomial implements
      * @param variables the {@code Variable}s to group
      * @return {@code this} expressed as a sum of polynomial multiples of monomials in {@code variables}
      */
-    public @NotNull List<Pair<Monomial, MultivariatePolynomial>> groupVariables(
+    public @NotNull List<Pair<Monomial, RationalMultivariatePolynomial>> groupVariables(
             @NotNull List<Variable> variables, @NotNull MonomialOrder order
     ) {
         if (any(v -> v == null, variables)) {
             throw new NullPointerException();
         }
-        SortedMap<Monomial, MultivariatePolynomial> groupedTerms;
+        SortedMap<Monomial, RationalMultivariatePolynomial> groupedTerms;
         if (order == DEFAULT_ORDER) {
             groupedTerms = new TreeMap<>();
         } else {
             groupedTerms = new TreeMap<>(order);
         }
-        for (Pair<Monomial, BigInteger> term : terms) {
+        for (Pair<Monomial, Rational> term : terms) {
             Monomial componentWithVariables = term.a.retainVariables(variables);
             Monomial componentWithoutVariables = term.a.removeVariables(variables);
-            MultivariatePolynomial withoutVariables = groupedTerms.get(componentWithVariables);
+            RationalMultivariatePolynomial withoutVariables = groupedTerms.get(componentWithVariables);
             if (withoutVariables == null) {
                 withoutVariables = ZERO;
             }
@@ -608,7 +638,7 @@ public final class MultivariatePolynomial implements
      * {@code variables}.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
      *  <li>{@code variables} cannot contain nulls.</li>
      *  <li>The result is a {@code List} of pairs such that no variable in any first element is in any of the second
      *  elements and no variable in any second element is in any of the first elements. The first elements are unique
@@ -618,17 +648,17 @@ public final class MultivariatePolynomial implements
      * @param variables the {@code Variable}s to group
      * @return {@code this} expressed as a sum of polynomial multiples of monomials in {@code variables}
      */
-    public @NotNull List<Pair<Monomial, MultivariatePolynomial>> groupVariables(
+    public @NotNull List<Pair<Monomial, RationalMultivariatePolynomial>> groupVariables(
             @NotNull List<Variable> variables
     ) {
         if (any(v -> v == null, variables)) {
             throw new NullPointerException();
         }
-        SortedMap<Monomial, MultivariatePolynomial> groupedTerms = new TreeMap<>();
-        for (Pair<Monomial, BigInteger> term : terms) {
+        SortedMap<Monomial, RationalMultivariatePolynomial> groupedTerms = new TreeMap<>();
+        for (Pair<Monomial, Rational> term : terms) {
             Monomial componentWithVariables = term.a.retainVariables(variables);
             Monomial componentWithoutVariables = term.a.removeVariables(variables);
-            MultivariatePolynomial withoutVariables = groupedTerms.get(componentWithVariables);
+            RationalMultivariatePolynomial withoutVariables = groupedTerms.get(componentWithVariables);
             if (withoutVariables == null) {
                 withoutVariables = ZERO;
             }
@@ -642,22 +672,22 @@ public final class MultivariatePolynomial implements
      * Returns the sum of {@code this} and {@code that}.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
      *  <li>{@code that} cannot be null.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @param that the {@code MultivariatePolynomial} added to {@code this}
+     * @param that the {@code RationalMultivariatePolynomial} added to {@code this}
      * @return {@code this}+{@code that}
      */
-    public @NotNull MultivariatePolynomial add(@NotNull MultivariatePolynomial that) {
+    public @NotNull RationalMultivariatePolynomial add(@NotNull RationalMultivariatePolynomial that) {
         if (this == ZERO) return that;
         if (that == ZERO) return this;
-        List<Pair<Monomial, BigInteger>> sumTerms = new ArrayList<>();
-        Iterator<Pair<Monomial, BigInteger>> thisTerms = terms.iterator();
-        Iterator<Pair<Monomial, BigInteger>> thatTerms = that.terms.iterator();
-        Pair<Monomial, BigInteger> thisTerm = thisTerms.hasNext() ? thisTerms.next() : null;
-        Pair<Monomial, BigInteger> thatTerm = thatTerms.hasNext() ? thatTerms.next() : null;
+        List<Pair<Monomial, Rational>> sumTerms = new ArrayList<>();
+        Iterator<Pair<Monomial, Rational>> thisTerms = terms.iterator();
+        Iterator<Pair<Monomial, Rational>> thatTerms = that.terms.iterator();
+        Pair<Monomial, Rational> thisTerm = thisTerms.hasNext() ? thisTerms.next() : null;
+        Pair<Monomial, Rational> thatTerm = thatTerms.hasNext() ? thatTerms.next() : null;
         while (thisTerm != null || thatTerm != null) {
             if (thisTerm == null) {
                 sumTerms.add(thatTerm);
@@ -668,8 +698,8 @@ public final class MultivariatePolynomial implements
             } else {
                 int vectorCompare = thisTerm.a.compareTo(thatTerm.a);
                 if (vectorCompare == 0) {
-                    BigInteger sum = thisTerm.b.add(thatTerm.b);
-                    if (!sum.equals(BigInteger.ZERO)) {
+                    Rational sum = thisTerm.b.add(thatTerm.b);
+                    if (sum != Rational.ZERO) {
                         sumTerms.add(new Pair<>(thisTerm.a, sum));
                     }
                     thisTerm = thisTerms.hasNext() ? thisTerms.next() : null;
@@ -683,53 +713,53 @@ public final class MultivariatePolynomial implements
                 }
             }
         }
-        if (sumTerms.size() == 0) return ZERO;
+        if (sumTerms.isEmpty()) return ZERO;
         if (sumTerms.size() == 1) {
-            Pair<Monomial, BigInteger> term = sumTerms.get(0);
-            if (term.a == Monomial.ONE && term.b.equals(BigInteger.ONE)) return ONE;
+            Pair<Monomial, Rational> term = sumTerms.get(0);
+            if (term.a == Monomial.ONE && term.b == Rational.ONE) return ONE;
         }
-        return new MultivariatePolynomial(sumTerms);
+        return new RationalMultivariatePolynomial(sumTerms);
     }
 
     /**
      * Returns the negative of {@code this}.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
      *  <li>The result is non-null.</li>
      * </ul>
      *
      * @return –{@code this}
      */
-    public @NotNull MultivariatePolynomial negate() {
+    public @NotNull RationalMultivariatePolynomial negate() {
         if (this == ZERO) return ZERO;
         if (terms.size() == 1) {
-            Pair<Monomial, BigInteger> term = terms.get(0);
-            if (term.a == Monomial.ONE && term.b.equals(IntegerUtils.NEGATIVE_ONE)) return ONE;
+            Pair<Monomial, Rational> term = terms.get(0);
+            if (term.a == Monomial.ONE && term.b.equals(Rational.NEGATIVE_ONE)) return ONE;
         }
-        return new MultivariatePolynomial(toList(map(t -> new Pair<>(t.a, t.b.negate()), terms)));
+        return new RationalMultivariatePolynomial(toList(map(t -> new Pair<>(t.a, t.b.negate()), terms)));
     }
 
     /**
      * Returns the difference of {@code this} and {@code that}.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
      *  <li>{@code that} cannot be null.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @param that the {@code MultivariatePolynomial} subtracted by {@code this}
+     * @param that the {@code RationalMultivariatePolynomial} subtracted by {@code this}
      * @return {@code this}–{@code that}
      */
-    public @NotNull MultivariatePolynomial subtract(@NotNull MultivariatePolynomial that) {
+    public @NotNull RationalMultivariatePolynomial subtract(@NotNull RationalMultivariatePolynomial that) {
         if (this == ZERO) return that.negate();
         if (that == ZERO) return this;
-        List<Pair<Monomial, BigInteger>> differenceTerms = new ArrayList<>();
-        Iterator<Pair<Monomial, BigInteger>> thisTerms = terms.iterator();
-        Iterator<Pair<Monomial, BigInteger>> thatTerms = that.terms.iterator();
-        Pair<Monomial, BigInteger> thisTerm = thisTerms.hasNext() ? thisTerms.next() : null;
-        Pair<Monomial, BigInteger> thatTerm = thatTerms.hasNext() ? thatTerms.next() : null;
+        List<Pair<Monomial, Rational>> differenceTerms = new ArrayList<>();
+        Iterator<Pair<Monomial, Rational>> thisTerms = terms.iterator();
+        Iterator<Pair<Monomial, Rational>> thatTerms = that.terms.iterator();
+        Pair<Monomial, Rational> thisTerm = thisTerms.hasNext() ? thisTerms.next() : null;
+        Pair<Monomial, Rational> thatTerm = thatTerms.hasNext() ? thatTerms.next() : null;
         while (thisTerm != null || thatTerm != null) {
             if (thisTerm == null) {
                 differenceTerms.add(new Pair<>(thatTerm.a, thatTerm.b.negate()));
@@ -741,7 +771,7 @@ public final class MultivariatePolynomial implements
                 int vectorCompare = thisTerm.a.compareTo(thatTerm.a);
                 if (vectorCompare == 0) {
                     if (!thisTerm.b.equals(thatTerm.b)) {
-                        BigInteger difference = thisTerm.b.subtract(thatTerm.b);
+                        Rational difference = thisTerm.b.subtract(thatTerm.b);
                         differenceTerms.add(new Pair<>(thisTerm.a, difference));
                     }
                     thisTerm = thisTerms.hasNext() ? thisTerms.next() : null;
@@ -755,19 +785,19 @@ public final class MultivariatePolynomial implements
                 }
             }
         }
-        if (differenceTerms.size() == 0) return ZERO;
+        if (differenceTerms.isEmpty()) return ZERO;
         if (differenceTerms.size() == 1) {
-            Pair<Monomial, BigInteger> term = differenceTerms.get(0);
-            if (term.a == Monomial.ONE && term.b.equals(BigInteger.ONE)) return ONE;
+            Pair<Monomial, Rational> term = differenceTerms.get(0);
+            if (term.a == Monomial.ONE && term.b == Rational.ONE) return ONE;
         }
-        return new MultivariatePolynomial(differenceTerms);
+        return new RationalMultivariatePolynomial(differenceTerms);
     }
 
     /**
      * Returns the product of {@code this} and {@code that}.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
      *  <li>{@code that} may be any {@code int}.</li>
      *  <li>The result is not null.</li>
      * </ul>
@@ -775,24 +805,28 @@ public final class MultivariatePolynomial implements
      * @param that the {@code int} {@code this} is multiplied by
      * @return {@code this}×{@code that}
      */
-    public @NotNull MultivariatePolynomial multiply(int that) {
+    public @NotNull RationalMultivariatePolynomial multiply(int that) {
         if (this == ZERO || that == 0) return ZERO;
         if (this == ONE && that == 1) return ONE;
-        if (that == -1 && terms.size() == 1) {
-            Pair<Monomial, BigInteger> term = terms.get(0);
-            if (term.a == Monomial.ONE && term.b.equals(IntegerUtils.NEGATIVE_ONE)) {
-                return ONE;
+        if (terms.size() == 1) {
+            Pair<Monomial, Rational> term = terms.get(0);
+            if (term.a == Monomial.ONE) {
+                Rational product = term.b.multiply(that);
+                return product == Rational.ONE ?
+                        ONE :
+                        new RationalMultivariatePolynomial(
+                                Collections.singletonList(new Pair<>(Monomial.ONE, product))
+                        );
             }
         }
-        BigInteger bigThat = BigInteger.valueOf(that);
-        return new MultivariatePolynomial(toList(map(t -> new Pair<>(t.a, t.b.multiply(bigThat)), terms)));
+        return new RationalMultivariatePolynomial(toList(map(t -> new Pair<>(t.a, t.b.multiply(that)), terms)));
     }
 
     /**
      * Returns the product of {@code this} and {@code that}.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
      *  <li>{@code that} cannot be null.</li>
      *  <li>The result is not null.</li>
      * </ul>
@@ -800,23 +834,57 @@ public final class MultivariatePolynomial implements
      * @param that the {@code BigInteger} {@code this} is multiplied by
      * @return {@code this}×{@code that}
      */
-    public @NotNull MultivariatePolynomial multiply(@NotNull BigInteger that) {
+    public @NotNull RationalMultivariatePolynomial multiply(@NotNull BigInteger that) {
         if (this == ZERO || that.equals(BigInteger.ZERO)) return ZERO;
         if (this == ONE && that.equals(BigInteger.ONE)) return ONE;
-        if (terms.size() == 1 && that.equals(IntegerUtils.NEGATIVE_ONE)) {
-            Pair<Monomial, BigInteger> term = terms.get(0);
-            if (term.a == Monomial.ONE && term.b.equals(IntegerUtils.NEGATIVE_ONE)) {
-                return ONE;
+        if (terms.size() == 1) {
+            Pair<Monomial, Rational> term = terms.get(0);
+            if (term.a == Monomial.ONE) {
+                Rational product = term.b.multiply(that);
+                return product == Rational.ONE ?
+                        ONE :
+                        new RationalMultivariatePolynomial(
+                                Collections.singletonList(new Pair<>(Monomial.ONE, product))
+                        );
             }
         }
-        return new MultivariatePolynomial(toList(map(t -> new Pair<>(t.a, t.b.multiply(that)), terms)));
+        return new RationalMultivariatePolynomial(toList(map(t -> new Pair<>(t.a, t.b.multiply(that)), terms)));
+    }
+
+    /**
+     * Returns the product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code Rational} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull RationalMultivariatePolynomial multiply(@NotNull Rational that) {
+        if (this == ZERO || that == Rational.ZERO) return ZERO;
+        if (this == ONE && that == Rational.ONE) return ONE;
+        if (terms.size() == 1) {
+            Pair<Monomial, Rational> term = terms.get(0);
+            if (term.a == Monomial.ONE) {
+                Rational product = term.b.multiply(that);
+                return product == Rational.ONE ?
+                        ONE :
+                        new RationalMultivariatePolynomial(
+                                Collections.singletonList(new Pair<>(Monomial.ONE, product))
+                        );
+            }
+        }
+        return new RationalMultivariatePolynomial(toList(map(t -> new Pair<>(t.a, t.b.multiply(that)), terms)));
     }
 
     /**
      * Returns the product of {@code this} and a single term, specified by a {@code Monomial} and its coefficient.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
      *  <li>{@code that} cannot be null.</li>
      *  <li>{@code c} cannot be null.</li>
      *  <li>The result is not null.</li>
@@ -825,26 +893,28 @@ public final class MultivariatePolynomial implements
      * @param m the {@code Monomial} of the term {@code this} is multiplied by
      * @return {@code this}×{@code c}×{@code m}
      */
-    public @NotNull MultivariatePolynomial multiply(@NotNull Monomial m, @NotNull BigInteger c) {
-        if (this == ZERO || c.equals(BigInteger.ZERO)) return ZERO;
+    public @NotNull RationalMultivariatePolynomial multiply(@NotNull Monomial m, @NotNull Rational c) {
+        if (this == ZERO || c == Rational.ZERO) return ZERO;
         if (this == ONE) return of(m, c);
         if (m == Monomial.ONE) return multiply(c);
-        return new MultivariatePolynomial(toList(map(t -> new Pair<>(t.a.multiply(m), t.b.multiply(c)), terms)));
+        return new RationalMultivariatePolynomial(
+                toList(map(t -> new Pair<>(t.a.multiply(m), t.b.multiply(c)), terms))
+        );
     }
 
     /**
      * Returns the product of {@code this} and {@code that}.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
      *  <li>{@code that} cannot be null.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @param that the {@code MultivariatePolynomial} {@code this} is multiplied by
+     * @param that the {@code RationalMultivariatePolynomial} {@code this} is multiplied by
      * @return {@code this}×{@code that}
      */
-    public @NotNull MultivariatePolynomial multiply(@NotNull MultivariatePolynomial that) {
+    public @NotNull RationalMultivariatePolynomial multiply(@NotNull RationalMultivariatePolynomial that) {
         if (this == ZERO || that == ZERO) return ZERO;
         if (this == ONE) return that;
         if (that == ONE) return this;
@@ -852,128 +922,146 @@ public final class MultivariatePolynomial implements
     }
 
     /**
-     * Returns the {@code this} divided by {@code that}, assuming that {@code that} divides each coefficient of
-     * {@code this}.
+     * Returns the quotient of {@code this} and {@code that}.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
      *  <li>{@code that} cannot be zero.</li>
-     *  <li>{@code that must divide each coefficient of {@code this}.</li>
-     *  <li>The result is not null.</li>
-     * </ul>
-     *
-     * @param that the {@code BigInteger} {@code this} is divided by
-     * @return {@code this}/{@code that}
-     */
-    public @NotNull MultivariatePolynomial divideExact(@NotNull BigInteger that) {
-        if (that.equals(BigInteger.ZERO)) {
-            throw new ArithmeticException("that cannot be zero.");
-        }
-        if (this == ZERO) return ZERO;
-        if (that.equals(BigInteger.ONE)) return this;
-        List<Pair<Monomial, BigInteger>> quotientTerms = toList(map(t -> new Pair<>(t.a, t.b.divide(that)), terms));
-        if (quotientTerms.size() == 1) {
-            Pair<Monomial, BigInteger> term = quotientTerms.get(0);
-            if (term.a == Monomial.ONE && term.b.equals(BigInteger.ONE)) return ONE;
-        }
-        return new MultivariatePolynomial(quotientTerms);
-    }
-
-    /**
-     * Returns the {@code this} divided by {@code that}, assuming that {@code that} divides each coefficient of
-     * {@code this}.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
-     *  <li>{@code that} cannot be zero.</li>
-     *  <li>{@code that must divide each coefficient of {@code this}.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
      * @param that the {@code int} {@code this} is divided by
      * @return {@code this}/{@code that}
      */
-    public @NotNull MultivariatePolynomial divideExact(int that) {
-        if (that == 0) {
-            throw new ArithmeticException("that cannot be zero.");
-        }
-        if (this == ZERO) return ZERO;
-        if (that == 1) return this;
-        BigInteger bigThat = BigInteger.valueOf(that);
-        List<Pair<Monomial, BigInteger>> quotientTerms = toList(map(t -> new Pair<>(t.a, t.b.divide(bigThat)), terms));
-        if (quotientTerms.size() == 1) {
-            Pair<Monomial, BigInteger> term = quotientTerms.get(0);
-            if (term.a == Monomial.ONE && term.b.equals(BigInteger.ONE)) return ONE;
-        }
-        return new MultivariatePolynomial(quotientTerms);
+    public @NotNull RationalMultivariatePolynomial divide(int that) {
+        return multiply(Rational.of(1, that));
     }
 
     /**
-     * Returns the left shift of {@code this} by {@code bits}; {@code this}×2<sup>{@code bits}</sup>. Negative
-     * {@code bits} are not allowed, even if {@code this} is divisible by a power of 2.
+     * Returns the quotient of {@code this} and {@code that}.
      *
      * <ul>
-     *  <li>{@code this} can be any {@code MultivariatePolynomial}.</li>
-     *  <li>{@code bits} cannot be negative.</li>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code BigInteger} {@code this} is divided by
+     * @return {@code this}/{@code that}
+     */
+    public @NotNull RationalMultivariatePolynomial divide(@NotNull BigInteger that) {
+        return multiply(Rational.of(BigInteger.ONE, that));
+    }
+
+    /**
+     * Returns the quotient of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code Rational} {@code this} is divided by
+     * @return {@code this}/{@code that}
+     */
+    public @NotNull RationalMultivariatePolynomial divide(@NotNull Rational that) {
+        return multiply(that.invert());
+    }
+
+    /**
+     * Returns the left shift of {@code this} by {@code bits}; {@code this}×2<sup>{@code bits}</sup>.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalMultivariatePolynomial}.</li>
+     *  <li>{@code bits} may be any {@code int}.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
      * @param bits the number of bits to left-shift by
      * @return {@code this}≪{@code bits}
      */
-    public @NotNull MultivariatePolynomial shiftLeft(int bits) {
-        if (bits < 0) {
-            throw new ArithmeticException("bits cannot be negative. Invalid bits: " + bits);
-        }
+    public @NotNull RationalMultivariatePolynomial shiftLeft(int bits) {
         if (this == ZERO || bits == 0) return this;
-        List<Pair<Monomial, BigInteger>> shiftedTerms = toList(map(t -> new Pair<>(t.a, t.b.shiftLeft(bits)), terms));
-        return new MultivariatePolynomial(shiftedTerms);
+        List<Pair<Monomial, Rational>> shiftedTerms = toList(map(t -> new Pair<>(t.a, t.b.shiftLeft(bits)), terms));
+        if (shiftedTerms.size() == 1) {
+            Pair<Monomial, Rational> term = shiftedTerms.get(0);
+            if (term.a == Monomial.ONE && term.b == Rational.ONE) {
+                return ONE;
+            }
+        }
+        return new RationalMultivariatePolynomial(shiftedTerms);
     }
 
     /**
-     * Returns the sum of all the {@code MultivariatePolynomial}s in {@code xs}. If {@code xs} is empty, 0 is returned.
+     * Returns the right shift of {@code this} by {@code bits}; {@code this}×2<sup>–{@code bits}</sup>.
      *
      * <ul>
-     *  <li>{@code xs} may not contain any nulls.</li>
-     *  <li>The result may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code this} can be any {@code RationalMultivariatePolynomial}.</li>
+     *  <li>{@code bits} may be any {@code int}.</li>
+     *  <li>The result is not null.</li>
      * </ul>
      *
-     * @param xs a {@code List} of {@code MultivariatePolynomial}s.
-     * @return Σxs
+     * @param bits the number of bits to right-shift by
+     * @return {@code this}≫{@code bits}
      */
-    public static @NotNull MultivariatePolynomial sum(@NotNull List<MultivariatePolynomial> xs) {
-        if (any(x -> x == null, xs)) {
-            throw new NullPointerException();
+    public @NotNull RationalMultivariatePolynomial shiftRight(int bits) {
+        if (this == ZERO || bits == 0) return this;
+        List<Pair<Monomial, Rational>> shiftedTerms = toList(map(t -> new Pair<>(t.a, t.b.shiftRight(bits)), terms));
+        if (shiftedTerms.size() == 1) {
+            Pair<Monomial, Rational> term = shiftedTerms.get(0);
+            if (term.a == Monomial.ONE && term.b == Rational.ONE) {
+                return ONE;
+            }
         }
-        return foldl(MultivariatePolynomial::add, ZERO, xs);
+        return new RationalMultivariatePolynomial(shiftedTerms);
     }
 
     /**
-     * Returns the product of all the {@code MultivariatePolynomial}s in {@code xs}. If {@code xs} is empty, 1 is
+     * Returns the sum of all the {@code RationalMultivariatePolynomial}s in {@code xs}. If {@code xs} is empty, 0 is
      * returned.
      *
      * <ul>
      *  <li>{@code xs} may not contain any nulls.</li>
-     *  <li>The result may be any {@code MultivariatePolynomial}.</li>
+     *  <li>The result may be any {@code RationalMultivariatePolynomial}.</li>
      * </ul>
      *
-     * @param xs a {@code List} of {@code MultivariatePolynomial}s.
+     * @param xs a {@code List} of {@code RationalMultivariatePolynomial}s.
+     * @return Σxs
+     */
+    public static @NotNull RationalMultivariatePolynomial sum(@NotNull List<RationalMultivariatePolynomial> xs) {
+        if (any(x -> x == null, xs)) {
+            throw new NullPointerException();
+        }
+        return foldl(RationalMultivariatePolynomial::add, ZERO, xs);
+    }
+
+    /**
+     * Returns the product of all the {@code RationalMultivariatePolynomial}s in {@code xs}. If {@code xs} is empty, 1
+     * is returned.
+     *
+     * <ul>
+     *  <li>{@code xs} may not contain any nulls.</li>
+     *  <li>The result may be any {@code RationalMultivariatePolynomial}.</li>
+     * </ul>
+     *
+     * @param xs a {@code List} of {@code RationalMultivariatePolynomial}s.
      * @return Πxs
      */
-    public static @NotNull MultivariatePolynomial product(@NotNull List<MultivariatePolynomial> xs) {
+    public static @NotNull RationalMultivariatePolynomial product(@NotNull List<RationalMultivariatePolynomial> xs) {
         if (any(x -> x == null, xs)) {
             throw new NullPointerException();
         }
         if (any(x -> x == ZERO, xs)) {
             return ZERO;
         }
-        return foldl(MultivariatePolynomial::multiply, ONE, xs);
+        return foldl(RationalMultivariatePolynomial::multiply, ONE, xs);
     }
 
     /**
-     * Returns the differences between successive {@code MultivariatePolynomial}s in {@code xs}. If {@code xs} contains
-     * a single {@code MultivariatePolynomial}, an empty {@code Iterable} is returned. {@code xs} cannot be empty. Does
-     * not support removal.
+     * Returns the differences between successive {@code RationalMultivariatePolynomial}s in {@code xs}. If {@code xs}
+     * contains a single {@code RationalMultivariatePolynomial}, an empty {@code Iterable} is returned. {@code xs}
+     * cannot be empty. Does not support removal.
      *
      * <ul>
      *  <li>{@code xs} must not be empty and may not contain any nulls.</li>
@@ -982,10 +1070,12 @@ public final class MultivariatePolynomial implements
      *
      * Length is |{@code xs}|–1
      *
-     * @param xs an {@code Iterable} of {@code MultivariatePolynomial}s.
+     * @param xs an {@code Iterable} of {@code RationalMultivariatePolynomial}s.
      * @return Δxs
      */
-    public static @NotNull Iterable<MultivariatePolynomial> delta(@NotNull Iterable<MultivariatePolynomial> xs) {
+    public static @NotNull Iterable<RationalMultivariatePolynomial> delta(
+            @NotNull Iterable<RationalMultivariatePolynomial> xs
+    ) {
         if (isEmpty(xs)) {
             throw new IllegalArgumentException("xs must not be empty.");
         }
@@ -999,7 +1089,7 @@ public final class MultivariatePolynomial implements
      * Returns {@code this} raised to the power of {@code p}. 0<sup>0</sup> yields 1.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
      *  <li>{@code p} cannot be negative.</li>
      *  <li>The result is not null.</li>
      * </ul>
@@ -1007,107 +1097,11 @@ public final class MultivariatePolynomial implements
      * @param p the power that {@code this} is raised to
      * @return {@code this}<sup>{@code p}</sup>
      */
-    public @NotNull MultivariatePolynomial pow(int p) {
+    public @NotNull RationalMultivariatePolynomial pow(int p) {
         if (p < 0) {
             throw new ArithmeticException("p cannot be negative. Invalid p: " + p);
         }
-        if (p == 0 || this == ONE) return ONE;
-        if (this == ZERO) return ZERO;
-        if (terms.size() == 1) {
-            Pair<Monomial, BigInteger> term = terms.get(0);
-            if (term.a == Monomial.ONE) {
-                return of(term.b.pow(p));
-            } else {
-                return new MultivariatePolynomial(Collections.singletonList(new Pair<>(term.a.pow(p), term.b.pow(p))));
-            }
-        }
-        MultivariatePolynomial result = ONE;
-        MultivariatePolynomial powerPower = null; // p^2^i
-        for (boolean bit : IntegerUtils.bits(p)) {
-            powerPower = powerPower == null ? this : powerPower.multiply(powerPower);
-            if (bit) result = result.multiply(powerPower);
-        }
-        return result;
-    }
-
-    /**
-     * Given two distinct {@code Variable} {@code a} and {@code b}, returns ({@code a}+{@code b})<sup>{@code p}</sup>.
-     *
-     * <ul>
-     *  <li>{@code a} cannot be null.</li>
-     *  <li>{@code b} cannot be null.</li>
-     *  <li>{@code a} cannot equal {@code b}.</li>
-     *  <li>The result is a power of the sum of two {@code Variable}s.</li>
-     * </ul>
-     *
-     * @param a the first {@code Variable}
-     * @param b the second {@code Variable}
-     * @param p the power the binomial is raised to
-     * @return ({@code a}+{@code b})<sup>{@code p}</sup>
-     */
-    @SuppressWarnings("JavaDoc")
-    public static @NotNull MultivariatePolynomial binomialPower(@NotNull Variable a, @NotNull Variable b, int p) {
-        if (p < 0) {
-            throw new ArithmeticException("p cannot be negative. Invalid p: " + p);
-        }
-        int vCompare = a.compareTo(b);
-        if (vCompare == 0) {
-            throw new IllegalArgumentException("a cannot equal b. Invalid a and b: " + a);
-        } else if (vCompare == 1) {
-            Variable temp = a;
-            a = b;
-            b = temp;
-        }
-        if (p == 0) return ONE;
-
-        int aIndex = a.getIndex();
-        int bIndex = b.getIndex();
-        List<Integer> exponentVector = toList(replicate(bIndex, 0));
-        exponentVector.add(p);
-
-        BigInteger bigP = BigInteger.valueOf(p);
-        List<BigInteger> coefficients = new ArrayList<>();
-        for (int i = 0; i <= p / 2; i++) {
-            coefficients.add(MathUtils.binomialCoefficient(bigP, i));
-        }
-
-        List<Pair<Monomial, BigInteger>> terms = new ArrayList<>();
-        boolean ascending = true;
-        int j = 0;
-        for (int i = 0; i <= p; i++) {
-            terms.add(new Pair<>(Monomial.of(exponentVector), coefficients.get(j)));
-            exponentVector.set(bIndex, exponentVector.get(bIndex) - 1);
-            exponentVector.set(aIndex, exponentVector.get(aIndex) + 1);
-            if (ascending) {
-                j++;
-                if (i == p / 2) {
-                    ascending = false;
-                    j = i;
-                    if ((p & 1) == 0) j--;
-                }
-            } else {
-                j--;
-            }
-        }
-        return new MultivariatePolynomial(terms);
-    }
-
-    /**
-     * Evaluates {@code this} by substituting a {@code BigInteger} for each variable. Every variable in {@code this}
-     * must have an associated {@code BigInteger}. Unused variables are allowed.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
-     *  <li>{@code xs} may not have any null keys or values.</li>
-     *  <li>Every {@code Variable} in {@code this} must be a key in {@code xs}.</li>
-     *  <li>The result is not null.</li>
-     * </ul>
-     *
-     * @param xs the values to substitute for each variable in {@code this}
-     * @return {@code this}({@code xs})
-     */
-    public @NotNull BigInteger applyBigInteger(@NotNull Map<Variable, BigInteger> xs) {
-        return sumBigInteger(toList(map(t -> t.a.applyBigInteger(xs).multiply(t.b), terms)));
+        return product(toList(replicate(p, this)));
     }
 
     /**
@@ -1115,7 +1109,7 @@ public final class MultivariatePolynomial implements
      * have an associated {@code Rational}. Unused variables are allowed.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
      *  <li>{@code xs} may not have any null keys or values.</li>
      *  <li>Every {@code Variable} in {@code this} must be a key in {@code xs}.</li>
      *  <li>The result is not null.</li>
@@ -1133,7 +1127,7 @@ public final class MultivariatePolynomial implements
      * {@code this} needs to have an associated {@code Monomial}. Unused variables are also allowed.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
      *  <li>{@code ms} may not have any null keys or values.</li>
      *  <li>The result is not null.</li>
      * </ul>
@@ -1141,37 +1135,39 @@ public final class MultivariatePolynomial implements
      * @param ms the {@code Monomial}s to substitute for variables in {@code this}
      * @return {@code this}({@code ms})
      */
-    public @NotNull MultivariatePolynomial substituteMonomial(@NotNull Map<Variable, Monomial> ms) {
+    public @NotNull RationalMultivariatePolynomial substituteMonomial(@NotNull Map<Variable, Monomial> ms) {
         return of(toList(map(t -> new Pair<>(t.a.substitute(ms), t.b), terms)));
     }
 
     /**
-     * Substitutes variables in {@code this} with {@code MultivariatePolynomial}s specified by {@code ps}. Not every
-     * variable in {@code this} needs to have an associated {@code MultivariatePolynomial}. Unused variables are also
-     * allowed.
+     * Substitutes variables in {@code this} with {@code RationalMultivariatePolynomial}s specified by {@code ps}. Not
+     * every variable in {@code this} needs to have an associated {@code RationalMultivariatePolynomial}. Unused
+     * variables are also allowed.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
      *  <li>{@code ps} may not have any null keys or values.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
      * Length is 1 if {@code this}=0 or {@code that}=0, deg({@code this})×deg({@code that})+1 otherwise
      *
-     * @param ps the {@code MultivariatePolynomial}s to substitute for variables in {@code this}
+     * @param ps the {@code RationalMultivariatePolynomial}s to substitute for variables in {@code this}
      * @return {@code this}({@code ps})
      */
-    public @NotNull MultivariatePolynomial substitute(@NotNull Map<Variable, MultivariatePolynomial> ps) {
-        for (Map.Entry<Variable, MultivariatePolynomial> entry : ps.entrySet()) {
+    public @NotNull RationalMultivariatePolynomial substitute(
+            @NotNull Map<Variable, RationalMultivariatePolynomial> ps
+    ) {
+        for (Map.Entry<Variable, RationalMultivariatePolynomial> entry : ps.entrySet()) {
             if (entry.getKey() == null || entry.getValue() == null) {
                 throw new NullPointerException();
             }
         }
-        MultivariatePolynomial result = ZERO;
-        for (Pair<Monomial, BigInteger> term : terms) {
-            MultivariatePolynomial product = of(term.b);
+        RationalMultivariatePolynomial result = ZERO;
+        for (Pair<Monomial, Rational> term : terms) {
+            RationalMultivariatePolynomial product = of(term.b);
             for (Pair<Variable, Integer> factor : term.a.terms()) {
-                MultivariatePolynomial p = ps.get(factor.a);
+                RationalMultivariatePolynomial p = ps.get(factor.a);
                 if (p == null) {
                     p = of(factor.a);
                 }
@@ -1183,166 +1179,81 @@ public final class MultivariatePolynomial implements
     }
 
     /**
-     * Returns a {@code Pair} containing a constant and polynomial whose product is {@code this}, such that the leading
-     * coefficient of the polynomial part (with respect to a particular monomial order) is positive and the GCD of its
-     * coefficients is 1.
-     *
-     * <ul>
-     *  <li>{@code this} cannot be zero.</li>
-     *  <li>{@code this} cannot be null.</li>
-     *  <li>The result is a {@code Pair} whose first element is nonzero and whose second element has a positive leading
-     *  coefficient with respect to one of three {@code MonomialOrder}s and no invertible constant factors.</li>
-     * </ul>
-     *
-     * @return the constant integral factor of {@code this} with the same sign as {@code this} (according to some
-     * monomial order) and the largest possible absolute value, along with {@code this} divided by that factor
-     */
-    public @NotNull Pair<BigInteger, MultivariatePolynomial> constantFactor(@NotNull MonomialOrder o) {
-        if (this == ZERO) {
-            throw new ArithmeticException("this cannot be zero.");
-        }
-        BigInteger gcd = MathUtils.gcd(toList(map(t -> t.b, terms)));
-        if (leadingCoefficient(o).get().signum() == -1) {
-            gcd = gcd.negate();
-        }
-        return new Pair<>(gcd, divideExact(gcd));
-    }
-
-    /**
-     * Returns a {@code Pair} containing a constant and polynomial whose product is {@code this}, such that the leading
-     * coefficient of the polynomial part (with respect to grevlex order) is positive and the GCD of its coefficients
-     * is 1.
+     * Returns a {@code Pair} containing a constant and an integer-coefficient polynomial whose product is
+     * {@code this}, such that the leading coefficient of the polynomial part (with respect to a particular monomial
+     * order) is positive and the GCD of its coefficients is 1.
      *
      * <ul>
      *  <li>{@code this} cannot be zero.</li>
      *  <li>The result is a {@code Pair} whose first element is nonzero and whose second element has a positive leading
-     *  coefficient with respect to grevlex order and no invertible constant factors.</li>
+     *  coefficient with respect to one of three {@code MonomialOrder}s and no invertible integral constant
+     *  factors.</li>
      * </ul>
      *
-     * @return the constant integral factor of {@code this} with the same sign as {@code this} (according to grevlex
-     * order) and the largest possible absolute value, along with {@code this} divided by that factor
+     * @return a constant factor of {@code this} and {@code this} divided by the factor
      */
-    public @NotNull Pair<BigInteger, MultivariatePolynomial> constantFactor() {
+    public @NotNull Pair<Rational, MultivariatePolynomial> constantFactor(@NotNull MonomialOrder o) {
         if (this == ZERO) {
             throw new ArithmeticException("this cannot be zero.");
         }
-        BigInteger gcd = MathUtils.gcd(toList(map(t -> t.b, terms)));
-        if (leadingCoefficient().get().signum() == -1) {
-            gcd = gcd.negate();
+        MultivariatePolynomial positivePrimitive = MultivariatePolynomial.of(
+                toList(zip(map(t -> t.a, terms), Rational.cancelDenominators(toList(map(t -> t.b, terms)))))
+        );
+        Rational leadingCoefficient = leadingCoefficient(o).get();
+        if (leadingCoefficient.signum() == -1) {
+            positivePrimitive = positivePrimitive.negate();
         }
-        return new Pair<>(gcd, divideExact(gcd));
+        return new Pair<>(leadingCoefficient.divide(positivePrimitive.leadingCoefficient(o).get()), positivePrimitive);
     }
 
     /**
-     * Returns the Sylvester matrix of {@code this} and {@code that}, expanded in terms of powers of
-     * {@code variableToEliminate}.
+     * Returns a {@code Pair} containing a constant and an integer-coefficient polynomial whose product is
+     * {@code this}, such that the leading coefficient of the polynomial part (with respect to grevlex order) is
+     * positive and the GCD of its coefficients is 1.
      *
      * <ul>
-     *  <li>{@code this} cannot be zero and must have no more than two variables.</li>
-     *  <li>{@code that} cannot be zero and must have no more than two variables.</li>
-     *  <li>{@code variableToEliminate} cannot be null.</li>
-     *  <li>Apart from {@code variableToEliminate}, {@code this} and {@code that} must have no more than one other
-     *  variable.</li>
-     *  <li>The result is a Sylvester matrix.</li>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>The result is a {@code Pair} whose first element is nonzero and whose second element has a positive leading
+     *  coefficient with respect to grevlex order and no invertible integral constant factors.</li>
      * </ul>
      *
-     * @param that a {@code MultivariatePolynomial}
-     * @return S<sub>{@code this},{@code that}</sub> expanded with respect to {@code variableToEliminate}
+     * @return a constant factor of {@code this} and {@code this} divided by the factor
      */
-    public @NotNull PolynomialMatrix sylvesterMatrix(
-            @NotNull MultivariatePolynomial that,
-            Variable variableToEliminate
-    ) {
+    public @NotNull Pair<Rational, MultivariatePolynomial> constantFactor() {
         if (this == ZERO) {
             throw new ArithmeticException("this cannot be zero.");
         }
-        if (that == ZERO) {
-            throw new ArithmeticException("that cannot be zero.");
+        MultivariatePolynomial positivePrimitive = MultivariatePolynomial.of(
+                toList(zip(map(t -> t.a, terms), Rational.cancelDenominators(toList(map(t -> t.b, terms)))))
+        );
+        Rational leadingCoefficient = leadingCoefficient().get();
+        if (leadingCoefficient.signum() == -1) {
+            positivePrimitive = positivePrimitive.negate();
         }
-        List<Variable> thisVariables = variables();
-        thisVariables.remove(variableToEliminate);
-        if (thisVariables.size() > 1) {
-            throw new ArithmeticException("Apart from variableToEliminate, this must have no more than one other" +
-                    " variable. variableToEliminate: " + variableToEliminate + ", this: " + this);
-        }
-        List<Variable> thatVariables = that.variables();
-        thatVariables.remove(variableToEliminate);
-        if (thatVariables.size() > 1) {
-            throw new ArithmeticException("Apart from variableToEliminate, that must have no more than one other" +
-                    " variable. variableToEliminate: " + variableToEliminate + ", that: " + that);
-        }
-
-        List<Polynomial> thisCoefficients =
-                reverse(map(MultivariatePolynomial::toPolynomial, coefficientsOfVariable(variableToEliminate)));
-        List<Polynomial> thatCoefficients =
-                reverse(map(MultivariatePolynomial::toPolynomial, that.coefficientsOfVariable(variableToEliminate)));
-        int thisDegree = thisCoefficients.size() - 1;
-        int thatDegree = thatCoefficients.size() - 1;
-        List<PolynomialVector> rows = new ArrayList<>();
-        for (int i = 0; i < thatDegree; i++) {
-            List<Polynomial> row = new ArrayList<>();
-            for (int j = 0; j < i; j++) {
-                row.add(Polynomial.ZERO);
-            }
-            row.addAll(thisCoefficients);
-            for (int j = 0; j < thatDegree - i - 1; j++) {
-                row.add(Polynomial.ZERO);
-            }
-            rows.add(PolynomialVector.of(row));
-        }
-        for (int i = 0; i < thisDegree; i++) {
-            List<Polynomial> row = new ArrayList<>();
-            for (int j = 0; j < i; j++) {
-                row.add(Polynomial.ZERO);
-            }
-            row.addAll(thatCoefficients);
-            for (int j = 0; j < thisDegree - i - 1; j++) {
-                row.add(Polynomial.ZERO);
-            }
-            rows.add(PolynomialVector.of(row));
-        }
-        return PolynomialMatrix.fromRows(rows);
+        return new Pair<>(leadingCoefficient.divide(positivePrimitive.leadingCoefficient().get()), positivePrimitive);
     }
 
     /**
-     * Returns the resultant of {@code this} and {@code that} with respect to {@code variableToEliminate}.
-     *
-     * <ul>
-     *  <li>{@code this} cannot be zero and must have no more than two variables.</li>
-     *  <li>{@code that} cannot be zero and must have no more than two variables.</li>
-     *  <li>{@code variableToEliminate} cannot be null.</li>
-     *  <li>Apart from {@code variableToEliminate}, {@code this} and {@code that} must have no more than one other
-     *  variable.</li>
-     *  <li>The result is not null.</li>
-     * </ul>
-     *
-     * @param that a {@code Polynomial}
-     * @return Res({@code this},{@code that}) with respect to {@code variableToEliminate}
-     */
-    @SuppressWarnings("JavaDoc")
-    public @NotNull Polynomial resultant(@NotNull MultivariatePolynomial that, @NotNull Variable variableToEliminate) {
-        return sylvesterMatrix(that, variableToEliminate).determinant();
-    }
-
-    /**
-     * Given some {@code Variable}s v<sub>i</sub> and some monic {@code Polynomials} p<sub>i</sub> such that
+     * Given some {@code Variable}s v<sub>i</sub> and some monic {@code RationalPolynomials} p<sub>i</sub> such that
      * p<sub>i</sub>(v<sub>i</sub>)=0, reduces {@code this} so that the degree of v<sub>i</sub> in the result is less
      * than deg(p<sub>i</sub>). If a {@code Variable} isn't listed in {@code minimalPolynomials} it won't be reduced.
      * Unused variables are allowed.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
      *  <li>{@code minimalPolynomials} may not have any null keys or values. All values must be monic and
      *  non-constant.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @param minimalPolynomials {@code Polynomial}s that define when variables are 0
+     * @param minimalPolynomials {@code RationalPolynomial}s that define when variables are 0
      * @return {@code this} reduced by {@code minimalPolynomials}
      */
-    public @NotNull MultivariatePolynomial powerReduce(@NotNull Map<Variable, Polynomial> minimalPolynomials) {
-        for (Map.Entry<Variable, Polynomial> entry : minimalPolynomials.entrySet()) {
-            Polynomial p = entry.getValue();
+    public @NotNull RationalMultivariatePolynomial powerReduce(
+            @NotNull Map<Variable, RationalPolynomial> minimalPolynomials
+    ) {
+        for (Map.Entry<Variable, RationalPolynomial> entry : minimalPolynomials.entrySet()) {
+            RationalPolynomial p = entry.getValue();
             if (entry.getKey() == null || p == null) {
                 throw new NullPointerException();
             }
@@ -1356,20 +1267,20 @@ public final class MultivariatePolynomial implements
             }
         }
         if (this == ZERO) return ZERO;
-        Map<Variable, List<MultivariatePolynomial>> powerTables = new HashMap<>();
-        for (Map.Entry<Variable, Polynomial> entry : minimalPolynomials.entrySet()) {
+        Map<Variable, List<RationalMultivariatePolynomial>> powerTables = new HashMap<>();
+        for (Map.Entry<Variable, RationalPolynomial> entry : minimalPolynomials.entrySet()) {
             Variable v = entry.getKey();
             powerTables.put(v, toList(map(p -> of(p, v), entry.getValue().powerTable(degree(v)))));
         }
-        MultivariatePolynomial sum = ZERO;
-        for (Pair<Monomial, BigInteger> term : terms) {
-            MultivariatePolynomial product = of(term.b);
+        RationalMultivariatePolynomial sum = ZERO;
+        for (Pair<Monomial, Rational> term : terms) {
+            RationalMultivariatePolynomial product = of(term.b);
             for (Pair<Variable, Integer> factor : term.a.terms()) {
-                List<MultivariatePolynomial> powerTable = powerTables.get(factor.a);
+                List<RationalMultivariatePolynomial> powerTable = powerTables.get(factor.a);
                 int power = factor.b;
                 product = product.multiply(
                         powerTable == null ?
-                                of(Monomial.of(factor.a).pow(power), BigInteger.ONE) :
+                                of(Monomial.of(factor.a).pow(power), Rational.ONE) :
                                 powerTable.get(power)
                 );
             }
@@ -1382,7 +1293,7 @@ public final class MultivariatePolynomial implements
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
      *  <li>{@code that} may be any {@code Object}.</li>
      *  <li>The result may be either {@code boolean}.</li>
      * </ul>
@@ -1393,14 +1304,15 @@ public final class MultivariatePolynomial implements
     @Override
     public boolean equals(Object that) {
         return this == that ||
-                that != null && getClass() == that.getClass() && terms.equals(((MultivariatePolynomial) that).terms);
+                that != null && getClass() == that.getClass() &&
+                terms.equals(((RationalMultivariatePolynomial) that).terms);
     }
 
     /**
      * Calculates the hash code of {@code this}.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
      *  <li>(conjecture) The result may be any {@code int}.</li>
      * </ul>
      *
@@ -1417,7 +1329,7 @@ public final class MultivariatePolynomial implements
      * lists.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
      *  <li>{@code that} cannot be null.</li>
      *  <li>The result may be –1, 0, or 1.</li>
      * </ul>
@@ -1426,15 +1338,15 @@ public final class MultivariatePolynomial implements
      * @return {@code this} compared to {@code that}
      */
     @Override
-    public int compareTo(@NotNull MultivariatePolynomial that) {
+    public int compareTo(@NotNull RationalMultivariatePolynomial that) {
         if (this == that) return 0;
         if (this == ZERO) return -1;
         if (that == ZERO) return 1;
         int i = terms.size() - 1;
         int j = that.terms.size() - 1;
         while (i >= 0 && j >= 0) {
-            Pair<Monomial, BigInteger> thisTerm = terms.get(i);
-            Pair<Monomial, BigInteger> thatTerm = that.terms.get(j);
+            Pair<Monomial, Rational> thisTerm = terms.get(i);
+            Pair<Monomial, Rational> thatTerm = that.terms.get(j);
             int evCompare = thisTerm.a.compareTo(thatTerm.a);
             if (evCompare != 0) return evCompare;
             int iCompare = thisTerm.b.compareTo(thatTerm.b);
@@ -1448,22 +1360,22 @@ public final class MultivariatePolynomial implements
     }
 
     /**
-     * Creates a {@code MultivariatePolynomial} from a {@code String}. Valid input takes the form of a {@code String}
-     * that could have been returned by {@link MultivariatePolynomial#toString(MonomialOrder)} applied to
-     * {@code order}.
+     * Creates a {@code RationalMultivariatePolynomial} from a {@code String}. Valid input takes the form of a
+     * {@code String} that could have been returned by {@link RationalMultivariatePolynomial#toString(MonomialOrder)}
+     * applied to {@code order}.
      *
      * <ul>
      *  <li>{@code s} cannot be null.</li>
      *  <li>{@code order} cannot be null.</li>
-     *  <li>The result may contain any {@code MultivariatePolynomial}, or be empty.</li>
+     *  <li>The result may contain any {@code RationalMultivariatePolynomial}, or be empty.</li>
      * </ul>
      *
-     * @param s a string representation of a {@code MultivariatePolynomial}
+     * @param s a string representation of a {@code RationalMultivariatePolynomial}
      * @param order the monomial order with respect to which the input terms must descend
-     * @return the {@code MultivariatePolynomial} represented by {@code s}, or an empty {@code Optional} if {@code s}
-     * is invalid
+     * @return the {@code RationalMultivariatePolynomial} represented by {@code s}, or an empty {@code Optional} if
+     * {@code s} is invalid
      */
-    public static @NotNull Optional<MultivariatePolynomial> readStrict(
+    public static @NotNull Optional<RationalMultivariatePolynomial> readStrict(
             @NotNull String s,
             @NotNull MonomialOrder order
     ) {
@@ -1495,21 +1407,21 @@ public final class MultivariatePolynomial implements
             monomialStrings.add(monomialString);
         }
 
-        List<Pair<Monomial, BigInteger>> terms = new ArrayList<>();
+        List<Pair<Monomial, Rational>> terms = new ArrayList<>();
         for (int i = monomialStrings.size() - 1; i >= 0; i--) {
             monomialString = monomialStrings.get(i);
             if (monomialString.isEmpty()) return Optional.empty();
             char head = head(monomialString);
             if (all(c -> c < 'a' || c > 'z', monomialString)) {
-                Optional<BigInteger> oConstant = Readers.readBigIntegerStrict(monomialString);
+                Optional<Rational> oConstant = Rational.readStrict(monomialString);
                 if (!oConstant.isPresent()) return Optional.empty();
-                BigInteger constant = oConstant.get();
-                if (constant.equals(BigInteger.ZERO)) return Optional.empty();
+                Rational constant = oConstant.get();
+                if (constant == Rational.ZERO) return Optional.empty();
                 terms.add(new Pair<>(Monomial.ONE, constant));
             } else if (head >= 'a' && head <= 'z') {
                 Optional<Monomial> oMonomial = Monomial.readStrict(monomialString);
                 if (!oMonomial.isPresent()) return Optional.empty();
-                terms.add(new Pair<>(oMonomial.get(), BigInteger.ONE));
+                terms.add(new Pair<>(oMonomial.get(), Rational.ONE));
             } else {
                 if (head == '-') {
                     if (monomialString.length() == 1) return Optional.empty();
@@ -1517,17 +1429,16 @@ public final class MultivariatePolynomial implements
                     if (second >= 'a' && second <= 'z') {
                         Optional<Monomial> oMonomial = Monomial.readStrict(tail(monomialString));
                         if (!oMonomial.isPresent()) return Optional.empty();
-                        terms.add(new Pair<>(oMonomial.get(), IntegerUtils.NEGATIVE_ONE));
+                        terms.add(new Pair<>(oMonomial.get(), Rational.NEGATIVE_ONE));
                         continue;
                     }
                 }
                 int starIndex = monomialString.indexOf('*');
                 if (starIndex == -1) return Optional.empty();
-                Optional<BigInteger> oFactor = Readers.readBigIntegerStrict(monomialString.substring(0, starIndex));
+                Optional<Rational> oFactor = Rational.readStrict(monomialString.substring(0, starIndex));
                 if (!oFactor.isPresent()) return Optional.empty();
-                BigInteger factor = oFactor.get();
-                if (factor.equals(BigInteger.ZERO) || factor.equals(BigInteger.ONE) ||
-                        factor.equals(IntegerUtils.NEGATIVE_ONE)) {
+                Rational factor = oFactor.get();
+                if (factor == Rational.ZERO || factor == Rational.ONE || factor.equals(Rational.NEGATIVE_ONE)) {
                     return Optional.empty();
                 }
                 Optional<Monomial> oMonomial =
@@ -1542,23 +1453,23 @@ public final class MultivariatePolynomial implements
         if (order != DEFAULT_ORDER) {
             terms = sort((x, y) -> x.a.compareTo(y.a), terms);
         }
-        return Optional.of(new MultivariatePolynomial(terms));
+        return Optional.of(new RationalMultivariatePolynomial(terms));
     }
 
     /**
-     * Creates a {@code MultivariatePolynomial} from a {@code String}. Valid input takes the form of a {@code String}
-     * that could have been returned by {@link MultivariatePolynomial#toString()}.
+     * Creates a {@code RationalMultivariatePolynomial} from a {@code String}. Valid input takes the form of a
+     * {@code String} that could have been returned by {@link RationalMultivariatePolynomial#toString()}.
      *
      * <ul>
      *  <li>{@code s} must be non-null.</li>
-     *  <li>The result may contain any {@code MultivariatePolynomial}, or be empty.</li>
+     *  <li>The result may contain any {@code RationalMultivariatePolynomial}, or be empty.</li>
      * </ul>
      *
-     * @param s a string representation of a {@code MultivariatePolynomial}
-     * @return the {@code MultivariatePolynomial} represented by {@code s}, or an empty {@code Optional} if {@code s}
-     * is invalid
+     * @param s a string representation of a {@code RationalMultivariatePolynomial}
+     * @return the {@code RationalMultivariatePolynomial} represented by {@code s}, or an empty {@code Optional} if
+     * {@code s} is invalid
      */
-    public static @NotNull Optional<MultivariatePolynomial> readStrict(@NotNull String s) {
+    public static @NotNull Optional<RationalMultivariatePolynomial> readStrict(@NotNull String s) {
         return readStrict(s, DEFAULT_ORDER);
     }
 
@@ -1566,7 +1477,7 @@ public final class MultivariatePolynomial implements
      * Creates a {@code String} representation of {@code this}. The terms are descending with respect to {@code order}.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
      *  <li>{@code order} cannot be null.</li>
      *  <li>See tests and demos for example results.</li>
      * </ul>
@@ -1576,13 +1487,13 @@ public final class MultivariatePolynomial implements
      */
     public @NotNull String toString(@NotNull MonomialOrder order) {
         if (this == ZERO) return "0";
-        List<Pair<Monomial, BigInteger>> sortedTerms = order == DEFAULT_ORDER ?
+        List<Pair<Monomial, Rational>> sortedTerms = order == DEFAULT_ORDER ?
                 terms :
                 sort((x, y) -> order.compare(x.a, y.a), terms);
         StringBuilder sb = new StringBuilder();
         boolean first = true;
         for (int i = sortedTerms.size() - 1; i >= 0; i--) {
-            Pair<Monomial, BigInteger> term = sortedTerms.get(i);
+            Pair<Monomial, Rational> term = sortedTerms.get(i);
             if (term.b.signum() == 1 && !first) {
                 sb.append('+');
             }
@@ -1592,9 +1503,9 @@ public final class MultivariatePolynomial implements
             if (term.a == Monomial.ONE) {
                 sb.append(term.b);
             } else {
-                if (term.b.equals(IntegerUtils.NEGATIVE_ONE)) {
+                if (term.b.equals(Rational.NEGATIVE_ONE)) {
                     sb.append('-');
-                } else if (!term.b.equals(BigInteger.ONE)) {
+                } else if (term.b != Rational.ONE) {
                     sb.append(term.b.toString()).append('*');
                 }
                 sb.append(term.a);
@@ -1607,7 +1518,7 @@ public final class MultivariatePolynomial implements
      * Creates a {@code String} representation of {@code this}.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code this} may be any {@code RationalMultivariatePolynomial}.</li>
      *  <li>See tests and demos for example results.</li>
      * </ul>
      *
@@ -1618,12 +1529,12 @@ public final class MultivariatePolynomial implements
     }
 
     /**
-     * Ensures that {@code this} is valid. Must return without exceptions for any {@code MultivariatePolynomial} used
-     * outside this class.
+     * Ensures that {@code this} is valid. Must return without exceptions for any
+     * {@code RationalMultivariatePolynomial} used outside this class.
      */
     public void validate() {
         assertEquals(this, DEFAULT_ORDER, MonomialOrder.GREVLEX);
-        assertTrue(this, all(t -> t != null && t.a != null && t.b != null && !t.b.equals(BigInteger.ZERO), terms));
+        assertTrue(this, all(t -> t != null && t.a != null && t.b != null && t.b != Rational.ZERO, terms));
         //noinspection RedundantCast
         assertTrue(this, increasing((Iterable<Monomial>) map(t -> t.a, terms)));
         if (equals(ZERO)) {

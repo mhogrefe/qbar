@@ -1,19 +1,22 @@
 package mho.qbar.objects;
 
 import mho.qbar.testing.QBarDemos;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import static mho.qbar.objects.Variable.of;
 import static mho.qbar.objects.Variable.readStrict;
-import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.iterables.IterableUtils.charsToString;
+import static mho.wheels.iterables.IterableUtils.take;
 import static mho.wheels.testing.Testing.MEDIUM_LIMIT;
 import static mho.wheels.testing.Testing.nicePrint;
 
 @SuppressWarnings("UnusedDeclaration")
 public class VariableDemos extends QBarDemos {
-    private static final @NotNull String VARIABLE_CHARS = charsToString(range('a', 'z'));
+    private static final @NotNull String VARIABLE_CHARS =
+            charsToString(ExhaustiveProvider.INSTANCE.rangeIncreasing('a', 'z'));
 
     public VariableDemos(boolean useRandom) {
         super(useRandom);
@@ -52,7 +55,7 @@ public class VariableDemos extends QBarDemos {
 
     private void demoCompareTo() {
         for (Pair<Variable, Variable> p : take(LIMIT, P.pairs(P.variables()))) {
-            System.out.println(p.a + " " + Ordering.compare(p.a, p.b).toChar() + " " + p.b);
+            System.out.println(p.a + " " + Ordering.compare(p.a, p.b) + " " + p.b);
         }
     }
 

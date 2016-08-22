@@ -521,17 +521,17 @@ public final class RationalPolynomialVector implements
      * Returns the sum of all the {@code RationalPolynomialVector}s in {@code xs}.
      *
      * <ul>
-     *  <li>{@code xs} must be finite and non-empty, and may not contain any nulls. Every
-     *  {@code RationalPolynomialVector} in {@code xs} must have the same dimension.</li>
+     *  <li>{@code xs} must be non-empty and may not contain any nulls. Every {@code RationalPolynomialVector} in
+     *  {@code xs} must have the same dimension.</li>
      *  <li>The result may be any {@code RationalPolynomialVector}.</li>
      * </ul>
      *
      * Length is dim(head({@code xs}))
      *
-     * @param xs an {@code Iterable} of {@code RationalPolynomialVector}s.
+     * @param xs a {@code List} of {@code RationalPolynomialVector}s.
      * @return Σxs
      */
-    public static @NotNull RationalPolynomialVector sum(@NotNull Iterable<RationalPolynomialVector> xs) {
+    public static @NotNull RationalPolynomialVector sum(@NotNull List<RationalPolynomialVector> xs) {
         if (isEmpty(xs)) {
             throw new IllegalArgumentException("xs cannot be empty.");
         } else if (!same(map(RationalPolynomialVector::dimension, xs))) {
@@ -586,7 +586,7 @@ public final class RationalPolynomialVector implements
             throw new ArithmeticException("this and that must have the same dimension. this: " + this + ", that: " +
                     that);
         }
-        return RationalPolynomial.sum(zipWith(RationalPolynomial::multiply, coordinates, that.coordinates));
+        return RationalPolynomial.sum(toList(zipWith(RationalPolynomial::multiply, coordinates, that.coordinates)));
     }
 
     /**
@@ -601,7 +601,7 @@ public final class RationalPolynomialVector implements
      * @return ‖{@code this}‖²
      */
     public @NotNull RationalPolynomial squaredLength() {
-        return RationalPolynomial.sum(map(x -> x.pow(2), coordinates));
+        return RationalPolynomial.sum(toList(map(x -> x.pow(2), coordinates)));
     }
 
     /**

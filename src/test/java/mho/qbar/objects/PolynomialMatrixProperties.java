@@ -3,6 +3,7 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
@@ -107,7 +108,7 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
         initialize("row(int)");
         Iterable<Pair<PolynomialMatrix, Integer>> ps = P.dependentPairs(
                 filterInfinite(m -> m.height() > 0, P.polynomialMatrices()),
-                m -> P.uniformSample(toList(range(0, m.height() - 1)))
+                m -> P.uniformSample(toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m.height() - 1)))
         );
         for (Pair<PolynomialMatrix, Integer> p : take(LIMIT, ps)) {
             PolynomialVector row = p.a.row(p.b);
@@ -130,7 +131,7 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
         initialize("column(int)");
         Iterable<Pair<PolynomialMatrix, Integer>> ps = P.dependentPairs(
                 filterInfinite(m -> m.width() > 0, P.polynomialMatrices()),
-                m -> P.uniformSample(toList(range(0, m.width() - 1)))
+                m -> P.uniformSample(toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m.width() - 1)))
         );
         for (Pair<PolynomialMatrix, Integer> p : take(LIMIT, ps)) {
             PolynomialVector column = p.a.column(p.b);
@@ -167,7 +168,12 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
                 P.dependentPairs(
                         filterInfinite(m -> m.height() > 0 && m.width() > 0, P.polynomialMatrices()),
                         m -> P.uniformSample(
-                                toList(EP.pairsLex(range(0, m.height() - 1), toList(range(0, m.width() - 1))))
+                                toList(
+                                        EP.pairsLex(
+                                                ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m.height() - 1),
+                                                toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m.width() - 1))
+                                        )
+                                )
                         )
                 )
         );
@@ -420,8 +426,12 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
                 P.dependentPairs(
                         P.polynomialMatrices(),
                         m -> {
-                            List<Integer> allRows = toList(EP.range(0, m.height() - 1));
-                            List<Integer> allColumns = toList(EP.range(0, m.width() - 1));
+                            List<Integer> allRows = m.height() == 0 ?
+                                    Collections.emptyList() :
+                                    toList(EP.range(0, m.height() - 1));
+                            List<Integer> allColumns = m.width() == 0 ?
+                                    Collections.emptyList() :
+                                    toList(EP.range(0, m.width() - 1));
                             return P.pairs(
                                     map(bs -> toList(select(bs, allRows)), P.lists(m.height(), P.booleans())),
                                     map(bs -> toList(select(bs, allColumns)), P.lists(m.width(), P.booleans()))
@@ -439,7 +449,18 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
         PolynomialMatrix zero = zero(0, 0);
         for (PolynomialMatrix m : take(LIMIT, P.polynomialMatrices())) {
             assertEquals(m, m.submatrix(Collections.emptyList(), Collections.emptyList()), zero);
-            assertEquals(m, m.submatrix(toList(range(0, m.height() - 1)), toList(range(0, m.width() - 1))), m);
+            assertEquals(
+                    m,
+                    m.submatrix(
+                            m.height() == 0 ?
+                                    Collections.emptyList() :
+                                    toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m.height() - 1)),
+                            m.width() == 0 ?
+                                    Collections.emptyList() :
+                                    toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m.width() - 1))
+                    ),
+                    m
+            );
         }
 
         Iterable<Triple<PolynomialMatrix, List<Integer>, List<Integer>>> tsFail = map(
@@ -448,7 +469,9 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
                         P.polynomialMatrices(),
                         m -> {
                             int height = m.height();
-                            List<Integer> allColumns = toList(EP.range(0, m.width() - 1));
+                            List<Integer> allColumns = m.width() == 0 ?
+                                    Collections.emptyList() :
+                                    toList(EP.range(0, m.width() - 1));
                             return P.pairs(
                                     filterInfinite(
                                             is -> any(i -> i == null || i < 0 || i >= height, is) || !increasing(is),
@@ -471,7 +494,9 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
                 P.dependentPairs(
                         P.polynomialMatrices(),
                         m -> {
-                            List<Integer> allRows = toList(EP.range(0, m.height() - 1));
+                            List<Integer> allRows = m.height() == 0 ?
+                                    Collections.emptyList() :
+                                    toList(EP.range(0, m.height() - 1));
                             int width = m.width();
                             return P.pairs(
                                     map(bs -> toList(select(bs, allRows)), P.lists(m.height(), P.booleans())),
@@ -543,7 +568,7 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
         Map<String, Function<PolynomialMatrix, PolynomialMatrix>> functions = new LinkedHashMap<>();
         functions.put("alt", PolynomialMatrixProperties::transpose_alt);
         functions.put("standard", PolynomialMatrix::transpose);
-        compareImplementations("transpose()", take(LIMIT, P.polynomialMatrices()), functions);
+        compareImplementations("transpose()", take(LIMIT, P.polynomialMatrices()), functions, v -> P.reset());
     }
 
     private void propertiesConcat() {
@@ -563,7 +588,7 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
                                 t -> P.pairs(P.polynomialMatrices(t.a, t.c), P.polynomialMatrices(t.b, t.c))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 p -> new Pair<>(zero(p.a, 0), zero(p.b, 0)),
                                 P.pairs(P.naturalIntegersGeometric())
@@ -619,7 +644,7 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
                                 t -> P.pairs(P.polynomialMatrices(t.a, t.b), P.polynomialMatrices(t.a, t.c))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(p -> new Pair<>(zero(0, p.a), zero(0, p.b)), P.pairs(P.naturalIntegersGeometric())),
                         map(
                                 i -> {
@@ -665,7 +690,7 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
                                 p -> P.pairs(P.polynomialMatrices(p.a, p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> {
                                     PolynomialMatrix m = zero(0, i);
@@ -709,7 +734,7 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
                                 p -> P.triples(P.polynomialMatrices(p.a, p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> {
                                     PolynomialMatrix m = zero(0, i);
@@ -775,7 +800,7 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
                                 p -> P.pairs(P.polynomialMatrices(p.a, p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> {
                                     PolynomialMatrix m = zero(0, i);
@@ -833,7 +858,7 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
                                 p -> P.pairs(P.polynomialMatrices(p.a, p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> {
                                     PolynomialMatrix m = zero(0, i);
@@ -850,7 +875,7 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
                         )
                 )
         );
-        compareImplementations("subtract(PolynomialMatrix)", take(LIMIT, ps), functions);
+        compareImplementations("subtract(PolynomialMatrix)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private void propertiesMultiply_Polynomial() {
@@ -932,7 +957,7 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
                                 p -> P.pairs(P.polynomialMatrices(p.a, p.b), P.polynomialVectors(p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> new Pair<>(zero(i, 0), PolynomialVector.ZERO_DIMENSIONAL),
                                 P.naturalIntegersGeometric()
@@ -1017,7 +1042,7 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
                         )
                 ),
                 P.choose(
-                    P.choose(
+                    P.withScale(1).choose(
                             map(
                                     m -> new Pair<>(m, zero(m.width(), 0)),
                                     filterInfinite(
@@ -1128,7 +1153,7 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
                         )
                 ),
                 P.choose(
-                        P.choose(
+                        P.withScale(1).choose(
                                 map(
                                         m -> new Pair<>(m, zero(m.width(), 0)),
                                         filterInfinite(
@@ -1150,7 +1175,7 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
                         )
                 )
         );
-        compareImplementations("multiply(PolynomialMatrix)", take(LIMIT, ps), functions);
+        compareImplementations("multiply(PolynomialMatrix)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull PolynomialMatrix shiftLeft_simplest(@NotNull PolynomialMatrix m, int bits) {
@@ -1198,7 +1223,7 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
         functions.put("simplest", p -> shiftLeft_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.shiftLeft(p.b));
         Iterable<Pair<PolynomialMatrix, Integer>> ps = P.pairs(P.polynomialMatrices(), P.naturalIntegersGeometric());
-        compareImplementations("shiftLeft(int)", take(LIMIT, ps), functions);
+        compareImplementations("shiftLeft(int)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull Polynomial determinant_Laplace(@NotNull PolynomialMatrix m) {
@@ -1206,7 +1231,7 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
         if (m.width() == 1) return m.get(0, 0);
         Polynomial determinant = Polynomial.ZERO;
         PolynomialVector firstRow = m.row(0);
-        List<Integer> rowIndices = toList(range(1, m.width() - 1));
+        List<Integer> rowIndices = toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(1, m.width() - 1));
         boolean sign = true;
         for (int i = 0; i < m.width(); i++) {
             Polynomial factor = firstRow.get(i);
@@ -1215,7 +1240,16 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
             if (factor == Polynomial.ZERO) continue;
             Polynomial minor = m.submatrix(
                     rowIndices,
-                    toList(concat(range(0, i - 1), range(i + 1, m.width() - 1)))
+                    toList(
+                            concat(
+                                    i == 0 ?
+                                            Collections.emptyList() :
+                                            ExhaustiveProvider.INSTANCE.rangeIncreasing(0, i - 1),
+                                    m.width() < i + 2 ?
+                                            Collections.emptyList() :
+                                            ExhaustiveProvider.INSTANCE.rangeIncreasing(i + 1, m.width() - 1)
+                            )
+                    )
             ).determinant();
             determinant = determinant.add(factor.multiply(minor));
         }
@@ -1270,7 +1304,12 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
         Map<String, Function<PolynomialMatrix, Polynomial>> functions = new LinkedHashMap<>();
         functions.put("Laplace", PolynomialMatrixProperties::determinant_Laplace);
         functions.put("standard", PolynomialMatrix::determinant);
-        compareImplementations("determinant()", take(LIMIT, P.withScale(4).squarePolynomialMatrices()), functions);
+        compareImplementations(
+                "determinant()",
+                take(LIMIT, P.withScale(4).squarePolynomialMatrices()),
+                functions,
+                v -> P.reset()
+        );
     }
 
     private void propertiesEquals() {

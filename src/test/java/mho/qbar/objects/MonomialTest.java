@@ -82,11 +82,11 @@ public class MonomialTest {
         terms_helper("x^2*y*z^3", "[(x, 2), (y, 1), (z, 3)]");
     }
 
-    private static void of_helper(@NotNull String input, @NotNull String output) {
+    private static void of_List_Integer_helper(@NotNull String input, @NotNull String output) {
         aeq(of(readIntegerList(input)), output);
     }
 
-    private static void of_fail_helper(@NotNull String input) {
+    private static void of_List_Integer_fail_helper(@NotNull String input) {
         try {
             of(readIntegerListWithNulls(input));
             fail();
@@ -94,17 +94,34 @@ public class MonomialTest {
     }
 
     @Test
-    public void testOf() {
-        of_helper("[]", "1");
-        of_helper("[0]", "1");
-        of_helper("[0, 0, 0]", "1");
-        of_helper("[1]", "a");
-        of_helper("[0, 0, 0, 4]", "d^4");
-        of_helper("[1, 2, 3, 4, 5]", "a*b^2*c^3*d^4*e^5");
-        of_helper("[1, 2, 3, 4, 5, 0]", "a*b^2*c^3*d^4*e^5");
+    public void testOf_List_Integer() {
+        of_List_Integer_helper("[]", "1");
+        of_List_Integer_helper("[0]", "1");
+        of_List_Integer_helper("[0, 0, 0]", "1");
+        of_List_Integer_helper("[1]", "a");
+        of_List_Integer_helper("[0, 0, 0, 4]", "d^4");
+        of_List_Integer_helper("[1, 2, 3, 4, 5]", "a*b^2*c^3*d^4*e^5");
+        of_List_Integer_helper("[1, 2, 3, 4, 5, 0]", "a*b^2*c^3*d^4*e^5");
 
-        of_fail_helper("[1, -1, 3]");
-        of_fail_helper("[1, null, 3]");
+        of_List_Integer_fail_helper("[1, -1, 3]");
+        of_List_Integer_fail_helper("[1, null, 3]");
+    }
+
+    private static void of_Variable(@NotNull String input) {
+        Monomial m = of(Variable.readStrict(input).get());
+        m.validate();
+        aeq(m, input);
+    }
+
+    @Test
+    public void testOf_Variable() {
+        of_Variable("a");
+        of_Variable("b");
+        of_Variable("c");
+        of_Variable("x");
+        of_Variable("y");
+        of_Variable("z");
+        of_Variable("ooo");
     }
 
     private static void fromTerms_helper(@NotNull String input, @NotNull String output) {
@@ -164,6 +181,21 @@ public class MonomialTest {
         variables_helper("x^2*y*z^3", "[x, y, z]");
     }
 
+    private static void variableCount_helper(@NotNull String input, int output) {
+        aeq(readStrict(input).get().variableCount(), output);
+    }
+
+    @Test
+    public void testVariableCount() {
+        variableCount_helper("1", 0);
+        variableCount_helper("a", 1);
+        variableCount_helper("a^2", 1);
+        variableCount_helper("a^3", 1);
+        variableCount_helper("a*b", 2);
+        variableCount_helper("ooo", 1);
+        variableCount_helper("x^2*y*z^3", 3);
+    }
+
     private static void removeVariable_helper(@NotNull String m, @NotNull String v, @NotNull String output) {
         aeq(readStrict(m).get().removeVariable(Variable.readStrict(v).get()), output);
     }
@@ -214,6 +246,38 @@ public class MonomialTest {
 
         removeVariables_fail_helper("1", "[a, null, b]");
         removeVariables_fail_helper("a", "[a, null, b]");
+    }
+
+    private static void retainVariables_helper(@NotNull String m, @NotNull String vs, @NotNull String output) {
+        aeq(readStrict(m).get().retainVariables(readVariableList(vs)), output);
+    }
+
+    private static void retainVariables_fail_helper(@NotNull String m, @NotNull String vs) {
+        try {
+            readStrict(m).get().retainVariables(readVariableListWithNulls(vs));
+            fail();
+        } catch (NullPointerException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testRetainVariables() {
+        retainVariables_helper("1", "[]", "1");
+        retainVariables_helper("1", "[a]", "1");
+        retainVariables_helper("1", "[a, z]", "1");
+        retainVariables_helper("a", "[]", "1");
+        retainVariables_helper("a", "[b, z]", "1");
+        retainVariables_helper("a", "[a, z]", "a");
+        retainVariables_helper("x^2*y*z^3", "[]", "1");
+        retainVariables_helper("x^2*y*z^3", "[x]", "x^2");
+        retainVariables_helper("x^2*y*z^3", "[y]", "y");
+        retainVariables_helper("x^2*y*z^3", "[z]", "z^3");
+        retainVariables_helper("x^2*y*z^3", "[x, y]", "x^2*y");
+        retainVariables_helper("x^2*y*z^3", "[x, z]", "x^2*z^3");
+        retainVariables_helper("x^2*y*z^3", "[y, z]", "y*z^3");
+        retainVariables_helper("x^2*y*z^3", "[x, y, z]", "x^2*y*z^3");
+
+        retainVariables_fail_helper("1", "[a, null, b]");
+        retainVariables_fail_helper("a", "[a, null, b]");
     }
 
     private static void multiply_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
@@ -322,9 +386,9 @@ public class MonomialTest {
         aeq(readStrict(m).get().applyBigInteger(readVariableBigIntegerMap(xs)), output);
     }
 
-    private static void apply_BigInteger_fail_helper(@NotNull String ev, @NotNull String xs) {
+    private static void apply_BigInteger_fail_helper(@NotNull String m, @NotNull String xs) {
         try {
-            readStrict(ev).get().applyBigInteger(readVariableBigIntegerMapWithNulls(xs));
+            readStrict(m).get().applyBigInteger(readVariableBigIntegerMapWithNulls(xs));
             fail();
         } catch (IllegalArgumentException | NullPointerException ignored) {}
     }
@@ -482,7 +546,7 @@ public class MonomialTest {
 
     private static @NotNull List<Pair<Variable, Integer>> readVariableIntegerPairList(@NotNull String s) {
         return Readers.readListStrict(
-                u -> Pair.read(
+                u -> Pair.readStrict(
                         u,
                         t -> NullableOptional.fromOptional(Variable.readStrict(t)),
                         t -> NullableOptional.fromOptional(Readers.readIntegerStrict(t))
@@ -492,7 +556,7 @@ public class MonomialTest {
 
     private static @NotNull List<Pair<Variable, Integer>> readVariableIntegerPairListWithNulls(@NotNull String s) {
         return Readers.readListWithNullsStrict(
-                u -> Pair.read(
+                u -> Pair.readStrict(
                         u,
                         Readers.readWithNullsStrict(Variable::readStrict),
                         Readers.readWithNullsStrict(Readers::readIntegerStrict)
@@ -503,7 +567,7 @@ public class MonomialTest {
     private static @NotNull Map<Variable, BigInteger> readVariableBigIntegerMap(@NotNull String s) {
         return IterableUtils.toMap(
                 Readers.readListStrict(
-                        u -> Pair.read(
+                        u -> Pair.readStrict(
                                 u,
                                 t -> NullableOptional.fromOptional(Variable.readStrict(t)),
                                 t -> NullableOptional.fromOptional(Readers.readBigIntegerStrict(t))
@@ -515,7 +579,7 @@ public class MonomialTest {
     private static @NotNull Map<Variable, BigInteger> readVariableBigIntegerMapWithNulls(@NotNull String s) {
         return IterableUtils.toMap(
                 Readers.readListStrict(
-                        u -> Pair.read(
+                        u -> Pair.readStrict(
                                 u,
                                 Readers.readWithNullsStrict(Variable::readStrict),
                                 Readers.readWithNullsStrict(Readers::readBigIntegerStrict)
@@ -527,7 +591,7 @@ public class MonomialTest {
     private static @NotNull Map<Variable, Rational> readVariableRationalMap(@NotNull String s) {
         return IterableUtils.toMap(
                 Readers.readListStrict(
-                        u -> Pair.read(
+                        u -> Pair.readStrict(
                                 u,
                                 t -> NullableOptional.fromOptional(Variable.readStrict(t)),
                                 t -> NullableOptional.fromOptional(Rational.readStrict(t))
@@ -539,7 +603,7 @@ public class MonomialTest {
     private static @NotNull Map<Variable, Rational> readVariableRationalMapWithNulls(@NotNull String s) {
         return IterableUtils.toMap(
                 Readers.readListStrict(
-                        u -> Pair.read(
+                        u -> Pair.readStrict(
                                 u,
                                 Readers.readWithNullsStrict(Variable::readStrict),
                                 Readers.readWithNullsStrict(Rational::readStrict)
@@ -551,7 +615,7 @@ public class MonomialTest {
     private static @NotNull Map<Variable, Monomial> readVariableMonomialMap(@NotNull String s) {
         return IterableUtils.toMap(
                 Readers.readListStrict(
-                        u -> Pair.read(
+                        u -> Pair.readStrict(
                                 u,
                                 t -> NullableOptional.fromOptional(Variable.readStrict(t)),
                                 t -> NullableOptional.fromOptional(Monomial.readStrict(t))
@@ -563,7 +627,7 @@ public class MonomialTest {
     private static @NotNull Map<Variable, Monomial> readVariableMonomialMapWithNulls(@NotNull String s) {
         return IterableUtils.toMap(
                 Readers.readListStrict(
-                        u -> Pair.read(
+                        u -> Pair.readStrict(
                                 u,
                                 Readers.readWithNullsStrict(Variable::readStrict),
                                 Readers.readWithNullsStrict(Monomial::readStrict)

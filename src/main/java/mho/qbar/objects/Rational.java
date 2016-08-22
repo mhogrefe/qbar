@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.NoRemoveIterator;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.math.MathUtils;
@@ -114,7 +115,14 @@ public final class Rational implements Comparable<Rational> {
      * Length is infinite
      */
     public static final @NotNull Iterable<Rational> HARMONIC_NUMBERS =
-            scanl(Rational::add, ONE, map(i -> new Rational(BigInteger.ONE, BigInteger.valueOf(i)), rangeUp(2)));
+            scanl(
+                    Rational::add,
+                    ONE,
+                    map(
+                            i -> new Rational(BigInteger.ONE, BigInteger.valueOf(i)),
+                            ExhaustiveProvider.INSTANCE.rangeUpIncreasing(2)
+                    )
+            );
 
     /**
      * A {@code Comparator} that compares two {@code Rational}s by their denominators, then by the absolute values of
@@ -695,12 +703,12 @@ public final class Rational implements Comparable<Rational> {
      *
      * @return the smallest power of 2 greater than or equal to {@code this}.
      */
-    public @NotNull Rational roundUpToPowerOfTwo() {
+    public @NotNull BinaryFraction roundUpToPowerOfTwo() {
         if (signum() != 1) {
             throw new ArithmeticException("this must be positive. Invalid this: " + this);
         }
-        if (isPowerOfTwo()) return this;
-        return ONE.shiftLeft(binaryExponent() + 1);
+        if (isPowerOfTwo()) return binaryFractionValueExact();
+        return BinaryFraction.ONE.shiftLeft(binaryExponent() + 1);
     }
 
     /**
@@ -1672,14 +1680,14 @@ public final class Rational implements Comparable<Rational> {
      * Returns the sum of all the {@code Rational}s in {@code xs}. If {@code xs} is empty, 0 is returned.
      *
      * <ul>
-     *  <li>{@code xs} must be finite and may not contain any nulls.</li>
+     *  <li>{@code xs} may not contain any nulls.</li>
      *  <li>The result may be any {@code Rational}.</li>
      * </ul>
      *
-     * @param xs an {@code Iterable} of {@code Rational}s
+     * @param xs a {@code List} of {@code Rational}s
      * @return Σxs
      */
-    public static @NotNull Rational sum(@NotNull Iterable<Rational> xs) {
+    public static @NotNull Rational sum(@NotNull List<Rational> xs) {
         if (any(x -> x == null, xs)) {
             throw new NullPointerException();
         }
@@ -1690,14 +1698,14 @@ public final class Rational implements Comparable<Rational> {
      * Returns the product of all the {@code Rational}s in {@code xs}. If {@code xs} is empty, 1 is returned.
      *
      * <ul>
-     *  <li>{@code xs} must be finite and may not contain any nulls.</li>
+     *  <li>{@code xs} may not contain any nulls.</li>
      *  <li>The result may be any {@code Rational}.</li>
      * </ul>
      *
-     * @param xs an {@code Iterable} of {@code Rational}s
+     * @param xs a {@code List} of {@code Rational}s
      * @return Πxs
      */
-    public static @NotNull Rational product(@NotNull Iterable<Rational> xs) {
+    public static @NotNull Rational product(@NotNull List<Rational> xs) {
         if (any(x -> x == null, xs)) {
             throw new NullPointerException();
         }
@@ -1802,7 +1810,20 @@ public final class Rational implements Comparable<Rational> {
         if (n < 1) {
             throw new ArithmeticException("n must be positive. Invalid n: " + n);
         }
-        return sum(cons(ONE, map(i -> new Rational(BigInteger.ONE, BigInteger.valueOf(i)), range(2, n))));
+        if (n == 1) {
+            return ONE;
+        }
+        return sum(
+                toList(
+                        cons(
+                                ONE,
+                                map(
+                                        i -> new Rational(BigInteger.ONE, BigInteger.valueOf(i)),
+                                        ExhaustiveProvider.INSTANCE.rangeIncreasing(2, n)
+                                )
+                        )
+                )
+        );
     }
 
     /**
@@ -1849,7 +1870,7 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * Rounds {@code this} a rational number that is an integer multiple of 1/{@code denominator} according to
+     * Rounds {@code this} a to rational number that is an integer multiple of 1/{@code denominator} according to
      * {@code roundingMode}; see documentation for {@link java.math.RoundingMode} for details.
      *
      * <ul>
@@ -1876,8 +1897,8 @@ public final class Rational implements Comparable<Rational> {
 
     /**
      * Finds the continued fraction of {@code this}. If we pretend that the result is an array called a of length n,
-     * then {@code this}=a[0]+1/(a[1]+1/(a[2]+...+1/a[n-1])...). Every rational number has two such representations;
-     * this method returns the shortest one.
+     * then {@code this}=a[0]+1/(a[1]+1/(a[2]+...+1/a[n-1])). Every rational number has two such representations; this
+     * method returns the shortest one.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Rational}.</li>
@@ -2163,13 +2184,13 @@ public final class Rational implements Comparable<Rational> {
             @NotNull Rational b
     ) {
         if (a.signum() == -1) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("a cannot be negative. Invalid a: " + a);
         }
         if (b.signum() == -1) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("b cannot be negative. Invalid b: " + b);
         }
         if (a.equals(b)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("a and b cannot be equal. Invalid a and b: " + a);
         }
         Pair<List<BigInteger>, Iterable<BigInteger>> aDigits = a.digits(base);
         Pair<List<BigInteger>, Iterable<BigInteger>> bDigits = b.digits(base);
@@ -2271,7 +2292,7 @@ public final class Rational implements Comparable<Rational> {
      * @param base the base of the output digits
      * @param scale the maximum number of digits after the decimal point in the result. If {@code this} has a
      *              terminating base-{@code base} expansion, the actual number of digits after the decimal point may be
-     *              less.
+     *              fewer.
      * @return a {@code String} representation of {@code this} in base {@code base}
      */
     public @NotNull String toStringBase(@NotNull BigInteger base, int scale) {
@@ -2351,7 +2372,7 @@ public final class Rational implements Comparable<Rational> {
                     if (head(t) != '(' || last(t) != ')' || t.contains("()")) {
                         throw new IllegalArgumentException("Invalid String: " + sFinal);
                     }
-                    t = tail(init(t));
+                    t = middle(t);
                     return toList(
                             map(
                                     u -> {

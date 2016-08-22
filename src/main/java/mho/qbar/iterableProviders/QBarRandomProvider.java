@@ -9,7 +9,6 @@ import org.jetbrains.annotations.NotNull;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static mho.wheels.iterables.IterableUtils.*;
@@ -188,7 +187,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * @return A copy of {@code this} with a new scale
      */
     @Override
-    public @NotNull QBarIterableProvider withScale(int scale) {
+    public @NotNull QBarRandomProvider withScale(int scale) {
         return new QBarRandomProvider((RandomProvider) wheelsProvider.withScale(scale));
     }
 
@@ -205,7 +204,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * @return A copy of {@code this} with a new secondary scale
      */
     @Override
-    public @NotNull QBarIterableProvider withSecondaryScale(int secondaryScale) {
+    public @NotNull QBarRandomProvider withSecondaryScale(int secondaryScale) {
         return new QBarRandomProvider((RandomProvider) wheelsProvider.withSecondaryScale(secondaryScale));
     }
 
@@ -222,7 +221,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * @return A copy of {@code this} with a new tertiary scale
      */
     @Override
-    public @NotNull QBarIterableProvider withTertiaryScale(int tertiaryScale) {
+    public @NotNull QBarRandomProvider withTertiaryScale(int tertiaryScale) {
         return new QBarRandomProvider((RandomProvider) wheelsProvider.withTertiaryScale(tertiaryScale));
     }
 
@@ -411,7 +410,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      *  <li>{@code this} must have a {@code scale} of at least 4.</li>
      *  <li>{@code a} cannot be null.</li>
      *  <li>{@code b} cannot be null.</li>
-     *  <li>{@code a} cannot be greater than {@code b}.</li>
+     *  <li>{@code a} must be less than or equal to {@code b}.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Rational}s.</li>
      * </ul>
      *
@@ -428,8 +427,8 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
             throw new IllegalStateException("this must have a scale of at least 4. Invalid scale: " + scale);
         }
         switch (Ordering.compare(a, b)) {
-            case GT: throw new IllegalArgumentException("a cannot be greater than b. Invalid a: " +
-                    a + ", and invalid b: " + b);
+            case GT: throw new IllegalArgumentException("a must be less than or equal to b. Invalid a: " +
+                    a + ", invalid b: " + b);
             case EQ: return repeat(a);
             case LT:
                 Rational diameter = b.subtract(a);
@@ -556,7 +555,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                 Rational x = complement.get(0).getUpper().get();
                 Rational y = complement.get(1).getLower().get();
                 //noinspection RedundantCast
-                return choose(
+                return withScale(1).choose(
                         filterInfinite(r -> !r.equals(x), rangeDown(x)),
                         filterInfinite(r -> !r.equals(y), rangeUp(y))
                 );
@@ -898,7 +897,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
             throw new IllegalStateException("this must have a secondaryScale of at least 2. Invalid secondaryScale: " +
                     secondaryScale);
         }
-        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
+        QBarRandomProvider dimensionProvider = withScale(
                 MathUtils.ceilingRoot(2, BigInteger.valueOf(secondaryScale)).intValueExact()
         );
         return chooseLogarithmicOrder(
@@ -909,7 +908,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                                 p -> lists(p.a, vectors(p.b))
                         )
                 ),
-                choose(
+                withScale(1).choose(
                         map(i -> Matrix.zero(0, i), dimensionProvider.naturalIntegersGeometric()),
                         map(i -> Matrix.zero(i, 0), dimensionProvider.positiveIntegersGeometric())
                 )
@@ -939,7 +938,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
             throw new IllegalStateException("this must have a secondaryScale of at least 2. Invalid secondaryScale: " +
                     secondaryScale);
         }
-        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
+        QBarRandomProvider dimensionProvider = withScale(
                 MathUtils.ceilingRoot(2, BigInteger.valueOf(secondaryScale)).intValueExact()
         );
         return withElement(
@@ -1005,7 +1004,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
             throw new IllegalStateException("this must have a secondaryScale of at least 2. Invalid secondaryScale: " +
                     secondaryScale);
         }
-        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
+        QBarRandomProvider dimensionProvider = withScale(
                 MathUtils.ceilingRoot(2, BigInteger.valueOf(secondaryScale)).intValueExact()
         );
         return chooseLogarithmicOrder(
@@ -1016,7 +1015,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                                 p -> lists(p.a, rationalVectors(p.b))
                         )
                 ),
-                choose(
+                withScale(1).choose(
                         map(i -> RationalMatrix.zero(0, i), dimensionProvider.naturalIntegersGeometric()),
                         map(i -> RationalMatrix.zero(i, 0), dimensionProvider.positiveIntegersGeometric())
                 )
@@ -1047,7 +1046,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
             throw new IllegalStateException("this must have a secondaryScale of at least 2. Invalid secondaryScale: " +
                     secondaryScale);
         }
-        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
+        QBarRandomProvider dimensionProvider = withScale(
                 MathUtils.ceilingRoot(2, BigInteger.valueOf(secondaryScale)).intValueExact()
         );
         return withElement(
@@ -1123,7 +1122,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
             throw new IllegalStateException("this must have a tertiaryScale of at least 2. Invalid tertiaryScale: " +
                     tertiaryScale);
         }
-        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
+        QBarRandomProvider dimensionProvider = withScale(
                 MathUtils.ceilingRoot(2, BigInteger.valueOf(tertiaryScale)).intValueExact()
         );
         return chooseLogarithmicOrder(
@@ -1134,7 +1133,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                                 p -> lists(p.a, polynomialVectors(p.b))
                         )
                 ),
-                choose(
+                withScale(1).choose(
                         map(i -> PolynomialMatrix.zero(0, i), dimensionProvider.naturalIntegersGeometric()),
                         map(i -> PolynomialMatrix.zero(i, 0), dimensionProvider.positiveIntegersGeometric())
                 )
@@ -1169,7 +1168,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
             throw new IllegalStateException("this must have a tertiaryScale of at least 2. Invalid tertiaryScale: " +
                     tertiaryScale);
         }
-        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
+        QBarRandomProvider dimensionProvider = withScale(
                 MathUtils.ceilingRoot(2, BigInteger.valueOf(tertiaryScale)).intValueExact()
         );
         return withElement(
@@ -1251,7 +1250,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
             throw new IllegalStateException("this must have a tertiaryScale of at least 2. Invalid tertiaryScale: " +
                     tertiaryScale);
         }
-        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
+        QBarRandomProvider dimensionProvider = withScale(
                 MathUtils.ceilingRoot(2, BigInteger.valueOf(tertiaryScale)).intValueExact()
         );
         return chooseLogarithmicOrder(
@@ -1262,7 +1261,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                                 p -> lists(p.a, rationalPolynomialVectors(p.b))
                         )
                 ),
-                choose(
+                withScale(1).choose(
                         map(i -> RationalPolynomialMatrix.zero(0, i), dimensionProvider.naturalIntegersGeometric()),
                         map(i -> RationalPolynomialMatrix.zero(i, 0), dimensionProvider.positiveIntegersGeometric())
                 )
@@ -1301,7 +1300,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
             throw new IllegalStateException("this must have a tertiaryScale of at least 2. Invalid tertiaryScale: " +
                     tertiaryScale);
         }
-        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
+        QBarRandomProvider dimensionProvider = withScale(
                 MathUtils.ceilingRoot(2, BigInteger.valueOf(tertiaryScale)).intValueExact()
         );
         return withElement(
@@ -1844,7 +1843,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         if (scale < 1) {
             throw new IllegalStateException("this must have a positive scale. Invalid scale: " + scale);
         }
-        QBarRandomProvider variableCountProvider = (QBarRandomProvider) withScale(
+        QBarRandomProvider variableCountProvider = withScale(
                 MathUtils.ceilingRoot(2, BigInteger.valueOf(scale)).intValueExact()
         );
         return map(
@@ -1934,16 +1933,89 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         );
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code RationalMultivariatePolynomial}s. A larger {@code scale}
+     * corresponds to a {@code RationalMultivariatePolynomial} with larger coefficients on average, a larger
+     * {@code secondaryScale} corresponds to more variables and higher exponents, and a larger {@code tertiaryScale}
+     * corresponds to more terms. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 4.</li>
+     *  <li>{@code this} must have a positive {@code secondaryScale}.</li>
+     *  <li>{@code this} must have a {@code tertiaryScale} of at least 2.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing
+     *  {@code RationalMultivariatePolynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
     @Override
-    public @NotNull Iterable<Real> reals() {
-        int base = 1 << 30;
-        return map(
-                rp -> Real.fromDigits(
-                        BigInteger.valueOf(base),
-                        Collections.emptyList(),
-                        map(i -> BigInteger.valueOf(i & (base - 1)), rp.integers())
-                ),
-                randomProvidersDefault()
+    public @NotNull Iterable<RationalMultivariatePolynomial> rationalMultivariatePolynomials() {
+        int scale = getScale();
+        if (scale < 4) {
+            throw new IllegalStateException("this must have a scale of at least 4. Invalid scale: " + scale);
+        }
+        return withElement(
+                RationalMultivariatePolynomial.ZERO,
+                map(
+                        p -> RationalMultivariatePolynomial.of(toList(zip(p.a, p.b))),
+                        dependentPairsInfinite(
+                                withScale(getTertiaryScale())
+                                        .subsetsAtLeast(1, withScale(getSecondaryScale()).monomials()),
+                                evs -> lists(evs.size(), nonzeroRationals())
+                        )
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code RationalMultivariatePolynomial}s containing only (a subset of) the
+     * given variables. A larger {@code scale} corresponds to a {@code RationalMultivariatePolynomial} with larger
+     * coefficients on average, a larger {@code secondaryScale} corresponds to more variables and higher exponents, and
+     * a larger {@code tertiaryScale} corresponds to more terms. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 4.</li>
+     *  <li>{@code this} must have a positive {@code secondaryScale}.</li>
+     *  <li>{@code this} must have a {@code tertiaryScale} of at least 2.</li>
+     *  <li>{@code variables} must be in increasing order and must contain no repetitions.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing
+     *  {@code RationalMultivariatePolynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<RationalMultivariatePolynomial> rationalMultivariatePolynomials(
+            @NotNull List<Variable> variables
+    ) {
+        int scale = getScale();
+        if (scale < 4) {
+            throw new IllegalStateException("this must have a scale of at least 4. Invalid scale: " + scale);
+        }
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 1) {
+            throw new IllegalStateException("this must have a positive secondaryScale. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
+        int tertiaryScale = getTertiaryScale();
+        if (tertiaryScale < 2) {
+            throw new IllegalStateException("this must have a tertiaryScale of at least 2. Invalid tertiaryScale: " +
+                    tertiaryScale);
+        }
+        if (variables.isEmpty()) {
+            return map(RationalMultivariatePolynomial::of, rationals());
+        }
+        return withElement(
+                RationalMultivariatePolynomial.ZERO,
+                map(
+                        p -> RationalMultivariatePolynomial.of(toList(zip(p.a, p.b))),
+                        dependentPairsInfinite(
+                                withScale(tertiaryScale)
+                                        .subsetsAtLeast(1, withScale(secondaryScale).monomials(variables)),
+                                evs -> lists(evs.size(), nonzeroRationals())
+                        )
+                )
         );
     }
 
@@ -2440,7 +2512,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                 Algebraic x = Algebraic.of(complement.get(0).getUpper().get());
                 Algebraic y = Algebraic.of(complement.get(1).getLower().get());
                 //noinspection RedundantCast
-                return choose(
+                return withScale(1).choose(
                         filterInfinite(r -> !r.equals(x), rangeDown(degree, x)),
                         filterInfinite(r -> !r.equals(y), rangeUp(degree, y))
                 );
@@ -2477,7 +2549,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                 Algebraic x = Algebraic.of(complement.get(0).getUpper().get());
                 Algebraic y = Algebraic.of(complement.get(1).getLower().get());
                 //noinspection RedundantCast
-                return choose(
+                return withScale(1).choose(
                         filterInfinite(r -> !r.equals(x), rangeDown(x)),
                         filterInfinite(r -> !r.equals(y), rangeUp(y))
                 );

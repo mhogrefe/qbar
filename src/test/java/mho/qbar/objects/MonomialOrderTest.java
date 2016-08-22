@@ -9,7 +9,6 @@ import java.util.List;
 
 import static mho.qbar.objects.MonomialOrder.*;
 import static mho.wheels.testing.Testing.aeq;
-import static org.junit.Assert.assertFalse;
 
 public class MonomialOrderTest {
     private static void compare_helper(@NotNull MonomialOrder order, @NotNull String input) {
@@ -30,23 +29,20 @@ public class MonomialOrderTest {
         compare_helper(GREVLEX, "[1, ooo, b, a, z^2, y^2, x*y, x^2, x*y^2, x^2*y, x^3, x^2*z^2, x*y^2*z, a*b*c*d]");
     }
 
-    private static void readStrict_helper(@NotNull String input) {
-        aeq(readStrict(input).get(), input);
-    }
-
-    private static void readStrict_fail_helper(@NotNull String input) {
-        assertFalse(readStrict(input).isPresent());
+    private static void readStrict_helper(@NotNull String input, @NotNull String output) {
+        aeq(readStrict(input), output);
     }
 
     @Test
     public void testReadStrict() {
-        readStrict_helper("LEX");
-        readStrict_helper("GRLEX");
-        readStrict_helper("GREVLEX");
-        readStrict_fail_helper("");
-        readStrict_fail_helper("1");
-        readStrict_fail_helper(" ");
-        readStrict_fail_helper("ab");
+        readStrict_helper("LEX", "Optional[LEX]");
+        readStrict_helper("GRLEX", "Optional[GRLEX]");
+        readStrict_helper("GREVLEX", "Optional[GREVLEX]");
+
+        readStrict_helper("", "Optional.empty");
+        readStrict_helper("1", "Optional.empty");
+        readStrict_helper(" ", "Optional.empty");
+        readStrict_helper("ab", "Optional.empty");
     }
 
     private static @NotNull List<Monomial> readMonomialList(@NotNull String s) {

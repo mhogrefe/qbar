@@ -31,13 +31,18 @@ public class MonomialProperties extends QBarTestProperties {
         propertiesExponent();
         propertiesSize();
         propertiesTerms();
-        propertiesOf();
+        propertiesOf_List_Integer();
+        propertiesOf_Variable();
         propertiesFromTerms();
         propertiesDegree();
         propertiesVariables();
+        propertiesVariableCount();
+        compareImplementationsVariableCount();
         propertiesRemoveVariable();
         propertiesRemoveVariables();
         compareImplementationsRemoveVariables();
+        propertiesRetainVariables();
+        compareImplementationsRetainVariables();
         propertiesMultiply();
         propertiesProduct();
         compareImplementationsProduct();
@@ -100,7 +105,7 @@ public class MonomialProperties extends QBarTestProperties {
         }
     }
 
-    private void propertiesOf() {
+    private void propertiesOf_List_Integer() {
         initialize("of(List<Integer>)");
         for (List<Integer> is : take(LIMIT, P.withScale(4).lists(P.naturalIntegersGeometric()))) {
             Monomial m = of(is);
@@ -131,6 +136,16 @@ public class MonomialProperties extends QBarTestProperties {
                 of(is);
                 fail(is);
             } catch (NullPointerException ignored) {}
+        }
+    }
+
+    private void propertiesOf_Variable() {
+        initialize("of(Variable)");
+        for (Variable v : take(LIMIT, P.variables())) {
+            Monomial m = of(v);
+            m.validate();
+            assertEquals(v, m.variableCount(), 1);
+            assertEquals(v, m.degree(), 1);
         }
     }
 
@@ -219,6 +234,26 @@ public class MonomialProperties extends QBarTestProperties {
         }
     }
 
+    private static int variableCount_simplest(@NotNull Monomial m) {
+        return m.variables().size();
+    }
+
+    private void propertiesVariableCount() {
+        initialize("variableCount()");
+        for (Monomial m : take(LIMIT, P.monomials())) {
+            int count = m.variableCount();
+            assertEquals(m, count, variableCount_simplest(m));
+            assertTrue(m, count >= 0);
+        }
+    }
+
+    private void compareImplementationsVariableCount() {
+        Map<String, Function<Monomial, Integer>> functions = new LinkedHashMap<>();
+        functions.put("simplest", MonomialProperties::variableCount_simplest);
+        functions.put("standard", Monomial::variableCount);
+        compareImplementations("variableCount()", take(LIMIT, P.monomials()), functions, v -> P.reset());
+    }
+
     private void propertiesRemoveVariable() {
         initialize("removeVariable(Variable)");
         Iterable<Pair<Monomial, Variable>> ps = P.pairsLogarithmicOrder(P.monomials(), P.variables());
@@ -246,6 +281,12 @@ public class MonomialProperties extends QBarTestProperties {
         return of(removedExponents);
     }
 
+    private static @NotNull Monomial removeVariables_alt2(@NotNull Monomial m, @NotNull List<Variable> vs) {
+        List<Variable> us = m.variables();
+        us.removeAll(vs);
+        return m.retainVariables(us);
+    }
+
     private void propertiesRemoveVariables() {
         initialize("removeVariables(List<Variable>)");
         Iterable<Pair<Monomial, List<Variable>>> ps = P.pairsLogarithmicOrder(
@@ -256,6 +297,7 @@ public class MonomialProperties extends QBarTestProperties {
             Monomial removed = p.a.removeVariables(p.b);
             removed.validate();
             assertEquals(p, removeVariables_alt(p.a, p.b), removed);
+            assertEquals(p, removeVariables_alt2(p.a, p.b), removed);
         }
 
         for (List<Variable> vs : take(LIMIT, P.lists(P.variables()))) {
@@ -263,6 +305,7 @@ public class MonomialProperties extends QBarTestProperties {
         }
 
         for (Monomial m : take(LIMIT, P.monomials())) {
+            fixedPoint(n -> n.removeVariables(Collections.emptyList()), m);
             assertEquals(m, m.removeVariables(m.variables()), ONE);
         }
 
@@ -281,12 +324,63 @@ public class MonomialProperties extends QBarTestProperties {
     private void compareImplementationsRemoveVariables() {
         Map<String, Function<Pair<Monomial, List<Variable>>, Monomial>> functions = new LinkedHashMap<>();
         functions.put("alt", p -> removeVariables_alt(p.a, p.b));
+        functions.put("alt2", p -> removeVariables_alt2(p.a, p.b));
         functions.put("standard", p -> p.a.removeVariables(p.b));
         Iterable<Pair<Monomial, List<Variable>>> ps = P.pairsLogarithmicOrder(
                 P.monomials(),
                 P.lists(P.variables())
         );
-        compareImplementations("removeVariables(List<Variable>)", take(LIMIT, ps), functions);
+        compareImplementations("removeVariables(List<Variable>)", take(LIMIT, ps), functions, v -> P.reset());
+    }
+
+    private static @NotNull Monomial retainVariables_alt(@NotNull Monomial m, @NotNull List<Variable> vs) {
+        List<Variable> us = m.variables();
+        us.removeAll(vs);
+        return m.removeVariables(us);
+    }
+
+    private void propertiesRetainVariables() {
+        initialize("retainVariables(List<Variable>)");
+        Iterable<Pair<Monomial, List<Variable>>> ps = P.pairsLogarithmicOrder(
+                P.monomials(),
+                P.lists(P.variables())
+        );
+        for (Pair<Monomial, List<Variable>> p : take(LIMIT, ps)) {
+            Monomial retained = p.a.retainVariables(p.b);
+            retained.validate();
+            assertEquals(p, retainVariables_alt(p.a, p.b), retained);
+        }
+
+        for (List<Variable> vs : take(LIMIT, P.lists(P.variables()))) {
+            fixedPoint(e -> e.retainVariables(vs), ONE);
+        }
+
+        for (Monomial m : take(LIMIT, P.monomials())) {
+            fixedPoint(n -> n.retainVariables(n.variables()), m);
+            assertEquals(m, m.retainVariables(Collections.emptyList()), ONE);
+        }
+
+        Iterable<Pair<Monomial, List<Variable>>> psFail = P.pairs(
+                P.monomials(),
+                P.listsWithElement(null, P.variables())
+        );
+        for (Pair<Monomial, List<Variable>> p : take(LIMIT, psFail)) {
+            try {
+                p.a.retainVariables(p.b);
+                fail(p);
+            } catch (NullPointerException | IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void compareImplementationsRetainVariables() {
+        Map<String, Function<Pair<Monomial, List<Variable>>, Monomial>> functions = new LinkedHashMap<>();
+        functions.put("alt", p -> retainVariables_alt(p.a, p.b));
+        functions.put("standard", p -> p.a.retainVariables(p.b));
+        Iterable<Pair<Monomial, List<Variable>>> ps = P.pairsLogarithmicOrder(
+                P.monomials(),
+                P.lists(P.variables())
+        );
+        compareImplementations("retainVariables(List<Variable>)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private void propertiesMultiply() {
@@ -355,7 +449,11 @@ public class MonomialProperties extends QBarTestProperties {
         );
         for (Pair<List<Monomial>, Map<Variable, BigInteger>> p : take(LIMIT, ps)) {
             Monomial product = product(p.a);
-            assertEquals(p, productBigInteger(map(m -> m.applyBigInteger(p.b), p.a)), product.applyBigInteger(p.b));
+            assertEquals(
+                    p,
+                    productBigInteger(toList(map(m -> m.applyBigInteger(p.b), p.a))),
+                    product.applyBigInteger(p.b)
+            );
         }
     }
 
@@ -364,7 +462,12 @@ public class MonomialProperties extends QBarTestProperties {
         functions.put("simplest", MonomialProperties::product_simplest);
         functions.put("alt", MonomialProperties::product_alt);
         functions.put("standard", Monomial::product);
-        compareImplementations("product(List<Monomial>)", take(LIMIT, P.lists(P.monomials())), functions);
+        compareImplementations(
+                "product(List<Monomial>)",
+                take(LIMIT, P.lists(P.monomials())),
+                functions,
+                v -> P.reset()
+        );
     }
 
     private static @NotNull Monomial pow_simplest(@NotNull Monomial ev, int p) {
@@ -462,7 +565,7 @@ public class MonomialProperties extends QBarTestProperties {
                 P.monomials(),
                 P.withScale(4).naturalIntegersGeometric()
         );
-        compareImplementations("pow(int)", take(LIMIT, ps), functions);
+        compareImplementations("pow(int)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private void propertiesApplyBigInteger() {
@@ -607,7 +710,8 @@ public class MonomialProperties extends QBarTestProperties {
                 )
         );
         for (Pair<Monomial, Map<Variable, Monomial>> p : take(LIMIT, ps)) {
-            p.a.substitute(p.b);
+            Monomial m = p.a.substitute(p.b);
+            m.validate();
         }
     }
 

@@ -3,6 +3,7 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Quadruple;
@@ -74,6 +75,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
         propertiesIsInReducedRowEchelonForm();
         propertiesReducedRowEchelonForm();
         propertiesSolveLinearSystem();
+        propertiesSolveLinearSystemPermissive();
         propertiesInvert();
         propertiesDeterminant();
         compareImplementationsDeterminant();
@@ -81,6 +83,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
         compareImplementationsCharacteristicPolynomial();
         propertiesKroneckerMultiply();
         propertiesKroneckerAdd();
+        propertiesRealEigenvalues();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -122,7 +125,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
         initialize("row(int)");
         Iterable<Pair<RationalMatrix, Integer>> ps = P.dependentPairs(
                 filterInfinite(m -> m.height() > 0, P.rationalMatrices()),
-                m -> P.uniformSample(toList(range(0, m.height() - 1)))
+                m -> P.uniformSample(toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m.height() - 1)))
         );
         for (Pair<RationalMatrix, Integer> p : take(LIMIT, ps)) {
             RationalVector row = p.a.row(p.b);
@@ -145,7 +148,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
         initialize("column(int)");
         Iterable<Pair<RationalMatrix, Integer>> ps = P.dependentPairs(
                 filterInfinite(m -> m.width() > 0, P.rationalMatrices()),
-                m -> P.uniformSample(toList(range(0, m.width() - 1)))
+                m -> P.uniformSample(toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m.width() - 1)))
         );
         for (Pair<RationalMatrix, Integer> p : take(LIMIT, ps)) {
             RationalVector column = p.a.column(p.b);
@@ -204,7 +207,12 @@ public class RationalMatrixProperties extends QBarTestProperties {
                 P.dependentPairs(
                         filterInfinite(m -> m.height() > 0 && m.width() > 0, P.rationalMatrices()),
                         m -> P.uniformSample(
-                                toList(EP.pairsLex(range(0, m.height() - 1), toList(range(0, m.width() - 1))))
+                                toList(
+                                        EP.pairsLex(
+                                                ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m.height() - 1),
+                                                toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m.width() - 1))
+                                        )
+                                )
                         )
                 )
         );
@@ -454,8 +462,12 @@ public class RationalMatrixProperties extends QBarTestProperties {
                 P.dependentPairs(
                         P.rationalMatrices(),
                         m -> {
-                            List<Integer> allRows = toList(EP.range(0, m.height() - 1));
-                            List<Integer> allColumns = toList(EP.range(0, m.width() - 1));
+                            List<Integer> allRows = m.height() == 0 ?
+                                    Collections.emptyList() :
+                                    toList(EP.range(0, m.height() - 1));
+                            List<Integer> allColumns = m.width() == 0 ?
+                                    Collections.emptyList() :
+                                    toList(EP.range(0, m.width() - 1));
                             return P.pairs(
                                     map(bs -> toList(select(bs, allRows)), P.lists(m.height(), P.booleans())),
                                     map(bs -> toList(select(bs, allColumns)), P.lists(m.width(), P.booleans()))
@@ -473,7 +485,18 @@ public class RationalMatrixProperties extends QBarTestProperties {
         RationalMatrix zero = zero(0, 0);
         for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
             assertEquals(m, m.submatrix(Collections.emptyList(), Collections.emptyList()), zero);
-            assertEquals(m, m.submatrix(toList(range(0, m.height() - 1)), toList(range(0, m.width() - 1))), m);
+            assertEquals(
+                    m,
+                    m.submatrix(
+                            m.height() == 0 ?
+                                    Collections.emptyList() :
+                                    toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m.height() - 1)),
+                            m.width() == 0 ?
+                                    Collections.emptyList() :
+                                    toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m.width() - 1))
+                    ),
+                    m
+            );
         }
 
         Iterable<Triple<RationalMatrix, List<Integer>, List<Integer>>> tsFail = map(
@@ -482,7 +505,9 @@ public class RationalMatrixProperties extends QBarTestProperties {
                         P.rationalMatrices(),
                         m -> {
                             int height = m.height();
-                            List<Integer> allColumns = toList(EP.range(0, m.width() - 1));
+                            List<Integer> allColumns = m.width() == 0 ?
+                                    Collections.emptyList() :
+                                    toList(EP.range(0, m.width() - 1));
                             return P.pairs(
                                     filterInfinite(
                                             is -> any(i -> i == null || i < 0 || i >= height, is) || !increasing(is),
@@ -505,7 +530,9 @@ public class RationalMatrixProperties extends QBarTestProperties {
                 P.dependentPairs(
                         P.rationalMatrices(),
                         m -> {
-                            List<Integer> allRows = toList(EP.range(0, m.height() - 1));
+                            List<Integer> allRows = m.height() == 0 ?
+                                    Collections.emptyList() :
+                                    toList(EP.range(0, m.height() - 1));
                             int width = m.width();
                             return P.pairs(
                                     map(bs -> toList(select(bs, allRows)), P.lists(m.height(), P.booleans())),
@@ -577,7 +604,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
         Map<String, Function<RationalMatrix, RationalMatrix>> functions = new LinkedHashMap<>();
         functions.put("alt", RationalMatrixProperties::transpose_alt);
         functions.put("standard", RationalMatrix::transpose);
-        compareImplementations("transpose()", take(LIMIT, P.rationalMatrices()), functions);
+        compareImplementations("transpose()", take(LIMIT, P.rationalMatrices()), functions, v -> P.reset());
     }
 
     private void propertiesConcat() {
@@ -600,7 +627,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
                                 )
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 p -> new Pair<>(zero(p.a, 0), zero(p.b, 0)),
                                 P.pairs(P.naturalIntegersGeometric())
@@ -656,7 +683,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
                                 t -> P.pairs(P.rationalMatrices(t.a, t.b), P.rationalMatrices(t.a, t.c))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(p -> new Pair<>(zero(0, p.a), zero(0, p.b)), P.pairs(P.naturalIntegersGeometric())),
                         map(
                                 i -> {
@@ -702,7 +729,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
                                 p -> P.pairs(P.rationalMatrices(p.a, p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> {
                                     RationalMatrix m = zero(0, i);
@@ -742,7 +769,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
                                 p -> P.triples(P.rationalMatrices(p.a, p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> {
                                     RationalMatrix m = zero(0, i);
@@ -805,7 +832,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
                                 p -> P.pairs(P.rationalMatrices(p.a, p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> {
                                     RationalMatrix m = zero(0, i);
@@ -862,7 +889,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
                                 p -> P.pairs(P.rationalMatrices(p.a, p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> {
                                     RationalMatrix m = zero(0, i);
@@ -879,7 +906,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
                         )
                 )
         );
-        compareImplementations("subtract(RationalMatrix)", take(LIMIT, ps), functions);
+        compareImplementations("subtract(RationalMatrix)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private void propertiesMultiply_Rational() {
@@ -1065,7 +1092,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
                                 p -> P.pairs(P.rationalMatrices(p.a, p.b), P.rationalVectors(p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> new Pair<>(zero(i, 0), RationalVector.ZERO_DIMENSIONAL),
                                 P.naturalIntegersGeometric()
@@ -1150,7 +1177,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
                         )
                 ),
                 P.choose(
-                    P.choose(
+                    P.withScale(1).choose(
                             map(
                                     m -> new Pair<>(m, zero(m.width(), 0)),
                                     filterInfinite(
@@ -1203,7 +1230,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
                                 p -> P.pairs(P.rationalMatrices(p.a, p.b), P.rationalVectors(p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> new Pair<>(zero(i, 0), RationalVector.ZERO_DIMENSIONAL),
                                 P.naturalIntegersGeometric()
@@ -1254,7 +1281,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
                         )
                 ),
                 P.choose(
-                        P.choose(
+                        P.withScale(1).choose(
                                 map(
                                         m -> new Pair<>(m, zero(m.width(), 0)),
                                         filterInfinite(
@@ -1276,7 +1303,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
                         )
                 )
         );
-        compareImplementations("multiply(RationalMatrix)", take(LIMIT, ps), functions);
+        compareImplementations("multiply(RationalMatrix)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull RationalMatrix shiftLeft_simplest(@NotNull RationalMatrix m, int bits) {
@@ -1323,7 +1350,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
         functions.put("simplest", p -> shiftLeft_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.shiftLeft(p.b));
         Iterable<Pair<RationalMatrix, Integer>> ps = P.pairs(P.rationalMatrices(), P.integersGeometric());
-        compareImplementations("shiftLeft(int)", take(LIMIT, ps), functions);
+        compareImplementations("shiftLeft(int)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull RationalMatrix shiftRight_simplest(@NotNull RationalMatrix m, int bits) {
@@ -1370,7 +1397,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
         functions.put("simplest", p -> shiftRight_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.shiftRight(p.b));
         Iterable<Pair<RationalMatrix, Integer>> ps = P.pairs(P.rationalMatrices(), P.integersGeometric());
-        compareImplementations("shiftRight(int)", take(LIMIT, ps), functions);
+        compareImplementations("shiftRight(int)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private void propertiesIsInRowEchelonForm() {
@@ -1475,7 +1502,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
                                 p -> P.pairs(P.rationalMatrices(p.a, p.b), P.rationalVectors(p.a))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> new Pair<>(zero(0, i), RationalVector.ZERO_DIMENSIONAL),
                                 P.withScale(4).naturalIntegersGeometric()
@@ -1489,6 +1516,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
                 assertTrue(p, p.a.height() >= p.a.width());
                 RationalVector v = solution.get();
                 assertEquals(p, p.a.multiply(v), p.b);
+                assertEquals(p, solution, p.a.solveLinearSystemPermissive(p.b));
             }
         }
 
@@ -1499,6 +1527,47 @@ public class RationalMatrixProperties extends QBarTestProperties {
         for (Pair<RationalMatrix, RationalVector> p : take(LIMIT, psFail)) {
             try {
                 p.a.solveLinearSystem(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesSolveLinearSystemPermissive() {
+        initialize("solveLinearSystemPermissive(RationalVector)");
+        Iterable<Pair<RationalMatrix, RationalVector>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.withScale(4).positiveIntegersGeometric()),
+                                p -> P.pairs(
+                                        P.withScale(4).rationalMatrices(p.a, p.b),
+                                        P.withScale(4).rationalVectors(p.a)
+                                )
+                        )
+                ),
+                P.withScale(1).choose(
+                        map(
+                                i -> new Pair<>(zero(0, i), RationalVector.ZERO_DIMENSIONAL),
+                                P.withScale(4).naturalIntegersGeometric()
+                        ),
+                        map(v -> new Pair<>(zero(v.dimension(), 0), v), P.withScale(4).rationalVectorsAtLeast(1))
+                )
+        );
+        for (Pair<RationalMatrix, RationalVector> p : take(LIMIT, ps)) {
+            Optional<RationalVector> solution = p.a.solveLinearSystemPermissive(p.b);
+            if (solution.isPresent()) {
+                RationalVector v = solution.get();
+                assertEquals(p, p.a.multiply(v), p.b);
+            }
+        }
+
+        Iterable<Pair<RationalMatrix, RationalVector>> psFail = filterInfinite(
+                q -> q.b.dimension() != q.a.height(),
+                P.pairs(P.rationalMatrices(), P.rationalVectors())
+        );
+        for (Pair<RationalMatrix, RationalVector> p : take(LIMIT, psFail)) {
+            try {
+                p.a.solveLinearSystemPermissive(p.b);
                 fail(p);
             } catch (IllegalArgumentException ignored) {}
         }
@@ -1534,7 +1603,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
         if (m.width() == 1) return m.get(0, 0);
         Rational determinant = Rational.ZERO;
         RationalVector firstRow = m.row(0);
-        List<Integer> rowIndices = toList(range(1, m.width() - 1));
+        List<Integer> rowIndices = toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(1, m.width() - 1));
         boolean sign = true;
         for (int i = 0; i < m.width(); i++) {
             Rational factor = firstRow.get(i);
@@ -1543,7 +1612,16 @@ public class RationalMatrixProperties extends QBarTestProperties {
             if (factor == Rational.ZERO) continue;
             Rational minor = m.submatrix(
                     rowIndices,
-                    toList(concat(range(0, i - 1), range(i + 1, m.width() - 1)))
+                    toList(
+                            concat(
+                                    i == 0 ?
+                                            Collections.emptyList() :
+                                            ExhaustiveProvider.INSTANCE.rangeIncreasing(0, i - 1),
+                                    m.width() < i + 2 ?
+                                            Collections.emptyList() :
+                                            ExhaustiveProvider.INSTANCE.rangeIncreasing(i + 1, m.width() - 1)
+                            )
+                    )
             ).determinant();
             determinant = determinant.add(factor.multiply(minor));
         }
@@ -1647,7 +1725,12 @@ public class RationalMatrixProperties extends QBarTestProperties {
         functions.put("Laplace", RationalMatrixProperties::determinant_Laplace);
         functions.put("Gauss", RationalMatrixProperties::determinant_Gauss);
         functions.put("standard", RationalMatrix::determinant);
-        compareImplementations("determinant()", take(LIMIT, P.withScale(4).squareRationalMatrices()), functions);
+        compareImplementations(
+                "determinant()",
+                take(LIMIT, P.withScale(4).squareRationalMatrices()),
+                functions,
+                v -> P.reset()
+        );
     }
 
     private static @NotNull RationalPolynomial characteristicPolynomial_alt(@NotNull RationalMatrix a) {
@@ -1688,7 +1771,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
         functions.put("alt", RationalMatrixProperties::characteristicPolynomial_alt);
         functions.put("standard", RationalMatrix::characteristicPolynomial);
         Iterable<RationalMatrix> ms = P.withScale(4).squareRationalMatrices();
-        compareImplementations("characteristicPolynomial()", take(LIMIT, ms), functions);
+        compareImplementations("characteristicPolynomial()", take(LIMIT, ms), functions, v -> P.reset());
     }
 
     private void propertiesKroneckerMultiply() {
@@ -1722,7 +1805,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
                                 p -> P.pairs(P.rationalMatrices(p.a, p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> {
                                     RationalMatrix m = RationalMatrix.zero(0, i);
@@ -1760,7 +1843,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
                         )
                 ),
                 P.choose(
-                    P.choose(
+                    P.withScale(1).choose(
                             map(
                                     m -> new Pair<>(m, zero(m.width(), 0)),
                                     filterInfinite(
@@ -1853,6 +1936,23 @@ public class RationalMatrixProperties extends QBarTestProperties {
             assertEquals(p, sum.height(), 1);
             assertEquals(p, sum.width(), 1);
             assertEquals(p, sum.get(0, 0), p.a.add(p.b));
+        }
+    }
+
+    private void propertiesRealEigenvalues() {
+        initialize("realEigenvalues()");
+        for (RationalMatrix m : take(LIMIT, P.withScale(4).squareRationalMatrices())) {
+            List<Algebraic> realEigenvalues = m.realEigenvalues();
+            realEigenvalues.forEach(Algebraic::validate);
+            assertTrue(m, increasing(realEigenvalues));
+            assertEquals(m, realEigenvalues.size(), m.characteristicPolynomial().constantFactor().b.rootCount());
+        }
+
+        for (RationalMatrix m : take(LIMIT, filterInfinite(n -> !n.isSquare(), P.rationalMatrices()))) {
+            try {
+                m.realEigenvalues();
+                fail(m);
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 

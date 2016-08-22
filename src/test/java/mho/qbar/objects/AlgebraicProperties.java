@@ -3,7 +3,12 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
+import mho.wheels.concurrency.ConcurrencyUtils;
+import mho.wheels.iterables.ExhaustiveProvider;
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.math.BinaryFraction;
+import mho.wheels.math.MathUtils;
+import mho.wheels.numberUtils.BigDecimalUtils;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
@@ -13,12 +18,12 @@ import org.jetbrains.annotations.NotNull;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static mho.qbar.objects.Algebraic.*;
+import static mho.qbar.objects.Algebraic.sum;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.numberUtils.FloatingPointUtils.*;
 import static mho.wheels.ordering.Ordering.*;
@@ -26,6 +31,7 @@ import static mho.wheels.testing.Testing.*;
 
 public class AlgebraicProperties extends QBarTestProperties {
     private static final @NotNull String ALGEBRAIC_CHARS = " ()*+-/0123456789^foqrstx";
+    private static final BigInteger ASCII_ALPHANUMERIC_COUNT = BigInteger.valueOf(36);
 
     public AlgebraicProperties() {
         super("Algebraic");
@@ -73,6 +79,12 @@ public class AlgebraicProperties extends QBarTestProperties {
         propertiesDoubleValue_RoundingMode();
         propertiesDoubleValue();
         propertiesDoubleValueExact();
+        propertiesHasTerminatingBaseExpansion();
+        propertiesBigDecimalValueByPrecision_int_RoundingMode();
+        propertiesBigDecimalValueByScale_int_RoundingMode();
+        propertiesBigDecimalValueByPrecision_int();
+        propertiesBigDecimalValueByScale_int();
+        propertiesBigDecimalValueExact();
         propertiesMinimalPolynomial();
         propertiesRootIndex();
         propertiesDegree();
@@ -101,6 +113,32 @@ public class AlgebraicProperties extends QBarTestProperties {
         compareImplementationsShiftLeft();
         propertiesShiftRight();
         compareImplementationsShiftRight();
+        propertiesSum();
+        compareImplementationsSum();
+        propertiesProduct();
+        compareImplementationsProduct();
+        propertiesSumSign();
+        compareImplementationsSumSign();
+        propertiesDelta();
+        propertiesPow_int();
+        compareImplementationsPow_int();
+        propertiesRoot();
+        propertiesSqrt();
+        propertiesCbrt();
+        propertiesPow_Rational();
+        compareImplementationsPow_Rational();
+        propertiesFractionalPart();
+        propertiesRoundToDenominator();
+        propertiesRealConjugates();
+        propertiesIsReducedSurd();
+        propertiesContinuedFraction();
+        compareImplementationsIsContinuedFraction();
+        propertiesRepeatedContinuedFraction();
+        propertiesFromContinuedFraction();
+        propertiesConvergents();
+        propertiesDigits();
+        propertiesCommonLeadingDigits();
+        propertiesToStringBase();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -129,7 +167,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             try {
                 of(Polynomial.ZERO, i);
                 fail(i);
-            } catch (IllegalArgumentException ignored) {}
+            } catch (ArithmeticException ignored) {}
         }
 
         for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), P.negativeIntegersGeometric()))) {
@@ -143,7 +181,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             try {
                 of(p.a, p.b);
                 fail(p);
-            } catch (IllegalArgumentException ignored) {}
+            } catch (ArithmeticException ignored) {}
         }
 
         Iterable<Pair<Polynomial, Integer>> psFail = P.pairs(
@@ -154,7 +192,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             try {
                 of(p.a, p.b);
                 fail(p);
-            } catch (IllegalArgumentException ignored) {}
+            } catch (ArithmeticException ignored) {}
         }
     }
 
@@ -218,13 +256,13 @@ public class AlgebraicProperties extends QBarTestProperties {
         for (float f : take(LIMIT, filter(Float::isFinite, P.floats()))) {
             Algebraic x = of(f).get();
             x.validate();
-            //todo assertTrue(f, x.hasTerminatingBaseExpansion(BigInteger.TEN));
+            assertTrue(f, x.hasTerminatingBaseExpansion(BigInteger.TEN));
         }
 
         for (float f : take(LIMIT, filter(g -> Float.isFinite(g) && !isNegativeZero(g), P.floats()))) {
             Algebraic x = of(f).get();
             aeqf(f, f, x.floatValue());
-            //todo assertTrue(f, eq(new BigDecimal(Float.toString(f)), x.bigDecimalValueExact()));
+            assertTrue(f, eq(new BigDecimal(Float.toString(f)), x.bigDecimalValueExact()));
         }
     }
 
@@ -233,13 +271,13 @@ public class AlgebraicProperties extends QBarTestProperties {
         for (double d : take(LIMIT, filter(Double::isFinite, P.doubles()))) {
             Algebraic x = of(d).get();
             x.validate();
-            //todo assertTrue(d, x.hasTerminatingBaseExpansion(BigInteger.TEN));
+            assertTrue(d, x.hasTerminatingBaseExpansion(BigInteger.TEN));
         }
 
         for (double d : take(LIMIT, filter(e -> Double.isFinite(e) && !isNegativeZero(e), P.doubles()))) {
             Algebraic x = of(d).get();
             aeqd(d, d, x.doubleValue());
-            //todo assertTrue(d, eq(new BigDecimal(Double.toString(d)), x.bigDecimalValueExact()));
+            assertTrue(d, eq(new BigDecimal(Double.toString(d)), x.bigDecimalValueExact()));
         }
     }
 
@@ -306,13 +344,13 @@ public class AlgebraicProperties extends QBarTestProperties {
         for (BigDecimal bd : take(LIMIT, P.bigDecimals())) {
             Algebraic x = of(bd);
             x.validate();
-            //todo assertTrue(bd, eq(bd, x.bigDecimalValueExact()));
-            //todo assertTrue(bd, x.hasTerminatingBaseExpansion(BigInteger.TEN));
+            assertTrue(bd, eq(bd, x.bigDecimalValueExact()));
+            assertTrue(bd, x.hasTerminatingBaseExpansion(BigInteger.TEN));
         }
 
-//        for (BigDecimal bd : take(LIMIT, P.canonicalBigDecimals())) {
-//            inverse(Algebraic::of, Algebraic::bigDecimalValueExact, bd);
-//        }
+        for (BigDecimal bd : take(LIMIT, P.canonicalBigDecimals())) {
+            inverse(Algebraic::of, Algebraic::bigDecimalValueExact, bd);
+        }
     }
 
     private void propertiesIsInteger() {
@@ -353,18 +391,17 @@ public class AlgebraicProperties extends QBarTestProperties {
             assertTrue(x, le(x.subtract(of(x.bigIntegerValue(RoundingMode.HALF_EVEN))).abs(), ONE_HALF));
         }
 
-        //todo
-//        for (Algebraic x : take(LIMIT, filterInfinite(s -> lt(s.abs().fractionalPart(), ONE_HALF), P.algebraics()))) {
-//            assertEquals(r, r.bigIntegerValue(RoundingMode.HALF_DOWN), r.bigIntegerValue(RoundingMode.DOWN));
-//            assertEquals(r, r.bigIntegerValue(RoundingMode.HALF_UP), r.bigIntegerValue(RoundingMode.DOWN));
-//            assertEquals(r, r.bigIntegerValue(RoundingMode.HALF_EVEN), r.bigIntegerValue(RoundingMode.DOWN));
-//        }
-//
-//        for (Rational r : take(LIMIT, filterInfinite(s -> gt(s.abs().fractionalPart(), ONE_HALF), P.rationals()))) {
-//            assertEquals(r, r.bigIntegerValue(RoundingMode.HALF_DOWN), r.bigIntegerValue(RoundingMode.UP));
-//            assertEquals(r, r.bigIntegerValue(RoundingMode.HALF_UP), r.bigIntegerValue(RoundingMode.UP));
-//            assertEquals(r, r.bigIntegerValue(RoundingMode.HALF_EVEN), r.bigIntegerValue(RoundingMode.UP));
-//        }
+        for (Algebraic x : take(LIMIT, filterInfinite(s -> lt(s.abs().fractionalPart(), ONE_HALF), P.algebraics()))) {
+            assertEquals(x, x.bigIntegerValue(RoundingMode.HALF_DOWN), x.bigIntegerValue(RoundingMode.DOWN));
+            assertEquals(x, x.bigIntegerValue(RoundingMode.HALF_UP), x.bigIntegerValue(RoundingMode.DOWN));
+            assertEquals(x, x.bigIntegerValue(RoundingMode.HALF_EVEN), x.bigIntegerValue(RoundingMode.DOWN));
+        }
+
+        for (Algebraic x : take(LIMIT, filterInfinite(s -> gt(s.abs().fractionalPart(), ONE_HALF), P.algebraics()))) {
+            assertEquals(x, x.bigIntegerValue(RoundingMode.HALF_DOWN), x.bigIntegerValue(RoundingMode.UP));
+            assertEquals(x, x.bigIntegerValue(RoundingMode.HALF_UP), x.bigIntegerValue(RoundingMode.UP));
+            assertEquals(x, x.bigIntegerValue(RoundingMode.HALF_EVEN), x.bigIntegerValue(RoundingMode.UP));
+        }
 
         //odd multiples of 1/2
         Iterable<Algebraic> xs = map(
@@ -393,13 +430,13 @@ public class AlgebraicProperties extends QBarTestProperties {
             assertTrue(x, le(x.subtract(of(x.bigIntegerValue())).abs(), ONE_HALF));
         }
 
-//        for (Rational r : take(LIMIT, filterInfinite(s -> lt(s.abs().fractionalPart(), ONE_HALF), P.rationals()))) {
-//            assertEquals(r, r.bigIntegerValue(), r.bigIntegerValue(RoundingMode.DOWN));
-//        }
-//
-//        for (Rational r : take(LIMIT, filterInfinite(s -> gt(s.abs().fractionalPart(), ONE_HALF), P.rationals()))) {
-//            assertEquals(r, r.bigIntegerValue(), r.bigIntegerValue(RoundingMode.UP));
-//        }
+        for (Algebraic x : take(LIMIT, filterInfinite(s -> lt(s.abs().fractionalPart(), ONE_HALF), P.algebraics()))) {
+            assertEquals(x, x.bigIntegerValue(), x.bigIntegerValue(RoundingMode.DOWN));
+        }
+
+        for (Algebraic x : take(LIMIT, filterInfinite(s -> gt(s.abs().fractionalPart(), ONE_HALF), P.algebraics()))) {
+            assertEquals(x, x.bigIntegerValue(), x.bigIntegerValue(RoundingMode.UP));
+        }
 
         //odd multiples of 1/2
         Iterable<Algebraic> xs = map(
@@ -624,7 +661,7 @@ public class AlgebraicProperties extends QBarTestProperties {
     private void propertiesRoundUpToIntegerPowerOfTwo() {
         initialize("roundUpToIntegerPowerOfTwo()");
         for (Algebraic x : take(LIMIT, P.positiveAlgebraics())) {
-            Rational powerOfTwo = x.roundUpToIntegerPowerOfTwo();
+            BinaryFraction powerOfTwo = x.roundUpToIntegerPowerOfTwo();
             assertTrue(x, powerOfTwo.isPowerOfTwo());
             assertTrue(x, le(x, of(powerOfTwo)));
             assertTrue(x, lt(of(powerOfTwo.shiftRight(1)), x));
@@ -775,7 +812,7 @@ public class AlgebraicProperties extends QBarTestProperties {
         Map<String, Function<Algebraic, Boolean>> functions = new LinkedHashMap<>();
         functions.put("simplest", AlgebraicProperties::isEqualToFloat_simplest);
         functions.put("standard", Algebraic::isEqualToFloat);
-        compareImplementations("isEqualToFloat()", take(LIMIT, P.algebraics()), functions);
+        compareImplementations("isEqualToFloat()", take(LIMIT, P.algebraics()), functions, v -> P.reset());
     }
 
     private static boolean isEqualToDouble_simplest(@NotNull Algebraic x) {
@@ -807,7 +844,7 @@ public class AlgebraicProperties extends QBarTestProperties {
         Map<String, Function<Algebraic, Boolean>> functions = new LinkedHashMap<>();
         functions.put("simplest", AlgebraicProperties::isEqualToDouble_simplest);
         functions.put("standard", Algebraic::isEqualToDouble);
-        compareImplementations("isEqualToDouble()", take(LIMIT, P.algebraics()), functions);
+        compareImplementations("isEqualToDouble()", take(LIMIT, P.algebraics()), functions, v -> P.reset());
     }
 
     private static boolean floatEquidistant(@NotNull Algebraic x) {
@@ -1548,6 +1585,432 @@ public class AlgebraicProperties extends QBarTestProperties {
         }
     }
 
+    private void propertiesHasTerminatingBaseExpansion() {
+        initialize("hasTerminatingBaseExpansion(BigInteger)");
+        //noinspection Convert2MethodRef
+        Iterable<Pair<Algebraic, BigInteger>> ps = P.pairs(
+                P.withScale(4).algebraics(),
+                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
+        );
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, ps)) {
+            boolean result = p.a.hasTerminatingBaseExpansion(p.b);
+            if (result) {
+                Rational r = p.a.rationalValueExact();
+                Iterable<BigInteger> dPrimeFactors = nub(MathUtils.primeFactors(r.getDenominator()));
+                Iterable<BigInteger> bPrimeFactors = nub(MathUtils.primeFactors(p.b));
+                assertTrue(p, isSubsetOf(dPrimeFactors, bPrimeFactors));
+                Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>> pn = r.abs().positionalNotation(p.b);
+                assertTrue(p, pn.c.equals(Collections.singletonList(BigInteger.ZERO)));
+            }
+        }
+
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, P.pairs(P.algebraics(), P.rangeDown(BigInteger.ONE)))) {
+            try {
+                p.a.hasTerminatingBaseExpansion(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesBigDecimalValueByPrecision_int_RoundingMode() {
+        initialize("bigDecimalValueByPrecision(int, RoundingMode)");
+        Predicate<Triple<Algebraic, Integer, RoundingMode>> valid = t -> {
+            try {
+                t.a.bigDecimalValueByPrecision(t.b, t.c);
+                return true;
+            } catch (ArithmeticException e) {
+                return false;
+            }
+        };
+        Iterable<Triple<Algebraic, Integer, RoundingMode>> ts = filterInfinite(
+                valid,
+                P.triples(P.algebraics(), P.naturalIntegersGeometric(), P.roundingModes())
+        );
+        for (Triple<Algebraic, Integer, RoundingMode> t : take(LIMIT, ts)) {
+            BigDecimal bd = t.a.bigDecimalValueByPrecision(t.b, t.c);
+            assertTrue(t, eq(bd, BigDecimal.ZERO) || bd.signum() == t.a.signum());
+        }
+
+        ts = filterInfinite(valid, P.triples(P.nonzeroAlgebraics(), P.positiveIntegersGeometric(), P.roundingModes()));
+        for (Triple<Algebraic, Integer, RoundingMode> t : take(LIMIT, ts)) {
+            BigDecimal bd = t.a.bigDecimalValueByPrecision(t.b, t.c);
+            assertTrue(t, bd.precision() == t.b);
+        }
+
+        Iterable<Pair<Algebraic, Integer>> ps = filterInfinite(
+                q -> valid.test(new Triple<>(q.a, q.b, RoundingMode.UNNECESSARY)),
+                P.pairsSquareRootOrder(P.algebraics(1), P.naturalIntegersGeometric())
+        );
+        for (Pair<Algebraic, Integer> p : take(LIMIT, ps)) {
+            BigDecimal bd = p.a.bigDecimalValueByPrecision(p.b, RoundingMode.UNNECESSARY);
+            assertEquals(p, bd, p.a.bigDecimalValueByPrecision(p.b, RoundingMode.FLOOR));
+            assertEquals(p, bd, p.a.bigDecimalValueByPrecision(p.b, RoundingMode.CEILING));
+            assertEquals(p, bd, p.a.bigDecimalValueByPrecision(p.b, RoundingMode.DOWN));
+            assertEquals(p, bd, p.a.bigDecimalValueByPrecision(p.b, RoundingMode.UP));
+            assertEquals(p, bd, p.a.bigDecimalValueByPrecision(p.b, RoundingMode.HALF_DOWN));
+            assertEquals(p, bd, p.a.bigDecimalValueByPrecision(p.b, RoundingMode.HALF_UP));
+            assertEquals(p, bd, p.a.bigDecimalValueByPrecision(p.b, RoundingMode.HALF_EVEN));
+        }
+
+        ps = filterInfinite(
+                q -> valid.test(new Triple<>(q.a, q.b, RoundingMode.FLOOR)) &&
+                        !of(q.a.bigDecimalValueByPrecision(q.b)).equals(q.a),
+                P.pairsSquareRootOrder(P.algebraics(), P.naturalIntegersGeometric())
+        );
+        for (Pair<Algebraic, Integer> p : take(LIMIT, ps)) {
+            BigDecimal low = p.a.bigDecimalValueByPrecision(p.b, RoundingMode.FLOOR);
+            BigDecimal high = p.a.bigDecimalValueByPrecision(p.b, RoundingMode.CEILING);
+            assertTrue(p, lt(low, high));
+        }
+
+        ps = filterInfinite(
+                q -> valid.test(new Triple<>(q.a, q.b, RoundingMode.FLOOR)) &&
+                        !of(q.a.bigDecimalValueByPrecision(q.b)).equals(q.a),
+                P.pairsSquareRootOrder(P.positiveAlgebraics(), P.naturalIntegersGeometric())
+        );
+        for (Pair<Algebraic, Integer> p : take(LIMIT, ps)) {
+            BigDecimal floor = p.a.bigDecimalValueByPrecision(p.b, RoundingMode.FLOOR);
+            BigDecimal down = p.a.bigDecimalValueByPrecision(p.b, RoundingMode.DOWN);
+            BigDecimal ceiling = p.a.bigDecimalValueByPrecision(p.b, RoundingMode.CEILING);
+            BigDecimal up = p.a.bigDecimalValueByPrecision(p.b, RoundingMode.UP);
+            assertEquals(p, floor, down);
+            assertEquals(p, ceiling, up);
+        }
+
+        ps = filterInfinite(
+                q -> valid.test(new Triple<>(q.a, q.b, RoundingMode.FLOOR)) &&
+                        !of(q.a.bigDecimalValueByPrecision(q.b)).equals(q.a),
+                P.pairsSquareRootOrder(P.negativeAlgebraics(), P.naturalIntegersGeometric())
+        );
+        for (Pair<Algebraic, Integer> p : take(LIMIT, ps)) {
+            BigDecimal floor = p.a.bigDecimalValueByPrecision(p.b, RoundingMode.FLOOR);
+            BigDecimal down = p.a.bigDecimalValueByPrecision(p.b, RoundingMode.DOWN);
+            BigDecimal ceiling = p.a.bigDecimalValueByPrecision(p.b, RoundingMode.CEILING);
+            BigDecimal up = p.a.bigDecimalValueByPrecision(p.b, RoundingMode.UP);
+            assertEquals(p, floor, up);
+            assertEquals(p, ceiling, down);
+        }
+
+        BigInteger five = BigInteger.valueOf(5);
+        Iterable<BigDecimal> bds = filterInfinite(
+                bd -> bd.precision() > 1 && !bd.abs().unscaledValue().mod(BigInteger.TEN).equals(five),
+                P.bigDecimals()
+        );
+        for (BigDecimal bd : take(LIMIT, bds)) {
+            int precision = bd.precision() - 1;
+            Algebraic x = of(bd);
+            BigDecimal down = x.bigDecimalValueByPrecision(precision, RoundingMode.DOWN);
+            BigDecimal up = x.bigDecimalValueByPrecision(precision, RoundingMode.UP);
+            BigDecimal halfDown = x.bigDecimalValueByPrecision(precision, RoundingMode.HALF_DOWN);
+            BigDecimal halfUp = x.bigDecimalValueByPrecision(precision, RoundingMode.HALF_UP);
+            BigDecimal halfEven = x.bigDecimalValueByPrecision(precision, RoundingMode.HALF_EVEN);
+            BigDecimal closest = lt(x.subtract(of(down)).abs(), x.subtract(of(up)).abs()) ? down : up;
+            assertEquals(bd, halfDown, closest);
+            assertEquals(bd, halfUp, closest);
+            assertEquals(bd, halfEven, closest);
+        }
+
+        bds = filterInfinite(
+                bd -> bd.precision() > 1,
+                map(
+                        bd -> new BigDecimal(bd.unscaledValue().multiply(BigInteger.TEN).add(five), bd.scale()),
+                        P.bigDecimals()
+                )
+        );
+        for (BigDecimal bd : take(LIMIT, bds)) {
+            int precision = bd.precision() - 1;
+            Algebraic x = of(bd);
+            BigDecimal down = x.bigDecimalValueByPrecision(precision, RoundingMode.DOWN);
+            BigDecimal up = x.bigDecimalValueByPrecision(precision, RoundingMode.UP);
+            BigDecimal halfDown = x.bigDecimalValueByPrecision(precision, RoundingMode.HALF_DOWN);
+            BigDecimal halfUp = x.bigDecimalValueByPrecision(precision, RoundingMode.HALF_UP);
+            BigDecimal halfEven = x.bigDecimalValueByPrecision(precision, RoundingMode.HALF_EVEN);
+            assertEquals(bd, down, halfDown);
+            assertEquals(bd, up, halfUp);
+            assertTrue(bd, bd.scale() != halfEven.scale() + 1 || !halfEven.unscaledValue().testBit(0));
+        }
+
+        Iterable<Triple<Algebraic, Integer, RoundingMode>> tsFail = P.triples(
+                P.nonzeroAlgebraics(),
+                P.negativeIntegers(),
+                P.roundingModes()
+        );
+        for (Triple<Algebraic, Integer, RoundingMode> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.bigDecimalValueByPrecision(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException | ArithmeticException ignored) {}
+        }
+
+        Iterable<Pair<Algebraic, Integer>> psFail = P.pairsSquareRootOrder(
+                filterInfinite(x -> !x.hasTerminatingBaseExpansion(BigInteger.TEN), P.algebraics()),
+                P.naturalIntegersGeometric()
+        );
+        for (Pair<Algebraic, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.bigDecimalValueByPrecision(p.b, RoundingMode.UNNECESSARY);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesBigDecimalValueByScale_int_RoundingMode() {
+        initialize("bigDecimalValueByScale(int, RoundingMode)");
+        Predicate<Triple<Algebraic, Integer, RoundingMode>> valid =
+                t -> t.c != RoundingMode.UNNECESSARY ||
+                        t.a.isRational() && t.a.multiply(Rational.TEN.pow(t.b)).isInteger();
+        Iterable<Triple<Algebraic, Integer, RoundingMode>> ts = filterInfinite(
+                valid,
+                P.triples(P.algebraics(), P.integersGeometric(), P.roundingModes())
+        );
+        for (Triple<Algebraic, Integer, RoundingMode> t : take(LIMIT, ts)) {
+            BigDecimal bd = t.a.bigDecimalValueByScale(t.b, t.c);
+            assertTrue(t, bd.scale() == t.b);
+            assertTrue(t, eq(bd, BigDecimal.ZERO) || bd.signum() == t.a.signum());
+        }
+
+        Iterable<Pair<Algebraic, Integer>> ps = filterInfinite(
+                q -> q.a.multiply(Rational.TEN.pow(q.b)).isInteger(),
+                P.pairsSquareRootOrder(P.algebraics(1), P.integersGeometric())
+        );
+        for (Pair<Algebraic, Integer> p : take(LIMIT, ps)) {
+            BigDecimal bd = p.a.bigDecimalValueByScale(p.b, RoundingMode.UNNECESSARY);
+            assertEquals(p, bd, p.a.bigDecimalValueByScale(p.b, RoundingMode.FLOOR));
+            assertEquals(p, bd, p.a.bigDecimalValueByScale(p.b, RoundingMode.CEILING));
+            assertEquals(p, bd, p.a.bigDecimalValueByScale(p.b, RoundingMode.DOWN));
+            assertEquals(p, bd, p.a.bigDecimalValueByScale(p.b, RoundingMode.UP));
+            assertEquals(p, bd, p.a.bigDecimalValueByScale(p.b, RoundingMode.HALF_DOWN));
+            assertEquals(p, bd, p.a.bigDecimalValueByScale(p.b, RoundingMode.HALF_UP));
+            assertEquals(p, bd, p.a.bigDecimalValueByScale(p.b, RoundingMode.HALF_EVEN));
+        }
+
+        ps = filterInfinite(
+                q -> !q.a.isRational() || !q.a.multiply(Rational.TEN.pow(q.b)).isInteger(),
+                P.pairsSquareRootOrder(P.algebraics(), P.integersGeometric())
+        );
+        for (Pair<Algebraic, Integer> p : take(LIMIT, ps)) {
+            BigDecimal low = p.a.bigDecimalValueByScale(p.b, RoundingMode.FLOOR);
+            BigDecimal high = p.a.bigDecimalValueByScale(p.b, RoundingMode.CEILING);
+            Rational lowR = Rational.of(low);
+            Rational highR = Rational.of(high);
+            assertTrue(p, gt(p.a, of(lowR)));
+            assertTrue(p, lt(p.a, of(highR)));
+            assertEquals(p, highR.subtract(lowR), Rational.TEN.pow(-p.b));
+        }
+
+        ps = filterInfinite(
+                q -> !q.a.isRational() || !q.a.multiply(Rational.TEN.pow(q.b)).isInteger(),
+                P.pairsSquareRootOrder(P.positiveAlgebraics(), P.integersGeometric())
+        );
+        for (Pair<Algebraic, Integer> p : take(LIMIT, ps)) {
+            BigDecimal floor = p.a.bigDecimalValueByScale(p.b, RoundingMode.FLOOR);
+            BigDecimal down = p.a.bigDecimalValueByScale(p.b, RoundingMode.DOWN);
+            BigDecimal ceiling = p.a.bigDecimalValueByScale(p.b, RoundingMode.CEILING);
+            BigDecimal up = p.a.bigDecimalValueByScale(p.b, RoundingMode.UP);
+            assertEquals(p, floor, down);
+            assertEquals(p, ceiling, up);
+        }
+
+        ps = filterInfinite(
+                q -> !q.a.isRational() || !q.a.multiply(Rational.TEN.pow(q.b)).isInteger(),
+                P.pairsSquareRootOrder(P.negativeAlgebraics(), P.integersGeometric())
+        );
+        for (Pair<Algebraic, Integer> p : take(LIMIT, ps)) {
+            BigDecimal floor = p.a.bigDecimalValueByScale(p.b, RoundingMode.FLOOR);
+            BigDecimal down = p.a.bigDecimalValueByScale(p.b, RoundingMode.DOWN);
+            BigDecimal ceiling = p.a.bigDecimalValueByScale(p.b, RoundingMode.CEILING);
+            BigDecimal up = p.a.bigDecimalValueByScale(p.b, RoundingMode.UP);
+            assertEquals(p, floor, up);
+            assertEquals(p, ceiling, down);
+        }
+
+        BigInteger five = BigInteger.valueOf(5);
+        Iterable<BigDecimal> bds = filterInfinite(
+                bd -> !bd.abs().unscaledValue().mod(BigInteger.TEN).equals(five),
+                P.bigDecimals()
+        );
+        for (BigDecimal bd : take(LIMIT, bds)) {
+            int scale = bd.scale() - 1;
+            Algebraic x = of(bd);
+            BigDecimal down = x.bigDecimalValueByScale(scale, RoundingMode.DOWN);
+            BigDecimal up = x.bigDecimalValueByScale(scale, RoundingMode.UP);
+            BigDecimal halfDown = x.bigDecimalValueByScale(scale, RoundingMode.HALF_DOWN);
+            BigDecimal halfUp = x.bigDecimalValueByScale(scale, RoundingMode.HALF_UP);
+            BigDecimal halfEven = x.bigDecimalValueByScale(scale, RoundingMode.HALF_EVEN);
+            BigDecimal closest = lt(x.subtract(of(down)).abs(), x.subtract(of(up)).abs()) ? down : up;
+            assertEquals(bd, halfDown, closest);
+            assertEquals(bd, halfUp, closest);
+            assertEquals(bd, halfEven, closest);
+        }
+
+        bds = map(
+                bd -> new BigDecimal(bd.unscaledValue().multiply(BigInteger.TEN).add(five), bd.scale()),
+                P.bigDecimals()
+        );
+        for (BigDecimal bd : take(LIMIT, bds)) {
+            int scale = bd.scale() - 1;
+            Algebraic x = of(bd);
+            BigDecimal down = x.bigDecimalValueByScale(scale, RoundingMode.DOWN);
+            BigDecimal up = x.bigDecimalValueByScale(scale, RoundingMode.UP);
+            BigDecimal halfDown = x.bigDecimalValueByScale(scale, RoundingMode.HALF_DOWN);
+            BigDecimal halfUp = x.bigDecimalValueByScale(scale, RoundingMode.HALF_UP);
+            BigDecimal halfEven = x.bigDecimalValueByScale(scale, RoundingMode.HALF_EVEN);
+            assertEquals(bd, down, halfDown);
+            assertEquals(bd, up, halfUp);
+            assertTrue(bd, !halfEven.unscaledValue().testBit(0));
+        }
+
+        Iterable<Pair<Algebraic, Integer>> psFail = P.pairsSquareRootOrder(
+                filterInfinite(x -> !x.hasTerminatingBaseExpansion(BigInteger.TEN), P.algebraics()),
+                P.naturalIntegersGeometric()
+        );
+        for (Pair<Algebraic, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.bigDecimalValueByScale(p.b, RoundingMode.UNNECESSARY);
+                fail(p);
+            } catch (IllegalArgumentException | ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesBigDecimalValueByPrecision_int() {
+        initialize("bigDecimalValueByPrecision(int)");
+        Predicate<Pair<Algebraic, Integer>> valid = p -> {
+            try {
+                p.a.bigDecimalValueByPrecision(p.b);
+                return true;
+            } catch (ArithmeticException e) {
+                return false;
+            }
+        };
+        Iterable<Pair<Algebraic, Integer>> ps = filterInfinite(
+                valid,
+                P.pairsSquareRootOrder(P.algebraics(), P.naturalIntegersGeometric())
+        );
+        for (Pair<Algebraic, Integer> p : take(LIMIT, ps)) {
+            BigDecimal bd = p.a.bigDecimalValueByPrecision(p.b);
+            assertEquals(p, bd, p.a.bigDecimalValueByPrecision(p.b, RoundingMode.HALF_EVEN));
+            assertTrue(p, eq(bd, BigDecimal.ZERO) || bd.signum() == p.a.signum());
+        }
+
+        ps = filterInfinite(valid::test, P.pairsSquareRootOrder(P.nonzeroAlgebraics(), P.positiveIntegersGeometric()));
+        for (Pair<Algebraic, Integer> p : take(LIMIT, ps)) {
+            BigDecimal bd = p.a.bigDecimalValueByPrecision(p.b);
+            assertTrue(p, bd.precision() == p.b);
+        }
+
+        BigInteger five = BigInteger.valueOf(5);
+        Iterable<BigDecimal> bds = filterInfinite(
+                bd -> bd.precision() > 1 && !bd.abs().unscaledValue().mod(BigInteger.TEN).equals(five),
+                P.bigDecimals()
+        );
+        for (BigDecimal bd : take(LIMIT, bds)) {
+            int precision = bd.precision() - 1;
+            Algebraic x = of(bd);
+            BigDecimal down = x.bigDecimalValueByPrecision(precision, RoundingMode.DOWN);
+            BigDecimal up = x.bigDecimalValueByPrecision(precision, RoundingMode.UP);
+            BigDecimal halfEven = x.bigDecimalValueByPrecision(precision);
+            boolean closerToDown = lt(x.subtract(of(down)).abs(), x.subtract(of(up)).abs());
+            assertEquals(bd, halfEven, closerToDown ? down : up);
+        }
+
+        bds = filterInfinite(
+                bd -> bd.precision() > 1,
+                map(
+                        bd -> new BigDecimal(bd.unscaledValue().multiply(BigInteger.TEN).add(five), bd.scale()),
+                        P.bigDecimals()
+                )
+        );
+        for (BigDecimal bd : take(LIMIT, bds)) {
+            int precision = bd.precision() - 1;
+            Algebraic x = of(bd);
+            BigDecimal halfEven = x.bigDecimalValueByPrecision(precision);
+            assertTrue(bd, bd.scale() != halfEven.scale() + 1 || !halfEven.unscaledValue().testBit(0));
+        }
+
+        for (Pair<Algebraic, Integer> p : take(LIMIT, P.pairs(P.algebraics(), P.negativeIntegers()))) {
+            try {
+                p.a.bigDecimalValueByPrecision(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesBigDecimalValueByScale_int() {
+        initialize("bigDecimalValueByScale(int)");
+        for (Pair<Algebraic, Integer> p : take(LIMIT, P.pairsSquareRootOrder(P.algebraics(), P.integersGeometric()))) {
+            BigDecimal bd = p.a.bigDecimalValueByScale(p.b);
+            assertEquals(p, bd, p.a.bigDecimalValueByScale(p.b, RoundingMode.HALF_EVEN));
+            assertTrue(p, eq(bd, BigDecimal.ZERO) || bd.signum() == p.a.signum());
+            assertTrue(p, bd.scale() == p.b);
+        }
+
+        BigInteger five = BigInteger.valueOf(5);
+        Iterable<BigDecimal> bds = filterInfinite(
+                bd -> !bd.abs().unscaledValue().mod(BigInteger.TEN).equals(five),
+                P.bigDecimals()
+        );
+        for (BigDecimal bd : take(LIMIT, bds)) {
+            int scale = bd.scale() - 1;
+            Algebraic x = of(bd);
+            BigDecimal down = x.bigDecimalValueByScale(scale, RoundingMode.DOWN);
+            BigDecimal up = x.bigDecimalValueByScale(scale, RoundingMode.UP);
+            BigDecimal halfEven = x.bigDecimalValueByScale(scale);
+            BigDecimal closer = lt(x.subtract(of(down)).abs(), x.subtract(of(up)).abs()) ? down : up;
+            assertEquals(bd, halfEven, closer);
+        }
+
+        bds = map(
+                bd -> new BigDecimal(bd.unscaledValue().multiply(BigInteger.TEN).add(five), bd.scale()),
+                P.bigDecimals()
+        );
+        for (BigDecimal bd : take(LIMIT, bds)) {
+            int scale = bd.scale() - 1;
+            Algebraic x = of(bd);
+            BigDecimal halfEven = x.bigDecimalValueByScale(scale);
+            assertTrue(bd, !halfEven.unscaledValue().testBit(0));
+        }
+    }
+
+    private void propertiesBigDecimalValueExact() {
+        initialize("bigDecimalValueExact()");
+        Iterable<Algebraic> xs = map(
+                Algebraic::of,
+                filterInfinite(r -> r.hasTerminatingBaseExpansion(BigInteger.TEN), P.rationals())
+        );
+        for (Algebraic x : take(LIMIT, xs)) {
+            BigDecimal bd = x.bigDecimalValueExact();
+            assertTrue(bd, BigDecimalUtils.isCanonical(bd));
+            assertEquals(x, bd, x.bigDecimalValueByPrecision(0, RoundingMode.UNNECESSARY));
+            assertTrue(x, bd.signum() == x.signum());
+            inverse(Algebraic::bigDecimalValueExact, Algebraic::of, x);
+            homomorphic(
+                    Algebraic::negate,
+                    BigDecimal::negate,
+                    Algebraic::bigDecimalValueExact,
+                    Algebraic::bigDecimalValueExact,
+                    x
+            );
+        }
+
+        for (Pair<Algebraic, Integer> p : take(LIMIT, P.pairs(P.algebraics(), P.negativeIntegers()))) {
+            try {
+                p.a.bigDecimalValueByPrecision(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        Iterable<Algebraic> xsFail = filterInfinite(
+                x -> !x.hasTerminatingBaseExpansion(BigInteger.TEN),
+                P.algebraics()
+        );
+        for (Algebraic x : take(LIMIT, xsFail)) {
+            try {
+                x.bigDecimalValueExact();
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
     private void propertiesMinimalPolynomial() {
         initialize("minimalPolynomial()");
         for (Algebraic x : take(LIMIT, P.algebraics())) {
@@ -2110,7 +2573,8 @@ public class AlgebraicProperties extends QBarTestProperties {
         compareImplementations(
                 "shiftLeft(int)",
                 take(LIMIT, P.pairs(P.algebraics(), P.integersGeometric())),
-                functions
+                functions,
+                v -> P.reset()
         );
     }
 
@@ -2156,8 +2620,1227 @@ public class AlgebraicProperties extends QBarTestProperties {
         compareImplementations(
                 "shiftRight(int)",
                 take(LIMIT, P.pairs(P.algebraics(), P.integersGeometric())),
-                functions
+                functions,
+                v -> P.reset()
         );
+    }
+
+    private static @NotNull Algebraic sum_simplest(@NotNull List<Algebraic> xs) {
+        return foldl(Algebraic::add, ZERO, xs);
+    }
+
+    private void propertiesSum() {
+        initialize("sum(List<Algebraic>)");
+        Iterable<List<Algebraic>> xss = filterInfinite(
+                yss -> productInteger(toList(map(Algebraic::degree, yss))) <= 10,
+                P.withScale(1).lists(P.withScale(1).withSecondaryScale(4).algebraics())
+        );
+        for (List<Algebraic> xs : take(SMALL_LIMIT, xss)) {
+            Algebraic sum = sum(xs);
+            sum.validate();
+            assertEquals(xs, sum(xs), sum_simplest(xs));
+        }
+
+        Iterable<Pair<List<Algebraic>, List<Algebraic>>> ps = filterInfinite(
+                q -> !q.a.equals(q.b),
+                P.dependentPairs(xss, P::permutationsFinite)
+        );
+        for (Pair<List<Algebraic>, List<Algebraic>> p : take(SMALL_LIMIT, ps)) {
+            assertEquals(p, sum(p.a), sum(p.b));
+        }
+
+        for (Algebraic x : take(LIMIT, P.withScale(1).withSecondaryScale(4).algebraics())) {
+            assertEquals(x, sum(Collections.singletonList(x)), x);
+        }
+
+        for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.pairs(P.withScale(1).withSecondaryScale(4).algebraics()))) {
+            assertEquals(p, sum(Arrays.asList(p.a, p.b)), p.a.add(p.b));
+        }
+
+        Iterable<List<Algebraic>> xssFail = filterInfinite(
+                ys -> !ys.isEmpty(),
+                P.listsWithElement(null, P.withScale(1).algebraics())
+        );
+        for (List<Algebraic> xs : take(LIMIT, xssFail)) {
+            try {
+                sum(xs);
+                fail(xs);
+            } catch (NullPointerException | IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void compareImplementationsSum() {
+        Polynomial.USE_FACTOR_CACHE = false;
+        Algebraic.USE_SUM_CACHE = false;
+        Algebraic.USE_PRODUCT_CACHE = false;
+        Map<String, Function<List<Algebraic>, Algebraic>> functions = new LinkedHashMap<>();
+        functions.put("simplest", AlgebraicProperties::sum_simplest);
+        functions.put("standard", Algebraic::sum);
+        Iterable<List<Algebraic>> xss = P.withScale(1).lists(P.withScale(1).withSecondaryScale(4).algebraics());
+        compareImplementations("sum(Iterable<Algebraic>)", take(SMALL_LIMIT, xss), functions, v -> P.reset());
+        Polynomial.USE_FACTOR_CACHE = true;
+        Algebraic.USE_SUM_CACHE = true;
+        Algebraic.USE_PRODUCT_CACHE = true;
+    }
+
+    private static @NotNull Algebraic product_simplest(@NotNull List<Algebraic> xs) {
+        return foldl(Algebraic::multiply, ONE, xs);
+    }
+
+    private void propertiesProduct() {
+        initialize("product(List<Algebraic>)");
+        Iterable<List<Algebraic>> xss = filterInfinite(
+                yss -> productInteger(toList(map(Algebraic::degree, yss))) <= 10,
+                P.withScale(1).lists(P.withScale(1).withSecondaryScale(4).algebraics())
+        );
+        for (List<Algebraic> xs : take(SMALL_LIMIT, xss)) {
+            Algebraic product = product(xs);
+            product.validate();
+            assertEquals(xs, product(xs), product_simplest(xs));
+        }
+
+        Iterable<Pair<List<Algebraic>, List<Algebraic>>> ps = filterInfinite(
+                q -> !q.a.equals(q.b),
+                P.dependentPairs(xss, P::permutationsFinite)
+        );
+        for (Pair<List<Algebraic>, List<Algebraic>> p : take(SMALL_LIMIT, ps)) {
+            assertEquals(p, product_simplest(p.a), product(p.b));
+        }
+
+        for (Algebraic x : take(LIMIT, P.withScale(1).withSecondaryScale(4).algebraics())) {
+            assertEquals(x, product(Collections.singletonList(x)), x);
+        }
+
+        for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.pairs(P.withScale(1).withSecondaryScale(4).algebraics()))) {
+            assertEquals(p, product(Arrays.asList(p.a, p.b)), p.a.multiply(p.b));
+        }
+
+        Iterable<List<Algebraic>> xssFail = filterInfinite(
+                ys -> !ys.isEmpty(),
+                P.listsWithElement(null, P.withScale(1).algebraics())
+        );
+        for (List<Algebraic> xs : take(LIMIT, xssFail)) {
+            try {
+                product(xs);
+                fail(xs);
+            } catch (NullPointerException | IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void compareImplementationsProduct() {
+        Polynomial.USE_FACTOR_CACHE = false;
+        Algebraic.USE_SUM_CACHE = false;
+        Algebraic.USE_PRODUCT_CACHE = false;
+        Map<String, Function<List<Algebraic>, Algebraic>> functions = new LinkedHashMap<>();
+        functions.put("simplest", AlgebraicProperties::sum_simplest);
+        functions.put("standard", Algebraic::sum);
+        Iterable<List<Algebraic>> xss = P.withScale(1).lists(P.withScale(1).withSecondaryScale(4).algebraics());
+        compareImplementations("product(List<Algebraic>)", take(SMALL_LIMIT, xss), functions, v -> P.reset());
+        Polynomial.USE_FACTOR_CACHE = true;
+        Algebraic.USE_SUM_CACHE = true;
+        Algebraic.USE_PRODUCT_CACHE = true;
+    }
+
+    private static int sumSign_simplest(@NotNull List<Algebraic> xs) {
+        return sum(xs).signum();
+    }
+
+    private static int sumSign_alt(@NotNull List<Algebraic> xs) {
+        switch (xs.size()) {
+            case 0:
+                return 0;
+            case 1:
+                return xs.get(0).signum();
+            default:
+                return Integer.signum(sum(toList(tail(xs))).compareTo(head(xs).negate()));
+        }
+    }
+
+    public static int sumSign_alt2(@NotNull List<Algebraic> xs) {
+        if (any(x -> x == null, xs)) {
+            throw new NullPointerException();
+        }
+        switch (xs.size()) {
+            case 0:
+                return 0;
+            case 1:
+                return xs.get(0).signum();
+            default:
+                Map<String, Function<Void, Integer>> implementations = new HashMap<>();
+                implementations.put("real", v -> Real.sum(toList(map(Algebraic::realValue, xs))).signumUnsafe());
+                implementations.put("algebraic", v -> {
+                    List<Algebraic> positives = new ArrayList<>();
+                    List<Algebraic> negatives = new ArrayList<>();
+                    for (Algebraic x : xs) {
+                        int signum = x.signum();
+                        if (signum == 1) {
+                            positives.add(x);
+                        } else if (signum == -1) {
+                            negatives.add(x);
+                        }
+                    }
+                    int positiveSize = positives.size();
+                    int negativeSize = negatives.size();
+                    if (positiveSize == 0 && negativeSize == 0) {
+                        return 0;
+                    } else if (positiveSize == 0) {
+                        return -1;
+                    } else if (negativeSize == 0) {
+                        return 1;
+                    } else if (positiveSize < negativeSize) {
+                        Algebraic positiveSum = sum(positives).negate();
+                        Algebraic negativeSum = ZERO;
+                        for (Algebraic negative : negatives) {
+                            negativeSum = negativeSum.add(negative);
+                            if (lt(negativeSum, positiveSum)) return -1;
+                        }
+                        return negativeSum.equals(positiveSum) ? 0 : 1;
+                    } else {
+                        Algebraic negativeSum = sum(negatives).negate();
+                        Algebraic positiveSum = ZERO;
+                        for (Algebraic positive : positives) {
+                            positiveSum = positiveSum.add(positive);
+                            if (gt(positiveSum, negativeSum)) return 1;
+                        }
+                        return negativeSum.equals(positiveSum) ? 0 : -1;
+                    }
+                });
+            return ConcurrencyUtils.evaluateFastest(implementations, null).b;
+        }
+    }
+
+    private void propertiesSumSign() {
+        initialize("sumSign(List<Algebraic>)");
+        Iterable<List<Algebraic>> xss = P.withScale(1).lists(P.withScale(1).withSecondaryScale(4).algebraics());
+        for (List<Algebraic> xs : take(SMALL_LIMIT, xss)) {
+            int sumSign = sumSign(xs);
+            assertEquals(xs, sumSign_simplest(xs), sumSign);
+            assertEquals(xs, sumSign_alt(xs), sumSign);
+            assertEquals(xs, sumSign_alt2(xs), sumSign);
+            assertTrue(xs, sumSign == 0 || sumSign == 1 || sumSign == -1);
+            assertEquals(xs, sumSign(toList(map(Algebraic::negate, xs))), -sumSign);
+        }
+
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            assertEquals(x, sumSign(Collections.singletonList(x)), x.signum());
+        }
+
+        for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.pairs(P.withScale(1).withSecondaryScale(4).algebraics()))) {
+            assertEquals(p, sumSign(Pair.toList(p)), Integer.signum(p.a.compareTo(p.b.negate())));
+        }
+
+        for (List<Algebraic> xs : take(LIMIT, P.listsWithElement(null, P.algebraics()))) {
+            try {
+                sumSign(xs);
+                fail(xs);
+            } catch (NullPointerException ignored) {}
+        }
+    }
+
+    private void compareImplementationsSumSign() {
+        Polynomial.USE_FACTOR_CACHE = false;
+        Algebraic.USE_SUM_CACHE = false;
+        Algebraic.USE_PRODUCT_CACHE = false;
+        Map<String, Function<List<Algebraic>, Integer>> functions = new LinkedHashMap<>();
+        functions.put("simplest", AlgebraicProperties::sumSign_simplest);
+        functions.put("alt", AlgebraicProperties::sumSign_alt);
+        functions.put("alt2", AlgebraicProperties::sumSign_alt2);
+        functions.put("standard", Algebraic::sumSign);
+        Iterable<List<Algebraic>> xss = filterInfinite(
+                yss -> productInteger(toList(map(Algebraic::degree, yss))) <= 20,
+                P.withScale(1).lists(P.withScale(1).withSecondaryScale(4).algebraics())
+        );
+        compareImplementations("sumSign(List<Algebraic>)", take(MEDIUM_LIMIT, xss), functions, v -> P.reset());
+        Polynomial.USE_FACTOR_CACHE = true;
+        Algebraic.USE_SUM_CACHE = true;
+        Algebraic.USE_PRODUCT_CACHE = true;
+    }
+
+    private void propertiesDelta() {
+        initialize("delta(Iterable<Algebraic>)");
+        Iterable<List<Algebraic>> xss = P.withScale(2).listsAtLeast(
+                1,
+                P.withScale(1).withSecondaryScale(4).algebraics()
+        );
+        for (List<Algebraic> xs : take(SMALL_LIMIT, xss)) {
+            Iterable<Algebraic> deltas = delta(xs);
+            deltas.forEach(Algebraic::validate);
+            aeq(xs, length(deltas), length(xs) - 1);
+            Iterable<Algebraic> reversed = reverse(map(Algebraic::negate, delta(reverse(xs))));
+            aeqit(xs, deltas, reversed);
+            testNoRemove(TINY_LIMIT, deltas);
+            testHasNext(deltas);
+        }
+
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            assertTrue(x, isEmpty(delta(Collections.singletonList(x))));
+        }
+
+        for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.pairs(P.withScale(1).withSecondaryScale(4).algebraics()))) {
+            aeqit(p, delta(Pair.toList(p)), Collections.singletonList(p.b.subtract(p.a)));
+        }
+
+        for (Iterable<Algebraic> xs : take(SMALL_LIMIT, P.prefixPermutations(QBarTesting.QEP.algebraics()))) {
+            Iterable<Algebraic> deltas = delta(xs);
+            List<Algebraic> deltaPrefix = toList(take(TINY_LIMIT, deltas));
+            deltaPrefix.forEach(Algebraic::validate);
+            aeq(IterableUtils.toString(TINY_LIMIT, xs), length(deltaPrefix), TINY_LIMIT);
+            testNoRemove(TINY_LIMIT, deltas);
+        }
+
+        Iterable<List<Algebraic>> xssFail = P.withScale(3).listsWithElement(
+                null,
+                P.withScale(1).withSecondaryScale(4).algebraics()
+        );
+        for (List<Algebraic> xs : take(LIMIT, xssFail)) {
+            try {
+                toList(delta(xs));
+                fail(xs);
+            } catch (NullPointerException ignored) {}
+        }
+    }
+
+    private static @NotNull Algebraic pow_int_alt(@NotNull Algebraic x, int p) {
+        if (p == 0 || x == ONE) return ONE;
+        if (p == 1) return x;
+        if (p < 0) return pow_int_alt(x.invert(), -p);
+        if (x == ZERO) return x;
+        if (p % 2 == 0 && x.equals(NEGATIVE_ONE)) return ONE;
+        if (x.isRational()) {
+            return of(x.rationalValueExact().pow(p));
+        }
+        Optional<Polynomial> oPowerMP = x.minimalPolynomial().undoRootRoots(p);
+        if (oPowerMP.isPresent()) {
+            Polynomial powerMp = oPowerMP.get();
+            int powerRootIndex = x.rootIndex();
+            if ((p & 1) == 0) {
+                int negativeRootCount = x.minimalPolynomial().rootCount(Interval.lessThanOrEqualTo(Rational.ZERO));
+                int powerNegativeRootCount = powerMp.rootCount(Interval.lessThanOrEqualTo(Rational.ZERO));
+                if (x.signum() == 1) {
+                    powerRootIndex = powerNegativeRootCount - negativeRootCount + x.rootIndex();
+                } else {
+                    powerRootIndex = negativeRootCount + powerNegativeRootCount - x.rootIndex() - 1;
+                }
+            }
+            return of(powerMp, powerRootIndex);
+        }
+
+        Polynomial mp = x.minimalPolynomial();
+        if (mp.isMonic()) {
+            return mp.rootPower(p).apply(x);
+        } else {
+            return mp.toRationalPolynomial().makeMonic().rootPower(p).apply(x);
+        }
+    }
+
+    private static @NotNull Algebraic pow_int_alt2(@NotNull Algebraic x, int p) {
+        if (p == 0 || x == ONE) return ONE;
+        if (p == 1) return x;
+        if (p < 0) return pow_int_alt2(x.invert(), -p);
+        if (x == ZERO) return x;
+        if (p % 2 == 0 && x.equals(NEGATIVE_ONE)) return ONE;
+        if (x.isRational()) {
+            return of(x.rationalValueExact().pow(p));
+        }
+        Optional<Polynomial> oPowerMP = x.minimalPolynomial().undoRootRoots(p);
+        if (oPowerMP.isPresent()) {
+            Polynomial powerMp = oPowerMP.get();
+            int powerRootIndex = x.rootIndex();
+            if ((p & 1) == 0) {
+                int negativeRootCount = x.minimalPolynomial().rootCount(Interval.lessThanOrEqualTo(Rational.ZERO));
+                int powerNegativeRootCount = powerMp.rootCount(Interval.lessThanOrEqualTo(Rational.ZERO));
+                if (x.signum() == 1) {
+                    powerRootIndex = powerNegativeRootCount - negativeRootCount + x.rootIndex();
+                } else {
+                    powerRootIndex = negativeRootCount + powerNegativeRootCount - x.rootIndex() - 1;
+                }
+            }
+            return of(powerMp, powerRootIndex);
+        }
+
+        Map<String, Function<Pair<Algebraic, Integer>, Algebraic>> implementations = new HashMap<>();
+        implementations.put("reducing", q -> q.a.pow(q.b));
+        implementations.put("halving", q -> pow_int_alt(q.a, q.b));
+        return ConcurrencyUtils.evaluateFastest(implementations, new Pair<>(x, p)).b;
+    }
+
+    private void propertiesPow_int() {
+        initialize("pow(int)");
+        Iterable<Pair<Algebraic, Integer>> ps = filterInfinite(
+                p -> p.a != ZERO || p.b >= 0,
+                P.pairsSquareRootOrder(
+                        P.withScale(1).withSecondaryScale(4).algebraics(),
+                        P.withScale(1).integersGeometric()
+                )
+        );
+        for (Pair<Algebraic, Integer> p : take(MEDIUM_LIMIT, ps)) {
+            Algebraic x = p.a.pow(p.b);
+            x.validate();
+            if (p.b != 0 && ((p.b & 1) == 1 || p.a.signum() != -1)) {
+                inverse(y -> y.pow(p.b), (Algebraic y) -> y.root(p.b), p.a);
+            }
+            assertEquals(p, x, pow_int_alt(p.a, p.b));
+            assertEquals(p, x, pow_int_alt2(p.a, p.b));
+        }
+
+        ps = P.pairs(P.withScale(1).withSecondaryScale(4).nonzeroAlgebraics(), P.withScale(1).integersGeometric());
+        for (Pair<Algebraic, Integer> p : take(SMALL_LIMIT, ps)) {
+            homomorphic(Function.identity(), i -> -i, Algebraic::invert, Algebraic::pow, Algebraic::pow, p);
+            homomorphic(Algebraic::invert, i -> -i, Function.identity(), Algebraic::pow, Algebraic::pow, p);
+        }
+
+        for (int i : take(LIMIT, P.positiveIntegersGeometric())) {
+            fixedPoint(j -> j.pow(i), ZERO);
+        }
+
+        for (Algebraic x : take(MEDIUM_LIMIT, P.withScale(1).withSecondaryScale(4).algebraics())) {
+            assertTrue(x, x.pow(0) == ONE);
+            fixedPoint(y -> y.pow(1), x);
+            assertEquals(x, x.pow(2), x.multiply(x));
+        }
+
+        for (Algebraic x : take(LIMIT, P.nonzeroAlgebraics())) {
+            assertEquals(x, x.pow(-1), x.invert());
+        }
+
+        Iterable<Triple<Algebraic, Integer, Integer>> ts = filterInfinite(
+                t -> t.a != ZERO || (t.b >= 0 && t.c >= 0),
+                P.triples(
+                        P.withScale(1).withSecondaryScale(4).algebraics(),
+                        P.withScale(1).integersGeometric(),
+                        P.withScale(1).integersGeometric()
+                )
+        );
+        for (Triple<Algebraic, Integer, Integer> t : take(SMALL_LIMIT, ts)) {
+            Algebraic expression1 = t.a.pow(t.b).multiply(t.a.pow(t.c));
+            Algebraic expression2 = t.a.pow(t.b + t.c);
+            assertEquals(t, expression1, expression2);
+            Algebraic expression3 = t.a.pow(t.b).pow(t.c);
+            Algebraic expression4 = t.a.pow(t.b * t.c);
+            assertEquals(t, expression3, expression4);
+        }
+
+        ts = filterInfinite(
+                t -> t.a != ZERO || (t.c == 0 && t.b >= 0),
+                P.triples(
+                        P.withScale(1).withSecondaryScale(4).algebraics(),
+                        P.withScale(1).integersGeometric(),
+                        P.withScale(1).integersGeometric()
+                )
+        );
+        for (Triple<Algebraic, Integer, Integer> t : take(SMALL_LIMIT, ts)) {
+            Algebraic expression1 = t.a.pow(t.b).divide(t.a.pow(t.c));
+            Algebraic expression2 = t.a.pow(t.b - t.c);
+            assertEquals(t, expression1, expression2);
+        }
+
+        Iterable<Triple<Algebraic, Algebraic, Integer>> ts2 = filter(
+                t -> (t.a != ZERO && t.b != ZERO) || t.c >= 0,
+                P.triples(
+                        P.withScale(1).withSecondaryScale(4).algebraics(),
+                        P.withScale(1).withSecondaryScale(4).algebraics(),
+                        P.withScale(2).positiveIntegersGeometric()
+                )
+        );
+        for (Triple<Algebraic, Algebraic, Integer> t : take(TINY_LIMIT, ts2)) {
+            Algebraic expression1 = t.a.multiply(t.b).pow(t.c);
+            Algebraic expression2 = t.a.pow(t.c).multiply(t.b.pow(t.c));
+            assertEquals(t, expression1, expression2);
+        }
+
+        ts2 = filterInfinite(
+                t -> t.a != ZERO || t.c >= 0,
+                P.triples(
+                        filterInfinite(x -> x.degree() < 5, P.withScale(1).withSecondaryScale(4).algebraics()),
+                        filterInfinite(x -> x.degree() < 5, P.withScale(1).withSecondaryScale(4).nonzeroAlgebraics()),
+                        P.withScale(2).positiveIntegersGeometric()
+                )
+        );
+        for (Triple<Algebraic, Algebraic, Integer> t : take(TINY_LIMIT, ts2)) {
+            Algebraic expression1 = t.a.divide(t.b).pow(t.c);
+            Algebraic expression2 = t.a.pow(t.c).divide(t.b.pow(t.c));
+            assertEquals(t, expression1, expression2);
+        }
+
+        for (int i : take(LIMIT, P.negativeIntegers())) {
+            try {
+                ZERO.pow(i);
+                fail(i);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void compareImplementationsPow_int() {
+        Polynomial.USE_FACTOR_CACHE = false;
+        Algebraic.USE_SUM_CACHE = false;
+        Algebraic.USE_PRODUCT_CACHE = false;
+        Map<String, Function<Pair<Algebraic, Integer>, Algebraic>> functions = new LinkedHashMap<>();
+        functions.put("alt", p -> pow_int_alt(p.a, p.b));
+        functions.put("alt2", p -> pow_int_alt2(p.a, p.b));
+        functions.put("standard", p -> p.a.pow(p.b));
+        Iterable<Pair<Algebraic, Integer>> ps = filterInfinite(
+                p -> p.a != ZERO || p.b >= 0,
+                P.pairsSquareRootOrder(
+                        P.withScale(1).withSecondaryScale(4).algebraics(),
+                        P.withScale(1).integersGeometric()
+                )
+        );
+        compareImplementations("pow(int)", take(MEDIUM_LIMIT, ps), functions, v -> P.reset());
+        Polynomial.USE_FACTOR_CACHE = true;
+        Algebraic.USE_SUM_CACHE = true;
+        Algebraic.USE_PRODUCT_CACHE = true;
+    }
+
+    private void propertiesRoot() {
+        initialize("root(int)");
+        Iterable<Pair<Algebraic, Integer>> ps = filterInfinite(
+                p -> (p.a != ZERO || p.b >= 0) && ((p.b & 1) != 0 || p.a.signum() != -1),
+                P.pairsSquareRootOrder(P.withScale(4).algebraics(), P.withScale(2).nonzeroIntegersGeometric())
+        );
+        for (Pair<Algebraic, Integer> p : take(MEDIUM_LIMIT, ps)) {
+            Algebraic x = p.a.root(p.b);
+            x.validate();
+            inverse(y -> y.root(p.b), (Algebraic y) -> y.pow(p.b), p.a);
+            if ((p.b & 1) == 0) {
+                assertNotEquals(p, x.signum(), -1);
+            }
+        }
+
+        ps = filterInfinite(
+                p -> (p.b & 1) != 0 || p.a.signum() != -1,
+                P.pairsSquareRootOrder(P.withScale(4).nonzeroAlgebraics(), P.withScale(2).nonzeroIntegersGeometric())
+        );
+        for (Pair<Algebraic, Integer> p : take(MEDIUM_LIMIT, ps)) {
+            homomorphic(Function.identity(), i -> -i, Algebraic::invert, Algebraic::root, Algebraic::root, p);
+            homomorphic(Algebraic::invert, i -> -i, Function.identity(), Algebraic::root, Algebraic::root, p);
+        }
+
+        for (int i : take(LIMIT, P.positiveIntegersGeometric())) {
+            fixedPoint(j -> j.root(i), ZERO);
+        }
+
+        for (Algebraic x : take(MEDIUM_LIMIT, P.withScale(4).algebraics())) {
+            fixedPoint(y -> y.root(1), x);
+        }
+
+        for (Algebraic x : take(LIMIT, P.nonzeroAlgebraics())) {
+            assertEquals(x, x.root(-1), x.invert());
+        }
+
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            try {
+                x.root(0);
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        for (int i : take(LIMIT, P.negativeIntegers())) {
+            try {
+                ZERO.root(i);
+                fail(i);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<Pair<Algebraic, Integer>> psFail = P.pairs(
+                P.negativeAlgebraics(),
+                map(i -> i * 2, P.integersGeometric())
+        );
+        for (Pair<Algebraic, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.root(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesSqrt() {
+        initialize("sqrt()");
+        for (Algebraic x : take(LIMIT, P.withElement(ZERO, P.withScale(4).positiveAlgebraics()))) {
+            Algebraic y = x.sqrt();
+            y.validate();
+            inverse(Algebraic::sqrt, (Algebraic z) -> z.pow(2), x);
+            assertNotEquals(x, x.signum(), -1);
+        }
+
+        Iterable<Pair<Algebraic, Algebraic>> ps = P.pairs(P.withElement(ZERO, P.withScale(4).positiveAlgebraics()));
+        for (Pair<Algebraic, Algebraic> p : take(LIMIT, ps)) {
+            assertEquals(p, p.a.compareTo(p.b), p.a.sqrt().compareTo(p.b.sqrt()));
+        }
+
+        for (Algebraic x : take(LIMIT, P.negativeAlgebraics())) {
+            try {
+                x.sqrt();
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesCbrt() {
+        initialize("cbrt()");
+        for (Algebraic x : take(LIMIT, P.withScale(4).algebraics())) {
+            Algebraic y = x.cbrt();
+            y.validate();
+            inverse(Algebraic::cbrt, (Algebraic z) -> z.pow(3), x);
+        }
+
+        for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.pairs(P.withScale(4).algebraics()))) {
+            assertEquals(p, p.a.compareTo(p.b), p.a.cbrt().compareTo(p.b.cbrt()));
+        }
+    }
+
+    private static @NotNull Algebraic pow_Rational_alt(@NotNull Algebraic x, @NotNull Rational p) {
+        return x.root(p.getDenominator().intValueExact()).pow(p.getNumerator().intValueExact());
+    }
+
+    private void propertiesPow_Rational() {
+        initialize("pow(Rational)");
+        BigInteger lower = BigInteger.valueOf(Integer.MIN_VALUE);
+        BigInteger upper = BigInteger.valueOf(Integer.MAX_VALUE);
+        Iterable<Rational> rs = filterInfinite(
+                r -> ge(r.getNumerator(), lower) && le(r.getNumerator(), upper) && le(r.getDenominator(), upper),
+                P.withScale(3).rationals()
+        );
+        Iterable<Pair<Algebraic, Rational>> ps = filterInfinite(
+                p -> (p.a != ZERO || p.b.signum() != -1) &&
+                        (p.a.signum() != -1 || !p.b.getDenominator().and(BigInteger.ONE).equals(BigInteger.ZERO)),
+                P.pairsSquareRootOrder(P.withScale(1).withSecondaryScale(4).algebraics(), rs)
+        );
+        for (Pair<Algebraic, Rational> p : take(SMALL_LIMIT, ps)) {
+            Algebraic x = p.a.pow(p.b);
+            x.validate();
+        }
+
+        BigInteger five = BigInteger.valueOf(5);
+        Iterable<Rational> simpleRs = filterInfinite(
+                r -> le(r.getNumerator().abs(), five) && le(r.getDenominator(), five),
+                P.withScale(3).rationals()
+        );
+        ps = filterInfinite(
+                p -> (p.a != ZERO || p.b.signum() != -1) &&
+                        (p.a.signum() != -1 || !p.b.getDenominator().and(BigInteger.ONE).equals(BigInteger.ZERO)),
+                P.pairsSquareRootOrder(P.withScale(1).withSecondaryScale(4).algebraics(), simpleRs)
+        );
+        for (Pair<Algebraic, Rational> p : take(SMALL_LIMIT, ps)) {
+            assertEquals(p, p.a.pow(p.b), pow_Rational_alt(p.a, p.b));
+            if (p.b != Rational.ZERO &&
+                    (p.b.getNumerator().and(BigInteger.ONE).equals(BigInteger.ONE) || p.a.signum() != -1)) {
+                inverse(y -> y.pow(p.b), (Algebraic y) -> y.pow(p.b.invert()), p.a);
+            }
+        }
+
+        ps = filterInfinite(
+                p -> p.b.getDenominator().and(BigInteger.ONE).equals(BigInteger.ONE) || p.a.signum() == 1,
+                P.pairs(P.withScale(1).withSecondaryScale(4).nonzeroAlgebraics(), simpleRs)
+        );
+        for (Pair<Algebraic, Rational> p : take(SMALL_LIMIT, ps)) {
+            homomorphic(Function.identity(), Rational::negate, Algebraic::invert, Algebraic::pow, Algebraic::pow, p);
+            homomorphic(Algebraic::invert, Rational::negate, Function.identity(), Algebraic::pow, Algebraic::pow, p);
+        }
+
+        Iterable<Rational> positiveRs = filterInfinite(
+                r -> ge(r.getNumerator(), lower) && le(r.getNumerator(), upper) && le(r.getDenominator(), upper),
+                P.withScale(4).positiveRationals()
+        );
+        for (Rational r : take(LIMIT, positiveRs)) {
+            fixedPoint(j -> j.pow(r), ZERO);
+        }
+
+        for (Algebraic x : take(MEDIUM_LIMIT, P.withScale(1).withSecondaryScale(4).algebraics())) {
+            assertTrue(x, x.pow(Rational.ZERO) == ONE);
+            fixedPoint(y -> y.pow(Rational.ONE), x);
+            assertEquals(x, x.pow(Rational.TWO), x.multiply(x));
+        }
+
+        for (Algebraic x : take(LIMIT, P.nonzeroAlgebraics())) {
+            assertEquals(x, x.pow(Rational.NEGATIVE_ONE), x.invert());
+        }
+
+        Iterable<Triple<Algebraic, Rational, Rational>> ts = filterInfinite(
+                t -> (t.a != ZERO || (t.b.signum() != -1 && t.c.signum() != -1)),
+                P.triples(
+                        filterInfinite(x -> x.degree() < 5, P.withScale(1).withSecondaryScale(4).positiveAlgebraics()),
+                        simpleRs,
+                        simpleRs
+                )
+        );
+        for (Triple<Algebraic, Rational, Rational> t : take(SMALL_LIMIT, ts)) {
+            Algebraic expression1 = t.a.pow(t.b).multiply(t.a.pow(t.c));
+            Algebraic expression2 = t.a.pow(t.b.add(t.c));
+            assertEquals(t, expression1, expression2);
+            Algebraic expression3 = t.a.pow(t.b).pow(t.c);
+            Algebraic expression4 = t.a.pow(t.b.multiply(t.c));
+            assertEquals(t, expression3, expression4);
+        }
+
+        ts = filterInfinite(
+                t -> t.a != ZERO || (t.c == Rational.ZERO && t.b.signum() != -1),
+                P.triples(
+                        filterInfinite(x -> x.degree() < 5, P.withScale(1).withSecondaryScale(4).positiveAlgebraics()),
+                        simpleRs,
+                        simpleRs
+                )
+        );
+        for (Triple<Algebraic, Rational, Rational> t : take(SMALL_LIMIT, ts)) {
+            Algebraic expression1 = t.a.pow(t.b).divide(t.a.pow(t.c));
+            Algebraic expression2 = t.a.pow(t.b.subtract(t.c));
+            assertEquals(t, expression1, expression2);
+        }
+
+        Iterable<Triple<Algebraic, Algebraic, Rational>> ts2 = P.triples(
+                filterInfinite(x -> x.degree() < 5, P.withScale(1).withSecondaryScale(4).positiveAlgebraics()),
+                filterInfinite(x -> x.degree() < 5, P.withScale(1).withSecondaryScale(4).positiveAlgebraics()),
+                simpleRs
+        );
+        for (Triple<Algebraic, Algebraic, Rational> t : take(TINY_LIMIT, ts2)) {
+            Algebraic expression1 = t.a.multiply(t.b).pow(t.c);
+            Algebraic expression2 = t.a.pow(t.c).multiply(t.b.pow(t.c));
+            assertEquals(t, expression1, expression2);
+        }
+
+        ts2 = P.triples(
+                filterInfinite(x -> x.degree() < 5, P.withScale(1).withSecondaryScale(4).positiveAlgebraics()),
+                filterInfinite(x -> x.degree() < 5, P.withScale(1).withSecondaryScale(4).positiveAlgebraics()),
+                simpleRs
+        );
+        for (Triple<Algebraic, Algebraic, Rational> t : take(SMALL_LIMIT, ts2)) {
+            Algebraic expression1 = t.a.divide(t.b).pow(t.c);
+            Algebraic expression2 = t.a.pow(t.c).divide(t.b.pow(t.c));
+            assertEquals(t, expression1, expression2);
+        }
+
+        for (int i : take(LIMIT, P.negativeIntegers())) {
+            try {
+                ZERO.pow(i);
+                fail(i);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<Pair<Algebraic, Rational>> psFail = P.pairs(
+                P.negativeAlgebraics(),
+                filterInfinite(r -> r.getDenominator().and(BigInteger.ONE).equals(BigInteger.ZERO), rs)
+        );
+        for (Pair<Algebraic, Rational> p : take(LIMIT, psFail)) {
+            try {
+                p.a.pow(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<Rational> rsFail = filterInfinite(
+                r -> lt(r.getNumerator(), lower) || gt(r.getNumerator(), upper) || gt(r.getDenominator(), upper),
+                map(
+                        p -> Rational.of(p.a, p.b),
+                        P.choose(
+                                P.pairs(
+                                        P.withScale(1).choose(
+                                                P.withScale(33).rangeDown(lower.subtract(BigInteger.ONE)),
+                                                P.withScale(33).rangeUp(upper.add(BigInteger.ONE))
+                                        ),
+                                        P.positiveBigIntegers()
+                                ),
+                                P.pairs(P.bigIntegers(), P.withScale(33).rangeUp(upper.add(BigInteger.ONE)))
+                        )
+                )
+        );
+        for (Pair<Algebraic, Rational> p : take(LIMIT, P.pairs(P.algebraics(), rsFail))) {
+            try {
+                p.a.pow(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void compareImplementationsPow_Rational() {
+        Polynomial.USE_FACTOR_CACHE = false;
+        Algebraic.USE_SUM_CACHE = false;
+        Algebraic.USE_PRODUCT_CACHE = false;
+        Map<String, Function<Pair<Algebraic, Rational>, Algebraic>> functions = new LinkedHashMap<>();
+        functions.put("alt", p -> pow_Rational_alt(p.a, p.b));
+        functions.put("standard", p -> p.a.pow(p.b));
+        BigInteger five = BigInteger.valueOf(5);
+        Iterable<Rational> simpleRs = filterInfinite(
+                r -> le(r.getNumerator().abs(), five) && le(r.getDenominator(), five),
+                P.withScale(3).rationals()
+        );
+        Iterable<Pair<Algebraic, Rational>> ps = filterInfinite(
+                p -> (p.a != ZERO || p.b.signum() != -1) &&
+                        (p.a.signum() != -1 || !p.b.getDenominator().and(BigInteger.ONE).equals(BigInteger.ZERO)),
+                P.pairsSquareRootOrder(P.withScale(1).withSecondaryScale(4).algebraics(), simpleRs)
+        );
+        compareImplementations("pow(Rational)", take(SMALL_LIMIT, ps), functions, v -> P.reset());
+        Polynomial.USE_FACTOR_CACHE = true;
+        Algebraic.USE_SUM_CACHE = true;
+        Algebraic.USE_PRODUCT_CACHE = true;
+    }
+
+    private void propertiesFractionalPart() {
+        initialize("fractionalPart()");
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            Algebraic fractionalPart = x.fractionalPart();
+            fractionalPart.validate();
+            assertTrue(x, ge(fractionalPart, ZERO));
+            assertTrue(x, lt(fractionalPart, ONE));
+            assertEquals(x, of(x.floor()).add(fractionalPart), x);
+        }
+
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            assertEquals(i, of(i).fractionalPart(), ZERO);
+        }
+    }
+
+    private void propertiesRoundToDenominator() {
+        initialize("roundToDenominator(BigInteger, RoundingMode)");
+        Iterable<Triple<Algebraic, BigInteger, RoundingMode>> ts = filter(
+                p -> p.c != RoundingMode.UNNECESSARY ||
+                        p.a.isRational() && p.b.mod(p.a.rationalValueExact().getDenominator()).equals(BigInteger.ZERO),
+                P.triples(P.withScale(4).algebraics(), P.positiveBigIntegers(), P.roundingModes())
+        );
+        for (Triple<Algebraic, BigInteger, RoundingMode> t : take(LIMIT, ts)) {
+            Rational rounded = t.a.roundToDenominator(t.b, t.c);
+            rounded.validate();
+            assertEquals(t, t.b.mod(rounded.getDenominator()), BigInteger.ZERO);
+            assertTrue(t, rounded == Rational.ZERO || rounded.signum() == t.a.signum());
+            assertTrue(t, lt(t.a.subtract(rounded).abs(), of(Rational.of(BigInteger.ONE, t.b))));
+        }
+
+        Iterable<Pair<Algebraic, RoundingMode>> ps = filterInfinite(
+                p -> p.b != RoundingMode.UNNECESSARY || p.a.isInteger(),
+                P.pairs(P.algebraics(), P.roundingModes())
+        );
+        for (Pair<Algebraic, RoundingMode> p : take(LIMIT, ps)) {
+            Rational rounded = p.a.roundToDenominator(BigInteger.ONE, p.b);
+            assertEquals(p, rounded.getNumerator(), p.a.bigIntegerValue(p.b));
+            assertEquals(p, rounded.getDenominator(), BigInteger.ONE);
+        }
+
+        Iterable<Pair<Algebraic, BigInteger>> ps2 = filterInfinite(
+                p -> p.b.mod(p.a.rationalValueExact().getDenominator()).equals(BigInteger.ZERO),
+                P.pairs(P.algebraics(1), P.positiveBigIntegers())
+        );
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, ps2)) {
+            assertTrue(p, p.a.roundToDenominator(p.b, RoundingMode.UNNECESSARY).equals(p.a.rationalValueExact()));
+        }
+
+        ps2 = P.pairs(P.withScale(4).algebraics(), P.positiveBigIntegers());
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, ps2)) {
+            assertTrue(p, le(of(p.a.roundToDenominator(p.b, RoundingMode.FLOOR)), p.a));
+            assertTrue(p, ge(of(p.a.roundToDenominator(p.b, RoundingMode.CEILING)), p.a));
+            assertTrue(p, le(of(p.a.roundToDenominator(p.b, RoundingMode.DOWN).abs()), p.a.abs()));
+            assertTrue(p, ge(of(p.a.roundToDenominator(p.b, RoundingMode.UP).abs()), p.a.abs()));
+            Algebraic resolution = of(Rational.of(p.b).shiftLeft(1).invert());
+            assertTrue(p, le(p.a.subtract(p.a.roundToDenominator(p.b, RoundingMode.HALF_DOWN)).abs(), resolution));
+            assertTrue(p, le(p.a.subtract(p.a.roundToDenominator(p.b, RoundingMode.HALF_UP)).abs(), resolution));
+            assertTrue(p, le(p.a.subtract(p.a.roundToDenominator(p.b, RoundingMode.HALF_EVEN)).abs(), resolution));
+        }
+
+        ps2 = filterInfinite(
+                p -> lt(p.a.abs().multiply(p.b).fractionalPart(), ONE_HALF),
+                P.pairs(P.withScale(4).algebraics(), P.positiveBigIntegers())
+        );
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, ps2)) {
+            Rational down = p.a.roundToDenominator(p.b, RoundingMode.DOWN);
+            assertEquals(p, p.a.roundToDenominator(p.b, RoundingMode.HALF_DOWN), down);
+            assertEquals(p, p.a.roundToDenominator(p.b, RoundingMode.HALF_UP), down);
+            assertEquals(p, p.a.roundToDenominator(p.b, RoundingMode.HALF_EVEN), down);
+        }
+
+        ps2 = filterInfinite(
+                p -> gt(p.a.abs().multiply(p.b).fractionalPart(), ONE_HALF),
+                P.pairs(P.withScale(4).algebraics(), P.positiveBigIntegers())
+        );
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, ps2)) {
+            Rational up = p.a.roundToDenominator(p.b, RoundingMode.UP);
+            assertEquals(p, p.a.roundToDenominator(p.b, RoundingMode.HALF_DOWN), up);
+            assertEquals(p, p.a.roundToDenominator(p.b, RoundingMode.HALF_UP), up);
+            assertEquals(p, p.a.roundToDenominator(p.b, RoundingMode.HALF_EVEN), up);
+        }
+
+        for (Rational r : take(LIMIT, filterInfinite(s -> !s.getDenominator().testBit(0), P.rationals()))) {
+            Algebraic x = of(r);
+            BigInteger denominator = r.getDenominator().shiftRight(1);
+            assertEquals(x, x.abs().multiply(denominator).fractionalPart(), ONE_HALF);
+            Rational hd = x.roundToDenominator(denominator, RoundingMode.HALF_DOWN);
+            assertEquals(x, hd, x.roundToDenominator(denominator, RoundingMode.DOWN));
+            Rational hu = x.roundToDenominator(denominator, RoundingMode.HALF_UP);
+            assertEquals(x, hu, x.roundToDenominator(denominator, RoundingMode.UP));
+            Rational he = x.roundToDenominator(denominator, RoundingMode.HALF_EVEN);
+            assertFalse(r, he.multiply(denominator).getNumerator().testBit(0));
+        }
+
+        Iterable<Triple<Algebraic, BigInteger, RoundingMode>> tsFail = P.triples(
+                P.algebraics(),
+                P.withElement(BigInteger.ZERO, P.negativeBigIntegers()),
+                P.roundingModes()
+        );
+        for (Triple<Algebraic, BigInteger, RoundingMode> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.roundToDenominator(t.b, t.c);
+                fail(t);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<Pair<Algebraic, BigInteger>> psFail = filterInfinite(
+                p -> !p.a.isRational() || !p.b.mod(p.a.rationalValueExact().getDenominator()).equals(BigInteger.ZERO),
+                P.pairs(P.algebraics(), P.positiveBigIntegers())
+        );
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, psFail)) {
+            try {
+                p.a.roundToDenominator(p.b, RoundingMode.UNNECESSARY);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesRealConjugates() {
+        initialize("realConjugates()");
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            List<Algebraic> realConjugates = x.realConjugates();
+            assertEquals(x, realConjugates.size(), x.minimalPolynomialRootCount() - 1);
+            Polynomial mp = x.minimalPolynomial();
+            int rootIndex = x.rootIndex();
+            for (Algebraic realConjugate : realConjugates) {
+                realConjugate.validate();
+                assertEquals(x, realConjugate.minimalPolynomial(), mp);
+                assertNotEquals(x, realConjugate.rootIndex(), rootIndex);
+            }
+        }
+    }
+
+    private void propertiesIsReducedSurd() {
+        initialize("isReducedSurd()");
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            x.isReducedSurd();
+        }
+
+        Iterable<Algebraic> xs = P.withScale(1).choose(P.withScale(4).algebraics(1), P.withScale(1).algebraics(2));
+        for (Algebraic x : take(LIMIT, xs)) {
+            assertEquals(x, x.isReducedSurd(), x.repeatedContinuedFraction().a.isEmpty());
+        }
+    }
+
+    public static @NotNull Iterable<BigInteger> continuedFraction_alt(@NotNull Algebraic x) {
+        if (x.isRational()) {
+            return x.rationalValueExact().continuedFraction();
+        } else {
+            return x.realValue().continuedFraction();
+        }
+    }
+
+    private void propertiesContinuedFraction() {
+        initialize("continuedFraction()");
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            List<BigInteger> continuedFraction = toList(take(TINY_LIMIT, x.continuedFraction()));
+            assertEquals(x, toList(take(TINY_LIMIT, continuedFraction_alt(x))), continuedFraction);
+            assertFalse(x, continuedFraction.isEmpty());
+            assertTrue(x, all(i -> i != null, continuedFraction));
+            assertTrue(x, all(i -> i.signum() == 1, tail(continuedFraction)));
+        }
+    }
+
+    private void compareImplementationsIsContinuedFraction() {
+        Map<String, Function<Algebraic, Iterable<BigInteger>>> functions = new LinkedHashMap<>();
+        functions.put("alt", AlgebraicProperties::continuedFraction_alt);
+        functions.put("standard", Algebraic::continuedFraction);
+        compareImplementations("continuedFraction()", take(LIMIT, P.algebraics()), functions, v -> P.reset());
+    }
+
+    private void propertiesRepeatedContinuedFraction() {
+        initialize("repeatedContinuedFraction()");
+        Iterable<Algebraic> xs = P.withScale(1).choose(P.withScale(4).algebraics(1), P.withScale(1).algebraics(2));
+        for (Algebraic x : take(LIMIT, xs)) {
+            Pair<List<BigInteger>, List<BigInteger>> cf = x.repeatedContinuedFraction();
+            assertNotNull(x, cf.a);
+            assertNotNull(x, cf.b);
+            assertTrue(x, all(i -> i != null, cf.a));
+            if (!cf.a.isEmpty()) {
+                assertTrue(x, all(i -> i.signum() == 1, tail(cf.a)));
+            }
+            assertTrue(x, all(i -> i.signum() == 1, cf.b));
+            assertTrue(x, !cf.a.isEmpty() || !cf.b.isEmpty());
+            Pair<List<BigInteger>, List<BigInteger>> minimized = minimize(cf.a, cf.b);
+            assertEquals(x, minimized.a, cf.a);
+            assertEquals(x, minimized.b, cf.b);
+            assertEquals(x, cf.b.isEmpty(), x.isRational());
+            inverse(Algebraic::repeatedContinuedFraction, p -> fromContinuedFraction(p.a, p.b), x);
+        }
+
+        for (Algebraic x : take(LIMIT, filterInfinite(y -> y.degree() >= 3, P.algebraics()))) {
+            try {
+                x.repeatedContinuedFraction();
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesFromContinuedFraction() {
+        initialize("fromContinuedFraction(List<BigInteger>, List<BigInteger>)");
+        Iterable<Pair<List<BigInteger>, List<BigInteger>>> ps = filterInfinite(
+                p -> !p.a.isEmpty() || !p.b.isEmpty(),
+                P.pairs(
+                        P.withElement(
+                                Collections.emptyList(),
+                                zipWith(
+                                        (i, is) -> toList(cons(i, is)),
+                                        P.withScale(1).bigIntegers(),
+                                        P.withScale(4).lists(P.withScale(2).positiveBigIntegers())
+                                )
+                        ),
+                        P.withScale(4).lists(P.withScale(2).positiveBigIntegers())
+                )
+        );
+        for (Pair<List<BigInteger>, List<BigInteger>> p : take(LIMIT, ps)) {
+            Algebraic x = fromContinuedFraction(p.a, p.b);
+            x.validate();
+            assertEquals(p, x, fromContinuedFraction(p.a, toList(concat(p.b, p.b))));
+            if (!p.b.isEmpty()) {
+                assertEquals(
+                        p,
+                        x,
+                        fromContinuedFraction(
+                                toList(concat(p.a, Collections.singletonList(head(p.b)))), toList(rotateLeft(1, p.b))
+                        )
+                );
+            }
+        }
+
+        Iterable<Pair<List<BigInteger>, List<BigInteger>>> psFail = filterInfinite(
+                q -> (!q.a.isEmpty() && any(i -> i.signum() != 1, tail(q.a))) || any(i -> i.signum() != 1, q.b),
+                P.pairs(P.withScale(4).lists(P.withScale(1).bigIntegers()))
+        );
+        for (Pair<List<BigInteger>, List<BigInteger>> p : take(LIMIT, psFail)) {
+            try {
+                fromContinuedFraction(p.a, p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        psFail = filterInfinite(
+                p -> any(i -> i == null, p.a) || any(i -> i == null, p.b),
+                P.pairs(
+                        P.withElement(
+                                Collections.emptyList(),
+                                zipWith(
+                                        (i, is) -> toList(cons(i, is)),
+                                        P.withScale(1).bigIntegers(),
+                                        P.withScale(4)
+                                                .lists(P.withScale(4).withNull(P.withScale(2).positiveBigIntegers()))
+                                )
+                        ),
+                        P.withScale(4).lists(P.withScale(2).positiveBigIntegers())
+                )
+        );
+        for (Pair<List<BigInteger>, List<BigInteger>> p : take(LIMIT, psFail)) {
+            try {
+                fromContinuedFraction(p.a, p.b);
+                fail(p);
+            } catch (NullPointerException ignored) {}
+        }
+    }
+
+    private void propertiesConvergents() {
+        initialize("convergents()");
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            List<Rational> convergents = toList(take(TINY_LIMIT, x.convergents()));
+            assertFalse(x, convergents.isEmpty());
+            assertTrue(x, all(s -> s != null, convergents));
+            assertEquals(x, head(convergents), Rational.of(x.floor()));
+            if (x.isRational()) {
+                assertEquals(x, last(x.convergents()), x.rationalValueExact());
+            }
+            assertTrue(x, zigzagging(convergents));
+            if (convergents.size() > 1) {
+                assertTrue(x, lt(convergents.get(0), convergents.get(1)));
+            }
+        }
+    }
+
+    private void propertiesDigits() {
+        initialize("digits(BigInteger)");
+        //noinspection Convert2MethodRef
+        Iterable<Pair<Algebraic, BigInteger>> ps = P.pairsSquareRootOrder(
+                P.withElement(ZERO, P.positiveAlgebraics()),
+                P.rangeUp(IntegerUtils.TWO)
+        );
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, ps)) {
+            Pair<List<BigInteger>, Iterable<BigInteger>> digits = p.a.digits(p.b);
+            assertTrue(p, digits.a.isEmpty() || !head(digits.a).equals(BigInteger.ZERO));
+            assertTrue(p, all(x -> x.signum() != -1 && lt(x, p.b), digits.a));
+            assertEquals(p, IntegerUtils.fromBigEndianDigits(p.b, digits.a), p.a.floor());
+        }
+
+        ps = filterInfinite(
+                q -> q.a.hasTerminatingBaseExpansion(q.b),
+                P.pairsSquareRootOrder(
+                        P.withElement(ZERO, P.positiveAlgebraics(1)),
+                        P.withScale(4).rangeUp(IntegerUtils.TWO)
+                )
+        );
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, ps)) {
+            toList(p.a.digits(p.b).b);
+        }
+
+        Iterable<Pair<Algebraic, BigInteger>> psFail = P.pairs(P.negativeAlgebraics(), P.rangeUp(IntegerUtils.TWO));
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, psFail)) {
+            try {
+                p.a.digits(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, P.pairs(P.algebraics(), P.rangeDown(BigInteger.ONE)))) {
+            try {
+                p.a.digits(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesCommonLeadingDigits() {
+        initialize("commonLeadingDigits(BigInteger, Algebraic, Algebraic)");
+        //noinspection Convert2MethodRef
+        Iterable<Triple<BigInteger, Algebraic, Algebraic>> ts = map(
+                p -> new Triple<>(p.b, p.a.a, p.a.b),
+                P.pairsSquareRootOrder(
+                        filterInfinite(p -> p.a != p.b, P.pairs(P.withElement(ZERO, P.positiveAlgebraics()))),
+                        map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
+                )
+        );
+        for (Triple<BigInteger, Algebraic, Algebraic> t : take(LIMIT, ts)) {
+            Pair<List<BigInteger>, Integer> cld = commonLeadingDigits(t.a, t.b, t.c);
+            assertNotEquals(t, cld.a, null);
+            assertNotEquals(t, cld.b, null);
+            assertTrue(t, cld.a.isEmpty() || !head(cld.a).equals(BigInteger.ZERO));
+            BigInteger approx = IntegerUtils.fromBigEndianDigits(t.a, cld.a);
+            Rational pow = Rational.of(t.a).pow(cld.b);
+            assertTrue(t, le(of(pow.multiply(approx)), t.b));
+            assertTrue(t, le(of(pow.multiply(approx)), t.c));
+            assertTrue(t, gt(of(pow.multiply(approx.add(BigInteger.ONE))), t.b));
+            assertTrue(t, gt(of(pow.multiply(approx.add(BigInteger.ONE))), t.c));
+        }
+
+        Iterable<Triple<BigInteger, Algebraic, Algebraic>> tsFail = map(
+                p -> new Triple<>(p.b, p.a.a, p.a.b),
+                P.pairsSquareRootOrder(
+                        filterInfinite(p -> p.a != p.b, P.pairs(P.withElement(ZERO, P.positiveAlgebraics()))),
+                        P.rangeDown(BigInteger.valueOf(-2))
+                )
+        );
+        for (Triple<BigInteger, Algebraic, Algebraic> t : take(LIMIT, tsFail)) {
+            try {
+                commonLeadingDigits(t.a, t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        //noinspection Convert2MethodRef
+        tsFail = map(
+                p -> new Triple<>(p.b, p.a.a, p.a.b),
+                P.pairsSquareRootOrder(
+                        P.pairs(P.withElement(ZERO, P.positiveAlgebraics()), P.negativeAlgebraics()),
+                        map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
+                )
+        );
+        for (Triple<BigInteger, Algebraic, Algebraic> t : take(LIMIT, tsFail)) {
+            try {
+                commonLeadingDigits(t.a, t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        //noinspection Convert2MethodRef
+        tsFail = map(
+                p -> new Triple<>(p.b, p.a.a, p.a.b),
+                P.pairsSquareRootOrder(
+                        P.pairs(P.negativeAlgebraics(), P.withElement(ZERO, P.positiveAlgebraics())),
+                        map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
+                )
+        );
+        for (Triple<BigInteger, Algebraic, Algebraic> t : take(LIMIT, tsFail)) {
+            try {
+                commonLeadingDigits(t.a, t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        //noinspection Convert2MethodRef
+        Iterable<Pair<Algebraic, BigInteger>> psFail = P.pairsSquareRootOrder(
+                P.withElement(ZERO, P.positiveAlgebraics()),
+                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
+        );
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, psFail)) {
+            try {
+                commonLeadingDigits(p.b, p.a, p.a);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesToStringBase() {
+        initialize("toStringBase(BigInteger, int)");
+        //noinspection Convert2MethodRef
+        Iterable<Triple<Algebraic, BigInteger, Integer>> ts = P.triples(
+                P.withScale(4).algebraics(),
+                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2)),
+                P.withScale(16).integersGeometric()
+        );
+        for (Triple<Algebraic, BigInteger, Integer> t : take(LIMIT, ts)) {
+            String s = t.a.toStringBase(t.b, t.c);
+            boolean ellipsis = s.endsWith("...");
+            if (ellipsis) s = take(s.length() - 3, s);
+            Algebraic error = t.a.subtract(Rational.fromStringBase(s, t.b)).abs();
+            assertTrue(t, lt(error, of(t.b).pow(-t.c)));
+            if (ellipsis) {
+                assertTrue(t, error != ZERO);
+            }
+        }
+
+        String smallBaseChars = charsToString(
+                concat(
+                        Arrays.asList(
+                                fromString("-."),
+                                ExhaustiveProvider.INSTANCE.rangeIncreasing('0', '9'),
+                                ExhaustiveProvider.INSTANCE.rangeIncreasing('A', 'Z')
+                        )
+                )
+        );
+        ts = P.triples(
+                P.withScale(4).algebraics(),
+                P.range(IntegerUtils.TWO, ASCII_ALPHANUMERIC_COUNT),
+                P.withScale(16).integersGeometric()
+        );
+        for (Triple<Algebraic, BigInteger, Integer> t : take(LIMIT, ts)) {
+            String s = t.a.toStringBase(t.b, t.c);
+            assertTrue(t, all(c -> elem(c, smallBaseChars), s));
+        }
+
+        String largeBaseChars = charsToString(
+                concat(fromString("-.()"), ExhaustiveProvider.INSTANCE.rangeIncreasing('0', '9'))
+        );
+        //noinspection Convert2MethodRef
+        ts = P.triples(
+                P.withScale(4).algebraics(),
+                map(
+                        i -> BigInteger.valueOf(i),
+                        P.withScale(64).rangeUpGeometric(ASCII_ALPHANUMERIC_COUNT.intValueExact() + 1)
+                ),
+                P.withScale(16).integersGeometric()
+        );
+        for (Triple<Algebraic, BigInteger, Integer> t : take(LIMIT, ts)) {
+            String s = t.a.toStringBase(t.b, t.c);
+            assertTrue(t, all(c -> elem(c, largeBaseChars), s));
+        }
+
+        Iterable<Triple<Algebraic, BigInteger, Integer>> tsFail = P.triples(
+                P.withScale(4).algebraics(),
+                P.rangeDown(BigInteger.ONE),
+                P.withScale(16).integers()
+        );
+        for (Triple<Algebraic, BigInteger, Integer> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.toStringBase(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
     }
 
     private void propertiesEquals() {

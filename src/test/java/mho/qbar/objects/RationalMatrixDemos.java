@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.qbar.testing.QBarDemos;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
@@ -36,7 +37,7 @@ public class RationalMatrixDemos extends QBarDemos {
     private void demoRow() {
         Iterable<Pair<RationalMatrix, Integer>> ps = P.dependentPairs(
                 filterInfinite(m -> m.height() > 0, P.withScale(4).rationalMatrices()),
-                m -> P.uniformSample(toList(range(0, m.height() - 1)))
+                m -> P.uniformSample(toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m.height() - 1)))
         );
         for (Pair<RationalMatrix, Integer> p : take(LIMIT, ps)) {
             System.out.println("row(" + p.a + ", " + p.b + ") = " + p.a.row(p.b));
@@ -46,7 +47,7 @@ public class RationalMatrixDemos extends QBarDemos {
     private void demoColumn() {
         Iterable<Pair<RationalMatrix, Integer>> ps = P.dependentPairs(
                 filterInfinite(m -> m.width() > 0, P.withScale(4).rationalMatrices()),
-                m -> P.uniformSample(toList(range(0, m.width() - 1)))
+                m -> P.uniformSample(toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m.width() - 1)))
         );
         for (Pair<RationalMatrix, Integer> p : take(LIMIT, ps)) {
             System.out.println("column(" + p.a + ", " + p.b + ") = " + p.a.column(p.b));
@@ -72,7 +73,12 @@ public class RationalMatrixDemos extends QBarDemos {
                 P.dependentPairs(
                         filterInfinite(m -> m.height() > 0 && m.width() > 0, P.withScale(4).rationalMatrices()),
                         m -> P.uniformSample(
-                                toList(EP.pairsLex(range(0, m.height() - 1), toList(range(0, m.width() - 1))))
+                                toList(
+                                        EP.pairsLex(
+                                                ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m.height() - 1),
+                                                toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m.width() - 1))
+                                        )
+                                )
                         )
                 )
         );
@@ -96,8 +102,7 @@ public class RationalMatrixDemos extends QBarDemos {
                 )
         );
         for (List<RationalVector> vs : take(LIMIT, vss)) {
-            String listString = tail(init(vs.toString()));
-            System.out.println("fromRows(" + listString + ") = " + fromRows(vs));
+            System.out.println("fromRows(" + middle(vs.toString()) + ") = " + fromRows(vs));
         }
     }
 
@@ -116,8 +121,7 @@ public class RationalMatrixDemos extends QBarDemos {
                 )
         );
         for (List<RationalVector> vs : take(LIMIT, vss)) {
-            String listString = tail(init(vs.toString()));
-            System.out.println("fromColumns(" + listString + ") = " + fromColumns(vs));
+            System.out.println("fromColumns(" + middle(vs.toString()) + ") = " + fromColumns(vs));
         }
     }
 
@@ -220,7 +224,7 @@ public class RationalMatrixDemos extends QBarDemos {
                                 )
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 p -> new Pair<>(zero(p.a, 0), zero(p.b, 0)),
                                 P.pairs(P.withScale(4).naturalIntegersGeometric())
@@ -258,7 +262,7 @@ public class RationalMatrixDemos extends QBarDemos {
                                 )
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 p -> new Pair<>(zero(0, p.a), zero(0, p.b)),
                                 P.pairs(P.withScale(4).naturalIntegersGeometric())
@@ -286,7 +290,7 @@ public class RationalMatrixDemos extends QBarDemos {
                                 p -> P.pairs(P.withScale(4).rationalMatrices(p.a, p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> {
                                     RationalMatrix m = zero(0, i);
@@ -323,7 +327,7 @@ public class RationalMatrixDemos extends QBarDemos {
                                 p -> P.pairs(P.withScale(4).rationalMatrices(p.a, p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> {
                                     RationalMatrix m = zero(0, i);
@@ -402,7 +406,7 @@ public class RationalMatrixDemos extends QBarDemos {
                                 )
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> new Pair<>(zero(i, 0), RationalVector.ZERO_DIMENSIONAL),
                                 P.withScale(4).naturalIntegersGeometric()
@@ -428,7 +432,7 @@ public class RationalMatrixDemos extends QBarDemos {
                         )
                 ),
                 P.choose(
-                    P.choose(
+                    P.withScale(1).choose(
                             map(
                                     m -> new Pair<>(m, zero(m.width(), 0)),
                                     filterInfinite(
@@ -518,7 +522,7 @@ public class RationalMatrixDemos extends QBarDemos {
                                 )
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> new Pair<>(zero(0, i), RationalVector.ZERO_DIMENSIONAL),
                                 P.withScale(4).naturalIntegersGeometric()
@@ -528,6 +532,32 @@ public class RationalMatrixDemos extends QBarDemos {
         );
         for (Pair<RationalMatrix, RationalVector> p : take(LIMIT, ps)) {
             System.out.println("solveLinearSystem(" + p.a + ", " + p.b + ") = " + p.a.solveLinearSystem(p.b));
+        }
+    }
+
+    private void demoSolveLinearSystemPermissive() {
+        Iterable<Pair<RationalMatrix, RationalVector>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.withScale(4).positiveIntegersGeometric()),
+                                p -> P.pairs(
+                                        P.withScale(4).rationalMatrices(p.a, p.b),
+                                        P.withScale(4).rationalVectors(p.a)
+                                )
+                        )
+                ),
+                P.withScale(1).choose(
+                        map(
+                                i -> new Pair<>(zero(0, i), RationalVector.ZERO_DIMENSIONAL),
+                                P.withScale(4).naturalIntegersGeometric()
+                        ),
+                        map(v -> new Pair<>(zero(v.dimension(), 0), v), P.withScale(4).rationalVectorsAtLeast(1))
+                )
+        );
+        for (Pair<RationalMatrix, RationalVector> p : take(LIMIT, ps)) {
+            System.out.println("solveLinearSystemPermissive(" + p.a + ", " + p.b + ") = " +
+                    p.a.solveLinearSystemPermissive(p.b));
         }
     }
 
@@ -562,6 +592,12 @@ public class RationalMatrixDemos extends QBarDemos {
         }
     }
 
+    private void demoRealEigenvalues() {
+        for (RationalMatrix m : take(LIMIT, P.withScale(4).squareRationalMatrices())) {
+            System.out.println("realEigenvalues(" + m + ") = " + m.realEigenvalues());
+        }
+    }
+
     private void demoEquals_RationalMatrix() {
         for (Pair<RationalMatrix, RationalMatrix> p : take(LIMIT, P.pairs(P.withScale(4).rationalMatrices()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);
@@ -583,7 +619,7 @@ public class RationalMatrixDemos extends QBarDemos {
 
     private void demoCompareTo() {
         for (Pair<RationalMatrix, RationalMatrix> p : take(LIMIT, P.pairs(P.withScale(4).rationalMatrices()))) {
-            System.out.println(p.a + " " + Ordering.compare(p.a, p.b).toChar() + " " + p.b);
+            System.out.println(p.a + " " + Ordering.compare(p.a, p.b) + " " + p.b);
         }
     }
 

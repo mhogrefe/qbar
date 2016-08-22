@@ -12,6 +12,7 @@ import java.util.List;
 
 import static mho.qbar.testing.QBarTesting.QEP;
 import static mho.qbar.testing.QBarTesting.aeqitLimitQBarLog;
+import static mho.wheels.iterables.IterableUtils.take;
 import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -81,16 +82,24 @@ public class QBarExhaustiveProviderTest {
         simpleProviderHelper(QEP.range(Rational.readStrict(a).get(), Rational.readStrict(b).get()), output);
     }
 
+    private static void range_Rational_Rational_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            QEP.range(Rational.readStrict(a).get(), Rational.readStrict(b).get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
     @Test
     public void testRange_Rational_Rational() {
-        range_Rational_Rational_helper("1", "0", "QBarExhaustiveProvider_range_Rational_Rational_i");
-        range_Rational_Rational_helper("1/2", "1/3", "QBarExhaustiveProvider_range_Rational_Rational_ii");
-        range_Rational_Rational_helper("0", "0", "QBarExhaustiveProvider_range_Rational_Rational_iii");
-        range_Rational_Rational_helper("5/3", "5/3", "QBarExhaustiveProvider_range_Rational_Rational_iv");
-        range_Rational_Rational_helper("0", "1", "QBarExhaustiveProvider_range_Rational_Rational_v");
-        range_Rational_Rational_helper("-1", "0", "QBarExhaustiveProvider_range_Rational_Rational_vi");
-        range_Rational_Rational_helper("1/3", "1/2", "QBarExhaustiveProvider_range_Rational_Rational_vii");
-        range_Rational_Rational_helper("-1", "5/3", "QBarExhaustiveProvider_range_Rational_Rational_viii");
+        range_Rational_Rational_helper("0", "0", "QBarExhaustiveProvider_range_Rational_Rational_i");
+        range_Rational_Rational_helper("5/3", "5/3", "QBarExhaustiveProvider_range_Rational_Rational_ii");
+        range_Rational_Rational_helper("0", "1", "QBarExhaustiveProvider_range_Rational_Rational_iii");
+        range_Rational_Rational_helper("-1", "0", "QBarExhaustiveProvider_range_Rational_Rational_iv");
+        range_Rational_Rational_helper("1/3", "1/2", "QBarExhaustiveProvider_range_Rational_Rational_v");
+        range_Rational_Rational_helper("-1", "5/3", "QBarExhaustiveProvider_range_Rational_Rational_vi");
+
+        range_Rational_Rational_fail_helper("1", "0");
+        range_Rational_Rational_fail_helper("1/2", "1/3");
     }
 
     @Test
@@ -149,6 +158,7 @@ public class QBarExhaustiveProviderTest {
         vectors_int_helper(2, "QBarExhaustiveProvider_vectors_int_iii");
         vectors_int_helper(3, "QBarExhaustiveProvider_vectors_int_iv");
         vectors_int_helper(10, "QBarExhaustiveProvider_vectors_int_v");
+
         vectors_int_fail_helper(-1);
     }
 
@@ -175,6 +185,7 @@ public class QBarExhaustiveProviderTest {
         vectorsAtLeast_helper(2, "QBarExhaustiveProvider_vectorsAtLeast_iii");
         vectorsAtLeast_helper(3, "QBarExhaustiveProvider_vectorsAtLeast_iv");
         vectorsAtLeast_helper(10, "QBarExhaustiveProvider_vectorsAtLeast_v");
+
         vectorsAtLeast_fail_helper(-1);
     }
 
@@ -196,6 +207,7 @@ public class QBarExhaustiveProviderTest {
         rationalVectors_int_helper(2, "QBarExhaustiveProvider_rationalVectors_int_iii");
         rationalVectors_int_helper(3, "QBarExhaustiveProvider_rationalVectors_int_iv");
         rationalVectors_int_helper(10, "QBarExhaustiveProvider_rationalVectors_int_v");
+
         rationalVectors_int_fail_helper(-1);
     }
 
@@ -222,6 +234,7 @@ public class QBarExhaustiveProviderTest {
         rationalVectorsAtLeast_helper(2, "QBarExhaustiveProvider_rationalVectorsAtLeast_iii");
         rationalVectorsAtLeast_helper(3, "QBarExhaustiveProvider_rationalVectorsAtLeast_iv");
         rationalVectorsAtLeast_helper(10, "QBarExhaustiveProvider_rationalVectorsAtLeast_v");
+
         rationalVectorsAtLeast_fail_helper(-1);
     }
 
@@ -243,6 +256,7 @@ public class QBarExhaustiveProviderTest {
         reducedRationalVectors_int_helper(2, "QBarExhaustiveProvider_reducedRationalVectors_int_iii");
         reducedRationalVectors_int_helper(3, "QBarExhaustiveProvider_reducedRationalVectors_int_iv");
         reducedRationalVectors_int_helper(10, "QBarExhaustiveProvider_reducedRationalVectors_int_v");
+
         reducedRationalVectors_int_fail_helper(-1);
     }
 
@@ -269,6 +283,7 @@ public class QBarExhaustiveProviderTest {
         reducedRationalVectorsAtLeast_helper(2, "QBarExhaustiveProvider_reducedRationalVectorsAtLeast_iii");
         reducedRationalVectorsAtLeast_helper(3, "QBarExhaustiveProvider_reducedRationalVectorsAtLeast_iv");
         reducedRationalVectorsAtLeast_helper(10, "QBarExhaustiveProvider_reducedRationalVectorsAtLeast_v");
+
         reducedRationalVectorsAtLeast_fail_helper(-1);
     }
 
@@ -290,6 +305,7 @@ public class QBarExhaustiveProviderTest {
         polynomialVectors_int_helper(2, "QBarExhaustiveProvider_polynomialVectors_int_iii");
         polynomialVectors_int_helper(3, "QBarExhaustiveProvider_polynomialVectors_int_iv");
         polynomialVectors_int_helper(10, "QBarExhaustiveProvider_polynomialVectors_int_v");
+
         polynomialVectors_int_fail_helper(-1);
     }
 
@@ -316,6 +332,7 @@ public class QBarExhaustiveProviderTest {
         polynomialVectorsAtLeast_helper(2, "QBarExhaustiveProvider_polynomialVectorsAtLeast_iii");
         polynomialVectorsAtLeast_helper(3, "QBarExhaustiveProvider_polynomialVectorsAtLeast_iv");
         polynomialVectorsAtLeast_helper(10, "QBarExhaustiveProvider_polynomialVectorsAtLeast_v");
+
         polynomialVectorsAtLeast_fail_helper(-1);
     }
 
@@ -337,6 +354,7 @@ public class QBarExhaustiveProviderTest {
         rationalPolynomialVectors_int_helper(2, "QBarExhaustiveProvider_rationalPolynomialVectors_int_iii");
         rationalPolynomialVectors_int_helper(3, "QBarExhaustiveProvider_rationalPolynomialVectors_int_iv");
         rationalPolynomialVectors_int_helper(10, "QBarExhaustiveProvider_rationalPolynomialVectors_int_v");
+
         rationalPolynomialVectors_int_fail_helper(-1);
     }
 
@@ -363,6 +381,7 @@ public class QBarExhaustiveProviderTest {
         rationalPolynomialVectorsAtLeast_helper(2, "QBarExhaustiveProvider_rationalPolynomialVectorsAtLeast_iii");
         rationalPolynomialVectorsAtLeast_helper(3, "QBarExhaustiveProvider_rationalPolynomialVectorsAtLeast_iv");
         rationalPolynomialVectorsAtLeast_helper(10, "QBarExhaustiveProvider_rationalPolynomialVectorsAtLeast_v");
+
         rationalPolynomialVectorsAtLeast_fail_helper(-1);
     }
 
@@ -385,6 +404,7 @@ public class QBarExhaustiveProviderTest {
         matrices_int_int_helper(1, 1, "QBarExhaustiveProvider_matrices_int_int_iv");
         matrices_int_int_helper(2, 2, "QBarExhaustiveProvider_matrices_int_int_v");
         matrices_int_int_helper(3, 4, "QBarExhaustiveProvider_matrices_int_int_vi");
+
         matrices_int_int_fail_helper(-1, 0);
         matrices_int_int_fail_helper(-1, 1);
         matrices_int_int_fail_helper(0, -1);
@@ -426,6 +446,7 @@ public class QBarExhaustiveProviderTest {
         rationalMatrices_int_int_helper(1, 1, "QBarExhaustiveProvider_rationalMatrices_int_int_iv");
         rationalMatrices_int_int_helper(2, 2, "QBarExhaustiveProvider_rationalMatrices_int_int_v");
         rationalMatrices_int_int_helper(3, 4, "QBarExhaustiveProvider_rationalMatrices_int_int_vi");
+
         rationalMatrices_int_int_fail_helper(-1, 0);
         rationalMatrices_int_int_fail_helper(-1, 1);
         rationalMatrices_int_int_fail_helper(0, -1);
@@ -467,6 +488,7 @@ public class QBarExhaustiveProviderTest {
         polynomialMatrices_int_int_helper(1, 1, "QBarExhaustiveProvider_polynomialMatrices_int_int_iv");
         polynomialMatrices_int_int_helper(2, 2, "QBarExhaustiveProvider_polynomialMatrices_int_int_v");
         polynomialMatrices_int_int_helper(3, 4, "QBarExhaustiveProvider_polynomialMatrices_int_int_vi");
+
         polynomialMatrices_int_int_fail_helper(-1, 0);
         polynomialMatrices_int_int_fail_helper(-1, 1);
         polynomialMatrices_int_int_fail_helper(0, -1);
@@ -507,6 +529,7 @@ public class QBarExhaustiveProviderTest {
         rationalPolynomialMatrices_int_int_helper(2, 2, "QBarExhaustiveProvider_rationalPolynomialMatrices_int_int_v");
         rationalPolynomialMatrices_int_int_helper(3, 4,
                 "QBarExhaustiveProvider_rationalPolynomialMatrices_int_int_vi");
+
         rationalPolynomialMatrices_int_int_fail_helper(-1, 0);
         rationalPolynomialMatrices_int_int_fail_helper(-1, 1);
         rationalPolynomialMatrices_int_int_fail_helper(0, -1);
@@ -543,6 +566,7 @@ public class QBarExhaustiveProviderTest {
         polynomials_int_helper(1, "QBarExhaustiveProvider_polynomials_int_iii");
         polynomials_int_helper(2, "QBarExhaustiveProvider_polynomials_int_iv");
         polynomials_int_helper(9, "QBarExhaustiveProvider_polynomials_int_v");
+
         polynomials_int_fail_helper(-2);
     }
 
@@ -569,6 +593,7 @@ public class QBarExhaustiveProviderTest {
         polynomialsAtLeast_helper(1, "QBarExhaustiveProvider_polynomialsAtLeast_iii");
         polynomialsAtLeast_helper(2, "QBarExhaustiveProvider_polynomialsAtLeast_iv");
         polynomialsAtLeast_helper(9, "QBarExhaustiveProvider_polynomialsAtLeast_v");
+
         polynomialsAtLeast_fail_helper(-2);
     }
 
@@ -590,6 +615,7 @@ public class QBarExhaustiveProviderTest {
         primitivePolynomials_int_helper(1, "QBarExhaustiveProvider_primitivePolynomials_int_iii");
         primitivePolynomials_int_helper(2, "QBarExhaustiveProvider_primitivePolynomials_int_iv");
         primitivePolynomials_int_helper(8, "QBarExhaustiveProvider_primitivePolynomials_int_v");
+
         primitivePolynomials_int_fail_helper(-2);
     }
 
@@ -616,6 +642,7 @@ public class QBarExhaustiveProviderTest {
         primitivePolynomialsAtLeast_helper(1, "QBarExhaustiveProvider_primitivePolynomialsAtLeast_iii");
         primitivePolynomialsAtLeast_helper(2, "QBarExhaustiveProvider_primitivePolynomialsAtLeast_iv");
         primitivePolynomialsAtLeast_helper(8, "QBarExhaustiveProvider_primitivePolynomialsAtLeast_v");
+
         primitivePolynomialsAtLeast_fail_helper(-2);
     }
 
@@ -637,6 +664,7 @@ public class QBarExhaustiveProviderTest {
         positivePrimitivePolynomials_int_helper(1, "QBarExhaustiveProvider_positivePrimitivePolynomials_int_iii");
         positivePrimitivePolynomials_int_helper(2, "QBarExhaustiveProvider_positivePrimitivePolynomials_int_iv");
         positivePrimitivePolynomials_int_helper(8, "QBarExhaustiveProvider_positivePrimitivePolynomials_int_v");
+
         positivePrimitivePolynomials_int_fail_helper(-2);
     }
 
@@ -665,6 +693,7 @@ public class QBarExhaustiveProviderTest {
                 "QBarExhaustiveProvider_positivePrimitivePolynomialsAtLeast_iii");
         positivePrimitivePolynomialsAtLeast_helper(2, "QBarExhaustiveProvider_positivePrimitivePolynomialsAtLeast_iv");
         positivePrimitivePolynomialsAtLeast_helper(8, "QBarExhaustiveProvider_positivePrimitivePolynomialsAtLeast_v");
+
         positivePrimitivePolynomialsAtLeast_fail_helper(-2);
     }
 
@@ -686,6 +715,7 @@ public class QBarExhaustiveProviderTest {
         monicPolynomials_int_helper(1, "QBarExhaustiveProvider_monicPolynomials_int_iii");
         monicPolynomials_int_helper(2, "QBarExhaustiveProvider_monicPolynomials_int_iv");
         monicPolynomials_int_helper(9, "QBarExhaustiveProvider_monicPolynomials_int_v");
+
         monicPolynomials_int_fail_helper(-2);
     }
 
@@ -712,6 +742,7 @@ public class QBarExhaustiveProviderTest {
         monicPolynomialsAtLeast_helper(1, "QBarExhaustiveProvider_monicPolynomialsAtLeast_iii");
         monicPolynomialsAtLeast_helper(2, "QBarExhaustiveProvider_monicPolynomialsAtLeast_iv");
         monicPolynomialsAtLeast_helper(9, "QBarExhaustiveProvider_monicPolynomialsAtLeast_v");
+
         monicPolynomialsAtLeast_fail_helper(-2);
     }
 
@@ -733,6 +764,7 @@ public class QBarExhaustiveProviderTest {
         squareFreePolynomials_int_helper(1, "QBarExhaustiveProvider_squareFreePolynomials_int_iii");
         squareFreePolynomials_int_helper(2, "QBarExhaustiveProvider_squareFreePolynomials_int_iv");
         squareFreePolynomials_int_helper(8, "QBarExhaustiveProvider_squareFreePolynomials_int_v");
+
         squareFreePolynomials_int_fail_helper(-2);
     }
 
@@ -759,6 +791,7 @@ public class QBarExhaustiveProviderTest {
         squareFreePolynomialsAtLeast_helper(1, "QBarExhaustiveProvider_squareFreePolynomialsAtLeast_iii");
         squareFreePolynomialsAtLeast_helper(2, "QBarExhaustiveProvider_squareFreePolynomialsAtLeast_iv");
         squareFreePolynomialsAtLeast_helper(8, "QBarExhaustiveProvider_squareFreePolynomialsAtLeast_v");
+
         squareFreePolynomialsAtLeast_fail_helper(-2);
     }
 
@@ -785,6 +818,7 @@ public class QBarExhaustiveProviderTest {
                 "QBarExhaustiveProvider_positivePrimitiveSquareFreePolynomials_int_iv");
         positivePrimitiveSquareFreePolynomials_int_helper(8,
                 "QBarExhaustiveProvider_positivePrimitiveSquareFreePolynomials_int_v");
+
         positivePrimitiveSquareFreePolynomials_int_fail_helper(-2);
     }
 
@@ -817,6 +851,7 @@ public class QBarExhaustiveProviderTest {
                 "QBarExhaustiveProvider_positivePrimitiveSquareFreePolynomialsAtLeast_iv");
         positivePrimitiveSquareFreePolynomialsAtLeast_helper(8,
                 "QBarExhaustiveProvider_positivePrimitiveSquareFreePolynomialsAtLeast_v");
+
         positivePrimitiveSquareFreePolynomialsAtLeast_fail_helper(-2);
     }
 
@@ -838,6 +873,7 @@ public class QBarExhaustiveProviderTest {
         irreduciblePolynomials_int_helper(1, "QBarExhaustiveProvider_irreduciblePolynomials_int_iii");
         irreduciblePolynomials_int_helper(2, "QBarExhaustiveProvider_irreduciblePolynomials_int_iv");
         irreduciblePolynomials_int_helper(8, "QBarExhaustiveProvider_irreduciblePolynomials_int_v");
+
         irreduciblePolynomials_int_fail_helper(-2);
     }
 
@@ -864,6 +900,7 @@ public class QBarExhaustiveProviderTest {
         irreduciblePolynomialsAtLeast_helper(1, "QBarExhaustiveProvider_irreduciblePolynomialsAtLeast_iii");
         irreduciblePolynomialsAtLeast_helper(2, "QBarExhaustiveProvider_irreduciblePolynomialsAtLeast_iv");
         irreduciblePolynomialsAtLeast_helper(8, "QBarExhaustiveProvider_irreduciblePolynomialsAtLeast_v");
+
         irreduciblePolynomialsAtLeast_fail_helper(-2);
     }
 
@@ -885,6 +922,7 @@ public class QBarExhaustiveProviderTest {
         rationalPolynomials_int_helper(1, "QBarExhaustiveProvider_rationalPolynomials_int_iii");
         rationalPolynomials_int_helper(2, "QBarExhaustiveProvider_rationalPolynomials_int_iv");
         rationalPolynomials_int_helper(9, "QBarExhaustiveProvider_rationalPolynomials_int_v");
+
         rationalPolynomials_int_fail_helper(-2);
     }
 
@@ -911,6 +949,7 @@ public class QBarExhaustiveProviderTest {
         rationalPolynomialsAtLeast_helper(1, "QBarExhaustiveProvider_rationalPolynomialsAtLeast_iii");
         rationalPolynomialsAtLeast_helper(2, "QBarExhaustiveProvider_rationalPolynomialsAtLeast_iv");
         rationalPolynomialsAtLeast_helper(9, "QBarExhaustiveProvider_rationalPolynomialsAtLeast_v");
+
         rationalPolynomialsAtLeast_fail_helper(-2);
     }
 
@@ -932,6 +971,7 @@ public class QBarExhaustiveProviderTest {
         monicRationalPolynomials_int_helper(1, "QBarExhaustiveProvider_monicRationalPolynomials_int_iii");
         monicRationalPolynomials_int_helper(2, "QBarExhaustiveProvider_monicRationalPolynomials_int_iv");
         monicRationalPolynomials_int_helper(8, "QBarExhaustiveProvider_monicRationalPolynomials_int_v");
+
         monicRationalPolynomials_int_fail_helper(-2);
     }
 
@@ -958,6 +998,7 @@ public class QBarExhaustiveProviderTest {
         monicRationalPolynomialsAtLeast_helper(1, "QBarExhaustiveProvider_monicRationalPolynomialsAtLeast_iii");
         monicRationalPolynomialsAtLeast_helper(2, "QBarExhaustiveProvider_monicRationalPolynomialsAtLeast_iv");
         monicRationalPolynomialsAtLeast_helper(8, "QBarExhaustiveProvider_monicRationalPolynomialsAtLeast_v");
+
         monicRationalPolynomialsAtLeast_fail_helper(-2);
     }
 
@@ -1038,6 +1079,86 @@ public class QBarExhaustiveProviderTest {
         multivariatePolynomials_List_Variable_fail_helper("[a, a]");
         multivariatePolynomials_List_Variable_fail_helper("[b, a]");
         multivariatePolynomials_List_Variable_fail_helper("[a, null]");
+    }
+
+    @Test
+    public void testRationalMultivariatePolynomials() {
+        simpleProviderHelper(QEP.rationalMultivariatePolynomials(),
+                "QBarExhaustiveProvider_rationalMultivariatePolynomials");
+    }
+
+    private static void rationalMultivariatePolynomials_List_Variable_helper(
+            @NotNull String variables,
+            @NotNull String output
+    ) {
+        simpleProviderHelper(QEP.rationalMultivariatePolynomials(readVariableList(variables)), output);
+    }
+
+    private static void rationalMultivariatePolynomials_List_Variable_fail_helper(@NotNull String variables) {
+        try {
+            QEP.rationalMultivariatePolynomials(readVariableListWithNulls(variables));
+            fail();
+        } catch (IllegalArgumentException | NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testRationalMultivariatePolynomials_List_Variable() {
+        rationalMultivariatePolynomials_List_Variable_helper("[]",
+                "QBarExhaustiveProvider_rationalMultivariatePolynomials_List_Variable_i");
+        rationalMultivariatePolynomials_List_Variable_helper("[a]",
+                "QBarExhaustiveProvider_rationalMultivariatePolynomials_List_Variable_ii");
+        rationalMultivariatePolynomials_List_Variable_helper("[x]",
+                "QBarExhaustiveProvider_rationalMultivariatePolynomials_List_Variable_iii");
+        rationalMultivariatePolynomials_List_Variable_helper("[ooo]",
+                "QBarExhaustiveProvider_rationalMultivariatePolynomials_List_Variable_iv");
+        rationalMultivariatePolynomials_List_Variable_helper("[x, y]",
+                "QBarExhaustiveProvider_rationalMultivariatePolynomials_List_Variable_v");
+        rationalMultivariatePolynomials_List_Variable_helper("[x, y, z]",
+                "QBarExhaustiveProvider_rationalMultivariatePolynomials_List_Variable_vi");
+
+        rationalMultivariatePolynomials_List_Variable_fail_helper("[a, a]");
+        rationalMultivariatePolynomials_List_Variable_fail_helper("[b, a]");
+        rationalMultivariatePolynomials_List_Variable_fail_helper("[a, null]");
+    }
+
+    @Test
+    public void testPositiveCleanReals() {
+        simpleProviderHelper(QEP.positiveCleanReals(), "QBarExhaustiveProvider_positiveCleanReals");
+    }
+
+    @Test
+    public void testPositiveReals() {
+        simpleProviderHelper(QEP.positiveReals(), "QBarExhaustiveProvider_positiveReals");
+    }
+
+    @Test
+    public void testNegativeCleanReals() {
+        simpleProviderHelper(QEP.negativeCleanReals(), "QBarExhaustiveProvider_negativeCleanReals");
+    }
+
+    @Test
+    public void testNegativeReals() {
+        simpleProviderHelper(QEP.negativeReals(), "QBarExhaustiveProvider_negativeReals");
+    }
+
+    @Test
+    public void testNonzeroCleanReals() {
+        simpleProviderHelper(QEP.nonzeroCleanReals(), "QBarExhaustiveProvider_nonzeroCleanReals");
+    }
+
+    @Test
+    public void testNonzeroReals() {
+        simpleProviderHelper(QEP.nonzeroReals(), "QBarExhaustiveProvider_nonzeroReals");
+    }
+
+    @Test
+    public void testCleanReals() {
+        simpleProviderHelper(QEP.cleanReals(), "QBarExhaustiveProvider_cleanReals");
+    }
+
+    @Test
+    public void testReals() {
+        simpleProviderHelper(QEP.reals(), "QBarExhaustiveProvider_reals");
     }
 
     private static void positiveAlgebraics_int_helper(int degree, @NotNull String output) {
@@ -1698,6 +1819,57 @@ public class QBarExhaustiveProviderTest {
         algebraicsNotIn_Interval_helper("[1, 4]", "QBarExhaustiveProvider_algebraicsNotIn_Interval_iv");
         algebraicsNotIn_Interval_helper("(-Infinity, 1/2]", "QBarExhaustiveProvider_algebraicsNotIn_Interval_v");
         algebraicsNotIn_Interval_helper("[1/2, Infinity)", "QBarExhaustiveProvider_algebraicsNotIn_Interval_vi");
+    }
+
+    private static void qbarRandomProvidersFixedScales_helper(
+            int scale,
+            int secondaryScale,
+            int tertiaryScale,
+            @NotNull String output
+    ) {
+        Iterable<QBarRandomProvider> rps = QEP.qbarRandomProvidersFixedScales(scale, secondaryScale, tertiaryScale);
+        take(TINY_LIMIT, rps).forEach(QBarRandomProvider::validate);
+        simpleProviderHelper(rps, output);
+    }
+
+    @Test
+    public void testQBarRandomProvidersFixedScales() {
+        qbarRandomProvidersFixedScales_helper(8, 32, 2, "QBarExhaustiveProvider_qbarRandomProvidersFixedScales_i");
+        qbarRandomProvidersFixedScales_helper(0, 0, 0, "QBarExhaustiveProvider_qbarRandomProvidersFixedScales_ii");
+        qbarRandomProvidersFixedScales_helper(
+                -5,
+                -10,
+                -1,
+                "QBarExhaustiveProvider_qbarRandomProvidersFixedScales_iii"
+        );
+    }
+
+    @Test
+    public void testQBarRandomProvidersDefault() {
+        Iterable<QBarRandomProvider> rps = QEP.qbarRandomProvidersDefault();
+        take(TINY_LIMIT, rps).forEach(QBarRandomProvider::validate);
+        simpleProviderHelper(rps, "QBarExhaustiveProvider_qbarRandomProvidersDefault");
+    }
+
+    @Test
+    public void testQBarRandomProvidersDefaultSecondaryAndTertiaryScale() {
+        Iterable<QBarRandomProvider> rps = QEP.qbarRandomProvidersDefaultSecondaryAndTertiaryScale();
+        take(TINY_LIMIT, rps).forEach(QBarRandomProvider::validate);
+        simpleProviderHelper(rps, "QBarExhaustiveProvider_qbarRandomProviderDefaultSecondaryAndTertiaryScale");
+    }
+
+    @Test
+    public void testQBarRandomProvidersDefaultTertiaryScale() {
+        Iterable<QBarRandomProvider> rps = QEP.qbarRandomProvidersDefaultTertiaryScale();
+        take(TINY_LIMIT, rps).forEach(QBarRandomProvider::validate);
+        simpleProviderHelper(rps, "QBarExhaustiveProvider_qbarRandomProvidersDefaultTertiaryScale");
+    }
+
+    @Test
+    public void testQBarRandomProviders() {
+        Iterable<QBarRandomProvider> rps = QEP.qbarRandomProviders();
+        take(TINY_LIMIT, rps).forEach(QBarRandomProvider::validate);
+        simpleProviderHelper(rps, "QBarExhaustiveProvider_qbarRandomProviders");
     }
 
     @Test

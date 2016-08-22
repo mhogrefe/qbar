@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -440,6 +441,105 @@ public strictfp abstract class QBarIterableProvider {
     }
 
     /**
+     * Generates {@code Byte}s greater than or equal to a given value, in increasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Byte}s
+     */
+    public @NotNull Iterable<Byte> rangeUpIncreasing(byte a) {
+        return wheelsProvider.rangeUpIncreasing(a);
+    }
+
+    /**
+     * Generates {@code Short}s greater than or equal to a given value, in increasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Short}s
+     */
+    public @NotNull Iterable<Short> rangeUpIncreasing(short a) {
+        return wheelsProvider.rangeUpIncreasing(a);
+    }
+
+    /**
+     * Generates {@code Integer}s greater than or equal to a given value, in increasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Integer}s
+     */
+    public @NotNull Iterable<Integer> rangeUpIncreasing(int a) {
+        return wheelsProvider.rangeUpIncreasing(a);
+    }
+
+    /**
+     * Generates {@code Long}s greater than or equal to a given value, in increasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Long}s
+     */
+    public @NotNull Iterable<Long> rangeUpIncreasing(long a) {
+        return wheelsProvider.rangeUpIncreasing(a);
+    }
+
+    /**
+     * Generates {@code BigInteger}s greater than or equal to a given value, in increasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code BigInteger}s
+     */
+    public @NotNull Iterable<BigInteger> rangeUpIncreasing(@NotNull BigInteger a) {
+        return wheelsProvider.rangeUpIncreasing(a);
+    }
+
+    /**
+     * Generates {@code Character}s greater than or equal to a given value, in increasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Character}s
+     */
+    public @NotNull Iterable<Character> rangeUpIncreasing(char a) {
+        return wheelsProvider.rangeUpIncreasing(a);
+    }
+
+    /**
+     * Generates {@code Byte}s greater than or equal to a given value, in decreasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Byte}s
+     */
+    public @NotNull Iterable<Byte> rangeUpDecreasing(byte a) {
+        return wheelsProvider.rangeUpDecreasing(a);
+    }
+
+    /**
+     * Generates {@code Short}s greater than or equal to a given value, in decreasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Short}s
+     */
+    public @NotNull Iterable<Short> rangeUpDecreasing(short a) {
+        return wheelsProvider.rangeUpDecreasing(a);
+    }
+
+    /**
+     * Generates {@code Integer}s greater than or equal to a given value, in decreasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Integer}s
+     */
+    public @NotNull Iterable<Integer> rangeUpDecreasing(int a) {
+        return wheelsProvider.rangeUpDecreasing(a);
+    }
+
+    /**
+     * Generates {@code Long}s greater than or equal to a given value, in decreasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Long}s
+     */
+    public @NotNull Iterable<Long> rangeUpDecreasing(long a) {
+        return wheelsProvider.rangeUpDecreasing(a);
+    }
+
+    /**
+     * Generates {@code Character}s greater than or equal to a given value, in decreasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Character}s
+     */
+    public @NotNull Iterable<Character> rangeUpDecreasing(char a) {
+        return wheelsProvider.rangeUpDecreasing(a);
+    }
+
+    /**
      * Generates {@code Byte}s greater than or equal to a given value.
      *
      * @param a the inclusive lower bound of the generated {@code Byte}s
@@ -494,6 +594,105 @@ public strictfp abstract class QBarIterableProvider {
     }
 
     /**
+     * Generates {@code Byte}s less than or equal to a given value, in increasing order.
+     *
+     * @param a the inclusive upper bound of the generated {@code Byte}s
+     */
+    public @NotNull Iterable<Byte> rangeDownIncreasing(byte a) {
+        return wheelsProvider.rangeDownIncreasing(a);
+    }
+
+    /**
+     * Generates {@code Short}s less than or equal to a given value, in increasing order.
+     *
+     * @param a the inclusive upper bound of the generated {@code Short}s
+     */
+    public @NotNull Iterable<Short> rangeDownIncreasing(short a) {
+        return wheelsProvider.rangeDownIncreasing(a);
+    }
+
+    /**
+     * Generates {@code Integer}s less than or equal to a given value, in increasing order.
+     *
+     * @param a the inclusive upper bound of the generated {@code Integer}s
+     */
+    public @NotNull Iterable<Integer> rangeDownIncreasing(int a) {
+        return wheelsProvider.rangeDownIncreasing(a);
+    }
+
+    /**
+     * Generates {@code Long}s less than or equal to a given value, in increasing order.
+     *
+     * @param a the inclusive upper bound of the generated {@code Long}s
+     */
+    public @NotNull Iterable<Long> rangeDownIncreasing(long a) {
+        return wheelsProvider.rangeDownIncreasing(a);
+    }
+
+    /**
+     * Generates {@code Character}s less than or equal to a given value, in increasing order.
+     *
+     * @param a the inclusive upper bound of the generated {@code Character}s
+     */
+    public @NotNull Iterable<Character> rangeDownIncreasing(char a) {
+        return wheelsProvider.rangeDownIncreasing(a);
+    }
+
+    /**
+     * Generates {@code Byte}s less than or equal to a given value, in decreasing order.
+     *
+     * @param a the inclusive upper bound of the generated {@code Byte}s
+     */
+    public @NotNull Iterable<Byte> rangeDownDecreasing(byte a) {
+        return wheelsProvider.rangeDownDecreasing(a);
+    }
+
+    /**
+     * Generates {@code Short}s less than or equal to a given value, in decreasing order.
+     *
+     * @param a the inclusive upper bound of the generated {@code Short}s
+     */
+    public @NotNull Iterable<Short> rangeDownDecreasing(short a) {
+        return wheelsProvider.rangeDownDecreasing(a);
+    }
+
+    /**
+     * Generates {@code Integer}s less than or equal to a given value, in decreasing order.
+     *
+     * @param a the inclusive upper bound of the generated {@code Integer}s
+     */
+    public @NotNull Iterable<Integer> rangeDownDecreasing(int a) {
+        return wheelsProvider.rangeDownDecreasing(a);
+    }
+
+    /**
+     * Generates {@code Long}s less than or equal to a given value, in decreasing order.
+     *
+     * @param a the inclusive upper bound of the generated {@code Long}s
+     */
+    public @NotNull Iterable<Long> rangeDownDecreasing(long a) {
+        return wheelsProvider.rangeDownDecreasing(a);
+    }
+
+    /**
+     * Generates {@code BigInteger}s less than or equal to a given value, in decreasing order.
+     *
+     * @param a the inclusive upper bound of the generated {@code BigInteger}s
+     */
+    public @NotNull Iterable<BigInteger> rangeDownDecreasing(@NotNull BigInteger a) {
+        return wheelsProvider.rangeDownDecreasing(a);
+    }
+
+    /**
+     * Generates {@code Character}s less than or equal to a given value, in decreasing order.
+     *
+     * @param a the inclusive upper bound of the generated {@code Character}s
+     */
+    public @NotNull Iterable<Character> rangeDownDecreasing(char a) {
+        return wheelsProvider.rangeDownDecreasing(a);
+    }
+
+    /**
      * Generates {@code Byte}s less than or equal to a given value.
      *
      * @param a the inclusive upper bound of the generated {@code Byte}s
@@ -545,6 +744,126 @@ public strictfp abstract class QBarIterableProvider {
      */
     public @NotNull Iterable<Character> rangeDown(char a) {
         return wheelsProvider.rangeDown(a);
+    }
+
+    /**
+     * Generates {@code Byte}s between {@code a} and {@code b}, inclusive, in increasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Byte}s
+     * @param b the inclusive upper bound of the generated {@code Byte}s
+     */
+    public @NotNull Iterable<Byte> rangeIncreasing(byte a, byte b) {
+        return wheelsProvider.rangeIncreasing(a, b);
+    }
+
+    /**
+     * Generates {@code Short}s between {@code a} and {@code b}, inclusive, in increasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Short}s
+     * @param b the inclusive upper bound of the generated {@code Short}s
+     */
+    public @NotNull Iterable<Short> rangeIncreasing(short a, short b) {
+        return wheelsProvider.rangeIncreasing(a, b);
+    }
+
+    /**
+     * Generates {@code Integer}s between {@code a} and {@code b}, inclusive, in increasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Integer}s
+     * @param b the inclusive upper bound of the generated {@code Integer}s
+     */
+    public @NotNull Iterable<Integer> rangeIncreasing(int a, int b) {
+        return wheelsProvider.rangeIncreasing(a, b);
+    }
+
+    /**
+     * Generates {@code Long}s between {@code a} and {@code b}, inclusive, in increasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Long}s
+     * @param b the inclusive upper bound of the generated {@code Long}s
+     */
+    public @NotNull Iterable<Long> rangeIncreasing(long a, long b) {
+        return wheelsProvider.rangeIncreasing(a, b);
+    }
+
+    /**
+     * Generates {@code BigInteger}s between {@code a} and {@code b}, inclusive, in increasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code BigInteger}s
+     * @param b the inclusive upper bound of the generated {@code BigInteger}s
+     */
+    public @NotNull Iterable<BigInteger> rangeIncreasing(@NotNull BigInteger a, @NotNull BigInteger b) {
+        return wheelsProvider.rangeIncreasing(a, b);
+    }
+
+    /**
+     * Generates {@code Character}s between {@code a} and {@code b}, inclusive, in increasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Character}s
+     * @param b the inclusive upper bound of the generated {@code Character}s
+     */
+    public @NotNull Iterable<Character> rangeIncreasing(char a, char b) {
+        return wheelsProvider.rangeIncreasing(a, b);
+    }
+
+    /**
+     * Generates {@code Byte}s between {@code a} and {@code b}, inclusive, in decreasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Byte}s
+     * @param b the inclusive upper bound of the generated {@code Byte}s
+     */
+    public @NotNull Iterable<Byte> rangeDecreasing(byte a, byte b) {
+        return wheelsProvider.rangeDecreasing(a, b);
+    }
+
+    /**
+     * Generates {@code Short}s between {@code a} and {@code b}, inclusive, in decreasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Short}s
+     * @param b the inclusive upper bound of the generated {@code Short}s
+     */
+    public @NotNull Iterable<Short> rangeDecreasing(short a, short b) {
+        return wheelsProvider.rangeDecreasing(a, b);
+    }
+
+    /**
+     * Generates {@code Integer}s between {@code a} and {@code b}, inclusive, in decreasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Integer}s
+     * @param b the inclusive upper bound of the generated {@code Integer}s
+     */
+    public @NotNull Iterable<Integer> rangeDecreasing(int a, int b) {
+        return wheelsProvider.rangeDecreasing(a, b);
+    }
+
+    /**
+     * Generates {@code Long}s between {@code a} and {@code b}, inclusive, in decreasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Long}s
+     * @param b the inclusive upper bound of the generated {@code Long}s
+     */
+    public @NotNull Iterable<Long> rangeDecreasing(long a, long b) {
+        return wheelsProvider.rangeDecreasing(a, b);
+    }
+
+    /**
+     * Generates {@code BigInteger}s between {@code a} and {@code b}, inclusive, in decreasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code BigInteger}s
+     * @param b the inclusive upper bound of the generated {@code BigInteger}s
+     */
+    public @NotNull Iterable<BigInteger> rangeDecreasing(@NotNull BigInteger a, @NotNull BigInteger b) {
+        return wheelsProvider.rangeDecreasing(a, b);
+    }
+
+    /**
+     * Generates {@code Character}s between {@code a} and {@code b}, inclusive, in decreasing order.
+     *
+     * @param a the inclusive lower bound of the generated {@code Character}s
+     * @param b the inclusive upper bound of the generated {@code Character}s
+     */
+    public @NotNull Iterable<Character> rangeDecreasing(char a, char b) {
+        return wheelsProvider.rangeDecreasing(a, b);
     }
 
     /**
@@ -2687,6 +3006,16 @@ public strictfp abstract class QBarIterableProvider {
     }
 
     /**
+     * Given a list of {@code Iterable}s, generates an {@code Iterable} containing the elements of all of them.
+     *
+     * @param xss the {@code Iterable}s
+     * @param <T> the type of the {@code Iterables}' elements
+     */
+    public @NotNull <T> Iterable<T> choose(@NotNull List<Iterable<T>> xss) {
+        return wheelsProvider.choose(xss);
+    }
+
+    /**
      * Generates the Cartesian product of a {@code List} of {@code List}s, that is, all possible {@code List}s such
      * that the ith element of the {@code List} comes from the ith input {@code List}.
      *
@@ -3495,7 +3824,115 @@ public strictfp abstract class QBarIterableProvider {
             @NotNull List<Variable> variables
     );
 
-    public abstract @NotNull Iterable<Real> reals();
+    /**
+     * Generates {@code RationalMultivariatePolynomials}.
+     */
+    public abstract @NotNull Iterable<RationalMultivariatePolynomial> rationalMultivariatePolynomials();
+
+    /**
+     * Generates {@code RationalMultivariatePolynomial}s containing only (a subset of) the given variables.
+     *
+     * <ul>
+     *  <li>{@code variables} must be in increasing order and cannot contain repetitions.</li>
+     * </ul>
+     *
+     * @param variables the allowed variables in the result
+     */
+    public abstract @NotNull Iterable<RationalMultivariatePolynomial> rationalMultivariatePolynomials(
+            @NotNull List<Variable> variables
+    );
+
+    /**
+     * Generates positive clean {@code Real}s.
+     */
+    public @NotNull Iterable<Real> positiveCleanReals() {
+        return map(Algebraic::realValue, positiveAlgebraics());
+    }
+
+    /**
+     * Generates positive {@code Real}s.
+     */
+    public @NotNull Iterable<Real> positiveReals() {
+        return withScale(1).choose(
+                map(Algebraic::realValue, positiveAlgebraics()),
+                choose(
+                        Arrays.asList(
+                                map(Real::leftFuzzyRepresentation, positiveRationals()),
+                                map(Real::rightFuzzyRepresentation, positiveRationals()),
+                                map(Real::fuzzyRepresentation, positiveRationals())
+                        )
+                )
+        );
+    }
+
+    /**
+     * Generates negative clean {@code Real}s.
+     */
+    public @NotNull Iterable<Real> negativeCleanReals() {
+        return map(Algebraic::realValue, negativeAlgebraics());
+    }
+
+    /**
+     * Generates negative {@code Real}s.
+     */
+    public @NotNull Iterable<Real> negativeReals() {
+        return withScale(1).choose(
+                map(Algebraic::realValue, negativeAlgebraics()),
+                choose(
+                        Arrays.asList(
+                                map(Real::leftFuzzyRepresentation, negativeRationals()),
+                                map(Real::rightFuzzyRepresentation, negativeRationals()),
+                                map(Real::fuzzyRepresentation, negativeRationals())
+                        )
+                )
+        );
+    }
+
+    /**
+     * Generates nonzero clean {@code Real}s.
+     */
+    public @NotNull Iterable<Real> nonzeroCleanReals() {
+        return map(Algebraic::realValue, nonzeroAlgebraics());
+    }
+
+    /**
+     * Generates negative {@code Real}s.
+     */
+    public @NotNull Iterable<Real> nonzeroReals() {
+        return withScale(1).choose(
+                map(Algebraic::realValue, nonzeroAlgebraics()),
+                choose(
+                        Arrays.asList(
+                                map(Real::leftFuzzyRepresentation, nonzeroRationals()),
+                                map(Real::rightFuzzyRepresentation, nonzeroRationals()),
+                                map(Real::fuzzyRepresentation, nonzeroRationals())
+                        )
+                )
+        );
+    }
+
+    /**
+     * Generates clean {@code Real}s.
+     */
+    public @NotNull Iterable<Real> cleanReals() {
+        return map(Algebraic::realValue, algebraics());
+    }
+
+    /**
+     * Generates {@code Real}s.
+     */
+    public @NotNull Iterable<Real> reals() {
+        return withScale(1).choose(
+                map(Algebraic::realValue, algebraics()),
+                choose(
+                        Arrays.asList(
+                                map(Real::leftFuzzyRepresentation, rationals()),
+                                map(Real::rightFuzzyRepresentation, rationals()),
+                                map(Real::fuzzyRepresentation, rationals())
+                        )
+                )
+        );
+    }
 
     /**
      * Generates positive {@code Algebraic}s with a given degree.
@@ -3791,40 +4228,61 @@ public strictfp abstract class QBarIterableProvider {
      */
     public abstract @NotNull Iterable<Algebraic> algebraicsNotIn(@NotNull Interval a);
 
+    /**
+     * Generates all {@code QBarRandomProvider}s with a fixed {@code scale}, {@code secondaryScale}, and
+     * {@code tertiaryScale}.
+     *
+     * @param scale the {@code scale} of the generated {@code QBarRandomProvider}s
+     * @param secondaryScale the {@code secondaryScale} of the generated {@code QBarRandomProvider}s
+     * @param tertiaryScale the {@code tertiaryScale} of the generated {@code QBarRandomProvider}s
+     */
     public @NotNull Iterable<QBarRandomProvider> qbarRandomProvidersFixedScales(
             int scale,
             int secondaryScale,
             int tertiaryScale
     ) {
         return map(
-                rp -> (QBarRandomProvider) new QBarRandomProvider(rp.getSeed())
+                rp -> new QBarRandomProvider(rp.getSeed())
                         .withScale(scale).withSecondaryScale(secondaryScale).withTertiaryScale(tertiaryScale),
                 wheelsProvider.randomProvidersDefault()
         );
     }
 
+    /**
+     * Generates all {@code QBarRandomProvider}s with the default {@code scale}, {@code secondaryScale}, and
+     * {@code tertiaryScale}.
+     */
     public @NotNull Iterable<QBarRandomProvider> qbarRandomProvidersDefault() {
         return map(rp -> new QBarRandomProvider(rp.getSeed()), wheelsProvider.randomProvidersDefault());
     }
 
+    /**
+     * Generates all {@code QBarRandomProvider}s with the default {@code secondaryScale} and {@code tertiaryScale}.
+     */
     public @NotNull Iterable<QBarRandomProvider> qbarRandomProvidersDefaultSecondaryAndTertiaryScale() {
         return map(
-                rp -> (QBarRandomProvider) new QBarRandomProvider(rp.getSeed()).withScale(rp.getScale()),
+                rp -> new QBarRandomProvider(rp.getSeed()).withScale(rp.getScale()),
                 wheelsProvider.randomProvidersDefaultSecondaryAndTertiaryScale()
         );
     }
 
+    /**
+     * Generates all {@code QBarRandomProvider}s with the default {@code tertiaryScale}.
+     */
     public @NotNull Iterable<QBarRandomProvider> qbarRandomProvidersDefaultTertiaryScale() {
         return map(
-                rp -> (QBarRandomProvider) new QBarRandomProvider(rp.getSeed()).withScale(rp.getScale())
+                rp -> new QBarRandomProvider(rp.getSeed()).withScale(rp.getScale())
                         .withSecondaryScale(rp.getSecondaryScale()),
                 wheelsProvider.randomProvidersDefaultTertiaryScale()
         );
     }
 
+    /**
+     * Generates all {@code QBarRandomProvider}s.
+     */
     public @NotNull Iterable<QBarRandomProvider> qbarRandomProviders() {
         return map(
-                rp -> (QBarRandomProvider) new QBarRandomProvider(rp.getSeed())
+                rp -> new QBarRandomProvider(rp.getSeed())
                         .withScale(rp.getScale()).withSecondaryScale(rp.getSecondaryScale())
                         .withTertiaryScale(rp.getTertiaryScale()),
                 wheelsProvider.randomProviders()

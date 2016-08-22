@@ -437,36 +437,31 @@ public class RationalDemos extends QBarDemos {
 
     private void demoSum() {
         for (List<Rational> rs : take(LIMIT, P.withScale(4).lists(P.rationals()))) {
-            String listString = tail(init(rs.toString()));
-            System.out.println("Σ(" + listString + ") = " + sum(rs));
+            System.out.println("Σ(" + middle(rs.toString()) + ") = " + sum(rs));
         }
     }
 
     private void demoProduct() {
         for (List<Rational> rs : take(LIMIT, P.withScale(4).lists(P.rationals()))) {
-            String listString = tail(init(rs.toString()));
-            System.out.println("Π(" + listString + ") = " + product(rs));
+            System.out.println("Π(" + middle(rs.toString()) + ") = " + product(rs));
         }
     }
 
     private void demoSumSign() {
         for (List<Rational> rs : take(LIMIT, P.withScale(4).lists(P.rationals()))) {
-            String listString = tail(init(rs.toString()));
-            System.out.println("sumSign(" + listString + ") = " + sumSign(rs));
+            System.out.println("sumSign(" + middle(rs.toString()) + ") = " + sumSign(rs));
         }
     }
 
     private void demoDelta_finite() {
         for (List<Rational> rs : take(LIMIT, P.withScale(4).listsAtLeast(1, P.rationals()))) {
-            String listString = tail(init(rs.toString()));
-            System.out.println("Δ(" + listString + ") = " + its(delta(rs)));
+            System.out.println("Δ(" + middle(rs.toString()) + ") = " + its(delta(rs)));
         }
     }
 
     private void demoDelta_infinite() {
         for (Iterable<Rational> rs : take(MEDIUM_LIMIT, P.prefixPermutations(QEP.rationals()))) {
-            String listString = tail(init(its(rs)));
-            System.out.println("Δ(" + listString + ") = " + its(delta(rs)));
+            System.out.println("Δ(" + middle(its(rs)) + ") = " + its(delta(rs)));
         }
     }
 
@@ -515,8 +510,7 @@ public class RationalDemos extends QBarDemos {
                 P.pairs(P.bigIntegers(), P.withScale(4).lists(P.positiveBigIntegers()))
         );
         for (List<BigInteger> is : take(LIMIT, iss)) {
-            String listString = tail(init(is.toString()));
-            System.out.println("fromContinuedFraction(" + listString + ") = " + fromContinuedFraction(is));
+            System.out.println("fromContinuedFraction(" + middle(is.toString()) + ") = " + fromContinuedFraction(is));
         }
     }
 
@@ -638,8 +632,7 @@ public class RationalDemos extends QBarDemos {
 
     private void demoCancelDenominators() {
         for (List<Rational> rs : take(LIMIT, P.withScale(4).lists(P.rationals()))) {
-            String listString = tail(init(rs.toString()));
-            System.out.println("cancelDenominators(" + listString + ") = " + cancelDenominators(rs));
+            System.out.println("cancelDenominators(" + middle(rs.toString()) + ") = " + cancelDenominators(rs));
         }
     }
 
@@ -664,7 +657,7 @@ public class RationalDemos extends QBarDemos {
 
     private void demoCompareTo() {
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            System.out.println(p.a + " " + Ordering.compare(p.a, p.b).toChar() + " " + p.b);
+            System.out.println(p.a + " " + Ordering.compare(p.a, p.b) + " " + p.b);
         }
     }
 

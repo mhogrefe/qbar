@@ -3,17 +3,20 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
+import mho.wheels.iterables.ExhaustiveProvider;
 import org.jetbrains.annotations.NotNull;
 
 import static mho.qbar.objects.Variable.of;
 import static mho.qbar.testing.QBarTesting.propertiesCompareToHelper;
 import static mho.qbar.testing.QBarTesting.propertiesEqualsHelper;
 import static mho.qbar.testing.QBarTesting.propertiesHashCodeHelper;
-import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.iterables.IterableUtils.charsToString;
+import static mho.wheels.iterables.IterableUtils.take;
 import static mho.wheels.testing.Testing.*;
 
 public class VariableProperties extends QBarTestProperties {
-    private static final @NotNull String VARIABLE_CHARS = charsToString(range('a', 'z'));
+    private static final @NotNull String VARIABLE_CHARS =
+            charsToString(ExhaustiveProvider.INSTANCE.rangeIncreasing('a', 'z'));
 
     public VariableProperties() {
         super("Variable");

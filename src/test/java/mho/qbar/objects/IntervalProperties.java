@@ -363,7 +363,12 @@ public class IntervalProperties extends QBarTestProperties {
                     return new Pair<>(a.getLower().orElse(null), a.getUpper().orElse(null));
                 }
         );
-        compareImplementations("convexHull(List<Interval>)", take(LIMIT, P.listsAtLeast(1, P.intervals())), functions);
+        compareImplementations(
+                "convexHull(List<Interval>)",
+                take(LIMIT, P.listsAtLeast(1, P.intervals())),
+                functions,
+                v -> P.reset()
+        );
     }
 
     private void propertiesIntersection() {
@@ -438,7 +443,7 @@ public class IntervalProperties extends QBarTestProperties {
         Map<String, Function<Pair<Interval, Interval>, Boolean>> functions = new LinkedHashMap<>();
         functions.put("simplest", p -> disjoint_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.disjoint(p.b));
-        compareImplementations("disjoint(Interval)", take(LIMIT, P.pairs(P.intervals())), functions);
+        compareImplementations("disjoint(Interval)", take(LIMIT, P.pairs(P.intervals())), functions, v -> P.reset());
     }
 
     private static @NotNull  List<Interval> union_alt(@NotNull List<Interval> as) {
@@ -514,7 +519,12 @@ public class IntervalProperties extends QBarTestProperties {
         Map<String, Function<List<Interval>, List<Interval>>> functions = new LinkedHashMap<>();
         functions.put("alt", IntervalProperties::union_alt);
         functions.put("standard", Interval::union);
-        compareImplementations("union(List<Interval>)", take(LIMIT, P.lists(P.intervals())), functions);
+        compareImplementations(
+                "union(List<Interval>)",
+                take(LIMIT, P.lists(P.intervals())),
+                functions,
+                v -> P.reset()
+        );
     }
 
     private void propertiesComplement() {
@@ -953,7 +963,7 @@ public class IntervalProperties extends QBarTestProperties {
         Map<String, Function<Pair<Interval, Interval>, Interval>> functions = new LinkedHashMap<>();
         functions.put("simplest", p -> subtract_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.subtract(p.b));
-        compareImplementations("subtract(Interval)", take(LIMIT, P.pairs(P.intervals())), functions);
+        compareImplementations("subtract(Interval)", take(LIMIT, P.pairs(P.intervals())), functions, v -> P.reset());
     }
 
     private void propertiesMultiply_Interval() {
@@ -1230,7 +1240,7 @@ public class IntervalProperties extends QBarTestProperties {
         functions.put("simplest", IntervalProperties::invertHull_simplest);
         functions.put("standard", Interval::invertHull);
         Iterable<Interval> as = filterInfinite(a -> !a.equals(ZERO), P.intervals());
-        compareImplementations("invertHull()", take(LIMIT, as), functions);
+        compareImplementations("invertHull()", take(LIMIT, as), functions, v -> P.reset());
     }
 
     private void propertiesDivide_Interval() {
@@ -1344,7 +1354,7 @@ public class IntervalProperties extends QBarTestProperties {
                 P.intervals(),
                 filterInfinite(a -> !a.equals(ZERO), P.intervals())
         );
-        compareImplementations("divideHull(Interval)", take(LIMIT, ps), functions);
+        compareImplementations("divideHull(Interval)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private void propertiesDivide_Rational() {
@@ -1491,7 +1501,7 @@ public class IntervalProperties extends QBarTestProperties {
         functions.put("simplest", p -> shiftLeft_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.shiftLeft(p.b));
         Iterable<Pair<Interval, Integer>> ps = P.pairs(P.intervals(), P.integersGeometric());
-        compareImplementations("shiftLeft(int)", take(LIMIT, ps), functions);
+        compareImplementations("shiftLeft(int)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull Interval shiftRight_simplest(@NotNull Interval a, int bits) {
@@ -1549,7 +1559,7 @@ public class IntervalProperties extends QBarTestProperties {
         functions.put("simplest", p -> shiftRight_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.shiftRight(p.b));
         Iterable<Pair<Interval, Integer>> ps = P.pairs(P.intervals(), P.integersGeometric());
-        compareImplementations("shiftRight(int)", take(LIMIT, ps), functions);
+        compareImplementations("shiftRight(int)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull Interval sum_simplest(@NotNull List<Interval> xs) {
@@ -1560,7 +1570,7 @@ public class IntervalProperties extends QBarTestProperties {
     }
 
     private void propertiesSum() {
-        initialize("sum(Iterable<Interval>)");
+        initialize("sum(List<Interval>)");
         propertiesFoldHelper(
                 LIMIT,
                 P.getWheelsProvider(),
@@ -1589,11 +1599,11 @@ public class IntervalProperties extends QBarTestProperties {
         Map<String, Function<List<Interval>, Interval>> functions = new LinkedHashMap<>();
         functions.put("simplest", IntervalProperties::sum_simplest);
         functions.put("standard", Interval::sum);
-        compareImplementations("sum(Iterable<Interval>)", take(LIMIT, P.lists(P.intervals())), functions);
+        compareImplementations("sum(List<Interval>)", take(LIMIT, P.lists(P.intervals())), functions, v -> P.reset());
     }
 
     private void propertiesProduct() {
-        initialize("product(Iterable<Interval>)");
+        initialize("product(List<Interval>)");
         propertiesFoldHelper(
                 LIMIT,
                 P.getWheelsProvider(),
@@ -1688,7 +1698,7 @@ public class IntervalProperties extends QBarTestProperties {
         );
         for (Pair<Interval, Integer> p : take(LIMIT, ps)) {
             List<Interval> pow = p.a.pow(p.b);
-            Interval x = product(replicate(Math.abs(p.b), p.a));
+            Interval x = product(toList(replicate(Math.abs(p.b), p.a)));
             Interval product = p.b < 0 ? x.invertHull() : x;
             assertTrue(p, all(product::contains, pow));
         }
@@ -1747,7 +1757,7 @@ public class IntervalProperties extends QBarTestProperties {
             Interval powHull = p.a.powHull(p.b);
             powHull.validate();
             assertEquals(p, powHull_simplest(p.a, p.b), powHull);
-            Interval product = product(replicate(Math.abs(p.b), p.a));
+            Interval product = product(toList(replicate(Math.abs(p.b), p.a)));
             if (p.b < 0) product = product.invertHull();
             assertTrue(p, product.contains(powHull));
         }
@@ -1864,7 +1874,7 @@ public class IntervalProperties extends QBarTestProperties {
                 p -> p.b >= 0 || !p.a.equals(ZERO),
                 P.pairs(P.intervals(), P.integersGeometric())
         );
-        compareImplementations("powHull(int)", take(LIMIT, ps), functions);
+        compareImplementations("powHull(int)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private void propertiesElementCompare() {

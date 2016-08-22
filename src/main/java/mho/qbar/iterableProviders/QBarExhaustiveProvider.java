@@ -2,7 +2,6 @@ package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.*;
 import mho.wheels.iterables.ExhaustiveProvider;
-import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.NoRemoveIterable;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.Ordering;
@@ -109,25 +108,26 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
                                 n -> Rational.of(n, d),
                                 filter(
                                         n -> n.gcd(d).equals(BigInteger.ONE),
-                                        IterableUtils.range(BigInteger.ONE, d.subtract(BigInteger.ONE))
+                                        wheelsProvider.rangeIncreasing(BigInteger.ONE, d.subtract(BigInteger.ONE))
                                 )
                         ),
-                        IterableUtils.rangeUp(IntegerUtils.TWO)
+                        wheelsProvider.rangeUpIncreasing(IntegerUtils.TWO)
                 )
         );
     }
 
     /**
-     * An {@code Iterable} that generates all {@code Rational}s between {@code a} and {@code b}, inclusive. If
-     * {@code a}{@literal >}{@code b}, an empty {@code Iterable} is returned. Does not support removal.
+     * An {@code Iterable} that generates all {@code Rational}s between {@code a} and {@code b}, inclusive. Does not
+     * support removal.
      *
      * <ul>
      *  <li>{@code a} cannot be null.</li>
      *  <li>{@code b} cannot be null.</li>
+     *  <li>{@code a} must be less than or equal to {@code b}.</li>
      *  <li>The result is a non-removable {@code Iterable} containing {@code Rational}s.</li>
      * </ul>
      *
-     * Length is 0 if a{@literal >}b, 1 if a=b, and infinite otherwise
+     * Length is 1 if a=b, infinite otherwise
      *
      * @param a the inclusive lower bound of the generated elements
      * @param b the inclusive upper bound of the generated elements
@@ -136,7 +136,8 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
     @Override
     public @NotNull Iterable<Rational> range(@NotNull Rational a, @NotNull Rational b) {
         switch (Ordering.compare(a, b)) {
-            case GT: return Collections.emptyList();
+            case GT:
+                throw new IllegalArgumentException("a must be less than or equal to b. a: " + a + ", b: " + b);
             case EQ: return Collections.singletonList(a);
             case LT:
                 Rational diameter = b.subtract(a);
@@ -1119,9 +1120,59 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         );
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code RationalMultivariatePolynomial}s.
+     *
+     * <ul>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code RationalMultivariatePolynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
     @Override
-    public @NotNull Iterable<Real> reals() {
-        return map(Algebraic::realValue, algebraics());
+    public @NotNull Iterable<RationalMultivariatePolynomial> rationalMultivariatePolynomials() {
+        return cons(
+                RationalMultivariatePolynomial.ZERO,
+                map(
+                        p -> RationalMultivariatePolynomial.of(toList(zip(p.a, p.b))),
+                        dependentPairsInfinite(
+                                subsetsAtLeast(1, monomials()),
+                                evs -> lists(evs.size(), nonzeroRationals())
+                        )
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code RationalMultivariatePolynomial}s containing only (a subset of) the
+     * given variables.
+     *
+     * <ul>
+     *  <li>{@code variables} must be in increasing order and cannot contain repetitions.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code RationalMultivariatePolynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param variables the allowed variables in the result
+     */
+    @Override
+    public @NotNull Iterable<RationalMultivariatePolynomial> rationalMultivariatePolynomials(
+            @NotNull List<Variable> variables
+    ) {
+        if (variables.isEmpty()) {
+            return map(RationalMultivariatePolynomial::of, rationals());
+        }
+        return cons(
+                RationalMultivariatePolynomial.ZERO,
+                map(
+                        p -> RationalMultivariatePolynomial.of(toList(zip(p.a, p.b))),
+                        dependentPairsInfinite(
+                                subsetsAtLeast(1, monomials(variables)),
+                                evs -> lists(evs.size(), nonzeroRationals())
+                        )
+                )
+        );
     }
 
     /**

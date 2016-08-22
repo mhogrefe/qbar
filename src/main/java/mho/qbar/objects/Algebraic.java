@@ -5,20 +5,18 @@ import mho.wheels.io.Readers;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.IntegerUtils;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.ordering.Ordering.gt;
+import static mho.wheels.ordering.Ordering.*;
 import static mho.wheels.testing.Testing.assertEquals;
 import static mho.wheels.testing.Testing.assertTrue;
 
@@ -67,12 +65,22 @@ public final class Algebraic implements Comparable<Algebraic> {
     /**
      * the square root of 2
      */
-    public static final @NotNull Algebraic SQRT_TWO = of(Polynomial.readStrict("x^2-2").get(), 1);
+    public static final @NotNull Algebraic SQRT_TWO = TWO.sqrt();
 
     /**
      * φ, the golden ratio
      */
     public static final @NotNull Algebraic PHI = of(Polynomial.readStrict("x^2-x-1").get(), 1);
+
+    /**
+     * Whether to cache some results of {@link Algebraic#add(Algebraic)}
+     */
+    public static boolean USE_SUM_CACHE = true;
+
+    /**
+     * Whether to cache some results of {@link Algebraic#multiply(Algebraic)}
+     */
+    public static boolean USE_PRODUCT_CACHE = true;
 
     /**
      * A thread-safe cache of some of the results of {@link Algebraic#add(Algebraic)}
@@ -91,6 +99,33 @@ public final class Algebraic implements Comparable<Algebraic> {
             p -> p.a.degree() > 2 && p.b.degree() > 2,
             p -> gt(p.a, p.b) ? new Pair<>(p.b, p.a) : p
     );
+
+    private static final @NotNull Comparator<Algebraic> COMPLEXITY_COMPARATOR = (a, b) -> {
+        int aDegree = a.degree();
+        int bDegree = b.degree();
+        if (aDegree > bDegree) return 1;
+        if (aDegree < bDegree) return -1;
+        Polynomial aMP = a.minimalPolynomial;
+        Polynomial bMP = b.minimalPolynomial;
+        int aCoefficientBitSize = 0;
+        for (BigInteger c : aMP) {
+            aCoefficientBitSize += c.bitLength();
+        }
+        int bCoefficientBitSize = 0;
+        for (BigInteger c : bMP) {
+            bCoefficientBitSize += c.bitLength();
+        }
+        if (aCoefficientBitSize > bCoefficientBitSize) return 1;
+        if (aCoefficientBitSize < bCoefficientBitSize) return -1;
+        int pCompare = aMP.compareTo(bMP);
+        if (pCompare != 0) return pCompare;
+        return Integer.compare(a.rootIndex, b.rootIndex);
+    };
+
+    /**
+     * 36, the number of ASCII alphanumeric characters
+     */
+    private static final @NotNull BigInteger ASCII_ALPHANUMERIC_COUNT = BigInteger.valueOf(36);
 
     /**
      * The minimal polynomial of {@code this}; the unique primitive, irreducible polynomial of minimal degree with
@@ -151,7 +186,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      *  {@code minimalPolynomial.powerOfTwoIsolatingInterval(rootIndex)} (see
      *  {@link Polynomial#powerOfTwoIsolatingInterval(int)}).</li>
      *  <li>{@code mpRootCount} cannot be negative.</li>
-     *  <li>{@code mpRootCount} must be the number of real roots of {@code minimalPolynomial}</li>
+     *  <li>{@code mpRootCount} must be the number of real roots of {@code minimalPolynomial}.</li>
      *  <li>Any irrational {@code Algebraic} may be constructed with this constructor.</li>
      * </ul>
      *
@@ -194,10 +229,10 @@ public final class Algebraic implements Comparable<Algebraic> {
             throw new IllegalArgumentException("rootIndex cannot be negative. Invalid rootIndex: " + rootIndex);
         }
         if (polynomial == Polynomial.ZERO) {
-            throw new IllegalArgumentException("polynomial cannot be zero.");
+            throw new ArithmeticException("polynomial cannot be zero.");
         }
         if (polynomial.degree() == 0) {
-            throw new IllegalArgumentException("polynomial must have at least one real root. Invalid polynomial: " +
+            throw new ArithmeticException("polynomial must have at least one real root. Invalid polynomial: " +
                     polynomial);
         }
         Polynomial squareFree = polynomial.squareFreePart();
@@ -214,11 +249,11 @@ public final class Algebraic implements Comparable<Algebraic> {
 
         int rootCount = squareFree.rootCount();
         if (rootCount == 0) {
-            throw new IllegalArgumentException("polynomial must have at least one real root. Invalid polynomial: " +
+            throw new ArithmeticException("polynomial must have at least one real root. Invalid polynomial: " +
                     polynomial);
         }
         if (rootIndex >= rootCount) {
-            throw new IllegalArgumentException("rootIndex must be less than the number of real roots of polynomial." +
+            throw new ArithmeticException("rootIndex must be less than the number of real roots of polynomial." +
                     " rootIndex: " + rootIndex + ", number of real roots of " + polynomial + ": " + rootCount);
         }
         List<Polynomial> factors = squareFree.factor();
@@ -457,6 +492,66 @@ public final class Algebraic implements Comparable<Algebraic> {
     }
 
     /**
+     * See {@link Polynomial#realRoots()}.
+     *
+     * @param polynomial a {@code Polynomial}
+     * @return the real roots of {@code Polynomial}, in ascending order
+     */
+    public static @NotNull List<Algebraic> roots(@NotNull Polynomial polynomial) {
+        if (polynomial == Polynomial.ZERO) {
+            throw new ArithmeticException("polynomial cannot be zero.");
+        }
+        if (polynomial.degree() == 0) {
+            return Collections.emptyList();
+        }
+        Polynomial squareFree = polynomial.squareFreePart();
+        if (squareFree.degree() == 1) {
+            Rational r = Rational.of(squareFree.coefficient(0).negate(), squareFree.coefficient(1));
+            if (r == Rational.ZERO) return Collections.singletonList(ZERO);
+            if (r == Rational.ONE) return Collections.singletonList(ONE);
+            return Collections.singletonList(new Algebraic(r));
+        }
+
+        List<Polynomial> factors = squareFree.factor();
+        if (factors.size() == 1) {
+            List<Algebraic> roots = new ArrayList<>();
+            List<Interval> isolatingIntervals = squareFree.powerOfTwoIsolatingIntervals();
+            int rootCount = isolatingIntervals.size();
+            for (int i = 0; i < rootCount; i++) {
+                roots.add(new Algebraic(squareFree, i, isolatingIntervals.get(i), rootCount));
+            }
+            return roots;
+        }
+
+        SortedMap<Real, Algebraic> rootMap = new TreeMap<>();
+        for (Polynomial factor : factors) {
+            if (factor.degree() == 1) {
+                Rational r = Rational.of(factor.coefficient(0).negate(), factor.coefficient(1));
+                Algebraic x;
+                if (r == Rational.ZERO) {
+                    x = ZERO;
+                } else if (r == Rational.ONE) {
+                    x = ONE;
+                } else {
+                    x = new Algebraic(r);
+                }
+                rootMap.put(Real.of(r), x);
+            } else {
+                List<Interval> isolatingIntervals = factor.powerOfTwoIsolatingIntervals();
+                int rootCount = isolatingIntervals.size();
+                for (int i = 0; i < rootCount; i++) {
+                    Interval isolatingInterval = isolatingIntervals.get(i);
+                    rootMap.put(
+                            Real.root(factor::signum, isolatingInterval),
+                            new Algebraic(factor, i, isolatingInterval, rootCount)
+                    );
+                }
+            }
+        }
+        return toList(rootMap.values());
+    }
+
+    /**
      * Determines whether {@code this} is integral.
      *
      * <ul>
@@ -652,7 +747,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      *
      * @return the smallest integer power of 2 greater than or equal to {@code this}.
      */
-    public @NotNull Rational roundUpToIntegerPowerOfTwo() {
+    public @NotNull BinaryFraction roundUpToIntegerPowerOfTwo() {
         if (signum() != 1) {
             throw new ArithmeticException("this must be positive. Invalid this: " + this);
         }
@@ -1049,6 +1144,152 @@ public final class Algebraic implements Comparable<Algebraic> {
     }
 
     /**
+     * Determines whether {@code this} has a terminating digit expansion in a particular base.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>{@code base} must be at least 2.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @param base the base in which we are interesting in expanding {@code this}
+     * @return whether {@code this} has a terminating base expansion in base-{@code base}
+     */
+    public boolean hasTerminatingBaseExpansion(@NotNull BigInteger base) {
+        if (lt(base, IntegerUtils.TWO)) {
+            throw new IllegalArgumentException("base must be at least 2. Invalid base: " + base);
+        }
+        return rational.isPresent() && rational.get().hasTerminatingBaseExpansion(base);
+    }
+
+    /**
+     * Rounds {@code this} to a {@link java.math.BigDecimal} with a specified rounding mode (see documentation for
+     * {@code java.math.RoundingMode} for details) and with a specified precision (number of significant digits), or
+     * to full precision if {@code precision} is 0.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>{@code precision} cannot be negative.</li>
+     *  <li>{@code roundingMode} may be any {@code RoundingMode}.</li>
+     *  <li>If {@code precision} is 0, then {@code this} must be an {@code Algebraic} with a terminating decimal
+     *  expansion; that is, it must be rational and its denominator must only have 2 or 5 as prime factors.</li>
+     *  <li>If {@code roundingMode} is {@code RoundingMode.UNNECESSARY}, then {@code precision} must be at least as
+     *  large as the number of digits in {@code this}'s decimal expansion.</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * @param precision the precision with which to round {@code this}. 0 indicates full precision.
+     * @param roundingMode specifies the details of how to round {@code this}.
+     * @return {@code this}, in {@code BigDecimal} form
+     */
+    public @NotNull BigDecimal bigDecimalValueByPrecision(int precision, @NotNull RoundingMode roundingMode) {
+        if (rational.isPresent()) {
+            return rational.get().bigDecimalValueByPrecision(precision, roundingMode);
+        } else {
+            if (precision == 0) {
+                throw new ArithmeticException("If precision is 0, this must be an Algebraic with a terminating" +
+                        " decimal expansion. Invalid this: " + this);
+            }
+            if (roundingMode == RoundingMode.UNNECESSARY) {
+                throw new ArithmeticException("If roundingMode is RoundingMode.UNNECESSARY, then precision must" +
+                        " be as large as the number of digits in this's decimal expansion. Invalid this: " + this);
+            }
+            return realValue().bigDecimalValueByPrecision(precision, roundingMode);
+        }
+    }
+
+    /**
+     * Rounds {@code this} to a {@link java.math.BigDecimal} with a specified rounding mode (see documentation for
+     * {@code java.math.RoundingMode} for details) and with a specified scale (number digits after the decimal point).
+     * Scale may be negative; for example, {@code 1E+1} has a scale of –1.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>{@code scale} may be any {@code int}.</li>
+     *  <li>{@code roundingMode} may be any {@code RoundingMode}.</li>
+     *  <li>If {@code roundingMode} is {@code RoundingMode.UNNECESSARY}, then {@code scale} must be at least as large
+     *  as the smallest n such that {@code this}×10<sup>n</sup> is an integer (and such an n must exist).</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * @param scale the scale with which to round {@code this}.
+     * @param roundingMode specifies the details of how to round {@code this}.
+     * @return {@code this}, in {@code BigDecimal} form
+     */
+    public @NotNull BigDecimal bigDecimalValueByScale(int scale, @NotNull RoundingMode roundingMode) {
+        if (rational.isPresent()) {
+            return rational.get().bigDecimalValueByScale(scale, roundingMode);
+        } else {
+            if (roundingMode == RoundingMode.UNNECESSARY) {
+                throw new IllegalArgumentException("If roundingMode is RoundingMode.UNNECESSARY, then scale must be" +
+                        " at least as large as the smallest n such that this*10^n is an integer. But n does not" +
+                        " exist, since this = " + this);
+            }
+            return realValue().bigDecimalValueByScale(scale, roundingMode);
+        }
+    }
+
+    /**
+     * Rounds {@code this} to a {@code BigDecimal} with a specified precision (number of significant digits), or to
+     * full precision if {@code precision} is 0. {@code RoundingMode.HALF_EVEN} is used for rounding.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>{@code precision} cannot be negative.</li>
+     *  <li>If {@code precision} is 0, then {@code this} must be an {@code Algebraic} with a terminating decimal
+     *  expansion; that is, it must be rational and its denominator must only have 2 or 5 as prime factors.</li>
+     *  <li>The result is a {@code BigDecimal} with minimal scale. That is, the scale is the smallest non-negative n
+     *  such that {@code this}×10<sup>n</sup> is an integer.</li>
+     * </ul>
+     *
+     * @param precision the precision with which to round {@code this}. 0 indicates full precision.
+     * @return {@code this}, in {@code BigDecimal} form
+     */
+    public @NotNull BigDecimal bigDecimalValueByPrecision(int precision) {
+        return bigDecimalValueByPrecision(precision, RoundingMode.HALF_EVEN);
+    }
+
+    /**
+     * Rounds {@code this} to a {@code BigDecimal} with a specified scale (number digits after the decimal point).
+     * Scale may be negative; for example, {@code 1E+1} has a scale of –1. {@code RoundingMode.HALF_EVEN} is used for
+     * rounding.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>{@code scale} may be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param scale the scale with which to round {@code this}.
+     * @return {@code this}, in {@code BigDecimal} form
+     */
+    public @NotNull BigDecimal bigDecimalValueByScale(int scale) {
+        return bigDecimalValueByScale(scale, RoundingMode.HALF_EVEN);
+    }
+
+    /**
+     * Returns a {@code BigDecimal} exactly equal to {@code this}. Throws an {@code ArithmeticException} if
+     * {@code this} cannot be represented as a terminating decimal.
+     *
+     * <ul>
+     *  <li>{@code this} must be an {@code Algebraic} with a terminating decimal expansion; that is, it must be
+     *  rational and its denominator must only have 2 or 5 as prime factors.</li>
+     *  <li>The result is a canonical {@code BigDecimal} (see
+     *  {@link mho.wheels.numberUtils.BigDecimalUtils#isCanonical(BigDecimal)}.)</li>
+     * </ul>
+     *
+     * @return {@code this}, in {@code BigDecimal} form
+     */
+    public @NotNull BigDecimal bigDecimalValueExact() {
+        if (rational.isPresent()) {
+            return rational.get().bigDecimalValueExact();
+        } else {
+            throw new ArithmeticException("this must be an Algebraic with a terminating decimal expansion. Invalid" +
+                    " this: " + this);
+        }
+    }
+
+    /**
      * The minimal polynomial of {@code this}; the nonzero, irreducible, primitive polynomial with positive leading
      * coefficient and minimal degree that has {@code this} as a root.
      *
@@ -1207,7 +1448,7 @@ public final class Algebraic implements Comparable<Algebraic> {
         if (rational.isPresent()) {
             return rational.get().signum();
         } else {
-            return realValue().signum();
+            return realValue().signumUnsafe();
         }
     }
 
@@ -1274,7 +1515,7 @@ public final class Algebraic implements Comparable<Algebraic> {
         if (that == ZERO) return this;
         if (isRational()) return that.add(rational.get());
         if (that.isRational()) return add(that.rational.get());
-        return SUM_CACHE.get(new Pair<>(this, that));
+        return USE_SUM_CACHE ? SUM_CACHE.get(new Pair<>(this, that)) : addRaw(that);
     }
 
     /**
@@ -1491,16 +1732,26 @@ public final class Algebraic implements Comparable<Algebraic> {
         if (that == ONE) return this;
         if (isRational()) return that.multiply(rational.get());
         if (that.isRational()) return multiply(that.rational.get());
-        return PRODUCT_CACHE.get(new Pair<>(this, that));
+        return USE_PRODUCT_CACHE ? PRODUCT_CACHE.get(new Pair<>(this, that)) : multiplyRaw(that);
     }
 
     /**
      * The no-cache version of {@link Algebraic#add(Algebraic)}.
      */
     public @NotNull Algebraic multiplyRaw(@NotNull Algebraic that) {
-        if (degree() == that.degree()) {
-            //todo if (equals(that)) return pow(2);
-            if (equals(that.invert())) return ONE;
+        int thisDegree = degree();
+        if (thisDegree == that.degree()) {
+            if (equals(that)) {
+                if (thisDegree == 2) {
+                    if (minimalPolynomial.isMonic()) {
+                        return minimalPolynomial.rootPower(2).apply(this);
+                    } else {
+                        return minimalPolynomial.toRationalPolynomial().makeMonic().rootPower(2).apply(this);
+                    }
+                }
+            } else if (equals(that.invert())) {
+                return ONE;
+            }
         }
         Polynomial productMP = minimalPolynomial.multiplyRoots(that.minimalPolynomial).squareFreePart();
         int productMPRootCount = productMP.rootCount();
@@ -1554,7 +1805,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      */
     public @NotNull Algebraic invert() {
         if (this == ZERO) {
-            throw new ArithmeticException("that cannot be zero.");
+            throw new ArithmeticException("this cannot be zero.");
         }
         if (this == ONE) return ONE;
         if (rational.isPresent()) {
@@ -1727,6 +1978,910 @@ public final class Algebraic implements Comparable<Algebraic> {
     }
 
     /**
+     * Returns the sum of all the {@code Algebraic}s in {@code xs}. If {@code xs} is empty, 0 is returned.
+     *
+     * <ul>
+     *  <li>{@code xs} may not contain any nulls.</li>
+     *  <li>The result may be any {@code Algebraic}.</li>
+     * </ul>
+     *
+     * @param xs a {@code List} of {@code Algebraic}s
+     * @return Σxs
+     */
+    public static @NotNull Algebraic sum(@NotNull List<Algebraic> xs) {
+        if (any(x -> x == null, xs)) {
+            throw new NullPointerException();
+        }
+        switch (xs.size()) {
+            case 0: return ZERO;
+            case 1: return xs.get(0);
+            default:
+                Map<Integer, List<Algebraic>> degreeMap = new HashMap<>();
+                for (Algebraic x : xs) {
+                    if (x != ZERO) {
+                        int degree = x.degree();
+                        List<Algebraic> degreeXs = degreeMap.get(degree);
+                        if (degreeXs == null) {
+                            degreeXs = new ArrayList<>();
+                            degreeMap.put(degree, degreeXs);
+                        }
+                        degreeXs.add(x);
+                    }
+                }
+                List<Algebraic> sums = new ArrayList<>();
+                for (Map.Entry<Integer, List<Algebraic>> entry : degreeMap.entrySet()) {
+                    if (entry.getValue().size() == 1) {
+                        sums.add(entry.getValue().get(0));
+                        continue;
+                    }
+                    if (entry.getKey() == 1) {
+                        sums.add(
+                                Algebraic.of(
+                                        Rational.sum(toList(map(Algebraic::rationalValueExact, entry.getValue())))
+                                )
+                        );
+                        continue;
+                    }
+                    List<Algebraic> equalDegreeXs = entry.getValue();
+                    List<Algebraic> condensed = new ArrayList<>();
+                    Set<Integer> indicesToSkip = new HashSet<>();
+                    for (int i = 0; i < equalDegreeXs.size(); i++) {
+                        if (indicesToSkip.contains(i)) continue;
+                        Algebraic x = equalDegreeXs.get(i);
+                        Algebraic negativeX = i >= equalDegreeXs.size() - 1 ? null : x.negate();
+                        int multiple = 1;
+                        for (int j = i + 1; j < equalDegreeXs.size(); j++) {
+                            if (indicesToSkip.contains(j)) continue;
+                            Algebraic y = equalDegreeXs.get(j);
+                            if (x.equals(y)) {
+                                multiple++;
+                                indicesToSkip.add(j);
+                            } else {
+                                //noinspection ConstantConditions
+                                if (negativeX.equals(y)) {
+                                    multiple--;
+                                    indicesToSkip.add(j);
+                                }
+                            }
+                        }
+                        switch (multiple) {
+                            case 0:
+                                break;
+                            case 1:
+                                condensed.add(x);
+                                break;
+                            default:
+                                condensed.add(x.multiply(multiple));
+                        }
+                    }
+                    Collections.sort(condensed, COMPLEXITY_COMPARATOR);
+                    sums.add(foldl(Algebraic::add, ZERO, condensed));
+                }
+                Collections.sort(sums, COMPLEXITY_COMPARATOR);
+                return foldl(Algebraic::add, ZERO, sums);
+        }
+    }
+
+    /**
+     * Returns the product of all the {@code Algebraic}s in {@code xs}. If {@code xs} is empty, 1 is returned.
+     *
+     * <ul>
+     *  <li>{@code xs} may not contain any nulls.</li>
+     *  <li>The result may be any {@code Algebraic}.</li>
+     * </ul>
+     *
+     * @param xs a {@code List} of {@code Algebraic}s
+     * @return Πxs
+     */
+    public static @NotNull Algebraic product(@NotNull List<Algebraic> xs) {
+        if (any(x -> x == null, xs)) {
+            throw new NullPointerException();
+        }
+        if (any(x -> x == ZERO, xs)) {
+            return ZERO;
+        }
+        switch (xs.size()) {
+            case 0: return ONE;
+            case 1: return xs.get(0);
+            default:
+                Map<Integer, List<Algebraic>> degreeMap = new HashMap<>();
+                for (Algebraic x : xs) {
+                    if (x != ONE) {
+                        int degree = x.degree();
+                        List<Algebraic> degreeXs = degreeMap.get(degree);
+                        if (degreeXs == null) {
+                            degreeXs = new ArrayList<>();
+                            degreeMap.put(degree, degreeXs);
+                        }
+                        degreeXs.add(x);
+                    }
+                }
+                List<Algebraic> products = new ArrayList<>();
+                for (Map.Entry<Integer, List<Algebraic>> entry : degreeMap.entrySet()) {
+                    if (entry.getValue().size() == 1) {
+                        products.add(entry.getValue().get(0));
+                        continue;
+                    }
+                    if (entry.getKey() == 1) {
+                        products.add(
+                                Algebraic.of(
+                                        Rational.product(toList(map(Algebraic::rationalValueExact, entry.getValue())))
+                                )
+                        );
+                        continue;
+                    }
+                    List<Algebraic> equalDegreeXs = entry.getValue();
+                    List<Algebraic> condensed = new ArrayList<>();
+                    Set<Integer> indicesToSkip = new HashSet<>();
+                    for (int i = 0; i < equalDegreeXs.size(); i++) {
+                        if (indicesToSkip.contains(i)) continue;
+                        Algebraic x = equalDegreeXs.get(i);
+                        Algebraic inverseX = i >= equalDegreeXs.size() - 1 ? null : x.invert();
+                        int power = 1;
+                        for (int j = i + 1; j < equalDegreeXs.size(); j++) {
+                            if (indicesToSkip.contains(j)) continue;
+                            Algebraic y = equalDegreeXs.get(j);
+                            if (x.equals(y)) {
+                                power++;
+                                indicesToSkip.add(j);
+                            } else {
+                                //noinspection ConstantConditions
+                                if (inverseX.equals(y)) {
+                                    power--;
+                                    indicesToSkip.add(j);
+                                }
+                            }
+                        }
+                        switch (power) {
+                            case 0:
+                                break;
+                            case 1:
+                                condensed.add(x);
+                                break;
+                            default:
+                                condensed.add(x.pow(power));
+                        }
+                    }
+                    Collections.sort(condensed, COMPLEXITY_COMPARATOR);
+                    products.add(foldl(Algebraic::multiply, ONE, condensed));
+                }
+                Collections.sort(products, COMPLEXITY_COMPARATOR);
+                return foldl(Algebraic::multiply, ONE, products);
+        }
+    }
+
+    /**
+     * Returns the sign of the sum of a {@code List} of {@code Algebraic}s. If {@code xs} is empty, 0 is returned.
+     *
+     * <ul>
+     *  <li>{@code xs} cannot contain nulls.</li>
+     *  <li>The result may be –1, 0, or 1.</li>
+     * </ul>
+     *
+     * @param xs a {@code List} of {@code Algebraic}s
+     * @return sgn(Σxs)
+     */
+    public static int sumSign(@NotNull List<Algebraic> xs) {
+        if (any(x -> x == null, xs)) {
+            throw new NullPointerException();
+        }
+        switch (xs.size()) {
+            case 0:
+                return 0;
+            case 1:
+                return xs.get(0).signum();
+            default:
+                List<Algebraic> positives = new ArrayList<>();
+                List<Algebraic> negatives = new ArrayList<>();
+                for (Algebraic x : xs) {
+                    int signum = x.signum();
+                    if (signum == 1) {
+                        positives.add(x);
+                    } else if (signum == -1) {
+                        negatives.add(x);
+                    }
+                }
+                int positiveSize = positives.size();
+                int negativeSize = negatives.size();
+                if (positiveSize == 0 && negativeSize == 0) {
+                    return 0;
+                } else if (positiveSize == 0) {
+                    return -1;
+                } else if (negativeSize == 0) {
+                    return 1;
+                } else if (positiveSize < negativeSize) {
+                    Algebraic positiveSum = sum(positives).negate();
+                    Algebraic negativeSum = ZERO;
+                    for (Algebraic negative : negatives) {
+                        negativeSum = negativeSum.add(negative);
+                        if (lt(negativeSum, positiveSum)) return -1;
+                    }
+                    return negativeSum.equals(positiveSum) ? 0 : 1;
+                } else {
+                    Algebraic negativeSum = sum(negatives).negate();
+                    Algebraic positiveSum = ZERO;
+                    for (Algebraic positive : positives) {
+                        positiveSum = positiveSum.add(positive);
+                        if (gt(positiveSum, negativeSum)) return 1;
+                    }
+                    return negativeSum.equals(positiveSum) ? 0 : -1;
+                }
+        }
+    }
+
+    /**
+     * Returns the differences between successive {@code Algebraic}s in {@code xs}. If {@code xs} contains a single
+     * {@code Algebraic}, an empty {@code Iterable} is returned. {@code xs} cannot be empty. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code xs} must not be empty and may not contain any nulls.</li>
+     *  <li>The result is does not contain any nulls.</li>
+     * </ul>
+     *
+     * Length is |{@code xs}|–1
+     *
+     * @param xs an {@code Iterable} of {@code Algebraic}s.
+     * @return Δxs
+     */
+    public static @NotNull Iterable<Algebraic> delta(@NotNull Iterable<Algebraic> xs) {
+        if (isEmpty(xs)) {
+            throw new IllegalArgumentException("xs must not be empty.");
+        }
+        if (head(xs) == null) {
+            throw new NullPointerException();
+        }
+        return adjacentPairsWith((x, y) -> y.subtract(x), xs);
+    }
+
+    /**
+     * Returns {@code this} raised to the power of {@code p}. 0<sup>0</sup> yields 1.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>{@code p} may be any {@code int}.</li>
+     *  <li>If {@code p} is negative, {@code this} cannot be 0.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param p the power that {@code this} is raised to
+     * @return {@code this}<sup>{@code p}</sup>
+     */
+    public @NotNull Algebraic pow(int p) {
+        if (p == 0 || this == ONE) return ONE;
+        if (p == 1) return this;
+        if (p < 0) return invert().pow(-p);
+        if (this == ZERO) return this;
+        if (p % 2 == 0 && this.equals(NEGATIVE_ONE)) return ONE;
+        if (rational.isPresent()) {
+            return new Algebraic(rational.get().pow(p));
+        }
+        Optional<Polynomial> oPowerMP = minimalPolynomial.undoRootRoots(p);
+        if (oPowerMP.isPresent()) {
+            Polynomial powerMp = oPowerMP.get();
+            if (powerMp.degree() == 1) {
+                Rational r = Rational.of(powerMp.coefficient(0).negate(), powerMp.coefficient(1));
+                if (r == Rational.ZERO) return ZERO;
+                if (r == Rational.ONE) return ONE;
+                return new Algebraic(r);
+            }
+            int powerRootCount = powerMp.rootCount();
+            int powerRootIndex = rootIndex;
+            if ((p & 1) == 0) {
+                int negativeRootCount = minimalPolynomial.rootCount(Interval.lessThanOrEqualTo(Rational.ZERO));
+                int powerNegativeRootCount = powerMp.rootCount(Interval.lessThanOrEqualTo(Rational.ZERO));
+                if (signum() == 1) {
+                    powerRootIndex = powerNegativeRootCount - negativeRootCount + rootIndex;
+                } else {
+                    powerRootIndex = negativeRootCount + powerNegativeRootCount - rootIndex - 1;
+                }
+            }
+            Interval powerIsolatingInterval = powerMp.powerOfTwoIsolatingInterval(powerRootIndex);
+            return new Algebraic(powerMp, powerRootIndex, powerIsolatingInterval, powerRootCount);
+        }
+
+        Algebraic result = ONE;
+        Algebraic powerPower = null; // p^2^i
+        for (boolean bit : IntegerUtils.bits(p)) {
+            powerPower = powerPower == null ? this : powerPower.multiply(powerPower);
+            if (bit) result = result.multiply(powerPower);
+        }
+        return result;
+    }
+
+    /**
+     * Returns the {@code r}th root of {@code this}, or {@code this}<sup>1/{@code r}</sup>. If {@code r} is even, the
+     * principal (non-negative) root is chosen.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>{@code r} cannot be 0.</li>
+     *  <li>If {@code r} is negative, {@code this} cannot be zero.</li>
+     *  <li>If {@code r} is even, {@code this} cannot be negative.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param r the index of the root
+     * @return {@code this}<sup>1/{@code r}</sup>
+     */
+    public @NotNull Algebraic root(int r) {
+        if (r == 0) {
+            throw new ArithmeticException("r cannot be zero.");
+        }
+        if (r == 1 || this == ONE) {
+            return this;
+        }
+        if (r < 0) {
+            return invert().root(-r);
+        }
+        if (this == ZERO) {
+            return this;
+        }
+        if ((r & 1) == 0 && signum() == -1) {
+            throw new ArithmeticException("If r is even, this cannot be negative. r: " + r + ", this: " + this);
+        }
+        if (rational.isPresent()) {
+            BigInteger numerator = rational.get().getNumerator();
+            int numeratorSign = numerator.signum();
+            Pair<BigInteger, Integer> numeratorPowers;
+            if (numerator.abs().equals(BigInteger.ONE)) {
+                numeratorPowers = new Pair<>(BigInteger.ONE, 0);
+            } else {
+                numeratorPowers = MathUtils.expressAsPower(numerator.abs());
+            }
+            BigInteger denominator = rational.get().getDenominator();
+            Pair<BigInteger, Integer> denominatorPowers;
+            if (denominator.equals(BigInteger.ONE)) {
+                denominatorPowers = new Pair<>(BigInteger.ONE, 0);
+            } else {
+                denominatorPowers = MathUtils.expressAsPower(denominator);
+            }
+            int gcd = MathUtils.gcd(MathUtils.gcd(numeratorPowers.b, denominatorPowers.b), r);
+            if (gcd != 1) {
+                numerator = numeratorPowers.a.pow(numeratorPowers.b / gcd);
+                if (numeratorSign == -1) {
+                    numerator = numerator.negate();
+                }
+                denominator = denominatorPowers.a.pow(denominatorPowers.b / gcd);
+                r /= gcd;
+                if (r == 1) {
+                    return new Algebraic(Rational.of(numerator, denominator));
+                }
+            }
+            int rootRootIndex = (r & 1) == 0 ? 1 : 0;
+            List<BigInteger> coefficients = new ArrayList<>();
+            coefficients.add(numerator.negate());
+            for (int i = 0; i < r - 1; i++) {
+                coefficients.add(BigInteger.ZERO);
+            }
+            coefficients.add(denominator);
+            Polynomial rootMp = Polynomial.of(coefficients);
+            Interval rootIsolatingInterval = rootMp.powerOfTwoIsolatingInterval(rootRootIndex);
+            return new Algebraic(rootMp, rootRootIndex, rootIsolatingInterval, rootRootIndex + 1);
+        }
+        Polynomial rootMp = minimalPolynomial.rootRoots(r);
+        int rootRootIndex = rootIndex;
+        if ((r & 1) == 0) {
+            int negativeRootCount = minimalPolynomial.rootCount(Interval.lessThanOrEqualTo(Rational.ZERO));
+            int rootNegativeRootCount = rootMp.rootCount(Interval.lessThanOrEqualTo(Rational.ZERO));
+            rootRootIndex = rootIndex + rootNegativeRootCount - negativeRootCount;
+        }
+        return of(rootMp, rootRootIndex);
+    }
+
+    /**
+     * Returns the square root of {@code this}, or {@code this}<sup>1/2</sup>. The principal (non-negative) square root
+     * is chosen.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be negative.</li>
+     *  <li>The result is not negative.</li>
+     * </ul>
+     *
+     * @return sqrt({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Algebraic sqrt() {
+        return root(2);
+    }
+
+    /**
+     * Returns the cube root of {@code this}, or {@code this}<sup>1/3</sup>.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return cbrt({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Algebraic cbrt() {
+        return root(3);
+    }
+
+    /**
+     * Returns {@code this} raised to the power of {@code p}. 0<sup>0</sup> yields 1. If {@code p} has an even
+     * denominator, the principal (non-negative) root is chosen.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>{@code p} must have a numerator greater than or equal to –2<sup>31</sup> and less than 2<sup>31</sup> and
+     *  a denominator less than 2<sup>31</sup>.</li>
+     *  <li>If {@code p} is negative, {@code this} cannot be 0.</li>
+     *  <li>If {@code p} has an even denominator, {@code this} cannot be negative.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param p the power that {@code this} is raised to
+     * @return {@code this}<sup>{@code p}</sup>
+     */
+    public @NotNull Algebraic pow(@NotNull Rational p) {
+        if (p.getDenominator().and(BigInteger.ONE).equals(BigInteger.ZERO) && signum() == -1) {
+            throw new ArithmeticException("If p has an even denominator, this cannot be negative. this: " +
+                    this + ", p: " + p);
+        }
+        int n = p.getNumerator().intValueExact();
+        int d = p.getDenominator().intValueExact();
+        return pow(n).root(d);
+    }
+
+    /**
+     * Returns the fractional part of {@code this}; {@code this}–⌊{@code this}⌋.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>The result is an {@code Algebraic} x such that 0≤x{@literal <}1.</li>
+     * </ul>
+     *
+     * @return the fractional part of {@code this}
+     */
+    public @NotNull Algebraic fractionalPart() {
+        if (rational.isPresent()) {
+            Rational fp = rational.get().fractionalPart();
+            return fp == Rational.ZERO ? ZERO : new Algebraic(fp);
+        } else {
+            return subtract(floor());
+        }
+    }
+
+    /**
+     * Rounds {@code this} to a rational number that is an integer multiple of 1/{@code denominator} according to
+     * {@code roundingMode}; see documentation for {@link java.math.RoundingMode} for details.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>{@code denominator} must be positive.</li>
+     *  <li>If {@code roundingMode} is {@code RoundingMode.UNNECESSARY}, {@code this} must be rational and its
+     *  denominator must divide {@code denominator}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param denominator the denominator which represents the precision that {@code this} is rounded to.
+     * @param roundingMode determines the way in which {@code this} is rounded. Options are {@code RoundingMode.UP},
+     *                     {@code RoundingMode.DOWN}, {@code RoundingMode.CEILING}, {@code RoundingMode.FLOOR},
+     *                     {@code RoundingMode.HALF_UP}, {@code RoundingMode.HALF_DOWN},
+     *                     {@code RoundingMode.HALF_EVEN}, and {@code RoundingMode.UNNECESSARY}.
+     * @return {@code this}, rounded to an integer multiple of 1/{@code denominator}
+     */
+    public @NotNull Rational roundToDenominator(@NotNull BigInteger denominator, @NotNull RoundingMode roundingMode) {
+        if (denominator.signum() != 1) {
+            throw new ArithmeticException("denominator must be positive. Invalid denominator: " + denominator);
+        }
+        return Rational.of(multiply(denominator).bigIntegerValue(roundingMode)).divide(denominator);
+    }
+
+    /**
+     * Returns the real conjugates of {@code this}; that is, all real roots of the minimal polynomial of {@code this},
+     * apart from {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>The result is a list containing all but one real roots of an irreducible polynomial over the
+     *  rationals.</li>
+     * </ul>
+     *
+     * @return the real conjugates of {@code this}
+     */
+    public @NotNull List<Algebraic> realConjugates() {
+        if (rational.isPresent() || mpRootCount == 1) {
+            return Collections.emptyList();
+        }
+        List<Interval> isolatingIntervals = minimalPolynomial.powerOfTwoIsolatingIntervals();
+        List<Algebraic> realConjugates = new ArrayList<>();
+        for (int i = 0; i < mpRootCount; i++) {
+            if (i != rootIndex) {
+                realConjugates.add(new Algebraic(minimalPolynomial, i, isolatingIntervals.get(i), mpRootCount));
+            }
+        }
+        return realConjugates;
+    }
+
+    /**
+     * Determines whether {@code this} is a reduced surd–that is, whether {@code this} is a quadratic irrational
+     * greater than 1 whose conjugate is between –1 and 0. Reduced surds are precisely those {@code Algebraic}s whose
+     * continued fractions are purely periodic (have no repeated part).
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic.}</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is a reduced surd
+     */
+    public boolean isReducedSurd() {
+        return degree() == 2 && Ordering.gt(this, ONE) &&
+                Interval.of(Rational.NEGATIVE_ONE, Rational.ZERO).contains(realConjugates().get(0));
+    }
+
+    /**
+     * Finds the continued fraction of {@code this}. If we pretend that the result is an array called a, then
+     * {@code this}=a[0]+1/(a[1]+1/(a[2]+...+1/a[n-1])...).
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>The result is non-null and non-empty. None of its elements are null. The first element may be any
+     *  {@code BigInteger}; the remaining elements, if any, are all positive. If the result is finite and has more than
+     *  one element, the last element is greater than 1.</li>
+     * </ul>
+     *
+     * Length is O(log({@code denominator})) if {@code this} is rational, infinite otherwise
+     *
+     * @return the continued-fraction-representation of {@code this}
+     */
+    public @NotNull Iterable<BigInteger> continuedFraction() {
+        if (rational.isPresent()) {
+            return rational.get().continuedFraction();
+        } else if (degree() == 2) {
+            return () -> new Iterator<BigInteger>() {
+                private List<BigInteger> terms = new ArrayList<>();
+                private Map<Algebraic, Integer> remainderMap = new HashMap<>();
+                private @NotNull Algebraic remainder = Algebraic.this;
+                private int index = 0;
+                private @NotNull List<BigInteger> repeatedPart = new ArrayList<>();
+
+                @Override
+                public boolean hasNext() {
+                    return true;
+                }
+
+                @Override
+                public BigInteger next() {
+                    if (remainderMap == null) {
+                        BigInteger term = repeatedPart.get(index);
+                        index++;
+                        if (index == repeatedPart.size()) {
+                            index = 0;
+                        }
+                        return term;
+                    } else {
+                        Integer previousIndex = remainderMap.get(remainder);
+                        if (previousIndex != null) {
+                            for (int i = previousIndex; i < terms.size(); i++) {
+                                repeatedPart.add(terms.get(i));
+                            }
+                            terms = null;
+                            remainderMap = null;
+                            index = repeatedPart.size() == 1 ? 0 : 1;
+                            return repeatedPart.get(0);
+                        } else {
+                            remainderMap.put(remainder, index);
+                            BigInteger term = remainder.floor();
+                            terms.add(term);
+                            remainder = remainder.subtract(term).invert();
+                            index++;
+                            return term;
+                        }
+                    }
+                }
+            };
+        } else {
+            return realValue().continuedFraction();
+        }
+    }
+
+    /**
+     * Returns the non-repeated and repeated parts of the continued fraction of {@code this}. If the result is
+     * [(a, b, c), (x, y)], that means that the actual continued fraction is [a, b, c, x, y, x, y, x, y, ...]. If
+     * {@code this} is rational, the repeated part is empty and the entire continued fraction is in the non-repeated
+     * part. If {@code this}'s degree is greater than two, the continued fraction does not repeat and an exception is
+     * thrown.
+     *
+     * <ul>
+     *  <li>{@code this} must have a degree less than 3.</li>
+     *  <li>Neither element of the result is null or contains nulls. All elements of the first part, except possibly
+     *  the first element of the first part, are positive. All elements of the second part are positive. At least one
+     *  of the two parts is nonempty. The two elements of the result are minimal; see
+     *  {@link mho.wheels.iterables.IterableUtils#minimize(List, List)}</li>
+     * </ul>
+     *
+     * @return the repeated continued-fraction-representation of {@code this}
+     */
+    public @NotNull Pair<List<BigInteger>, List<BigInteger>> repeatedContinuedFraction() {
+        if (rational.isPresent()) {
+            return new Pair<>(toList(rational.get().continuedFraction()), Collections.emptyList());
+        } else if (degree() > 2) {
+            throw new ArithmeticException("this must have a degree less than 3. Invalid this: " + this);
+        } else {
+            List<BigInteger> terms = new ArrayList<>();
+            Map<Algebraic, Integer> remainderMap = new HashMap<>();
+            Algebraic remainder = this;
+            int index = 0;
+            while (true) {
+                Integer previousIndex = remainderMap.get(remainder);
+                if (previousIndex != null) {
+                    List<BigInteger> nonRepeatedPart = new ArrayList<>();
+                    for (int i = 0; i < previousIndex; i++) {
+                        nonRepeatedPart.add(terms.get(i));
+                    }
+                    List<BigInteger> repeatedPart = new ArrayList<>();
+                    for (int i = previousIndex; i < terms.size(); i++) {
+                        repeatedPart.add(terms.get(i));
+                    }
+                    return new Pair<>(nonRepeatedPart, repeatedPart);
+                } else {
+                    remainderMap.put(remainder, index);
+                    BigInteger term = remainder.floor();
+                    terms.add(term);
+                    remainder = remainder.subtract(term).invert();
+                    index++;
+                }
+            }
+        }
+    }
+
+    /**
+     * Given a repeated continued fraction, where [x, y] means [x, y, x, y, x, y, ...], returns the quadratic
+     * {@code Algebraic} equal to it.
+     *
+     * <ul>
+     *  <li>{@code repeatedPart} cannot be empty, and each of its elements must be positive.</li>
+     *  <li>The result has degree 2 and is a reduced surd; that is, it is greater than 1 and its conjugate is greater
+     *  than –1 and less than 0.</li>
+     * </ul>
+     *
+     * @param repeatedPart the repeated portion of the purely periodic continued fraction of a number
+     * @return the number equal to the continued fraction represented by {@code repeatedPart}
+     */
+    private static @NotNull Algebraic fromContinuedFraction(@NotNull List<BigInteger> repeatedPart) {
+        if (any(i -> i.signum() != 1, repeatedPart)) {
+            throw new IllegalArgumentException("Every element of repeatedPart must be positive. Invalid" +
+                    " repeatedPart: " + repeatedPart);
+        }
+        if (repeatedPart.size() == 1) {
+            BigInteger a = repeatedPart.get(0);
+            return of(a.pow(2).add(BigInteger.valueOf(4))).sqrt().add(a).shiftRight(1);
+        }
+        List<BigInteger> init = new ArrayList<>(repeatedPart);
+        init.remove(repeatedPart.size() - 1);
+        Rational r = Rational.fromContinuedFraction(repeatedPart);
+        Rational rInit = Rational.fromContinuedFraction(init);
+        BigInteger p = r.getNumerator();
+        BigInteger q = r.getDenominator();
+        BigInteger pInit = rInit.getNumerator();
+        BigInteger qInit = rInit.getDenominator();
+        BigInteger difference = qInit.subtract(p);
+        return of(difference.pow(2).add(q.multiply(pInit).shiftLeft(2))).sqrt().subtract(difference).shiftRight(1)
+                .divide(q);
+    }
+
+    /**
+     * Given a repeated fraction, returns the {@code Algebraic} equal to it. If the non-repeated part is [a, b, c] and
+     * the repeated part is [x, y], that represents the continued fraction [a, b, c, x, y, x, y, x, y, ...]. If the
+     * repeated part is empty, the non-repeated part is taken to be the entire continued fraction, and it is equal to
+     * a rational number.
+     *
+     * <ul>
+     *  <li>{@code nonRepeatedPart} cannot contain nulls, and every element, except possibly the first, must be
+     *  positive.</li>
+     *  <li>Every element of {@code repeatedPart} must be positive.</li>
+     *  <li>{@code nonRepeatedPart} and {@code repeatedPart} cannot both be empty.</li>
+     *  <li>The result has degree less than 3.</li>
+     * </ul>
+     *
+     * @param nonRepeatedPart the non-repeating portion of the continued fraction
+     * @param repeatedPart the repeating portion of the continued fraction
+     * @return the {@code Algebraic} equal to the continued fraction
+     */
+    public static @NotNull Algebraic fromContinuedFraction(
+            @NotNull List<BigInteger> nonRepeatedPart,
+            @NotNull List<BigInteger> repeatedPart
+    ) {
+        if (repeatedPart.isEmpty()) {
+            return of(Rational.fromContinuedFraction(nonRepeatedPart));
+        } else {
+            Algebraic a = fromContinuedFraction(repeatedPart);
+            for (int i = nonRepeatedPart.size() - 1; i >= 0; i--) {
+                BigInteger term = nonRepeatedPart.get(i);
+                if (i != 0 && term.signum() != 1) {
+                    throw new IllegalArgumentException("Every element in nonRepeatedPart, except possibly the first," +
+                            " must be positive. Invalid nonRepeatedPart: " + nonRepeatedPart);
+                }
+                a = a.invert().add(nonRepeatedPart.get(i));
+            }
+            return a;
+        }
+    }
+
+    /**
+     * Returns the convergents, or rational approximations of {@code this} formed by truncating its continued fraction
+     * at various points. The first element of the result is the floor of {@code this}. If {@code this} is rational,
+     * the last element of the result is {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>The result is a non-null, non-empty {@code Iterable} that consists of the convergents of some algebraic
+     *  number.</li>
+     * </ul>
+     *
+     * Length is O(log({@code denominator})) if {@code this} is rational, infinite otherwise.
+     *
+     * @return the convergents of {@code this}.
+     */
+    public @NotNull Iterable<Rational> convergents() {
+        return map(Rational::fromContinuedFraction, tail(inits(continuedFraction())));
+    }
+
+    /**
+     * Returns the digits of (non-negative) {@code this} in a given base. The return value is a pair consisting of the
+     * digits before the decimal point (in a list) and the digits after the decimal point (in a possibly-infinite
+     * {@code Iterable}). Trailing zeroes are not included.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be negative.</li>
+     *  <li>{@code base} must be at least 2.</li>
+     *  <li>Both of the result's elements are non-null. The first element does not begin with a zero.</li>
+     *  <li>All the elements of both of the result's elements only contain non-negative {@code BigInteger}s less than
+     *  {@code base}. The second element does not contain an infinite sequence of zeros or an infinite sequence of
+     *  {@code base}–1.</li>
+     * </ul>
+     *
+     * @param base the base of the digits
+     * @return a pair consisting of the digits before the decimal point and the digits after
+     */
+    public @NotNull Pair<List<BigInteger>, Iterable<BigInteger>> digits(@NotNull BigInteger base) {
+        if (signum() == -1) {
+            throw new IllegalArgumentException("this cannot be negative. Invalid this: " + this);
+        }
+        if (rational.isPresent()) {
+            return rational.get().digits(base);
+        } else {
+            return realValue().digitsUnsafe(base);
+        }
+    }
+
+    /**
+     * Given two {@code Algebraic}s {@code a} and {@code b}, returns a {@code Pair} containing their common leading
+     * digits (excluding leading zeros) in base {@code base} and the smallest integer p such that {@code a} and
+     * {@code b} have the same {@code base}<sup>x</sup>-place digits for all x≥p.
+     *
+     * For example, in base 10, 22/7 is 3.1428571428... and 157/50 is 3.14, so they share digits up to the hundredths
+     * (10<sup>–2</sup>) place. Thus, commonLeadingDigits(10, 22/7, 157/50) returns ([3, 1, 4], -2). On the other hand,
+     * 2 and 3 share no digits and are only equal up to the tens (10<sup>1</sup>) place, so
+     * commonLeadingDigits(10, 2, 3) returns ([], 1).
+     *
+     * <ul>
+     *  <li>{@code a} cannot be negative.</li>
+     *  <li>{@code b} cannot be negative.</li>
+     *  <li>{@code base} must be at least 2.</li>
+     *  <li>{@code a} and {@code b} cannot be equal.</li>
+     *  <li>The result is a pair whose first element contains no leading zeros and whose second element is not
+     *  null.</li>
+     * </ul>
+     *
+     * @param base the base of the digits we are considering
+     * @param a the first {@code Algebraic}
+     * @param b the second {@code Algebraic}
+     * @return the common leading digits of {@code a} and {@code b} and an offset specifying which digits they are
+     */
+    public static @NotNull Pair<List<BigInteger>, Integer> commonLeadingDigits(
+            @NotNull BigInteger base,
+            @NotNull Algebraic a,
+            @NotNull Algebraic b
+    ) {
+        if (a.signum() == -1) {
+            throw new IllegalArgumentException("a cannot be negative. Invalid a: " + a);
+        }
+        if (b.signum() == -1) {
+            throw new IllegalArgumentException("b cannot be negative. Invalid b: " + b);
+        }
+        if (a.equals(b)) {
+            throw new IllegalArgumentException("a and b cannot be equal. Invalid a and b: " + a);
+        }
+        Pair<List<BigInteger>, Iterable<BigInteger>> aDigits = a.digits(base);
+        Pair<List<BigInteger>, Iterable<BigInteger>> bDigits = b.digits(base);
+        List<BigInteger> aFloorDigits = aDigits.a;
+        List<BigInteger> bFloorDigits = bDigits.a;
+        if (aFloorDigits.size() != bFloorDigits.size()) {
+            return new Pair<>(Collections.emptyList(), max(aFloorDigits.size(), bFloorDigits.size()));
+        }
+        List<BigInteger> commonDigits = new ArrayList<>();
+        boolean seenNonzero = false;
+        for (int i = 0; i < aFloorDigits.size(); i++) {
+            BigInteger aDigit = aFloorDigits.get(i);
+            BigInteger bDigit = bFloorDigits.get(i);
+            if (!aDigit.equals(bDigit)) {
+                return new Pair<>(commonDigits, aFloorDigits.size() - i);
+            }
+            seenNonzero = seenNonzero || !aDigit.equals(BigInteger.ZERO);
+            commonDigits.add(aDigit);
+        }
+        Iterator<BigInteger> aFractionDigits = concat(aDigits.b, repeat(BigInteger.ZERO)).iterator();
+        Iterator<BigInteger> bFractionDigits = concat(bDigits.b, repeat(BigInteger.ZERO)).iterator();
+        for (int i = 0; ; i--) {
+            BigInteger aDigit = aFractionDigits.next();
+            BigInteger bDigit = bFractionDigits.next();
+            if (!aDigit.equals(bDigit)) {
+                return new Pair<>(commonDigits, i);
+            }
+            seenNonzero = seenNonzero || !aDigit.equals(BigInteger.ZERO);
+            if (seenNonzero) {
+                commonDigits.add(aDigit);
+            }
+        }
+    }
+
+    /**
+     * Converts {@code this} to a {@code String} in any base greater than 1, rounding to {@code scale} digits after the
+     * decimal point. A scale of 0 indicates rounding to an integer, and a negative scale indicates rounding to a
+     * positive power of {@code base}. All rounding is done towards 0 (truncation), so that the displayed digits are
+     * unaltered. If the result is an approximation (that is, not all digits are displayed) and the scale is positive,
+     * an ellipsis ("...") is appended. If the base is 36 or less, the digits are '0' through '9' followed by 'A'
+     * through 'Z'. If the base is greater than 36, the digits are written in decimal and each digit is surrounded by
+     * parentheses. If {@code this} has a fractional part, a decimal point is used. Zero is represented by "0" if the
+     * base is 36 or less, or "(0)" otherwise. There are no leading zeroes before the decimal point (unless
+     * {@code this} is less than 1, in which case there is exactly one zero) and no trailing zeroes after (unless an
+     * ellipsis is present, in which case there may be any number of trailing zeroes). Scientific notation is not used.
+     * If {@code this} is negative, the result will contain a leading '-'.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>{@code base} must be at least 2.</li>
+     *  <li>{@code scale} may be any {@code int}.</li>
+     *  <li>The result is a {@code String} representing an {@code Algebraic} in the manner previously described. See
+     *  the unit test and demo for further reference.</li>
+     * </ul>
+     *
+     * @param base the base of the output digits
+     * @param scale the maximum number of digits after the decimal point in the result. If {@code this} has a
+     *              terminating base-{@code base} expansion, the actual number of digits after the decimal point may be
+     *              fewer.
+     * @return a {@code String} representation of {@code this} in base {@code base}
+     */
+    public @NotNull String toStringBase(@NotNull BigInteger base, int scale) {
+        if (rational.isPresent()) {
+            return rational.get().toStringBase(base, scale);
+        }
+        if (lt(base, IntegerUtils.TWO)) {
+            throw new IllegalArgumentException("base must be at least 2. Invalid base: " + base);
+        }
+        BigInteger power = base.pow(scale >= 0 ? scale : -scale);
+        Algebraic scaled = scale >= 0 ? multiply(power) : divide(power);
+        Rational rounded = Rational.of(scaled.bigIntegerValue(RoundingMode.DOWN));
+        rounded = scale >= 0 ? rounded.divide(power) : rounded.multiply(power);
+        String result = rounded.toStringBase(base);
+        if (scale > 0 && !scaled.isInteger()) { //append ellipsis
+            //pad with trailing zeroes if necessary
+            int dotIndex = result.indexOf('.');
+            if (dotIndex == -1) {
+                dotIndex = result.length();
+                result = result + ".";
+            }
+            if (le(base, ASCII_ALPHANUMERIC_COUNT)) {
+                int missingZeroes = scale - result.length() + dotIndex + 1;
+                result += replicate(missingZeroes, '0');
+            } else {
+                int missingZeroes = scale;
+                for (int i = dotIndex + 1; i < result.length(); i++) {
+                    if (result.charAt(i) == '(') missingZeroes--;
+                }
+                result += concatStrings(replicate(missingZeroes, "(0)"));
+            }
+            result += "...";
+        }
+        return result;
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>
@@ -1832,7 +2987,7 @@ public final class Algebraic implements Comparable<Algebraic> {
             Algebraic x;
             try {
                 x = of(oMinimalPolynomial.get(), rootIndex);
-            } catch (IllegalArgumentException e) {
+            } catch (ArithmeticException e) {
                 return Optional.empty();
             }
             if (x.toString().equals("root " + s)) {

@@ -33,7 +33,7 @@ public class QBarExhaustiveProviderDemos extends QBarDemos {
     }
 
     private void demoRange_Rational_Rational() {
-        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+        for (Pair<Rational, Rational> p : take(MEDIUM_LIMIT, P.bagPairs(P.rationals()))) {
             System.out.println("range(" + p.a + ", " + p.b + ") = " + its(QEP.range(p.a, p.b)));
         }
     }
@@ -255,16 +255,21 @@ public class QBarExhaustiveProviderDemos extends QBarDemos {
 
     private void demoMonomials_List_Variable() {
         for (List<Variable> vs : take(MEDIUM_LIMIT, P.subsets(P.variables()))) {
-            String listString = tail(init(vs.toString()));
-            System.out.println("monomials(" + listString + ") = " + its(QEP.monomials(vs)));
+            System.out.println("monomials(" + middle(vs.toString()) + ") = " + its(QEP.monomials(vs)));
         }
     }
 
     private void demoMultivariatePolynomials_List_Variable() {
         for (List<Variable> vs : take(MEDIUM_LIMIT, P.subsets(P.variables()))) {
-            String listString = tail(init(vs.toString()));
-            System.out.println("multivariatePolynomials(" + listString + ") = " +
+            System.out.println("multivariatePolynomials(" + middle(vs.toString()) + ") = " +
                     its(QEP.multivariatePolynomials(vs)));
+        }
+    }
+
+    private void demoRationalMultivariatePolynomials_List_Variable() {
+        for (List<Variable> vs : take(MEDIUM_LIMIT, P.subsets(P.variables()))) {
+            System.out.println("rationalMultivariatePolynomials(" + middle(vs.toString()) + ") = " +
+                    its(QEP.rationalMultivariatePolynomials(vs)));
         }
     }
 
@@ -379,6 +384,13 @@ public class QBarExhaustiveProviderDemos extends QBarDemos {
     private void demoAlgebraicsNotIn_Interval() {
         for (Interval a : take(MEDIUM_LIMIT, P.intervals())) {
             System.out.println("algebraicsNotIn(" + a + ") = " + its(QEP.algebraicsNotIn(a)));
+        }
+    }
+
+    private void demoQBarRandomProvidersFixedScales() {
+        for (Triple<Integer, Integer, Integer> t : take(SMALL_LIMIT, P.triples(P.integersGeometric()))) {
+            System.out.println("qbarRandomProvidersFixedScales(" + t.a + ", " + t.b + ", " + t.c + ") = " +
+                    its(P.qbarRandomProvidersFixedScales(t.a, t.b, t.c)));
         }
     }
 }

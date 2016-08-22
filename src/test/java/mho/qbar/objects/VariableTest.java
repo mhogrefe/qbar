@@ -5,11 +5,11 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Optional;
 
 import static mho.qbar.objects.Variable.of;
 import static mho.qbar.objects.Variable.readStrict;
 import static mho.wheels.testing.Testing.*;
-import static org.junit.Assert.assertFalse;
 
 public class VariableTest {
     private static void getIndex_helper(@NotNull String x, int output) {
@@ -28,7 +28,9 @@ public class VariableTest {
     }
 
     private static void of_helper(int input, @NotNull String output) {
-        aeq(of(input), output);
+        Variable v = of(input);
+        v.validate();
+        aeq(v, output);
     }
 
     @Test
@@ -67,27 +69,28 @@ public class VariableTest {
         testCompareToHelper(readVariableList("[a, b, c, x, y, z, ooo]"));
     }
 
-    private static void readStrict_helper(@NotNull String input) {
-        aeq(readStrict(input).get(), input);
-    }
-
-    private static void readStrict_fail_helper(@NotNull String input) {
-        assertFalse(readStrict(input).isPresent());
+    private static void readStrict_helper(@NotNull String input, @NotNull String output) {
+        Optional<Variable> ov = readStrict(input);
+        if (ov.isPresent()) {
+            ov.get().validate();
+        }
+        aeq(ov, output);
     }
 
     @Test
     public void testReadStrict() {
-        readStrict_helper("a");
-        readStrict_helper("b");
-        readStrict_helper("c");
-        readStrict_helper("x");
-        readStrict_helper("y");
-        readStrict_helper("z");
-        readStrict_helper("ooo");
-        readStrict_fail_helper("");
-        readStrict_fail_helper("1");
-        readStrict_fail_helper(" ");
-        readStrict_fail_helper("ab");
+        readStrict_helper("a", "Optional[a]");
+        readStrict_helper("b", "Optional[b]");
+        readStrict_helper("c", "Optional[c]");
+        readStrict_helper("x", "Optional[x]");
+        readStrict_helper("y", "Optional[y]");
+        readStrict_helper("z", "Optional[z]");
+        readStrict_helper("ooo", "Optional[ooo]");
+
+        readStrict_helper("", "Optional.empty");
+        readStrict_helper("1", "Optional.empty");
+        readStrict_helper(" ", "Optional.empty");
+        readStrict_helper("ab", "Optional.empty");
     }
 
     private static @NotNull List<Variable> readVariableList(@NotNull String s) {

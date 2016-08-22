@@ -24,7 +24,7 @@ public class MonomialOrderDemos extends QBarDemos {
                 P.monomials()
         );
         for (Triple<MonomialOrder, Monomial, Monomial> t : take(LIMIT, ts)) {
-            System.out.println(t.a + ": " + t.b + " " + Ordering.compare(t.a, t.b, t.c).toChar() + " " + t.c);
+            System.out.println(t.a + ": " + t.b + " " + Ordering.compare(t.a, t.b, t.c) + " " + t.c);
         }
     }
 

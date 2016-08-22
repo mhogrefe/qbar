@@ -1,19 +1,24 @@
 package mho.qbar.objects;
 
 import mho.qbar.testing.QBarDemos;
+import mho.qbar.testing.QBarTesting;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.numberUtils.FloatingPointUtils;
-import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
+import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.util.Collections;
+import java.util.List;
 
 import static mho.qbar.objects.Algebraic.*;
+import static mho.qbar.objects.Algebraic.sum;
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.testing.Testing.nicePrint;
+import static mho.wheels.ordering.Ordering.*;
+import static mho.wheels.testing.Testing.*;
 
 @SuppressWarnings("UnusedDeclaration")
 public class AlgebraicDemos extends QBarDemos {
@@ -274,6 +279,87 @@ public class AlgebraicDemos extends QBarDemos {
         }
     }
 
+    private void demoHasTerminatingBaseExpansion() {
+        //noinspection Convert2MethodRef
+        Iterable<Pair<Algebraic, BigInteger>> ps = P.pairs(
+                P.withScale(4).algebraics(),
+                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
+        );
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, ps)) {
+            System.out.println(p.a + (p.a.hasTerminatingBaseExpansion(p.b) ? " has " : " doesn't have ") +
+                    "a terminating base-" + p.b + " expansion");
+        }
+    }
+
+    private void demoBigDecimalValueByPrecision_int_RoundingMode() {
+        Iterable<Triple<Algebraic, Integer, RoundingMode>> ts = filterInfinite(
+                t -> {
+                    try {
+                        t.a.bigDecimalValueByPrecision(t.b, t.c);
+                        return true;
+                    } catch (ArithmeticException e) {
+                        return false;
+                    }
+                },
+                P.triples(P.withScale(4).algebraics(), P.naturalIntegersGeometric(), P.roundingModes())
+        );
+        for (Triple<Algebraic, Integer, RoundingMode> t : take(LIMIT, ts)) {
+            System.out.println("bigDecimalValueByPrecision(" + t.a + ", " + t.b + ", " + t.c + ") = " +
+                    t.a.bigDecimalValueByPrecision(t.b, t.c));
+        }
+    }
+
+    private void demoBigDecimalValueByScale_int_RoundingMode() {
+        Iterable<Triple<Algebraic, Integer, RoundingMode>> ts = filterInfinite(
+                t -> t.c != RoundingMode.UNNECESSARY ||
+                        t.a.isRational() && t.a.multiply(Rational.TEN.pow(t.b)).isInteger(),
+                P.triples(P.withScale(4).algebraics(), P.integersGeometric(), P.roundingModes())
+        );
+        for (Triple<Algebraic, Integer, RoundingMode> t : take(LIMIT, ts)) {
+            System.out.println("bigDecimalValueByScale(" + t.a + ", " + t.b + ", " + t.c + ") = " +
+                    t.a.bigDecimalValueByScale(t.b, t.c));
+        }
+    }
+
+    private void demoBigDecimalValueByPrecision_int() {
+        Iterable<Pair<Algebraic, Integer>> ps = filterInfinite(
+                p -> {
+                    try {
+                        p.a.bigDecimalValueByPrecision(p.b);
+                        return true;
+                    } catch (ArithmeticException e) {
+                        return false;
+                    }
+                },
+                P.pairsSquareRootOrder(P.withScale(4).algebraics(), P.naturalIntegersGeometric())
+        );
+        for (Pair<Algebraic, Integer> p : take(LIMIT, ps)) {
+            System.out.println("bigDecimalValueByPrecision(" + p.a + ", " + p.b + ") = " +
+                    p.a.bigDecimalValueByPrecision(p.b));
+        }
+    }
+
+    private void demoBigDecimalValueByScale_int() {
+        Iterable<Pair<Algebraic, Integer>> ps = P.pairsSquareRootOrder(
+                P.withScale(4).algebraics(),
+                P.integersGeometric()
+        );
+        for (Pair<Algebraic, Integer> p : take(LIMIT, ps)) {
+            System.out.println("bigDecimalValueByScale(" + p.a + ", " + p.b + ") = " +
+                    p.a.bigDecimalValueByScale(p.b));
+        }
+    }
+
+    private void demoBigDecimalValueExact() {
+        Iterable<Algebraic> xs = map(
+                Algebraic::of,
+                filterInfinite(r -> r.hasTerminatingBaseExpansion(BigInteger.TEN), P.rationals())
+        );
+        for (Algebraic x : take(LIMIT, xs)) {
+            System.out.println("bigDecimalValueExact(" + x + ") = " + x.bigDecimalValueExact());
+        }
+    }
+
     private void demoMinimalPolynomial() {
         for (Algebraic x : take(LIMIT, P.withScale(4).algebraics())) {
             System.out.println("minimalPolynomial(" + x + ") = " + x.minimalPolynomial());
@@ -435,6 +521,209 @@ public class AlgebraicDemos extends QBarDemos {
         }
     }
 
+    private void demoSum() {
+        Iterable<List<Algebraic>> xss = P.withScale(1).lists(P.withScale(1).withSecondaryScale(4).algebraics());
+        for (List<Algebraic> xs : take(SMALL_LIMIT, xss)) {
+            System.out.println("Σ(" + middle(xs.toString()) + ") = " + sum(xs));
+        }
+    }
+
+    private void demoProduct() {
+        Iterable<List<Algebraic>> xss = P.withScale(1).lists(P.withScale(1).withSecondaryScale(4).algebraics());
+        for (List<Algebraic> xs : take(SMALL_LIMIT, xss)) {
+            System.out.println("Π(" + middle(xs.toString()) + ") = " + product(xs));
+        }
+    }
+
+    private void demoSumSign() {
+        Iterable<List<Algebraic>> xss = P.withScale(1).lists(P.withScale(1).withSecondaryScale(4).algebraics());
+        for (List<Algebraic> xs : take(SMALL_LIMIT, xss)) {
+            System.out.println("sumSign(" + middle(xs.toString()) + ") = " + sumSign(xs));
+        }
+    }
+
+    private void demoDelta_finite() {
+        Iterable<List<Algebraic>> xss = P.withScale(2).listsAtLeast(
+                1,
+                P.withScale(1).withSecondaryScale(4).algebraics()
+        );
+        for (List<Algebraic> xs : take(SMALL_LIMIT, xss)) {
+            System.out.println("Δ(" + middle(xs.toString()) + ") = " + its(delta(xs)));
+        }
+    }
+
+    private void demoDelta_infinite() {
+        for (Iterable<Algebraic> xs : take(SMALL_LIMIT, P.prefixPermutations(QBarTesting.QEP.algebraics()))) {
+            System.out.println("Δ(" + middle(its(xs)) + ") = " + its(delta(xs)));
+        }
+    }
+
+    private void demoPow_int() {
+        Iterable<Pair<Algebraic, Integer>> ps = filterInfinite(
+                p -> p.a != ZERO || p.b >= 0,
+                P.pairsSquareRootOrder(
+                        P.withScale(1).withSecondaryScale(4).algebraics(),
+                        P.withScale(1).integersGeometric()
+                )
+        );
+        for (Pair<Algebraic, Integer> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("(" + p.a + ") ^ " + p.b + " = " + p.a.pow(p.b));
+        }
+    }
+
+    private void demoRoot() {
+        Iterable<Pair<Algebraic, Integer>> ps = filterInfinite(
+                p -> (p.a != ZERO || p.b >= 0) && ((p.b & 1) != 0 || p.a.signum() != -1),
+                P.pairsSquareRootOrder(P.withScale(4).algebraics(), P.withScale(2).nonzeroIntegersGeometric())
+        );
+        for (Pair<Algebraic, Integer> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("(" + p.a + ") ^ (1/" + p.b + ") = " + p.a.root(p.b));
+        }
+    }
+
+    private void demoSqrt() {
+        for (Algebraic x : take(LIMIT, P.withElement(ZERO, P.withScale(4).positiveAlgebraics()))) {
+            System.out.println("sqrt(" + x + ") = " + x.sqrt());
+        }
+    }
+
+    private void demoCbrt() {
+        for (Algebraic x : take(LIMIT, P.withScale(4).algebraics())) {
+            System.out.println("cbrt(" + x + ") = " + x.cbrt());
+        }
+    }
+
+    private void demoPow_Rational() {
+        BigInteger lower = BigInteger.valueOf(Integer.MIN_VALUE);
+        BigInteger upper = BigInteger.valueOf(Integer.MAX_VALUE);
+        Iterable<Pair<Algebraic, Rational>> ps = filterInfinite(
+                p -> (p.a != ZERO || p.b.signum() != -1) &&
+                        (p.a.signum() != -1 || !p.b.getDenominator().and(BigInteger.ONE).equals(BigInteger.ZERO)),
+                P.pairsSquareRootOrder(
+                        P.withScale(1).withSecondaryScale(4).algebraics(),
+                        filterInfinite(
+                                r -> ge(r.getNumerator(), lower) && le(r.getNumerator(), upper) &&
+                                        le(r.getDenominator(), upper),
+                                P.withScale(3).rationals()
+                        )
+                )
+        );
+        for (Pair<Algebraic, Rational> p : take(SMALL_LIMIT, ps)) {
+            System.out.println("(" + p.a + ") ^ (" + p.b + ") = " + p.a.pow(p.b));
+        }
+    }
+
+    private void demoFractionalPart() {
+        for (Algebraic x : take(LIMIT, P.withScale(4).algebraics())) {
+            System.out.println("fractionalPart(" + x + ") = " + x.fractionalPart());
+        }
+    }
+
+    private void demoRoundToDenominator() {
+        Iterable<Triple<Algebraic, BigInteger, RoundingMode>> ts = filterInfinite(
+                p -> p.c != RoundingMode.UNNECESSARY ||
+                        p.a.isRational() && p.b.mod(p.a.rationalValueExact().getDenominator()).equals(BigInteger.ZERO),
+                P.triples(P.withScale(4).algebraics(), P.positiveBigIntegers(), P.roundingModes())
+        );
+        for (Triple<Algebraic, BigInteger, RoundingMode> t : take(LIMIT, ts)) {
+            System.out.println("roundToDenominator(" + t.a + ", " + t.b + ", " + t.c + ") = " +
+                    t.a.roundToDenominator(t.b, t.c));
+        }
+    }
+
+    private void demoRealConjugates() {
+        for (Algebraic x : take(LIMIT, P.withScale(4).algebraics())) {
+            System.out.println("realConjugates(" + x + ") = " + x.realConjugates());
+        }
+    }
+
+    private void demoIsReducedSurd() {
+        for (Algebraic x : take(LIMIT, P.withScale(4).algebraics())) {
+            System.out.println(x + " is " + (x.isReducedSurd() ? "" : "not ") + "a reduced surd");
+        }
+    }
+
+    private void demoContinuedFraction() {
+        for (Algebraic x : take(LIMIT, P.withScale(4).algebraics())) {
+            System.out.println("continuedFraction(" + x + ") = " + its(x.continuedFraction()));
+        }
+    }
+
+    private void demoRepeatedContinuedFraction() {
+        Iterable<Algebraic> xs = P.withScale(1).choose(P.withScale(4).algebraics(1), P.withScale(1).algebraics(2));
+        for (Algebraic x : take(LIMIT, xs)) {
+            System.out.println("repeatedContinuedFraction(" + x + ") = " + x.repeatedContinuedFraction());
+        }
+    }
+
+    private void demoFromContinuedFraction() {
+        Iterable<Pair<List<BigInteger>, List<BigInteger>>> ps = filterInfinite(
+                p -> !p.a.isEmpty() || !p.b.isEmpty(),
+                P.pairs(
+                        P.withElement(
+                                Collections.emptyList(),
+                                zipWith(
+                                        (i, is) -> toList(cons(i, is)),
+                                        P.withScale(1).bigIntegers(),
+                                        P.withScale(4).lists(P.withScale(2).positiveBigIntegers())
+                                )
+                        ),
+                        P.withScale(4).lists(P.withScale(2).positiveBigIntegers())
+                )
+        );
+        for (Pair<List<BigInteger>, List<BigInteger>> p : take(LIMIT, ps)) {
+            System.out.println("fromContinuedFraction(" + p.a + ", " + p.b + ") = " + fromContinuedFraction(p.a, p.b));
+        }
+    }
+
+    private void demoConvergents() {
+        for (Algebraic x : take(MEDIUM_LIMIT, P.withScale(4).algebraics())) {
+            System.out.println("convergents(" + x + ") = " + its(x.convergents()));
+        }
+    }
+
+    private void demoDigits() {
+        //noinspection Convert2MethodRef
+        Iterable<Pair<Algebraic, BigInteger>> ps = P.pairsSquareRootOrder(
+                P.withElement(ZERO, P.withScale(4).positiveAlgebraics()),
+                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
+        );
+        for (Pair<Algebraic, BigInteger> p : take(LIMIT, ps)) {
+            Pair<List<BigInteger>, Iterable<BigInteger>> digits = p.a.digits(p.b);
+            System.out.println("digits(" + p.a + ", " + p.b + ") = " + new Pair<>(digits.a.toString(), its(digits.b)));
+        }
+    }
+
+    private void demoCommonLeadingDigits() {
+        //noinspection Convert2MethodRef
+        Iterable<Triple<BigInteger, Algebraic, Algebraic>> ts = map(
+                p -> new Triple<>(p.b, p.a.a, p.a.b),
+                P.pairsSquareRootOrder(
+                        filterInfinite(
+                                p -> p.a != p.b,
+                                P.pairs(P.withElement(ZERO, P.withScale(4).positiveAlgebraics()))
+                        ),
+                        map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
+                )
+        );
+        for (Triple<BigInteger, Algebraic, Algebraic> t : take(LIMIT, ts)) {
+            System.out.println("commonLeadingDigits(" + t.a + ", " + t.b + ", " + t.c + ") = " +
+                    commonLeadingDigits(t.a, t.b, t.c));
+        }
+    }
+
+    private void demoToStringBase() {
+        //noinspection Convert2MethodRef
+        Iterable<Triple<Algebraic, BigInteger, Integer>> ts = P.triples(
+                P.withScale(4).algebraics(),
+                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2)),
+                P.withScale(16).integersGeometric()
+        );
+        for (Triple<Algebraic, BigInteger, Integer> t : take(LIMIT, ts)) {
+            System.out.println("toStringBase(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.toStringBase(t.b, t.c));
+        }
+    }
+
     private void demoEquals_Algebraic() {
         for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.pairs(P.withScale(4).algebraics()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);
@@ -456,7 +745,7 @@ public class AlgebraicDemos extends QBarDemos {
 
     private void demoCompareTo() {
         for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.pairs(P.withScale(4).algebraics()))) {
-            System.out.println(p.a + " " + Ordering.compare(p.a, p.b).toChar() + " " + p.b);
+            System.out.println(p.a + " " + compare(p.a, p.b) + " " + p.b);
         }
     }
 

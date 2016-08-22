@@ -408,18 +408,18 @@ public final class PolynomialVector implements Comparable<PolynomialVector>, Ite
      * Returns the sum of all the {@code PolynomialVector}s in {@code xs}.
      *
      * <ul>
-     *  <li>{@code xs} must be finite and non-empty, and may not contain any nulls. Every {@code PolynomialVector} in
+     *  <li>{@code xs} must be non-empty, and may not contain any nulls. Every {@code PolynomialVector} in
      *  {@code xs} must have the same dimension.</li>
      *  <li>The result may be any {@code PolynomialVector}.</li>
      * </ul>
      *
      * Length is dim(head({@code xs}))
      *
-     * @param xs an {@code Iterable} of {@code PolynomialVector}s.
+     * @param xs a {@code List} of {@code PolynomialVector}s.
      * @return Σxs
      */
-    public static @NotNull PolynomialVector sum(@NotNull Iterable<PolynomialVector> xs) {
-        if (isEmpty(xs)) {
+    public static @NotNull PolynomialVector sum(@NotNull List<PolynomialVector> xs) {
+        if (xs.isEmpty()) {
             throw new IllegalArgumentException("xs cannot be empty.");
         } else if (!same(map(PolynomialVector::dimension, xs))) {
             throw new ArithmeticException("Every PolynomialVector in xs must have the same dimension. Invalid xs: " +
@@ -473,7 +473,7 @@ public final class PolynomialVector implements Comparable<PolynomialVector>, Ite
             throw new ArithmeticException("this and that must have the same dimension. this: " + this + ", that: " +
                     that);
         }
-        return Polynomial.sum(zipWith(Polynomial::multiply, coordinates, that.coordinates));
+        return Polynomial.sum(toList(zipWith(Polynomial::multiply, coordinates, that.coordinates)));
     }
 
     /**
@@ -488,7 +488,7 @@ public final class PolynomialVector implements Comparable<PolynomialVector>, Ite
      * @return ‖{@code this}‖²
      */
     public @NotNull Polynomial squaredLength() {
-        return Polynomial.sum(map(x -> x.pow(2), coordinates));
+        return Polynomial.sum(toList(map(x -> x.pow(2), coordinates)));
     }
 
     /**

@@ -14,6 +14,7 @@ import java.util.TreeMap;
 
 import static mho.qbar.objects.Monomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.testing.Testing.MEDIUM_LIMIT;
 import static mho.wheels.testing.Testing.nicePrint;
 
 @SuppressWarnings("UnusedDeclaration")
@@ -49,10 +50,15 @@ public class MonomialDemos extends QBarDemos {
         }
     }
 
-    private void demoOf() {
+    private void demoOf_List_Integer() {
         for (List<Integer> is : take(LIMIT, P.lists(P.naturalIntegersGeometric()))) {
-            String listString = tail(init(is.toString()));
-            System.out.println("of(" + listString + ") = " + of(is));
+            System.out.println("of(" + middle(is.toString()) + ") = " + of(is));
+        }
+    }
+
+    private void demoOf_Variable() {
+        for (Variable v : take(MEDIUM_LIMIT, P.variables())) {
+            System.out.println("of(" + v + ") = " + of(v));
         }
     }
 
@@ -68,8 +74,7 @@ public class MonomialDemos extends QBarDemos {
                 )
         );
         for (List<Pair<Variable, Integer>> ps : take(LIMIT, pss)) {
-            String listString = tail(init(ps.toString()));
-            System.out.println("fromTerms(" + listString + ") = " + fromTerms(ps));
+            System.out.println("fromTerms(" + middle(ps.toString()) + ") = " + fromTerms(ps));
         }
     }
 
@@ -82,6 +87,12 @@ public class MonomialDemos extends QBarDemos {
     private void demoVariables() {
         for (Monomial m : take(LIMIT, P.monomials())) {
             System.out.println("variables(" + m + ") = " + m.variables());
+        }
+    }
+
+    private void demoVariableCount() {
+        for (Monomial m : take(LIMIT, P.monomials())) {
+            System.out.println("variableCount(" + m + ") = " + m.variableCount());
         }
     }
 
@@ -105,6 +116,16 @@ public class MonomialDemos extends QBarDemos {
         }
     }
 
+    private void demoRetainVariables() {
+        Iterable<Pair<Monomial, List<Variable>>> ps = P.pairsLogarithmicOrder(
+                P.monomials(),
+                P.withScale(4).lists(P.withScale(4).variables())
+        );
+        for (Pair<Monomial, List<Variable>> p : take(LIMIT, ps)) {
+            System.out.println("retainVariables(" + p.a + ", " + p.b + ") = " + p.a.retainVariables(p.b));
+        }
+    }
+
     private void demoMultiply() {
         for (Pair<Monomial, Monomial> p : take(LIMIT, P.pairs(P.monomials()))) {
             System.out.println("(" + p.a + ") * (" + p.b + ") = " + p.a.multiply(p.b));
@@ -113,8 +134,7 @@ public class MonomialDemos extends QBarDemos {
 
     private void demoProduct() {
         for (List<Monomial> ps : take(LIMIT, P.withScale(4).lists(P.withScale(4).monomials()))) {
-            String listString = tail(init(ps.toString()));
-            System.out.println("Π(" + listString + ") = " + product(ps));
+            System.out.println("Π(" + middle(ps.toString()) + ") = " + product(ps));
         }
     }
 
@@ -226,7 +246,7 @@ public class MonomialDemos extends QBarDemos {
                         map(
                                 p -> p.b,
                                 P.dependentPairsInfiniteLogarithmicOrder(
-                                        P.withScale(4).subsetsAtLeast(1, P.variables()),
+                                        P.withScale(4).subsetsAtLeast(1, P.withScale(4).variables()),
                                         vs -> P.maps(vs, P.withScale(4).monomials())
                                 )
                         )
@@ -258,7 +278,7 @@ public class MonomialDemos extends QBarDemos {
 
     private void demoCompareTo() {
         for (Pair<Monomial, Monomial> p : take(LIMIT, P.pairs(P.monomials()))) {
-            System.out.println(p.a + " " + Ordering.compare(p.a, p.b).toChar() + " " + p.b);
+            System.out.println(p.a + " " + Ordering.compare(p.a, p.b) + " " + p.b);
         }
     }
 

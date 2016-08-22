@@ -3,6 +3,7 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.Ordering;
@@ -76,6 +77,7 @@ public class MatrixProperties extends QBarTestProperties {
         compareImplementationsPrimitiveReducedRowEchelonForm();
         propertiesSolveLinearSystem();
         compareImplementationsSolveLinearSystem();
+        propertiesSolveLinearSystemPermissive();
         propertiesInvert();
         compareImplementationsInvert();
         propertiesDeterminant();
@@ -84,6 +86,7 @@ public class MatrixProperties extends QBarTestProperties {
         compareImplementationsCharacteristicPolynomial();
         propertiesKroneckerMultiply();
         propertiesKroneckerAdd();
+        propertiesRealEigenvalues();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -125,7 +128,7 @@ public class MatrixProperties extends QBarTestProperties {
         initialize("row(int)");
         Iterable<Pair<Matrix, Integer>> ps = P.dependentPairs(
                 filterInfinite(m -> m.height() > 0, P.matrices()),
-                m -> P.uniformSample(toList(range(0, m.height() - 1)))
+                m -> P.uniformSample(toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m.height() - 1)))
         );
         for (Pair<Matrix, Integer> p : take(LIMIT, ps)) {
             Vector row = p.a.row(p.b);
@@ -148,7 +151,7 @@ public class MatrixProperties extends QBarTestProperties {
         initialize("column(int)");
         Iterable<Pair<Matrix, Integer>> ps = P.dependentPairs(
                 filterInfinite(m -> m.width() > 0, P.matrices()),
-                m -> P.uniformSample(toList(range(0, m.width() - 1)))
+                m -> P.uniformSample(toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m.width() - 1)))
         );
         for (Pair<Matrix, Integer> p : take(LIMIT, ps)) {
             Vector column = p.a.column(p.b);
@@ -185,7 +188,12 @@ public class MatrixProperties extends QBarTestProperties {
                 P.dependentPairs(
                         filterInfinite(m -> m.height() > 0 && m.width() > 0, P.matrices()),
                         m -> P.uniformSample(
-                                toList(EP.pairsLex(range(0, m.height() - 1), toList(range(0, m.width() - 1))))
+                                toList(
+                                        EP.pairsLex(
+                                                ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m.height() - 1),
+                                                toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m.width() - 1))
+                                        )
+                                )
                         )
                 )
         );
@@ -434,8 +442,12 @@ public class MatrixProperties extends QBarTestProperties {
                 P.dependentPairs(
                         P.matrices(),
                         m -> {
-                            List<Integer> allRows = toList(EP.range(0, m.height() - 1));
-                            List<Integer> allColumns = toList(EP.range(0, m.width() - 1));
+                            List<Integer> allRows = m.height() == 0 ?
+                                    Collections.emptyList() :
+                                    toList(EP.range(0, m.height() - 1));
+                            List<Integer> allColumns = m.width() == 0 ?
+                                    Collections.emptyList() :
+                                    toList(EP.range(0, m.width() - 1));
                             return P.pairs(
                                     map(bs -> toList(select(bs, allRows)), P.lists(m.height(), P.booleans())),
                                     map(bs -> toList(select(bs, allColumns)), P.lists(m.width(), P.booleans()))
@@ -453,7 +465,18 @@ public class MatrixProperties extends QBarTestProperties {
         Matrix zero = zero(0, 0);
         for (Matrix m : take(LIMIT, P.matrices())) {
             assertEquals(m, m.submatrix(Collections.emptyList(), Collections.emptyList()), zero);
-            assertEquals(m, m.submatrix(toList(range(0, m.height() - 1)), toList(range(0, m.width() - 1))), m);
+            assertEquals(
+                    m,
+                    m.submatrix(
+                            m.height() == 0 ?
+                                    Collections.emptyList() :
+                                    toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m.height() - 1)),
+                            m.width() == 0 ?
+                                    Collections.emptyList() :
+                                    toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m.width() - 1))
+                    ),
+                    m
+            );
         }
 
         Iterable<Triple<Matrix, List<Integer>, List<Integer>>> tsFail = map(
@@ -462,7 +485,9 @@ public class MatrixProperties extends QBarTestProperties {
                         P.matrices(),
                         m -> {
                             int height = m.height();
-                            List<Integer> allColumns = toList(EP.range(0, m.width() - 1));
+                            List<Integer> allColumns = m.width() == 0 ?
+                                    Collections.emptyList() :
+                                    toList(EP.range(0, m.width() - 1));
                             return P.pairs(
                                     filterInfinite(
                                             is -> any(i -> i == null || i < 0 || i >= height, is) || !increasing(is),
@@ -485,7 +510,9 @@ public class MatrixProperties extends QBarTestProperties {
                 P.dependentPairs(
                         P.matrices(),
                         m -> {
-                            List<Integer> allRows = toList(EP.range(0, m.height() - 1));
+                            List<Integer> allRows = m.height() == 0 ?
+                                    Collections.emptyList() :
+                                    toList(EP.range(0, m.height() - 1));
                             int width = m.width();
                             return P.pairs(
                                     map(bs -> toList(select(bs, allRows)), P.lists(m.height(), P.booleans())),
@@ -557,7 +584,7 @@ public class MatrixProperties extends QBarTestProperties {
         Map<String, Function<Matrix, Matrix>> functions = new LinkedHashMap<>();
         functions.put("alt", MatrixProperties::transpose_alt);
         functions.put("standard", Matrix::transpose);
-        compareImplementations("transpose()", take(LIMIT, P.matrices()), functions);
+        compareImplementations("transpose()", take(LIMIT, P.matrices()), functions, v -> P.reset());
     }
 
     private void propertiesConcat() {
@@ -577,7 +604,7 @@ public class MatrixProperties extends QBarTestProperties {
                                 t -> P.pairs(P.matrices(t.a, t.c), P.matrices(t.b, t.c))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 p -> new Pair<>(zero(p.a, 0), zero(p.b, 0)),
                                 P.pairs(P.naturalIntegersGeometric())
@@ -630,7 +657,7 @@ public class MatrixProperties extends QBarTestProperties {
                                 t -> P.pairs(P.matrices(t.a, t.b), P.matrices(t.a, t.c))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(p -> new Pair<>(zero(0, p.a), zero(0, p.b)), P.pairs(P.naturalIntegersGeometric())),
                         map(
                                 i -> {
@@ -676,7 +703,7 @@ public class MatrixProperties extends QBarTestProperties {
                                 p -> P.pairs(P.matrices(p.a, p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> {
                                     Matrix m = zero(0, i);
@@ -783,7 +810,7 @@ public class MatrixProperties extends QBarTestProperties {
                                 p -> P.pairs(P.matrices(p.a, p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> {
                                     Matrix m = zero(0, i);
@@ -840,7 +867,7 @@ public class MatrixProperties extends QBarTestProperties {
                                 p -> P.pairs(P.matrices(p.a, p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> {
                                     Matrix m = zero(0, i);
@@ -857,7 +884,7 @@ public class MatrixProperties extends QBarTestProperties {
                         )
                 )
         );
-        compareImplementations("subtract(Matrix)", take(LIMIT, ps), functions);
+        compareImplementations("subtract(Matrix)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private void propertiesMultiply_BigInteger() {
@@ -916,7 +943,7 @@ public class MatrixProperties extends QBarTestProperties {
                                 p -> P.pairs(P.matrices(p.a, p.b), P.vectors(p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> new Pair<>(zero(i, 0), Vector.ZERO_DIMENSIONAL),
                                 P.naturalIntegersGeometric()
@@ -992,7 +1019,7 @@ public class MatrixProperties extends QBarTestProperties {
                         )
                 ),
                 P.choose(
-                    P.choose(
+                    P.withScale(1).choose(
                             map(
                                     m -> new Pair<>(m, zero(m.width(), 0)),
                                     filterInfinite(
@@ -1051,7 +1078,7 @@ public class MatrixProperties extends QBarTestProperties {
                                 p -> P.pairs(P.matrices(p.a, p.b), P.vectors(p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> new Pair<>(zero(i, 0), Vector.ZERO_DIMENSIONAL),
                                 P.naturalIntegersGeometric()
@@ -1099,7 +1126,7 @@ public class MatrixProperties extends QBarTestProperties {
                         )
                 ),
                 P.choose(
-                        P.choose(
+                        P.withScale(1).choose(
                                 map(
                                         m -> new Pair<>(m, zero(m.width(), 0)),
                                         filterInfinite(
@@ -1121,7 +1148,7 @@ public class MatrixProperties extends QBarTestProperties {
                         )
                 )
         );
-        compareImplementations("multiply(Matrix)", take(LIMIT, ps), functions);
+        compareImplementations("multiply(Matrix)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private static @NotNull Matrix shiftLeft_simplest(@NotNull Matrix m, int bits) {
@@ -1160,7 +1187,7 @@ public class MatrixProperties extends QBarTestProperties {
         functions.put("simplest", p -> shiftLeft_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.shiftLeft(p.b));
         Iterable<Pair<Matrix, Integer>> ps = P.pairs(P.matrices(), P.naturalIntegersGeometric());
-        compareImplementations("shiftLeft(int)", take(LIMIT, ps), functions);
+        compareImplementations("shiftLeft(int)", take(LIMIT, ps), functions, v -> P.reset());
     }
 
     private void propertiesIsInRowEchelonForm() {
@@ -1244,7 +1271,7 @@ public class MatrixProperties extends QBarTestProperties {
         Map<String, Function<Matrix, Matrix>> functions = new LinkedHashMap<>();
         functions.put("simplest", MatrixProperties::primitiveRowEchelonForm_simplest);
         functions.put("standard", Matrix::primitiveRowEchelonForm);
-        compareImplementations("primitiveRowEchelonForm()", take(LIMIT, P.matrices()), functions);
+        compareImplementations("primitiveRowEchelonForm()", take(LIMIT, P.matrices()), functions, v -> P.reset());
     }
 
     private static int rank_alt(@NotNull Matrix m) {
@@ -1295,7 +1322,7 @@ public class MatrixProperties extends QBarTestProperties {
         functions.put("alt", MatrixProperties::rank_alt);
         functions.put("alt2", MatrixProperties::rank_alt2);
         functions.put("standard", Matrix::rank);
-        compareImplementations("rank()", take(LIMIT, P.matrices()), functions);
+        compareImplementations("rank()", take(LIMIT, P.matrices()), functions, v -> P.reset());
     }
 
     private static boolean isInvertible_alt(@NotNull Matrix m) {
@@ -1323,7 +1350,12 @@ public class MatrixProperties extends QBarTestProperties {
         Map<String, Function<Matrix, Boolean>> functions = new LinkedHashMap<>();
         functions.put("alt", MatrixProperties::isInvertible_alt);
         functions.put("standard", Matrix::isInvertible);
-        compareImplementations("isInvertible()", take(LIMIT, P.withScale(4).squareMatrices()), functions);
+        compareImplementations(
+                "isInvertible()",
+                take(LIMIT, P.withScale(4).squareMatrices()),
+                functions,
+                v -> P.reset()
+        );
     }
 
     private void propertiesIsInReducedRowEchelonForm() {
@@ -1409,7 +1441,12 @@ public class MatrixProperties extends QBarTestProperties {
         Map<String, Function<Matrix, Matrix>> functions = new LinkedHashMap<>();
         functions.put("simplest", MatrixProperties::primitiveReducedRowEchelonForm_simplest);
         functions.put("standard", Matrix::primitiveReducedRowEchelonForm);
-        compareImplementations("primitiveReducedRowEchelonForm()", take(LIMIT, P.matrices()), functions);
+        compareImplementations(
+                "primitiveReducedRowEchelonForm()",
+                take(LIMIT, P.matrices()),
+                functions,
+                v -> P.reset()
+        );
     }
 
     private static @NotNull Optional<RationalVector> solveLinearSystem_simplest(@NotNull Matrix m, @NotNull Vector v) {
@@ -1422,7 +1459,12 @@ public class MatrixProperties extends QBarTestProperties {
         }
         if (m.width() > m.height()) return Optional.empty();
         Matrix rref = m.augment(fromColumns(Collections.singletonList(v))).primitiveReducedRowEchelonForm();
-        Matrix bottom = rref.submatrix(toList(range(m.width(), m.height() - 1)), toList(range(0, m.width())));
+        Matrix bottom = rref.submatrix(
+                m.width() == m.height() ?
+                        Collections.emptyList() :
+                        toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(m.width(), m.height() - 1)),
+                toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(0, m.width()))
+        );
         if (!bottom.isZero()) return Optional.empty();
         List<Rational> result = new ArrayList<>();
         int lastColumnIndex = rref.width() - 1;
@@ -1446,7 +1488,7 @@ public class MatrixProperties extends QBarTestProperties {
                                 p -> P.pairs(P.withScale(4).matrices(p.a, p.b), P.withScale(4).vectors(p.a))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> new Pair<>(zero(0, i), Vector.ZERO_DIMENSIONAL),
                                 P.withScale(4).naturalIntegersGeometric()
@@ -1462,6 +1504,7 @@ public class MatrixProperties extends QBarTestProperties {
                 assertTrue(p, p.a.height() >= p.a.width());
                 RationalVector v = solution.get();
                 assertEquals(p, p.a.toRationalMatrix().multiply(v).toVector(), p.b);
+                assertEquals(p, solution, p.a.solveLinearSystemPermissive(p.b));
             }
         }
 
@@ -1490,7 +1533,7 @@ public class MatrixProperties extends QBarTestProperties {
                                 p -> P.pairs(P.withScale(4).matrices(p.a, p.b), P.withScale(4).vectors(p.a))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> new Pair<>(zero(0, i), Vector.ZERO_DIMENSIONAL),
                                 P.withScale(4).naturalIntegersGeometric()
@@ -1498,7 +1541,45 @@ public class MatrixProperties extends QBarTestProperties {
                         map(v -> new Pair<>(zero(v.dimension(), 0), v), P.withScale(4).vectorsAtLeast(1))
                 )
         );
-        compareImplementations("solveLinearSystem(Vector)", take(LIMIT, ps), functions);
+        compareImplementations("solveLinearSystem(Vector)", take(LIMIT, ps), functions, v -> P.reset());
+    }
+
+    private void propertiesSolveLinearSystemPermissive() {
+        initialize("solveLinearSystemPermissive(Vector)");
+        Iterable<Pair<Matrix, Vector>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.withScale(4).positiveIntegersGeometric()),
+                                p -> P.pairs(P.withScale(4).matrices(p.a, p.b), P.withScale(4).vectors(p.a))
+                        )
+                ),
+                P.withScale(1).choose(
+                        map(
+                                i -> new Pair<>(zero(0, i), Vector.ZERO_DIMENSIONAL),
+                                P.withScale(4).naturalIntegersGeometric()
+                        ),
+                        map(v -> new Pair<>(zero(v.dimension(), 0), v), P.withScale(4).vectorsAtLeast(1))
+                )
+        );
+        for (Pair<Matrix, Vector> p : take(LIMIT, ps)) {
+            Optional<RationalVector> solution = p.a.solveLinearSystemPermissive(p.b);
+            if (solution.isPresent()) {
+                RationalVector v = solution.get();
+                assertEquals(p, p.a.toRationalMatrix().multiply(v).toVector(), p.b);
+            }
+        }
+
+        Iterable<Pair<Matrix, Vector>> psFail = filterInfinite(
+                q -> q.b.dimension() != q.a.height(),
+                P.pairs(P.matrices(), P.vectors())
+        );
+        for (Pair<Matrix, Vector> p : take(LIMIT, psFail)) {
+            try {
+                p.a.solveLinearSystemPermissive(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
     }
 
     private static @NotNull Optional<RationalMatrix> invert_simplest(@NotNull Matrix m) {
@@ -1558,7 +1639,7 @@ public class MatrixProperties extends QBarTestProperties {
         functions.put("alt", MatrixProperties::invert_alt);
         functions.put("standard", Matrix::invert);
         Iterable<Matrix> ms = P.withScale(4).withSecondaryScale(4).squareMatrices();
-        compareImplementations("invert()", take(LIMIT, ms), functions);
+        compareImplementations("invert()", take(LIMIT, ms), functions, v -> P.reset());
     }
 
     private static @NotNull BigInteger determinant_simplest(@NotNull Matrix m) {
@@ -1570,7 +1651,7 @@ public class MatrixProperties extends QBarTestProperties {
         if (m.width() == 1) return m.get(0, 0);
         BigInteger determinant = BigInteger.ZERO;
         Vector firstRow = m.row(0);
-        List<Integer> rowIndices = toList(range(1, m.width() - 1));
+        List<Integer> rowIndices = toList(ExhaustiveProvider.INSTANCE.rangeIncreasing(1, m.width() - 1));
         boolean sign = true;
         for (int i = 0; i < m.width(); i++) {
             BigInteger factor = firstRow.get(i);
@@ -1579,7 +1660,16 @@ public class MatrixProperties extends QBarTestProperties {
             if (factor.equals(BigInteger.ZERO)) continue;
             BigInteger minor = m.submatrix(
                     rowIndices,
-                    toList(concat(range(0, i - 1), range(i + 1, m.width() - 1)))
+                    toList(
+                            concat(
+                                    i == 0 ?
+                                            Collections.emptyList() :
+                                            ExhaustiveProvider.INSTANCE.rangeIncreasing(0, i - 1),
+                                    m.width() < i + 2 ?
+                                            Collections.emptyList() :
+                                            ExhaustiveProvider.INSTANCE.rangeIncreasing(i + 1, m.width() - 1)
+                            )
+                    )
             ).determinant();
             determinant = determinant.add(factor.multiply(minor));
         }
@@ -1640,7 +1730,12 @@ public class MatrixProperties extends QBarTestProperties {
         functions.put("simplest", MatrixProperties::determinant_simplest);
         functions.put("Laplace", MatrixProperties::determinant_Laplace);
         functions.put("standard", Matrix::determinant);
-        compareImplementations("determinant()", take(LIMIT, P.withScale(4).squareMatrices()), functions);
+        compareImplementations(
+                "determinant()",
+                take(LIMIT, P.withScale(4).squareMatrices()),
+                functions,
+                v -> P.reset()
+        );
     }
 
     private static @NotNull Polynomial characteristicPolynomial_simplest(@NotNull Matrix m) {
@@ -1686,7 +1781,12 @@ public class MatrixProperties extends QBarTestProperties {
         functions.put("simplest", MatrixProperties::characteristicPolynomial_simplest);
         functions.put("alt", MatrixProperties::characteristicPolynomial_alt);
         functions.put("standard", Matrix::characteristicPolynomial);
-        compareImplementations("characteristicPolynomial()", take(LIMIT, P.withScale(4).squareMatrices()), functions);
+        compareImplementations(
+                "characteristicPolynomial()",
+                take(LIMIT, P.withScale(4).squareMatrices()),
+                functions,
+                v -> P.reset()
+        );
     }
 
     private void propertiesKroneckerMultiply() {
@@ -1716,7 +1816,7 @@ public class MatrixProperties extends QBarTestProperties {
                                 p -> P.pairs(P.matrices(p.a, p.b))
                         )
                 ),
-                P.choose(
+                P.withScale(1).choose(
                         map(
                                 i -> {
                                     Matrix m = Matrix.zero(0, i);
@@ -1754,7 +1854,7 @@ public class MatrixProperties extends QBarTestProperties {
                         )
                 ),
                 P.choose(
-                    P.choose(
+                    P.withScale(1).choose(
                             map(
                                     m -> new Pair<>(m, zero(m.width(), 0)),
                                     filterInfinite(
@@ -1844,6 +1944,23 @@ public class MatrixProperties extends QBarTestProperties {
             assertEquals(p, sum.height(), 1);
             assertEquals(p, sum.width(), 1);
             assertEquals(p, sum.get(0, 0), p.a.add(p.b));
+        }
+    }
+
+    private void propertiesRealEigenvalues() {
+        initialize("realEigenvalues()");
+        for (Matrix m : take(LIMIT, P.withScale(4).squareMatrices())) {
+            List<Algebraic> realEigenvalues = m.realEigenvalues();
+            realEigenvalues.forEach(Algebraic::validate);
+            assertTrue(m, increasing(realEigenvalues));
+            assertEquals(m, realEigenvalues.size(), m.characteristicPolynomial().rootCount());
+        }
+
+        for (Matrix m : take(LIMIT, filterInfinite(n -> !n.isSquare(), P.matrices()))) {
+            try {
+                m.realEigenvalues();
+                fail(m);
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 
