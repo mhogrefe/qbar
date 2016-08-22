@@ -58,6 +58,14 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesMonomials();
         propertiesMultivariatePolynomials();
         propertiesRationalMultivariatePolynomials();
+        propertiesPositiveCleanReals();
+        propertiesPositiveReals();
+        propertiesNegativeCleanReals();
+        propertiesNegativeReals();
+        propertiesNonzeroCleanReals();
+        propertiesNonzeroReals();
+        propertiesCleanReals();
+        propertiesReals();
         propertiesPositiveAlgebraics();
         propertiesNegativeAlgebraics();
         propertiesNonzeroAlgebraics();
@@ -986,6 +994,46 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
                 fail(vs);
             } catch (NullPointerException ignored) {}
         }
+    }
+
+    private void propertiesPositiveCleanReals() {
+        initializeConstant("positiveCleanReals()");
+        simpleTest(QEP, QEP.positiveCleanReals(), x -> x.signumUnsafe() == 1);
+    }
+
+    private void propertiesPositiveReals() {
+        initializeConstant("positiveReals()");
+        simpleTest(QEP, QEP.positiveReals(), x -> x.signumUnsafe() == 1);
+    }
+
+    private void propertiesNegativeCleanReals() {
+        initializeConstant("negativeCleanReals()");
+        simpleTest(QEP, QEP.negativeCleanReals(), x -> x.signumUnsafe() == -1);
+    }
+
+    private void propertiesNegativeReals() {
+        initializeConstant("negativeReals()");
+        simpleTest(QEP, QEP.negativeReals(), x -> x.signumUnsafe() == -1);
+    }
+
+    private void propertiesNonzeroCleanReals() {
+        initializeConstant("nonzeroCleanReals()");
+        simpleTest(QEP, QEP.nonzeroCleanReals(), x -> x.signumUnsafe() != 0);
+    }
+
+    private void propertiesNonzeroReals() {
+        initializeConstant("nonzeroReals()");
+        simpleTest(QEP, QEP.nonzeroReals(), x -> x.signumUnsafe() != 0);
+    }
+
+    private void propertiesCleanReals() {
+        initializeConstant("cleanReals()");
+        simpleTest(QEP, QEP.cleanReals(), x -> true);
+    }
+
+    private void propertiesReals() {
+        initializeConstant("reals()");
+        simpleTest(QEP, QEP.reals(), x -> true);
     }
 
     private void propertiesPositiveAlgebraics_int() {
