@@ -1,6 +1,9 @@
 package mho.qbar.iterableProviders;
 
-import mho.qbar.objects.*;
+import mho.qbar.objects.Algebraic;
+import mho.qbar.objects.Interval;
+import mho.qbar.objects.Rational;
+import mho.qbar.objects.Variable;
 import mho.wheels.io.Readers;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
