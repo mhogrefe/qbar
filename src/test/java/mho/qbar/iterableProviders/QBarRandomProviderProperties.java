@@ -114,6 +114,14 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         propertiesMultivariatePolynomials_List_Variable();
         propertiesRationalMultivariatePolynomials();
         propertiesRationalMultivariatePolynomials_List_Variable();
+        propertiesPositiveCleanReals();
+        propertiesPositiveReals();
+        propertiesNegativeCleanReals();
+        propertiesNegativeReals();
+        propertiesNonzeroCleanReals();
+        propertiesNonzeroReals();
+        propertiesCleanReals();
+        propertiesReals();
         propertiesPositiveAlgebraics_int();
         propertiesPositiveAlgebraics();
         propertiesNegativeAlgebraics_int();
@@ -3617,6 +3625,286 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
                 p.a.rationalMultivariatePolynomials(p.b);
                 fail(p);
             } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesPositiveCleanReals() {
+        initialize("positiveCleanReals()");
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                s -> s.getScale() > 0 && s.getSecondaryScale() >= 4,
+                P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(TINY_LIMIT, rps)) {
+            Iterable<Real> xs = rp.positiveCleanReals();
+            rp.reset();
+            simpleTest(rp, xs, x -> x.signumUnsafe() == 1);
+        }
+
+        Iterable<QBarRandomProvider> rpsFail = filterInfinite(
+                s -> s.getScale() <= 0 && s.getSecondaryScale() >= 4,
+                P.qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.positiveCleanReals();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        rpsFail = filterInfinite(
+                s -> s.getScale() > 0 && s.getSecondaryScale() < 4,
+                P.qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.positiveCleanReals();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+    }
+
+    private void propertiesPositiveReals() {
+        initialize("positiveReals()");
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                s -> s.getScale() >= 4 && s.getSecondaryScale() >= 4,
+                P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(TINY_LIMIT, rps)) {
+            Iterable<Real> xs = rp.positiveReals();
+            rp.reset();
+            simpleTest(rp, xs, x -> x.signumUnsafe() == 1);
+        }
+
+        Iterable<QBarRandomProvider> rpsFail = filterInfinite(
+                s -> s.getScale() < 4 && s.getSecondaryScale() >= 4,
+                P.qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.positiveReals();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        rpsFail = filterInfinite(
+                s -> s.getScale() >= 4 && s.getSecondaryScale() < 4,
+                P.qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.positiveReals();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+    }
+
+    private void propertiesNegativeCleanReals() {
+        initialize("negativeCleanReals()");
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                s -> s.getScale() > 0 && s.getSecondaryScale() >= 4,
+                P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(TINY_LIMIT, rps)) {
+            Iterable<Real> xs = rp.negativeCleanReals();
+            rp.reset();
+            simpleTest(rp, xs, x -> x.signumUnsafe() == -1);
+        }
+
+        Iterable<QBarRandomProvider> rpsFail = filterInfinite(
+                s -> s.getScale() <= 0 && s.getSecondaryScale() >= 4,
+                P.qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.negativeCleanReals();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        rpsFail = filterInfinite(
+                s -> s.getScale() > 0 && s.getSecondaryScale() < 4,
+                P.qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.negativeCleanReals();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+    }
+
+    private void propertiesNegativeReals() {
+        initialize("negativeReals()");
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                s -> s.getScale() >= 4 && s.getSecondaryScale() >= 4,
+                P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(TINY_LIMIT, rps)) {
+            Iterable<Real> xs = rp.negativeReals();
+            rp.reset();
+            simpleTest(rp, xs, x -> x.signumUnsafe() == -1);
+        }
+
+        Iterable<QBarRandomProvider> rpsFail = filterInfinite(
+                s -> s.getScale() < 4 && s.getSecondaryScale() >= 4,
+                P.qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.negativeReals();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        rpsFail = filterInfinite(
+                s -> s.getScale() >= 4 && s.getSecondaryScale() < 4,
+                P.qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.negativeReals();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+    }
+
+    private void propertiesNonzeroCleanReals() {
+        initialize("nonzeroCleanReals()");
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                s -> s.getScale() > 0 && s.getSecondaryScale() >= 4,
+                P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(TINY_LIMIT, rps)) {
+            Iterable<Real> xs = rp.nonzeroCleanReals();
+            rp.reset();
+            simpleTest(rp, xs, x -> x.signumUnsafe() != 0);
+        }
+
+        Iterable<QBarRandomProvider> rpsFail = filterInfinite(
+                s -> s.getScale() <= 0 && s.getSecondaryScale() >= 4,
+                P.qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.nonzeroCleanReals();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        rpsFail = filterInfinite(
+                s -> s.getScale() > 0 && s.getSecondaryScale() < 4,
+                P.qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.nonzeroCleanReals();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+    }
+
+    private void propertiesNonzeroReals() {
+        initialize("nonzeroReals()");
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                s -> s.getScale() >= 4 && s.getSecondaryScale() >= 4,
+                P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(TINY_LIMIT, rps)) {
+            Iterable<Real> xs = rp.nonzeroReals();
+            rp.reset();
+            simpleTest(rp, xs, x -> x.signumUnsafe() != 0);
+        }
+
+        Iterable<QBarRandomProvider> rpsFail = filterInfinite(
+                s -> s.getScale() < 4 && s.getSecondaryScale() >= 4,
+                P.qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.nonzeroReals();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        rpsFail = filterInfinite(
+                s -> s.getScale() >= 4 && s.getSecondaryScale() < 4,
+                P.qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.nonzeroReals();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+    }
+
+    private void propertiesCleanReals() {
+        initialize("cleanReals()");
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                s -> s.getScale() > 0 && s.getSecondaryScale() >= 4,
+                P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(TINY_LIMIT, rps)) {
+            Iterable<Real> xs = rp.cleanReals();
+            rp.reset();
+            simpleTest(rp, xs, x -> true);
+        }
+
+        Iterable<QBarRandomProvider> rpsFail = filterInfinite(
+                s -> s.getScale() <= 0 && s.getSecondaryScale() >= 4,
+                P.qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.cleanReals();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        rpsFail = filterInfinite(
+                s -> s.getScale() > 0 && s.getSecondaryScale() < 4,
+                P.qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.cleanReals();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+    }
+
+    private void propertiesReals() {
+        initialize("reals()");
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                s -> s.getScale() >= 3 && s.getSecondaryScale() >= 4,
+                P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(TINY_LIMIT, rps)) {
+            Iterable<Real> xs = rp.reals();
+            rp.reset();
+            simpleTest(rp, xs, x -> true);
+        }
+
+        Iterable<QBarRandomProvider> rpsFail = filterInfinite(
+                s -> s.getScale() < 3 && s.getSecondaryScale() >= 4,
+                P.qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.reals();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        rpsFail = filterInfinite(
+                s -> s.getScale() >= 3 && s.getSecondaryScale() < 4,
+                P.qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.reals();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
         }
     }
 

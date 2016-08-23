@@ -24,26 +24,29 @@ import static mho.wheels.testing.Testing.*;
 /**
  * <p>The {@code Real} class represents real numbers as infinite, converging sequences of bounding intervals. Every
  * interval in the sequence must be contained in the preceding interval, and the intervals' diameters must converge to
- * zero. The rate of convergence is unspecified. These conditions cannot be enforced except by the caller, so be
- * careful when constructing your own reals, and prefer to use the methods of this class, which, when given valid
- * {@code Real}s, will always return valid {@code Real}s.</p>
+ * zero. The rate of convergence is unspecified. Every interval must take a finite amount of computing time to produce.
+ * These conditions cannot be enforced except by the caller, so be careful when constructing your own reals, and prefer
+ * to use the methods of this class, which, when given valid {@code Real}s, will always return valid {@code Real}s.</p>
  *
  * <p>Any real number may be represented by infinitely many {@code Real}s. Given a rational number r, the {@code Real}
  * whose intervals are [r, r], [r, r], [r, r], ... is called the exact representation of r, and all other {@code Real}s
  * representing r are called fuzzy representations. Fuzzy {@code Real}s are difficult to work with, but also difficult
  * to avoid. Sometimes, a method that takes a {@code Real} will loop forever given certain fuzzy {@code Real}s. If this
- * is the case, that behavior is documented and the method is labeled unsafe. Often, a safe alternative that gives up
- * after some number of loops is provided.</p>
+ * is the case, that behavior is documented and the method is labeled unsafe. Often, a safe alternative is provided
+ * that gives up after the diameters of the approximating intervals decrease below a certain resolution.</p>
  *
  * <p>Every {@code Real} is either irrational, exact, or fuzzy. Irrational or exact {@code Real}s are also called
  * clean.</p>
  *
- * <p>For example, consider the {@link Real#signumUnsafe()}, which returns the sign of a {@code Real}: –1, 0, or 1. It works
- * by looking at the signs of the lower and upper bounds of the {@code Real}'s intervals, and returning when they are
- * equal. This will always work for irrational {@code Real}s and exact {@code Real}s, but will loop forever on a fuzzy
- * zero whose intervals are [–1, 0], [–1/2, 0], [–1/4, 0], [–1/8, 0], ..., because the method will never know whether
- * the {@code Real} is actually zero or just a negative number with a small magnitude. In fact, any fuzzy zero will
- * cause this problem.</p>
+ * <p>For example, consider the {@link Real#signumUnsafe()}, which returns the sign of a {@code Real}: –1, 0, or 1. It
+ * works by looking at the signs of the lower and upper bounds of the {@code Real}'s intervals, and returning when they
+ * are equal. This will always work for irrational {@code Real}s and exact {@code Real}s, but will loop forever on a
+ * fuzzy zero whose intervals are [–1, 0], [–1/2, 0], [–1/4, 0], [–1/8, 0], ..., because the method will never know
+ * whether the {@code Real} is actually zero or just a negative number with a small magnitude. A safer alternative is
+ * {@link Real#signum(Rational)}. When given the fuzzy zero, it will give up (and return an empty {@code Optional})
+ * after the diameters of the intervals decrease below the specified resolution. By the {@code Real} contract, a
+ * small-enough interval is guaranteed to appear after a finite amount of computing time, so this method never
+ * hangs.</p>
  *
  * <p>The above should make it clear that {@code Real}s are not user-friendly. Make sure to read the documentation
  * carefully, and, whenever possible, use {@link Rational} or {@link Algebraic} instead.</p>
@@ -57,6 +60,8 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
 
     public static final @NotNull Real PI =
             atan(Rational.of(1, 5)).shiftLeft(2).subtract(atan(Rational.of(1, 239))).shiftLeft(2);
+
+    private static final @NotNull Rational DEFAULT_RESOLUTION = Rational.ONE.shiftRight(SMALL_LIMIT);
 
     private final @NotNull Iterable<Interval> intervals;
 
@@ -242,12 +247,11 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
         }
     }
 
-    private <T> NullableOptional<T> limitValue(@NotNull Function<Rational, T> f, int maxLoops) {
+    private <T> NullableOptional<T> limitValue(@NotNull Function<Rational, T> f, @NotNull Rational resolution) {
         Optional<Rational> previousLower = Optional.empty();
         Optional<Rational> previousUpper = Optional.empty();
         T lowerValue = null;
         T upperValue = null;
-        int i = 0;
         for (Interval a : intervals) {
             if (Thread.interrupted()) return null;
             if (a.isFinitelyBounded()) {
@@ -262,12 +266,11 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
                 if (Objects.equals(lowerValue, upperValue)) {
                     return NullableOptional.of(lowerValue);
                 }
+                if (lt(upper.subtract(lower), resolution)) {
+                    return NullableOptional.empty();
+                }
                 previousLower = Optional.of(lower);
                 previousUpper = Optional.of(upper);
-            }
-            i++;
-            if (i == maxLoops) {
-                return NullableOptional.empty();
             }
         }
         throw new IllegalStateException("unreachable");
@@ -340,8 +343,8 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
         return limitValueUnsafe(Rational::signum);
     }
 
-    public Optional<Integer> signum(int maxLoops) {
-        return limitValue(Rational::signum, maxLoops).toOptional();
+    public Optional<Integer> signum(@NotNull Rational resolution) {
+        return limitValue(Rational::signum, resolution).toOptional();
     }
 
     public @NotNull Real abs() {
@@ -352,8 +355,8 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
         return limitValueUnsafe(Rational::floor);
     }
 
-    public @NotNull Optional<BigInteger> floor(int maxLoops) {
-        return limitValue(Rational::floor, maxLoops).toOptional();
+    public @NotNull Optional<BigInteger> floor(@NotNull Rational resolution) {
+        return limitValue(Rational::floor, resolution).toOptional();
     }
 
     public @NotNull Pair<List<BigInteger>, Iterable<BigInteger>> digitsUnsafe(@NotNull BigInteger base) {
@@ -398,9 +401,9 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
 
     public @NotNull Optional<Pair<List<BigInteger>, Iterable<BigInteger>>> digits(
             @NotNull BigInteger base,
-            int maxLoops
+            @NotNull Rational resolution
     ) {
-        Optional<Integer> oSignum = signum(maxLoops);
+        Optional<Integer> oSignum = signum(resolution);
         if (!oSignum.isPresent()) {
             return Optional.empty();
         }
@@ -408,7 +411,7 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
         if (signum == -1) {
             throw new IllegalArgumentException("this cannot be negative. Invalid this: " + this);
         }
-        Optional<BigInteger> oFloor = floor(maxLoops);
+        Optional<BigInteger> oFloor = floor(resolution);
         if (!oFloor.isPresent()) {
             return Optional.empty();
         }
@@ -433,7 +436,6 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
 
             @Override
             public @NotNull BigInteger next() {
-                int i = 0;
                 while (true) {
                     BigInteger lowerFloor = interval.getLower().get().floor();
                     BigInteger upperFloor = interval.getUpper().get().floor();
@@ -442,12 +444,11 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
                         interval = interval.multiply(base);
                         return lowerFloor.mod(base);
                     } else {
+                        if (lt(interval.diameter().get(), resolution)) {
+                            aborted = true;
+                            return IntegerUtils.NEGATIVE_ONE;
+                        }
                         interval = fractionIntervals.next().multiply(power);
-                    }
-                    i++;
-                    if (i == maxLoops) {
-                        aborted = true;
-                        return IntegerUtils.NEGATIVE_ONE;
                     }
                 }
             }
@@ -477,7 +478,7 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
         return (signumUnsafe() == -1 ? "-" + result : result) + "...";
     }
 
-    public @NotNull String toStringBase(@NotNull BigInteger base, int scale, int maxLoops) {
+    public @NotNull String toStringBase(@NotNull BigInteger base, int scale, @NotNull Rational resolution) {
         if (lt(base, IntegerUtils.TWO)) {
             throw new IllegalArgumentException("base must be at least 2. Invalid base: " + base);
         }
@@ -486,9 +487,9 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
             return or.get().toStringBase(base, scale);
         }
         boolean baseIsSmall = le(base, BigInteger.valueOf(36));
-        Optional<Pair<List<BigInteger>, Iterable<BigInteger>>> oDigits = abs().digits(base, maxLoops);
+        Optional<Pair<List<BigInteger>, Iterable<BigInteger>>> oDigits = abs().digits(base, resolution);
         if (!oDigits.isPresent()) {
-            Optional<Integer> oSignum = signum(maxLoops);
+            Optional<Integer> oSignum = signum(resolution);
             if (!oSignum.isPresent()) {
                 return "~0";
             }
@@ -509,7 +510,7 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
             Optional<BigInteger> oFloor;
             for (int i = 1; i <= maxDigitsToTheLeft; i++) {
                 power = power.multiply(base);
-                oFloor = abs().divide(power).floor(maxLoops);
+                oFloor = abs().divide(power).floor(resolution);
                 if (oFloor.isPresent()) {
                     BigInteger floor = oFloor.get();
                     if (floor.equals(BigInteger.ZERO)) {
@@ -885,7 +886,7 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
     }
 
     public @NotNull String toString() {
-        return toStringBase(BigInteger.TEN, TINY_LIMIT, SMALL_LIMIT);
+        return toStringBase(BigInteger.TEN, TINY_LIMIT, DEFAULT_RESOLUTION);
     }
 
     @Override
