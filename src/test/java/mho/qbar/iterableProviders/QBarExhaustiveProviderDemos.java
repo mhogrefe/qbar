@@ -273,6 +273,42 @@ public class QBarExhaustiveProviderDemos extends QBarDemos {
         }
     }
 
+    private void demoCleanRealRangeUp() {
+        for (Algebraic x : take(MEDIUM_LIMIT, P.withScale(4).algebraics())) {
+            System.out.println("cleanRealRangeUp(" + x + ") = " + its(QEP.cleanRealRangeUp(x)));
+        }
+    }
+
+    private void demoRealRangeUp() {
+        for (Algebraic x : take(MEDIUM_LIMIT, P.withScale(4).algebraics())) {
+            System.out.println("realRangeUp(" + x + ") = " + its(QEP.realRangeUp(x)));
+        }
+    }
+
+    private void demoCleanRealRangeDown() {
+        for (Algebraic x : take(MEDIUM_LIMIT, P.withScale(4).algebraics())) {
+            System.out.println("cleanRealRangeDown(" + x + ") = " + its(QEP.cleanRealRangeDown(x)));
+        }
+    }
+
+    private void demoRealRangeDown() {
+        for (Algebraic x : take(MEDIUM_LIMIT, P.withScale(4).algebraics())) {
+            System.out.println("realRangeDown(" + x + ") = " + its(QEP.realRangeDown(x)));
+        }
+    }
+
+    private void demoCleanRealRange() {
+        for (Pair<Algebraic, Algebraic> p : take(MEDIUM_LIMIT, P.bagPairs(P.withScale(4).algebraics()))) {
+            System.out.println("cleanRealRange(" + p.a + ", " + p.b + ") = " + its(QEP.cleanRealRange(p.a, p.b)));
+        }
+    }
+
+    private void demoRealRange() {
+        for (Pair<Algebraic, Algebraic> p : take(MEDIUM_LIMIT, P.bagPairs(P.withScale(4).algebraics()))) {
+            System.out.println("realRange(" + p.a + ", " + p.b + ") = " + its(QEP.realRange(p.a, p.b)));
+        }
+    }
+
     private void demoPositiveAlgebraics_int() {
         for (int i : take(TINY_LIMIT, P.withScale(2).positiveIntegersGeometric())) {
             System.out.println("positiveAlgebraics(" + i + ") = " + its(QEP.positiveAlgebraics(i)));

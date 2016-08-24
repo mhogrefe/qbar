@@ -51,7 +51,7 @@ import static mho.wheels.testing.Testing.*;
  * <p>The above should make it clear that {@code Real}s are not user-friendly. Make sure to read the documentation
  * carefully, and, whenever possible, use {@link Rational} or {@link Algebraic} instead.</p>
  */
-public final class Real implements Iterable<Interval>, Comparable<Real> {
+public final class Real implements Iterable<Interval> {
     public static final @NotNull Real ZERO = of(Rational.ZERO);
 
     public static final @NotNull Real ONE = of(Rational.ONE);
@@ -61,7 +61,7 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
     public static final @NotNull Real PI =
             atan(Rational.of(1, 5)).shiftLeft(2).subtract(atan(Rational.of(1, 239))).shiftLeft(2);
 
-    private static final @NotNull Rational DEFAULT_RESOLUTION = Rational.ONE.shiftRight(SMALL_LIMIT);
+    public static final @NotNull Rational DEFAULT_RESOLUTION = Rational.ONE.shiftRight(SMALL_LIMIT);
 
     private final @NotNull Iterable<Interval> intervals;
 
@@ -889,8 +889,7 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
         return toStringBase(BigInteger.TEN, TINY_LIMIT, DEFAULT_RESOLUTION);
     }
 
-    @Override
-    public int compareTo(@NotNull Real that) {
+    public int compareToUnsafe(@NotNull Real that) {
         if (this == that) return 0;
         Iterator<Interval> thisIntervals = intervals.iterator();
         Iterator<Interval> thatIntervals = that.intervals.iterator();
@@ -900,7 +899,28 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
         }
     }
 
+    public @NotNull Optional<Integer> compareTo(@NotNull Real that, @NotNull Rational resolution) {
+        if (this == that) return Optional.of(0);
+        Iterator<Interval> thisIntervals = intervals.iterator();
+        Iterator<Interval> thatIntervals = that.intervals.iterator();
+        while (true) {
+            Interval thisInterval = thisIntervals.next();
+            Interval thatInterval = thatIntervals.next();
+            Optional<Ordering> o = thisInterval.elementCompare(thatInterval);
+            if (o.isPresent()) {
+                return Optional.of(o.get().toInt());
+            } else if (thisInterval.isFinitelyBounded() && thatInterval.isFinitelyBounded() &&
+                    lt(thisInterval.diameter().get(), resolution) && lt(thatInterval.diameter().get(), resolution)) {
+                return Optional.empty();
+            }
+        }
+    }
+
     public int compareTo(@NotNull Rational that) {
+        Optional<Rational> thisRational = rationalValue();
+        if (thisRational.isPresent()) {
+            return thisRational.get().compareTo(that);
+        }
         for (Interval interval : intervals) {
             if (!interval.contains(that)) {
                 Rational sample = interval.getLower().isPresent() ?
@@ -910,6 +930,10 @@ public final class Real implements Iterable<Interval>, Comparable<Real> {
             }
         }
         throw new IllegalStateException("unreachable");
+    }
+
+    public static boolean leUnsafe(@NotNull Real x, @NotNull Real y) {
+        return x.compareToUnsafe(y) <= 0;
     }
 
     /**

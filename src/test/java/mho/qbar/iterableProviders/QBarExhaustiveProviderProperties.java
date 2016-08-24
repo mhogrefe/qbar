@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import static mho.qbar.testing.QBarTesting.QEP;
@@ -119,6 +120,12 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesMonomials_List_Variable();
         propertiesMultivariatePolynomials_List_Variable();
         propertiesRationalMultivariatePolynomials_List_Variable();
+        propertiesCleanRealRangeUp();
+        propertiesRealRangeUp();
+        propertiesCleanRealRangeDown();
+        propertiesRealRangeDown();
+        propertiesCleanRealRange();
+        propertiesRealRange();
         propertiesPositiveAlgebraics_int();
         propertiesNegativeAlgebraics_int();
         propertiesNonzeroAlgebraics_int();
@@ -1034,6 +1041,117 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
     private void propertiesReals() {
         initializeConstant("reals()");
         simpleTest(QEP, QEP.reals(), x -> true);
+    }
+
+    private void propertiesCleanRealRangeUp() {
+        initialize("cleanRealRangeUp(Algebraic)");
+        for (Algebraic x : take(SMALL_LIMIT, P.withScale(4).algebraics())) {
+            Iterable<Real> xs = QEP.cleanRealRangeUp(x);
+            simpleTest(x, xs, y -> {
+                Optional<Integer> oc = y.compareTo(x.realValue(), Real.DEFAULT_RESOLUTION);
+                return !oc.isPresent() || oc.get() != -1;
+            });
+        }
+
+        for (Rational r : take(SMALL_LIMIT, P.rationals())) {
+            Iterable<Real> xs = QEP.cleanRealRangeUp(Algebraic.of(r));
+            simpleTest(r, xs, y -> y.compareTo(r) >= 0);
+        }
+    }
+
+    private void propertiesRealRangeUp() {
+        initialize("realRangeUp(Algebraic)");
+        for (Algebraic x : take(SMALL_LIMIT, P.withScale(4).algebraics())) {
+            Iterable<Real> xs = QEP.realRangeUp(x);
+            simpleTest(x, xs, y -> {
+                Optional<Integer> oc = y.compareTo(x.realValue(), Real.DEFAULT_RESOLUTION);
+                return !oc.isPresent() || oc.get() != -1;
+            });
+        }
+    }
+
+    private void propertiesCleanRealRangeDown() {
+        initialize("cleanRealRangeDown(Algebraic)");
+        for (Algebraic x : take(SMALL_LIMIT, P.withScale(4).algebraics())) {
+            Iterable<Real> xs = QEP.cleanRealRangeDown(x);
+            simpleTest(x, xs, y -> {
+                Optional<Integer> oc = y.compareTo(x.realValue(), Real.DEFAULT_RESOLUTION);
+                return !oc.isPresent() || oc.get() != 1;
+            });
+        }
+
+        for (Rational r : take(SMALL_LIMIT, P.rationals())) {
+            Iterable<Real> xs = QEP.cleanRealRangeDown(Algebraic.of(r));
+            simpleTest(r, xs, y -> y.compareTo(r) <= 0);
+        }
+    }
+
+    private void propertiesRealRangeDown() {
+        initialize("realRangeDown(Algebraic)");
+        for (Algebraic x : take(SMALL_LIMIT, P.withScale(4).algebraics())) {
+            Iterable<Real> xs = QEP.realRangeDown(x);
+            simpleTest(x, xs, y -> {
+                Optional<Integer> oc = y.compareTo(x.realValue(), Real.DEFAULT_RESOLUTION);
+                return !oc.isPresent() || oc.get() != 1;
+            });
+        }
+    }
+
+    private void propertiesCleanRealRange() {
+        initialize("cleanRealRange(Algebraic, Algebraic)");
+        for (Pair<Algebraic, Algebraic> p : take(SMALL_LIMIT, P.bagPairs(P.withScale(4).algebraics()))) {
+            Iterable<Real> xs = QEP.cleanRealRange(p.a, p.b);
+            simpleTest(p, xs, y -> {
+                Optional<Integer> ocLower = y.compareTo(p.a.realValue(), Real.DEFAULT_RESOLUTION);
+                if (ocLower.isPresent() && ocLower.get() == -1) {
+                    return false;
+                }
+                Optional<Integer> ocUpper = y.compareTo(p.b.realValue(), Real.DEFAULT_RESOLUTION);
+                return !ocUpper.isPresent() || ocUpper.get() != 1;
+            });
+        }
+
+        for (Algebraic x : take(LIMIT, P.algebraics())) {
+            assertEquals(x, length(QEP.cleanRealRange(x, x)), 1);
+        }
+
+        for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.subsetPairs(P.algebraics()))) {
+            try {
+                QEP.cleanRealRange(p.b, p.a);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesRealRange() {
+        initialize("realRange(Algebraic, Algebraic)");
+        for (Pair<Algebraic, Algebraic> p : take(SMALL_LIMIT, P.bagPairs(P.withScale(4).algebraics()))) {
+            Iterable<Real> xs = QEP.realRange(p.a, p.b);
+            simpleTest(p, xs, y -> {
+                Optional<Integer> ocLower = y.compareTo(p.a.realValue(), Real.DEFAULT_RESOLUTION);
+                if (ocLower.isPresent() && ocLower.get() == -1) {
+                    return false;
+                }
+                Optional<Integer> ocUpper = y.compareTo(p.b.realValue(), Real.DEFAULT_RESOLUTION);
+                return !ocUpper.isPresent() || ocUpper.get() != 1;
+            });
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            Algebraic x = Algebraic.of(r);
+            assertEquals(r, length(QEP.realRange(x, x)), 4);
+        }
+
+        for (Algebraic x : take(LIMIT, filterInfinite(y -> !y.isRational(), P.algebraics()))) {
+            assertEquals(x, length(QEP.realRange(x, x)), 1);
+        }
+
+        for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.subsetPairs(P.algebraics()))) {
+            try {
+                QEP.realRange(p.b, p.a);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
     }
 
     private void propertiesPositiveAlgebraics_int() {

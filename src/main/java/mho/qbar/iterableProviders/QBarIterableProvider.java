@@ -3935,6 +3935,117 @@ public strictfp abstract class QBarIterableProvider {
     }
 
     /**
+     * Generates clean {@code Real}s greater than or equal to a given value.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     * </ul>
+     *
+     * @param a the inclusive lower bound of the generated {@code Real}s
+     */
+    public @NotNull Iterable<Real> cleanRealRangeUp(@NotNull Algebraic a) {
+        return map(Algebraic::realValue, rangeUp(a));
+    }
+
+    /**
+     * Generates {@code Real}s greater than or equal to a given value.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     * </ul>
+     *
+     * @param a the inclusive lower bound of the generated {@code Real}s
+     */
+    public @NotNull Iterable<Real> realRangeUp(@NotNull Algebraic a) {
+        return withScale(1).choose(
+                map(Algebraic::realValue, rangeUp(a)),
+                choose(
+                        Arrays.asList(
+                                map(x -> Real.leftFuzzyRepresentation(x.rationalValueExact()), rangeUp(1, a)),
+                                map(x -> Real.rightFuzzyRepresentation(x.rationalValueExact()), rangeUp(1, a)),
+                                map(x -> Real.fuzzyRepresentation(x.rationalValueExact()), rangeUp(1, a))
+                        )
+                )
+        );
+    }
+
+    /**
+     * Generates clean {@code Real}s less than or equal to a given value.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     * </ul>
+     *
+     * @param a the inclusive upper bound of the generated {@code Real}s
+     */
+    public @NotNull Iterable<Real> cleanRealRangeDown(@NotNull Algebraic a) {
+        return map(Algebraic::realValue, rangeDown(a));
+    }
+
+    /**
+     * Generates {@code Real}s less than or equal to a given value.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     * </ul>
+     *
+     * @param a the inclusive upper bound of the generated {@code Real}s
+     */
+    public @NotNull Iterable<Real> realRangeDown(@NotNull Algebraic a) {
+        return withScale(1).choose(
+                map(Algebraic::realValue, rangeDown(a)),
+                choose(
+                        Arrays.asList(
+                                map(x -> Real.leftFuzzyRepresentation(x.rationalValueExact()), rangeDown(1, a)),
+                                map(x -> Real.rightFuzzyRepresentation(x.rationalValueExact()), rangeDown(1, a)),
+                                map(x -> Real.fuzzyRepresentation(x.rationalValueExact()), rangeDown(1, a))
+                        )
+                )
+        );
+    }
+
+    /**
+     * Generates clean {@code Real}s between {@code a} and {@code b}, inclusive.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>{@code b} cannot be null.</li>
+     *  <li>{@code a} must be less than or equal to {@code b}.</li>
+     * </ul>
+     *
+     * @param a the inclusive lower bound of the generated {@code Real}s
+     * @param b the inclusive upper bound of the generated {@code Real}s
+     */
+    public @NotNull Iterable<Real> cleanRealRange(@NotNull Algebraic a, @NotNull Algebraic b) {
+        return map(Algebraic::realValue, range(a, b));
+    }
+
+    /**
+     * Generates {@code Real}s between {@code a} and {@code b}, inclusive.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>{@code b} cannot be null.</li>
+     *  <li>{@code a} must be less than or equal to {@code b}.</li>
+     * </ul>
+     *
+     * @param a the inclusive lower bound of the generated {@code Real}s
+     * @param b the inclusive upper bound of the generated {@code Real}s
+     */
+    public @NotNull Iterable<Real> realRange(@NotNull Algebraic a, @NotNull Algebraic b) {
+        return withScale(1).choose(
+                map(Algebraic::realValue, range(a, b)),
+                choose(
+                        Arrays.asList(
+                                map(x -> Real.leftFuzzyRepresentation(x.rationalValueExact()), range(1, a, b)),
+                                map(x -> Real.rightFuzzyRepresentation(x.rationalValueExact()), range(1, a, b)),
+                                map(x -> Real.fuzzyRepresentation(x.rationalValueExact()), range(1, a, b))
+                        )
+                )
+        );
+    }
+
+    /**
      * Generates positive {@code Algebraic}s with a given degree.
      *
      * <ul>

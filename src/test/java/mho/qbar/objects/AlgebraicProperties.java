@@ -2068,7 +2068,10 @@ public class AlgebraicProperties extends QBarTestProperties {
             assertTrue(p, extension.isFinitelyBounded());
             assertTrue(
                     p,
-                    le(Real.of(extension.diameter().get().shiftRight(1)), p.b.realValue().subtract(p.a.realValue()))
+                    Real.leUnsafe(
+                            Real.of(extension.diameter().get().shiftRight(1)),
+                            p.b.realValue().subtract(p.a.realValue())
+                    )
             );
         }
 

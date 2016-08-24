@@ -1161,6 +1161,125 @@ public class QBarExhaustiveProviderTest {
         simpleProviderHelper(QEP.reals(), "QBarExhaustiveProvider_reals");
     }
 
+    private static void cleanRealRangeUp_helper(@NotNull String a, @NotNull String output) {
+        simpleProviderHelper(QEP.cleanRealRangeUp(Algebraic.readStrict(a).get()), output);
+    }
+
+    @Test
+    public void testCleanRealRangeUp() {
+        cleanRealRangeUp_helper("0", "QBarExhaustiveProvider_cleanRealRangeUp_i");
+        cleanRealRangeUp_helper("1", "QBarExhaustiveProvider_cleanRealRangeUp_ii");
+        cleanRealRangeUp_helper("1/2", "QBarExhaustiveProvider_cleanRealRangeUp_iii");
+        cleanRealRangeUp_helper("-4/3", "QBarExhaustiveProvider_cleanRealRangeUp_iv");
+        cleanRealRangeUp_helper("sqrt(2)", "QBarExhaustiveProvider_cleanRealRangeUp_v");
+        cleanRealRangeUp_helper("-sqrt(2)", "QBarExhaustiveProvider_cleanRealRangeUp_vi");
+        cleanRealRangeUp_helper("(1+sqrt(5))/2", "QBarExhaustiveProvider_cleanRealRangeUp_vii");
+        cleanRealRangeUp_helper("root 0 of x^5-x-1", "QBarExhaustiveProvider_cleanRealRangeUp_viii");
+    }
+
+    private static void realRangeUp_helper(@NotNull String a, @NotNull String output) {
+        simpleProviderHelper(QEP.realRangeUp(Algebraic.readStrict(a).get()), output);
+    }
+
+    @Test
+    public void testRealRangeUp() {
+        realRangeUp_helper("0", "QBarExhaustiveProvider_realRangeUp_i");
+        realRangeUp_helper("1", "QBarExhaustiveProvider_realRangeUp_ii");
+        realRangeUp_helper("1/2", "QBarExhaustiveProvider_realRangeUp_iii");
+        realRangeUp_helper("-4/3", "QBarExhaustiveProvider_realRangeUp_iv");
+        realRangeUp_helper("sqrt(2)", "QBarExhaustiveProvider_realRangeUp_v");
+        realRangeUp_helper("-sqrt(2)", "QBarExhaustiveProvider_realRangeUp_vi");
+        realRangeUp_helper("(1+sqrt(5))/2", "QBarExhaustiveProvider_realRangeUp_vii");
+        realRangeUp_helper("root 0 of x^5-x-1", "QBarExhaustiveProvider_realRangeUp_viii");
+    }
+
+    private static void cleanRealRangeDown_helper(@NotNull String a, @NotNull String output) {
+        simpleProviderHelper(QEP.cleanRealRangeDown(Algebraic.readStrict(a).get()), output);
+    }
+
+    @Test
+    public void testCleanRealRangeDown() {
+        cleanRealRangeDown_helper("0", "QBarExhaustiveProvider_cleanRealRangeDown_i");
+        cleanRealRangeDown_helper("1", "QBarExhaustiveProvider_cleanRealRangeDown_ii");
+        cleanRealRangeDown_helper("1/2", "QBarExhaustiveProvider_cleanRealRangeDown_iii");
+        cleanRealRangeDown_helper("-4/3", "QBarExhaustiveProvider_cleanRealRangeDown_iv");
+        cleanRealRangeDown_helper("sqrt(2)", "QBarExhaustiveProvider_cleanRealRangeDown_v");
+        cleanRealRangeDown_helper("-sqrt(2)", "QBarExhaustiveProvider_cleanRealRangeDown_vi");
+        cleanRealRangeDown_helper("(1+sqrt(5))/2", "QBarExhaustiveProvider_cleanRealRangeDown_vii");
+        cleanRealRangeDown_helper("root 0 of x^5-x-1", "QBarExhaustiveProvider_cleanRealRangeDown_viii");
+    }
+
+    private static void realRangeDown_helper(@NotNull String a, @NotNull String output) {
+        simpleProviderHelper(QEP.realRangeDown(Algebraic.readStrict(a).get()), output);
+    }
+
+    @Test
+    public void testRealRangeDown() {
+        realRangeDown_helper("0", "QBarExhaustiveProvider_realRangeDown_i");
+        realRangeDown_helper("1", "QBarExhaustiveProvider_realRangeDown_ii");
+        realRangeDown_helper("1/2", "QBarExhaustiveProvider_realRangeDown_iii");
+        realRangeDown_helper("-4/3", "QBarExhaustiveProvider_realRangeDown_iv");
+        realRangeDown_helper("sqrt(2)", "QBarExhaustiveProvider_realRangeDown_v");
+        realRangeDown_helper("-sqrt(2)", "QBarExhaustiveProvider_realRangeDown_vi");
+        realRangeDown_helper("(1+sqrt(5))/2", "QBarExhaustiveProvider_realRangeDown_vii");
+        realRangeDown_helper("root 0 of x^5-x-1", "QBarExhaustiveProvider_realRangeDown_viii");
+    }
+
+    private static void cleanRealRange_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        simpleProviderHelper(QEP.cleanRealRange(Algebraic.readStrict(a).get(), Algebraic.readStrict(b).get()), output);
+    }
+
+    private static void cleanRealRange_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            QEP.cleanRealRange(Algebraic.readStrict(a).get(), Algebraic.readStrict(b).get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testCleanRealRange() {
+        cleanRealRange_helper("0", "0", "QBarExhaustiveProvider_cleanRealRange_i");
+        cleanRealRange_helper("1", "1", "QBarExhaustiveProvider_cleanRealRange_ii");
+        cleanRealRange_helper("sqrt(2)", "sqrt(2)", "QBarExhaustiveProvider_cleanRealRange_iii");
+        cleanRealRange_helper("1", "2", "QBarExhaustiveProvider_cleanRealRange_iv");
+        cleanRealRange_helper("-4/3", "1/2", "QBarExhaustiveProvider_cleanRealRange_v");
+        cleanRealRange_helper("1", "sqrt(2)", "QBarExhaustiveProvider_cleanRealRange_vi");
+        cleanRealRange_helper("sqrt(2)", "sqrt(3)", "QBarExhaustiveProvider_cleanRealRange_vii");
+        cleanRealRange_helper("0", "256", "QBarExhaustiveProvider_cleanRealRange_viii");
+        cleanRealRange_helper("sqrt(2)", "6369051672525773/4503599627370496",
+                "QBarExhaustiveProvider_cleanRealRange_ix");
+
+        cleanRealRange_fail_helper("1", "0");
+        cleanRealRange_fail_helper("6369051672525773/4503599627370496", "sqrt(2)");
+    }
+
+    private static void realRange_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        simpleProviderHelper(QEP.realRange(Algebraic.readStrict(a).get(), Algebraic.readStrict(b).get()), output);
+    }
+
+    private static void realRange_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            QEP.realRange(Algebraic.readStrict(a).get(), Algebraic.readStrict(b).get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testRealRange() {
+        realRange_helper("0", "0", "QBarExhaustiveProvider_cleanRange_i");
+        realRange_helper("1", "1", "QBarExhaustiveProvider_cleanRange_ii");
+        realRange_helper("sqrt(2)", "sqrt(2)", "QBarExhaustiveProvider_cleanRange_iii");
+        realRange_helper("1", "2", "QBarExhaustiveProvider_cleanRange_iv");
+        realRange_helper("-4/3", "1/2", "QBarExhaustiveProvider_cleanRange_v");
+        realRange_helper("1", "sqrt(2)", "QBarExhaustiveProvider_cleanRange_vi");
+        realRange_helper("sqrt(2)", "sqrt(3)", "QBarExhaustiveProvider_cleanRange_vii");
+        realRange_helper("0", "256", "QBarExhaustiveProvider_cleanRange_viii");
+        realRange_helper("sqrt(2)", "6369051672525773/4503599627370496", "QBarExhaustiveProvider_cleanRange_ix");
+
+        realRange_fail_helper("1", "0");
+        realRange_fail_helper("6369051672525773/4503599627370496", "sqrt(2)");
+    }
+
     private static void positiveAlgebraics_int_helper(int degree, @NotNull String output) {
         simpleProviderHelper(QEP.positiveAlgebraics(degree), output);
     }

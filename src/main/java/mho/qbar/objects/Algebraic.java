@@ -2951,7 +2951,7 @@ public final class Algebraic implements Comparable<Algebraic> {
         } else if (that.rational.isPresent()) {
             return realValue().compareTo(that.rational.get());
         } else {
-            return realValue().compareTo(that.realValue());
+            return realValue().compareToUnsafe(that.realValue());
         }
     }
 
