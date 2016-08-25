@@ -5749,6 +5749,323 @@ public class QBarRandomProviderTest {
         reals_fail_helper(3, 3);
     }
 
+    private static void cleanRealRangeUp_helper(
+            int scale,
+            int secondaryScale,
+            @NotNull String a,
+            @NotNull String output
+    ) {
+        reals_helper(
+                P.withScale(scale).withSecondaryScale(secondaryScale).cleanRealRangeUp(Algebraic.readStrict(a).get()),
+                output
+        );
+        P.reset();
+    }
+
+    private static void cleanRealRangeUp_fail_helper(int scale, int secondaryScale, @NotNull String a) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).cleanRealRangeUp(Algebraic.readStrict(a).get());
+            fail();
+        } catch (IllegalStateException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testCleanRealRangeUp() {
+        cleanRealRangeUp_helper(2, 4, "0", "QBarRandomProvider_cleanRealRangeUp_i");
+        cleanRealRangeUp_helper(5, 6, "0", "QBarRandomProvider_cleanRealRangeUp_ii");
+        cleanRealRangeUp_helper(2, 4, "1", "QBarRandomProvider_cleanRealRangeUp_iii");
+        cleanRealRangeUp_helper(5, 6, "1", "QBarRandomProvider_cleanRealRangeUp_iv");
+        cleanRealRangeUp_helper(2, 4, "1/2", "QBarRandomProvider_cleanRealRangeUp_v");
+        cleanRealRangeUp_helper(5, 6, "1/2", "QBarRandomProvider_cleanRealRangeUp_vi");
+        cleanRealRangeUp_helper(2, 4, "-4/3", "QBarRandomProvider_cleanRealRangeUp_vii");
+        cleanRealRangeUp_helper(5, 6, "-4/3", "QBarRandomProvider_cleanRealRangeUp_viii");
+        cleanRealRangeUp_helper(2, 4, "sqrt(2)", "QBarRandomProvider_cleanRealRangeUp_ix");
+        cleanRealRangeUp_helper(5, 6, "sqrt(2)", "QBarRandomProvider_cleanRealRangeUp_x");
+        cleanRealRangeUp_helper(2, 4, "-sqrt(2)", "QBarRandomProvider_cleanRealRangeUp_xi");
+        cleanRealRangeUp_helper(5, 6, "-sqrt(2)", "QBarRandomProvider_cleanRealRangeUp_xii");
+        cleanRealRangeUp_helper(2, 4, "(1+sqrt(5))/2", "QBarRandomProvider_cleanRealRangeUp_xiii");
+        cleanRealRangeUp_helper(5, 6, "(1+sqrt(5))/2", "QBarRandomProvider_cleanRealRangeUp_xiv");
+        cleanRealRangeUp_helper(2, 4, "root 0 of x^5-x-1", "QBarRandomProvider_cleanRealRangeUp_xv");
+        cleanRealRangeUp_helper(5, 6, "root 0 of x^5-x-1", "QBarRandomProvider_cleanRealRangeUp_xvi");
+
+        cleanRealRangeUp_fail_helper(1, 4, "0");
+        cleanRealRangeUp_fail_helper(2, 3, "0");
+        cleanRealRangeUp_fail_helper(1, 4, "sqrt(2)");
+        cleanRealRangeUp_fail_helper(2, 3, "sqrt(2)");
+    }
+
+    private static void realRangeUp_helper(
+            int scale,
+            int secondaryScale,
+            @NotNull String a,
+            @NotNull String output
+    ) {
+        reals_helper(
+                P.withScale(scale).withSecondaryScale(secondaryScale).realRangeUp(Algebraic.readStrict(a).get()),
+                output
+        );
+        P.reset();
+    }
+
+    private static void realRangeUp_fail_helper(int scale, int secondaryScale, @NotNull String a) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).realRangeUp(Algebraic.readStrict(a).get());
+            fail();
+        } catch (IllegalStateException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testRealRangeUp() {
+        realRangeUp_helper(2, 4, "0", "QBarRandomProvider_realRangeUp_i");
+        realRangeUp_helper(5, 6, "0", "QBarRandomProvider_realRangeUp_ii");
+        realRangeUp_helper(2, 4, "1", "QBarRandomProvider_realRangeUp_iii");
+        realRangeUp_helper(5, 6, "1", "QBarRandomProvider_realRangeUp_iv");
+        realRangeUp_helper(2, 4, "1/2", "QBarRandomProvider_realRangeUp_v");
+        realRangeUp_helper(5, 6, "1/2", "QBarRandomProvider_realRangeUp_vi");
+        realRangeUp_helper(2, 4, "-4/3", "QBarRandomProvider_realRangeUp_vii");
+        realRangeUp_helper(5, 6, "-4/3", "QBarRandomProvider_realRangeUp_viii");
+        realRangeUp_helper(2, 4, "sqrt(2)", "QBarRandomProvider_realRangeUp_ix");
+        realRangeUp_helper(5, 6, "sqrt(2)", "QBarRandomProvider_realRangeUp_x");
+        realRangeUp_helper(2, 4, "-sqrt(2)", "QBarRandomProvider_realRangeUp_xi");
+        realRangeUp_helper(5, 6, "-sqrt(2)", "QBarRandomProvider_realRangeUp_xii");
+        realRangeUp_helper(2, 4, "(1+sqrt(5))/2", "QBarRandomProvider_realRangeUp_xiii");
+        realRangeUp_helper(5, 6, "(1+sqrt(5))/2", "QBarRandomProvider_realRangeUp_xiv");
+        realRangeUp_helper(2, 4, "root 0 of x^5-x-1", "QBarRandomProvider_realRangeUp_xv");
+        realRangeUp_helper(5, 6, "root 0 of x^5-x-1", "QBarRandomProvider_realRangeUp_xvi");
+
+        realRangeUp_fail_helper(1, 4, "0");
+        realRangeUp_fail_helper(2, 3, "0");
+        realRangeUp_fail_helper(1, 4, "sqrt(2)");
+        realRangeUp_fail_helper(2, 3, "sqrt(2)");
+    }
+
+    private static void cleanRealRangeDown_helper(
+            int scale,
+            int secondaryScale,
+            @NotNull String a,
+            @NotNull String output
+    ) {
+        reals_helper(
+                P.withScale(scale).withSecondaryScale(secondaryScale)
+                        .cleanRealRangeDown(Algebraic.readStrict(a).get()),
+                output
+        );
+        P.reset();
+    }
+
+    private static void cleanRealRangeDown_fail_helper(int scale, int secondaryScale, @NotNull String a) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).cleanRealRangeDown(Algebraic.readStrict(a).get());
+            fail();
+        } catch (IllegalStateException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testCleanRealRangeDown() {
+        cleanRealRangeDown_helper(2, 4, "0", "QBarRandomProvider_cleanRealRangeDown_i");
+        cleanRealRangeDown_helper(5, 6, "0", "QBarRandomProvider_cleanRealRangeDown_ii");
+        cleanRealRangeDown_helper(2, 4, "1", "QBarRandomProvider_cleanRealRangeDown_iii");
+        cleanRealRangeDown_helper(5, 6, "1", "QBarRandomProvider_cleanRealRangeDown_iv");
+        cleanRealRangeDown_helper(2, 4, "1/2", "QBarRandomProvider_cleanRealRangeDown_v");
+        cleanRealRangeDown_helper(5, 6, "1/2", "QBarRandomProvider_cleanRealRangeDown_vi");
+        cleanRealRangeDown_helper(2, 4, "-4/3", "QBarRandomProvider_cleanRealRangeDown_vii");
+        cleanRealRangeDown_helper(5, 6, "-4/3", "QBarRandomProvider_cleanRealRangeDown_viii");
+        cleanRealRangeDown_helper(2, 4, "sqrt(2)", "QBarRandomProvider_cleanRealRangeDown_ix");
+        cleanRealRangeDown_helper(5, 6, "sqrt(2)", "QBarRandomProvider_cleanRealRangeDown_x");
+        cleanRealRangeDown_helper(2, 4, "-sqrt(2)", "QBarRandomProvider_cleanRealRangeDown_xi");
+        cleanRealRangeDown_helper(5, 6, "-sqrt(2)", "QBarRandomProvider_cleanRealRangeDown_xii");
+        cleanRealRangeDown_helper(2, 4, "(1+sqrt(5))/2", "QBarRandomProvider_cleanRealRangeDown_xiii");
+        cleanRealRangeDown_helper(5, 6, "(1+sqrt(5))/2", "QBarRandomProvider_cleanRealRangeDown_xiv");
+        cleanRealRangeDown_helper(2, 4, "root 0 of x^5-x-1", "QBarRandomProvider_cleanRealRangeDown_xv");
+        cleanRealRangeDown_helper(5, 6, "root 0 of x^5-x-1", "QBarRandomProvider_cleanRealRangeDown_xvi");
+
+        cleanRealRangeDown_fail_helper(1, 4, "0");
+        cleanRealRangeDown_fail_helper(2, 3, "0");
+        cleanRealRangeDown_fail_helper(1, 4, "sqrt(2)");
+        cleanRealRangeDown_fail_helper(2, 3, "sqrt(2)");
+    }
+
+    private static void realRangeDown_helper(
+            int scale,
+            int secondaryScale,
+            @NotNull String a,
+            @NotNull String output
+    ) {
+        reals_helper(
+                P.withScale(scale).withSecondaryScale(secondaryScale).realRangeDown(Algebraic.readStrict(a).get()),
+                output
+        );
+        P.reset();
+    }
+
+    private static void realRangeDown_fail_helper(int scale, int secondaryScale, @NotNull String a) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).realRangeDown(Algebraic.readStrict(a).get());
+            fail();
+        } catch (IllegalStateException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testRealRangeDown() {
+        realRangeDown_helper(2, 4, "0", "QBarRandomProvider_realRangeDown_i");
+        realRangeDown_helper(5, 6, "0", "QBarRandomProvider_realRangeDown_ii");
+        realRangeDown_helper(2, 4, "1", "QBarRandomProvider_realRangeDown_iii");
+        realRangeDown_helper(5, 6, "1", "QBarRandomProvider_realRangeDown_iv");
+        realRangeDown_helper(2, 4, "1/2", "QBarRandomProvider_realRangeDown_v");
+        realRangeDown_helper(5, 6, "1/2", "QBarRandomProvider_realRangeDown_vi");
+        realRangeDown_helper(2, 4, "-4/3", "QBarRandomProvider_realRangeDown_vii");
+        realRangeDown_helper(5, 6, "-4/3", "QBarRandomProvider_realRangeDown_viii");
+        realRangeDown_helper(2, 4, "sqrt(2)", "QBarRandomProvider_realRangeDown_ix");
+        realRangeDown_helper(5, 6, "sqrt(2)", "QBarRandomProvider_realRangeDown_x");
+        realRangeDown_helper(2, 4, "-sqrt(2)", "QBarRandomProvider_realRangeDown_xi");
+        realRangeDown_helper(5, 6, "-sqrt(2)", "QBarRandomProvider_realRangeDown_xii");
+        realRangeDown_helper(2, 4, "(1+sqrt(5))/2", "QBarRandomProvider_realRangeDown_xiii");
+        realRangeDown_helper(5, 6, "(1+sqrt(5))/2", "QBarRandomProvider_realRangeDown_xiv");
+        realRangeDown_helper(2, 4, "root 0 of x^5-x-1", "QBarRandomProvider_realRangeDown_xv");
+        realRangeDown_helper(5, 6, "root 0 of x^5-x-1", "QBarRandomProvider_realRangeDown_xvi");
+
+        realRangeDown_fail_helper(1, 4, "0");
+        realRangeDown_fail_helper(2, 3, "0");
+        realRangeDown_fail_helper(1, 4, "sqrt(2)");
+        realRangeDown_fail_helper(2, 3, "sqrt(2)");
+    }
+
+    private static void cleanRealRange_helper(
+            int scale,
+            int secondaryScale,
+            @NotNull String a,
+            @NotNull String b,
+            @NotNull String output
+    ) {
+        reals_helper(
+                P.withScale(scale).withSecondaryScale(secondaryScale)
+                        .cleanRealRange(Algebraic.readStrict(a).get(), Algebraic.readStrict(b).get()),
+                output
+        );
+        P.reset();
+    }
+
+    private static void cleanRealRange_fail_helper(
+            int scale,
+            int secondaryScale,
+            @NotNull String a,
+            @NotNull String b
+    ) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale)
+                    .cleanRealRange(Algebraic.readStrict(a).get(), Algebraic.readStrict(b).get());
+            fail();
+        } catch (IllegalStateException | IllegalArgumentException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testCleanRealRange() {
+        cleanRealRange_helper(2, 4, "0", "0", "QBarRandomProvider_cleanRealRange_i");
+        cleanRealRange_helper(5, 6, "0", "0", "QBarRandomProvider_cleanRealRange_ii");
+        cleanRealRange_helper(2, 4, "1", "1", "QBarRandomProvider_cleanRealRange_iii");
+        cleanRealRange_helper(5, 6, "1", "1", "QBarRandomProvider_cleanRealRange_iv");
+        cleanRealRange_helper(2, 4, "sqrt(2)", "sqrt(2)", "QBarRandomProvider_cleanRealRange_v");
+        cleanRealRange_helper(5, 6, "sqrt(2)", "sqrt(2)", "QBarRandomProvider_cleanRealRange_vi");
+        cleanRealRange_helper(2, 4, "1", "2", "QBarRandomProvider_cleanRealRange_vii");
+        cleanRealRange_helper(5, 6, "1", "2", "QBarRandomProvider_cleanRealRange_viii");
+        cleanRealRange_helper(2, 4, "-4/3", "1/2", "QBarRandomProvider_cleanRealRange_ix");
+        cleanRealRange_helper(5, 6, "-4/3", "1/2", "QBarRandomProvider_cleanRealRange_x");
+        cleanRealRange_helper(2, 4, "1", "sqrt(2)", "QBarRandomProvider_cleanRealRange_xi");
+        cleanRealRange_helper(5, 6, "1", "sqrt(2)", "QBarRandomProvider_cleanRealRange_xii");
+        cleanRealRange_helper(2, 4, "sqrt(2)", "sqrt(3)", "QBarRandomProvider_cleanRealRange_xiii");
+        cleanRealRange_helper(5, 6, "sqrt(2)", "sqrt(3)", "QBarRandomProvider_cleanRealRange_xiv");
+        cleanRealRange_helper(2, 4, "0", "256", "QBarRandomProvider_cleanRealRange_xv");
+        cleanRealRange_helper(5, 6, "0", "256", "QBarRandomProvider_cleanRealRange_xvi");
+        cleanRealRange_helper(2, 4, "sqrt(2)", "6369051672525773/4503599627370496",
+                "QBarRandomProvider_cleanRealRange_xvii");
+        cleanRealRange_helper(5, 6, "sqrt(2)", "6369051672525773/4503599627370496",
+                "QBarRandomProvider_cleanRealRange_xviii");
+
+        cleanRealRange_fail_helper(1, 4, "0", "1");
+        cleanRealRange_fail_helper(2, 3, "0", "1");
+        cleanRealRange_fail_helper(1, 4, "0", "0");
+        cleanRealRange_fail_helper(2, 3, "0", "0");
+        cleanRealRange_fail_helper(2, 4, "1", "0");
+        cleanRealRange_fail_helper(2, 4, "1/2", "1/3");
+        cleanRealRange_fail_helper(2, 4, "6369051672525773/4503599627370496", "sqrt(2)");
+    }
+
+    private static void realRange_helper(
+            int scale,
+            int secondaryScale,
+            @NotNull String a,
+            @NotNull String b,
+            @NotNull String output
+    ) {
+        reals_helper(
+                P.withScale(scale).withSecondaryScale(secondaryScale)
+                        .realRange(Algebraic.readStrict(a).get(), Algebraic.readStrict(b).get()),
+                output
+        );
+        P.reset();
+    }
+
+    private static void realRange_fail_helper(
+            int scale,
+            int secondaryScale,
+            @NotNull String a,
+            @NotNull String b
+    ) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale)
+                    .realRange(Algebraic.readStrict(a).get(), Algebraic.readStrict(b).get());
+            fail();
+        } catch (IllegalStateException | IllegalArgumentException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testRealRange() {
+        realRange_helper(2, 4, "0", "0", "QBarRandomProvider_realRange_i");
+        realRange_helper(5, 6, "0", "0", "QBarRandomProvider_realRange_ii");
+        realRange_helper(2, 4, "1", "1", "QBarRandomProvider_realRange_iii");
+        realRange_helper(5, 6, "1", "1", "QBarRandomProvider_realRange_iv");
+        realRange_helper(2, 4, "sqrt(2)", "sqrt(2)", "QBarRandomProvider_realRange_v");
+        realRange_helper(5, 6, "sqrt(2)", "sqrt(2)", "QBarRandomProvider_realRange_vi");
+        realRange_helper(2, 4, "1", "2", "QBarRandomProvider_realRange_vii");
+        realRange_helper(5, 6, "1", "2", "QBarRandomProvider_realRange_viii");
+        realRange_helper(2, 4, "-4/3", "1/2", "QBarRandomProvider_realRange_ix");
+        realRange_helper(5, 6, "-4/3", "1/2", "QBarRandomProvider_realRange_x");
+        realRange_helper(2, 4, "1", "sqrt(2)", "QBarRandomProvider_realRange_xi");
+        realRange_helper(5, 6, "1", "sqrt(2)", "QBarRandomProvider_realRange_xii");
+        realRange_helper(2, 4, "sqrt(2)", "sqrt(3)", "QBarRandomProvider_realRange_xiii");
+        realRange_helper(5, 6, "sqrt(2)", "sqrt(3)", "QBarRandomProvider_realRange_xiv");
+        realRange_helper(2, 4, "0", "256", "QBarRandomProvider_realRange_xv");
+        realRange_helper(5, 6, "0", "256", "QBarRandomProvider_realRange_xvi");
+        realRange_helper(2, 4, "sqrt(2)", "6369051672525773/4503599627370496", "QBarRandomProvider_realRange_xvii");
+        realRange_helper(5, 6, "sqrt(2)", "6369051672525773/4503599627370496", "QBarRandomProvider_realRange_xviii");
+
+        realRange_fail_helper(1, 4, "0", "1");
+        realRange_fail_helper(2, 3, "0", "1");
+        realRange_fail_helper(1, 4, "0", "0");
+        realRange_fail_helper(2, 3, "0", "0");
+        realRange_fail_helper(2, 4, "1", "0");
+        realRange_fail_helper(2, 4, "1/2", "1/3");
+        realRange_fail_helper(2, 4, "6369051672525773/4503599627370496", "sqrt(2)");
+    }
+
     private static void algebraics_helper(
             @NotNull Iterable<Algebraic> input,
             @NotNull String output,

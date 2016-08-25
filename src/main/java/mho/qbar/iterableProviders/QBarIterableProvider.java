@@ -4033,16 +4033,20 @@ public strictfp abstract class QBarIterableProvider {
      * @param b the inclusive upper bound of the generated {@code Real}s
      */
     public @NotNull Iterable<Real> realRange(@NotNull Algebraic a, @NotNull Algebraic b) {
-        return withScale(1).choose(
-                map(Algebraic::realValue, range(a, b)),
-                choose(
-                        Arrays.asList(
-                                map(x -> Real.leftFuzzyRepresentation(x.rationalValueExact()), range(1, a, b)),
-                                map(x -> Real.rightFuzzyRepresentation(x.rationalValueExact()), range(1, a, b)),
-                                map(x -> Real.fuzzyRepresentation(x.rationalValueExact()), range(1, a, b))
-                        )
-                )
-        );
+        if (a.equals(b) && !a.isRational()) {
+            return repeat(a.realValue());
+        } else {
+            return withScale(1).choose(
+                    map(Algebraic::realValue, range(a, b)),
+                    choose(
+                            Arrays.asList(
+                                    map(x -> Real.leftFuzzyRepresentation(x.rationalValueExact()), range(1, a, b)),
+                                    map(x -> Real.rightFuzzyRepresentation(x.rationalValueExact()), range(1, a, b)),
+                                    map(x -> Real.fuzzyRepresentation(x.rationalValueExact()), range(1, a, b))
+                            )
+                    )
+            );
+        }
     }
 
     /**
