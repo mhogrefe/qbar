@@ -472,8 +472,10 @@ public class IntervalProperties extends QBarTestProperties {
             assertEquals(as, union, union_alt(as));
             assertTrue(as, increasing(union));
             assertTrue(as.toString(), and(map(p -> p.a.disjoint(p.b), EP.distinctPairs(union))));
-            for (Rational r : take(TINY_LIMIT, mux(toList(map(P::rationalsIn, as))))) { //todo use choose
-                assertTrue(as, or(map(a -> a.contains(r), union)));
+            if (!as.isEmpty()) {
+                for (Rational r : take(TINY_LIMIT, P.choose(toList(map(P::rationalsIn, as))))) {
+                    assertTrue(as, or(map(a -> a.contains(r), union)));
+                }
             }
         }
 
