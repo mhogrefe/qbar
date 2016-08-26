@@ -156,12 +156,31 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         assertTrue(message, unique(txs));
     }
 
+    private static <T> void test_helperNoUnique(
+            int limit,
+            @NotNull Object message,
+            @NotNull Iterable<T> xs,
+            @NotNull Predicate<T> predicate
+    ) {
+        Iterable<T> txs = take(limit, xs);
+        assertTrue(message, all(x -> x != null && predicate.test(x), txs));
+        testNoRemove(limit, txs);
+    }
+
     private static <T> void simpleTest(
             @NotNull Object message,
             @NotNull Iterable<T> xs,
             @NotNull Predicate<T> predicate
     ) {
         test_helper(TINY_LIMIT, message, xs, predicate);
+    }
+
+    private static <T> void simpleTestNoUnique(
+            @NotNull Object message,
+            @NotNull Iterable<T> xs,
+            @NotNull Predicate<T> predicate
+    ) {
+        test_helperNoUnique(TINY_LIMIT, message, xs, predicate);
     }
 
     private static <T> void biggerTest(
@@ -1005,57 +1024,59 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
 
     private void propertiesPositiveCleanReals() {
         initializeConstant("positiveCleanReals()");
-        simpleTest(QEP, QEP.positiveCleanReals(), x -> x.signumUnsafe() == 1);
+        simpleTestNoUnique(QEP, QEP.positiveCleanReals(), x -> x.signumUnsafe() == 1);
     }
 
     private void propertiesPositiveReals() {
         initializeConstant("positiveReals()");
-        simpleTest(QEP, QEP.positiveReals(), x -> x.signumUnsafe() == 1);
+        simpleTestNoUnique(QEP, QEP.positiveReals(), x -> x.signumUnsafe() == 1);
     }
 
     private void propertiesNegativeCleanReals() {
         initializeConstant("negativeCleanReals()");
-        simpleTest(QEP, QEP.negativeCleanReals(), x -> x.signumUnsafe() == -1);
+        simpleTestNoUnique(QEP, QEP.negativeCleanReals(), x -> x.signumUnsafe() == -1);
     }
 
     private void propertiesNegativeReals() {
         initializeConstant("negativeReals()");
-        simpleTest(QEP, QEP.negativeReals(), x -> x.signumUnsafe() == -1);
+        simpleTestNoUnique(QEP, QEP.negativeReals(), x -> x.signumUnsafe() == -1);
     }
 
     private void propertiesNonzeroCleanReals() {
         initializeConstant("nonzeroCleanReals()");
-        simpleTest(QEP, QEP.nonzeroCleanReals(), x -> x.signumUnsafe() != 0);
+        simpleTestNoUnique(QEP, QEP.nonzeroCleanReals(), x -> x.signumUnsafe() != 0);
     }
 
     private void propertiesNonzeroReals() {
         initializeConstant("nonzeroReals()");
-        simpleTest(QEP, QEP.nonzeroReals(), x -> x.signumUnsafe() != 0);
+        simpleTestNoUnique(QEP, QEP.nonzeroReals(), x -> x.signumUnsafe() != 0);
     }
 
     private void propertiesCleanReals() {
         initializeConstant("cleanReals()");
-        simpleTest(QEP, QEP.cleanReals(), x -> true);
+        simpleTestNoUnique(QEP, QEP.cleanReals(), x -> true);
     }
 
     private void propertiesReals() {
         initializeConstant("reals()");
-        simpleTest(QEP, QEP.reals(), x -> true);
+        simpleTestNoUnique(QEP, QEP.reals(), x -> true);
     }
 
     private void propertiesCleanRealRangeUp() {
         initialize("cleanRealRangeUp(Algebraic)");
         for (Algebraic x : take(SMALL_LIMIT, P.withScale(4).algebraics())) {
             Iterable<Real> xs = QEP.cleanRealRangeUp(x);
-            simpleTest(x, xs, y -> {
-                Optional<Integer> oc = y.compareTo(x.realValue(), Real.DEFAULT_RESOLUTION);
-                return !oc.isPresent() || oc.get() != -1;
+            simpleTestNoUnique(x, xs, y -> {
+                //noinspection SuspiciousNameCombination
+                Optional<Boolean> oc = Real.ge(y, x.realValue(), Real.DEFAULT_RESOLUTION);
+                return !oc.isPresent() || oc.get();
             });
         }
 
         for (Rational r : take(SMALL_LIMIT, P.rationals())) {
             Iterable<Real> xs = QEP.cleanRealRangeUp(Algebraic.of(r));
-            simpleTest(r, xs, y -> y.compareTo(r) >= 0);
+            //noinspection SuspiciousNameCombination
+            simpleTestNoUnique(r, xs, y -> Real.geUnsafe(y, r));
         }
     }
 
@@ -1063,9 +1084,10 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         initialize("realRangeUp(Algebraic)");
         for (Algebraic x : take(SMALL_LIMIT, P.withScale(4).algebraics())) {
             Iterable<Real> xs = QEP.realRangeUp(x);
-            simpleTest(x, xs, y -> {
-                Optional<Integer> oc = y.compareTo(x.realValue(), Real.DEFAULT_RESOLUTION);
-                return !oc.isPresent() || oc.get() != -1;
+            simpleTestNoUnique(x, xs, y -> {
+                //noinspection SuspiciousNameCombination
+                Optional<Boolean> oc = Real.ge(y, x.realValue(), Real.DEFAULT_RESOLUTION);
+                return !oc.isPresent() || oc.get();
             });
         }
     }
@@ -1074,15 +1096,17 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         initialize("cleanRealRangeDown(Algebraic)");
         for (Algebraic x : take(SMALL_LIMIT, P.withScale(4).algebraics())) {
             Iterable<Real> xs = QEP.cleanRealRangeDown(x);
-            simpleTest(x, xs, y -> {
-                Optional<Integer> oc = y.compareTo(x.realValue(), Real.DEFAULT_RESOLUTION);
-                return !oc.isPresent() || oc.get() != 1;
+            simpleTestNoUnique(x, xs, y -> {
+                //noinspection SuspiciousNameCombination
+                Optional<Boolean> oc = Real.le(y, x.realValue(), Real.DEFAULT_RESOLUTION);
+                return !oc.isPresent() || oc.get();
             });
         }
 
         for (Rational r : take(SMALL_LIMIT, P.rationals())) {
             Iterable<Real> xs = QEP.cleanRealRangeDown(Algebraic.of(r));
-            simpleTest(r, xs, y -> y.compareTo(r) <= 0);
+            //noinspection SuspiciousNameCombination
+            simpleTestNoUnique(r, xs, y -> Real.leUnsafe(y, r));
         }
     }
 
@@ -1090,9 +1114,10 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         initialize("realRangeDown(Algebraic)");
         for (Algebraic x : take(SMALL_LIMIT, P.withScale(4).algebraics())) {
             Iterable<Real> xs = QEP.realRangeDown(x);
-            simpleTest(x, xs, y -> {
-                Optional<Integer> oc = y.compareTo(x.realValue(), Real.DEFAULT_RESOLUTION);
-                return !oc.isPresent() || oc.get() != 1;
+            simpleTestNoUnique(x, xs, y -> {
+                //noinspection SuspiciousNameCombination
+                Optional<Boolean> oc = Real.le(y, x.realValue(), Real.DEFAULT_RESOLUTION);
+                return !oc.isPresent() || oc.get();
             });
         }
     }
@@ -1101,13 +1126,15 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         initialize("cleanRealRange(Algebraic, Algebraic)");
         for (Pair<Algebraic, Algebraic> p : take(SMALL_LIMIT, P.bagPairs(P.withScale(4).algebraics()))) {
             Iterable<Real> xs = QEP.cleanRealRange(p.a, p.b);
-            simpleTest(p, xs, y -> {
-                Optional<Integer> ocLower = y.compareTo(p.a.realValue(), Real.DEFAULT_RESOLUTION);
-                if (ocLower.isPresent() && ocLower.get() == -1) {
+            simpleTestNoUnique(p, xs, y -> {
+                //noinspection SuspiciousNameCombination
+                Optional<Boolean> lower = Real.ge(y, p.a.realValue(), Real.DEFAULT_RESOLUTION);
+                if (lower.isPresent() && !lower.get()) {
                     return false;
                 }
-                Optional<Integer> ocUpper = y.compareTo(p.b.realValue(), Real.DEFAULT_RESOLUTION);
-                return !ocUpper.isPresent() || ocUpper.get() != 1;
+                //noinspection SuspiciousNameCombination
+                Optional<Boolean> upper = Real.le(y, p.b.realValue(), Real.DEFAULT_RESOLUTION);
+                return !upper.isPresent() || upper.get();
             });
         }
 
@@ -1127,13 +1154,15 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         initialize("realRange(Algebraic, Algebraic)");
         for (Pair<Algebraic, Algebraic> p : take(SMALL_LIMIT, P.bagPairs(P.withScale(4).algebraics()))) {
             Iterable<Real> xs = QEP.realRange(p.a, p.b);
-            simpleTest(p, xs, y -> {
-                Optional<Integer> ocLower = y.compareTo(p.a.realValue(), Real.DEFAULT_RESOLUTION);
-                if (ocLower.isPresent() && ocLower.get() == -1) {
+            simpleTestNoUnique(p, xs, y -> {
+                //noinspection SuspiciousNameCombination
+                Optional<Boolean> lower = Real.ge(y, p.a.realValue(), Real.DEFAULT_RESOLUTION);
+                if (lower.isPresent() && !lower.get()) {
                     return false;
                 }
-                Optional<Integer> ocUpper = y.compareTo(p.b.realValue(), Real.DEFAULT_RESOLUTION);
-                return !ocUpper.isPresent() || ocUpper.get() != 1;
+                //noinspection SuspiciousNameCombination
+                Optional<Boolean> upper = Real.le(y, p.b.realValue(), Real.DEFAULT_RESOLUTION);
+                return !upper.isPresent() || upper.get();
             });
         }
 

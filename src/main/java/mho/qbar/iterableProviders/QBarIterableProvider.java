@@ -1,6 +1,7 @@
 package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.*;
+import mho.qbar.objects.Vector;
 import mho.wheels.iterables.IterableProvider;
 import mho.wheels.iterables.RandomProvider;
 import mho.wheels.math.BinaryFraction;
@@ -13,10 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.*;
@@ -4034,7 +4032,7 @@ public strictfp abstract class QBarIterableProvider {
      */
     public @NotNull Iterable<Real> realRange(@NotNull Algebraic a, @NotNull Algebraic b) {
         if (a.equals(b) && !a.isRational()) {
-            return repeat(a.realValue());
+            return map(Algebraic::realValue, range(a, a));
         } else {
             return withScale(1).choose(
                     map(Algebraic::realValue, range(a, b)),

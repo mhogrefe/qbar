@@ -17,8 +17,6 @@ import java.util.*;
 import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.ordering.Ordering.le;
-import static mho.wheels.ordering.Ordering.lt;
 import static mho.wheels.testing.Testing.*;
 
 /**
@@ -266,7 +264,7 @@ public final class Real implements Iterable<Interval> {
                 if (Objects.equals(lowerValue, upperValue)) {
                     return NullableOptional.of(lowerValue);
                 }
-                if (lt(upper.subtract(lower), resolution)) {
+                if (Ordering.lt(upper.subtract(lower), resolution)) {
                     return NullableOptional.empty();
                 }
                 previousLower = Optional.of(lower);
@@ -444,7 +442,7 @@ public final class Real implements Iterable<Interval> {
                         interval = interval.multiply(base);
                         return lowerFloor.mod(base);
                     } else {
-                        if (lt(interval.diameter().get(), resolution)) {
+                        if (Ordering.lt(interval.diameter().get(), resolution)) {
                             aborted = true;
                             return IntegerUtils.NEGATIVE_ONE;
                         }
@@ -457,14 +455,14 @@ public final class Real implements Iterable<Interval> {
     }
 
     public @NotNull String toStringBaseUnsafe(@NotNull BigInteger base, int scale) {
-        if (lt(base, IntegerUtils.TWO)) {
+        if (Ordering.lt(base, IntegerUtils.TWO)) {
             throw new IllegalArgumentException("base must be at least 2. Invalid base: " + base);
         }
         Optional<Rational> or = rationalValue();
         if (or.isPresent()) {
             return or.get().toStringBase(base, scale);
         }
-        boolean baseIsSmall = le(base, BigInteger.valueOf(36));
+        boolean baseIsSmall = Ordering.le(base, BigInteger.valueOf(36));
         Pair<List<BigInteger>, Iterable<BigInteger>> digits = abs().digitsUnsafe(base);
         Function<BigInteger, String> digitFunction = baseIsSmall ?
                 i -> Character.toString(IntegerUtils.toDigit(i.intValueExact())) :
@@ -479,14 +477,14 @@ public final class Real implements Iterable<Interval> {
     }
 
     public @NotNull String toStringBase(@NotNull BigInteger base, int scale, @NotNull Rational resolution) {
-        if (lt(base, IntegerUtils.TWO)) {
+        if (Ordering.lt(base, IntegerUtils.TWO)) {
             throw new IllegalArgumentException("base must be at least 2. Invalid base: " + base);
         }
         Optional<Rational> or = rationalValue();
         if (or.isPresent()) {
             return or.get().toStringBase(base, scale);
         }
-        boolean baseIsSmall = le(base, BigInteger.valueOf(36));
+        boolean baseIsSmall = Ordering.le(base, BigInteger.valueOf(36));
         Optional<Pair<List<BigInteger>, Iterable<BigInteger>>> oDigits = abs().digits(base, resolution);
         if (!oDigits.isPresent()) {
             Optional<Integer> oSignum = signum(resolution);
@@ -502,7 +500,7 @@ public final class Real implements Iterable<Interval> {
             Rational bound = Ordering.max(firstInterval.getLower().get().abs(), firstInterval.getUpper().get().abs());
             int maxDigitsToTheLeft = 0;
             Rational power = Rational.ONE;
-            while (le(power, bound)) {
+            while (Ordering.le(power, bound)) {
                 power = power.multiply(base);
                 maxDigitsToTheLeft++;
             }
@@ -899,6 +897,22 @@ public final class Real implements Iterable<Interval> {
         }
     }
 
+    public static boolean ltUnsafe(@NotNull Real x, @NotNull Real y) {
+        return x.compareToUnsafe(y) < 0;
+    }
+
+    public static boolean gtUnsafe(@NotNull Real x, @NotNull Real y) {
+        return x.compareToUnsafe(y) > 0;
+    }
+
+    public static boolean leUnsafe(@NotNull Real x, @NotNull Real y) {
+        return x.compareToUnsafe(y) <= 0;
+    }
+
+    public static boolean geUnsafe(@NotNull Real x, @NotNull Real y) {
+        return x.compareToUnsafe(y) >= 0;
+    }
+
     public @NotNull Optional<Integer> compareTo(@NotNull Real that, @NotNull Rational resolution) {
         if (this == that) return Optional.of(0);
         Iterator<Interval> thisIntervals = intervals.iterator();
@@ -910,13 +924,30 @@ public final class Real implements Iterable<Interval> {
             if (o.isPresent()) {
                 return Optional.of(o.get().toInt());
             } else if (thisInterval.isFinitelyBounded() && thatInterval.isFinitelyBounded() &&
-                    lt(thisInterval.diameter().get(), resolution) && lt(thatInterval.diameter().get(), resolution)) {
+                    Ordering.lt(thisInterval.diameter().get(), resolution) &&
+                    Ordering.lt(thatInterval.diameter().get(), resolution)) {
                 return Optional.empty();
             }
         }
     }
 
-    public int compareTo(@NotNull Rational that) {
+    public static @NotNull Optional<Boolean> lt(@NotNull Real x, @NotNull Real y, @NotNull Rational resolution) {
+        return x.compareTo(y, resolution).map(c -> c < 0);
+    }
+
+    public static @NotNull Optional<Boolean> gt(@NotNull Real x, @NotNull Real y, @NotNull Rational resolution) {
+        return x.compareTo(y, resolution).map(c -> c > 0);
+    }
+
+    public static @NotNull Optional<Boolean> le(@NotNull Real x, @NotNull Real y, @NotNull Rational resolution) {
+        return x.compareTo(y, resolution).map(c -> c <= 0);
+    }
+
+    public static @NotNull Optional<Boolean> ge(@NotNull Real x, @NotNull Real y, @NotNull Rational resolution) {
+        return x.compareTo(y, resolution).map(c -> c >= 0);
+    }
+
+    public int compareToUnsafe(@NotNull Rational that) {
         Optional<Rational> thisRational = rationalValue();
         if (thisRational.isPresent()) {
             return thisRational.get().compareTo(that);
@@ -932,8 +963,55 @@ public final class Real implements Iterable<Interval> {
         throw new IllegalStateException("unreachable");
     }
 
-    public static boolean leUnsafe(@NotNull Real x, @NotNull Real y) {
+    public static boolean ltUnsafe(@NotNull Real x, @NotNull Rational y) {
+        return x.compareToUnsafe(y) < 0;
+    }
+
+    public static boolean gtUnsafe(@NotNull Real x, @NotNull Rational y) {
+        return x.compareToUnsafe(y) > 0;
+    }
+
+    public static boolean leUnsafe(@NotNull Real x, @NotNull Rational y) {
         return x.compareToUnsafe(y) <= 0;
+    }
+
+    public static boolean geUnsafe(@NotNull Real x, @NotNull Rational y) {
+        return x.compareToUnsafe(y) >= 0;
+    }
+
+    public @NotNull Optional<Integer> compareTo(@NotNull Rational that, @NotNull Rational resolution) {
+        Optional<Rational> thisRational = rationalValue();
+        if (thisRational.isPresent()) {
+            return Optional.of(thisRational.get().compareTo(that));
+        }
+        for (Interval interval : intervals) {
+            if (!interval.contains(that)) {
+                Rational sample = interval.getLower().isPresent() ?
+                        interval.getLower().get() :
+                        interval.getUpper().get();
+                return Optional.of(sample.compareTo(that));
+            }
+            if (interval.isFinitelyBounded() && Ordering.lt(interval.diameter().get(), resolution)) {
+                return Optional.empty();
+            }
+        }
+        throw new IllegalStateException("unreachable");
+    }
+
+    public static @NotNull Optional<Boolean> lt(@NotNull Real x, @NotNull Rational y, @NotNull Rational resolution) {
+        return x.compareTo(y, resolution).map(c -> c < 0);
+    }
+
+    public static @NotNull Optional<Boolean> gt(@NotNull Real x, @NotNull Rational y, @NotNull Rational resolution) {
+        return x.compareTo(y, resolution).map(c -> c > 0);
+    }
+
+    public static @NotNull Optional<Boolean> le(@NotNull Real x, @NotNull Rational y, @NotNull Rational resolution) {
+        return x.compareTo(y, resolution).map(c -> c <= 0);
+    }
+
+    public static @NotNull Optional<Boolean> ge(@NotNull Real x, @NotNull Rational y, @NotNull Rational resolution) {
+        return x.compareTo(y, resolution).map(c -> c >= 0);
     }
 
     /**
