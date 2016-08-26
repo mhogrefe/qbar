@@ -1138,6 +1138,12 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
             });
         }
 
+        for (Pair<Rational, Rational> p : take(SMALL_LIMIT, P.bagPairs(P.rationals()))) {
+            Iterable<Real> xs = QEP.cleanRealRange(Algebraic.of(p.a), Algebraic.of(p.b));
+            //noinspection SuspiciousNameCombination
+            simpleTestNoUnique(p, xs, y -> Real.geUnsafe(y, p.a) && Real.leUnsafe(y, p.b));
+        }
+
         for (Algebraic x : take(LIMIT, P.algebraics())) {
             assertEquals(x, length(QEP.cleanRealRange(x, x)), 1);
         }

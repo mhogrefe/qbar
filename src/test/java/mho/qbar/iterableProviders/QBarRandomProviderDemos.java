@@ -1137,6 +1137,93 @@ public class QBarRandomProviderDemos extends QBarDemos {
         }
     }
 
+    private void demoCleanRealRangeUp() {
+        Iterable<Pair<QBarRandomProvider, Algebraic>> ps = P.pairs(
+                filterInfinite(
+                        rp -> rp.getScale() >= 2 && rp.getSecondaryScale() >= 4,
+                        P.withScale(1).qbarRandomProvidersDefaultTertiaryScale()
+                ),
+                P.withScale(1).withSecondaryScale(4).algebraics()
+        );
+        for (Pair<QBarRandomProvider, Algebraic> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("cleanRealRangeUp(" + p.a + ", " + p.b + ") = " + its(p.a.cleanRealRangeUp(p.b)));
+        }
+    }
+
+    private void demoRealRangeUp() {
+        Iterable<Pair<QBarRandomProvider, Algebraic>> ps = P.pairs(
+                filterInfinite(
+                        rp -> rp.getScale() >= 2 && rp.getSecondaryScale() >= 4,
+                        P.withScale(1).qbarRandomProvidersDefaultTertiaryScale()
+                ),
+                P.withScale(1).withSecondaryScale(4).algebraics()
+        );
+        for (Pair<QBarRandomProvider, Algebraic> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("realRangeUp(" + p.a + ", " + p.b + ") = " + its(p.a.realRangeUp(p.b)));
+        }
+    }
+
+    private void demoCleanRealRangeDown() {
+        Iterable<Pair<QBarRandomProvider, Algebraic>> ps = P.pairs(
+                filterInfinite(
+                        rp -> rp.getScale() >= 2 && rp.getSecondaryScale() >= 4,
+                        P.withScale(1).qbarRandomProvidersDefaultTertiaryScale()
+                ),
+                P.withScale(1).withSecondaryScale(4).algebraics()
+        );
+        for (Pair<QBarRandomProvider, Algebraic> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("cleanRealRangeDown(" + p.a + ", " + p.b + ") = " + its(p.a.cleanRealRangeDown(p.b)));
+        }
+    }
+
+    private void demoRealRangeDown() {
+        Iterable<Pair<QBarRandomProvider, Algebraic>> ps = P.pairs(
+                filterInfinite(
+                        rp -> rp.getScale() >= 2 && rp.getSecondaryScale() >= 4,
+                        P.withScale(1).qbarRandomProvidersDefaultTertiaryScale()
+                ),
+                P.withScale(1).withSecondaryScale(4).algebraics()
+        );
+        for (Pair<QBarRandomProvider, Algebraic> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("realRangeDown(" + p.a + ", " + p.b + ") = " + its(p.a.realRangeDown(p.b)));
+        }
+    }
+
+    private void demoCleanRealRange() {
+        Iterable<Triple<QBarRandomProvider, Algebraic, Algebraic>> ts = filterInfinite(
+                t -> le(t.b, t.c),
+                P.triples(
+                        filterInfinite(
+                                rp -> rp.getScale() >= 2 && rp.getSecondaryScale() >= 4,
+                                P.withScale(1).qbarRandomProvidersDefaultTertiaryScale()
+                        ),
+                        P.withScale(1).withSecondaryScale(4).algebraics(),
+                        P.withScale(1).withSecondaryScale(4).algebraics()
+                )
+        );
+        for (Triple<QBarRandomProvider, Algebraic, Algebraic> t : take(MEDIUM_LIMIT, ts)) {
+            System.out.println("cleanRealRange(" + t.a + ", " + t.b + ", " + t.c + ") = " +
+                    its(t.a.cleanRealRange(t.b, t.c)));
+        }
+    }
+
+    private void demoRealRange() {
+        Iterable<Triple<QBarRandomProvider, Algebraic, Algebraic>> ts = filterInfinite(
+                t -> le(t.b, t.c),
+                P.triples(
+                        filterInfinite(
+                                rp -> rp.getScale() >= 2 && rp.getSecondaryScale() >= 4,
+                                P.withScale(1).qbarRandomProvidersDefaultTertiaryScale()
+                        ),
+                        P.withScale(1).withSecondaryScale(4).algebraics(),
+                        P.withScale(1).withSecondaryScale(4).algebraics()
+                )
+        );
+        for (Triple<QBarRandomProvider, Algebraic, Algebraic> t : take(MEDIUM_LIMIT, ts)) {
+            System.out.println("realRange(" + t.a + ", " + t.b + ", " + t.c + ") = " + its(t.a.realRange(t.b, t.c)));
+        }
+    }
+
     private void demoPositiveAlgebraics_int() {
         Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairs(
                 filterInfinite(
