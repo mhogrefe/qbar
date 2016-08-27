@@ -50,12 +50,54 @@ import static mho.wheels.testing.Testing.*;
  * carefully, and, whenever possible, use {@link Rational} or {@link Algebraic} instead.</p>
  */
 public final class Real implements Iterable<Interval> {
+    /**
+     * 0
+     */
     public static final @NotNull Real ZERO = of(Rational.ZERO);
 
+    /**
+     * 1
+     */
     public static final @NotNull Real ONE = of(Rational.ONE);
 
+    /**
+     * 10
+     */
+    public static final @NotNull Real TEN = of(Rational.TEN);
+
+    /**
+     * 2
+     */
+    public static final @NotNull Real TWO = of(Rational.TWO);
+
+    /**
+     * –1
+     */
+    public static final @NotNull Real NEGATIVE_ONE = of(Rational.NEGATIVE_ONE);
+
+    /**
+     * 1/2
+     */
+    public static final @NotNull Real ONE_HALF = of(Rational.ONE_HALF);
+
+    /**
+     * the square root of 2
+     */
+    public static final @NotNull Real SQRT_TWO = Algebraic.SQRT_TWO.realValue();
+
+    /**
+     * φ, the golden ratio
+     */
+    public static final @NotNull Real PHI = Algebraic.PHI.realValue();
+
+    /**
+     * e, the base of the natural logarithm
+     */
     public static final @NotNull Real E = exp(Rational.ONE);
 
+    /**
+     * π, the ratio of a circle's circumference to its diameter
+     */
     public static final @NotNull Real PI =
             atan(Rational.of(1, 5)).shiftLeft(2).subtract(atan(Rational.of(1, 239))).shiftLeft(2);
 
