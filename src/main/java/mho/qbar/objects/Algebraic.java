@@ -100,6 +100,15 @@ public final class Algebraic implements Comparable<Algebraic> {
             p -> gt(p.a, p.b) ? new Pair<>(p.b, p.a) : p
     );
 
+    /**
+     * A {@code Comparator} that compares two {@code Algebraic}s by complexity. If two {@code Algbraic}s have different
+     * degrees, the lower-degree one is less complex. If they have the same degrees but their minimal polynomials have
+     * different bit lengths (where the bit length of a polynomial is the sum of the bit lengths of its coefficients),
+     * the one with the shorter minimal polynomial is less complex. If they have the same degrees and their minimal
+     * polynomials have the same bit length but the minimal polynomials are different, the one with the smaller minimal
+     * polynomial is less complex. If they have the same minimal polynomial, the one with the smaller root index is
+     * less complex.
+     */
     private static final @NotNull Comparator<Algebraic> COMPLEXITY_COMPARATOR = (a, b) -> {
         int aDegree = a.degree();
         int bDegree = b.degree();
@@ -292,17 +301,17 @@ public final class Algebraic implements Comparable<Algebraic> {
      * Creates an {@code Algebraic} equal to a {@code Rational}.
      *
      * <ul>
-     *  <li>{@code rational} cannot be null.</li>
+     *  <li>{@code r} cannot be null.</li>
      *  <li>The result is rational.</li>
      * </ul>
      *
-     * @param rational a {@code Rational}
-     * @return the {@code Algebraic} equal to {@code rational}
+     * @param r a {@code Rational}
+     * @return the {@code Algebraic} equal to {@code r}
      */
-    public static @NotNull Algebraic of(@NotNull Rational rational) {
-        if (rational == Rational.ZERO) return ZERO;
-        if (rational == Rational.ONE) return ONE;
-        return new Algebraic(rational);
+    public static @NotNull Algebraic of(@NotNull Rational r) {
+        if (r == Rational.ZERO) return ZERO;
+        if (r == Rational.ONE) return ONE;
+        return new Algebraic(r);
     }
 
     /**

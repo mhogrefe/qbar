@@ -67,6 +67,7 @@
                         <include>**/RationalVectorTest.java</include>
                         <include>**/RationalVectorProperties.java</include>
                         <include>**/RealTest.java</include>
+                        <include>**/RealProperties.java</include>
                         <include>**/VariableTest.java</include>
                         <include>**/VariableProperties.java</include>
                         <include>**/VectorTest.java</include>

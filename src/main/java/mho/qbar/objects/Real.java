@@ -101,20 +101,92 @@ public final class Real implements Iterable<Interval> {
     public static final @NotNull Real PI =
             atan(Rational.of(1, 5)).shiftLeft(2).subtract(atan(Rational.of(1, 239))).shiftLeft(2);
 
+    /**
+     * 2^(-100), the default resolution of those methods which give up a computation after the bounding interval
+     * becomes too small.
+     */
     public static final @NotNull Rational DEFAULT_RESOLUTION = Rational.ONE.shiftRight(SMALL_LIMIT);
 
+    /**
+     * The bounding intervals that define this {@code Real}. See the comment at the top of the class.
+     */
     private final @NotNull Iterable<Interval> intervals;
 
+    /**
+     * Constructs a {@code Real} from an {@code Iterable} of {@code Interval}s. Unfortunately, none of the
+     * preconditions on the argument can be checked.
+     *
+     * <ul>
+     *  <li>{@code interval}s must be infinite. Every element after the first must be contained in its predecessor. The
+     *  diameters of the elements must approach zero. Every element must take a finite amount of computation time to
+     *  produce.</li>
+     *  <li>Any {@code Real} may be generated with this constructor.</li>
+     * </ul>
+     *
+     * @param intervals the bounding intervals that define a {@code Real}
+     */
     public Real(@NotNull Iterable<Interval> intervals) {
         this.intervals = intervals;
     }
 
+    /**
+     * Creates a {@code Real} equal to a {@code Rational}.
+     *
+     * <ul>
+     *  <li>{@code r} cannot be null.</li>
+     *  <li>The result is rational and exact.</li>
+     * </ul>
+     *
+     * @param r a {@code Rational}
+     * @return the {@code Real} equal to {@code r}
+     */
     public static @NotNull Real of(@NotNull Rational r) {
         return new Real(repeat(Interval.of(r)));
     }
 
-    public static @NotNull Real of(@NotNull BigInteger i) {
-        return new Real(repeat(Interval.of(Rational.of(i))));
+    /**
+     * Creates a {@code Real} equal to a {@code BigInteger}.
+     *
+     * <ul>
+     *  <li>{@code n} cannot be null.</li>
+     *  <li>The result is an integer and exact.</li>
+     * </ul>
+     *
+     * @param n a {@code BigInteger}
+     * @return the {@code Real} equal to {@code n}
+     */
+    public static @NotNull Real of(@NotNull BigInteger n) {
+        return new Real(repeat(Interval.of(Rational.of(n))));
+    }
+
+    /**
+     * Creates a {@code Real} equal to a {@code long}.
+     *
+     * <ul>
+     *  <li>{@code n} may be any {@code long}.</li>
+     *  <li>The result is an integer satisfying –2<sup>63</sup>≤x{@literal <}2<sup>63</sup>, and exact.</li>
+     * </ul>
+     *
+     * @param n a {@code long}
+     * @return the {@code Real} equal to {@code n}
+     */
+    public static @NotNull Real of(long n) {
+        return new Real(repeat(Interval.of(Rational.of(n))));
+    }
+
+    /**
+     * Creates a {@code Real} equal to an {@code int}.
+     *
+     * <ul>
+     *  <li>{@code n} may be any {@code int}.</li>
+     *  <li>The result is an integer satisfying –2<sup>31</sup>≤x{@literal <}2<sup>31</sup>, and exact.</li>
+     * </ul>
+     *
+     * @param n an {@code int}
+     * @return the {@code Real} equal to {@code n}
+     */
+    public static @NotNull Real of(int n) {
+        return new Real(repeat(Interval.of(Rational.of(n))));
     }
 
     public static @NotNull Real fuzzyRepresentation(@NotNull Rational r) {
@@ -253,6 +325,25 @@ public final class Real implements Iterable<Interval> {
     @Override
     public Iterator<Interval> iterator() {
         return intervals.iterator();
+    }
+
+    public boolean isExactRational() {
+        Interval first = head(intervals);
+        return first.getLower().isPresent() && first.getLower().equals(first.getUpper());
+    }
+
+    public boolean isExactInteger() {
+        Optional<Rational> rationalValue = rationalValue();
+        return rationalValue.isPresent() && rationalValue.get().isInteger();
+    }
+
+    public @NotNull Optional<Rational> rationalValue() {
+        Interval first = head(intervals);
+        if (first.getLower().isPresent() && first.getLower().equals(first.getUpper())) {
+            return Optional.of(first.getLower().get());
+        } else {
+            return Optional.empty();
+        }
     }
 
     public int match(@NotNull List<Real> targets) {
@@ -588,15 +679,6 @@ public final class Real implements Iterable<Interval> {
         String afterDecimal = concatStrings(map(digitFunction, filter(d -> d.signum() != -1, take(scale, digits.b))));
         result = beforeDecimal + "." + afterDecimal;
         return (signumUnsafe() == -1 ? "-" + result : result) + "...";
-    }
-
-    public @NotNull Optional<Rational> rationalValue() {
-        Interval first = head(intervals);
-        if (first.getLower().isPresent() && first.getLower().equals(first.getUpper())) {
-            return Optional.of(first.getLower().get());
-        } else {
-            return Optional.empty();
-        }
     }
 
     public @NotNull BinaryFraction roundUpToIntegerPowerOfTwo() {
