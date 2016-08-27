@@ -246,7 +246,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             Algebraic x = of(bf);
             x.validate();
             assertEquals(bf, of(bf.getMantissa()).multiply(ONE.shiftLeft(bf.getExponent())), x);
-            assertTrue(bf, IntegerUtils.isPowerOfTwo(x.rationalValueExact().getDenominator()));
+            assertTrue(bf, x.isBinaryFraction());
             inverse(Algebraic::of, Algebraic::binaryFractionValueExact, bf);
         }
     }

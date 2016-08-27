@@ -53,32 +53,32 @@ public final class Real implements Iterable<Interval> {
     /**
      * 0
      */
-    public static final @NotNull Real ZERO = of(Rational.ZERO);
+    public static final @NotNull Real ZERO = new Real(Rational.ZERO);
 
     /**
      * 1
      */
-    public static final @NotNull Real ONE = of(Rational.ONE);
+    public static final @NotNull Real ONE = new Real(Rational.ONE);
 
     /**
      * 10
      */
-    public static final @NotNull Real TEN = of(Rational.TEN);
+    public static final @NotNull Real TEN = new Real(Rational.TEN);
 
     /**
      * 2
      */
-    public static final @NotNull Real TWO = of(Rational.TWO);
+    public static final @NotNull Real TWO = new Real(Rational.TWO);
 
     /**
      * –1
      */
-    public static final @NotNull Real NEGATIVE_ONE = of(Rational.NEGATIVE_ONE);
+    public static final @NotNull Real NEGATIVE_ONE = new Real(Rational.NEGATIVE_ONE);
 
     /**
      * 1/2
      */
-    public static final @NotNull Real ONE_HALF = of(Rational.ONE_HALF);
+    public static final @NotNull Real ONE_HALF = new Real(Rational.ONE_HALF);
 
     /**
      * the square root of 2
@@ -129,6 +129,10 @@ public final class Real implements Iterable<Interval> {
         this.intervals = intervals;
     }
 
+    private Real(@NotNull Rational r) {
+        intervals = repeat(Interval.of(r));
+    }
+
     /**
      * Creates a {@code Real} equal to a {@code Rational}.
      *
@@ -138,10 +142,12 @@ public final class Real implements Iterable<Interval> {
      * </ul>
      *
      * @param r a {@code Rational}
-     * @return the {@code Real} equal to {@code r}
+     * @return the exact {@code Real} equal to {@code r}
      */
     public static @NotNull Real of(@NotNull Rational r) {
-        return new Real(repeat(Interval.of(r)));
+        if (r == Rational.ZERO) return ZERO;
+        if (r == Rational.ONE) return ONE;
+        return new Real(r);
     }
 
     /**
@@ -153,10 +159,12 @@ public final class Real implements Iterable<Interval> {
      * </ul>
      *
      * @param n a {@code BigInteger}
-     * @return the {@code Real} equal to {@code n}
+     * @return the exact {@code Real} equal to {@code n}
      */
     public static @NotNull Real of(@NotNull BigInteger n) {
-        return new Real(repeat(Interval.of(Rational.of(n))));
+        if (n.equals(BigInteger.ZERO)) return ZERO;
+        if (n.equals(BigInteger.ONE)) return ONE;
+        return new Real(Rational.of(n));
     }
 
     /**
@@ -168,10 +176,12 @@ public final class Real implements Iterable<Interval> {
      * </ul>
      *
      * @param n a {@code long}
-     * @return the {@code Real} equal to {@code n}
+     * @return the exact {@code Real} equal to {@code n}
      */
     public static @NotNull Real of(long n) {
-        return new Real(repeat(Interval.of(Rational.of(n))));
+        if (n == 0) return ZERO;
+        if (n == 1) return ONE;
+        return new Real(Rational.of(n));
     }
 
     /**
@@ -183,10 +193,147 @@ public final class Real implements Iterable<Interval> {
      * </ul>
      *
      * @param n an {@code int}
-     * @return the {@code Real} equal to {@code n}
+     * @return the exact {@code Real} equal to {@code n}
      */
     public static @NotNull Real of(int n) {
-        return new Real(repeat(Interval.of(Rational.of(n))));
+        if (n == 0) return ZERO;
+        if (n == 1) return ONE;
+        return new Real(Rational.of(n));
+    }
+
+    /**
+     * Creates a {@code Real} from a {@code BinaryFraction}.
+     *
+     * <ul>
+     *  <li>{@code bf} cannot be null.</li>
+     *  <li>The result is a rational number whose denominator is a power of 2, and is exact.</li>
+     * </ul>
+     *
+     * @param bf the {@code BinaryFraction}
+     * @return the exact {@code Real} corresponding to {@code bf}
+     */
+    public static @NotNull Real of(@NotNull BinaryFraction bf) {
+        if (bf == BinaryFraction.ZERO) return ZERO;
+        if (bf == BinaryFraction.ONE) return ONE;
+        return new Real(Rational.of(bf));
+    }
+
+    /**
+     * Creates a {@code Real} from a {@link float}. This method uses the {@code float}'s {@code String} representation,
+     * so that 0.1f becomes 1/10 as might be expected. To get {@code float}'s exact, sometimes-counterintuitive value,
+     * use {@link Real#ofExact} instead. Returns empty if the {@code float} is {@code Infinity}, {@code -Infinity}, or
+     * {@code NaN}.
+     *
+     * <ul>
+     *  <li>{@code f} may be any {@code float}.</li>
+     *  <li>The result is empty or an exact {@code Real} whose decimal expansion is equal to the displayed decimal
+     *  expansion of some {@code float}. A necessary but not sufficient condition for this is that the denominator is
+     *  of the form 2<sup>m</sup>5<sup>n</sup>, with m,n≥0.</li>
+     * </ul>
+     *
+     * @param f the {@code float}
+     * @return the exact {@code Real} corresponding to {@code f}, or empty if {@code f} is {@code Infinity},
+     * {@code -Infinity}, or {@code NaN}
+     */
+    public static @NotNull Optional<Real> of(float f) {
+        if (f == 0.0f) return Optional.of(Real.ZERO);
+        if (f == 1.0f) return Optional.of(Real.ONE);
+        return Rational.of(f).map(Real::new);
+    }
+
+    /**
+     * Creates a {@code Real} from a {@link double}. This method uses the {@code double}'s {@code String}
+     * representation, so that 0.1 becomes 1/10 as might be expected. To get {@code double}'s exact,
+     * sometimes-counterintuitive value, use {@link Real#ofExact} instead. Returns empty if the {@code double} is
+     * {@code Infinity}, {@code -Infinity}, or {@code NaN}.
+     *
+     * <ul>
+     *  <li>{@code d} may be any {@code double}.</li>
+     *  <li>The result is empty or an exact {@code Real} whose decimal expansion is equal to the displayed decimal
+     *  expansion of some {@code double}. A necessary but not sufficient conditions for this is that the denominator is
+     *  of the form 2<sup>m</sup>5<sup>n</sup>, with m,n≥0.</li>
+     * </ul>
+     *
+     * @param d the {@code double}
+     * @return the exact {@code Real} corresponding to {@code d}, or empty if {@code d} is {@code Infinity},
+     * {@code -Infinity}, or {@code NaN}
+     */
+    public static @NotNull Optional<Real> of(double d) {
+        if (d == 0.0) return Optional.of(Real.ZERO);
+        if (d == 1.0) return Optional.of(Real.ONE);
+        return Rational.of(d).map(Real::new);
+    }
+
+    /**
+     * Creates a {@code Real} from a {@code float}. No rounding occurs; the {@code Real} has exactly the same value as
+     * the {@code float}. For example, {@code of(1.0f/3.0f)} yields 11184811/33554432, not 1/3. Returns empty if the
+     * {@code float} is {@code Infinity}, {@code -Infinity}, or {@code NaN}.
+     *
+     * <ul>
+     *  <li>{@code f} may be any {@code float}.</li>
+     *  <li>
+     *   The result is empty or an exact {@code Real} that may be exactly represented as a {@code float}. Here are
+     *   some, but not all, of the conditions on the result:
+     *   <ul>
+     *    <li>The denominator is a power of 2 less than or equal to 2<sup>149</sup>.</li>
+     *    <li>The numerator is less than or equal to 2<sup>128</sup>–2<sup>104</sup>.</li>
+     *   </ul>
+     *  </li>
+     * </ul>
+     *
+     * @param f the {@code float}
+     * @return the exact {@code Real} corresponding to {@code f}, or empty if {@code f} is {@code Infinity},
+     * {@code -Infinity}, or {@code NaN}
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull Optional<Real> ofExact(float f) {
+        if (f == 0.0f) return Optional.of(Real.ZERO);
+        if (f == 1.0f) return Optional.of(Real.ONE);
+        return Rational.ofExact(f).map(Real::new);
+    }
+
+    /**
+     * Creates a {@code Real} from a {@link double}. No rounding occurs; the {@code Real} has exactly the same value as
+     * the {@code double}. For example, {@code of(1.0/3.0)} yields 6004799503160661/18014398509481984, not 1/3. Returns
+     * empty if the {@code double} is {@code Infinity}, {@code -Infinity}, or {@code NaN}.
+     *
+     * <ul>
+     *  <li>{@code d} may be any {@code double}.</li>
+     *  <li>
+     *   The result is empty or a {@code Real} that may be exactly represented as a {@code double}. Here are some, but
+     *   not all, of the conditions on the result:
+     *   <ul>
+     *    <li>The denominator is a power of 2 less than or equal to 2<sup>1074</sup>.</li>
+     *    <li>The numerator is less than or equal to 2<sup>1024</sup>–2<sup>971</sup>.</li>
+     *   </ul>
+     *  </li>
+     * </ul>
+     *
+     * @param d the {@code double}
+     * @return the exact {@code Real} corresponding to {@code d}, or empty if {@code d} is {@code Infinity},
+     * {@code -Infinity}, or {@code NaN}
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull Optional<Real> ofExact(double d) {
+        if (d == 0.0) return Optional.of(Real.ZERO);
+        if (d == 1.0) return Optional.of(Real.ONE);
+        return Rational.ofExact(d).map(Real::new);
+    }
+
+    /**
+     * Creates a {@code Real} from a {@link BigDecimal}.
+     *
+     * <ul>
+     *  <li>{@code bd} may not be null.</li>
+     *  <li>The result is an exact {@code Real} whose denominator may be written as 2<sup>m</sup>5<sup>n</sup>, with
+     *  m,n≥0.</li>
+     * </ul>
+     *
+     * @param bd the {@code BigDecimal}
+     * @return the exact {@code Real} corresponding to {@code d}
+     */
+    public static @NotNull Real of(@NotNull BigDecimal bd) {
+        return of(Rational.of(bd));
     }
 
     public static @NotNull Real fuzzyRepresentation(@NotNull Rational r) {
@@ -327,14 +474,9 @@ public final class Real implements Iterable<Interval> {
         return intervals.iterator();
     }
 
-    public boolean isExactRational() {
+    public boolean isExact() {
         Interval first = head(intervals);
         return first.getLower().isPresent() && first.getLower().equals(first.getUpper());
-    }
-
-    public boolean isExactInteger() {
-        Optional<Rational> rationalValue = rationalValue();
-        return rationalValue.isPresent() && rationalValue.get().isInteger();
     }
 
     public @NotNull Optional<Rational> rationalValue() {
@@ -1136,6 +1278,11 @@ public final class Real implements Iterable<Interval> {
 
     public static @NotNull Optional<Boolean> ge(@NotNull Real x, @NotNull Rational y, @NotNull Rational resolution) {
         return x.compareTo(y, resolution).map(c -> c >= 0);
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        throw new UnsupportedOperationException("");
     }
 
     /**

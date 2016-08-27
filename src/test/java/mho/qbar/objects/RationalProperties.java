@@ -3458,6 +3458,16 @@ public class RationalProperties extends QBarTestProperties {
             }
         }
 
+        ts = P.triples(
+                P.negativeRationals(),
+                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2)),
+                P.integersGeometric()
+        );
+        for (Triple<Rational, BigInteger, Integer> t : take(LIMIT, ts)) {
+            String s = t.a.toStringBase(t.b, t.c);
+            assertEquals(t, head(s), '-');
+        }
+
         String smallBaseChars = charsToString(
                 concat(
                         Arrays.asList(

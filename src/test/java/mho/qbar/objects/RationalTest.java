@@ -4196,12 +4196,12 @@ public class RationalTest {
         toStringBase_BigInteger_int_helper("198", "83", -1, "(2)(0)");
         toStringBase_BigInteger_int_helper("198", "83", -2, "(0)");
 
-        toStringBase_BigInteger_int_helper("-1/7", "10", -1, "0");
-        toStringBase_BigInteger_int_helper("-1/7", "10", 0, "0");
+        toStringBase_BigInteger_int_helper("-1/7", "10", -1, "-0");
+        toStringBase_BigInteger_int_helper("-1/7", "10", 0, "-0");
         toStringBase_BigInteger_int_helper("-1/7", "10", 5, "-0.14285...");
         toStringBase_BigInteger_int_helper("-1/7", "10", 20, "-0.14285714285714285714...");
-        toStringBase_BigInteger_int_helper("-1/7", "83", -1, "(0)");
-        toStringBase_BigInteger_int_helper("-1/7", "83", 0, "(0)");
+        toStringBase_BigInteger_int_helper("-1/7", "83", -1, "-(0)");
+        toStringBase_BigInteger_int_helper("-1/7", "83", 0, "-(0)");
         toStringBase_BigInteger_int_helper("-1/7", "83", 5, "-(0).(11)(71)(11)(71)(11)...");
         toStringBase_BigInteger_int_helper("-1/7", "83", 20,
                 "-(0).(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)...");
@@ -4241,6 +4241,9 @@ public class RationalTest {
         toStringBase_BigInteger_int_helper("1000001/10000000", "100", 3, "(0).(10)(0)(0)...");
         toStringBase_BigInteger_int_helper("1000001/10000000", "100", 4, "(0).(10)(0)(0)(10)");
         toStringBase_BigInteger_int_helper("1000001/10000000", "100", 5, "(0).(10)(0)(0)(10)");
+
+        toStringBase_BigInteger_int_helper(of(Float.MIN_VALUE).get(), "10", 20, "0.00000000000000000000...");
+        toStringBase_BigInteger_int_helper(of(-Float.MIN_VALUE).get(), "10", 20, "-0.00000000000000000000...");
 
         toStringBase_BigInteger_int_fail_helper("-1/2", "1", 5);
         toStringBase_BigInteger_int_fail_helper("-1/2", "0", 5);

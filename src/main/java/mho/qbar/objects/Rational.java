@@ -2303,7 +2303,12 @@ public final class Rational implements Comparable<Rational> {
         Rational scaled = scale >= 0 ? multiply(power) : divide(power);
         Rational rounded = of(scaled.bigIntegerValue(RoundingMode.DOWN));
         rounded = scale >= 0 ? rounded.divide(power) : rounded.multiply(power);
-        String result = rounded.toStringBase(base);
+        String result;
+        if (rounded == ZERO && signum() == -1) {
+            result = "-" + rounded.toStringBase(base);
+        } else {
+            result = rounded.toStringBase(base);
+        }
         if (scale > 0 && !scaled.isInteger()) { //append ellipsis
             //pad with trailing zeroes if necessary
             int dotIndex = result.indexOf('.');
