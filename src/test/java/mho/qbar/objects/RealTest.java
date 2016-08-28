@@ -291,4 +291,67 @@ public class RealTest {
         of_BigDecimal_helper("1000000000000000", "1000000000000000");
         of_BigDecimal_helper("1E+15", "1000000000000000");
     }
+
+    private static void fuzzyRepresentation_helper(@NotNull String input, @NotNull String output) {
+        Real x = fuzzyRepresentation(Rational.readStrict(input).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testFuzzyRepresentation() {
+        fuzzyRepresentation_helper("0", "~0");
+        fuzzyRepresentation_helper("1", "+...");
+        fuzzyRepresentation_helper("-1", "-...");
+        fuzzyRepresentation_helper("2", "+...");
+        fuzzyRepresentation_helper("-2", "-...");
+        fuzzyRepresentation_helper("11", "1?....");
+        fuzzyRepresentation_helper("-11", "-1?....");
+        fuzzyRepresentation_helper("5/4", "1.2...");
+        fuzzyRepresentation_helper("-5/4", "-1.2...");
+        fuzzyRepresentation_helper("5/3", "1.66666666666666666666...");
+        fuzzyRepresentation_helper("-5/3", "-1.66666666666666666666...");
+    }
+
+    private static void leftFuzzyRepresentation_helper(@NotNull String input, @NotNull String output) {
+        Real x = leftFuzzyRepresentation(Rational.readStrict(input).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testLeftFuzzyRepresentation() {
+        leftFuzzyRepresentation_helper("0", "~0");
+        leftFuzzyRepresentation_helper("1", "+...");
+        leftFuzzyRepresentation_helper("-1", "-1.00000000000000000000...");
+        leftFuzzyRepresentation_helper("2", "+...");
+        leftFuzzyRepresentation_helper("-2", "-2.00000000000000000000...");
+        leftFuzzyRepresentation_helper("11", "1?....");
+        leftFuzzyRepresentation_helper("-11", "-11.00000000000000000000...");
+        leftFuzzyRepresentation_helper("5/4", "1.2...");
+        leftFuzzyRepresentation_helper("-5/4", "-1.25000000000000000000...");
+        leftFuzzyRepresentation_helper("5/3", "1.66666666666666666666...");
+        leftFuzzyRepresentation_helper("-5/3", "-1.66666666666666666666...");
+    }
+
+    private static void rightFuzzyRepresentation_helper(@NotNull String input, @NotNull String output) {
+        Real x = rightFuzzyRepresentation(Rational.readStrict(input).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testRightFuzzyRepresentation() {
+        rightFuzzyRepresentation_helper("0", "~0");
+        rightFuzzyRepresentation_helper("1", "1.00000000000000000000...");
+        rightFuzzyRepresentation_helper("-1", "-...");
+        rightFuzzyRepresentation_helper("2", "2.00000000000000000000...");
+        rightFuzzyRepresentation_helper("-2", "-...");
+        rightFuzzyRepresentation_helper("11", "11.00000000000000000000...");
+        rightFuzzyRepresentation_helper("-11", "-1?....");
+        rightFuzzyRepresentation_helper("5/4", "1.25000000000000000000...");
+        rightFuzzyRepresentation_helper("-5/4", "-1.2...");
+        rightFuzzyRepresentation_helper("5/3", "1.66666666666666666666...");
+        rightFuzzyRepresentation_helper("-5/3", "-1.66666666666666666666...");
+    }
 }

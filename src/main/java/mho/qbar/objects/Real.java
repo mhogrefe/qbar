@@ -120,7 +120,7 @@ public final class Real implements Iterable<Interval> {
      *  <li>{@code interval}s must be infinite. Every element after the first must be contained in its predecessor. The
      *  diameters of the elements must approach zero. Every element must take a finite amount of computation time to
      *  produce.</li>
-     *  <li>Any {@code Real} may be generated with this constructor.</li>
+     *  <li>Any {@code Real} may be constructed with this constructor.</li>
      * </ul>
      *
      * @param intervals the bounding intervals that define a {@code Real}
@@ -129,6 +129,16 @@ public final class Real implements Iterable<Interval> {
         this.intervals = intervals;
     }
 
+    /**
+     * Constructs a {@code Real} from a {@code Rational}.
+     *
+     * <ul>
+     *  <li>{@code r} cannot be null.</li>
+     *  <li>Any exact rational {@code Real} may be constructed with this constructor.</li>
+     * </ul>
+     *
+     * @param r a {@code Rational}
+     */
     private Real(@NotNull Rational r) {
         intervals = repeat(Interval.of(r));
     }
@@ -336,6 +346,18 @@ public final class Real implements Iterable<Interval> {
         return of(Rational.of(bd));
     }
 
+    /**
+     * Constructs a fuzzy {@code Real} equal to a {@code Rational}. The resulting {@code Real} is fuzzy on both sides–
+     * that is, both its lower and upper bounds approach but never equal its value.
+     *
+     * <ul>
+     *  <li>{@code r} cannot be null.</li>
+     *  <li>The result is fuzzy.</li>
+     * </ul>
+     *
+     * @param r a {@code Rational}
+     * @return a fuzzy {@code Real} equal to {@code r}
+     */
     public static @NotNull Real fuzzyRepresentation(@NotNull Rational r) {
         return new Real(() -> new Iterator<Interval>() {
             private @NotNull Rational radius = Rational.ONE;
@@ -354,6 +376,18 @@ public final class Real implements Iterable<Interval> {
         });
     }
 
+    /**
+     * Constructs a fuzzy {@code Real} equal to a {@code Rational}. The resulting {@code Real} is fuzzy on the left–
+     * that is, its lower bounds approach but never equal its value.
+     *
+     * <ul>
+     *  <li>{@code r} cannot be null.</li>
+     *  <li>The result is fuzzy.</li>
+     * </ul>
+     *
+     * @param r a {@code Rational}
+     * @return a fuzzy {@code Real} equal to {@code r}
+     */
     public static @NotNull Real leftFuzzyRepresentation(@NotNull Rational r) {
         return new Real(() -> new Iterator<Interval>() {
             private @NotNull Rational radius = Rational.ONE;
@@ -372,6 +406,18 @@ public final class Real implements Iterable<Interval> {
         });
     }
 
+    /**
+     * Constructs a fuzzy {@code Real} equal to a {@code Rational}. The resulting {@code Real} is fuzzy on the right–
+     * that is, its upper bounds approach but never equal its value.
+     *
+     * <ul>
+     *  <li>{@code r} cannot be null.</li>
+     *  <li>The result is fuzzy.</li>
+     * </ul>
+     *
+     * @param r a {@code Rational}
+     * @return a fuzzy {@code Real} equal to {@code r}
+     */
     public static @NotNull Real rightFuzzyRepresentation(@NotNull Rational r) {
         return new Real(() -> new Iterator<Interval>() {
             private @NotNull Rational radius = Rational.ONE;
@@ -390,6 +436,21 @@ public final class Real implements Iterable<Interval> {
         });
     }
 
+    /**
+     * Finds a root of a function using bisection, given the ability to test the function's sign at any point and a
+     * bounding interval that contains at least one root.
+     *
+     * <ul>
+     *  <li>{@code signTest} can only return 0, 1, or –1.</li>
+     *  <li>{@code boundingInterval} must have finite bounds.</li>
+     *  <li>{@code signTest} must be defined for all {@code Rational}s in {@code boundingInterval}.</li>
+     *  <li>The result may be any {@code Real}.</li>
+     * </ul>
+     *
+     * @param signTest a function which tests the sign of the function whose root we are finding
+     * @param boundingInterval an interval that contains at least one root of the function
+     * @return a root of the function within the bounding interval
+     */
     public static @NotNull Real root(
             @NotNull Function<Rational, Integer> signTest,
             @NotNull Interval boundingInterval
@@ -440,33 +501,6 @@ public final class Real implements Iterable<Interval> {
                 return interval;
             }
         });
-    }
-
-    public static @NotNull Real fromDigits(
-            @NotNull BigInteger base,
-            @NotNull List<BigInteger> beforeDecimal,
-            @NotNull Iterable<BigInteger> afterDecimal
-    ) {
-        return of(Rational.of(IntegerUtils.fromBigEndianDigits(base, beforeDecimal))).add(
-                new Real(() -> new Iterator<Interval>() {
-                    private final @NotNull Iterator<BigInteger> digits = afterDecimal.iterator();
-                    private @NotNull BigInteger acc = BigInteger.ZERO;
-                    private @NotNull BigInteger power = BigInteger.ONE;
-
-                    @Override
-                    public boolean hasNext() {
-                        return true;
-                    }
-
-                    @Override
-                    public @NotNull Interval next() {
-                        acc = acc.multiply(base).add(digits.next());
-                        power = power.multiply(base);
-                        Rational r = Rational.of(acc);
-                        return Interval.of(r.divide(power), r.add(Rational.ONE).divide(power));
-                    }
-                })
-        );
     }
 
     @Override
@@ -1104,6 +1138,33 @@ public final class Real implements Iterable<Interval> {
                     return Interval.of(bound.negate(), bound);
                 },
                 x
+        );
+    }
+
+    public static @NotNull Real fromDigits(
+            @NotNull BigInteger base,
+            @NotNull List<BigInteger> beforeDecimal,
+            @NotNull Iterable<BigInteger> afterDecimal
+    ) {
+        return of(Rational.of(IntegerUtils.fromBigEndianDigits(base, beforeDecimal))).add(
+                new Real(() -> new Iterator<Interval>() {
+                    private final @NotNull Iterator<BigInteger> digits = afterDecimal.iterator();
+                    private @NotNull BigInteger acc = BigInteger.ZERO;
+                    private @NotNull BigInteger power = BigInteger.ONE;
+
+                    @Override
+                    public boolean hasNext() {
+                        return true;
+                    }
+
+                    @Override
+                    public @NotNull Interval next() {
+                        acc = acc.multiply(base).add(digits.next());
+                        power = power.multiply(base);
+                        Rational r = Rational.of(acc);
+                        return Interval.of(r.divide(power), r.add(Rational.ONE).divide(power));
+                    }
+                })
         );
     }
 

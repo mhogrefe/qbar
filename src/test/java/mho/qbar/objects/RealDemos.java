@@ -74,4 +74,22 @@ public class RealDemos extends QBarDemos {
             System.out.println("of(" + bd + ") = " + of(bd));
         }
     }
+
+    private void demoFuzzyRepresentation() {
+        for (Rational r : take(LIMIT, P.rationals())) {
+            System.out.println("fuzzyRepresentation(" + r + ") = " + fuzzyRepresentation(r));
+        }
+    }
+
+    private void demoLeftFuzzyRepresentation() {
+        for (Rational r : take(LIMIT, P.rationals())) {
+            System.out.println("leftFuzzyRepresentation(" + r + ") = " + leftFuzzyRepresentation(r));
+        }
+    }
+
+    private void demoRightFuzzyRepresentation() {
+        for (Rational r : take(LIMIT, P.rationals())) {
+            System.out.println("rightFuzzyRepresentation(" + r + ") = " + rightFuzzyRepresentation(r));
+        }
+    }
 }

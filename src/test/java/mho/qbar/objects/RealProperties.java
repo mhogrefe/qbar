@@ -33,6 +33,9 @@ public class RealProperties extends QBarTestProperties {
         propertiesOfExact_float();
         propertiesOfExact_double();
         propertiesOf_BigDecimal();
+        propertiesFuzzyRepresentation();
+        propertiesLeftFuzzyRepresentation();
+        propertiesRightFuzzyRepresentation();
     }
 
     private void propertiesOf_Rational() {
@@ -193,6 +196,33 @@ public class RealProperties extends QBarTestProperties {
 
         for (BigDecimal bd : take(LIMIT, P.canonicalBigDecimals())) {
             inverse(Algebraic::of, Algebraic::bigDecimalValueExact, bd);
+        }
+    }
+
+    private void propertiesFuzzyRepresentation() {
+        initialize("fuzzyRepresentation(Rational)");
+        for (Rational r : take(LIMIT, P.rationals())) {
+            Real x = fuzzyRepresentation(r);
+            x.validate();
+            assertFalse(r, x.isExact());
+        }
+    }
+
+    private void propertiesLeftFuzzyRepresentation() {
+        initialize("leftFuzzyRepresentation(Rational)");
+        for (Rational r : take(LIMIT, P.rationals())) {
+            Real x = leftFuzzyRepresentation(r);
+            x.validate();
+            assertFalse(r, x.isExact());
+        }
+    }
+
+    private void propertiesRightFuzzyRepresentation() {
+        initialize("rightFuzzyRepresentation(Rational)");
+        for (Rational r : take(LIMIT, P.rationals())) {
+            Real x = rightFuzzyRepresentation(r);
+            x.validate();
+            assertFalse(r, x.isExact());
         }
     }
 }
