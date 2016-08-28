@@ -94,7 +94,7 @@ public class RealProperties extends QBarTestProperties {
             x.validate();
             assertEquals(
                     bf,
-                    of(bf.getMantissa()).multiply(ONE.shiftLeft(bf.getExponent())).rationalValue().get(),
+                    of(bf.getMantissa()).multiply(Rational.ONE.shiftLeft(bf.getExponent())).rationalValue().get(),
                     x.rationalValue().get()
             );
             assertTrue(bf, x.rationalValue().get().isBinaryFraction());

@@ -113,6 +113,11 @@ public final class Real implements Iterable<Interval> {
     private final @NotNull Iterable<Interval> intervals;
 
     /**
+     * If {@code this} is rational and exact, the {@code Rational} equal to {@code this}; otherwise, empty
+     */
+    private final @NotNull Optional<Rational> rational;
+
+    /**
      * Constructs a {@code Real} from an {@code Iterable} of {@code Interval}s. Unfortunately, none of the
      * preconditions on the argument can be checked.
      *
@@ -127,6 +132,7 @@ public final class Real implements Iterable<Interval> {
      */
     public Real(@NotNull Iterable<Interval> intervals) {
         this.intervals = intervals;
+        rational = Optional.empty();
     }
 
     /**
@@ -141,6 +147,7 @@ public final class Real implements Iterable<Interval> {
      */
     private Real(@NotNull Rational r) {
         intervals = repeat(Interval.of(r));
+        rational = Optional.of(r);
     }
 
     /**
@@ -531,8 +538,7 @@ public final class Real implements Iterable<Interval> {
      * @return whether {@code this} is an exact {@code Real}
      */
     public boolean isExact() {
-        Interval first = head(intervals);
-        return first.getLower().isPresent() && first.getLower().equals(first.getUpper());
+        return rational.isPresent();
     }
 
     /**
@@ -547,12 +553,7 @@ public final class Real implements Iterable<Interval> {
      * @return the {@code Rational} equal to {@code this}, if {@code this} is exact
      */
     public @NotNull Optional<Rational> rationalValue() {
-        Interval first = head(intervals);
-        if (first.getLower().isPresent() && first.getLower().equals(first.getUpper())) {
-            return Optional.of(first.getLower().get());
-        } else {
-            return Optional.empty();
-        }
+        return rational;
     }
 
     public int match(@NotNull List<Real> targets) {
@@ -656,11 +657,29 @@ public final class Real implements Iterable<Interval> {
     }
 
     public @NotNull Real multiply(@NotNull Real that) {
-        return new Real(zipWith(Interval::multiply, intervals, that.intervals));
+        if (rational.isPresent()) {
+            if (that.rational.isPresent()) {
+                return new Real(rational.get().multiply(that.rational.get()));
+            } else {
+                Rational thisR = rational.get();
+                return new Real(map(i -> i.multiply(thisR), that.intervals));
+            }
+        } else {
+            if (that.rational.isPresent()) {
+                Rational thatR = that.rational.get();
+                return new Real(map(i -> i.multiply(thatR), intervals));
+            } else {
+                return new Real(zipWith(Interval::multiply, intervals, that.intervals));
+            }
+        }
     }
 
     public @NotNull Real multiply(@NotNull Rational that) {
-        return new Real(map(i -> i.multiply(that), intervals));
+        if (rational.isPresent()) {
+            return new Real(rational.get().multiply(that));
+        } else {
+            return new Real(map(i -> i.multiply(that), intervals));
+        }
     }
 
     public @NotNull Real multiply(@NotNull BigInteger that) {
