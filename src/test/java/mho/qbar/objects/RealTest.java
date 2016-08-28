@@ -8,7 +8,9 @@ import org.junit.Test;
 import java.util.Optional;
 
 import static mho.qbar.objects.Real.*;
+import static mho.wheels.testing.Testing.TINY_LIMIT;
 import static mho.wheels.testing.Testing.aeq;
+import static mho.wheels.testing.Testing.aeqitLimit;
 
 public class RealTest {
     private static void constant_helper(@NotNull Real input, @NotNull String output) {
@@ -353,5 +355,112 @@ public class RealTest {
         rightFuzzyRepresentation_helper("-5/4", "-1.2...");
         rightFuzzyRepresentation_helper("5/3", "1.66666666666666666666...");
         rightFuzzyRepresentation_helper("-5/3", "-1.66666666666666666666...");
+    }
+
+    private static void iterator_helper(@NotNull Real input, int limit, @NotNull String output) {
+        aeqitLimit(limit, input, output);
+    }
+
+    private static void iterator_helper(@NotNull Real input, @NotNull String output) {
+        iterator_helper(input, TINY_LIMIT, output);
+    }
+
+    @Test
+    public void testIterator() {
+        iterator_helper(ZERO,
+                "[[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]," +
+                " [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], ...]");
+        iterator_helper(ONE,
+                "[[1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1]," +
+                " [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], ...]");
+        iterator_helper(NEGATIVE_ONE,
+                "[[-1, -1], [-1, -1], [-1, -1], [-1, -1], [-1, -1], [-1, -1], [-1, -1], [-1, -1], [-1, -1]," +
+                " [-1, -1], [-1, -1], [-1, -1], [-1, -1], [-1, -1], [-1, -1], [-1, -1], [-1, -1], [-1, -1]," +
+                " [-1, -1], [-1, -1], ...]");
+        iterator_helper(of(Rational.of(-4, 3)),
+                "[[-4/3, -4/3], [-4/3, -4/3], [-4/3, -4/3], [-4/3, -4/3], [-4/3, -4/3], [-4/3, -4/3], [-4/3, -4/3]," +
+                " [-4/3, -4/3], [-4/3, -4/3], [-4/3, -4/3], [-4/3, -4/3], [-4/3, -4/3], [-4/3, -4/3], [-4/3, -4/3]," +
+                " [-4/3, -4/3], [-4/3, -4/3], [-4/3, -4/3], [-4/3, -4/3], [-4/3, -4/3], [-4/3, -4/3], ...]");
+        iterator_helper(SQRT_TWO,
+                "[[0, 4], [0, 2], [1, 2], [1, 3/2], [5/4, 3/2], [11/8, 3/2], [11/8, 23/16], [45/32, 23/16]," +
+                " [45/32, 91/64], [181/128, 91/64], [181/128, 363/256], [181/128, 725/512], [181/128, 1449/1024]," +
+                " [181/128, 2897/2048], [181/128, 5793/4096], [11585/8192, 5793/4096], [11585/8192, 23171/16384]," +
+                " [11585/8192, 46341/32768], [92681/65536, 46341/32768], [185363/131072, 46341/32768], ...]");
+        iterator_helper(E,
+                "[[2, 4], [5/2, 7/2], [8/3, 3], [65/24, 67/24], [163/60, 41/15], [1957/720, 653/240]," +
+                " [685/252, 6851/2520], [109601/40320, 109603/40320], [98641/36288, 11743/4320]," +
+                " [9864101/3628800, 9864103/3628800], [13563139/4989600, 54252557/19958400]," +
+                " [260412269/95800320, 144673483/53222400], [8463398743/3113510400, 1057924843/389188800]," +
+                " [47395032961/17435658240, 236975164807/87178291200]," +
+                " [888656868019/326918592000, 592437912013/217945728000]," +
+                " [56874039553217/20922789888000, 8124862793317/2988969984000]," +
+                " [7437374403113/2736057139200, 241714668101173/88921857024000]," +
+                " [17403456103284421/6402373705728000, 5801152034428141/2134124568576000]," +
+                " [82666416490601/30411275102208, 165332832981202001/60822550204416000]," +
+                " [6613313319248080001/2432902008176640000, 508716409172929231/187146308321280000], ...]");
+        iterator_helper(PI, 5,
+                "[[281476/89625, 651864872/204778785]," +
+                " [1339760982986645756/426459285655703125, 15305839961353732690848/4871956171187883640625]," +
+                " [90159814330711160623850657403076/28698760246862382335602001953125," +
+                " 206000752128714602309315467175106616/65572075362441045655676878142578125]," +
+                " [11950827742763724038336441397624078583300672396/3804066618602651140286948940075677032470703125," +
+                " 1820381950672004239437026206052012466686191144368/579445571523205428758215494416167327391357421875" +
+                "]," +
+                " [1574353035058098242816726960753383747979148678087888676629836/50113213540244890249873419393114017" +
+                "4949627402324676513671875," +
+                " 3597144788622195741816151737039073386719688033186645699212537048/114500674825293135038520783566162" +
+                "6317331906673927513885498046875], ...]");
+
+        iterator_helper(fuzzyRepresentation(Rational.ZERO),
+                "[[-1, 1], [-1/2, 1/2], [-1/4, 1/4], [-1/8, 1/8], [-1/16, 1/16], [-1/32, 1/32], [-1/64, 1/64]," +
+                " [-1/128, 1/128], [-1/256, 1/256], [-1/512, 1/512], [-1/1024, 1/1024], [-1/2048, 1/2048]," +
+                " [-1/4096, 1/4096], [-1/8192, 1/8192], [-1/16384, 1/16384], [-1/32768, 1/32768]," +
+                " [-1/65536, 1/65536], [-1/131072, 1/131072], [-1/262144, 1/262144], [-1/524288, 1/524288], ...]");
+        iterator_helper(leftFuzzyRepresentation(Rational.ZERO),
+                "[[-1, 0], [-1/2, 0], [-1/4, 0], [-1/8, 0], [-1/16, 0], [-1/32, 0], [-1/64, 0], [-1/128, 0]," +
+                " [-1/256, 0], [-1/512, 0], [-1/1024, 0], [-1/2048, 0], [-1/4096, 0], [-1/8192, 0], [-1/16384, 0]," +
+                " [-1/32768, 0], [-1/65536, 0], [-1/131072, 0], [-1/262144, 0], [-1/524288, 0], ...]");
+        iterator_helper(rightFuzzyRepresentation(Rational.ZERO),
+                "[[0, 1], [0, 1/2], [0, 1/4], [0, 1/8], [0, 1/16], [0, 1/32], [0, 1/64], [0, 1/128], [0, 1/256]," +
+                " [0, 1/512], [0, 1/1024], [0, 1/2048], [0, 1/4096], [0, 1/8192], [0, 1/16384], [0, 1/32768]," +
+                " [0, 1/65536], [0, 1/131072], [0, 1/262144], [0, 1/524288], ...]");
+    }
+
+    private static void isExact_helper(@NotNull Real input, boolean output) {
+        aeq(input.isExact(), output);
+    }
+
+    @Test
+    public void testIsExact() {
+        isExact_helper(ZERO, true);
+        isExact_helper(ONE, true);
+        isExact_helper(NEGATIVE_ONE, true);
+        isExact_helper(of(Rational.of(-4, 3)), true);
+        isExact_helper(SQRT_TWO, false);
+        isExact_helper(E, false);
+        isExact_helper(PI, false);
+
+        isExact_helper(fuzzyRepresentation(Rational.ZERO), false);
+        isExact_helper(leftFuzzyRepresentation(Rational.ZERO), false);
+        isExact_helper(rightFuzzyRepresentation(Rational.ZERO), false);
+    }
+
+    private static void rationalValue_helper(@NotNull Real input, @NotNull String output) {
+        aeq(input.rationalValue(), output);
+    }
+
+    @Test
+    public void testRationalValue() {
+        rationalValue_helper(ZERO, "Optional[0]");
+        rationalValue_helper(ONE, "Optional[1]");
+        rationalValue_helper(NEGATIVE_ONE, "Optional[-1]");
+        rationalValue_helper(of(Rational.of(-4, 3)), "Optional[-4/3]");
+        rationalValue_helper(SQRT_TWO, "Optional.empty");
+        rationalValue_helper(E, "Optional.empty");
+        rationalValue_helper(PI, "Optional.empty");
+
+        rationalValue_helper(fuzzyRepresentation(Rational.ZERO), "Optional.empty");
+        rationalValue_helper(leftFuzzyRepresentation(Rational.ZERO), "Optional.empty");
+        rationalValue_helper(rightFuzzyRepresentation(Rational.ZERO), "Optional.empty");
     }
 }

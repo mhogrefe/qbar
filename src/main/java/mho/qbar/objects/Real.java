@@ -503,16 +503,49 @@ public final class Real implements Iterable<Interval> {
         });
     }
 
+    /**
+     * Returns the bounding intervals that define {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>The result is infinite. The diameters of the intervals converge to zero, and every interval (except the
+     *  first) is contained in its predecessor.</li>
+     * </ul>
+     *
+     * @return bounding intervals of this {@code Real}
+     */
     @Override
     public Iterator<Interval> iterator() {
         return intervals.iterator();
     }
 
+    /**
+     * Whether this immediately converges to its value—that is, whether this is rational and all of its intervals have
+     * diameter zero.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is an exact {@code Real}
+     */
     public boolean isExact() {
         Interval first = head(intervals);
         return first.getLower().isPresent() && first.getLower().equals(first.getUpper());
     }
 
+    /**
+     * If {@code this} is exact, returns the {@code Rational} equal to {@code this}; otherwise, returns an empty
+     * {@code Optional}.
+     *
+     * <ul>
+     *  <li>{@code this} mat be any {@code Real}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return the {@code Rational} equal to {@code this}, if {@code this} is exact
+     */
     public @NotNull Optional<Rational> rationalValue() {
         Interval first = head(intervals);
         if (first.getLower().isPresent() && first.getLower().equals(first.getUpper())) {
@@ -654,7 +687,7 @@ public final class Real implements Iterable<Interval> {
         return limitValueUnsafe(Rational::signum);
     }
 
-    public Optional<Integer> signum(@NotNull Rational resolution) {
+    public @NotNull Optional<Integer> signum(@NotNull Rational resolution) {
         return limitValue(Rational::signum, resolution).toOptional();
     }
 
@@ -1294,6 +1327,14 @@ public final class Real implements Iterable<Interval> {
         }
     }
 
+    public static @NotNull Optional<Boolean> eq(@NotNull Real x, @NotNull Real y, @NotNull Rational resolution) {
+        return x.compareTo(y, resolution).map(c -> c == 0);
+    }
+
+    public static @NotNull Optional<Boolean> ne(@NotNull Real x, @NotNull Real y, @NotNull Rational resolution) {
+        return x.compareTo(y, resolution).map(c -> c != 0);
+    }
+
     public static @NotNull Optional<Boolean> lt(@NotNull Real x, @NotNull Real y, @NotNull Rational resolution) {
         return x.compareTo(y, resolution).map(c -> c < 0);
     }
@@ -1324,6 +1365,14 @@ public final class Real implements Iterable<Interval> {
             }
         }
         throw new IllegalStateException("unreachable");
+    }
+
+    public static boolean eqUnsafe(@NotNull Real x, @NotNull Rational y) {
+        return x.compareToUnsafe(y) == 0;
+    }
+
+    public static boolean neUnsafe(@NotNull Real x, @NotNull Rational y) {
+        return x.compareToUnsafe(y) != 0;
     }
 
     public static boolean ltUnsafe(@NotNull Real x, @NotNull Rational y) {
@@ -1359,6 +1408,14 @@ public final class Real implements Iterable<Interval> {
             }
         }
         throw new IllegalStateException("unreachable");
+    }
+
+    public static @NotNull Optional<Boolean> eq(@NotNull Real x, @NotNull Rational y, @NotNull Rational resolution) {
+        return x.compareTo(y, resolution).map(c -> c == 0);
+    }
+
+    public static @NotNull Optional<Boolean> ne(@NotNull Real x, @NotNull Rational y, @NotNull Rational resolution) {
+        return x.compareTo(y, resolution).map(c -> c != 0);
     }
 
     public static @NotNull Optional<Boolean> lt(@NotNull Real x, @NotNull Rational y, @NotNull Rational resolution) {

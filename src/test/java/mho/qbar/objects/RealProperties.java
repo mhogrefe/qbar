@@ -6,6 +6,7 @@ import mho.wheels.numberUtils.IntegerUtils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Optional;
 
 import static mho.qbar.objects.Real.*;
@@ -36,6 +37,9 @@ public class RealProperties extends QBarTestProperties {
         propertiesFuzzyRepresentation();
         propertiesLeftFuzzyRepresentation();
         propertiesRightFuzzyRepresentation();
+        propertiesIterator();
+        propertiesIsExact();
+        propertiesRationalValue();
     }
 
     private void propertiesOf_Rational() {
@@ -44,6 +48,7 @@ public class RealProperties extends QBarTestProperties {
             Real x = of(r);
             x.validate();
             assertTrue(r, x.isExact());
+            inverse(Real::of, (Real y) -> y.rationalValue().get(), r);
         }
     }
 
@@ -223,6 +228,44 @@ public class RealProperties extends QBarTestProperties {
             Real x = rightFuzzyRepresentation(r);
             x.validate();
             assertFalse(r, x.isExact());
+        }
+    }
+
+    private void propertiesIterator() {
+        initialize("iterator()");
+        for (Real x : take(LIMIT, P.reals())) {
+            List<Interval> intervals = toList(take(TINY_LIMIT, x));
+            for (int i = 1; i < TINY_LIMIT; i++) {
+                assertTrue(x, intervals.get(i - 1).contains(intervals.get(i)));
+            }
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            List<Interval> intervals = toList(take(TINY_LIMIT, of(r)));
+            assertEquals(r, intervals, toList(replicate(TINY_LIMIT, Interval.of(r))));
+        }
+    }
+
+    private void propertiesIsExact() {
+        initialize("isExact()");
+        for (Real x : take(LIMIT, P.reals())) {
+            x.isExact();
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertTrue(r, of(r).isExact());
+        }
+    }
+
+    private void propertiesRationalValue() {
+        initialize("rationalValue()");
+        for (Real x : take(LIMIT, P.reals())) {
+            x.rationalValue();
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            Real x = of(r);
+            assertTrue(r, x.rationalValue().isPresent());
         }
     }
 }

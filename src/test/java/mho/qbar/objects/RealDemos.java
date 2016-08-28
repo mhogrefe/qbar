@@ -8,6 +8,7 @@ import java.math.BigInteger;
 
 import static mho.qbar.objects.Real.*;
 import static mho.wheels.iterables.IterableUtils.take;
+import static mho.wheels.testing.Testing.*;
 
 @SuppressWarnings("UnusedDeclaration")
 public class RealDemos extends QBarDemos {
@@ -90,6 +91,24 @@ public class RealDemos extends QBarDemos {
     private void demoRightFuzzyRepresentation() {
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("rightFuzzyRepresentation(" + r + ") = " + rightFuzzyRepresentation(r));
+        }
+    }
+
+    private void demoIterator() {
+        for (Real r : take(MEDIUM_LIMIT, P.withScale(4).reals())) {
+            System.out.println(r + ": " + its(r));
+        }
+    }
+
+    private void demoIsExact() {
+        for (Real r : take(LIMIT, P.withScale(4).reals())) {
+            System.out.println(r + " is " + (r.isExact() ? "" : "not ") + "exact");
+        }
+    }
+
+    private void demoRationalValue() {
+        for (Real r : take(LIMIT, P.withScale(4).reals())) {
+            System.out.println("rationalValue(" + r +") = " + r.rationalValue());
         }
     }
 }
