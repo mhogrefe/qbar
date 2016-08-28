@@ -99,7 +99,7 @@ public final class Real implements Iterable<Interval> {
      * π, the ratio of a circle's circumference to its diameter
      */
     public static final @NotNull Real PI =
-            atan(Rational.of(1, 5)).shiftLeft(2).subtract(atan(Rational.of(1, 239))).shiftLeft(2);
+            atan01(Rational.of(1, 5)).shiftLeft(2).subtract(atan01(Rational.of(1, 239))).shiftLeft(2);
 
     /**
      * 2^(-100), the default resolution of those methods which give up a computation after the bounding interval
@@ -612,6 +612,10 @@ public final class Real implements Iterable<Interval> {
         return new Real(map(a -> a.shiftLeft(bits), intervals));
     }
 
+    public @NotNull Real shiftRight(int bits) {
+        return new Real(map(a -> a.shiftRight(bits), intervals));
+    }
+
     public int signumUnsafe() {
         return limitValueUnsafe(Rational::signum);
     }
@@ -814,9 +818,6 @@ public final class Real implements Iterable<Interval> {
         String beforeDecimal = digits.a.isEmpty() ?
                 (baseIsSmall ? "0" : "(0)") :
                 concatStrings(map(digitFunction, digits.a));
-        if (its(intervals).startsWith("[[-1/2, 1/2]")) {
-            int lll = 0;
-        }
         String result;
         String afterDecimal = concatStrings(map(digitFunction, filter(d -> d.signum() != -1, take(scale, digits.b))));
         result = beforeDecimal + "." + afterDecimal;
@@ -1047,6 +1048,41 @@ public final class Real implements Iterable<Interval> {
                 k -> derivativeBounds,
                 x
         );
+    }
+
+    private static @NotNull Real atan01(@NotNull Rational x) {
+        if (x == Rational.ZERO) return ZERO;
+        if (x == Rational.ONE) return PI.shiftRight(2);
+        return new Real(() -> new Iterator<Interval>() {
+            private @NotNull Rational xSquared = x.pow(2);
+            private @NotNull Rational partialSum = x;
+            private @NotNull Rational xPower = x;
+            private @NotNull BigInteger denominator = BigInteger.ONE;
+            private boolean first = true;
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public Interval next() {
+                Rational upper;
+                if (first) {
+                    first = false;
+                    upper = partialSum;
+                } else {
+                    xPower = xPower.multiply(xSquared);
+                    denominator = denominator.add(IntegerUtils.TWO);
+                    partialSum = partialSum.add(xPower.divide(denominator));
+                    upper = partialSum;
+                }
+                xPower = xPower.multiply(xSquared);
+                denominator = denominator.add(IntegerUtils.TWO);
+                partialSum = partialSum.subtract(xPower.divide(denominator));
+                return Interval.of(partialSum, upper);
+            }
+        });
     }
 
     public static @NotNull Real atan(@NotNull Rational x) {

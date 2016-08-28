@@ -31,7 +31,7 @@ public class RealTest {
         constant_helper(SQRT_TWO, "1.41421356237309504880...");
         constant_helper(PHI, "1.61803398874989484820...");
         constant_helper(E, "2.71828182845904523536...");
-        //todo fix constant_helper(PI, "3.14159265358979323846...");
+        constant_helper(PI, "3.14159265358979323846...");
 
         constant_helper(DEFAULT_RESOLUTION, "1/1267650600228229401496703205376");
     }
