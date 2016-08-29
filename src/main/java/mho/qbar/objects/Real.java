@@ -6,7 +6,6 @@ import mho.wheels.math.BinaryFraction;
 import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.Ordering;
-import mho.wheels.structures.NullableOptional;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
@@ -556,7 +555,24 @@ public final class Real implements Iterable<Interval> {
         return rational;
     }
 
+    /**
+     * Given a list of target {@code Real}s, returns the 0-based index of the one that is equal to {@code this}. If
+     * none are equal to {@code this}, this method will return an incorrect result or throw an exception. If more than
+     * one is equal to {@code this}, this method will loop forever.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code targets} cannot be empty and cannot contain nulls.</li>
+     *  <li>Exactly one element of {@code targets} must be equal to {@code this}.</li>
+     * </ul>
+     *
+     * @param targets a list of {@code Real}s, one of which is equal to {@code this}
+     * @return the index of the {@code Real} in {@code targets} that is equal to {@code this}
+     */
     public int match(@NotNull List<Real> targets) {
+        if (targets.size() == 1) {
+            return 0;
+        }
         Set<Integer> skipIndices = new HashSet<>(); //stop refining intervals that are disjoint from this's intervals
         Iterator<Interval> iterator = intervals.iterator();
         List<Iterator<Interval>> targetIterators = toList(map(Iterable::iterator, targets));
@@ -582,65 +598,133 @@ public final class Real implements Iterable<Interval> {
                 }
             }
             if (matchIndex == -1) {
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("No element of targets is equal to this. this: " +
+                        this + ", targets: " + targets);
             }
             return matchIndex;
         }
     }
 
-    private <T> NullableOptional<T> limitValue(@NotNull Function<Rational, T> f, @NotNull Rational resolution) {
-        Optional<Rational> previousLower = Optional.empty();
-        Optional<Rational> previousUpper = Optional.empty();
+    /**
+     * A helper function that lifts functions from {@code Rational} to {@code T} to functions from {@code Real} to
+     * {@code T}, assuming that the latter can be computed by repeatedly applying the former to increasingly-accurate
+     * interval bounds on the {@code Real} argument until f(lower) is equal to f(upper). The function must have any
+     * null values. If {@code this} is not exact and the function is discontinuous at {@code this}—that is, if f(lower)
+     * will never equal f(upper) no matter how accurate the approximation–then this method will loop forever. To
+     * prevent this behavior, use {@link Real#limitValue(Function, Rational)} instead.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code f} must be defined for all {@code Rational}s and must never return null or throw an exception.</li>
+     *  <li>{@code this} must be exact, or {@code f} must be continuous at {@code this}.</li>
+     * </ul>
+     *
+     * @param f a function from {@code Rational} to {@code T}
+     * @param <T> the type of the result of {@code f}
+     * @return {@code f} applied to {@code this}
+     */
+    private <T> T limitValueUnsafe(@NotNull Function<Rational, T> f) {
+        if (rational.isPresent()) {
+            return f.apply(rational.get());
+        }
+        Rational previousLower = null;
+        Rational previousUpper = null;
         T lowerValue = null;
         T upperValue = null;
-        for (Interval a : intervals) {
+        Iterator<Interval> as = intervals.iterator();
+        Interval a;
+        do {
+            a = as.next();
+        } while (!a.isFinitelyBounded());
+        while (true) {
             if (Thread.interrupted()) return null;
-            if (a.isFinitelyBounded()) {
-                Rational lower = a.getLower().get();
-                Rational upper = a.getUpper().get();
-                if (!previousLower.isPresent() || !previousLower.get().equals(lower)) {
-                    lowerValue = f.apply(lower);
+            Rational lower = a.getLower().get();
+            Rational upper = a.getUpper().get();
+            if (previousLower == null || !previousLower.equals(lower)) {
+                lowerValue = f.apply(lower);
+                if (lowerValue == null) {
+                    throw new IllegalArgumentException("f returned null on " + lower);
                 }
-                if (!previousUpper.isPresent() || !previousUpper.get().equals(upper)) {
-                    upperValue = f.apply(upper);
-                }
-                if (Objects.equals(lowerValue, upperValue)) {
-                    return NullableOptional.of(lowerValue);
-                }
-                if (Ordering.lt(upper.subtract(lower), resolution)) {
-                    return NullableOptional.empty();
-                }
-                previousLower = Optional.of(lower);
-                previousUpper = Optional.of(upper);
             }
+            if (previousUpper == null || !previousUpper.equals(upper)) {
+                upperValue = f.apply(upper);
+                if (upperValue == null) {
+                    throw new IllegalArgumentException("f returned null on " + upper);
+                }
+            }
+            if (lowerValue.equals(upperValue)) {
+                return lowerValue;
+            }
+            previousLower = lower;
+            previousUpper = upper;
+            a = as.next();
         }
-        throw new IllegalStateException("unreachable");
     }
 
-    private <T> T limitValueUnsafe(@NotNull Function<Rational, T> f) {
-        Optional<Rational> previousLower = Optional.empty();
-        Optional<Rational> previousUpper = Optional.empty();
+    /**
+     * A helper function that lifts functions from {@code Rational} to {@code T} to functions from {@code Real} to
+     * {@code T}, assuming that the latter can be computed by repeatedly applying the former to increasingly-accurate
+     * interval bounds on the {@code Real} argument until f(lower) is equal to f(upper). The function must have any
+     * null values. If {@code this} is not exact and the function is discontinuous at {@code this}—that is, if f(lower)
+     * will never equal f(upper) no matter how accurate the approximation–then this method will give up and return
+     * empty once the approximating interval's diameter is less than the specified resolution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>{@code f} must be defined for all {@code Rational}s and must never return null or throw an exception.</li>
+     * </ul>
+     *
+     * @param f a function from {@code Rational} to {@code T}
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @param <T> the type of the result of {@code f}
+     * @return {@code f} applied to {@code this}
+     */
+    private @NotNull <T> Optional<T> limitValue(
+            @NotNull Function<Rational, T> f,
+            @NotNull Rational resolution
+    ) {
+        if (resolution.signum() != 1) {
+            throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
+        }
+        if (rational.isPresent()) {
+            return Optional.of(f.apply(rational.get()));
+        }
+        Rational previousLower = null;
+        Rational previousUpper = null;
         T lowerValue = null;
         T upperValue = null;
-        for (Interval a : intervals) {
-            if (Thread.interrupted()) return null;
-            if (a.isFinitelyBounded()) {
-                Rational lower = a.getLower().get();
-                Rational upper = a.getUpper().get();
-                if (!previousLower.isPresent() || !previousLower.get().equals(lower)) {
-                    lowerValue = f.apply(lower);
+        Iterator<Interval> as = intervals.iterator();
+        Interval a;
+        do {
+            a = as.next();
+        } while (!a.isFinitelyBounded());
+        while (true) {
+            if (Thread.interrupted()) return Optional.empty();
+            Rational lower = a.getLower().get();
+            Rational upper = a.getUpper().get();
+            if (previousLower == null || !previousLower.equals(lower)) {
+                lowerValue = f.apply(lower);
+                if (lowerValue == null) {
+                    throw new IllegalArgumentException("f returned null on " + lower);
                 }
-                if (!previousUpper.isPresent() || !previousUpper.get().equals(upper)) {
-                    upperValue = f.apply(upper);
-                }
-                if (Objects.equals(lowerValue, upperValue)) {
-                    return lowerValue;
-                }
-                previousLower = Optional.of(lower);
-                previousUpper = Optional.of(upper);
             }
+            if (previousUpper == null || !previousUpper.equals(upper)) {
+                upperValue = f.apply(upper);
+                if (upperValue == null) {
+                    throw new IllegalArgumentException("f returned null on " + upper);
+                }
+            }
+            if (lowerValue.equals(upperValue)) {
+                return Optional.of(lowerValue);
+            }
+            if (Ordering.lt(upper.subtract(lower), resolution)) {
+                return Optional.empty();
+            }
+            previousLower = lower;
+            previousUpper = upper;
+            a = as.next();
         }
-        throw new IllegalStateException("unreachable");
     }
 
     public @NotNull Real negate() {
@@ -707,7 +791,7 @@ public final class Real implements Iterable<Interval> {
     }
 
     public @NotNull Optional<Integer> signum(@NotNull Rational resolution) {
-        return limitValue(Rational::signum, resolution).toOptional();
+        return limitValue(Rational::signum, resolution);
     }
 
     public @NotNull Real abs() {
@@ -719,7 +803,7 @@ public final class Real implements Iterable<Interval> {
     }
 
     public @NotNull Optional<BigInteger> floor(@NotNull Rational resolution) {
-        return limitValue(Rational::floor, resolution).toOptional();
+        return limitValue(Rational::floor, resolution);
     }
 
     public @NotNull Pair<List<BigInteger>, Iterable<BigInteger>> digitsUnsafe(@NotNull BigInteger base) {

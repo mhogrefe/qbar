@@ -5,12 +5,16 @@ import mho.wheels.math.BinaryFraction;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static mho.qbar.objects.Real.*;
 import static mho.wheels.testing.Testing.TINY_LIMIT;
 import static mho.wheels.testing.Testing.aeq;
 import static mho.wheels.testing.Testing.aeqitLimit;
+import static org.junit.Assert.fail;
 
 public class RealTest {
     private static void constant_helper(@NotNull Real input, @NotNull String output) {
@@ -462,5 +466,32 @@ public class RealTest {
         rationalValue_helper(fuzzyRepresentation(Rational.ZERO), "Optional.empty");
         rationalValue_helper(leftFuzzyRepresentation(Rational.ZERO), "Optional.empty");
         rationalValue_helper(rightFuzzyRepresentation(Rational.ZERO), "Optional.empty");
+    }
+
+    private static void match_helper(@NotNull Real r, @NotNull List<Real> targets, int output) {
+        aeq(r.match(targets), output);
+    }
+
+    private static void match_fail_helper(@NotNull Real r, @NotNull List<Real> targets) {
+        try {
+            r.match(targets);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testMatch() {
+        List<Real> targets = Arrays.asList(ZERO, ONE, NEGATIVE_ONE, of(Rational.of(-4, 3)), SQRT_TWO, E, PI);
+
+        match_helper(ZERO, targets, 0);
+        match_helper(ONE, targets, 1);
+        match_helper(NEGATIVE_ONE, targets, 2);
+        match_helper(of(Rational.of(-4, 3)), targets, 3);
+        match_helper(SQRT_TWO, targets, 4);
+        match_helper(E, targets, 5);
+        match_helper(PI, targets, 6);
+
+        match_fail_helper(ONE, Collections.emptyList());
+        match_fail_helper(of(100), targets);
     }
 }

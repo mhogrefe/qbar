@@ -1,13 +1,18 @@
 package mho.qbar.objects;
 
 import mho.qbar.testing.QBarDemos;
+import mho.wheels.iterables.CachedIterator;
 import mho.wheels.math.BinaryFraction;
+import mho.wheels.structures.Pair;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.List;
 
 import static mho.qbar.objects.Real.*;
+import static mho.wheels.iterables.IterableUtils.map;
 import static mho.wheels.iterables.IterableUtils.take;
+import static mho.wheels.iterables.IterableUtils.toList;
 import static mho.wheels.testing.Testing.*;
 
 @SuppressWarnings("UnusedDeclaration")
@@ -109,6 +114,20 @@ public class RealDemos extends QBarDemos {
     private void demoRationalValue() {
         for (Real r : take(LIMIT, P.withScale(4).reals())) {
             System.out.println("rationalValue(" + r +") = " + r.rationalValue());
+        }
+    }
+
+    private void demoMatch() {
+        CachedIterator<Real> reals = new CachedIterator<>(P.withScale(4).cleanReals());
+        Iterable<Pair<Real, List<Real>>> ps = map(
+                p -> new Pair<>(reals.get(p.b).get(), toList(map(i -> reals.get(i).get(), p.a))),
+                P.dependentPairs(
+                        P.withScale(4).distinctListsAtLeast(1, P.withScale(4).naturalIntegersGeometric()),
+                        P::uniformSample
+                )
+        );
+        for (Pair<Real, List<Real>> p : take(LIMIT, ps)) {
+            System.out.println("match(" + p.a + ", " + p.b + ") = " + p.a.match(p.b));
         }
     }
 }

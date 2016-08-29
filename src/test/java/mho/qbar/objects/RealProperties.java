@@ -1,11 +1,14 @@
 package mho.qbar.objects;
 
 import mho.qbar.testing.QBarTestProperties;
+import mho.wheels.iterables.CachedIterator;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.numberUtils.IntegerUtils;
+import mho.wheels.structures.Pair;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,6 +43,7 @@ public class RealProperties extends QBarTestProperties {
         propertiesIterator();
         propertiesIsExact();
         propertiesRationalValue();
+        propertiesMatch();
     }
 
     private void propertiesOf_Rational() {
@@ -266,6 +270,29 @@ public class RealProperties extends QBarTestProperties {
         for (Rational r : take(LIMIT, P.rationals())) {
             Real x = of(r);
             assertTrue(r, x.rationalValue().isPresent());
+        }
+    }
+
+    private void propertiesMatch() {
+        initialize("match(List<Real>)");
+        CachedIterator<Real> reals = new CachedIterator<>(P.cleanReals());
+        Iterable<Pair<Real, List<Real>>> ps = map(
+                p -> new Pair<>(reals.get(p.b).get(), toList(map(i -> reals.get(i).get(), p.a))),
+                P.dependentPairs(
+                        P.distinctListsAtLeast(1, P.naturalIntegersGeometric()),
+                        P::uniformSample
+                )
+        );
+        for (Pair<Real, List<Real>> p : take(LIMIT, ps)) {
+            int index = p.a.match(p.b);
+            assertTrue(p, p.b.get(index) == p.a);
+        }
+
+        for (Real r : take(LIMIT, P.reals())) {
+            try {
+                r.match(Collections.emptyList());
+                fail(r);
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 }
