@@ -17,6 +17,11 @@ import static mho.wheels.testing.Testing.aeqitLimit;
 import static org.junit.Assert.fail;
 
 public class RealTest {
+    private static final @NotNull Real NEGATIVE_FOUR_THIRDS = of(Rational.of(-4, 3));
+    private static final @NotNull Real NEGATIVE_ONE_HALF = ONE_HALF.negate();
+    private static final @NotNull Real THREE_HALVES = of(Rational.of(3, 2));
+    private static final @NotNull Real NEGATIVE_THREE_HALVES = of(Rational.of(-3, 2));
+
     private static void constant_helper(@NotNull Real input, @NotNull String output) {
         input.validate();
         aeq(input, output);
@@ -381,7 +386,7 @@ public class RealTest {
                 "[[-1, -1], [-1, -1], [-1, -1], [-1, -1], [-1, -1], [-1, -1], [-1, -1], [-1, -1], [-1, -1]," +
                 " [-1, -1], [-1, -1], [-1, -1], [-1, -1], [-1, -1], [-1, -1], [-1, -1], [-1, -1], [-1, -1]," +
                 " [-1, -1], [-1, -1], ...]");
-        iterator_helper(of(Rational.of(-4, 3)),
+        iterator_helper(NEGATIVE_FOUR_THIRDS,
                 "[[-4/3, -4/3], [-4/3, -4/3], [-4/3, -4/3], [-4/3, -4/3], [-4/3, -4/3], [-4/3, -4/3], [-4/3, -4/3]," +
                 " [-4/3, -4/3], [-4/3, -4/3], [-4/3, -4/3], [-4/3, -4/3], [-4/3, -4/3], [-4/3, -4/3], [-4/3, -4/3]," +
                 " [-4/3, -4/3], [-4/3, -4/3], [-4/3, -4/3], [-4/3, -4/3], [-4/3, -4/3], [-4/3, -4/3], ...]");
@@ -439,7 +444,7 @@ public class RealTest {
         isExact_helper(ZERO, true);
         isExact_helper(ONE, true);
         isExact_helper(NEGATIVE_ONE, true);
-        isExact_helper(of(Rational.of(-4, 3)), true);
+        isExact_helper(NEGATIVE_FOUR_THIRDS, true);
         isExact_helper(SQRT_TWO, false);
         isExact_helper(E, false);
         isExact_helper(PI, false);
@@ -458,7 +463,7 @@ public class RealTest {
         rationalValue_helper(ZERO, "Optional[0]");
         rationalValue_helper(ONE, "Optional[1]");
         rationalValue_helper(NEGATIVE_ONE, "Optional[-1]");
-        rationalValue_helper(of(Rational.of(-4, 3)), "Optional[-4/3]");
+        rationalValue_helper(NEGATIVE_FOUR_THIRDS, "Optional[-4/3]");
         rationalValue_helper(SQRT_TWO, "Optional.empty");
         rationalValue_helper(E, "Optional.empty");
         rationalValue_helper(PI, "Optional.empty");
@@ -481,17 +486,874 @@ public class RealTest {
 
     @Test
     public void testMatch() {
-        List<Real> targets = Arrays.asList(ZERO, ONE, NEGATIVE_ONE, of(Rational.of(-4, 3)), SQRT_TWO, E, PI);
+        List<Real> targets = Arrays.asList(ZERO, ONE, NEGATIVE_ONE, NEGATIVE_FOUR_THIRDS, SQRT_TWO, E, PI);
 
         match_helper(ZERO, targets, 0);
         match_helper(ONE, targets, 1);
         match_helper(NEGATIVE_ONE, targets, 2);
-        match_helper(of(Rational.of(-4, 3)), targets, 3);
+        match_helper(NEGATIVE_FOUR_THIRDS, targets, 3);
         match_helper(SQRT_TWO, targets, 4);
         match_helper(E, targets, 5);
         match_helper(PI, targets, 6);
 
         match_fail_helper(ONE, Collections.emptyList());
         match_fail_helper(of(100), targets);
+    }
+
+    private static void bigIntegerValueUnsafe_RoundingMode_helper(
+            @NotNull Real x,
+            @NotNull String rm,
+            @NotNull String output
+    ) {
+        aeq(x.bigIntegerValueUnsafe(Readers.readRoundingModeStrict(rm).get()), output);
+    }
+
+    private static void bigIntegerValueUnsafe_RoundingMode_fail_helper(@NotNull Real x, @NotNull String rm) {
+        try {
+            x.bigIntegerValueUnsafe(Readers.readRoundingModeStrict(rm).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testBigIntegerValueUnsafe_RoundingMode() {
+        bigIntegerValueUnsafe_RoundingMode_helper(ZERO, "UP", "0");
+        bigIntegerValueUnsafe_RoundingMode_helper(ONE, "UP", "1");
+        bigIntegerValueUnsafe_RoundingMode_helper(NEGATIVE_ONE, "UP", "-1");
+        bigIntegerValueUnsafe_RoundingMode_helper(ONE_HALF, "UP", "1");
+        bigIntegerValueUnsafe_RoundingMode_helper(NEGATIVE_ONE_HALF, "UP", "-1");
+        bigIntegerValueUnsafe_RoundingMode_helper(THREE_HALVES, "UP", "2");
+        bigIntegerValueUnsafe_RoundingMode_helper(NEGATIVE_THREE_HALVES, "UP", "-2");
+        bigIntegerValueUnsafe_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, "UP", "-2");
+        bigIntegerValueUnsafe_RoundingMode_helper(SQRT_TWO, "UP", "2");
+        bigIntegerValueUnsafe_RoundingMode_helper(E, "UP", "3");
+        bigIntegerValueUnsafe_RoundingMode_helper(PI, "UP", "4");
+        bigIntegerValueUnsafe_RoundingMode_helper(leftFuzzyRepresentation(Rational.ONE), "UP", "1");
+        bigIntegerValueUnsafe_RoundingMode_helper(rightFuzzyRepresentation(Rational.NEGATIVE_ONE), "UP", "-1");
+        bigIntegerValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.ONE_HALF), "UP", "1");
+        bigIntegerValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.ONE_HALF.negate()), "UP", "-1");
+        bigIntegerValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.of(3, 2)), "UP", "2");
+        bigIntegerValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.of(-3, 2)), "UP", "-2");
+        bigIntegerValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.of(-4, 3)), "UP", "-2");
+
+        bigIntegerValueUnsafe_RoundingMode_helper(ZERO, "DOWN", "0");
+        bigIntegerValueUnsafe_RoundingMode_helper(ONE, "DOWN", "1");
+        bigIntegerValueUnsafe_RoundingMode_helper(NEGATIVE_ONE, "DOWN", "-1");
+        bigIntegerValueUnsafe_RoundingMode_helper(ONE_HALF, "DOWN", "0");
+        bigIntegerValueUnsafe_RoundingMode_helper(NEGATIVE_ONE_HALF, "DOWN", "0");
+        bigIntegerValueUnsafe_RoundingMode_helper(THREE_HALVES, "DOWN", "1");
+        bigIntegerValueUnsafe_RoundingMode_helper(NEGATIVE_THREE_HALVES, "DOWN", "-1");
+        bigIntegerValueUnsafe_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, "DOWN", "-1");
+        bigIntegerValueUnsafe_RoundingMode_helper(SQRT_TWO, "DOWN", "1");
+        bigIntegerValueUnsafe_RoundingMode_helper(E, "DOWN", "2");
+        bigIntegerValueUnsafe_RoundingMode_helper(PI, "DOWN", "3");
+        bigIntegerValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.ZERO), "DOWN", "0");
+        bigIntegerValueUnsafe_RoundingMode_helper(rightFuzzyRepresentation(Rational.ONE), "DOWN", "1");
+        bigIntegerValueUnsafe_RoundingMode_helper(leftFuzzyRepresentation(Rational.NEGATIVE_ONE), "DOWN", "-1");
+        bigIntegerValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.ONE_HALF), "DOWN", "0");
+        bigIntegerValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.ONE_HALF.negate()), "DOWN", "0");
+        bigIntegerValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.of(3, 2)), "DOWN", "1");
+        bigIntegerValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.of(-3, 2)), "DOWN", "-1");
+        bigIntegerValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.of(-4, 3)), "DOWN", "-1");
+
+        bigIntegerValueUnsafe_RoundingMode_helper(ZERO, "CEILING", "0");
+        bigIntegerValueUnsafe_RoundingMode_helper(ONE, "CEILING", "1");
+        bigIntegerValueUnsafe_RoundingMode_helper(NEGATIVE_ONE, "CEILING", "-1");
+        bigIntegerValueUnsafe_RoundingMode_helper(ONE_HALF, "CEILING", "1");
+        bigIntegerValueUnsafe_RoundingMode_helper(NEGATIVE_ONE_HALF, "CEILING", "0");
+        bigIntegerValueUnsafe_RoundingMode_helper(THREE_HALVES, "CEILING", "2");
+        bigIntegerValueUnsafe_RoundingMode_helper(NEGATIVE_THREE_HALVES, "CEILING", "-1");
+        bigIntegerValueUnsafe_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, "CEILING", "-1");
+        bigIntegerValueUnsafe_RoundingMode_helper(SQRT_TWO, "CEILING", "2");
+        bigIntegerValueUnsafe_RoundingMode_helper(E, "CEILING", "3");
+        bigIntegerValueUnsafe_RoundingMode_helper(PI, "CEILING", "4");
+        bigIntegerValueUnsafe_RoundingMode_helper(leftFuzzyRepresentation(Rational.ZERO), "CEILING", "0");
+        bigIntegerValueUnsafe_RoundingMode_helper(leftFuzzyRepresentation(Rational.ONE), "CEILING", "1");
+        bigIntegerValueUnsafe_RoundingMode_helper(leftFuzzyRepresentation(Rational.NEGATIVE_ONE), "CEILING", "-1");
+        bigIntegerValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.ONE_HALF), "CEILING", "1");
+        bigIntegerValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.ONE_HALF.negate()), "CEILING", "0");
+        bigIntegerValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.of(3, 2)), "CEILING", "2");
+        bigIntegerValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.of(-3, 2)), "CEILING", "-1");
+        bigIntegerValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.of(-4, 3)), "CEILING", "-1");
+
+        bigIntegerValueUnsafe_RoundingMode_helper(ZERO, "FLOOR", "0");
+        bigIntegerValueUnsafe_RoundingMode_helper(ONE, "FLOOR", "1");
+        bigIntegerValueUnsafe_RoundingMode_helper(NEGATIVE_ONE, "FLOOR", "-1");
+        bigIntegerValueUnsafe_RoundingMode_helper(ONE_HALF, "FLOOR", "0");
+        bigIntegerValueUnsafe_RoundingMode_helper(NEGATIVE_ONE_HALF, "FLOOR", "-1");
+        bigIntegerValueUnsafe_RoundingMode_helper(THREE_HALVES, "FLOOR", "1");
+        bigIntegerValueUnsafe_RoundingMode_helper(NEGATIVE_THREE_HALVES, "FLOOR", "-2");
+        bigIntegerValueUnsafe_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, "FLOOR", "-2");
+        bigIntegerValueUnsafe_RoundingMode_helper(SQRT_TWO, "FLOOR", "1");
+        bigIntegerValueUnsafe_RoundingMode_helper(E, "FLOOR", "2");
+        bigIntegerValueUnsafe_RoundingMode_helper(PI, "FLOOR", "3");
+        bigIntegerValueUnsafe_RoundingMode_helper(rightFuzzyRepresentation(Rational.ZERO), "FLOOR", "0");
+        bigIntegerValueUnsafe_RoundingMode_helper(rightFuzzyRepresentation(Rational.ONE), "FLOOR", "1");
+        bigIntegerValueUnsafe_RoundingMode_helper(rightFuzzyRepresentation(Rational.NEGATIVE_ONE), "FLOOR", "-1");
+        bigIntegerValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.ONE_HALF), "FLOOR", "0");
+        bigIntegerValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.ONE_HALF.negate()), "FLOOR", "-1");
+        bigIntegerValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.of(3, 2)), "FLOOR", "1");
+        bigIntegerValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.of(-3, 2)), "FLOOR", "-2");
+        bigIntegerValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.of(-4, 3)), "FLOOR", "-2");
+
+        bigIntegerValueUnsafe_RoundingMode_helper(ZERO, "HALF_UP", "0");
+        bigIntegerValueUnsafe_RoundingMode_helper(ONE, "HALF_UP", "1");
+        bigIntegerValueUnsafe_RoundingMode_helper(NEGATIVE_ONE, "HALF_UP", "-1");
+        bigIntegerValueUnsafe_RoundingMode_helper(ONE_HALF, "HALF_UP", "1");
+        bigIntegerValueUnsafe_RoundingMode_helper(NEGATIVE_ONE_HALF, "HALF_UP", "-1");
+        bigIntegerValueUnsafe_RoundingMode_helper(THREE_HALVES, "HALF_UP", "2");
+        bigIntegerValueUnsafe_RoundingMode_helper(NEGATIVE_THREE_HALVES, "HALF_UP", "-2");
+        bigIntegerValueUnsafe_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, "HALF_UP", "-1");
+        bigIntegerValueUnsafe_RoundingMode_helper(SQRT_TWO, "HALF_UP", "1");
+        bigIntegerValueUnsafe_RoundingMode_helper(E, "HALF_UP", "3");
+        bigIntegerValueUnsafe_RoundingMode_helper(PI, "HALF_UP", "3");
+        bigIntegerValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.ZERO), "HALF_UP", "0");
+        bigIntegerValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.ONE), "HALF_UP", "1");
+        bigIntegerValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), "HALF_UP", "-1");
+        bigIntegerValueUnsafe_RoundingMode_helper(rightFuzzyRepresentation(Rational.ONE_HALF), "HALF_UP", "1");
+        bigIntegerValueUnsafe_RoundingMode_helper(leftFuzzyRepresentation(Rational.ONE_HALF.negate()), "HALF_UP",
+                "-1");
+        bigIntegerValueUnsafe_RoundingMode_helper(rightFuzzyRepresentation(Rational.of(3, 2)), "HALF_UP", "2");
+        bigIntegerValueUnsafe_RoundingMode_helper(leftFuzzyRepresentation(Rational.of(-3, 2)), "HALF_UP", "-2");
+        bigIntegerValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.of(-4, 3)), "HALF_UP", "-1");
+
+        bigIntegerValueUnsafe_RoundingMode_helper(ZERO, "HALF_DOWN", "0");
+        bigIntegerValueUnsafe_RoundingMode_helper(ONE, "HALF_DOWN", "1");
+        bigIntegerValueUnsafe_RoundingMode_helper(NEGATIVE_ONE, "HALF_DOWN", "-1");
+        bigIntegerValueUnsafe_RoundingMode_helper(ONE_HALF, "HALF_DOWN", "0");
+        bigIntegerValueUnsafe_RoundingMode_helper(NEGATIVE_ONE_HALF, "HALF_DOWN", "0");
+        bigIntegerValueUnsafe_RoundingMode_helper(THREE_HALVES, "HALF_DOWN", "1");
+        bigIntegerValueUnsafe_RoundingMode_helper(NEGATIVE_THREE_HALVES, "HALF_DOWN", "-1");
+        bigIntegerValueUnsafe_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, "HALF_DOWN", "-1");
+        bigIntegerValueUnsafe_RoundingMode_helper(SQRT_TWO, "HALF_DOWN", "1");
+        bigIntegerValueUnsafe_RoundingMode_helper(E, "HALF_DOWN", "3");
+        bigIntegerValueUnsafe_RoundingMode_helper(PI, "HALF_DOWN", "3");
+        bigIntegerValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.ZERO), "HALF_DOWN", "0");
+        bigIntegerValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.ONE), "HALF_DOWN", "1");
+        bigIntegerValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), "HALF_DOWN", "-1");
+        bigIntegerValueUnsafe_RoundingMode_helper(leftFuzzyRepresentation(Rational.ONE_HALF), "HALF_DOWN", "0");
+        bigIntegerValueUnsafe_RoundingMode_helper(rightFuzzyRepresentation(Rational.ONE_HALF.negate()), "HALF_DOWN",
+                "0");
+        bigIntegerValueUnsafe_RoundingMode_helper(leftFuzzyRepresentation(Rational.of(3, 2)), "HALF_DOWN", "1");
+        bigIntegerValueUnsafe_RoundingMode_helper(rightFuzzyRepresentation(Rational.of(-3, 2)), "HALF_DOWN", "-1");
+        bigIntegerValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.of(-4, 3)), "HALF_DOWN", "-1");
+
+        bigIntegerValueUnsafe_RoundingMode_helper(ZERO, "HALF_EVEN", "0");
+        bigIntegerValueUnsafe_RoundingMode_helper(ONE, "HALF_EVEN", "1");
+        bigIntegerValueUnsafe_RoundingMode_helper(NEGATIVE_ONE, "HALF_EVEN", "-1");
+        bigIntegerValueUnsafe_RoundingMode_helper(ONE_HALF, "HALF_EVEN", "0");
+        bigIntegerValueUnsafe_RoundingMode_helper(NEGATIVE_ONE_HALF, "HALF_EVEN", "0");
+        bigIntegerValueUnsafe_RoundingMode_helper(THREE_HALVES, "HALF_EVEN", "2");
+        bigIntegerValueUnsafe_RoundingMode_helper(NEGATIVE_THREE_HALVES, "HALF_EVEN", "-2");
+        bigIntegerValueUnsafe_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, "HALF_EVEN", "-1");
+        bigIntegerValueUnsafe_RoundingMode_helper(SQRT_TWO, "HALF_EVEN", "1");
+        bigIntegerValueUnsafe_RoundingMode_helper(E, "HALF_EVEN", "3");
+        bigIntegerValueUnsafe_RoundingMode_helper(PI, "HALF_EVEN", "3");
+        bigIntegerValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.ZERO), "HALF_EVEN", "0");
+        bigIntegerValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.ONE), "HALF_EVEN", "1");
+        bigIntegerValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), "HALF_EVEN", "-1");
+        bigIntegerValueUnsafe_RoundingMode_helper(leftFuzzyRepresentation(Rational.ONE_HALF), "HALF_EVEN", "0");
+        bigIntegerValueUnsafe_RoundingMode_helper(rightFuzzyRepresentation(Rational.ONE_HALF.negate()), "HALF_EVEN",
+                "0");
+        bigIntegerValueUnsafe_RoundingMode_helper(rightFuzzyRepresentation(Rational.of(3, 2)), "HALF_EVEN", "2");
+        bigIntegerValueUnsafe_RoundingMode_helper(leftFuzzyRepresentation(Rational.of(-3, 2)), "HALF_EVEN", "-2");
+        bigIntegerValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.of(-4, 3)), "HALF_EVEN", "-1");
+
+        bigIntegerValueUnsafe_RoundingMode_fail_helper(ONE_HALF, "UNNECESSARY");
+        bigIntegerValueUnsafe_RoundingMode_fail_helper(NEGATIVE_ONE_HALF, "UNNECESSARY");
+        bigIntegerValueUnsafe_RoundingMode_fail_helper(THREE_HALVES, "UNNECESSARY");
+        bigIntegerValueUnsafe_RoundingMode_fail_helper(NEGATIVE_THREE_HALVES, "UNNECESSARY");
+        bigIntegerValueUnsafe_RoundingMode_fail_helper(NEGATIVE_FOUR_THIRDS, "UNNECESSARY");
+        bigIntegerValueUnsafe_RoundingMode_fail_helper(SQRT_TWO, "UNNECESSARY");
+        bigIntegerValueUnsafe_RoundingMode_fail_helper(E, "UNNECESSARY");
+        bigIntegerValueUnsafe_RoundingMode_fail_helper(PI, "UNNECESSARY");
+        bigIntegerValueUnsafe_RoundingMode_fail_helper(leftFuzzyRepresentation(Rational.ZERO), "UNNECESSARY");
+        bigIntegerValueUnsafe_RoundingMode_fail_helper(rightFuzzyRepresentation(Rational.ZERO), "UNNECESSARY");
+        bigIntegerValueUnsafe_RoundingMode_fail_helper(fuzzyRepresentation(Rational.ZERO), "UNNECESSARY");
+    }
+
+    private static void bigIntegerValue_RoundingMode_Rational_helper(
+            @NotNull Real x,
+            @NotNull String rm,
+            @NotNull Rational r,
+            @NotNull String output
+    ) {
+        aeq(x.bigIntegerValue(Readers.readRoundingModeStrict(rm).get(), r), output);
+    }
+
+    private static void bigIntegerValue_RoundingMode_Rational_fail_helper(
+            @NotNull Real x,
+            @NotNull String rm,
+            @NotNull Rational r
+    ) {
+        try {
+            x.bigIntegerValue(Readers.readRoundingModeStrict(rm).get(), r);
+            fail();
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testBigIntegerValue_RoundingMode() {
+        bigIntegerValue_RoundingMode_Rational_helper(ZERO, "UP", DEFAULT_RESOLUTION, "Optional[0]");
+        bigIntegerValue_RoundingMode_Rational_helper(ONE, "UP", DEFAULT_RESOLUTION, "Optional[1]");
+        bigIntegerValue_RoundingMode_Rational_helper(NEGATIVE_ONE, "UP", DEFAULT_RESOLUTION, "Optional[-1]");
+        bigIntegerValue_RoundingMode_Rational_helper(ONE_HALF, "UP", DEFAULT_RESOLUTION, "Optional[1]");
+        bigIntegerValue_RoundingMode_Rational_helper(NEGATIVE_ONE_HALF, "UP", DEFAULT_RESOLUTION, "Optional[-1]");
+        bigIntegerValue_RoundingMode_Rational_helper(THREE_HALVES, "UP", DEFAULT_RESOLUTION, "Optional[2]");
+        bigIntegerValue_RoundingMode_Rational_helper(NEGATIVE_THREE_HALVES, "UP", DEFAULT_RESOLUTION, "Optional[-2]");
+        bigIntegerValue_RoundingMode_Rational_helper(NEGATIVE_FOUR_THIRDS, "UP", DEFAULT_RESOLUTION, "Optional[-2]");
+        bigIntegerValue_RoundingMode_Rational_helper(SQRT_TWO, "UP", DEFAULT_RESOLUTION, "Optional[2]");
+        bigIntegerValue_RoundingMode_Rational_helper(E, "UP", DEFAULT_RESOLUTION, "Optional[3]");
+        bigIntegerValue_RoundingMode_Rational_helper(PI, "UP", DEFAULT_RESOLUTION, "Optional[4]");
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                "UP",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ONE),
+                "UP",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                "UP",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ONE_HALF),
+                "UP",
+                DEFAULT_RESOLUTION,
+                "Optional[1]"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ONE_HALF.negate()),
+                "UP",
+                DEFAULT_RESOLUTION,
+                "Optional[-1]"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(3, 2)),
+                "UP",
+                DEFAULT_RESOLUTION,
+                "Optional[2]"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(-3, 2)),
+                "UP",
+                DEFAULT_RESOLUTION,
+                "Optional[-2]"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(-4, 3)),
+                "UP",
+                DEFAULT_RESOLUTION,
+                "Optional[-2]"
+        );
+
+        bigIntegerValue_RoundingMode_Rational_helper(ZERO, "DOWN", DEFAULT_RESOLUTION, "Optional[0]");
+        bigIntegerValue_RoundingMode_Rational_helper(ONE, "DOWN", DEFAULT_RESOLUTION, "Optional[1]");
+        bigIntegerValue_RoundingMode_Rational_helper(NEGATIVE_ONE, "DOWN", DEFAULT_RESOLUTION, "Optional[-1]");
+        bigIntegerValue_RoundingMode_Rational_helper(ONE_HALF, "DOWN", DEFAULT_RESOLUTION, "Optional[0]");
+        bigIntegerValue_RoundingMode_Rational_helper(NEGATIVE_ONE_HALF, "DOWN", DEFAULT_RESOLUTION, "Optional[0]");
+        bigIntegerValue_RoundingMode_Rational_helper(THREE_HALVES, "DOWN", DEFAULT_RESOLUTION, "Optional[1]");
+        bigIntegerValue_RoundingMode_Rational_helper(NEGATIVE_THREE_HALVES, "DOWN", DEFAULT_RESOLUTION,
+                "Optional[-1]");
+        bigIntegerValue_RoundingMode_Rational_helper(NEGATIVE_FOUR_THIRDS, "DOWN", DEFAULT_RESOLUTION, "Optional[-1]");
+        bigIntegerValue_RoundingMode_Rational_helper(SQRT_TWO, "DOWN", DEFAULT_RESOLUTION, "Optional[1]");
+        bigIntegerValue_RoundingMode_Rational_helper(E, "DOWN", DEFAULT_RESOLUTION, "Optional[2]");
+        bigIntegerValue_RoundingMode_Rational_helper(PI, "DOWN", DEFAULT_RESOLUTION, "Optional[3]");
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                "DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[0]"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ONE),
+                "DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                "DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ONE_HALF),
+                "DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[0]"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ONE_HALF.negate()),
+                "DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[0]"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(3, 2)),
+                "DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[1]"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(-3, 2)),
+                "DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[-1]"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(-4, 3)),
+                "DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[-1]"
+        );
+
+        bigIntegerValue_RoundingMode_Rational_helper(ZERO, "CEILING", DEFAULT_RESOLUTION, "Optional[0]");
+        bigIntegerValue_RoundingMode_Rational_helper(ONE, "CEILING", DEFAULT_RESOLUTION, "Optional[1]");
+        bigIntegerValue_RoundingMode_Rational_helper(NEGATIVE_ONE, "CEILING", DEFAULT_RESOLUTION, "Optional[-1]");
+        bigIntegerValue_RoundingMode_Rational_helper(ONE_HALF, "CEILING", DEFAULT_RESOLUTION, "Optional[1]");
+        bigIntegerValue_RoundingMode_Rational_helper(NEGATIVE_ONE_HALF, "CEILING", DEFAULT_RESOLUTION, "Optional[0]");
+        bigIntegerValue_RoundingMode_Rational_helper(THREE_HALVES, "CEILING", DEFAULT_RESOLUTION, "Optional[2]");
+        bigIntegerValue_RoundingMode_Rational_helper(NEGATIVE_THREE_HALVES, "CEILING", DEFAULT_RESOLUTION,
+                "Optional[-1]");
+        bigIntegerValue_RoundingMode_Rational_helper(NEGATIVE_FOUR_THIRDS, "CEILING", DEFAULT_RESOLUTION,
+                "Optional[-1]");
+        bigIntegerValue_RoundingMode_Rational_helper(SQRT_TWO, "CEILING", DEFAULT_RESOLUTION, "Optional[2]");
+        bigIntegerValue_RoundingMode_Rational_helper(E, "CEILING", DEFAULT_RESOLUTION, "Optional[3]");
+        bigIntegerValue_RoundingMode_Rational_helper(PI, "CEILING", DEFAULT_RESOLUTION, "Optional[4]");
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ONE),
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ONE_HALF),
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional[1]"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ONE_HALF.negate()),
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional[0]"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(3, 2)),
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional[2]"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(-3, 2)),
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional[-1]"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(-4, 3)),
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional[-1]"
+        );
+
+        bigIntegerValue_RoundingMode_Rational_helper(ZERO, "FLOOR", DEFAULT_RESOLUTION, "Optional[0]");
+        bigIntegerValue_RoundingMode_Rational_helper(ONE, "FLOOR", DEFAULT_RESOLUTION, "Optional[1]");
+        bigIntegerValue_RoundingMode_Rational_helper(NEGATIVE_ONE, "FLOOR", DEFAULT_RESOLUTION, "Optional[-1]");
+        bigIntegerValue_RoundingMode_Rational_helper(ONE_HALF, "FLOOR", DEFAULT_RESOLUTION, "Optional[0]");
+        bigIntegerValue_RoundingMode_Rational_helper(NEGATIVE_ONE_HALF, "FLOOR", DEFAULT_RESOLUTION, "Optional[-1]");
+        bigIntegerValue_RoundingMode_Rational_helper(THREE_HALVES, "FLOOR", DEFAULT_RESOLUTION, "Optional[1]");
+        bigIntegerValue_RoundingMode_Rational_helper(NEGATIVE_THREE_HALVES, "FLOOR", DEFAULT_RESOLUTION,
+                "Optional[-2]");
+        bigIntegerValue_RoundingMode_Rational_helper(NEGATIVE_FOUR_THIRDS, "FLOOR", DEFAULT_RESOLUTION,
+                "Optional[-2]");
+        bigIntegerValue_RoundingMode_Rational_helper(SQRT_TWO, "FLOOR", DEFAULT_RESOLUTION, "Optional[1]");
+        bigIntegerValue_RoundingMode_Rational_helper(E, "FLOOR", DEFAULT_RESOLUTION, "Optional[2]");
+        bigIntegerValue_RoundingMode_Rational_helper(PI, "FLOOR", DEFAULT_RESOLUTION, "Optional[3]");
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                "FLOOR",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ONE),
+                "FLOOR",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                "FLOOR",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ONE_HALF),
+                "FLOOR",
+                DEFAULT_RESOLUTION,
+                "Optional[0]"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ONE_HALF.negate()),
+                "FLOOR",
+                DEFAULT_RESOLUTION,
+                "Optional[-1]"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(3, 2)),
+                "FLOOR",
+                DEFAULT_RESOLUTION,
+                "Optional[1]"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(-3, 2)),
+                "FLOOR",
+                DEFAULT_RESOLUTION,
+                "Optional[-2]"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(-4, 3)),
+                "FLOOR",
+                DEFAULT_RESOLUTION,
+                "Optional[-2]"
+        );
+
+        bigIntegerValue_RoundingMode_Rational_helper(ZERO, "HALF_UP", DEFAULT_RESOLUTION, "Optional[0]");
+        bigIntegerValue_RoundingMode_Rational_helper(ONE, "HALF_UP", DEFAULT_RESOLUTION, "Optional[1]");
+        bigIntegerValue_RoundingMode_Rational_helper(NEGATIVE_ONE, "HALF_UP", DEFAULT_RESOLUTION, "Optional[-1]");
+        bigIntegerValue_RoundingMode_Rational_helper(ONE_HALF, "HALF_UP", DEFAULT_RESOLUTION, "Optional[1]");
+        bigIntegerValue_RoundingMode_Rational_helper(NEGATIVE_ONE_HALF, "HALF_UP", DEFAULT_RESOLUTION, "Optional[-1]");
+        bigIntegerValue_RoundingMode_Rational_helper(THREE_HALVES, "HALF_UP", DEFAULT_RESOLUTION, "Optional[2]");
+        bigIntegerValue_RoundingMode_Rational_helper(NEGATIVE_THREE_HALVES, "HALF_UP", DEFAULT_RESOLUTION,
+                "Optional[-2]");
+        bigIntegerValue_RoundingMode_Rational_helper(NEGATIVE_FOUR_THIRDS, "HALF_UP", DEFAULT_RESOLUTION,
+                "Optional[-1]");
+        bigIntegerValue_RoundingMode_Rational_helper(SQRT_TWO, "HALF_UP", DEFAULT_RESOLUTION, "Optional[1]");
+        bigIntegerValue_RoundingMode_Rational_helper(E, "HALF_UP", DEFAULT_RESOLUTION, "Optional[3]");
+        bigIntegerValue_RoundingMode_Rational_helper(PI, "HALF_UP", DEFAULT_RESOLUTION, "Optional[3]");
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional[0]"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ONE),
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional[1]"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional[-1]"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ONE_HALF),
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ONE_HALF.negate()),
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(3, 2)),
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(-3, 2)),
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(-4, 3)),
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional[-1]"
+        );
+
+        bigIntegerValue_RoundingMode_Rational_helper(ZERO, "HALF_DOWN", DEFAULT_RESOLUTION, "Optional[0]");
+        bigIntegerValue_RoundingMode_Rational_helper(ONE, "HALF_DOWN", DEFAULT_RESOLUTION, "Optional[1]");
+        bigIntegerValue_RoundingMode_Rational_helper(NEGATIVE_ONE, "HALF_DOWN", DEFAULT_RESOLUTION, "Optional[-1]");
+        bigIntegerValue_RoundingMode_Rational_helper(ONE_HALF, "HALF_DOWN", DEFAULT_RESOLUTION, "Optional[0]");
+        bigIntegerValue_RoundingMode_Rational_helper(NEGATIVE_ONE_HALF, "HALF_DOWN", DEFAULT_RESOLUTION,
+                "Optional[0]");
+        bigIntegerValue_RoundingMode_Rational_helper(THREE_HALVES, "HALF_DOWN", DEFAULT_RESOLUTION, "Optional[1]");
+        bigIntegerValue_RoundingMode_Rational_helper(NEGATIVE_THREE_HALVES, "HALF_DOWN", DEFAULT_RESOLUTION,
+                "Optional[-1]");
+        bigIntegerValue_RoundingMode_Rational_helper(NEGATIVE_FOUR_THIRDS, "HALF_DOWN", DEFAULT_RESOLUTION,
+                "Optional[-1]");
+        bigIntegerValue_RoundingMode_Rational_helper(SQRT_TWO, "HALF_DOWN", DEFAULT_RESOLUTION, "Optional[1]");
+        bigIntegerValue_RoundingMode_Rational_helper(E, "HALF_DOWN", DEFAULT_RESOLUTION, "Optional[3]");
+        bigIntegerValue_RoundingMode_Rational_helper(PI, "HALF_DOWN", DEFAULT_RESOLUTION, "Optional[3]");
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[0]"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ONE),
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[1]"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[-1]"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ONE_HALF),
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ONE_HALF.negate()),
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(3, 2)),
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(-3, 2)),
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(-4, 3)),
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[-1]"
+        );
+
+        bigIntegerValue_RoundingMode_Rational_helper(ZERO, "HALF_EVEN", DEFAULT_RESOLUTION, "Optional[0]");
+        bigIntegerValue_RoundingMode_Rational_helper(ONE, "HALF_EVEN", DEFAULT_RESOLUTION, "Optional[1]");
+        bigIntegerValue_RoundingMode_Rational_helper(NEGATIVE_ONE, "HALF_EVEN", DEFAULT_RESOLUTION, "Optional[-1]");
+        bigIntegerValue_RoundingMode_Rational_helper(ONE_HALF, "HALF_EVEN", DEFAULT_RESOLUTION, "Optional[0]");
+        bigIntegerValue_RoundingMode_Rational_helper(NEGATIVE_ONE_HALF, "HALF_EVEN", DEFAULT_RESOLUTION,
+                "Optional[0]");
+        bigIntegerValue_RoundingMode_Rational_helper(THREE_HALVES, "HALF_EVEN", DEFAULT_RESOLUTION, "Optional[2]");
+        bigIntegerValue_RoundingMode_Rational_helper(NEGATIVE_THREE_HALVES, "HALF_EVEN", DEFAULT_RESOLUTION,
+                "Optional[-2]");
+        bigIntegerValue_RoundingMode_Rational_helper(NEGATIVE_FOUR_THIRDS, "HALF_EVEN", DEFAULT_RESOLUTION,
+                "Optional[-1]");
+        bigIntegerValue_RoundingMode_Rational_helper(SQRT_TWO, "HALF_EVEN", DEFAULT_RESOLUTION, "Optional[1]");
+        bigIntegerValue_RoundingMode_Rational_helper(E, "HALF_EVEN", DEFAULT_RESOLUTION, "Optional[3]");
+        bigIntegerValue_RoundingMode_Rational_helper(PI, "HALF_EVEN", DEFAULT_RESOLUTION, "Optional[3]");
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional[0]"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ONE),
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional[1]"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional[-1]"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ONE_HALF),
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ONE_HALF.negate()),
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(3, 2)),
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(-3, 2)),
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigIntegerValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(-4, 3)),
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional[-1]"
+        );
+
+        bigIntegerValue_RoundingMode_Rational_helper(PI.shiftLeft(10), "FLOOR", Rational.ONE, "Optional.empty");
+
+        bigIntegerValue_RoundingMode_Rational_fail_helper(ZERO, "HALF_EVEN", Rational.ZERO);
+        bigIntegerValue_RoundingMode_Rational_fail_helper(ZERO, "HALF_EVEN", Rational.NEGATIVE_ONE);
+
+        bigIntegerValue_RoundingMode_Rational_fail_helper(ONE_HALF, "UNNECESSARY", DEFAULT_RESOLUTION);
+        bigIntegerValue_RoundingMode_Rational_fail_helper(NEGATIVE_ONE_HALF, "UNNECESSARY", DEFAULT_RESOLUTION);
+        bigIntegerValue_RoundingMode_Rational_fail_helper(THREE_HALVES, "UNNECESSARY", DEFAULT_RESOLUTION);
+        bigIntegerValue_RoundingMode_Rational_fail_helper(NEGATIVE_THREE_HALVES, "UNNECESSARY", DEFAULT_RESOLUTION);
+        bigIntegerValue_RoundingMode_Rational_fail_helper(NEGATIVE_FOUR_THIRDS, "UNNECESSARY", DEFAULT_RESOLUTION);
+        bigIntegerValue_RoundingMode_Rational_fail_helper(SQRT_TWO, "UNNECESSARY", DEFAULT_RESOLUTION);
+        bigIntegerValue_RoundingMode_Rational_fail_helper(E, "UNNECESSARY", DEFAULT_RESOLUTION);
+        bigIntegerValue_RoundingMode_Rational_fail_helper(PI, "UNNECESSARY", DEFAULT_RESOLUTION);
+        bigIntegerValue_RoundingMode_Rational_fail_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                "UNNECESSARY",
+                DEFAULT_RESOLUTION
+        );
+        bigIntegerValue_RoundingMode_Rational_fail_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "UNNECESSARY",
+                DEFAULT_RESOLUTION
+        );
+        bigIntegerValue_RoundingMode_Rational_fail_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                "UNNECESSARY",
+                DEFAULT_RESOLUTION
+        );
+    }
+
+    private static void bigIntegerValueUnsafe_helper(@NotNull Real x, @NotNull String output) {
+        aeq(x.bigIntegerValueUnsafe(), output);
+    }
+
+    @Test
+    public void testBigIntegerValueUnsafe() {
+        bigIntegerValueUnsafe_helper(ZERO, "0");
+        bigIntegerValueUnsafe_helper(ONE, "1");
+        bigIntegerValueUnsafe_helper(NEGATIVE_ONE, "-1");
+        bigIntegerValueUnsafe_helper(ONE_HALF, "0");
+        bigIntegerValueUnsafe_helper(NEGATIVE_ONE_HALF, "0");
+        bigIntegerValueUnsafe_helper(THREE_HALVES, "2");
+        bigIntegerValueUnsafe_helper(NEGATIVE_THREE_HALVES, "-2");
+        bigIntegerValueUnsafe_helper(NEGATIVE_FOUR_THIRDS, "-1");
+        bigIntegerValueUnsafe_helper(SQRT_TWO, "1");
+        bigIntegerValueUnsafe_helper(E, "3");
+        bigIntegerValueUnsafe_helper(PI, "3");
+        bigIntegerValueUnsafe_helper(fuzzyRepresentation(Rational.ZERO), "0");
+        bigIntegerValueUnsafe_helper(fuzzyRepresentation(Rational.ONE), "1");
+        bigIntegerValueUnsafe_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), "-1");
+        bigIntegerValueUnsafe_helper(leftFuzzyRepresentation(Rational.ONE_HALF), "0");
+        bigIntegerValueUnsafe_helper(rightFuzzyRepresentation(Rational.ONE_HALF.negate()), "0");
+        bigIntegerValueUnsafe_helper(rightFuzzyRepresentation(Rational.of(3, 2)), "2");
+        bigIntegerValueUnsafe_helper(leftFuzzyRepresentation(Rational.of(-3, 2)), "-2");
+        bigIntegerValueUnsafe_helper(fuzzyRepresentation(Rational.of(-4, 3)), "-1");
+    }
+
+    private static void bigIntegerValue_Rational_helper(@NotNull Real x, @NotNull Rational r, @NotNull String output) {
+        aeq(x.bigIntegerValue(r), output);
+    }
+
+    private static void bigIntegerValue_Rational_fail_helper(@NotNull Real x, @NotNull Rational r) {
+        try {
+            x.bigIntegerValue(r);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testBigIntegerValue() {
+        bigIntegerValue_Rational_helper(ZERO, DEFAULT_RESOLUTION, "Optional[0]");
+        bigIntegerValue_Rational_helper(ONE, DEFAULT_RESOLUTION, "Optional[1]");
+        bigIntegerValue_Rational_helper(NEGATIVE_ONE, DEFAULT_RESOLUTION, "Optional[-1]");
+        bigIntegerValue_Rational_helper(ONE_HALF, DEFAULT_RESOLUTION, "Optional[0]");
+        bigIntegerValue_Rational_helper(NEGATIVE_ONE_HALF, DEFAULT_RESOLUTION, "Optional[0]");
+        bigIntegerValue_Rational_helper(THREE_HALVES, DEFAULT_RESOLUTION, "Optional[2]");
+        bigIntegerValue_Rational_helper(NEGATIVE_THREE_HALVES, DEFAULT_RESOLUTION, "Optional[-2]");
+        bigIntegerValue_Rational_helper(NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[-1]");
+        bigIntegerValue_Rational_helper(SQRT_TWO, DEFAULT_RESOLUTION, "Optional[1]");
+        bigIntegerValue_Rational_helper(E, DEFAULT_RESOLUTION, "Optional[3]");
+        bigIntegerValue_Rational_helper(PI, DEFAULT_RESOLUTION, "Optional[3]");
+        bigIntegerValue_Rational_helper(fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[0]");
+        bigIntegerValue_Rational_helper(fuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional[1]");
+        bigIntegerValue_Rational_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), DEFAULT_RESOLUTION,
+                "Optional[-1]");
+        bigIntegerValue_Rational_helper(fuzzyRepresentation(Rational.ONE_HALF), DEFAULT_RESOLUTION, "Optional.empty");
+        bigIntegerValue_Rational_helper(fuzzyRepresentation(Rational.ONE_HALF.negate()), DEFAULT_RESOLUTION,
+                "Optional.empty");
+        bigIntegerValue_Rational_helper(fuzzyRepresentation(Rational.of(3, 2)), DEFAULT_RESOLUTION, "Optional.empty");
+        bigIntegerValue_Rational_helper(fuzzyRepresentation(Rational.of(-3, 2)), DEFAULT_RESOLUTION, "Optional.empty");
+        bigIntegerValue_Rational_helper(fuzzyRepresentation(Rational.of(-4, 3)), DEFAULT_RESOLUTION, "Optional[-1]");
+
+        bigIntegerValue_Rational_helper(PI.shiftLeft(100), Rational.ONE, "Optional.empty");
+
+        bigIntegerValue_Rational_fail_helper(ZERO, Rational.ZERO);
+        bigIntegerValue_Rational_fail_helper(ZERO, Rational.NEGATIVE_ONE);
+    }
+
+    private static void floorUnsafe_helper(@NotNull Real x, @NotNull String output) {
+        aeq(x.floorUnsafe(), output);
+    }
+
+    @Test
+    public void testFloorUnsafe_RoundingMode() {
+        floorUnsafe_helper(ZERO, "0");
+        floorUnsafe_helper(ONE, "1");
+        floorUnsafe_helper(NEGATIVE_ONE, "-1");
+        floorUnsafe_helper(ONE_HALF, "0");
+        floorUnsafe_helper(NEGATIVE_ONE_HALF, "-1");
+        floorUnsafe_helper(THREE_HALVES, "1");
+        floorUnsafe_helper(NEGATIVE_THREE_HALVES, "-2");
+        floorUnsafe_helper(NEGATIVE_FOUR_THIRDS, "-2");
+        floorUnsafe_helper(SQRT_TWO, "1");
+        floorUnsafe_helper(E, "2");
+        floorUnsafe_helper(PI, "3");
+        floorUnsafe_helper(rightFuzzyRepresentation(Rational.ZERO), "0");
+        floorUnsafe_helper(rightFuzzyRepresentation(Rational.ONE), "1");
+        floorUnsafe_helper(rightFuzzyRepresentation(Rational.NEGATIVE_ONE), "-1");
+        floorUnsafe_helper(fuzzyRepresentation(Rational.ONE_HALF), "0");
+        floorUnsafe_helper(fuzzyRepresentation(Rational.ONE_HALF.negate()), "-1");
+        floorUnsafe_helper(fuzzyRepresentation(Rational.of(3, 2)), "1");
+        floorUnsafe_helper(fuzzyRepresentation(Rational.of(-3, 2)), "-2");
+        floorUnsafe_helper(fuzzyRepresentation(Rational.of(-4, 3)), "-2");
+    }
+
+    private static void floor_helper(@NotNull Real x, @NotNull Rational r, @NotNull String output) {
+        aeq(x.floor(r), output);
+    }
+
+    private static void floor_fail_helper(@NotNull Real x, @NotNull Rational r) {
+        try {
+            x.floor(r);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testFloor() {
+        floor_helper(ZERO, DEFAULT_RESOLUTION, "Optional[0]");
+        floor_helper(ONE, DEFAULT_RESOLUTION, "Optional[1]");
+        floor_helper(NEGATIVE_ONE, DEFAULT_RESOLUTION, "Optional[-1]");
+        floor_helper(ONE_HALF, DEFAULT_RESOLUTION, "Optional[0]");
+        floor_helper(NEGATIVE_ONE_HALF, DEFAULT_RESOLUTION, "Optional[-1]");
+        floor_helper(THREE_HALVES, DEFAULT_RESOLUTION, "Optional[1]");
+        floor_helper(NEGATIVE_THREE_HALVES, DEFAULT_RESOLUTION, "Optional[-2]");
+        floor_helper(NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[-2]");
+        floor_helper(SQRT_TWO, DEFAULT_RESOLUTION, "Optional[1]");
+        floor_helper(E, DEFAULT_RESOLUTION, "Optional[2]");
+        floor_helper(PI, DEFAULT_RESOLUTION, "Optional[3]");
+        floor_helper(fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        floor_helper(fuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional.empty");
+        floor_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), DEFAULT_RESOLUTION, "Optional.empty");
+        floor_helper(fuzzyRepresentation(Rational.ONE_HALF), DEFAULT_RESOLUTION, "Optional[0]");
+        floor_helper(fuzzyRepresentation(Rational.ONE_HALF.negate()), DEFAULT_RESOLUTION, "Optional[-1]");
+        floor_helper(fuzzyRepresentation(Rational.of(3, 2)), DEFAULT_RESOLUTION, "Optional[1]");
+        floor_helper(fuzzyRepresentation(Rational.of(-3, 2)), DEFAULT_RESOLUTION, "Optional[-2]");
+        floor_helper(fuzzyRepresentation(Rational.of(-4, 3)), DEFAULT_RESOLUTION, "Optional[-2]");
+
+        floor_helper(PI.shiftLeft(10), Rational.ONE, "Optional.empty");
+
+        floor_fail_helper(ZERO, Rational.ZERO);
+        floor_fail_helper(ZERO, Rational.NEGATIVE_ONE);
+    }
+
+    private static void ceilingUnsafe_helper(@NotNull Real x, @NotNull String output) {
+        aeq(x.ceilingUnsafe(), output);
+    }
+
+    @Test
+    public void testCeilingUnsafe() {
+        ceilingUnsafe_helper(ZERO, "0");
+        ceilingUnsafe_helper(ONE, "1");
+        ceilingUnsafe_helper(NEGATIVE_ONE, "-1");
+        ceilingUnsafe_helper(ONE_HALF, "1");
+        ceilingUnsafe_helper(NEGATIVE_ONE_HALF, "0");
+        ceilingUnsafe_helper(THREE_HALVES, "2");
+        ceilingUnsafe_helper(NEGATIVE_THREE_HALVES, "-1");
+        ceilingUnsafe_helper(NEGATIVE_FOUR_THIRDS, "-1");
+        ceilingUnsafe_helper(SQRT_TWO, "2");
+        ceilingUnsafe_helper(E, "3");
+        ceilingUnsafe_helper(PI, "4");
+        ceilingUnsafe_helper(leftFuzzyRepresentation(Rational.ZERO), "0");
+        ceilingUnsafe_helper(leftFuzzyRepresentation(Rational.ONE), "1");
+        ceilingUnsafe_helper(leftFuzzyRepresentation(Rational.NEGATIVE_ONE), "-1");
+        ceilingUnsafe_helper(fuzzyRepresentation(Rational.ONE_HALF), "1");
+        ceilingUnsafe_helper(fuzzyRepresentation(Rational.ONE_HALF.negate()), "0");
+        ceilingUnsafe_helper(fuzzyRepresentation(Rational.of(3, 2)), "2");
+        ceilingUnsafe_helper(fuzzyRepresentation(Rational.of(-3, 2)), "-1");
+        ceilingUnsafe_helper(fuzzyRepresentation(Rational.of(-4, 3)), "-1");
+    }
+
+    private static void ceiling_helper(@NotNull Real x, @NotNull Rational r, @NotNull String output) {
+        aeq(x.ceiling(r), output);
+    }
+
+    private static void ceiling_fail_helper(@NotNull Real x, @NotNull Rational r) {
+        try {
+            x.ceiling(r);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testCeiling() {
+        ceiling_helper(ZERO, DEFAULT_RESOLUTION, "Optional[0]");
+        ceiling_helper(ONE, DEFAULT_RESOLUTION, "Optional[1]");
+        ceiling_helper(NEGATIVE_ONE, DEFAULT_RESOLUTION, "Optional[-1]");
+        ceiling_helper(ONE_HALF, DEFAULT_RESOLUTION, "Optional[1]");
+        ceiling_helper(NEGATIVE_ONE_HALF, DEFAULT_RESOLUTION, "Optional[0]");
+        ceiling_helper(THREE_HALVES, DEFAULT_RESOLUTION, "Optional[2]");
+        ceiling_helper(NEGATIVE_THREE_HALVES, DEFAULT_RESOLUTION, "Optional[-1]");
+        ceiling_helper(NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[-1]");
+        ceiling_helper(SQRT_TWO, DEFAULT_RESOLUTION, "Optional[2]");
+        ceiling_helper(E, DEFAULT_RESOLUTION, "Optional[3]");
+        ceiling_helper(PI, DEFAULT_RESOLUTION, "Optional[4]");
+        ceiling_helper(fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        ceiling_helper(fuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional.empty");
+        ceiling_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), DEFAULT_RESOLUTION, "Optional.empty");
+        ceiling_helper(fuzzyRepresentation(Rational.ONE_HALF), DEFAULT_RESOLUTION, "Optional[1]");
+        ceiling_helper(fuzzyRepresentation(Rational.ONE_HALF.negate()), DEFAULT_RESOLUTION, "Optional[0]");
+        ceiling_helper(fuzzyRepresentation(Rational.of(3, 2)), DEFAULT_RESOLUTION, "Optional[2]");
+        ceiling_helper(fuzzyRepresentation(Rational.of(-3, 2)), DEFAULT_RESOLUTION, "Optional[-1]");
+        ceiling_helper(fuzzyRepresentation(Rational.of(-4, 3)), DEFAULT_RESOLUTION, "Optional[-1]");
+
+        ceiling_helper(PI.shiftLeft(10), Rational.ONE, "Optional.empty");
+
+        ceiling_fail_helper(ZERO, Rational.ZERO);
+        ceiling_fail_helper(ZERO, Rational.NEGATIVE_ONE);
     }
 }

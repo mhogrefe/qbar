@@ -3,10 +3,13 @@ package mho.qbar.objects;
 import mho.qbar.testing.QBarDemos;
 import mho.wheels.iterables.CachedIterator;
 import mho.wheels.math.BinaryFraction;
+import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.structures.Pair;
+import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.util.List;
 
 import static mho.qbar.objects.Real.*;
@@ -128,6 +131,45 @@ public class RealDemos extends QBarDemos {
         );
         for (Pair<Real, List<Real>> p : take(LIMIT, ps)) {
             System.out.println("match(" + p.a + ", " + p.b + ") = " + p.a.match(p.b));
+        }
+    }
+
+    private enum FuzzinessType {
+        LEFT, RIGHT, BOTH
+    }
+
+    private static boolean fuzzyCheck(@NotNull Rational r, @NotNull RoundingMode rm, @NotNull FuzzinessType ft) {
+        boolean left = ft == FuzzinessType.LEFT || ft == FuzzinessType.BOTH;
+        boolean right = ft == FuzzinessType.RIGHT || ft == FuzzinessType.BOTH;
+        if (r.isInteger()) {
+            int sign = r.signum();
+            switch (rm) {
+                case UP:
+                    return sign != 0 && (sign != 1 || right) && (sign != -1 || left);
+                case DOWN:
+                    return (sign != 1 || left) && (sign != -1 || right);
+                case CEILING:
+                    return right;
+                case FLOOR:
+                    return left;
+                default:
+                    return true;
+            }
+        } else if (r.getDenominator().equals(IntegerUtils.TWO)) {
+            int sign = r.signum();
+            switch (rm) {
+                case HALF_UP:
+                    return (sign != 1 || right) && (sign != -1 || left);
+                case HALF_DOWN:
+                    return (sign != 1 || left) && (sign != -1 || right);
+                case HALF_EVEN:
+                    BigInteger mod4 = r.getNumerator().and(BigInteger.valueOf(3));
+                    return (!mod4.equals(BigInteger.ONE) && right) || (!mod4.equals(BigInteger.valueOf(3)) && left);
+                default:
+                    return true;
+            }
+        } else {
+            return true;
         }
     }
 }

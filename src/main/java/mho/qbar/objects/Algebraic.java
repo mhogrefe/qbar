@@ -601,7 +601,7 @@ public final class Algebraic implements Comparable<Algebraic> {
                 throw new ArithmeticException("If roundingMode is UNNECESSARY, this must be an integer. Invalid" +
                         " this: " + this);
             }
-            return realValue().bigIntegerValue(roundingMode);
+            return realValue().bigIntegerValueUnsafe(roundingMode);
         }
     }
 
@@ -628,7 +628,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @return ⌊{@code this}⌋;
+     * @return ⌊{@code this}⌋
      */
     public @NotNull BigInteger floor() {
         return bigIntegerValue(RoundingMode.FLOOR);

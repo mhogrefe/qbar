@@ -727,8 +727,223 @@ public final class Real implements Iterable<Interval> {
         }
     }
 
+    /**
+     * Rounds {@code this} to an integer according to {@code roundingMode}; see {@link java.math.RoundingMode} for
+     * details. If {@code this} is a fuzzy integer or a fuzzy half-integer, this method may loop forever, depending on
+     * the rounding mode and the nature of the fuzziness. To prevent this behavior, use
+     * {@link Real#bigIntegerValue(RoundingMode, Rational)} instead.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code roundingMode} may be any {@code RoundingMode}.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#UP}, {@code this} cannot be a positive integer
+     *  that is fuzzy on the right, a negative integer that is fuzzy on the left, or a fuzzy zero.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#DOWN}, {@code this} cannot be a positive integer
+     *  that is fuzzy on the left or a negative integer that is fuzzy on the right. However, it may be a fuzzy
+     *  zero.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#CEILING}, {@code this} cannot be an integer that
+     *  is fuzzy on the right.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#FLOOR}, {@code this} cannot be an integer that is
+     *  fuzzy on the left.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#HALF_UP}, {@code this} cannot be a positive half-
+     *  integer that is fuzzy on the left or a negative half-integer that is fuzzy on the right. However, it may be a
+     *  fuzzy integer.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#HALF_DOWN}, {@code this} cannot be a positive
+     *  half-integer that is fuzzy on the right or a negative half-integer that is fuzzy on the left. However, it may
+     *  be a fuzzy integer.</li>
+     *  <li>Let k be an integer. If {@code roundingMode} is {@link java.math.RoundingMode#HALF_EVEN}, {@code this}
+     *  cannot be equal to (4k+1)/2 and fuzzy on the right, or equal to (4k+3)/2 and fuzzy on the left. However, it may
+     *  be a fuzzy integer.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#UNNECESSARY}, {@code this} must be an exact
+     *  integer.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param roundingMode determines the way in which {@code this} is rounded. Options are
+     * {@link java.math.RoundingMode#UP}, {@link java.math.RoundingMode#DOWN}, {@link java.math.RoundingMode#CEILING},
+     * {@link java.math.RoundingMode#FLOOR}, {@link java.math.RoundingMode#HALF_UP},
+     * {@link java.math.RoundingMode#HALF_DOWN}, {@link java.math.RoundingMode#HALF_EVEN}, and
+     * {@link java.math.RoundingMode#UNNECESSARY}.
+     * @return {@code this}, rounded
+     */
+    public @NotNull BigInteger bigIntegerValueUnsafe(@NotNull RoundingMode roundingMode) {
+        if (rational.isPresent()) {
+            return rational.get().bigIntegerValue(roundingMode);
+        }
+        if (roundingMode == RoundingMode.UNNECESSARY) {
+            throw new ArithmeticException("If roundingMode is UNNECESSARY, this must be an exact integer. Invalid" +
+                    " this: " + this);
+        }
+        //noinspection ConstantConditions
+        return limitValueUnsafe(r -> r.bigIntegerValue(roundingMode));
+    }
+
+    /**
+     * Rounds {@code this} to an integer according to {@code roundingMode}; see {@link java.math.RoundingMode} for
+     * details. If {@code this} is a fuzzy integer or a fuzzy half-integer, depending on the rounding mode and the
+     * nature of the fuzziness (see {@link Real#bigIntegerValueUnsafe(RoundingMode)}, this method will give up and
+     * return empty once the approximating interval's diameter is less than the specified resolution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code roundingMode} may be any {@code RoundingMode}.</li>
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param roundingMode determines the way in which {@code this} is rounded. Options are
+     * {@link java.math.RoundingMode#UP}, {@link java.math.RoundingMode#DOWN}, {@link java.math.RoundingMode#CEILING},
+     * {@link java.math.RoundingMode#FLOOR}, {@link java.math.RoundingMode#HALF_UP},
+     * {@link java.math.RoundingMode#HALF_DOWN}, {@link java.math.RoundingMode#HALF_EVEN}, and
+     * {@link java.math.RoundingMode#UNNECESSARY}.
+     * @return {@code this}, rounded
+     */
+    public @NotNull Optional<BigInteger> bigIntegerValue(
+            @NotNull RoundingMode roundingMode,
+            @NotNull Rational resolution
+    ) {
+        if (resolution.signum() != 1) {
+            throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
+        }
+        return limitValue(r -> r.bigIntegerValue(roundingMode), resolution);
+    }
+
+    /**
+     * Rounds {@code this} to an integer, breaking ties with the half-even rule (see
+     * {@link java.math.RoundingMode#HALF_EVEN}). If {@code this} is a fuzzy half-integer, this method may loop
+     * forever, depending on the nature of the fuzziness. To prevent this behavior, use
+     * {@link Real#bigIntegerValue(Rational)} instead.
+     *
+     * <ul>
+     *  <li>Let k be an integer. {@code this} cannot be equal to 2k+1/2 and fuzzy on the right, or equal to 2k+3/2 and
+     *  fuzzy on the left. However, it may be a fuzzy integer.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return {@code this}, rounded
+     */
+    public @NotNull BigInteger bigIntegerValueUnsafe() {
+        return bigIntegerValueUnsafe(RoundingMode.HALF_EVEN);
+    }
+
+    /**
+     * Rounds {@code this} to an integer, breaking ties with the half-even rule (see
+     * {@link java.math.RoundingMode#HALF_EVEN}). If {@code this} is a fuzzy half-integer, depending on the nature of
+     * the fuzziness (see {@link Real#bigIntegerValueUnsafe(RoundingMode)}, this method will give up and return empty
+     * once the approximating interval's diameter is less than the specified resolution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return {@code this}, rounded
+     */
+    public @NotNull Optional<BigInteger> bigIntegerValue(@NotNull Rational resolution) {
+        return bigIntegerValue(RoundingMode.HALF_EVEN, resolution);
+    }
+
+    /**
+     * Returns the floor of {@code this}. If {@code this} is an integer that is fuzzy on the left, this method will
+     * loop forever. To prevent this behavior, use {@link Real#floor(Rational)} instead.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be an integer that is fuzzy on the left.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return ⌊{@code this}⌋
+     */
+    public @NotNull BigInteger floorUnsafe() {
+        return bigIntegerValueUnsafe(RoundingMode.FLOOR);
+    }
+
+    /**
+     * Returns the floor of {@code this}. If {@code this} is an integer that is fuzzy on the left, this method will
+     * give up and return empty once the approximating interval's diameter is less than the specified resolution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return ⌊{@code this}⌋
+     */
+    public @NotNull Optional<BigInteger> floor(@NotNull Rational resolution) {
+        return bigIntegerValue(RoundingMode.FLOOR, resolution);
+    }
+
+    /**
+     * Returns the ceiling of {@code this}. If {@code this} is an integer that is fuzzy on the right, this method will
+     * loop forever. To prevent this behavior, use {@link Real#ceiling(Rational)} instead.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be an integer that is fuzzy on the right.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return ⌈{@code this}⌉
+     */
+    public @NotNull BigInteger ceilingUnsafe() {
+        return bigIntegerValueUnsafe(RoundingMode.CEILING);
+    }
+
+    /**
+     * Returns the ceiling of {@code this}. If {@code this} is an integer that is fuzzy on the right, this method will
+     * give up and return empty once the approximating interval's diameter is less than the specified resolution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return ⌈{@code this}⌉
+     */
+    public @NotNull Optional<BigInteger> ceiling(@NotNull Rational resolution) {
+        return bigIntegerValue(RoundingMode.CEILING, resolution);
+    }
+
+    public float floatValue(@NotNull RoundingMode roundingMode) {
+        return limitValueUnsafe(r -> r.floatValue(roundingMode));
+    }
+
+    public float floatValue() {
+        return floatValue(RoundingMode.HALF_EVEN);
+    }
+
+    public double doubleValue(@NotNull RoundingMode roundingMode) {
+        return limitValueUnsafe(r -> r.doubleValue(roundingMode));
+    }
+
+    public double doubleValue() {
+        return doubleValue(RoundingMode.HALF_EVEN);
+    }
+
+    public @NotNull BigDecimal bigDecimalValueByPrecision(int precision, @NotNull RoundingMode roundingMode) {
+        return limitValueUnsafe(r -> r.bigDecimalValueByPrecision(precision, roundingMode));
+    }
+
+    public @NotNull BigDecimal bigDecimalValueByScale(int scale, @NotNull RoundingMode roundingMode) {
+        return limitValueUnsafe(r -> r.bigDecimalValueByScale(scale, roundingMode));
+    }
+
+    public @NotNull BigDecimal bigDecimalValueByPrecision(int precision) {
+        return bigDecimalValueByPrecision(precision, RoundingMode.HALF_EVEN);
+    }
+
+    public @NotNull BigDecimal bigDecimalValueByScale(int scale) {
+        return bigDecimalValueByScale(scale, RoundingMode.HALF_EVEN);
+    }
+
     public @NotNull Real negate() {
-        return new Real(map(Interval::negate, intervals));
+        if (rational.isPresent()) {
+            return new Real(rational.get().negate());
+        } else {
+            return new Real(map(Interval::negate, intervals));
+        }
     }
 
     public @NotNull Real add(@NotNull Real that) {
@@ -796,14 +1011,6 @@ public final class Real implements Iterable<Interval> {
 
     public @NotNull Real abs() {
         return new Real(map(Interval::abs, intervals));
-    }
-
-    public @NotNull BigInteger floorUnsafe() {
-        return limitValueUnsafe(Rational::floor);
-    }
-
-    public @NotNull Optional<BigInteger> floor(@NotNull Rational resolution) {
-        return limitValue(Rational::floor, resolution);
     }
 
     public @NotNull Pair<List<BigInteger>, Iterable<BigInteger>> digitsUnsafe(@NotNull BigInteger base) {
@@ -1056,42 +1263,6 @@ public final class Real implements Iterable<Interval> {
             }
         }
         throw new IllegalStateException("unreachable");
-    }
-
-    public @NotNull BigInteger bigIntegerValue(@NotNull RoundingMode roundingMode) {
-        return limitValueUnsafe(r -> r.bigIntegerValue(roundingMode));
-    }
-
-    public float floatValue(@NotNull RoundingMode roundingMode) {
-        return limitValueUnsafe(r -> r.floatValue(roundingMode));
-    }
-
-    public float floatValue() {
-        return floatValue(RoundingMode.HALF_EVEN);
-    }
-
-    public double doubleValue(@NotNull RoundingMode roundingMode) {
-        return limitValueUnsafe(r -> r.doubleValue(roundingMode));
-    }
-
-    public double doubleValue() {
-        return doubleValue(RoundingMode.HALF_EVEN);
-    }
-
-    public @NotNull BigDecimal bigDecimalValueByPrecision(int precision, @NotNull RoundingMode roundingMode) {
-        return limitValueUnsafe(r -> r.bigDecimalValueByPrecision(precision, roundingMode));
-    }
-
-    public @NotNull BigDecimal bigDecimalValueByScale(int scale, @NotNull RoundingMode roundingMode) {
-        return limitValueUnsafe(r -> r.bigDecimalValueByScale(scale, roundingMode));
-    }
-
-    public @NotNull BigDecimal bigDecimalValueByPrecision(int precision) {
-        return bigDecimalValueByPrecision(precision, RoundingMode.HALF_EVEN);
-    }
-
-    public @NotNull BigDecimal bigDecimalValueByScale(int scale) {
-        return bigDecimalValueByScale(scale, RoundingMode.HALF_EVEN);
     }
 
     public static @NotNull Interval intervalExtension(@NotNull Real lower, @NotNull Real upper) {
