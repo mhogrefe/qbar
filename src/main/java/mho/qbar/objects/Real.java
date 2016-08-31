@@ -787,6 +787,8 @@ public final class Real implements Iterable<Interval> {
      * <ul>
      *  <li>{@code this} may be any {@code Real}.</li>
      *  <li>{@code roundingMode} may be any {@code RoundingMode}.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#UNNECESSARY}, {@code this} must be an exact
+     *  integer.</li>
      *  <li>{@code resolution} must be positive.</li>
      *  <li>The result is not null.</li>
      * </ul>
@@ -804,6 +806,10 @@ public final class Real implements Iterable<Interval> {
     ) {
         if (resolution.signum() != 1) {
             throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
+        }
+        if (roundingMode == RoundingMode.UNNECESSARY && (!isExact() || !rationalValue().get().isInteger())) {
+            throw new ArithmeticException("If roundingMode is UNNECESSARY, this must be an exact integer. Invalid" +
+                    " this: " + this);
         }
         return limitValue(r -> r.bigIntegerValue(roundingMode), resolution);
     }
@@ -1547,6 +1553,15 @@ public final class Real implements Iterable<Interval> {
                 }
             }
         };
+    }
+
+    public @NotNull Real fractionalPartUnsafe() {
+        if (rational.isPresent()) {
+            Rational fp = rational.get().fractionalPart();
+            return fp == Rational.ZERO ? ZERO : new Real(fp);
+        } else {
+            return subtract(of(floorUnsafe()));
+        }
     }
 
     public @NotNull String toStringUnsafe() {

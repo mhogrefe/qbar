@@ -5,9 +5,13 @@ import mho.wheels.iterables.CachedIterator;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.structures.Pair;
+import mho.wheels.structures.Triple;
+import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -44,6 +48,14 @@ public class RealProperties extends QBarTestProperties {
         propertiesIsExact();
         propertiesRationalValue();
         propertiesMatch();
+        propertiesBigIntegerValueUnsafe_RoundingMode();
+        propertiesBigIntegerValue_RoundingMode_Rational();
+        propertiesBigIntegerValueUnsafe();
+        propertiesBigIntegerValue_Rational();
+        propertiesFloorUnsafe();
+        propertiesFloor();
+        propertiesCeilingUnsafe();
+        propertiesCeiling();
     }
 
     private void propertiesOf_Rational() {
@@ -293,6 +305,408 @@ public class RealProperties extends QBarTestProperties {
                 r.match(Collections.emptyList());
                 fail(r);
             } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private enum FuzzinessType {
+        NONE, LEFT, RIGHT, BOTH
+    }
+
+    private static boolean rmCheck(@NotNull Algebraic x, @NotNull RoundingMode rm, @NotNull FuzzinessType ft) {
+        boolean left = ft == FuzzinessType.LEFT || ft == FuzzinessType.BOTH;
+        boolean right = ft == FuzzinessType.RIGHT || ft == FuzzinessType.BOTH;
+        if (x.isInteger()) {
+            int sign = x.signum();
+            switch (rm) {
+                case UP:
+                    return sign != 0 && !(sign == 1 && right) && !(sign == -1 && left);
+                case DOWN:
+                    return !(sign == 1 && left) && !(sign == -1 && right);
+                case CEILING:
+                    return !right;
+                case FLOOR:
+                    return !left;
+                case UNNECESSARY:
+                    return ft == FuzzinessType.NONE;
+                default:
+                    return true;
+            }
+        } else if (x.isRational() && x.rationalValueExact().getDenominator().equals(IntegerUtils.TWO)) {
+            int sign = x.signum();
+            switch (rm) {
+                case HALF_UP:
+                    return !(sign == 1 && left) && !(sign == -1 && right);
+                case HALF_DOWN:
+                    return !(sign == 1 && right) && !(sign == -1 && left);
+                case HALF_EVEN:
+                    BigInteger mod4 = x.rationalValueExact().getNumerator().and(BigInteger.valueOf(3));
+                    return !(mod4.equals(BigInteger.ONE) && right) && !(mod4.equals(BigInteger.valueOf(3)) && left);
+                case UNNECESSARY:
+                    return false;
+                default:
+                    return true;
+            }
+        } else {
+            return rm != RoundingMode.UNNECESSARY;
+        }
+    }
+
+    private void propertiesBigIntegerValueUnsafe_RoundingMode() {
+        initialize("bigIntegerValueUnsafe(RoundingMode)");
+        //noinspection RedundantCast
+        Iterable<Pair<Real, RoundingMode>> ps = map(
+                q -> {
+                    Real r;
+                    switch (q.a.b) {
+                        case NONE:
+                            r = q.a.a.realValue();
+                            break;
+                        case LEFT:
+                            r = leftFuzzyRepresentation(q.a.a.rationalValueExact());
+                            break;
+                        case RIGHT:
+                            r = rightFuzzyRepresentation(q.a.a.rationalValueExact());
+                            break;
+                        case BOTH:
+                            r = fuzzyRepresentation(q.a.a.rationalValueExact());
+                            break;
+                        default:
+                            throw new IllegalStateException("unreachable");
+                    }
+                    return new Pair<>(r, q.b);
+                },
+                filterInfinite(
+                        p -> rmCheck(p.a.a, p.b, p.a.b),
+                        P.pairsLogarithmicOrder(
+                                P.withScale(1).choose(
+                                        map(x -> new Pair<>(x, FuzzinessType.NONE), P.withScale(4).algebraics()),
+                                        P.choose(
+                                                (List<Iterable<Pair<Algebraic, FuzzinessType>>>) Arrays.asList(
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.LEFT),
+                                                                P.withScale(4).rationals()
+                                                        ),
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.RIGHT),
+                                                                P.withScale(4).rationals()
+                                                        ),
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.BOTH),
+                                                                P.withScale(4).rationals()
+                                                        )
+                                                )
+                                        )
+                                ),
+                                P.roundingModes()
+                        )
+                )
+        );
+        for (Pair<Real, RoundingMode> p : take(LIMIT, ps)) {
+            p.a.bigIntegerValueUnsafe(p.b);
+        }
+
+        ps = filterInfinite(
+                p -> p.b != RoundingMode.UNNECESSARY || p.a.isExact() && p.a.rationalValue().get().isInteger(),
+                P.pairs(P.cleanReals(), P.roundingModes())
+        );
+        for (Pair<Real, RoundingMode> p : take(LIMIT, ps)) {
+            BigInteger rounded = p.a.bigIntegerValueUnsafe(p.b);
+            assertTrue(p, rounded.equals(BigInteger.ZERO) || rounded.signum() == p.a.signumUnsafe());
+            assertTrue(p, ltUnsafe(p.a.subtract(of(rounded)).abs(), ONE));
+        }
+
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            assertEquals(i, of(i).bigIntegerValueUnsafe(RoundingMode.UNNECESSARY), i);
+        }
+
+        for (Real x : take(LIMIT, P.cleanReals())) {
+            assertEquals(x, x.bigIntegerValueUnsafe(RoundingMode.FLOOR), x.floorUnsafe());
+            assertEquals(x, x.bigIntegerValueUnsafe(RoundingMode.CEILING), x.ceilingUnsafe());
+            assertTrue(x, leUnsafe(of(x.bigIntegerValueUnsafe(RoundingMode.DOWN)).abs(), x.abs()));
+            assertTrue(x, geUnsafe(of(x.bigIntegerValueUnsafe(RoundingMode.UP)).abs(), x.abs()));
+            assertTrue(x, leUnsafe(x.subtract(of(x.bigIntegerValueUnsafe(RoundingMode.HALF_DOWN))).abs(), ONE_HALF));
+            assertTrue(x, leUnsafe(x.subtract(of(x.bigIntegerValueUnsafe(RoundingMode.HALF_UP))).abs(), ONE_HALF));
+            assertTrue(x, leUnsafe(x.subtract(of(x.bigIntegerValueUnsafe(RoundingMode.HALF_EVEN))).abs(), ONE_HALF));
+        }
+
+        Iterable<Real> xs = filterInfinite(s -> ltUnsafe(s.abs().fractionalPartUnsafe(), ONE_HALF), P.cleanReals());
+        for (Real x : take(LIMIT, xs)) {
+            assertEquals(
+                    x,
+                    x.bigIntegerValueUnsafe(RoundingMode.HALF_DOWN),
+                    x.bigIntegerValueUnsafe(RoundingMode.DOWN)
+            );
+            assertEquals(x, x.bigIntegerValueUnsafe(RoundingMode.HALF_UP), x.bigIntegerValueUnsafe(RoundingMode.DOWN));
+            assertEquals(
+                    x,
+                    x.bigIntegerValueUnsafe(RoundingMode.HALF_EVEN),
+                    x.bigIntegerValueUnsafe(RoundingMode.DOWN)
+            );
+        }
+
+        xs = filterInfinite(s -> gtUnsafe(s.abs().fractionalPartUnsafe(), ONE_HALF), P.cleanReals());
+        for (Real x : take(LIMIT, xs)) {
+            assertEquals(x, x.bigIntegerValueUnsafe(RoundingMode.HALF_DOWN), x.bigIntegerValueUnsafe(RoundingMode.UP));
+            assertEquals(x, x.bigIntegerValueUnsafe(RoundingMode.HALF_UP), x.bigIntegerValueUnsafe(RoundingMode.UP));
+            assertEquals(x, x.bigIntegerValueUnsafe(RoundingMode.HALF_EVEN), x.bigIntegerValueUnsafe(RoundingMode.UP));
+        }
+
+        //odd multiples of 1/2
+        xs = map(i -> of(Rational.of(i.shiftLeft(1).add(BigInteger.ONE), IntegerUtils.TWO)), P.bigIntegers());
+        for (Real x : take(LIMIT, xs)) {
+            assertEquals(
+                    x,
+                    x.bigIntegerValueUnsafe(RoundingMode.HALF_DOWN),
+                    x.bigIntegerValueUnsafe(RoundingMode.DOWN)
+            );
+            assertEquals(x, x.bigIntegerValueUnsafe(RoundingMode.HALF_UP), x.bigIntegerValueUnsafe(RoundingMode.UP));
+            assertFalse(x, x.bigIntegerValueUnsafe(RoundingMode.HALF_EVEN).testBit(0));
+        }
+
+        Iterable<Real> xsFail = filterInfinite(
+                s -> !s.isExact() || !s.rationalValue().get().isInteger(),
+                P.cleanReals()
+        );
+        for (Real x : take(LIMIT, xsFail)) {
+            try {
+                x.bigIntegerValueUnsafe(RoundingMode.UNNECESSARY);
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesBigIntegerValue_RoundingMode_Rational() {
+        initialize("bigIntegerValue(RoundingMode, Rational)");
+        Iterable<Triple<Real, RoundingMode, Rational>> ts = filterInfinite(
+                s -> s.b != RoundingMode.UNNECESSARY || s.a.isExact() && s.a.rationalValue().get().isInteger(),
+                P.triples(P.withScale(4).reals(), P.roundingModes(), P.withScale(4).positiveRationals())
+        );
+        for (Triple<Real, RoundingMode, Rational> t : take(LIMIT, ts)) {
+            Optional<BigInteger> oi = t.a.bigIntegerValue(t.b, t.c);
+            if (oi.isPresent()) {
+                assertEquals(t, t.a.bigIntegerValueUnsafe(t.b), oi.get());
+            }
+        }
+
+        Iterable<Pair<Real, Rational>> psFail = P.pairs(
+                filterInfinite(x -> !x.isExact() || !x.rationalValue().get().isInteger(), P.withScale(4).reals()),
+                P.withScale(4).positiveRationals()
+        );
+        for (Pair<Real, Rational> p : take(LIMIT, psFail)) {
+            try {
+                p.a.bigIntegerValue(RoundingMode.UNNECESSARY, p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesBigIntegerValueUnsafe() {
+        initialize("bigIntegerValueUnsafe()");
+        //noinspection RedundantCast
+        Iterable<Real> xs = map(
+                q -> {
+                    switch (q.b) {
+                        case NONE:
+                            return q.a.realValue();
+                        case LEFT:
+                            return leftFuzzyRepresentation(q.a.rationalValueExact());
+                        case RIGHT:
+                            return rightFuzzyRepresentation(q.a.rationalValueExact());
+                        case BOTH:
+                            return fuzzyRepresentation(q.a.rationalValueExact());
+                        default:
+                            throw new IllegalStateException("unreachable");
+                    }
+                },
+                filterInfinite(
+                        p -> rmCheck(p.a, RoundingMode.HALF_EVEN, p.b),
+                        P.withScale(1).choose(
+                                map(x -> new Pair<>(x, FuzzinessType.NONE), P.withScale(4).algebraics()),
+                                P.choose(
+                                        (List<Iterable<Pair<Algebraic, FuzzinessType>>>) Arrays.asList(
+                                                map(
+                                                        r -> new Pair<>(Algebraic.of(r), FuzzinessType.LEFT),
+                                                        P.withScale(4).rationals()
+                                                ),
+                                                map(
+                                                        r -> new Pair<>(Algebraic.of(r), FuzzinessType.RIGHT),
+                                                        P.withScale(4).rationals()
+                                                ),
+                                                map(
+                                                        r -> new Pair<>(Algebraic.of(r), FuzzinessType.BOTH),
+                                                        P.withScale(4).rationals()
+                                                )
+                                        )
+                                )
+                        )
+                )
+        );
+        for (Real x : take(LIMIT, xs)) {
+            x.bigIntegerValueUnsafe();
+        }
+
+        for (Real x : take(LIMIT, P.cleanReals())) {
+            BigInteger rounded = x.bigIntegerValueUnsafe();
+            assertTrue(x, rounded.equals(BigInteger.ZERO) || rounded.signum() == x.signumUnsafe());
+            assertTrue(x, ltUnsafe(x.subtract(of(rounded)).abs(), ONE));
+            assertTrue(x, leUnsafe(x.subtract(of(rounded)).abs(), ONE_HALF));
+        }
+
+        xs = filterInfinite(s -> ltUnsafe(s.abs().fractionalPartUnsafe(), ONE_HALF), P.cleanReals());
+        for (Real x : take(LIMIT, xs)) {
+            assertEquals(
+                    x,
+                    x.bigIntegerValueUnsafe(),
+                    x.bigIntegerValueUnsafe(RoundingMode.DOWN)
+            );
+        }
+
+        xs = filterInfinite(s -> gtUnsafe(s.abs().fractionalPartUnsafe(), ONE_HALF), P.cleanReals());
+        for (Real x : take(LIMIT, xs)) {
+            assertEquals(x, x.bigIntegerValueUnsafe(), x.bigIntegerValueUnsafe(RoundingMode.UP));
+        }
+
+        //odd multiples of 1/2
+        xs = map(i -> of(Rational.of(i.shiftLeft(1).add(BigInteger.ONE), IntegerUtils.TWO)), P.bigIntegers());
+        for (Real x : take(LIMIT, xs)) {
+            assertFalse(x, x.bigIntegerValueUnsafe().testBit(0));
+        }
+    }
+
+    private void propertiesBigIntegerValue_Rational() {
+        initialize("bigIntegerValue(RoundingMode)");
+        Iterable<Pair<Real, Rational>> ps = P.pairs(P.withScale(4).reals(), P.withScale(4).positiveRationals());
+        for (Pair<Real, Rational> p : take(LIMIT, ps)) {
+            Optional<BigInteger> oi = p.a.bigIntegerValue(p.b);
+            if (oi.isPresent()) {
+                assertEquals(p, p.a.bigIntegerValueUnsafe(), oi.get());
+            }
+        }
+    }
+
+    private void propertiesFloorUnsafe() {
+        initialize("floorUnsafe()");
+        //noinspection RedundantCast
+        Iterable<Real> xs = map(
+                q -> {
+                    switch (q.b) {
+                        case NONE:
+                            return q.a.realValue();
+                        case LEFT:
+                            return leftFuzzyRepresentation(q.a.rationalValueExact());
+                        case RIGHT:
+                            return rightFuzzyRepresentation(q.a.rationalValueExact());
+                        case BOTH:
+                            return fuzzyRepresentation(q.a.rationalValueExact());
+                        default:
+                            throw new IllegalStateException("unreachable");
+                    }
+                },
+                filterInfinite(
+                        p -> rmCheck(p.a, RoundingMode.FLOOR, p.b),
+                        P.withScale(1).choose(
+                                map(x -> new Pair<>(x, FuzzinessType.NONE), P.withScale(4).algebraics()),
+                                P.choose(
+                                        (List<Iterable<Pair<Algebraic, FuzzinessType>>>) Arrays.asList(
+                                                map(
+                                                        r -> new Pair<>(Algebraic.of(r), FuzzinessType.LEFT),
+                                                        P.withScale(4).rationals()
+                                                ),
+                                                map(
+                                                        r -> new Pair<>(Algebraic.of(r), FuzzinessType.RIGHT),
+                                                        P.withScale(4).rationals()
+                                                ),
+                                                map(
+                                                        r -> new Pair<>(Algebraic.of(r), FuzzinessType.BOTH),
+                                                        P.withScale(4).rationals()
+                                                )
+                                        )
+                                )
+                        )
+                )
+        );
+        for (Real x : take(LIMIT, xs)) {
+            x.floorUnsafe();
+        }
+
+        for (Real x : take(LIMIT, P.cleanReals())) {
+            BigInteger rounded = x.floorUnsafe();
+            assertTrue(x, rounded.equals(BigInteger.ZERO) || rounded.signum() == x.signumUnsafe());
+            assertTrue(x, ltUnsafe(x.subtract(of(rounded)).abs(), ONE));
+        }
+    }
+
+    private void propertiesFloor() {
+        initialize("floor(Rational)");
+        Iterable<Pair<Real, Rational>> ps = P.pairs(P.withScale(4).reals(), P.withScale(4).positiveRationals());
+        for (Pair<Real, Rational> p : take(LIMIT, ps)) {
+            Optional<BigInteger> oi = p.a.floor(p.b);
+            if (oi.isPresent()) {
+                assertEquals(p, p.a.floorUnsafe(), oi.get());
+            }
+        }
+    }
+
+    private void propertiesCeilingUnsafe() {
+        initialize("ceilingUnsafe()");
+        //noinspection RedundantCast
+        Iterable<Real> xs = map(
+                q -> {
+                    switch (q.b) {
+                        case NONE:
+                            return q.a.realValue();
+                        case LEFT:
+                            return leftFuzzyRepresentation(q.a.rationalValueExact());
+                        case RIGHT:
+                            return rightFuzzyRepresentation(q.a.rationalValueExact());
+                        case BOTH:
+                            return fuzzyRepresentation(q.a.rationalValueExact());
+                        default:
+                            throw new IllegalStateException("unreachable");
+                    }
+                },
+                filterInfinite(
+                        p -> rmCheck(p.a, RoundingMode.CEILING, p.b),
+                        P.withScale(1).choose(
+                                map(x -> new Pair<>(x, FuzzinessType.NONE), P.withScale(4).algebraics()),
+                                P.choose(
+                                        (List<Iterable<Pair<Algebraic, FuzzinessType>>>) Arrays.asList(
+                                                map(
+                                                        r -> new Pair<>(Algebraic.of(r), FuzzinessType.LEFT),
+                                                        P.withScale(4).rationals()
+                                                ),
+                                                map(
+                                                        r -> new Pair<>(Algebraic.of(r), FuzzinessType.RIGHT),
+                                                        P.withScale(4).rationals()
+                                                ),
+                                                map(
+                                                        r -> new Pair<>(Algebraic.of(r), FuzzinessType.BOTH),
+                                                        P.withScale(4).rationals()
+                                                )
+                                        )
+                                )
+                        )
+                )
+        );
+        for (Real x : take(LIMIT, xs)) {
+            x.ceilingUnsafe();
+        }
+
+        for (Real x : take(LIMIT, P.cleanReals())) {
+            BigInteger rounded = x.ceilingUnsafe();
+            assertTrue(x, rounded.equals(BigInteger.ZERO) || rounded.signum() == x.signumUnsafe());
+            assertTrue(x, ltUnsafe(x.subtract(of(rounded)).abs(), ONE));
+        }
+    }
+
+    private void propertiesCeiling() {
+        initialize("ceiling(Rational)");
+        Iterable<Pair<Real, Rational>> ps = P.pairs(P.withScale(4).reals(), P.withScale(4).positiveRationals());
+        for (Pair<Real, Rational> p : take(LIMIT, ps)) {
+            Optional<BigInteger> oi = p.a.ceiling(p.b);
+            if (oi.isPresent()) {
+                assertEquals(p, p.a.ceilingUnsafe(), oi.get());
+            }
         }
     }
 }
