@@ -728,6 +728,20 @@ public final class Real implements Iterable<Interval> {
     }
 
     /**
+     * Determines whether {@code this} is an exact integer.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether this is an exact integer
+     */
+    public boolean isExactInteger() {
+        return rational.isPresent() && rational.get().isInteger();
+    }
+
+    /**
      * Rounds {@code this} to an integer according to {@code roundingMode}; see {@link java.math.RoundingMode} for
      * details. If {@code this} is a fuzzy integer or a fuzzy half-integer, this method may loop forever, depending on
      * the rounding mode and the nature of the fuzziness. To prevent this behavior, use
@@ -807,7 +821,7 @@ public final class Real implements Iterable<Interval> {
         if (resolution.signum() != 1) {
             throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
         }
-        if (roundingMode == RoundingMode.UNNECESSARY && (!isExact() || !rationalValue().get().isInteger())) {
+        if (roundingMode == RoundingMode.UNNECESSARY && !isExactInteger()) {
             throw new ArithmeticException("If roundingMode is UNNECESSARY, this must be an exact integer. Invalid" +
                     " this: " + this);
         }
@@ -910,6 +924,85 @@ public final class Real implements Iterable<Interval> {
      */
     public @NotNull Optional<BigInteger> ceiling(@NotNull Rational resolution) {
         return bigIntegerValue(RoundingMode.CEILING, resolution);
+    }
+
+    /**
+     * Converts {@code this} to a {@code BigInteger}. Throws an {@link java.lang.ArithmeticException} if {@code this}
+     * is not an exact integer.
+     *
+     * <ul>
+     *  <li>{@code this} must be an exact integer.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return the {@code BigInteger} value of {@code this}
+     */
+    public @NotNull BigInteger bigIntegerValueExact() {
+        if (rational.isPresent()) {
+            return rational.get().bigIntegerValueExact();
+        } else {
+            throw new ArithmeticException("this must be an integer. Invalid this: " + this);
+        }
+    }
+
+    /**
+     * Converts {@code this} to a {@code byte}. Throws an {@link java.lang.ArithmeticException} if {@code this} is not
+     * an exact integer or outside of a {@code byte}'s range.
+     *
+     * <ul>
+     *  <li>{@code this} must be an exact integer within a {@code byte}'s range.</li>
+     *  <li>The result can be any {@code byte}.</li>
+     * </ul>
+     *
+     * @return the {@code byte} value of {@code this}
+     */
+    public byte byteValueExact() {
+        return bigIntegerValueExact().byteValueExact();
+    }
+
+    /**
+     * Converts {@code this} to a {@code short}. Throws an {@link java.lang.ArithmeticException} if {@code this} is not
+     * an exact integer or outside of a {@code short}'s range.
+     *
+     * <ul>
+     *  <li>{@code this} must be an exact integer within a {@code short}'s range.</li>
+     *  <li>The result can be any {@code short}.</li>
+     * </ul>
+     *
+     * @return the {@code short} value of {@code this}
+     */
+    public short shortValueExact() {
+        return bigIntegerValueExact().shortValueExact();
+    }
+
+    /**
+     * Converts {@code this} to an {@code int}. Throws an {@link java.lang.ArithmeticException} if {@code this} is not
+     * an exact integer or outside of an {@code int}'s range.
+     *
+     * <ul>
+     *  <li>{@code this} must be an exact integer within an {@code int}'s range.</li>
+     *  <li>The result can be any {@code int}.</li>
+     * </ul>
+     *
+     * @return the {@code int} value of {@code this}
+     */
+    public int intValueExact() {
+        return bigIntegerValueExact().intValueExact();
+    }
+
+    /**
+     * Converts {@code this} to a {@code long}. Throws an {@link java.lang.ArithmeticException} if {@code this} is not
+     * an exact integer or outside of a {@code long}'s range.
+     *
+     * <ul>
+     *  <li>{@code this} must be an exact integer within a {@code long}'s range.</li>
+     *  <li>The result can be any {@code long}.</li>
+     * </ul>
+     *
+     * @return the {@code long} value of {@code this}
+     */
+    public long longValueExact() {
+        return bigIntegerValueExact().longValueExact();
     }
 
     public float floatValue(@NotNull RoundingMode roundingMode) {

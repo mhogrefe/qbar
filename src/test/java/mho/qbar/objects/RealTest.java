@@ -5,6 +5,7 @@ import mho.wheels.math.BinaryFraction;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -498,6 +499,28 @@ public class RealTest {
 
         match_fail_helper(ONE, Collections.emptyList());
         match_fail_helper(of(100), targets);
+    }
+
+    private static void isExactInteger_helper(@NotNull Real input, boolean output) {
+        aeq(input.isExactInteger(), output);
+    }
+
+    @Test
+    public void testIsExactInteger() {
+        isExactInteger_helper(ZERO, true);
+        isExactInteger_helper(ONE, true);
+        isExactInteger_helper(NEGATIVE_ONE, true);
+        isExactInteger_helper(ONE_HALF, false);
+        isExactInteger_helper(NEGATIVE_FOUR_THIRDS, false);
+        isExactInteger_helper(SQRT_TWO, false);
+        isExactInteger_helper(E, false);
+        isExactInteger_helper(PI, false);
+        isExactInteger_helper(fuzzyRepresentation(Rational.ZERO), false);
+        isExactInteger_helper(leftFuzzyRepresentation(Rational.ZERO), false);
+        isExactInteger_helper(rightFuzzyRepresentation(Rational.ZERO), false);
+        isExactInteger_helper(fuzzyRepresentation(Rational.ONE), false);
+        isExactInteger_helper(leftFuzzyRepresentation(Rational.ONE), false);
+        isExactInteger_helper(rightFuzzyRepresentation(Rational.ONE), false);
     }
 
     private static void bigIntegerValueUnsafe_RoundingMode_helper(
@@ -1355,5 +1378,131 @@ public class RealTest {
 
         ceiling_fail_helper(ZERO, Rational.ZERO);
         ceiling_fail_helper(ZERO, Rational.NEGATIVE_ONE);
+    }
+
+    private static void bigIntegerValueExact_helper(@NotNull Real input) {
+        aeq(input.bigIntegerValueExact(), input);
+    }
+
+    private static void bigIntegerValueExact_fail_helper(@NotNull Real input) {
+        try {
+            input.bigIntegerValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testBigIntegerValueExact() {
+        bigIntegerValueExact_helper(ZERO);
+        bigIntegerValueExact_helper(ONE);
+        bigIntegerValueExact_helper(NEGATIVE_ONE);
+
+        bigIntegerValueExact_fail_helper(ONE_HALF);
+        bigIntegerValueExact_fail_helper(NEGATIVE_FOUR_THIRDS);
+        bigIntegerValueExact_fail_helper(SQRT_TWO);
+        bigIntegerValueExact_fail_helper(E);
+        bigIntegerValueExact_fail_helper(PI);
+        bigIntegerValueExact_fail_helper(fuzzyRepresentation(Rational.ZERO));
+        bigIntegerValueExact_fail_helper(leftFuzzyRepresentation(Rational.ZERO));
+        bigIntegerValueExact_fail_helper(rightFuzzyRepresentation(Rational.ZERO));
+        bigIntegerValueExact_fail_helper(fuzzyRepresentation(Rational.ONE));
+        bigIntegerValueExact_fail_helper(leftFuzzyRepresentation(Rational.ONE));
+        bigIntegerValueExact_fail_helper(rightFuzzyRepresentation(Rational.ONE));
+    }
+
+    private static void byteValueExact_helper(@NotNull Real input) {
+        aeq(input.byteValueExact(), input);
+    }
+
+    private static void byteValueExact_fail_helper(@NotNull Real input) {
+        try {
+            input.byteValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testByteValueExact() {
+        byteValueExact_helper(ONE);
+        byteValueExact_helper(ZERO);
+        byteValueExact_helper(NEGATIVE_ONE);
+        byteValueExact_helper(of(23));
+        byteValueExact_helper(of(8));
+
+        byteValueExact_fail_helper(NEGATIVE_FOUR_THIRDS);
+        byteValueExact_fail_helper(SQRT_TWO);
+        byteValueExact_fail_helper(of(1000));
+    }
+
+    private static void shortValueExact_helper(@NotNull Real input) {
+        aeq(input.shortValueExact(), input);
+    }
+
+    private static void shortValueExact_fail_helper(@NotNull Real input) {
+        try {
+            input.shortValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testShortValueExact() {
+        shortValueExact_helper(ONE);
+        shortValueExact_helper(ZERO);
+        shortValueExact_helper(NEGATIVE_ONE);
+        shortValueExact_helper(of(23));
+        shortValueExact_helper(of(8));
+
+        shortValueExact_fail_helper(NEGATIVE_FOUR_THIRDS);
+        shortValueExact_fail_helper(SQRT_TWO);
+        shortValueExact_fail_helper(of(100000));
+    }
+
+    private static void intValueExact_helper(@NotNull Real input) {
+        aeq(input.intValueExact(), input);
+    }
+
+    private static void intValueExact_fail_helper(@NotNull Real input) {
+        try {
+            input.intValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testIntValueExact() {
+        intValueExact_helper(ONE);
+        intValueExact_helper(ZERO);
+        intValueExact_helper(NEGATIVE_ONE);
+        intValueExact_helper(of(23));
+        intValueExact_helper(of(8));
+
+        intValueExact_fail_helper(NEGATIVE_FOUR_THIRDS);
+        intValueExact_fail_helper(SQRT_TWO);
+        intValueExact_fail_helper(of(10000000000L));
+    }
+
+    private static void longValueExact_helper(@NotNull Real input) {
+        aeq(input.longValueExact(), input);
+    }
+
+    private static void longValueExact_fail_helper(@NotNull Real input) {
+        try {
+            input.longValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testLongValueExact() {
+        longValueExact_helper(ONE);
+        longValueExact_helper(ZERO);
+        longValueExact_helper(NEGATIVE_ONE);
+        longValueExact_helper(of(23));
+        longValueExact_helper(of(8));
+
+        longValueExact_fail_helper(NEGATIVE_FOUR_THIRDS);
+        longValueExact_fail_helper(SQRT_TWO);
+        longValueExact_fail_helper(of(new BigInteger("10000000000000000000")));
     }
 }

@@ -510,10 +510,10 @@ public class AlgebraicProperties extends QBarTestProperties {
             homomorphic(Algebraic::negate, c -> (byte) -c, Algebraic::byteValueExact, Algebraic::byteValueExact, x);
         }
 
-        for (Rational r : take(LIMIT, filterInfinite(s -> !s.isInteger(), P.rationals()))) {
+        for (Algebraic x : take(LIMIT, filterInfinite(s -> !s.isInteger(), P.algebraics()))) {
             try {
-                r.byteValueExact();
-                fail(r);
+                x.byteValueExact();
+                fail(x);
             } catch (ArithmeticException ignored) {}
         }
 

@@ -134,6 +134,12 @@ public class RealDemos extends QBarDemos {
         }
     }
 
+    private void demoIsExactInteger() {
+        for (Real x : take(LIMIT, P.withScale(4).reals())) {
+            System.out.println(x + " is " + (x.isExactInteger() ? "" : "not ") + "an exact integer");
+        }
+    }
+
     private enum FuzzinessType {
         NONE, LEFT, RIGHT, BOTH
     }
@@ -233,7 +239,7 @@ public class RealDemos extends QBarDemos {
 
     private void demoBigIntegerValue_RoundingMode_Rational() {
         Iterable<Triple<Real, RoundingMode, Rational>> ts = filterInfinite(
-                s -> s.b != RoundingMode.UNNECESSARY || s.a.isExact() && s.a.rationalValue().get().isInteger(),
+                s -> s.b != RoundingMode.UNNECESSARY || s.a.isExactInteger(),
                 P.triples(P.withScale(4).reals(), P.roundingModes(), P.withScale(4).positiveRationals())
         );
         for (Triple<Real, RoundingMode, Rational> t : take(LIMIT, ts)) {
@@ -395,6 +401,36 @@ public class RealDemos extends QBarDemos {
         Iterable<Pair<Real, Rational>> ps = P.pairs(P.withScale(4).reals(), P.withScale(4).positiveRationals());
         for (Pair<Real, Rational> p : take(LIMIT, ps)) {
             System.out.println("ceiling(" + p.a + ", " + p.b + ") = " + p.a.ceiling(p.b));
+        }
+    }
+
+    private void demoBigIntegerValueExact() {
+        for (Real x : take(LIMIT, map(Real::of, P.bigIntegers()))) {
+            System.out.println("bigIntegerValueExact(" + x + ") = " + x.bigIntegerValueExact());
+        }
+    }
+
+    private void demoByteValueExact() {
+        for (Real x : take(LIMIT, map(Real::of, P.bytes()))) {
+            System.out.println("byteValueExact(" + x + ") = " + x.byteValueExact());
+        }
+    }
+
+    private void demoShortValueExact() {
+        for (Real x : take(LIMIT, map(Real::of, P.shorts()))) {
+            System.out.println("shortValueExact(" + x + ") = " + x.shortValueExact());
+        }
+    }
+
+    private void demoIntValueExact() {
+        for (Real x : take(LIMIT, map(Real::of, P.integers()))) {
+            System.out.println("intValueExact(" + x + ") = " + x.intValueExact());
+        }
+    }
+
+    private void demoLongValueExact() {
+        for (Real x : take(LIMIT, map(Real::of, P.longs()))) {
+            System.out.println("longValueExact(" + x + ") = " + x.longValueExact());
         }
     }
 }

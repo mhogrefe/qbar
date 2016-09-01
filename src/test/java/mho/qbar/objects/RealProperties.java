@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 import static mho.qbar.objects.Real.*;
 import static mho.wheels.iterables.IterableUtils.*;
@@ -48,6 +49,7 @@ public class RealProperties extends QBarTestProperties {
         propertiesIsExact();
         propertiesRationalValue();
         propertiesMatch();
+        propertiesIsExactInteger();
         propertiesBigIntegerValueUnsafe_RoundingMode();
         propertiesBigIntegerValue_RoundingMode_Rational();
         propertiesBigIntegerValueUnsafe();
@@ -56,6 +58,11 @@ public class RealProperties extends QBarTestProperties {
         propertiesFloor();
         propertiesCeilingUnsafe();
         propertiesCeiling();
+        propertiesBigIntegerValueExact();
+        propertiesByteValueExact();
+        propertiesShortValueExact();
+        propertiesIntValueExact();
+        propertiesLongValueExact();
     }
 
     private void propertiesOf_Rational() {
@@ -308,6 +315,17 @@ public class RealProperties extends QBarTestProperties {
         }
     }
 
+    private void propertiesIsExactInteger() {
+        initialize("isExactInteger()");
+        for (Real x : take(LIMIT, P.reals())) {
+            homomorphic(Real::negate, Function.identity(), Real::isExactInteger, Real::isExactInteger, x);
+        }
+
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            assertTrue(i, of(i).isExactInteger());
+        }
+    }
+
     private enum FuzzinessType {
         NONE, LEFT, RIGHT, BOTH
     }
@@ -406,7 +424,7 @@ public class RealProperties extends QBarTestProperties {
         }
 
         ps = filterInfinite(
-                p -> p.b != RoundingMode.UNNECESSARY || p.a.isExact() && p.a.rationalValue().get().isInteger(),
+                p -> p.b != RoundingMode.UNNECESSARY || p.a.isExactInteger(),
                 P.pairs(P.cleanReals(), P.roundingModes())
         );
         for (Pair<Real, RoundingMode> p : take(LIMIT, ps)) {
@@ -463,11 +481,7 @@ public class RealProperties extends QBarTestProperties {
             assertFalse(x, x.bigIntegerValueUnsafe(RoundingMode.HALF_EVEN).testBit(0));
         }
 
-        Iterable<Real> xsFail = filterInfinite(
-                s -> !s.isExact() || !s.rationalValue().get().isInteger(),
-                P.cleanReals()
-        );
-        for (Real x : take(LIMIT, xsFail)) {
+        for (Real x : take(LIMIT, filterInfinite(s -> !s.isExactInteger(), P.cleanReals()))) {
             try {
                 x.bigIntegerValueUnsafe(RoundingMode.UNNECESSARY);
                 fail(x);
@@ -478,7 +492,7 @@ public class RealProperties extends QBarTestProperties {
     private void propertiesBigIntegerValue_RoundingMode_Rational() {
         initialize("bigIntegerValue(RoundingMode, Rational)");
         Iterable<Triple<Real, RoundingMode, Rational>> ts = filterInfinite(
-                s -> s.b != RoundingMode.UNNECESSARY || s.a.isExact() && s.a.rationalValue().get().isInteger(),
+                s -> s.b != RoundingMode.UNNECESSARY || s.a.isExactInteger(),
                 P.triples(P.withScale(4).reals(), P.roundingModes(), P.withScale(4).positiveRationals())
         );
         for (Triple<Real, RoundingMode, Rational> t : take(LIMIT, ts)) {
@@ -489,7 +503,7 @@ public class RealProperties extends QBarTestProperties {
         }
 
         Iterable<Pair<Real, Rational>> psFail = P.pairs(
-                filterInfinite(x -> !x.isExact() || !x.rationalValue().get().isInteger(), P.withScale(4).reals()),
+                filterInfinite(x -> !x.isExactInteger(), P.withScale(4).reals()),
                 P.withScale(4).positiveRationals()
         );
         for (Pair<Real, Rational> p : take(LIMIT, psFail)) {
@@ -707,6 +721,165 @@ public class RealProperties extends QBarTestProperties {
             if (oi.isPresent()) {
                 assertEquals(p, p.a.ceilingUnsafe(), oi.get());
             }
+        }
+    }
+
+    private void propertiesBigIntegerValueExact() {
+        initialize("bigIntegerValueExact()");
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            Real x = of(i);
+            assertEquals(i, x.bigIntegerValueExact(), i);
+            homomorphic(Real::negate, BigInteger::negate, Real::bigIntegerValueExact, Real::bigIntegerValueExact, x);
+        }
+
+        for (Real x : take(LIMIT, filterInfinite(s -> !s.isExactInteger(), P.reals()))) {
+            try {
+                x.bigIntegerValueExact();
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesByteValueExact() {
+        initialize("byteValueExact()");
+        for (byte b : take(LIMIT, P.bytes())) {
+            Real x = of(b);
+            assertEquals(b, x.byteValueExact(), b);
+        }
+
+        for (byte b : take(LIMIT, filter(c -> c != Byte.MIN_VALUE, P.bytes()))) {
+            Real x = of(b);
+            homomorphic(Real::negate, c -> (byte) -c, Real::byteValueExact, Real::byteValueExact, x);
+        }
+
+        for (Real x : take(LIMIT, filterInfinite(s -> !s.isExactInteger(), P.reals()))) {
+            try {
+                x.byteValueExact();
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        for (BigInteger i : take(LIMIT, P.rangeUp(BigInteger.valueOf(Byte.MAX_VALUE).add(BigInteger.ONE)))) {
+            try {
+                of(i).byteValueExact();
+                fail(i);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        for (BigInteger i : take(LIMIT, P.rangeDown(BigInteger.valueOf(Byte.MIN_VALUE).subtract(BigInteger.ONE)))) {
+            try {
+                of(i).byteValueExact();
+                fail(i);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesShortValueExact() {
+        initialize("shortValueExact()");
+        for (short s : take(LIMIT, P.shorts())) {
+            Real x = of(s);
+            assertEquals(s, x.shortValueExact(), s);
+        }
+
+        for (short s : take(LIMIT, filter(t -> t != Short.MIN_VALUE, P.shorts()))) {
+            Real x = of(s);
+            homomorphic(Real::negate, t -> (short) -t, Real::shortValueExact, Real::shortValueExact, x);
+        }
+
+        for (Real x : take(LIMIT, filterInfinite(s -> !s.isExactInteger(), P.reals()))) {
+            try {
+                x.shortValueExact();
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        for (BigInteger i : take(LIMIT, P.rangeUp(BigInteger.valueOf(Short.MAX_VALUE).add(BigInteger.ONE)))) {
+            try {
+                of(i).shortValueExact();
+                fail(i);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        for (BigInteger i : take(LIMIT, P.rangeDown(BigInteger.valueOf(Short.MIN_VALUE).subtract(BigInteger.ONE)))) {
+            try {
+                of(i).shortValueExact();
+                fail(i);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesIntValueExact() {
+        initialize("intValueExact()");
+        for (int i : take(LIMIT, P.integers())) {
+            Real x = of(i);
+            assertEquals(i, x.intValueExact(), i);
+        }
+
+        for (int i : take(LIMIT, filter(j -> j != Integer.MIN_VALUE, P.integers()))) {
+            Real x = of(i);
+            homomorphic(Real::negate, j -> -j, Real::intValueExact, Real::intValueExact, x);
+        }
+
+        for (Real x : take(LIMIT, filterInfinite(s -> !s.isExactInteger(), P.reals()))) {
+            try {
+                x.intValueExact();
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<BigInteger> isFail = P.withScale(33)
+                .rangeUp(BigInteger.valueOf(Integer.MAX_VALUE).add(BigInteger.ONE));
+        for (BigInteger i : take(LIMIT, isFail)) {
+            try {
+                of(i).intValueExact();
+                fail(i);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<BigInteger> isFail2 = P.withScale(33)
+                .rangeDown(BigInteger.valueOf(Integer.MIN_VALUE).subtract(BigInteger.ONE));
+        for (BigInteger i : take(LIMIT, isFail2)) {
+            try {
+                of(i).intValueExact();
+                fail(i);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesLongValueExact() {
+        initialize("longValueExact()");
+        for (long l : take(LIMIT, P.longs())) {
+            Real x = of(l);
+            assertEquals(l, x.longValueExact(), l);
+        }
+
+        for (long l : take(LIMIT, filter(m -> m != Long.MIN_VALUE, P.longs()))) {
+            Real x = of(l);
+            homomorphic(Real::negate, m -> -m, Real::longValueExact, Real::longValueExact, x);
+        }
+
+        for (Real x : take(LIMIT, filterInfinite(s -> !s.isExactInteger(), P.reals()))) {
+            try {
+                x.longValueExact();
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<BigInteger> isFail = P.withScale(65).rangeUp(BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE));
+        for (BigInteger i : take(LIMIT, isFail)) {
+            try {
+                of(i).longValueExact();
+                fail(i);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<BigInteger> isFail2 = P.withScale(65)
+                .rangeDown(BigInteger.valueOf(Long.MIN_VALUE).subtract(BigInteger.ONE));
+        for (BigInteger i : take(LIMIT, isFail2)) {
+            try {
+                of(i).longValueExact();
+                fail(i);
+            } catch (ArithmeticException ignored) {}
         }
     }
 }
