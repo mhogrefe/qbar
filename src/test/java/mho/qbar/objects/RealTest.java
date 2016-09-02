@@ -436,44 +436,6 @@ public class RealTest {
                 " [0, 1/65536], [0, 1/131072], [0, 1/262144], [0, 1/524288], ...]");
     }
 
-    private static void isExact_helper(@NotNull Real input, boolean output) {
-        aeq(input.isExact(), output);
-    }
-
-    @Test
-    public void testIsExact() {
-        isExact_helper(ZERO, true);
-        isExact_helper(ONE, true);
-        isExact_helper(NEGATIVE_ONE, true);
-        isExact_helper(NEGATIVE_FOUR_THIRDS, true);
-        isExact_helper(SQRT_TWO, false);
-        isExact_helper(E, false);
-        isExact_helper(PI, false);
-
-        isExact_helper(fuzzyRepresentation(Rational.ZERO), false);
-        isExact_helper(leftFuzzyRepresentation(Rational.ZERO), false);
-        isExact_helper(rightFuzzyRepresentation(Rational.ZERO), false);
-    }
-
-    private static void rationalValue_helper(@NotNull Real input, @NotNull String output) {
-        aeq(input.rationalValue(), output);
-    }
-
-    @Test
-    public void testRationalValue() {
-        rationalValue_helper(ZERO, "Optional[0]");
-        rationalValue_helper(ONE, "Optional[1]");
-        rationalValue_helper(NEGATIVE_ONE, "Optional[-1]");
-        rationalValue_helper(NEGATIVE_FOUR_THIRDS, "Optional[-4/3]");
-        rationalValue_helper(SQRT_TWO, "Optional.empty");
-        rationalValue_helper(E, "Optional.empty");
-        rationalValue_helper(PI, "Optional.empty");
-
-        rationalValue_helper(fuzzyRepresentation(Rational.ZERO), "Optional.empty");
-        rationalValue_helper(leftFuzzyRepresentation(Rational.ZERO), "Optional.empty");
-        rationalValue_helper(rightFuzzyRepresentation(Rational.ZERO), "Optional.empty");
-    }
-
     private static void match_helper(@NotNull Real r, @NotNull List<Real> targets, int output) {
         aeq(r.match(targets), output);
     }
@@ -1504,5 +1466,304 @@ public class RealTest {
         longValueExact_fail_helper(NEGATIVE_FOUR_THIRDS);
         longValueExact_fail_helper(SQRT_TWO);
         longValueExact_fail_helper(of(new BigInteger("10000000000000000000")));
+    }
+
+    private static void isExactIntegerPowerOfTwo_helper(@NotNull Real input, boolean output) {
+        aeq(input.isExactIntegerPowerOfTwo(), output);
+    }
+
+    @Test
+    public void testIsExactIntegerPowerOfTwo() {
+        isExactIntegerPowerOfTwo_helper(ZERO, false);
+        isExactIntegerPowerOfTwo_helper(ONE, true);
+        isExactIntegerPowerOfTwo_helper(ONE_HALF, true);
+        isExactIntegerPowerOfTwo_helper(of(8), true);
+        isExactIntegerPowerOfTwo_helper(of(Rational.of(1, 8)), true);
+        isExactIntegerPowerOfTwo_helper(NEGATIVE_ONE, false);
+        isExactIntegerPowerOfTwo_helper(NEGATIVE_FOUR_THIRDS, false);
+        isExactIntegerPowerOfTwo_helper(SQRT_TWO, false);
+        isExactIntegerPowerOfTwo_helper(E, false);
+        isExactIntegerPowerOfTwo_helper(PI, false);
+        isExactIntegerPowerOfTwo_helper(fuzzyRepresentation(Rational.ZERO), false);
+        isExactIntegerPowerOfTwo_helper(leftFuzzyRepresentation(Rational.ZERO), false);
+        isExactIntegerPowerOfTwo_helper(rightFuzzyRepresentation(Rational.ZERO), false);
+    }
+
+    private static void roundUpToIntegerPowerOfTwoUnsafe_helper(@NotNull Real input, @NotNull String output) {
+        aeq(input.roundUpToIntegerPowerOfTwoUnsafe(), output);
+    }
+
+    private static void roundUpToIntegerPowerOfTwoUnsafe_fail_helper(@NotNull Real input) {
+        try {
+            input.roundUpToIntegerPowerOfTwoUnsafe();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testRoundUpToIntegerPowerOfTwoUnsafe() {
+        roundUpToIntegerPowerOfTwoUnsafe_helper(ONE, "1");
+        roundUpToIntegerPowerOfTwoUnsafe_helper(ONE_HALF, "1 >> 1");
+        roundUpToIntegerPowerOfTwoUnsafe_helper(of(8), "1 << 3");
+        roundUpToIntegerPowerOfTwoUnsafe_helper(of(Rational.of(1, 8)), "1 >> 3");
+        roundUpToIntegerPowerOfTwoUnsafe_helper(SQRT_TWO, "1 << 1");
+        roundUpToIntegerPowerOfTwoUnsafe_helper(E, "1 << 2");
+        roundUpToIntegerPowerOfTwoUnsafe_helper(PI, "1 << 2");
+        roundUpToIntegerPowerOfTwoUnsafe_helper(leftFuzzyRepresentation(Rational.ONE), "1");
+        roundUpToIntegerPowerOfTwoUnsafe_helper(leftFuzzyRepresentation(Rational.TWO), "1 << 1");
+        roundUpToIntegerPowerOfTwoUnsafe_helper(leftFuzzyRepresentation(Rational.ONE_HALF), "1 >> 1");
+
+        roundUpToIntegerPowerOfTwoUnsafe_fail_helper(ZERO);
+        roundUpToIntegerPowerOfTwoUnsafe_fail_helper(NEGATIVE_ONE);
+        roundUpToIntegerPowerOfTwoUnsafe_fail_helper(NEGATIVE_FOUR_THIRDS);
+        roundUpToIntegerPowerOfTwoUnsafe_fail_helper(PI.negate());
+        roundUpToIntegerPowerOfTwoUnsafe_fail_helper(leftFuzzyRepresentation(Rational.ZERO));
+    }
+
+    private static void roundUpToIntegerPowerOfTwo_helper(
+            @NotNull Real x,
+            @NotNull Rational resolution,
+            @NotNull String output
+    ) {
+        aeq(x.roundUpToIntegerPowerOfTwo(resolution), output);
+    }
+
+    private static void roundUpToIntegerPowerOfTwo_fail_helper(@NotNull Real x, @NotNull Rational resolution) {
+        try {
+            x.roundUpToIntegerPowerOfTwo(resolution);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testRoundUpToIntegerPowerOfTwo() {
+        roundUpToIntegerPowerOfTwo_helper(ONE, DEFAULT_RESOLUTION, "Optional[1]");
+        roundUpToIntegerPowerOfTwo_helper(ONE_HALF, DEFAULT_RESOLUTION, "Optional[1 >> 1]");
+        roundUpToIntegerPowerOfTwo_helper(of(8), DEFAULT_RESOLUTION, "Optional[1 << 3]");
+        roundUpToIntegerPowerOfTwo_helper(of(Rational.of(1, 8)), DEFAULT_RESOLUTION, "Optional[1 >> 3]");
+        roundUpToIntegerPowerOfTwo_helper(SQRT_TWO, DEFAULT_RESOLUTION, "Optional[1 << 1]");
+        roundUpToIntegerPowerOfTwo_helper(E, DEFAULT_RESOLUTION, "Optional[1 << 2]");
+        roundUpToIntegerPowerOfTwo_helper(PI, DEFAULT_RESOLUTION, "Optional[1 << 2]");
+        roundUpToIntegerPowerOfTwo_helper(leftFuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional[1]");
+        roundUpToIntegerPowerOfTwo_helper(leftFuzzyRepresentation(Rational.TWO), DEFAULT_RESOLUTION,
+                "Optional[1 << 1]");
+        roundUpToIntegerPowerOfTwo_helper(leftFuzzyRepresentation(Rational.ONE_HALF), DEFAULT_RESOLUTION,
+                "Optional[1 >> 1]");
+        roundUpToIntegerPowerOfTwo_helper(fuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional.empty");
+        roundUpToIntegerPowerOfTwo_helper(fuzzyRepresentation(Rational.TWO), DEFAULT_RESOLUTION, "Optional.empty");
+        roundUpToIntegerPowerOfTwo_helper(fuzzyRepresentation(Rational.ONE_HALF), DEFAULT_RESOLUTION,
+                "Optional.empty");
+
+        roundUpToIntegerPowerOfTwo_helper(E, Rational.TEN, "Optional.empty");
+
+        roundUpToIntegerPowerOfTwo_fail_helper(ZERO, DEFAULT_RESOLUTION);
+        roundUpToIntegerPowerOfTwo_fail_helper(NEGATIVE_ONE, DEFAULT_RESOLUTION);
+        roundUpToIntegerPowerOfTwo_fail_helper(NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION);
+        roundUpToIntegerPowerOfTwo_fail_helper(PI.negate(), DEFAULT_RESOLUTION);
+        roundUpToIntegerPowerOfTwo_fail_helper(leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION);
+    }
+
+    private static void isExactBinaryFraction_helper(@NotNull Real input, boolean output) {
+        aeq(input.isExactBinaryFraction(), output);
+    }
+
+    @Test
+    public void testIsExactBinaryFraction() {
+        isExactBinaryFraction_helper(ZERO, true);
+        isExactBinaryFraction_helper(ONE, true);
+        isExactBinaryFraction_helper(ONE_HALF, true);
+        isExactBinaryFraction_helper(of(8), true);
+        isExactBinaryFraction_helper(TEN, true);
+        isExactBinaryFraction_helper(of(Rational.of(1, 8)), true);
+        isExactBinaryFraction_helper(NEGATIVE_ONE, true);
+        isExactBinaryFraction_helper(NEGATIVE_FOUR_THIRDS, false);
+        isExactBinaryFraction_helper(SQRT_TWO, false);
+        isExactBinaryFraction_helper(E, false);
+        isExactBinaryFraction_helper(PI, false);
+        isExactBinaryFraction_helper(fuzzyRepresentation(Rational.ZERO), false);
+        isExactBinaryFraction_helper(leftFuzzyRepresentation(Rational.ZERO), false);
+        isExactBinaryFraction_helper(rightFuzzyRepresentation(Rational.ZERO), false);
+    }
+
+    private static void binaryFractionValueExact_helper(@NotNull Real input, @NotNull String output) {
+        aeq(input.binaryFractionValueExact(), output);
+    }
+
+    private static void binaryFractionValueExact_fail_helper(@NotNull Real input) {
+        try {
+            input.binaryFractionValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testBinaryFractionValueExact() {
+        binaryFractionValueExact_helper(ZERO, "0");
+        binaryFractionValueExact_helper(ONE, "1");
+        binaryFractionValueExact_helper(NEGATIVE_ONE, "-1");
+        binaryFractionValueExact_helper(ONE_HALF, "1 >> 1");
+        binaryFractionValueExact_helper(of(8), "1 << 3");
+        binaryFractionValueExact_helper(of(10), "5 << 1");
+
+        binaryFractionValueExact_fail_helper(NEGATIVE_FOUR_THIRDS);
+        binaryFractionValueExact_fail_helper(SQRT_TWO);
+        binaryFractionValueExact_fail_helper(E);
+        binaryFractionValueExact_fail_helper(PI);
+        binaryFractionValueExact_fail_helper(fuzzyRepresentation(Rational.ZERO));
+        binaryFractionValueExact_fail_helper(leftFuzzyRepresentation(Rational.ZERO));
+        binaryFractionValueExact_fail_helper(rightFuzzyRepresentation(Rational.ZERO));
+        binaryFractionValueExact_fail_helper(fuzzyRepresentation(Rational.ONE));
+        binaryFractionValueExact_fail_helper(leftFuzzyRepresentation(Rational.ONE));
+        binaryFractionValueExact_fail_helper(rightFuzzyRepresentation(Rational.ONE));
+    }
+
+    private static void isExact_helper(@NotNull Real input, boolean output) {
+        aeq(input.isExact(), output);
+    }
+
+    @Test
+    public void testIsExact() {
+        isExact_helper(ZERO, true);
+        isExact_helper(ONE, true);
+        isExact_helper(NEGATIVE_ONE, true);
+        isExact_helper(NEGATIVE_FOUR_THIRDS, true);
+        isExact_helper(SQRT_TWO, false);
+        isExact_helper(E, false);
+        isExact_helper(PI, false);
+
+        isExact_helper(fuzzyRepresentation(Rational.ZERO), false);
+        isExact_helper(leftFuzzyRepresentation(Rational.ZERO), false);
+        isExact_helper(rightFuzzyRepresentation(Rational.ZERO), false);
+    }
+
+    private static void rationalValueExact_helper(@NotNull Real input, @NotNull String output) {
+        aeq(input.rationalValueExact(), output);
+    }
+
+    @Test
+    public void testRationalValueExact() {
+        rationalValueExact_helper(ZERO, "Optional[0]");
+        rationalValueExact_helper(ONE, "Optional[1]");
+        rationalValueExact_helper(NEGATIVE_ONE, "Optional[-1]");
+        rationalValueExact_helper(NEGATIVE_FOUR_THIRDS, "Optional[-4/3]");
+        rationalValueExact_helper(SQRT_TWO, "Optional.empty");
+        rationalValueExact_helper(E, "Optional.empty");
+        rationalValueExact_helper(PI, "Optional.empty");
+
+        rationalValueExact_helper(fuzzyRepresentation(Rational.ZERO), "Optional.empty");
+        rationalValueExact_helper(leftFuzzyRepresentation(Rational.ZERO), "Optional.empty");
+        rationalValueExact_helper(rightFuzzyRepresentation(Rational.ZERO), "Optional.empty");
+    }
+
+    private static void binaryExponentUnsafe_helper(@NotNull Real input, int output) {
+        aeq(input.binaryExponentUnsafe(), output);
+    }
+
+    private static void binaryExponentUnsafe_fail_helper(@NotNull Real input) {
+        try {
+            input.binaryExponentUnsafe();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testBinaryExponentUnsafe() {
+        binaryExponentUnsafe_helper(ONE, 0);
+        binaryExponentUnsafe_helper(ONE_HALF, -1);
+        binaryExponentUnsafe_helper(of(8), 3);
+        binaryExponentUnsafe_helper(of(Rational.of(1, 8)), -3);
+        binaryExponentUnsafe_helper(SQRT_TWO, 0);
+        binaryExponentUnsafe_helper(E, 1);
+        binaryExponentUnsafe_helper(PI, 1);
+        binaryExponentUnsafe_helper(rightFuzzyRepresentation(Rational.ONE), 0);
+        binaryExponentUnsafe_helper(rightFuzzyRepresentation(Rational.TWO), 1);
+        binaryExponentUnsafe_helper(rightFuzzyRepresentation(Rational.ONE_HALF), -1);
+
+        binaryExponentUnsafe_fail_helper(ZERO);
+        binaryExponentUnsafe_fail_helper(NEGATIVE_ONE);
+        binaryExponentUnsafe_fail_helper(NEGATIVE_FOUR_THIRDS);
+        binaryExponentUnsafe_fail_helper(PI.negate());
+        binaryExponentUnsafe_fail_helper(leftFuzzyRepresentation(Rational.ZERO));
+    }
+
+    private static void binaryExponent_helper(@NotNull Real x, @NotNull Rational resolution, @NotNull String output) {
+        aeq(x.binaryExponent(resolution), output);
+    }
+
+    private static void binaryExponent_fail_helper(@NotNull Real x, @NotNull Rational resolution) {
+        try {
+            x.binaryExponent(resolution);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testBinaryExponent() {
+        binaryExponent_helper(ONE, DEFAULT_RESOLUTION, "Optional[0]");
+        binaryExponent_helper(ONE_HALF, DEFAULT_RESOLUTION, "Optional[-1]");
+        binaryExponent_helper(of(8), DEFAULT_RESOLUTION, "Optional[3]");
+        binaryExponent_helper(of(Rational.of(1, 8)), DEFAULT_RESOLUTION, "Optional[-3]");
+        binaryExponent_helper(SQRT_TWO, DEFAULT_RESOLUTION, "Optional[0]");
+        binaryExponent_helper(E, DEFAULT_RESOLUTION, "Optional[1]");
+        binaryExponent_helper(PI, DEFAULT_RESOLUTION, "Optional[1]");
+        binaryExponent_helper(rightFuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional[0]");
+        binaryExponent_helper(rightFuzzyRepresentation(Rational.TWO), DEFAULT_RESOLUTION, "Optional[1]");
+        binaryExponent_helper(rightFuzzyRepresentation(Rational.ONE_HALF), DEFAULT_RESOLUTION, "Optional[-1]");
+        binaryExponent_helper(fuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional.empty");
+        binaryExponent_helper(fuzzyRepresentation(Rational.TWO), DEFAULT_RESOLUTION, "Optional.empty");
+        binaryExponent_helper(fuzzyRepresentation(Rational.ONE_HALF), DEFAULT_RESOLUTION, "Optional.empty");
+        binaryExponent_helper(rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+
+        binaryExponent_helper(E, Rational.TEN, "Optional.empty");
+
+        binaryExponent_fail_helper(ZERO, DEFAULT_RESOLUTION);
+        binaryExponent_fail_helper(NEGATIVE_ONE, DEFAULT_RESOLUTION);
+        binaryExponent_fail_helper(NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION);
+        binaryExponent_fail_helper(PI.negate(), DEFAULT_RESOLUTION);
+        binaryExponent_fail_helper(leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION);
+    }
+
+    private static void isExactAndEqualToFloat_helper(@NotNull Real input, boolean output) {
+        aeq(input.isExactAndEqualToFloat(), output);
+    }
+
+    @Test
+    public void testIsExactAndEqualToFloat() {
+        isExactAndEqualToFloat_helper(ZERO, true);
+        isExactAndEqualToFloat_helper(ONE, true);
+        isExactAndEqualToFloat_helper(ONE_HALF, true);
+        isExactAndEqualToFloat_helper(of(8), true);
+        isExactAndEqualToFloat_helper(TEN, true);
+        isExactAndEqualToFloat_helper(of(Rational.of(1, 8)), true);
+        isExactAndEqualToFloat_helper(NEGATIVE_ONE, true);
+        isExactAndEqualToFloat_helper(NEGATIVE_FOUR_THIRDS, false);
+        isExactAndEqualToFloat_helper(SQRT_TWO, false);
+        isExactAndEqualToFloat_helper(E, false);
+        isExactAndEqualToFloat_helper(PI, false);
+        isExactAndEqualToFloat_helper(fuzzyRepresentation(Rational.ZERO), false);
+        isExactAndEqualToFloat_helper(leftFuzzyRepresentation(Rational.ZERO), false);
+        isExactAndEqualToFloat_helper(rightFuzzyRepresentation(Rational.ZERO), false);
+    }
+
+    private static void isExactAndEqualToDouble_helper(@NotNull Real input, boolean output) {
+        aeq(input.isExactAndEqualToDouble(), output);
+    }
+
+    @Test
+    public void testIsExactAndEqualToDouble() {
+        isExactAndEqualToDouble_helper(ZERO, true);
+        isExactAndEqualToDouble_helper(ONE, true);
+        isExactAndEqualToDouble_helper(ONE_HALF, true);
+        isExactAndEqualToDouble_helper(of(8), true);
+        isExactAndEqualToDouble_helper(TEN, true);
+        isExactAndEqualToDouble_helper(of(Rational.of(1, 8)), true);
+        isExactAndEqualToDouble_helper(NEGATIVE_ONE, true);
+        isExactAndEqualToDouble_helper(NEGATIVE_FOUR_THIRDS, false);
+        isExactAndEqualToDouble_helper(SQRT_TWO, false);
+        isExactAndEqualToDouble_helper(E, false);
+        isExactAndEqualToDouble_helper(PI, false);
+        isExactAndEqualToDouble_helper(fuzzyRepresentation(Rational.ZERO), false);
+        isExactAndEqualToDouble_helper(leftFuzzyRepresentation(Rational.ZERO), false);
+        isExactAndEqualToDouble_helper(rightFuzzyRepresentation(Rational.ZERO), false);
     }
 }

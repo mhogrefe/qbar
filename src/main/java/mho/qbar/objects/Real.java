@@ -526,36 +526,6 @@ public final class Real implements Iterable<Interval> {
     }
 
     /**
-     * Whether this immediately converges to its value—that is, whether this is rational and all of its intervals have
-     * diameter zero.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code Real}.</li>
-     *  <li>The result may be either {@code boolean}.</li>
-     * </ul>
-     *
-     * @return whether {@code this} is an exact {@code Real}
-     */
-    public boolean isExact() {
-        return rational.isPresent();
-    }
-
-    /**
-     * If {@code this} is exact, returns the {@code Rational} equal to {@code this}; otherwise, returns an empty
-     * {@code Optional}.
-     *
-     * <ul>
-     *  <li>{@code this} mat be any {@code Real}.</li>
-     *  <li>The result is not null.</li>
-     * </ul>
-     *
-     * @return the {@code Rational} equal to {@code this}, if {@code this} is exact
-     */
-    public @NotNull Optional<Rational> rationalValue() {
-        return rational;
-    }
-
-    /**
      * Given a list of target {@code Real}s, returns the 0-based index of the one that is equal to {@code this}. If
      * none are equal to {@code this}, this method will return an incorrect result or throw an exception. If more than
      * one is equal to {@code this}, this method will loop forever.
@@ -1005,6 +975,313 @@ public final class Real implements Iterable<Interval> {
         return bigIntegerValueExact().longValueExact();
     }
 
+    /**
+     * Determines whether {@code this} is an exact integer power of 2.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is an exact integer power of two
+     */
+    public boolean isExactIntegerPowerOfTwo() {
+        if (!rational.isPresent()) {
+            return false;
+        } else {
+            Rational r = rational.get();
+            return r.signum() == 1 && r.isPowerOfTwo();
+        }
+    }
+
+    /**
+     * Rounds {@code this} to the next-highest integer power of two. If {@code this} is an integer power of two, it is
+     * returned. If {@code this} is a zero or an integer power of two that is fuzzy on the right, this method will loop
+     * forever. To prevent this behavior, use {@link Real#roundUpToIntegerPowerOfTwo(Rational)} instead.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be negative, a fuzzy zero, or an integer power of two that is fuzzy on the right.</li>
+     *  <li>The result is an integer power of two. (That is, it is equal to 2<sup>p</sup> for some integer p, but the
+     *  result itself is not necessarily an integer.)</li>
+     * </ul>
+     *
+     * @return the smallest integer power of 2 greater than or equal to {@code this}.
+     */
+    public @NotNull BinaryFraction roundUpToIntegerPowerOfTwoUnsafe() {
+        Rational previousLower = null;
+        Rational previousUpper = null;
+        BinaryFraction lowerValue = null;
+        BinaryFraction upperValue = null;
+        Iterator<Interval> as = intervals.iterator();
+        Interval a;
+        do {
+            a = as.next();
+        } while (!a.isFinitelyBounded());
+        while (true) {
+            Rational lower = a.getLower().get();
+            Rational upper = a.getUpper().get();
+            if (upper.signum() != 1) {
+                throw new ArithmeticException();
+            }
+            if (lower.signum() == 1) {
+                if (!lower.equals(previousLower)) {
+                    lowerValue = lower.roundUpToPowerOfTwo();
+                }
+                if (!upper.equals(previousUpper)) {
+                    upperValue = upper.roundUpToPowerOfTwo();
+                }
+                if (lowerValue.equals(upperValue)) {
+                    return lowerValue;
+                }
+                previousLower = lower;
+                previousUpper = upper;
+            }
+            a = as.next();
+        }
+    }
+
+    /**
+     * Rounds {@code this} to the next-highest integer power of two. If {@code this} is an integer power of two, it is
+     * returned. If {@code this} is a zero or an integer power of two that is fuzzy on the right, this method will give
+     * up and return empty once the approximating interval's diameter is less than the specified resolution.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be negative, an exact zero, or a zero that is only fuzzy on the left.</li>
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>The result is empty or an integer power of two. (That is, it is equal to 2<sup>p</sup> for some integer p,
+     *  but the result itself is not necessarily an integer.)</li>
+     * </ul>
+     *
+     * @return the smallest integer power of 2 greater than or equal to {@code this}.
+     */
+    public @NotNull Optional<BinaryFraction> roundUpToIntegerPowerOfTwo(@NotNull Rational resolution) {
+        Rational previousLower = null;
+        Rational previousUpper = null;
+        BinaryFraction lowerValue = null;
+        BinaryFraction upperValue = null;
+        Iterator<Interval> as = intervals.iterator();
+        Interval a;
+        do {
+            a = as.next();
+        } while (!a.isFinitelyBounded());
+        while (true) {
+            Rational lower = a.getLower().get();
+            Rational upper = a.getUpper().get();
+            if (upper.signum() != 1) {
+                throw new ArithmeticException();
+            }
+            if (lower.signum() == 1) {
+                if (!lower.equals(previousLower)) {
+                    lowerValue = lower.roundUpToPowerOfTwo();
+                }
+                if (!upper.equals(previousUpper)) {
+                    upperValue = upper.roundUpToPowerOfTwo();
+                }
+                if (lowerValue.equals(upperValue)) {
+                    return Optional.of(lowerValue);
+                }
+                previousLower = lower;
+                previousUpper = upper;
+            }
+            if (Ordering.lt(a.diameter().get(), resolution)) {
+                return Optional.empty();
+            }
+            a = as.next();
+        }
+    }
+
+    /**
+     * Determines whether {@code this} is exact and a binary fraction (whether it is rational and its denominator is a
+     * power of 2).
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is an exact binary fraction
+     */
+    public boolean isExactBinaryFraction() {
+        return rational.isPresent() && rational.get().isBinaryFraction();
+    }
+
+    /**
+     * Converts {@code this} to a {@code BinaryFraction}. Throws an {@link java.lang.ArithmeticException} if
+     * {@code this} is not an exact binary fraction.
+     *
+     * <ul>
+     *  <li>{@code this} must be exact and a binary fraction (its denominator must be a power of 2.)</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return the {@code BinaryFraction} value of {@code this}
+     */
+    public @NotNull BinaryFraction binaryFractionValueExact() {
+        if (rational.isPresent()) {
+            return rational.get().binaryFractionValueExact();
+        } else {
+            throw new ArithmeticException("this must be an exact binary fraction. Invalid this: " + this);
+        }
+    }
+
+    /**
+     * Whether this immediately converges to its value—that is, whether this is rational and all of its intervals have
+     * diameter zero.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is an exact {@code Real}
+     */
+    public boolean isExact() {
+        return rational.isPresent();
+    }
+
+    /**
+     * If {@code this} is exact, returns the {@code Rational} equal to {@code this}; otherwise, returns an empty
+     * {@code Optional}.
+     *
+     * <ul>
+     *  <li>{@code this} mat be any {@code Real}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return the {@code Rational} equal to {@code this}, if {@code this} is exact
+     */
+    public @NotNull Optional<Rational> rationalValueExact() {
+        return rational;
+    }
+
+    /**
+     * This method returns the floor of the base-2 logarithm of {@code this}. In other words, every positive
+     * {@code Real} may be written as a×2<sup>b</sup>, where a is a {@code Real} such that 1≤a{@literal <}2 and b is an
+     * integer; this method returns b. If {@code this} is a zero that is fuzzy on the right or an integer power of two
+     * that is fuzzy on the left, this method will loop forever. To prevent this behavior, use
+     * {@link Real#binaryExponent(Rational)} instead.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be negative, zero, or an integer power of two that is fuzzy on the left.</li>
+     *  <li>The result can be any integer.</li>
+     * </ul>
+     *
+     * @return ⌊{@code log<sub>2</sub>this}⌋
+     */
+    public int binaryExponentUnsafe() {
+        Rational previousLower = null;
+        Rational previousUpper = null;
+        int lowerValue = 0;
+        int upperValue = 0;
+        Iterator<Interval> as = intervals.iterator();
+        Interval a;
+        do {
+            a = as.next();
+        } while (!a.isFinitelyBounded());
+        while (true) {
+            Rational lower = a.getLower().get();
+            Rational upper = a.getUpper().get();
+            if (upper.signum() != 1) {
+                throw new ArithmeticException();
+            }
+            if (lower.signum() == 1) {
+                if (!lower.equals(previousLower)) {
+                    lowerValue = lower.binaryExponent();
+                }
+                if (!upper.equals(previousUpper)) {
+                    upperValue = upper.binaryExponent();
+                }
+                if (lowerValue == upperValue) {
+                    return lowerValue;
+                }
+                previousLower = lower;
+                previousUpper = upper;
+            }
+            a = as.next();
+        }
+    }
+
+    /**
+     * This method returns the floor of the base-2 logarithm of {@code this}. In other words, every positive
+     * {@code Real} may be written as a×2<sup>b</sup>, where a is a {@code Real} such that 1≤a{@literal <}2 and b is an
+     * integer; this method returns b. If {@code this} is a zero that is fuzzy on the right or an integer power of two
+     * that is fuzzy on the left, this method will give up and return empty once the approximating interval's diameter
+     * is less than the specified resolution.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be negative, an exact zero, or a zero that is fuzzy on the left.</li>
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>The result can be any integer.</li>
+     * </ul>
+     *
+     * @return ⌊{@code log<sub>2</sub>this}⌋
+     */
+    public @NotNull Optional<Integer> binaryExponent(@NotNull Rational resolution) {
+        Rational previousLower = null;
+        Rational previousUpper = null;
+        int lowerValue = 0;
+        int upperValue = 0;
+        Iterator<Interval> as = intervals.iterator();
+        Interval a;
+        do {
+            a = as.next();
+        } while (!a.isFinitelyBounded());
+        while (true) {
+            Rational lower = a.getLower().get();
+            Rational upper = a.getUpper().get();
+            if (upper.signum() != 1) {
+                throw new ArithmeticException();
+            }
+            if (lower.signum() == 1) {
+                if (!lower.equals(previousLower)) {
+                    lowerValue = lower.binaryExponent();
+                }
+                if (!upper.equals(previousUpper)) {
+                    upperValue = upper.binaryExponent();
+                }
+                if (lowerValue == upperValue) {
+                    return Optional.of(lowerValue);
+                }
+                previousLower = lower;
+                previousUpper = upper;
+            }
+            if (Ordering.lt(a.diameter().get(), resolution)) {
+                return Optional.empty();
+            }
+            a = as.next();
+        }
+    }
+
+    /**
+     * Determines whether {@code this} is exact and exactly equal to some {@code float}. If true, the {@code float} may
+     * be found using //todo
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is exact and exactly equal to a {@code float}
+     */
+    public boolean isExactAndEqualToFloat() {
+        return rational.isPresent() && rational.get().isEqualToFloat();
+    }
+
+    /**
+     * Determines whether {@code this} is exact and exactly equal to some {@code double}. If true, the {@code double}
+     * may be found using //todo
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is exact and exactly equal to a {@code double}
+     */
+    public boolean isExactAndEqualToDouble() {
+        return rational.isPresent() && rational.get().isEqualToDouble();
+    }
+
     public float floatValue(@NotNull RoundingMode roundingMode) {
         return limitValueUnsafe(r -> r.floatValue(roundingMode));
     }
@@ -1213,7 +1490,7 @@ public final class Real implements Iterable<Interval> {
         if (Ordering.lt(base, IntegerUtils.TWO)) {
             throw new IllegalArgumentException("base must be at least 2. Invalid base: " + base);
         }
-        Optional<Rational> or = rationalValue();
+        Optional<Rational> or = rationalValueExact();
         if (or.isPresent()) {
             return or.get().toStringBase(base, scale);
         }
@@ -1235,7 +1512,7 @@ public final class Real implements Iterable<Interval> {
         if (Ordering.lt(base, IntegerUtils.TWO)) {
             throw new IllegalArgumentException("base must be at least 2. Invalid base: " + base);
         }
-        Optional<Rational> or = rationalValue();
+        Optional<Rational> or = rationalValueExact();
         if (or.isPresent()) {
             return or.get().toStringBase(base, scale);
         }
@@ -1298,70 +1575,6 @@ public final class Real implements Iterable<Interval> {
         String afterDecimal = concatStrings(map(digitFunction, filter(d -> d.signum() != -1, take(scale, digits.b))));
         result = beforeDecimal + "." + afterDecimal;
         return (signumUnsafe() == -1 ? "-" + result : result) + "...";
-    }
-
-    public @NotNull BinaryFraction roundUpToIntegerPowerOfTwo() {
-        Optional<Rational> previousLower = Optional.empty();
-        Optional<Rational> previousUpper = Optional.empty();
-        BinaryFraction lowerValue = null;
-        BinaryFraction upperValue = null;
-        for (Interval a : intervals) {
-            if (a.isFinitelyBounded()) {
-                Rational lower = a.getLower().get();
-                Rational upper = a.getUpper().get();
-                if (upper.signum() != 1) {
-                    throw new ArithmeticException();
-                }
-                if (lower.signum() != 1) {
-                    continue;
-                }
-                if (!previousLower.isPresent() || !previousLower.get().equals(lower)) {
-                    lowerValue = lower.roundUpToPowerOfTwo();
-                }
-                if (!previousUpper.isPresent() || !previousUpper.get().equals(upper)) {
-                    upperValue = upper.roundUpToPowerOfTwo();
-                }
-                if (Objects.equals(lowerValue, upperValue)) {
-                    //noinspection ConstantConditions
-                    return lowerValue;
-                }
-                previousLower = Optional.of(lower);
-                previousUpper = Optional.of(upper);
-            }
-        }
-        throw new IllegalStateException("unreachable");
-    }
-
-    public int binaryExponent() {
-        Optional<Rational> previousLower = Optional.empty();
-        Optional<Rational> previousUpper = Optional.empty();
-        int lowerValue = 0;
-        int upperValue = 0;
-        for (Interval a : intervals) {
-            if (a.isFinitelyBounded()) {
-                Rational lower = a.getLower().get();
-                Rational upper = a.getUpper().get();
-                if (upper.signum() != 1) {
-                    throw new ArithmeticException();
-                }
-                if (lower.signum() != 1) {
-                    continue;
-                }
-                if (!previousLower.isPresent() || previousLower.get() != lower) {
-                    lowerValue = lower.binaryExponent();
-                }
-                if (!previousUpper.isPresent() || previousUpper.get() != upper) {
-                    upperValue = upper.binaryExponent();
-                }
-                if (Objects.equals(lowerValue, upperValue)) {
-                    //noinspection ConstantConditions
-                    return lowerValue;
-                }
-                previousLower = Optional.of(lower);
-                previousUpper = Optional.of(upper);
-            }
-        }
-        throw new IllegalStateException("unreachable");
     }
 
     public static @NotNull Interval intervalExtension(@NotNull Real lower, @NotNull Real upper) {
@@ -1734,7 +1947,7 @@ public final class Real implements Iterable<Interval> {
     }
 
     public int compareToUnsafe(@NotNull Rational that) {
-        Optional<Rational> thisRational = rationalValue();
+        Optional<Rational> thisRational = rationalValueExact();
         if (thisRational.isPresent()) {
             return thisRational.get().compareTo(that);
         }
@@ -1774,7 +1987,7 @@ public final class Real implements Iterable<Interval> {
     }
 
     public @NotNull Optional<Integer> compareTo(@NotNull Rational that, @NotNull Rational resolution) {
-        Optional<Rational> thisRational = rationalValue();
+        Optional<Rational> thisRational = rationalValueExact();
         if (thisRational.isPresent()) {
             return Optional.of(thisRational.get().compareTo(that));
         }

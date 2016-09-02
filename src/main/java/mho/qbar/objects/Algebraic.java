@@ -763,7 +763,7 @@ public final class Algebraic implements Comparable<Algebraic> {
         if (rational.isPresent()) {
             return rational.get().roundUpToPowerOfTwo();
         } else {
-            return realValue().roundUpToIntegerPowerOfTwo();
+            return realValue().roundUpToIntegerPowerOfTwoUnsafe();
         }
     }
 
@@ -872,7 +872,7 @@ public final class Algebraic implements Comparable<Algebraic> {
 
     /**
      * This method returns the floor of the base-2 logarithm of {@code this}. In other words, every positive
-     * {@code Algebrauc} may be written as a×2<sup>b</sup>, where a is an {@code Algebraic} such that 1≤a{@literal <}2
+     * {@code Algebraic} may be written as a×2<sup>b</sup>, where a is an {@code Algebraic} such that 1≤a{@literal <}2
      * and b is an integer; this method returns b.
      *
      * <ul>
@@ -890,7 +890,7 @@ public final class Algebraic implements Comparable<Algebraic> {
         if (rational.isPresent()) {
             return rational.get().binaryExponent();
         } else {
-            return realValue().binaryExponent();
+            return realValue().binaryExponentUnsafe();
         }
     }
 

@@ -116,7 +116,7 @@ public class RealDemos extends QBarDemos {
 
     private void demoRationalValue() {
         for (Real r : take(LIMIT, P.withScale(4).reals())) {
-            System.out.println("rationalValue(" + r +") = " + r.rationalValue());
+            System.out.println("rationalValue(" + r +") = " + r.rationalValueExact());
         }
     }
 
