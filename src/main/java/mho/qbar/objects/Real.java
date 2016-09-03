@@ -578,7 +578,7 @@ public final class Real implements Iterable<Interval> {
     /**
      * A helper function that lifts functions from {@code Rational} to {@code T} to functions from {@code Real} to
      * {@code T}, assuming that the latter can be computed by repeatedly applying the former to increasingly-accurate
-     * interval bounds on the {@code Real} argument until f(lower) is equal to f(upper). The function must have any
+     * interval bounds on the {@code Real} argument until f(lower) is equal to f(upper). The function must not have any
      * null values. If {@code this} is not exact and the function is discontinuous at {@code this}—that is, if f(lower)
      * will never equal f(upper) no matter how accurate the approximation–then this method will loop forever. To
      * prevent this behavior, use {@link Real#limitValue(Function, Rational)} instead.
@@ -634,7 +634,7 @@ public final class Real implements Iterable<Interval> {
     /**
      * A helper function that lifts functions from {@code Rational} to {@code T} to functions from {@code Real} to
      * {@code T}, assuming that the latter can be computed by repeatedly applying the former to increasingly-accurate
-     * interval bounds on the {@code Real} argument until f(lower) is equal to f(upper). The function must have any
+     * interval bounds on the {@code Real} argument until f(lower) is equal to f(upper). The function must not have any
      * null values. If {@code this} is not exact and the function is discontinuous at {@code this}—that is, if f(lower)
      * will never equal f(upper) no matter how accurate the approximation–then this method will give up and return
      * empty once the approximating interval's diameter is less than the specified resolution.
@@ -693,6 +693,142 @@ public final class Real implements Iterable<Interval> {
             }
             previousLower = lower;
             previousUpper = upper;
+            a = as.next();
+        }
+    }
+
+    /**
+     * A helper function that lifts functions from {@code Rational} to {@code T} to functions from {@code Real} to
+     * {@code T}, assuming that the latter can be computed by repeatedly applying the former to increasingly-accurate
+     * interval bounds on the {@code Real} argument until f(lower) is equal to f(upper), and with the restriction that
+     * the argument must be positive. The function must have not any null values. If {@code this} is not exact and the
+     * function is discontinuous at {@code this}—that is, if f(lower) will never equal f(upper) no matter how accurate
+     * the approximation–then this method will loop forever. To prevent this behavior, use
+     * {@link Real#limitValuePositiveArgument(Function, Rational)} instead.
+     *
+     * <ul>
+     *  <li>{@code this} may be any positive {@code Real}.</li>
+     *  <li>{@code f} must be defined for all positive {@code Rational}s and must never return null or throw an
+     *  exception (except for nonpositive arguments).</li>
+     *  <li>{@code this} must be positive and either exact or {@code f} continuous at {@code this}.</li>
+     * </ul>
+     *
+     * @param f a function from positive {@code Rational}s to {@code T}
+     * @param <T> the type of the result of {@code f}
+     * @return {@code f} applied to {@code this}
+     */
+    private <T> T limitValuePositiveArgumentUnsafe(@NotNull Function<Rational, T> f) {
+        if (rational.isPresent()) {
+            return f.apply(rational.get());
+        }
+        Rational previousLower = null;
+        Rational previousUpper = null;
+        T lowerValue = null;
+        T upperValue = null;
+        Iterator<Interval> as = intervals.iterator();
+        Interval a;
+        do {
+            a = as.next();
+        } while (!a.isFinitelyBounded());
+        while (true) {
+            if (Thread.interrupted()) return null;
+            Rational lower = a.getLower().get();
+            Rational upper = a.getUpper().get();
+            if (upper.signum() != 1) {
+                throw new ArithmeticException("this must be positive. Invalid this: " + this);
+            }
+            if (lower.signum() == 1) {
+                if (previousLower == null || !previousLower.equals(lower)) {
+                    lowerValue = f.apply(lower);
+                    if (lowerValue == null) {
+                        throw new IllegalArgumentException("f returned null on " + lower);
+                    }
+                }
+                if (previousUpper == null || !previousUpper.equals(upper)) {
+                    upperValue = f.apply(upper);
+                    if (upperValue == null) {
+                        throw new IllegalArgumentException("f returned null on " + upper);
+                    }
+                }
+                if (lowerValue.equals(upperValue)) {
+                    return lowerValue;
+                }
+                previousLower = lower;
+                previousUpper = upper;
+            }
+            a = as.next();
+        }
+    }
+
+    /**
+     * A helper function that lifts functions from {@code Rational} to {@code T} to functions from {@code Real} to
+     * {@code T}, assuming that the latter can be computed by repeatedly applying the former to increasingly-accurate
+     * interval bounds on the {@code Real} argument until f(lower) is equal to f(upper), and with the restriction that
+     * the argument must be positive The function must not have any null values. If {@code this} is not exact and the
+     * function is discontinuous at {@code this}—that is, if f(lower) will never equal f(upper) no matter how accurate
+     * the approximation–then this method will give up and return empty once the approximating interval's diameter is
+     * less than the specified resolution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any positive {@code Real}.</li>
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>{@code f} must be defined for all positive {@code Rational}s and must never return null or throw an
+     *  exception (except for nonpositive arguments).</li>
+     * </ul>
+     *
+     * @param f a function from positive {@code Rational}s to {@code T}
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @param <T> the type of the result of {@code f}
+     * @return {@code f} applied to {@code this}
+     */
+    private @NotNull <T> Optional<T> limitValuePositiveArgument(
+            @NotNull Function<Rational, T> f,
+            @NotNull Rational resolution
+    ) {
+        if (resolution.signum() != 1) {
+            throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
+        }
+        if (rational.isPresent()) {
+            return Optional.of(f.apply(rational.get()));
+        }
+        Rational previousLower = null;
+        Rational previousUpper = null;
+        T lowerValue = null;
+        T upperValue = null;
+        Iterator<Interval> as = intervals.iterator();
+        Interval a;
+        do {
+            a = as.next();
+        } while (!a.isFinitelyBounded());
+        while (true) {
+            if (Thread.interrupted()) return Optional.empty();
+            Rational lower = a.getLower().get();
+            Rational upper = a.getUpper().get();
+            if (upper.signum() != 1) {
+                throw new ArithmeticException("this must be positive. Invalid this: " + this);
+            }
+            if (lower.signum() == 1) {
+                if (previousLower == null || !previousLower.equals(lower)) {
+                    lowerValue = f.apply(lower);
+                    if (lowerValue == null) {
+                        throw new IllegalArgumentException("f returned null on " + lower);
+                    }
+                }
+                if (previousUpper == null || !previousUpper.equals(upper)) {
+                    upperValue = f.apply(upper);
+                    if (upperValue == null) {
+                        throw new IllegalArgumentException("f returned null on " + upper);
+                    }
+                }
+                if (lowerValue.equals(upperValue)) {
+                    return Optional.of(lowerValue);
+                }
+                previousLower = lower;
+                previousUpper = upper;
+            }
+            if (Ordering.lt(upper.subtract(lower), resolution)) {
+                return Optional.empty();
+            }
             a = as.next();
         }
     }
@@ -1000,7 +1136,7 @@ public final class Real implements Iterable<Interval> {
      * forever. To prevent this behavior, use {@link Real#roundUpToIntegerPowerOfTwo(Rational)} instead.
      *
      * <ul>
-     *  <li>{@code this} cannot be negative, a fuzzy zero, or an integer power of two that is fuzzy on the right.</li>
+     *  <li>{@code this} cannot be negative, zero, or an integer power of two that is fuzzy on the right.</li>
      *  <li>The result is an integer power of two. (That is, it is equal to 2<sup>p</sup> for some integer p, but the
      *  result itself is not necessarily an integer.)</li>
      * </ul>
@@ -1008,36 +1144,8 @@ public final class Real implements Iterable<Interval> {
      * @return the smallest integer power of 2 greater than or equal to {@code this}.
      */
     public @NotNull BinaryFraction roundUpToIntegerPowerOfTwoUnsafe() {
-        Rational previousLower = null;
-        Rational previousUpper = null;
-        BinaryFraction lowerValue = null;
-        BinaryFraction upperValue = null;
-        Iterator<Interval> as = intervals.iterator();
-        Interval a;
-        do {
-            a = as.next();
-        } while (!a.isFinitelyBounded());
-        while (true) {
-            Rational lower = a.getLower().get();
-            Rational upper = a.getUpper().get();
-            if (upper.signum() != 1) {
-                throw new ArithmeticException();
-            }
-            if (lower.signum() == 1) {
-                if (!lower.equals(previousLower)) {
-                    lowerValue = lower.roundUpToPowerOfTwo();
-                }
-                if (!upper.equals(previousUpper)) {
-                    upperValue = upper.roundUpToPowerOfTwo();
-                }
-                if (lowerValue.equals(upperValue)) {
-                    return lowerValue;
-                }
-                previousLower = lower;
-                previousUpper = upper;
-            }
-            a = as.next();
-        }
+        //noinspection ConstantConditions
+        return limitValuePositiveArgumentUnsafe(Rational::roundUpToPowerOfTwo);
     }
 
     /**
@@ -1055,39 +1163,7 @@ public final class Real implements Iterable<Interval> {
      * @return the smallest integer power of 2 greater than or equal to {@code this}.
      */
     public @NotNull Optional<BinaryFraction> roundUpToIntegerPowerOfTwo(@NotNull Rational resolution) {
-        Rational previousLower = null;
-        Rational previousUpper = null;
-        BinaryFraction lowerValue = null;
-        BinaryFraction upperValue = null;
-        Iterator<Interval> as = intervals.iterator();
-        Interval a;
-        do {
-            a = as.next();
-        } while (!a.isFinitelyBounded());
-        while (true) {
-            Rational lower = a.getLower().get();
-            Rational upper = a.getUpper().get();
-            if (upper.signum() != 1) {
-                throw new ArithmeticException();
-            }
-            if (lower.signum() == 1) {
-                if (!lower.equals(previousLower)) {
-                    lowerValue = lower.roundUpToPowerOfTwo();
-                }
-                if (!upper.equals(previousUpper)) {
-                    upperValue = upper.roundUpToPowerOfTwo();
-                }
-                if (lowerValue.equals(upperValue)) {
-                    return Optional.of(lowerValue);
-                }
-                previousLower = lower;
-                previousUpper = upper;
-            }
-            if (Ordering.lt(a.diameter().get(), resolution)) {
-                return Optional.empty();
-            }
-            a = as.next();
-        }
+        return limitValuePositiveArgument(Rational::roundUpToPowerOfTwo, resolution);
     }
 
     /**
@@ -1169,36 +1245,8 @@ public final class Real implements Iterable<Interval> {
      * @return ⌊{@code log<sub>2</sub>this}⌋
      */
     public int binaryExponentUnsafe() {
-        Rational previousLower = null;
-        Rational previousUpper = null;
-        int lowerValue = 0;
-        int upperValue = 0;
-        Iterator<Interval> as = intervals.iterator();
-        Interval a;
-        do {
-            a = as.next();
-        } while (!a.isFinitelyBounded());
-        while (true) {
-            Rational lower = a.getLower().get();
-            Rational upper = a.getUpper().get();
-            if (upper.signum() != 1) {
-                throw new ArithmeticException();
-            }
-            if (lower.signum() == 1) {
-                if (!lower.equals(previousLower)) {
-                    lowerValue = lower.binaryExponent();
-                }
-                if (!upper.equals(previousUpper)) {
-                    upperValue = upper.binaryExponent();
-                }
-                if (lowerValue == upperValue) {
-                    return lowerValue;
-                }
-                previousLower = lower;
-                previousUpper = upper;
-            }
-            a = as.next();
-        }
+        //noinspection ConstantConditions
+        return limitValuePositiveArgumentUnsafe(Rational::binaryExponent);
     }
 
     /**
@@ -1217,39 +1265,7 @@ public final class Real implements Iterable<Interval> {
      * @return ⌊{@code log<sub>2</sub>this}⌋
      */
     public @NotNull Optional<Integer> binaryExponent(@NotNull Rational resolution) {
-        Rational previousLower = null;
-        Rational previousUpper = null;
-        int lowerValue = 0;
-        int upperValue = 0;
-        Iterator<Interval> as = intervals.iterator();
-        Interval a;
-        do {
-            a = as.next();
-        } while (!a.isFinitelyBounded());
-        while (true) {
-            Rational lower = a.getLower().get();
-            Rational upper = a.getUpper().get();
-            if (upper.signum() != 1) {
-                throw new ArithmeticException();
-            }
-            if (lower.signum() == 1) {
-                if (!lower.equals(previousLower)) {
-                    lowerValue = lower.binaryExponent();
-                }
-                if (!upper.equals(previousUpper)) {
-                    upperValue = upper.binaryExponent();
-                }
-                if (lowerValue == upperValue) {
-                    return Optional.of(lowerValue);
-                }
-                previousLower = lower;
-                previousUpper = upper;
-            }
-            if (Ordering.lt(a.diameter().get(), resolution)) {
-                return Optional.empty();
-            }
-            a = as.next();
-        }
+        return limitValuePositiveArgument(Rational::binaryExponent, resolution);
     }
 
     /**

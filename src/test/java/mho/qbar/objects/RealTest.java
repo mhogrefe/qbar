@@ -1663,7 +1663,7 @@ public class RealTest {
         try {
             input.binaryExponentUnsafe();
             fail();
-        } catch (ArithmeticException ignored) {}
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
     }
 
     @Test
@@ -1694,7 +1694,7 @@ public class RealTest {
         try {
             x.binaryExponent(resolution);
             fail();
-        } catch (ArithmeticException ignored) {}
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
     }
 
     @Test

@@ -46,8 +46,6 @@ public class RealProperties extends QBarTestProperties {
         propertiesLeftFuzzyRepresentation();
         propertiesRightFuzzyRepresentation();
         propertiesIterator();
-        propertiesIsExact();
-        propertiesRationalValue();
         propertiesMatch();
         propertiesIsExactInteger();
         propertiesBigIntegerValueUnsafe_RoundingMode();
@@ -63,6 +61,17 @@ public class RealProperties extends QBarTestProperties {
         propertiesShortValueExact();
         propertiesIntValueExact();
         propertiesLongValueExact();
+        propertiesIsExactIntegerPowerOfTwo();
+        propertiesRoundUpToIntegerPowerOfTwoUnsafe();
+        propertiesRoundUpToIntegerPowerOfTwo();
+        propertiesIsExactBinaryFraction();
+        propertiesBinaryFractionValueExact();
+        propertiesIsExact();
+        propertiesRationalValueExact();
+        propertiesBinaryExponentUnsafe();
+        propertiesBinaryExponent();
+        propertiesIsExactAndEqualToFloat();
+        propertiesIsExactAndEqualToDouble();
     }
 
     private void propertiesOf_Rational() {
@@ -266,29 +275,6 @@ public class RealProperties extends QBarTestProperties {
         for (Rational r : take(LIMIT, P.rationals())) {
             List<Interval> intervals = toList(take(TINY_LIMIT, of(r)));
             assertEquals(r, intervals, toList(replicate(TINY_LIMIT, Interval.of(r))));
-        }
-    }
-
-    private void propertiesIsExact() {
-        initialize("isExact()");
-        for (Real x : take(LIMIT, P.reals())) {
-            x.isExact();
-        }
-
-        for (Rational r : take(LIMIT, P.rationals())) {
-            assertTrue(r, of(r).isExact());
-        }
-    }
-
-    private void propertiesRationalValue() {
-        initialize("rationalValue()");
-        for (Real x : take(LIMIT, P.reals())) {
-            x.rationalValueExact();
-        }
-
-        for (Rational r : take(LIMIT, P.rationals())) {
-            Real x = of(r);
-            assertTrue(r, x.rationalValueExact().isPresent());
         }
     }
 
@@ -512,6 +498,21 @@ public class RealProperties extends QBarTestProperties {
                 fail(p);
             } catch (ArithmeticException ignored) {}
         }
+
+        Iterable<Triple<Real, RoundingMode, Rational>> tsFail = filterInfinite(
+                s -> s.b != RoundingMode.UNNECESSARY || s.a.isExactInteger(),
+                P.triples(
+                        P.withScale(4).reals(),
+                        P.roundingModes(),
+                        P.withElement(Rational.ZERO, P.withScale(4).negativeRationals())
+                )
+        );
+        for (Triple<Real, RoundingMode, Rational> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.bigIntegerValue(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
     }
 
     private void propertiesBigIntegerValueUnsafe() {
@@ -596,6 +597,17 @@ public class RealProperties extends QBarTestProperties {
                 assertEquals(p, p.a.bigIntegerValueUnsafe(), oi.get());
             }
         }
+
+        Iterable<Pair<Real, Rational>> psFail = P.pairs(
+                P.withScale(4).reals(),
+                P.withElement(Rational.ZERO, P.withScale(4).negativeRationals())
+        );
+        for (Pair<Real, Rational> p : take(LIMIT, psFail)) {
+            try {
+                p.a.bigIntegerValue(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
     }
 
     private void propertiesFloorUnsafe() {
@@ -659,6 +671,17 @@ public class RealProperties extends QBarTestProperties {
                 assertEquals(p, p.a.floorUnsafe(), oi.get());
             }
         }
+
+        Iterable<Pair<Real, Rational>> psFail = P.pairs(
+                P.withScale(4).reals(),
+                P.withElement(Rational.ZERO, P.withScale(4).negativeRationals())
+        );
+        for (Pair<Real, Rational> p : take(LIMIT, psFail)) {
+            try {
+                p.a.floor(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
     }
 
     private void propertiesCeilingUnsafe() {
@@ -721,6 +744,17 @@ public class RealProperties extends QBarTestProperties {
             if (oi.isPresent()) {
                 assertEquals(p, p.a.ceilingUnsafe(), oi.get());
             }
+        }
+
+        Iterable<Pair<Real, Rational>> psFail = P.pairs(
+                P.withScale(4).reals(),
+                P.withElement(Rational.ZERO, P.withScale(4).negativeRationals())
+        );
+        for (Pair<Real, Rational> p : take(LIMIT, psFail)) {
+            try {
+                p.a.ceiling(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 
@@ -880,6 +914,298 @@ public class RealProperties extends QBarTestProperties {
                 of(i).longValueExact();
                 fail(i);
             } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesIsExactIntegerPowerOfTwo() {
+        initialize("isExactIntegerPowerOfTwo()");
+        for (Real x : take(LIMIT, P.reals())) {
+            x.isExactIntegerPowerOfTwo();
+        }
+
+        for (int i : take(MEDIUM_LIMIT, P.withScale(4).integersGeometric())) {
+            assertTrue(i, of(Rational.ONE.shiftLeft(i)).isExactIntegerPowerOfTwo());
+        }
+    }
+
+    //x must be positive
+    private static boolean pow2Check(@NotNull Algebraic x, @NotNull FuzzinessType ft) {
+        boolean right = ft == FuzzinessType.RIGHT || ft == FuzzinessType.BOTH;
+        return !x.isIntegerPowerOfTwo() || !right;
+    }
+
+    private void propertiesRoundUpToIntegerPowerOfTwoUnsafe() {
+        initialize("roundUpToIntegerPowerOfTwoUnsafe()");
+        //noinspection RedundantCast
+        Iterable<Real> xs = map(
+                q -> {
+                    switch (q.b) {
+                        case NONE:
+                            return q.a.realValue();
+                        case LEFT:
+                            return leftFuzzyRepresentation(q.a.rationalValueExact());
+                        case RIGHT:
+                            return rightFuzzyRepresentation(q.a.rationalValueExact());
+                        case BOTH:
+                            return fuzzyRepresentation(q.a.rationalValueExact());
+                        default:
+                            throw new IllegalStateException("unreachable");
+                    }
+                },
+                filterInfinite(
+                        p -> pow2Check(p.a, p.b),
+                        P.withScale(1).choose(
+                                map(x -> new Pair<>(x, FuzzinessType.NONE), P.withScale(4).positiveAlgebraics()),
+                                P.choose(
+                                        (List<Iterable<Pair<Algebraic, FuzzinessType>>>) Arrays.asList(
+                                                map(
+                                                        r -> new Pair<>(Algebraic.of(r), FuzzinessType.LEFT),
+                                                        P.withScale(4).positiveRationals()
+                                                ),
+                                                map(
+                                                        r -> new Pair<>(Algebraic.of(r), FuzzinessType.RIGHT),
+                                                        P.withScale(4).positiveRationals()
+                                                ),
+                                                map(
+                                                        r -> new Pair<>(Algebraic.of(r), FuzzinessType.BOTH),
+                                                        P.withScale(4).positiveRationals()
+                                                )
+                                        )
+                                )
+                        )
+                )
+        );
+        for (Real x : take(LIMIT, xs)) {
+            x.roundUpToIntegerPowerOfTwoUnsafe();
+        }
+
+        for (Real x : take(LIMIT, P.positiveCleanReals())) {
+            BinaryFraction powerOfTwo = x.roundUpToIntegerPowerOfTwoUnsafe();
+            assertTrue(x, powerOfTwo.isPowerOfTwo());
+            assertTrue(x, leUnsafe(x, of(powerOfTwo)));
+            //noinspection SuspiciousNameCombination
+            assertTrue(x, ltUnsafe(of(powerOfTwo.shiftRight(1)), x));
+        }
+
+        for (Real x : take(LIMIT, P.withElement(ZERO, P.negativeCleanReals()))) {
+            try {
+                x.roundUpToIntegerPowerOfTwoUnsafe();
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesRoundUpToIntegerPowerOfTwo() {
+        initialize("roundUpToIntegerPowerOfTwo(Rational)");
+        Iterable<Pair<Real, Rational>> ps = P.pairs(
+                P.withScale(4).positiveReals(),
+                P.withScale(4).positiveRationals()
+        );
+        for (Pair<Real, Rational> p : take(LIMIT, ps)) {
+            Optional<BinaryFraction> obf = p.a.roundUpToIntegerPowerOfTwo(p.b);
+            if (obf.isPresent()) {
+                assertEquals(p, p.a.roundUpToIntegerPowerOfTwoUnsafe(), obf.get());
+            }
+        }
+
+        Iterable<Pair<Real, Rational>> psFail = P.pairs(
+                P.withScale(4).positiveReals(),
+                P.withElement(Rational.ZERO, P.withScale(4).negativeRationals())
+        );
+        for (Pair<Real, Rational> p : take(LIMIT, psFail)) {
+            try {
+                p.a.roundUpToIntegerPowerOfTwo(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesIsExactBinaryFraction() {
+        initialize("isExactBinaryFraction()");
+        for (Real x : take(LIMIT, P.reals())) {
+            x.isExactBinaryFraction();
+            homomorphic(
+                    Real::negate,
+                    Function.identity(),
+                    Real::isExactBinaryFraction,
+                    Real::isExactBinaryFraction,
+                    x
+            );
+        }
+    }
+
+    private void propertiesBinaryFractionValueExact() {
+        initialize("binaryFractionValueExact()");
+        for (Real x : take(LIMIT, map(Real::of, P.binaryFractions()))) {
+            homomorphic(
+                    Real::negate,
+                    BinaryFraction::negate,
+                    Real::binaryFractionValueExact,
+                    Real::binaryFractionValueExact,
+                    x
+            );
+        }
+
+        for (Real x : take(LIMIT, filterInfinite(s -> !s.isExactBinaryFraction(), P.reals()))) {
+            try {
+                x.binaryFractionValueExact();
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesIsExact() {
+        initialize("isExact()");
+        for (Real x : take(LIMIT, P.reals())) {
+            x.isExact();
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertTrue(r, of(r).isExact());
+        }
+    }
+
+    private void propertiesRationalValueExact() {
+        initialize("rationalValueExact()");
+        for (Real x : take(LIMIT, P.reals())) {
+            x.rationalValueExact();
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            Real x = of(r);
+            assertTrue(r, x.rationalValueExact().isPresent());
+        }
+    }
+
+    //x must be positive
+    private static boolean binaryExponentCheck(@NotNull Algebraic x, @NotNull FuzzinessType ft) {
+        boolean left = ft == FuzzinessType.LEFT || ft == FuzzinessType.BOTH;
+        return !x.isIntegerPowerOfTwo() || !left;
+    }
+
+    private void propertiesBinaryExponentUnsafe() {
+        initialize("binaryExponentUnsafe()");
+        //noinspection RedundantCast
+        Iterable<Real> xs = map(
+                q -> {
+                    switch (q.b) {
+                        case NONE:
+                            return q.a.realValue();
+                        case LEFT:
+                            return leftFuzzyRepresentation(q.a.rationalValueExact());
+                        case RIGHT:
+                            return rightFuzzyRepresentation(q.a.rationalValueExact());
+                        case BOTH:
+                            return fuzzyRepresentation(q.a.rationalValueExact());
+                        default:
+                            throw new IllegalStateException("unreachable");
+                    }
+                },
+                filterInfinite(
+                        p -> binaryExponentCheck(p.a, p.b),
+                        P.withScale(1).choose(
+                                map(x -> new Pair<>(x, FuzzinessType.NONE), P.withScale(4).positiveAlgebraics()),
+                                P.choose(
+                                        (List<Iterable<Pair<Algebraic, FuzzinessType>>>) Arrays.asList(
+                                                map(
+                                                        r -> new Pair<>(Algebraic.of(r), FuzzinessType.LEFT),
+                                                        P.withScale(4).positiveRationals()
+                                                ),
+                                                map(
+                                                        r -> new Pair<>(Algebraic.of(r), FuzzinessType.RIGHT),
+                                                        P.withScale(4).positiveRationals()
+                                                ),
+                                                map(
+                                                        r -> new Pair<>(Algebraic.of(r), FuzzinessType.BOTH),
+                                                        P.withScale(4).positiveRationals()
+                                                )
+                                        )
+                                )
+                        )
+                )
+        );
+        for (Real x : take(LIMIT, xs)) {
+            x.binaryExponentUnsafe();
+        }
+
+        for (Real x : take(LIMIT, P.positiveCleanReals())) {
+            int exponent = x.binaryExponentUnsafe();
+            Real power = ONE.shiftLeft(exponent);
+            //noinspection SuspiciousNameCombination
+            assertTrue(x, leUnsafe(power, x));
+            assertTrue(x, leUnsafe(x, power.shiftLeft(1)));
+        }
+
+        for (Real x : take(LIMIT, P.withElement(ZERO, P.negativeCleanReals()))) {
+            try {
+                x.binaryExponentUnsafe();
+                fail(x);
+            } catch (ArithmeticException | IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesBinaryExponent() {
+        initialize("binaryExponent(Rational)");
+        Iterable<Pair<Real, Rational>> ps = P.pairs(
+                P.withScale(4).positiveReals(),
+                P.withScale(4).positiveRationals()
+        );
+        for (Pair<Real, Rational> p : take(LIMIT, ps)) {
+            Optional<Integer> oi = p.a.binaryExponent(p.b);
+            if (oi.isPresent()) {
+                assertEquals(p, p.a.binaryExponentUnsafe(), oi.get());
+            }
+        }
+
+        Iterable<Pair<Real, Rational>> psFail = P.pairs(
+                P.withScale(4).positiveReals(),
+                P.withElement(Rational.ZERO, P.withScale(4).negativeRationals())
+        );
+        for (Pair<Real, Rational> p : take(LIMIT, psFail)) {
+            try {
+                p.a.binaryExponent(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    //todo alt
+    private void propertiesIsExactAndEqualToFloat() {
+        initialize("isExactAndEqualToFloat()");
+        for (Real x : take(LIMIT, P.reals())) {
+            boolean ietf = x.isExactAndEqualToFloat();
+            assertTrue(x, !ietf || x.isExactBinaryFraction());
+            homomorphic(
+                    Real::negate,
+                    Function.identity(),
+                    Real::isExactAndEqualToFloat,
+                    Real::isExactAndEqualToFloat,
+                    x
+            );
+        }
+
+        for (float f : take(LIMIT, filter(g -> Float.isFinite(g) && !isNegativeZero(g), P.floats()))) {
+            assertTrue(f, ofExact(f).get().isExactAndEqualToFloat());
+        }
+    }
+
+    //todo alt
+    private void propertiesIsExactAndEqualToDouble() {
+        initialize("isExactAndEqualToDouble()");
+        for (Real x : take(LIMIT, P.reals())) {
+            boolean ietf = x.isExactAndEqualToDouble();
+            assertTrue(x, !ietf || x.isExactBinaryFraction());
+            homomorphic(
+                    Real::negate,
+                    Function.identity(),
+                    Real::isExactAndEqualToDouble,
+                    Real::isExactAndEqualToDouble,
+                    x
+            );
+        }
+
+        for (double d : take(LIMIT, filter(g -> Double.isFinite(g) && !isNegativeZero(g), P.doubles()))) {
+            assertTrue(d, ofExact(d).get().isExactAndEqualToDouble());
         }
     }
 }

@@ -108,18 +108,6 @@ public class RealDemos extends QBarDemos {
         }
     }
 
-    private void demoIsExact() {
-        for (Real r : take(LIMIT, P.withScale(4).reals())) {
-            System.out.println(r + " is " + (r.isExact() ? "" : "not ") + "exact");
-        }
-    }
-
-    private void demoRationalValue() {
-        for (Real r : take(LIMIT, P.withScale(4).reals())) {
-            System.out.println("rationalValue(" + r +") = " + r.rationalValueExact());
-        }
-    }
-
     private void demoMatch() {
         CachedIterator<Real> reals = new CachedIterator<>(P.withScale(4).cleanReals());
         Iterable<Pair<Real, List<Real>>> ps = map(
@@ -144,7 +132,7 @@ public class RealDemos extends QBarDemos {
         NONE, LEFT, RIGHT, BOTH
     }
 
-    private static boolean rmCheck(@NotNull Algebraic x, @NotNull RoundingMode rm, @NotNull FuzzinessType ft) {
+    private static boolean rmIntCheck(@NotNull Algebraic x, @NotNull RoundingMode rm, @NotNull FuzzinessType ft) {
         boolean left = ft == FuzzinessType.LEFT || ft == FuzzinessType.BOTH;
         boolean right = ft == FuzzinessType.RIGHT || ft == FuzzinessType.BOTH;
         if (x.isInteger()) {
@@ -207,7 +195,7 @@ public class RealDemos extends QBarDemos {
                     return new Pair<>(r, q.b);
                 },
                 filterInfinite(
-                        p -> rmCheck(p.a.a, p.b, p.a.b),
+                        p -> rmIntCheck(p.a.a, p.b, p.a.b),
                         P.pairsLogarithmicOrder(
                                 P.withScale(1).choose(
                                         map(x -> new Pair<>(x, FuzzinessType.NONE), P.withScale(4).algebraics()),
@@ -266,7 +254,7 @@ public class RealDemos extends QBarDemos {
                     }
                 },
                 filterInfinite(
-                        p -> rmCheck(p.a, RoundingMode.HALF_EVEN, p.b),
+                        p -> rmIntCheck(p.a, RoundingMode.HALF_EVEN, p.b),
                         P.withScale(1).choose(
                                 map(x -> new Pair<>(x, FuzzinessType.NONE), P.withScale(4).algebraics()),
                                 P.choose(
@@ -318,7 +306,7 @@ public class RealDemos extends QBarDemos {
                     }
                 },
                 filterInfinite(
-                        p -> rmCheck(p.a, RoundingMode.FLOOR, p.b),
+                        p -> rmIntCheck(p.a, RoundingMode.FLOOR, p.b),
                         P.withScale(1).choose(
                                 map(x -> new Pair<>(x, FuzzinessType.NONE), P.withScale(4).algebraics()),
                                 P.choose(
@@ -370,7 +358,7 @@ public class RealDemos extends QBarDemos {
                     }
                 },
                 filterInfinite(
-                        p -> rmCheck(p.a, RoundingMode.CEILING, p.b),
+                        p -> rmIntCheck(p.a, RoundingMode.CEILING, p.b),
                         P.withScale(1).choose(
                                 map(x -> new Pair<>(x, FuzzinessType.NONE), P.withScale(4).algebraics()),
                                 P.choose(
@@ -431,6 +419,168 @@ public class RealDemos extends QBarDemos {
     private void demoLongValueExact() {
         for (Real x : take(LIMIT, map(Real::of, P.longs()))) {
             System.out.println("longValueExact(" + x + ") = " + x.longValueExact());
+        }
+    }
+
+    private void demoIsExactIntegerPowerOfTwo() {
+        for (Real x : take(LIMIT, P.withScale(4).positiveReals())) {
+            System.out.println(x + " is " + (x.isExactIntegerPowerOfTwo() ? "an" : "not an") +
+                    " exact integer power of 2");
+        }
+    }
+
+    //x must be positive
+    private static boolean pow2Check(@NotNull Algebraic x, @NotNull FuzzinessType ft) {
+        boolean right = ft == FuzzinessType.RIGHT || ft == FuzzinessType.BOTH;
+        return !x.isIntegerPowerOfTwo() || !right;
+    }
+
+    private void demoRoundUpToIntegerPowerOfTwoUnsafe() {
+        //noinspection RedundantCast
+        Iterable<Real> xs = map(
+                q -> {
+                    switch (q.b) {
+                        case NONE:
+                            return q.a.realValue();
+                        case LEFT:
+                            return leftFuzzyRepresentation(q.a.rationalValueExact());
+                        case RIGHT:
+                            return rightFuzzyRepresentation(q.a.rationalValueExact());
+                        case BOTH:
+                            return fuzzyRepresentation(q.a.rationalValueExact());
+                        default:
+                            throw new IllegalStateException("unreachable");
+                    }
+                },
+                filterInfinite(
+                        p -> pow2Check(p.a, p.b),
+                        P.withScale(1).choose(
+                                map(x -> new Pair<>(x, FuzzinessType.NONE), P.withScale(4).positiveAlgebraics()),
+                                P.choose(
+                                        (List<Iterable<Pair<Algebraic, FuzzinessType>>>) Arrays.asList(
+                                                map(
+                                                        r -> new Pair<>(Algebraic.of(r), FuzzinessType.LEFT),
+                                                        P.withScale(4).positiveRationals()
+                                                ),
+                                                map(
+                                                        r -> new Pair<>(Algebraic.of(r), FuzzinessType.RIGHT),
+                                                        P.withScale(4).positiveRationals()
+                                                ),
+                                                map(
+                                                        r -> new Pair<>(Algebraic.of(r), FuzzinessType.BOTH),
+                                                        P.withScale(4).positiveRationals()
+                                                )
+                                        )
+                                )
+                        )
+                )
+        );
+        for (Real x : take(LIMIT, xs)) {
+            System.out.println("roundUpToIntegerPowerOfTwoUnsafe(" + x + ") = " +
+                    x.roundUpToIntegerPowerOfTwoUnsafe());
+        }
+    }
+
+    private void demoRoundUpToIntegerPowerOfTwo() {
+        Iterable<Pair<Real, Rational>> ps = P.pairs(
+                P.withScale(4).positiveReals(),
+                P.withScale(4).positiveRationals()
+        );
+        for (Pair<Real, Rational> p : take(LIMIT, ps)) {
+            System.out.println("roundUpToIntegerPowerOfTwo(" + p.a + ", " + p.b + ") = " +
+                    p.a.roundUpToIntegerPowerOfTwo(p.b));
+        }
+    }
+
+    private void demoIsExactBinaryFraction() {
+        for (Real x : take(LIMIT, P.withScale(4).positiveReals())) {
+            System.out.println(x + " is " + (x.isExactBinaryFraction() ? "an" : "not an") + " exact binary fraction");
+        }
+    }
+
+    private void demoIsExact() {
+        for (Real r : take(LIMIT, P.withScale(4).reals())) {
+            System.out.println(r + " is " + (r.isExact() ? "" : "not ") + "exact");
+        }
+    }
+
+    private void demoRationalValueExact() {
+        for (Real r : take(LIMIT, P.withScale(4).reals())) {
+            System.out.println("rationalValueExact(" + r +") = " + r.rationalValueExact());
+        }
+    }
+
+    //x must be positive
+    private static boolean binaryExponentCheck(@NotNull Algebraic x, @NotNull FuzzinessType ft) {
+        boolean left = ft == FuzzinessType.LEFT || ft == FuzzinessType.BOTH;
+        return !x.isIntegerPowerOfTwo() || !left;
+    }
+
+    private void demoBinaryExponentUnsafe() {
+        //noinspection RedundantCast
+        Iterable<Real> xs = map(
+                q -> {
+                    switch (q.b) {
+                        case NONE:
+                            return q.a.realValue();
+                        case LEFT:
+                            return leftFuzzyRepresentation(q.a.rationalValueExact());
+                        case RIGHT:
+                            return rightFuzzyRepresentation(q.a.rationalValueExact());
+                        case BOTH:
+                            return fuzzyRepresentation(q.a.rationalValueExact());
+                        default:
+                            throw new IllegalStateException("unreachable");
+                    }
+                },
+                filterInfinite(
+                        p -> binaryExponentCheck(p.a, p.b),
+                        P.withScale(1).choose(
+                                map(x -> new Pair<>(x, FuzzinessType.NONE), P.withScale(4).positiveAlgebraics()),
+                                P.choose(
+                                        (List<Iterable<Pair<Algebraic, FuzzinessType>>>) Arrays.asList(
+                                                map(
+                                                        r -> new Pair<>(Algebraic.of(r), FuzzinessType.LEFT),
+                                                        P.withScale(4).positiveRationals()
+                                                ),
+                                                map(
+                                                        r -> new Pair<>(Algebraic.of(r), FuzzinessType.RIGHT),
+                                                        P.withScale(4).positiveRationals()
+                                                ),
+                                                map(
+                                                        r -> new Pair<>(Algebraic.of(r), FuzzinessType.BOTH),
+                                                        P.withScale(4).positiveRationals()
+                                                )
+                                        )
+                                )
+                        )
+                )
+        );
+        for (Real x : take(LIMIT, xs)) {
+            System.out.println("binaryExponentUnsafe(" + x + ") = " + x.binaryExponentUnsafe());
+        }
+    }
+
+    private void demoBinaryExponent() {
+        Iterable<Pair<Real, Rational>> ps = P.pairs(
+                P.withScale(4).positiveReals(),
+                P.withScale(4).positiveRationals()
+        );
+        for (Pair<Real, Rational> p : take(LIMIT, ps)) {
+            System.out.println("binaryExponent(" + p.a + ", " + p.b + ") = " + p.a.binaryExponent(p.b));
+        }
+    }
+
+    private void demoIsExactAndEqualToFloat() {
+        for (Real x : take(LIMIT, P.withScale(4).reals())) {
+            System.out.println(x + " is " + (x.isExactAndEqualToFloat() ? "" : "not ") + "exact and equal to a float");
+        }
+    }
+
+    private void demoIsExactAndEqualToDouble() {
+        for (Real x : take(LIMIT, P.withScale(4).reals())) {
+            System.out.println(x + " is " + (x.isExactAndEqualToDouble() ? "" : "not ") +
+                    "exact and equal to a double");
         }
     }
 }
