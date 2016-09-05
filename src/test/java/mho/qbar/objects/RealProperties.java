@@ -89,7 +89,7 @@ public class RealProperties extends QBarTestProperties {
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
             Real x = of(i);
             x.validate();
-            assertTrue(i, x.rationalValueExact().get().isInteger());
+            assertTrue(i, x.isExactInteger());
         }
     }
 
@@ -100,7 +100,7 @@ public class RealProperties extends QBarTestProperties {
         for (long l : take(LIMIT, P.longs())) {
             Real x = of(l);
             x.validate();
-            assertTrue(l, x.rationalValueExact().get().isInteger());
+            assertTrue(l, x.isExactInteger());
             assertTrue(l, geUnsafe(x, lowerLimit));
             assertTrue(l, leUnsafe(x, upperLimit));
         }
@@ -113,7 +113,7 @@ public class RealProperties extends QBarTestProperties {
         for (int i : take(LIMIT, P.integers())) {
             Real x = of(i);
             x.validate();
-            assertTrue(i, x.rationalValueExact().get().isInteger());
+            assertTrue(i, x.isExactInteger());
             assertTrue(i, geUnsafe(x, lowerLimit));
             assertTrue(i, leUnsafe(x, upperLimit));
         }
@@ -129,7 +129,7 @@ public class RealProperties extends QBarTestProperties {
                     of(bf.getMantissa()).multiply(Rational.ONE.shiftLeft(bf.getExponent())).rationalValueExact().get(),
                     x.rationalValueExact().get()
             );
-            assertTrue(bf, x.rationalValueExact().get().isBinaryFraction());
+            assertTrue(bf, x.isExactBinaryFraction());
             inverse(Algebraic::of, Algebraic::binaryFractionValueExact, bf);
         }
     }
@@ -144,7 +144,7 @@ public class RealProperties extends QBarTestProperties {
 
         for (float f : take(LIMIT, filter(g -> Float.isFinite(g) && !isNegativeZero(g), P.floats()))) {
             Real x = of(f).get();
-            aeqf(f, f, x.floatValue());
+            aeqf(f, f, x.floatValueUnsafe());
             assertTrue(f, eq(new BigDecimal(Float.toString(f)), x.rationalValueExact().get().bigDecimalValueExact()));
         }
     }
@@ -159,7 +159,7 @@ public class RealProperties extends QBarTestProperties {
 
         for (double d : take(LIMIT, filter(e -> Double.isFinite(e) && !isNegativeZero(e), P.doubles()))) {
             Real x = of(d).get();
-            aeqd(d, d, x.doubleValue());
+            aeqd(d, d, x.doubleValueUnsafe());
             assertTrue(d, eq(new BigDecimal(Double.toString(d)), x.rationalValueExact().get().bigDecimalValueExact()));
         }
     }
@@ -172,7 +172,8 @@ public class RealProperties extends QBarTestProperties {
         }
 
         for (float f : take(LIMIT, filter(g -> Float.isFinite(g) && !isNegativeZero(g), P.floats()))) {
-            inverse(g -> ofExact(g).get(), (Real x) -> x.rationalValueExact().get().floatValueExact(), f);
+            //noinspection Convert2MethodRef
+            inverse(g -> ofExact(g).get(), (Real x) -> x.floatValueExact(), f);
         }
 
         int x = 1 << (FLOAT_EXPONENT_WIDTH - 1);
@@ -189,7 +190,7 @@ public class RealProperties extends QBarTestProperties {
 
         for (float f : take(LIMIT, filter(g -> Float.isFinite(g) && !isNegativeZero(g), P.floats()))) {
             Real a = ofExact(f).get();
-            aeqf(f, f, a.floatValue());
+            aeqf(f, f, a.floatValueExact());
         }
     }
 
@@ -201,7 +202,7 @@ public class RealProperties extends QBarTestProperties {
         }
 
         for (double d : take(LIMIT, filter(e -> Double.isFinite(e) && !isNegativeZero(e), P.doubles()))) {
-            inverse(e -> ofExact(e).get(), (Real x) -> x.rationalValueExact().get().doubleValueExact(), d);
+            inverse(e -> ofExact(e).get(), Real::doubleValueExact, d);
         }
 
         int x = 1 << (DOUBLE_EXPONENT_WIDTH - 1);
@@ -218,7 +219,7 @@ public class RealProperties extends QBarTestProperties {
 
         for (double d : take(LIMIT, filter(e -> Double.isFinite(e) && !isNegativeZero(e), P.doubles()))) {
             Real a = ofExact(d).get();
-            aeqd(d, d, a.doubleValue());
+            aeqd(d, d, a.doubleValueExact());
         }
     }
 
@@ -1169,7 +1170,6 @@ public class RealProperties extends QBarTestProperties {
         }
     }
 
-    //todo alt
     private void propertiesIsExactAndEqualToFloat() {
         initialize("isExactAndEqualToFloat()");
         for (Real x : take(LIMIT, P.reals())) {
@@ -1189,7 +1189,6 @@ public class RealProperties extends QBarTestProperties {
         }
     }
 
-    //todo alt
     private void propertiesIsExactAndEqualToDouble() {
         initialize("isExactAndEqualToDouble()");
         for (Real x : take(LIMIT, P.reals())) {

@@ -2,6 +2,7 @@ package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
 import mho.wheels.math.BinaryFraction;
+import mho.wheels.numberUtils.FloatingPointUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -1765,5 +1766,1200 @@ public class RealTest {
         isExactAndEqualToDouble_helper(fuzzyRepresentation(Rational.ZERO), false);
         isExactAndEqualToDouble_helper(leftFuzzyRepresentation(Rational.ZERO), false);
         isExactAndEqualToDouble_helper(rightFuzzyRepresentation(Rational.ZERO), false);
+    }
+
+    private static void floatValueUnsafe_RoundingMode_helper(@NotNull Real x, @NotNull String rm, float output) {
+        aeq(x.floatValueUnsafe(Readers.readRoundingModeStrict(rm).get()), output);
+    }
+
+    private static void floatValueUnsafe_RoundingMode_fail_helper(@NotNull Real x, @NotNull String rm) {
+        try {
+            x.floatValueUnsafe(Readers.readRoundingModeStrict(rm).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testFloatValueUnsafe_RoundingMode() {
+        Rational positiveBetween =
+                Rational.ONE.add(Rational.ofExact(FloatingPointUtils.successor(1.0f)).get()).shiftRight(1);
+        Rational negativeBetween = positiveBetween.negate();
+
+        floatValueUnsafe_RoundingMode_helper(ZERO, "UP", 0.0f);
+        floatValueUnsafe_RoundingMode_helper(ONE, "UP", 1.0f);
+        floatValueUnsafe_RoundingMode_helper(NEGATIVE_ONE, "UP", -1.0f);
+        floatValueUnsafe_RoundingMode_helper(ONE_HALF, "UP", 0.5f);
+        floatValueUnsafe_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, "UP", -1.3333334f);
+        floatValueUnsafe_RoundingMode_helper(SQRT_TWO, "UP", 1.4142137f);
+        floatValueUnsafe_RoundingMode_helper(E, "UP", 2.718282f);
+        floatValueUnsafe_RoundingMode_helper(PI, "UP", 3.1415927f);
+        floatValueUnsafe_RoundingMode_helper(leftFuzzyRepresentation(Rational.ONE), "UP", 1.0f);
+        floatValueUnsafe_RoundingMode_helper(rightFuzzyRepresentation(Rational.NEGATIVE_ONE), "UP", -1.0f);
+        floatValueUnsafe_RoundingMode_helper(fuzzyRepresentation(positiveBetween), "UP", 1.0000001f);
+        floatValueUnsafe_RoundingMode_helper(fuzzyRepresentation(negativeBetween), "UP", -1.0000001f);
+
+        floatValueUnsafe_RoundingMode_helper(ZERO, "DOWN", 0.0f);
+        floatValueUnsafe_RoundingMode_helper(ONE, "DOWN", 1.0f);
+        floatValueUnsafe_RoundingMode_helper(NEGATIVE_ONE, "DOWN", -1.0f);
+        floatValueUnsafe_RoundingMode_helper(ONE_HALF, "DOWN", 0.5f);
+        floatValueUnsafe_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, "DOWN", -1.3333333f);
+        floatValueUnsafe_RoundingMode_helper(SQRT_TWO, "DOWN", 1.4142135f);
+        floatValueUnsafe_RoundingMode_helper(E, "DOWN", 2.7182817f);
+        floatValueUnsafe_RoundingMode_helper(PI, "DOWN", 3.1415925f);
+        floatValueUnsafe_RoundingMode_helper(rightFuzzyRepresentation(Rational.ONE), "DOWN", 1.0f);
+        floatValueUnsafe_RoundingMode_helper(leftFuzzyRepresentation(Rational.NEGATIVE_ONE), "DOWN", -1.0f);
+        floatValueUnsafe_RoundingMode_helper(fuzzyRepresentation(positiveBetween), "DOWN", 1.0f);
+        floatValueUnsafe_RoundingMode_helper(fuzzyRepresentation(negativeBetween), "DOWN", -1.0f);
+
+        floatValueUnsafe_RoundingMode_helper(ZERO, "CEILING", 0.0f);
+        floatValueUnsafe_RoundingMode_helper(ONE, "CEILING", 1.0f);
+        floatValueUnsafe_RoundingMode_helper(NEGATIVE_ONE, "CEILING", -1.0f);
+        floatValueUnsafe_RoundingMode_helper(ONE_HALF, "CEILING", 0.5f);
+        floatValueUnsafe_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, "CEILING", -1.3333333f);
+        floatValueUnsafe_RoundingMode_helper(SQRT_TWO, "CEILING", 1.4142137f);
+        floatValueUnsafe_RoundingMode_helper(E, "CEILING", 2.718282f);
+        floatValueUnsafe_RoundingMode_helper(PI, "CEILING", 3.1415927f);
+        floatValueUnsafe_RoundingMode_helper(leftFuzzyRepresentation(Rational.ONE), "CEILING", 1.0f);
+        floatValueUnsafe_RoundingMode_helper(leftFuzzyRepresentation(Rational.NEGATIVE_ONE), "CEILING", -1.0f);
+        floatValueUnsafe_RoundingMode_helper(fuzzyRepresentation(positiveBetween), "CEILING", 1.0000001f);
+        floatValueUnsafe_RoundingMode_helper(fuzzyRepresentation(negativeBetween), "CEILING", -1.0f);
+
+        floatValueUnsafe_RoundingMode_helper(ZERO, "FLOOR", 0.0f);
+        floatValueUnsafe_RoundingMode_helper(ONE, "FLOOR", 1.0f);
+        floatValueUnsafe_RoundingMode_helper(NEGATIVE_ONE, "FLOOR", -1.0f);
+        floatValueUnsafe_RoundingMode_helper(ONE_HALF, "FLOOR", 0.5f);
+        floatValueUnsafe_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, "FLOOR", -1.3333334f);
+        floatValueUnsafe_RoundingMode_helper(SQRT_TWO, "FLOOR", 1.4142135f);
+        floatValueUnsafe_RoundingMode_helper(E, "FLOOR", 2.7182817f);
+        floatValueUnsafe_RoundingMode_helper(PI, "FLOOR", 3.1415925f);
+        floatValueUnsafe_RoundingMode_helper(rightFuzzyRepresentation(Rational.ZERO), "FLOOR", 0.0f);
+        floatValueUnsafe_RoundingMode_helper(rightFuzzyRepresentation(Rational.ONE), "FLOOR", 1.0f);
+        floatValueUnsafe_RoundingMode_helper(rightFuzzyRepresentation(Rational.NEGATIVE_ONE), "FLOOR", -1.0f);
+        floatValueUnsafe_RoundingMode_helper(fuzzyRepresentation(positiveBetween), "FLOOR", 1.0f);
+        floatValueUnsafe_RoundingMode_helper(fuzzyRepresentation(negativeBetween), "FLOOR", -1.0000001f);
+
+        floatValueUnsafe_RoundingMode_helper(ZERO, "HALF_UP", 0.0f);
+        floatValueUnsafe_RoundingMode_helper(ONE, "HALF_UP", 1.0f);
+        floatValueUnsafe_RoundingMode_helper(NEGATIVE_ONE, "HALF_UP", -1.0f);
+        floatValueUnsafe_RoundingMode_helper(ONE_HALF, "HALF_UP", 0.5f);
+        floatValueUnsafe_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, "HALF_UP", -1.3333334f);
+        floatValueUnsafe_RoundingMode_helper(SQRT_TWO, "HALF_UP", 1.4142135f);
+        floatValueUnsafe_RoundingMode_helper(E, "HALF_UP", 2.7182817f);
+        floatValueUnsafe_RoundingMode_helper(PI, "HALF_UP", 3.1415927f);
+        floatValueUnsafe_RoundingMode_helper(rightFuzzyRepresentation(Rational.ZERO), "HALF_UP", 0.0f);
+        floatValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.ONE), "HALF_UP", 1.0f);
+        floatValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), "HALF_UP", -1.0f);
+        floatValueUnsafe_RoundingMode_helper(rightFuzzyRepresentation(positiveBetween), "HALF_UP", 1.0000001f);
+        floatValueUnsafe_RoundingMode_helper(leftFuzzyRepresentation(negativeBetween), "HALF_UP", -1.0000001f);
+
+        floatValueUnsafe_RoundingMode_helper(ZERO, "HALF_DOWN", 0.0f);
+        floatValueUnsafe_RoundingMode_helper(ONE, "HALF_DOWN", 1.0f);
+        floatValueUnsafe_RoundingMode_helper(NEGATIVE_ONE, "HALF_DOWN", -1.0f);
+        floatValueUnsafe_RoundingMode_helper(ONE_HALF, "HALF_DOWN", 0.5f);
+        floatValueUnsafe_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, "HALF_DOWN", -1.3333334f);
+        floatValueUnsafe_RoundingMode_helper(SQRT_TWO, "HALF_DOWN", 1.4142135f);
+        floatValueUnsafe_RoundingMode_helper(E, "HALF_DOWN", 2.7182817f);
+        floatValueUnsafe_RoundingMode_helper(PI, "HALF_DOWN", 3.1415927f);
+        floatValueUnsafe_RoundingMode_helper(rightFuzzyRepresentation(Rational.ZERO), "HALF_DOWN", 0.0f);
+        floatValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.ONE), "HALF_DOWN", 1.0f);
+        floatValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), "HALF_DOWN", -1.0f);
+        floatValueUnsafe_RoundingMode_helper(leftFuzzyRepresentation(positiveBetween), "HALF_DOWN", 1.0f);
+        floatValueUnsafe_RoundingMode_helper(rightFuzzyRepresentation(negativeBetween), "HALF_DOWN", -1.0f);
+
+        floatValueUnsafe_RoundingMode_helper(ZERO, "HALF_EVEN", 0.0f);
+        floatValueUnsafe_RoundingMode_helper(ONE, "HALF_EVEN", 1.0f);
+        floatValueUnsafe_RoundingMode_helper(NEGATIVE_ONE, "HALF_EVEN", -1.0f);
+        floatValueUnsafe_RoundingMode_helper(ONE_HALF, "HALF_EVEN", 0.5f);
+        floatValueUnsafe_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, "HALF_EVEN", -1.3333334f);
+        floatValueUnsafe_RoundingMode_helper(SQRT_TWO, "HALF_EVEN", 1.4142135f);
+        floatValueUnsafe_RoundingMode_helper(E, "HALF_EVEN", 2.7182817f);
+        floatValueUnsafe_RoundingMode_helper(PI, "HALF_EVEN", 3.1415927f);
+        floatValueUnsafe_RoundingMode_helper(rightFuzzyRepresentation(Rational.ZERO), "HALF_EVEN", 0.0f);
+        floatValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.ONE), "HALF_EVEN", 1.0f);
+        floatValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), "HALF_EVEN", -1.0f);
+        floatValueUnsafe_RoundingMode_helper(leftFuzzyRepresentation(positiveBetween), "HALF_EVEN", 1.0f);
+        floatValueUnsafe_RoundingMode_helper(rightFuzzyRepresentation(negativeBetween), "HALF_EVEN", -1.0f);
+
+        floatValueUnsafe_RoundingMode_helper(ZERO, "UNNECESSARY", 0.0f);
+        floatValueUnsafe_RoundingMode_helper(ONE, "UNNECESSARY", 1.0f);
+        floatValueUnsafe_RoundingMode_helper(NEGATIVE_ONE, "UNNECESSARY", -1.0f);
+        floatValueUnsafe_RoundingMode_helper(ONE_HALF, "UNNECESSARY", 0.5f);
+
+        floatValueUnsafe_RoundingMode_fail_helper(NEGATIVE_FOUR_THIRDS, "UNNECESSARY");
+        floatValueUnsafe_RoundingMode_fail_helper(SQRT_TWO, "UNNECESSARY");
+        floatValueUnsafe_RoundingMode_fail_helper(E, "UNNECESSARY");
+        floatValueUnsafe_RoundingMode_fail_helper(PI, "UNNECESSARY");
+        floatValueUnsafe_RoundingMode_fail_helper(fuzzyRepresentation(Rational.ZERO), "UNNECESSARY");
+        floatValueUnsafe_RoundingMode_fail_helper(fuzzyRepresentation(Rational.ONE), "UNNECESSARY");
+        floatValueUnsafe_RoundingMode_fail_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), "UNNECESSARY");
+        floatValueUnsafe_RoundingMode_fail_helper(fuzzyRepresentation(positiveBetween), "UNNECESSARY");
+        floatValueUnsafe_RoundingMode_fail_helper(fuzzyRepresentation(negativeBetween), "UNNECESSARY");
+    }
+
+    private static void floatValue_RoundingMode_Rational_helper(
+            @NotNull Real x,
+            @NotNull String rm,
+            @NotNull Rational r,
+            @NotNull String output
+    ) {
+        aeq(x.floatValue(Readers.readRoundingModeStrict(rm).get(), r), output);
+    }
+
+    private static void floatValue_RoundingMode_Rational_fail_helper(
+            @NotNull Real x,
+            @NotNull String rm,
+            @NotNull Rational r
+    ) {
+        try {
+            x.floatValue(Readers.readRoundingModeStrict(rm).get(), r);
+            fail();
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testFloatValue_RoundingMode_Rational() {
+        Rational positiveBetween =
+                Rational.ONE.add(Rational.ofExact(FloatingPointUtils.successor(1.0f)).get()).shiftRight(1);
+        Rational negativeBetween = positiveBetween.negate();
+
+        floatValue_RoundingMode_Rational_helper(ZERO, "UP", DEFAULT_RESOLUTION, "Optional[0.0]");
+        floatValue_RoundingMode_Rational_helper(ONE, "UP", DEFAULT_RESOLUTION, "Optional[1.0]");
+        floatValue_RoundingMode_Rational_helper(NEGATIVE_ONE, "UP", DEFAULT_RESOLUTION, "Optional[-1.0]");
+        floatValue_RoundingMode_Rational_helper(ONE_HALF, "UP", DEFAULT_RESOLUTION, "Optional[0.5]");
+        floatValue_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                "UP",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.3333334]"
+        );
+        floatValue_RoundingMode_Rational_helper(SQRT_TWO, "UP", DEFAULT_RESOLUTION, "Optional[1.4142137]");
+        floatValue_RoundingMode_Rational_helper(E, "UP", DEFAULT_RESOLUTION, "Optional[2.718282]");
+        floatValue_RoundingMode_Rational_helper(PI, "UP", DEFAULT_RESOLUTION, "Optional[3.1415927]");
+        floatValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                "UP",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        floatValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ONE),
+                "UP",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        floatValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                "UP",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        floatValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(positiveBetween),
+                "UP",
+                DEFAULT_RESOLUTION,
+                "Optional[1.0000001]"
+        );
+        floatValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(negativeBetween),
+                "UP",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.0000001]"
+        );
+
+        floatValue_RoundingMode_Rational_helper(ZERO, "DOWN", DEFAULT_RESOLUTION, "Optional[0.0]");
+        floatValue_RoundingMode_Rational_helper(ONE, "DOWN", DEFAULT_RESOLUTION, "Optional[1.0]");
+        floatValue_RoundingMode_Rational_helper(NEGATIVE_ONE, "DOWN", DEFAULT_RESOLUTION, "Optional[-1.0]");
+        floatValue_RoundingMode_Rational_helper(ONE_HALF, "DOWN", DEFAULT_RESOLUTION, "Optional[0.5]");
+        floatValue_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                "DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.3333333]"
+        );
+        floatValue_RoundingMode_Rational_helper(SQRT_TWO, "DOWN", DEFAULT_RESOLUTION, "Optional[1.4142135]");
+        floatValue_RoundingMode_Rational_helper(E, "DOWN", DEFAULT_RESOLUTION, "Optional[2.7182817]");
+        floatValue_RoundingMode_Rational_helper(PI, "DOWN", DEFAULT_RESOLUTION, "Optional[3.1415925]");
+        floatValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                "DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        floatValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ONE),
+                "DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        floatValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                "DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        floatValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(positiveBetween),
+                "DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[1.0]"
+        );
+        floatValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(negativeBetween),
+                "DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.0]"
+        );
+
+        floatValue_RoundingMode_Rational_helper(ZERO, "CEILING", DEFAULT_RESOLUTION, "Optional[0.0]");
+        floatValue_RoundingMode_Rational_helper(ONE, "CEILING", DEFAULT_RESOLUTION, "Optional[1.0]");
+        floatValue_RoundingMode_Rational_helper(NEGATIVE_ONE, "CEILING", DEFAULT_RESOLUTION, "Optional[-1.0]");
+        floatValue_RoundingMode_Rational_helper(ONE_HALF, "CEILING", DEFAULT_RESOLUTION, "Optional[0.5]");
+        floatValue_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.3333333]"
+        );
+        floatValue_RoundingMode_Rational_helper(SQRT_TWO, "CEILING", DEFAULT_RESOLUTION, "Optional[1.4142137]");
+        floatValue_RoundingMode_Rational_helper(E, "CEILING", DEFAULT_RESOLUTION, "Optional[2.718282]");
+        floatValue_RoundingMode_Rational_helper(PI, "CEILING", DEFAULT_RESOLUTION, "Optional[3.1415927]");
+        floatValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        floatValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ONE),
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        floatValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        floatValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(positiveBetween),
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional[1.0000001]"
+        );
+        floatValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(negativeBetween),
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.0]"
+        );
+
+        floatValue_RoundingMode_Rational_helper(ZERO, "FLOOR", DEFAULT_RESOLUTION, "Optional[0.0]");
+        floatValue_RoundingMode_Rational_helper(ONE, "FLOOR", DEFAULT_RESOLUTION, "Optional[1.0]");
+        floatValue_RoundingMode_Rational_helper(NEGATIVE_ONE, "FLOOR", DEFAULT_RESOLUTION, "Optional[-1.0]");
+        floatValue_RoundingMode_Rational_helper(ONE_HALF, "FLOOR", DEFAULT_RESOLUTION, "Optional[0.5]");
+        floatValue_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                "FLOOR",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.3333334]"
+        );
+        floatValue_RoundingMode_Rational_helper(SQRT_TWO, "FLOOR", DEFAULT_RESOLUTION, "Optional[1.4142135]");
+        floatValue_RoundingMode_Rational_helper(E, "FLOOR", DEFAULT_RESOLUTION, "Optional[2.7182817]");
+        floatValue_RoundingMode_Rational_helper(PI, "FLOOR", DEFAULT_RESOLUTION, "Optional[3.1415925]");
+        floatValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                "FLOOR", DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        floatValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ONE),
+                "FLOOR", DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        floatValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                "FLOOR", DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        floatValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(positiveBetween),
+                "FLOOR", DEFAULT_RESOLUTION,
+                "Optional[1.0]"
+        );
+        floatValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(negativeBetween),
+                "FLOOR", DEFAULT_RESOLUTION,
+                "Optional[-1.0000001]"
+        );
+
+        floatValue_RoundingMode_Rational_helper(ZERO, "HALF_UP", DEFAULT_RESOLUTION, "Optional[0.0]");
+        floatValue_RoundingMode_Rational_helper(ONE, "HALF_UP", DEFAULT_RESOLUTION, "Optional[1.0]");
+        floatValue_RoundingMode_Rational_helper(NEGATIVE_ONE, "HALF_UP", DEFAULT_RESOLUTION, "Optional[-1.0]");
+        floatValue_RoundingMode_Rational_helper(ONE_HALF, "HALF_UP", DEFAULT_RESOLUTION, "Optional[0.5]");
+        floatValue_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.3333334]"
+        );
+        floatValue_RoundingMode_Rational_helper(SQRT_TWO, "HALF_UP", DEFAULT_RESOLUTION, "Optional[1.4142135]");
+        floatValue_RoundingMode_Rational_helper(E, "HALF_UP", DEFAULT_RESOLUTION, "Optional[2.7182817]");
+        floatValue_RoundingMode_Rational_helper(PI, "HALF_UP", DEFAULT_RESOLUTION, "Optional[3.1415927]");
+        floatValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        floatValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ONE),
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional[1.0]"
+        );
+        floatValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.0]"
+        );
+        floatValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(positiveBetween),
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        floatValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(negativeBetween),
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        floatValue_RoundingMode_Rational_helper(ZERO, "HALF_DOWN", DEFAULT_RESOLUTION, "Optional[0.0]");
+        floatValue_RoundingMode_Rational_helper(ONE, "HALF_DOWN", DEFAULT_RESOLUTION, "Optional[1.0]");
+        floatValue_RoundingMode_Rational_helper(NEGATIVE_ONE, "HALF_DOWN", DEFAULT_RESOLUTION, "Optional[-1.0]");
+        floatValue_RoundingMode_Rational_helper(ONE_HALF, "HALF_DOWN", DEFAULT_RESOLUTION, "Optional[0.5]");
+        floatValue_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.3333334]"
+        );
+        floatValue_RoundingMode_Rational_helper(SQRT_TWO, "HALF_DOWN", DEFAULT_RESOLUTION, "Optional[1.4142135]");
+        floatValue_RoundingMode_Rational_helper(E, "HALF_DOWN", DEFAULT_RESOLUTION, "Optional[2.7182817]");
+        floatValue_RoundingMode_Rational_helper(PI, "HALF_DOWN", DEFAULT_RESOLUTION, "Optional[3.1415927]");
+        floatValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        floatValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ONE),
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[1.0]"
+        );
+        floatValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.0]"
+        );
+        floatValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(positiveBetween),
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        floatValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(negativeBetween),
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        floatValue_RoundingMode_Rational_helper(ZERO, "HALF_EVEN", DEFAULT_RESOLUTION, "Optional[0.0]");
+        floatValue_RoundingMode_Rational_helper(ONE, "HALF_EVEN", DEFAULT_RESOLUTION, "Optional[1.0]");
+        floatValue_RoundingMode_Rational_helper(NEGATIVE_ONE, "HALF_EVEN", DEFAULT_RESOLUTION, "Optional[-1.0]");
+        floatValue_RoundingMode_Rational_helper(ONE_HALF, "HALF_EVEN", DEFAULT_RESOLUTION, "Optional[0.5]");
+        floatValue_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.3333334]"
+        );
+        floatValue_RoundingMode_Rational_helper(SQRT_TWO, "HALF_EVEN", DEFAULT_RESOLUTION, "Optional[1.4142135]");
+        floatValue_RoundingMode_Rational_helper(E, "HALF_EVEN", DEFAULT_RESOLUTION, "Optional[2.7182817]");
+        floatValue_RoundingMode_Rational_helper(PI, "HALF_EVEN", DEFAULT_RESOLUTION, "Optional[3.1415927]");
+        floatValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        floatValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ONE),
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional[1.0]"
+        );
+        floatValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.0]"
+        );
+        floatValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(positiveBetween),
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        floatValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(negativeBetween),
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        floatValue_RoundingMode_Rational_helper(ZERO, "UNNECESSARY", DEFAULT_RESOLUTION, "Optional[0.0]");
+        floatValue_RoundingMode_Rational_helper(ONE, "UNNECESSARY", DEFAULT_RESOLUTION, "Optional[1.0]");
+        floatValue_RoundingMode_Rational_helper(NEGATIVE_ONE, "UNNECESSARY", DEFAULT_RESOLUTION, "Optional[-1.0]");
+        floatValue_RoundingMode_Rational_helper(ONE_HALF, "UNNECESSARY", DEFAULT_RESOLUTION, "Optional[0.5]");
+
+        floatValue_RoundingMode_Rational_helper(PI, "FLOOR", Rational.ONE, "Optional.empty");
+
+        floatValue_RoundingMode_Rational_fail_helper(ZERO, "HALF_EVEN", Rational.ZERO);
+        floatValue_RoundingMode_Rational_fail_helper(ZERO, "HALF_EVEN", Rational.NEGATIVE_ONE);
+
+        floatValue_RoundingMode_Rational_fail_helper(NEGATIVE_FOUR_THIRDS, "UNNECESSARY", DEFAULT_RESOLUTION);
+        floatValue_RoundingMode_Rational_fail_helper(SQRT_TWO, "UNNECESSARY", DEFAULT_RESOLUTION);
+        floatValue_RoundingMode_Rational_fail_helper(E, "UNNECESSARY", DEFAULT_RESOLUTION);
+        floatValue_RoundingMode_Rational_fail_helper(PI, "UNNECESSARY", DEFAULT_RESOLUTION);
+        floatValue_RoundingMode_Rational_fail_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                "UNNECESSARY",
+                DEFAULT_RESOLUTION
+        );
+        floatValue_RoundingMode_Rational_fail_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "UNNECESSARY",
+                DEFAULT_RESOLUTION
+        );
+        floatValue_RoundingMode_Rational_fail_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                "UNNECESSARY",
+                DEFAULT_RESOLUTION
+        );
+    }
+
+    private static void floatValueUnsafe_helper(@NotNull Real x, float output) {
+        aeq(x.floatValueUnsafe(), output);
+    }
+
+    @Test
+    public void testFloatValueUnsafe() {
+        Rational positiveBetween =
+                Rational.ONE.add(Rational.ofExact(FloatingPointUtils.successor(1.0f)).get()).shiftRight(1);
+        Rational negativeBetween = positiveBetween.negate();
+
+        floatValueUnsafe_helper(ZERO, 0.0f);
+        floatValueUnsafe_helper(ONE, 1.0f);
+        floatValueUnsafe_helper(NEGATIVE_ONE, -1.0f);
+        floatValueUnsafe_helper(ONE_HALF, 0.5f);
+        floatValueUnsafe_helper(NEGATIVE_FOUR_THIRDS, -1.3333334f);
+        floatValueUnsafe_helper(SQRT_TWO, 1.4142135f);
+        floatValueUnsafe_helper(E, 2.7182817f);
+        floatValueUnsafe_helper(PI, 3.1415927f);
+        floatValueUnsafe_helper(rightFuzzyRepresentation(Rational.ZERO), 0.0f);
+        floatValueUnsafe_helper(fuzzyRepresentation(Rational.ONE), 1.0f);
+        floatValueUnsafe_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), -1.0f);
+        floatValueUnsafe_helper(leftFuzzyRepresentation(positiveBetween), 1.0f);
+        floatValueUnsafe_helper(rightFuzzyRepresentation(negativeBetween), -1.0f);
+    }
+
+    private static void floatValue_Rational_helper(@NotNull Real x, @NotNull Rational r, @NotNull String output) {
+        aeq(x.floatValue(r), output);
+    }
+
+    private static void floatValue_Rational_fail_helper(@NotNull Real x, @NotNull Rational r) {
+        try {
+            x.floatValue(r);
+            fail();
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testFloatValue_Rational() {
+        Rational positiveBetween =
+                Rational.ONE.add(Rational.ofExact(FloatingPointUtils.successor(1.0f)).get()).shiftRight(1);
+        Rational negativeBetween = positiveBetween.negate();
+
+        floatValue_Rational_helper(ZERO, DEFAULT_RESOLUTION, "Optional[0.0]");
+        floatValue_Rational_helper(ONE, DEFAULT_RESOLUTION, "Optional[1.0]");
+        floatValue_Rational_helper(NEGATIVE_ONE, DEFAULT_RESOLUTION, "Optional[-1.0]");
+        floatValue_Rational_helper(ONE_HALF, DEFAULT_RESOLUTION, "Optional[0.5]");
+        floatValue_Rational_helper(NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[-1.3333334]");
+        floatValue_Rational_helper(SQRT_TWO, DEFAULT_RESOLUTION, "Optional[1.4142135]");
+        floatValue_Rational_helper(E, DEFAULT_RESOLUTION, "Optional[2.7182817]");
+        floatValue_Rational_helper(PI, DEFAULT_RESOLUTION, "Optional[3.1415927]");
+        floatValue_Rational_helper(fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        floatValue_Rational_helper(fuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional[1.0]");
+        floatValue_Rational_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), DEFAULT_RESOLUTION, "Optional[-1.0]");
+        floatValue_Rational_helper(fuzzyRepresentation(positiveBetween), DEFAULT_RESOLUTION, "Optional.empty");
+        floatValue_Rational_helper(fuzzyRepresentation(negativeBetween), DEFAULT_RESOLUTION, "Optional.empty");
+
+        floatValue_Rational_helper(PI, Rational.ONE, "Optional.empty");
+
+        floatValue_Rational_fail_helper(ZERO, Rational.ZERO);
+        floatValue_Rational_fail_helper(ZERO, Rational.NEGATIVE_ONE);
+    }
+
+    private static void floatValueExact_helper(@NotNull Real x, float output) {
+        aeq(x.floatValueExact(), output);
+    }
+
+    private static void floatValueExact_fail_helper(@NotNull Real x) {
+        try {
+            x.floatValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testFloatValueExact() {
+        Rational positiveBetween =
+                Rational.ONE.add(Rational.ofExact(FloatingPointUtils.successor(1.0f)).get()).shiftRight(1);
+        Rational negativeBetween = positiveBetween.negate();
+
+        floatValueExact_helper(ZERO, 0.0f);
+        floatValueExact_helper(ONE, 1.0f);
+        floatValueExact_helper(NEGATIVE_ONE, -1.0f);
+        floatValueExact_helper(ONE_HALF, 0.5f);
+
+        floatValueExact_fail_helper(NEGATIVE_FOUR_THIRDS);
+        floatValueExact_fail_helper(SQRT_TWO);
+        floatValueExact_fail_helper(E);
+        floatValueExact_fail_helper(PI);
+        floatValueExact_fail_helper(fuzzyRepresentation(Rational.ZERO));
+        floatValueExact_fail_helper(fuzzyRepresentation(Rational.ONE));
+        floatValueExact_fail_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE));
+        floatValueExact_fail_helper(fuzzyRepresentation(positiveBetween));
+        floatValueExact_fail_helper(fuzzyRepresentation(negativeBetween));
+    }
+
+    private static void doubleValueUnsafe_RoundingMode_helper(@NotNull Real x, @NotNull String rm, double output) {
+        aeq(x.doubleValueUnsafe(Readers.readRoundingModeStrict(rm).get()), output);
+    }
+
+    private static void doubleValueUnsafe_RoundingMode_fail_helper(@NotNull Real x, @NotNull String rm) {
+        try {
+            x.doubleValueUnsafe(Readers.readRoundingModeStrict(rm).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDoubleValueUnsafe_RoundingMode() {
+        Rational positiveBetween =
+                Rational.ONE.add(Rational.ofExact(FloatingPointUtils.successor(1.0)).get()).shiftRight(1);
+        Rational negativeBetween = positiveBetween.negate();
+
+        doubleValueUnsafe_RoundingMode_helper(ZERO, "UP", 0.0);
+        doubleValueUnsafe_RoundingMode_helper(ONE, "UP", 1.0);
+        doubleValueUnsafe_RoundingMode_helper(NEGATIVE_ONE, "UP", -1.0);
+        doubleValueUnsafe_RoundingMode_helper(ONE_HALF, "UP", 0.5);
+        doubleValueUnsafe_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, "UP", -1.3333333333333335);
+        doubleValueUnsafe_RoundingMode_helper(SQRT_TWO, "UP", 1.4142135623730951);
+        doubleValueUnsafe_RoundingMode_helper(E, "UP", 2.7182818284590455);
+        doubleValueUnsafe_RoundingMode_helper(PI, "UP", 3.1415926535897936);
+        doubleValueUnsafe_RoundingMode_helper(leftFuzzyRepresentation(Rational.ONE), "UP", 1.0);
+        doubleValueUnsafe_RoundingMode_helper(rightFuzzyRepresentation(Rational.NEGATIVE_ONE), "UP", -1.0);
+        doubleValueUnsafe_RoundingMode_helper(fuzzyRepresentation(positiveBetween), "UP", 1.0000000000000002);
+        doubleValueUnsafe_RoundingMode_helper(fuzzyRepresentation(negativeBetween), "UP", -1.0000000000000002);
+
+        doubleValueUnsafe_RoundingMode_helper(ZERO, "DOWN", 0.0);
+        doubleValueUnsafe_RoundingMode_helper(ONE, "DOWN", 1.0);
+        doubleValueUnsafe_RoundingMode_helper(NEGATIVE_ONE, "DOWN", -1.0);
+        doubleValueUnsafe_RoundingMode_helper(ONE_HALF, "DOWN", 0.5);
+        doubleValueUnsafe_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, "DOWN", -1.3333333333333333);
+        doubleValueUnsafe_RoundingMode_helper(SQRT_TWO, "DOWN", 1.414213562373095);
+        doubleValueUnsafe_RoundingMode_helper(E, "DOWN", 2.718281828459045);
+        doubleValueUnsafe_RoundingMode_helper(PI, "DOWN", 3.141592653589793);
+        doubleValueUnsafe_RoundingMode_helper(rightFuzzyRepresentation(Rational.ONE), "DOWN", 1.0);
+        doubleValueUnsafe_RoundingMode_helper(leftFuzzyRepresentation(Rational.NEGATIVE_ONE), "DOWN", -1.0);
+        doubleValueUnsafe_RoundingMode_helper(fuzzyRepresentation(positiveBetween), "DOWN", 1.0);
+        doubleValueUnsafe_RoundingMode_helper(fuzzyRepresentation(negativeBetween), "DOWN", -1.0);
+
+        doubleValueUnsafe_RoundingMode_helper(ZERO, "CEILING", 0.0);
+        doubleValueUnsafe_RoundingMode_helper(ONE, "CEILING", 1.0);
+        doubleValueUnsafe_RoundingMode_helper(NEGATIVE_ONE, "CEILING", -1.0);
+        doubleValueUnsafe_RoundingMode_helper(ONE_HALF, "CEILING", 0.5);
+        doubleValueUnsafe_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, "CEILING", -1.3333333333333333);
+        doubleValueUnsafe_RoundingMode_helper(SQRT_TWO, "CEILING", 1.4142135623730951);
+        doubleValueUnsafe_RoundingMode_helper(E, "CEILING", 2.7182818284590455);
+        doubleValueUnsafe_RoundingMode_helper(PI, "CEILING", 3.1415926535897936);
+        doubleValueUnsafe_RoundingMode_helper(leftFuzzyRepresentation(Rational.ONE), "CEILING", 1.0);
+        doubleValueUnsafe_RoundingMode_helper(leftFuzzyRepresentation(Rational.NEGATIVE_ONE), "CEILING", -1.0);
+        doubleValueUnsafe_RoundingMode_helper(fuzzyRepresentation(positiveBetween), "CEILING", 1.0000000000000002);
+        doubleValueUnsafe_RoundingMode_helper(fuzzyRepresentation(negativeBetween), "CEILING", -1.0);
+
+        doubleValueUnsafe_RoundingMode_helper(ZERO, "FLOOR", 0.0);
+        doubleValueUnsafe_RoundingMode_helper(ONE, "FLOOR", 1.0);
+        doubleValueUnsafe_RoundingMode_helper(NEGATIVE_ONE, "FLOOR", -1.0);
+        doubleValueUnsafe_RoundingMode_helper(ONE_HALF, "FLOOR", 0.5);
+        doubleValueUnsafe_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, "FLOOR", -1.3333333333333335);
+        doubleValueUnsafe_RoundingMode_helper(SQRT_TWO, "FLOOR", 1.414213562373095);
+        doubleValueUnsafe_RoundingMode_helper(E, "FLOOR", 2.718281828459045);
+        doubleValueUnsafe_RoundingMode_helper(PI, "FLOOR", 3.141592653589793);
+        doubleValueUnsafe_RoundingMode_helper(rightFuzzyRepresentation(Rational.ZERO), "FLOOR", 0.0);
+        doubleValueUnsafe_RoundingMode_helper(rightFuzzyRepresentation(Rational.ONE), "FLOOR", 1.0);
+        doubleValueUnsafe_RoundingMode_helper(rightFuzzyRepresentation(Rational.NEGATIVE_ONE), "FLOOR", -1.0);
+        doubleValueUnsafe_RoundingMode_helper(fuzzyRepresentation(positiveBetween), "FLOOR", 1.0);
+        doubleValueUnsafe_RoundingMode_helper(fuzzyRepresentation(negativeBetween), "FLOOR", -1.0000000000000002);
+
+        doubleValueUnsafe_RoundingMode_helper(ZERO, "HALF_UP", 0.0);
+        doubleValueUnsafe_RoundingMode_helper(ONE, "HALF_UP", 1.0);
+        doubleValueUnsafe_RoundingMode_helper(NEGATIVE_ONE, "HALF_UP", -1.0);
+        doubleValueUnsafe_RoundingMode_helper(ONE_HALF, "HALF_UP", 0.5);
+        doubleValueUnsafe_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, "HALF_UP", -1.3333333333333333);
+        doubleValueUnsafe_RoundingMode_helper(SQRT_TWO, "HALF_UP", 1.4142135623730951);
+        doubleValueUnsafe_RoundingMode_helper(E, "HALF_UP", 2.718281828459045);
+        doubleValueUnsafe_RoundingMode_helper(PI, "HALF_UP", 3.141592653589793);
+        doubleValueUnsafe_RoundingMode_helper(rightFuzzyRepresentation(Rational.ZERO), "HALF_UP", 0.0);
+        doubleValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.ONE), "HALF_UP", 1.0);
+        doubleValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), "HALF_UP", -1.0);
+        doubleValueUnsafe_RoundingMode_helper(
+                rightFuzzyRepresentation(positiveBetween),
+                "HALF_UP",
+                1.0000000000000002
+        );
+        doubleValueUnsafe_RoundingMode_helper(
+                leftFuzzyRepresentation(negativeBetween),
+                "HALF_UP",
+                -1.0000000000000002
+        );
+
+        doubleValueUnsafe_RoundingMode_helper(ZERO, "HALF_DOWN", 0.0);
+        doubleValueUnsafe_RoundingMode_helper(ONE, "HALF_DOWN", 1.0);
+        doubleValueUnsafe_RoundingMode_helper(NEGATIVE_ONE, "HALF_DOWN", -1.0);
+        doubleValueUnsafe_RoundingMode_helper(ONE_HALF, "HALF_DOWN", 0.5);
+        doubleValueUnsafe_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, "HALF_DOWN", -1.3333333333333333);
+        doubleValueUnsafe_RoundingMode_helper(SQRT_TWO, "HALF_DOWN", 1.4142135623730951);
+        doubleValueUnsafe_RoundingMode_helper(E, "HALF_DOWN", 2.718281828459045);
+        doubleValueUnsafe_RoundingMode_helper(PI, "HALF_DOWN", 3.141592653589793);
+        doubleValueUnsafe_RoundingMode_helper(rightFuzzyRepresentation(Rational.ZERO), "HALF_DOWN", 0.0);
+        doubleValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.ONE), "HALF_DOWN", 1.0);
+        doubleValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), "HALF_DOWN", -1.0);
+        doubleValueUnsafe_RoundingMode_helper(leftFuzzyRepresentation(positiveBetween), "HALF_DOWN", 1.0);
+        doubleValueUnsafe_RoundingMode_helper(rightFuzzyRepresentation(negativeBetween), "HALF_DOWN", -1.0);
+
+        doubleValueUnsafe_RoundingMode_helper(ZERO, "HALF_EVEN", 0.0);
+        doubleValueUnsafe_RoundingMode_helper(ONE, "HALF_EVEN", 1.0);
+        doubleValueUnsafe_RoundingMode_helper(NEGATIVE_ONE, "HALF_EVEN", -1.0);
+        doubleValueUnsafe_RoundingMode_helper(ONE_HALF, "HALF_EVEN", 0.5);
+        doubleValueUnsafe_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, "HALF_EVEN", -1.3333333333333333);
+        doubleValueUnsafe_RoundingMode_helper(SQRT_TWO, "HALF_EVEN", 1.4142135623730951);
+        doubleValueUnsafe_RoundingMode_helper(E, "HALF_EVEN", 2.718281828459045);
+        doubleValueUnsafe_RoundingMode_helper(PI, "HALF_EVEN", 3.141592653589793);
+        doubleValueUnsafe_RoundingMode_helper(rightFuzzyRepresentation(Rational.ZERO), "HALF_EVEN", 0.0);
+        doubleValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.ONE), "HALF_EVEN", 1.0);
+        doubleValueUnsafe_RoundingMode_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), "HALF_EVEN", -1.0);
+        doubleValueUnsafe_RoundingMode_helper(leftFuzzyRepresentation(positiveBetween), "HALF_EVEN", 1.0);
+        doubleValueUnsafe_RoundingMode_helper(rightFuzzyRepresentation(negativeBetween), "HALF_EVEN", -1.0);
+
+        doubleValueUnsafe_RoundingMode_helper(ZERO, "UNNECESSARY", 0.0);
+        doubleValueUnsafe_RoundingMode_helper(ONE, "UNNECESSARY", 1.0);
+        doubleValueUnsafe_RoundingMode_helper(NEGATIVE_ONE, "UNNECESSARY", -1.0);
+        doubleValueUnsafe_RoundingMode_helper(ONE_HALF, "UNNECESSARY", 0.5);
+
+        doubleValueUnsafe_RoundingMode_fail_helper(NEGATIVE_FOUR_THIRDS, "UNNECESSARY");
+        doubleValueUnsafe_RoundingMode_fail_helper(SQRT_TWO, "UNNECESSARY");
+        doubleValueUnsafe_RoundingMode_fail_helper(E, "UNNECESSARY");
+        doubleValueUnsafe_RoundingMode_fail_helper(PI, "UNNECESSARY");
+        doubleValueUnsafe_RoundingMode_fail_helper(fuzzyRepresentation(Rational.ZERO), "UNNECESSARY");
+        doubleValueUnsafe_RoundingMode_fail_helper(fuzzyRepresentation(Rational.ONE), "UNNECESSARY");
+        doubleValueUnsafe_RoundingMode_fail_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), "UNNECESSARY");
+        doubleValueUnsafe_RoundingMode_fail_helper(fuzzyRepresentation(positiveBetween), "UNNECESSARY");
+        doubleValueUnsafe_RoundingMode_fail_helper(fuzzyRepresentation(negativeBetween), "UNNECESSARY");
+    }
+
+    private static void doubleValue_RoundingMode_Rational_helper(
+            @NotNull Real x,
+            @NotNull String rm,
+            @NotNull Rational r,
+            @NotNull String output
+    ) {
+        aeq(x.doubleValue(Readers.readRoundingModeStrict(rm).get(), r), output);
+    }
+
+    private static void doubleValue_RoundingMode_Rational_fail_helper(
+            @NotNull Real x,
+            @NotNull String rm,
+            @NotNull Rational r
+    ) {
+        try {
+            x.doubleValue(Readers.readRoundingModeStrict(rm).get(), r);
+            fail();
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testDoubleValue_RoundingMode_Rational() {
+        Rational positiveBetween =
+                Rational.ONE.add(Rational.ofExact(FloatingPointUtils.successor(1.0)).get()).shiftRight(1);
+        Rational negativeBetween = positiveBetween.negate();
+
+        doubleValue_RoundingMode_Rational_helper(ZERO, "UP", DEFAULT_RESOLUTION, "Optional[0.0]");
+        doubleValue_RoundingMode_Rational_helper(ONE, "UP", DEFAULT_RESOLUTION, "Optional[1.0]");
+        doubleValue_RoundingMode_Rational_helper(NEGATIVE_ONE, "UP", DEFAULT_RESOLUTION, "Optional[-1.0]");
+        doubleValue_RoundingMode_Rational_helper(ONE_HALF, "UP", DEFAULT_RESOLUTION, "Optional[0.5]");
+        doubleValue_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                "UP",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.3333333333333335]"
+        );
+        doubleValue_RoundingMode_Rational_helper(SQRT_TWO, "UP", DEFAULT_RESOLUTION, "Optional[1.4142135623730951]");
+        doubleValue_RoundingMode_Rational_helper(E, "UP", DEFAULT_RESOLUTION, "Optional[2.7182818284590455]");
+        doubleValue_RoundingMode_Rational_helper(PI, "UP", DEFAULT_RESOLUTION, "Optional[3.1415926535897936]");
+        doubleValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                "UP",
+                DEFAULT_RESOLUTION,
+                "Optional.empty");
+        doubleValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ONE),
+                "UP",
+                DEFAULT_RESOLUTION,
+                "Optional.empty");
+        doubleValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                "UP",
+                DEFAULT_RESOLUTION,
+                "Optional.empty");
+        doubleValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(positiveBetween),
+                "UP",
+                DEFAULT_RESOLUTION,
+                "Optional[1.0000000000000002]");
+        doubleValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(negativeBetween),
+                "UP",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.0000000000000002]"
+        );
+
+        doubleValue_RoundingMode_Rational_helper(ZERO, "DOWN", DEFAULT_RESOLUTION, "Optional[0.0]");
+        doubleValue_RoundingMode_Rational_helper(ONE, "DOWN", DEFAULT_RESOLUTION, "Optional[1.0]");
+        doubleValue_RoundingMode_Rational_helper(NEGATIVE_ONE, "DOWN", DEFAULT_RESOLUTION, "Optional[-1.0]");
+        doubleValue_RoundingMode_Rational_helper(ONE_HALF, "DOWN", DEFAULT_RESOLUTION, "Optional[0.5]");
+        doubleValue_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                "DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.3333333333333333]"
+        );
+        doubleValue_RoundingMode_Rational_helper(SQRT_TWO, "DOWN", DEFAULT_RESOLUTION, "Optional[1.414213562373095]");
+        doubleValue_RoundingMode_Rational_helper(E, "DOWN", DEFAULT_RESOLUTION, "Optional[2.718281828459045]");
+        doubleValue_RoundingMode_Rational_helper(PI, "DOWN", DEFAULT_RESOLUTION, "Optional[3.141592653589793]");
+        doubleValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                "DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        doubleValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ONE),
+                "DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        doubleValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                "DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        doubleValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(positiveBetween),
+                "DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[1.0]"
+        );
+        doubleValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(negativeBetween),
+                "DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.0]"
+        );
+
+        doubleValue_RoundingMode_Rational_helper(ZERO, "CEILING", DEFAULT_RESOLUTION, "Optional[0.0]");
+        doubleValue_RoundingMode_Rational_helper(ONE, "CEILING", DEFAULT_RESOLUTION, "Optional[1.0]");
+        doubleValue_RoundingMode_Rational_helper(NEGATIVE_ONE, "CEILING", DEFAULT_RESOLUTION, "Optional[-1.0]");
+        doubleValue_RoundingMode_Rational_helper(ONE_HALF, "CEILING", DEFAULT_RESOLUTION, "Optional[0.5]");
+        doubleValue_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.3333333333333333]"
+        );
+        doubleValue_RoundingMode_Rational_helper(
+                SQRT_TWO,
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional[1.4142135623730951]"
+        );
+        doubleValue_RoundingMode_Rational_helper(E, "CEILING", DEFAULT_RESOLUTION, "Optional[2.7182818284590455]");
+        doubleValue_RoundingMode_Rational_helper(PI, "CEILING", DEFAULT_RESOLUTION, "Optional[3.1415926535897936]");
+        doubleValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        doubleValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ONE),
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        doubleValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        doubleValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(positiveBetween),
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional[1.0000000000000002]"
+        );
+        doubleValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(negativeBetween),
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.0]"
+        );
+
+        doubleValue_RoundingMode_Rational_helper(ZERO, "FLOOR", DEFAULT_RESOLUTION, "Optional[0.0]");
+        doubleValue_RoundingMode_Rational_helper(ONE, "FLOOR", DEFAULT_RESOLUTION, "Optional[1.0]");
+        doubleValue_RoundingMode_Rational_helper(NEGATIVE_ONE, "FLOOR", DEFAULT_RESOLUTION, "Optional[-1.0]");
+        doubleValue_RoundingMode_Rational_helper(ONE_HALF, "FLOOR", DEFAULT_RESOLUTION, "Optional[0.5]");
+        doubleValue_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                "FLOOR",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.3333333333333335]"
+        );
+        doubleValue_RoundingMode_Rational_helper(SQRT_TWO, "FLOOR", DEFAULT_RESOLUTION, "Optional[1.414213562373095]");
+        doubleValue_RoundingMode_Rational_helper(E, "FLOOR", DEFAULT_RESOLUTION, "Optional[2.718281828459045]");
+        doubleValue_RoundingMode_Rational_helper(PI, "FLOOR", DEFAULT_RESOLUTION, "Optional[3.141592653589793]");
+        doubleValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                "FLOOR",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        doubleValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ONE),
+                "FLOOR",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        doubleValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                "FLOOR",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        doubleValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(positiveBetween),
+                "FLOOR",
+                DEFAULT_RESOLUTION,
+                "Optional[1.0]"
+        );
+        doubleValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(negativeBetween),
+                "FLOOR",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.0000000000000002]"
+        );
+
+        doubleValue_RoundingMode_Rational_helper(ZERO, "HALF_UP", DEFAULT_RESOLUTION, "Optional[0.0]");
+        doubleValue_RoundingMode_Rational_helper(ONE, "HALF_UP", DEFAULT_RESOLUTION, "Optional[1.0]");
+        doubleValue_RoundingMode_Rational_helper(NEGATIVE_ONE, "HALF_UP", DEFAULT_RESOLUTION, "Optional[-1.0]");
+        doubleValue_RoundingMode_Rational_helper(ONE_HALF, "HALF_UP", DEFAULT_RESOLUTION, "Optional[0.5]");
+        doubleValue_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.3333333333333333]"
+        );
+        doubleValue_RoundingMode_Rational_helper(
+                SQRT_TWO,
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional[1.4142135623730951]"
+        );
+        doubleValue_RoundingMode_Rational_helper(E, "HALF_UP", DEFAULT_RESOLUTION, "Optional[2.718281828459045]");
+        doubleValue_RoundingMode_Rational_helper(PI, "HALF_UP", DEFAULT_RESOLUTION, "Optional[3.141592653589793]");
+        doubleValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        doubleValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ONE),
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional[1.0]"
+        );
+        doubleValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.0]"
+        );
+        doubleValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(positiveBetween),
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        doubleValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(negativeBetween),
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        doubleValue_RoundingMode_Rational_helper(ZERO, "HALF_DOWN", DEFAULT_RESOLUTION, "Optional[0.0]");
+        doubleValue_RoundingMode_Rational_helper(ONE, "HALF_DOWN", DEFAULT_RESOLUTION, "Optional[1.0]");
+        doubleValue_RoundingMode_Rational_helper(NEGATIVE_ONE, "HALF_DOWN", DEFAULT_RESOLUTION, "Optional[-1.0]");
+        doubleValue_RoundingMode_Rational_helper(ONE_HALF, "HALF_DOWN", DEFAULT_RESOLUTION, "Optional[0.5]");
+        doubleValue_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.3333333333333333]"
+        );
+        doubleValue_RoundingMode_Rational_helper(
+                SQRT_TWO,
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[1.4142135623730951]"
+        );
+        doubleValue_RoundingMode_Rational_helper(E, "HALF_DOWN", DEFAULT_RESOLUTION, "Optional[2.718281828459045]");
+        doubleValue_RoundingMode_Rational_helper(PI, "HALF_DOWN", DEFAULT_RESOLUTION, "Optional[3.141592653589793]");
+        doubleValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        doubleValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ONE),
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[1.0]"
+        );
+        doubleValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.0]"
+        );
+        doubleValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(positiveBetween),
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        doubleValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(negativeBetween),
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        doubleValue_RoundingMode_Rational_helper(ZERO, "HALF_EVEN", DEFAULT_RESOLUTION, "Optional[0.0]");
+        doubleValue_RoundingMode_Rational_helper(ONE, "HALF_EVEN", DEFAULT_RESOLUTION, "Optional[1.0]");
+        doubleValue_RoundingMode_Rational_helper(NEGATIVE_ONE, "HALF_EVEN", DEFAULT_RESOLUTION, "Optional[-1.0]");
+        doubleValue_RoundingMode_Rational_helper(ONE_HALF, "HALF_EVEN", DEFAULT_RESOLUTION, "Optional[0.5]");
+        doubleValue_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.3333333333333333]"
+        );
+        doubleValue_RoundingMode_Rational_helper(
+                SQRT_TWO,
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional[1.4142135623730951]"
+        );
+        doubleValue_RoundingMode_Rational_helper(E, "HALF_EVEN", DEFAULT_RESOLUTION, "Optional[2.718281828459045]");
+        doubleValue_RoundingMode_Rational_helper(PI, "HALF_EVEN", DEFAULT_RESOLUTION, "Optional[3.141592653589793]");
+        doubleValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        doubleValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ONE),
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional[1.0]"
+        );
+        doubleValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.0]"
+        );
+        doubleValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(positiveBetween),
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        doubleValue_RoundingMode_Rational_helper(
+                fuzzyRepresentation(negativeBetween),
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        doubleValue_RoundingMode_Rational_helper(ZERO, "UNNECESSARY", DEFAULT_RESOLUTION, "Optional[0.0]");
+        doubleValue_RoundingMode_Rational_helper(ONE, "UNNECESSARY", DEFAULT_RESOLUTION, "Optional[1.0]");
+        doubleValue_RoundingMode_Rational_helper(NEGATIVE_ONE, "UNNECESSARY", DEFAULT_RESOLUTION, "Optional[-1.0]");
+        doubleValue_RoundingMode_Rational_helper(ONE_HALF, "UNNECESSARY", DEFAULT_RESOLUTION, "Optional[0.5]");
+
+        doubleValue_RoundingMode_Rational_helper(PI, "FLOOR", Rational.ONE, "Optional.empty");
+
+        doubleValue_RoundingMode_Rational_fail_helper(ZERO, "HALF_EVEN", Rational.ZERO);
+        doubleValue_RoundingMode_Rational_fail_helper(ZERO, "HALF_EVEN", Rational.NEGATIVE_ONE);
+
+        doubleValue_RoundingMode_Rational_fail_helper(NEGATIVE_FOUR_THIRDS, "UNNECESSARY", DEFAULT_RESOLUTION);
+        doubleValue_RoundingMode_Rational_fail_helper(SQRT_TWO, "UNNECESSARY", DEFAULT_RESOLUTION);
+        doubleValue_RoundingMode_Rational_fail_helper(E, "UNNECESSARY", DEFAULT_RESOLUTION);
+        doubleValue_RoundingMode_Rational_fail_helper(PI, "UNNECESSARY", DEFAULT_RESOLUTION);
+        doubleValue_RoundingMode_Rational_fail_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                "UNNECESSARY",
+                DEFAULT_RESOLUTION
+        );
+        doubleValue_RoundingMode_Rational_fail_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "UNNECESSARY",
+                DEFAULT_RESOLUTION
+        );
+        doubleValue_RoundingMode_Rational_fail_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                "UNNECESSARY",
+                DEFAULT_RESOLUTION
+        );
+    }
+
+    private static void doubleValueUnsafe_helper(@NotNull Real x, double output) {
+        aeq(x.doubleValueUnsafe(), output);
+    }
+
+    @Test
+    public void testDoubleValueUnsafe() {
+        Rational positiveBetween =
+                Rational.ONE.add(Rational.ofExact(FloatingPointUtils.successor(1.0)).get()).shiftRight(1);
+        Rational negativeBetween = positiveBetween.negate();
+
+        doubleValueUnsafe_helper(ZERO, 0.0);
+        doubleValueUnsafe_helper(ONE, 1.0);
+        doubleValueUnsafe_helper(NEGATIVE_ONE, -1.0);
+        doubleValueUnsafe_helper(ONE_HALF, 0.5);
+        doubleValueUnsafe_helper(NEGATIVE_FOUR_THIRDS, -1.3333333333333333);
+        doubleValueUnsafe_helper(SQRT_TWO, 1.4142135623730951);
+        doubleValueUnsafe_helper(E, 2.718281828459045);
+        doubleValueUnsafe_helper(PI, 3.141592653589793);
+        doubleValueUnsafe_helper(rightFuzzyRepresentation(Rational.ZERO), 0.0);
+        doubleValueUnsafe_helper(fuzzyRepresentation(Rational.ONE), 1.0);
+        doubleValueUnsafe_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), -1.0);
+        doubleValueUnsafe_helper(leftFuzzyRepresentation(positiveBetween), 1.0);
+        doubleValueUnsafe_helper(rightFuzzyRepresentation(negativeBetween), -1.0);
+    }
+
+    private static void doubleValue_Rational_helper(@NotNull Real x, @NotNull Rational r, @NotNull String output) {
+        aeq(x.doubleValue(r), output);
+    }
+
+    private static void doubleValue_Rational_fail_helper(@NotNull Real x, @NotNull Rational r) {
+        try {
+            x.doubleValue(r);
+            fail();
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testDoubleValue_Rational() {
+        Rational positiveBetween =
+                Rational.ONE.add(Rational.ofExact(FloatingPointUtils.successor(1.0)).get()).shiftRight(1);
+        Rational negativeBetween = positiveBetween.negate();
+
+        doubleValue_Rational_helper(ZERO, DEFAULT_RESOLUTION, "Optional[0.0]");
+        doubleValue_Rational_helper(ONE, DEFAULT_RESOLUTION, "Optional[1.0]");
+        doubleValue_Rational_helper(NEGATIVE_ONE, DEFAULT_RESOLUTION, "Optional[-1.0]");
+        doubleValue_Rational_helper(ONE_HALF, DEFAULT_RESOLUTION, "Optional[0.5]");
+        doubleValue_Rational_helper(NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[-1.3333333333333333]");
+        doubleValue_Rational_helper(SQRT_TWO, DEFAULT_RESOLUTION, "Optional[1.4142135623730951]");
+        doubleValue_Rational_helper(E, DEFAULT_RESOLUTION, "Optional[2.718281828459045]");
+        doubleValue_Rational_helper(PI, DEFAULT_RESOLUTION, "Optional[3.141592653589793]");
+        doubleValue_Rational_helper(fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        doubleValue_Rational_helper(fuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional[1.0]");
+        doubleValue_Rational_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), DEFAULT_RESOLUTION, "Optional[-1.0]");
+        doubleValue_Rational_helper(fuzzyRepresentation(positiveBetween), DEFAULT_RESOLUTION, "Optional.empty");
+        doubleValue_Rational_helper(fuzzyRepresentation(negativeBetween), DEFAULT_RESOLUTION, "Optional.empty");
+
+        doubleValue_Rational_helper(PI, Rational.ONE, "Optional.empty");
+
+        doubleValue_Rational_fail_helper(ZERO, Rational.ZERO);
+        doubleValue_Rational_fail_helper(ZERO, Rational.NEGATIVE_ONE);
+    }
+
+    private static void doubleValueExact_helper(@NotNull Real x, double output) {
+        aeq(x.doubleValueExact(), output);
+    }
+
+    private static void doubleValueExact_fail_helper(@NotNull Real x) {
+        try {
+            x.doubleValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDoubleValueExact() {
+        Rational positiveBetween =
+                Rational.ONE.add(Rational.ofExact(FloatingPointUtils.successor(1.0)).get()).shiftRight(1);
+        Rational negativeBetween = positiveBetween.negate();
+
+        doubleValueExact_helper(ZERO, 0.0);
+        doubleValueExact_helper(ONE, 1.0);
+        doubleValueExact_helper(NEGATIVE_ONE, -1.0);
+        doubleValueExact_helper(ONE_HALF, 0.5);
+
+        doubleValueExact_fail_helper(NEGATIVE_FOUR_THIRDS);
+        doubleValueExact_fail_helper(SQRT_TWO);
+        doubleValueExact_fail_helper(E);
+        doubleValueExact_fail_helper(PI);
+        doubleValueExact_fail_helper(fuzzyRepresentation(Rational.ZERO));
+        doubleValueExact_fail_helper(fuzzyRepresentation(Rational.ONE));
+        doubleValueExact_fail_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE));
+        doubleValueExact_fail_helper(fuzzyRepresentation(positiveBetween));
+        doubleValueExact_fail_helper(fuzzyRepresentation(negativeBetween));
     }
 }

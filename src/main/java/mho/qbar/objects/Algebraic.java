@@ -580,7 +580,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      *
      * <ul>
      *  <li>{@code this} may be any {@code Algebraic}.</li>
-     *  <li>{@code roundingMode} may be any {@code RoundingMode}.</li>
+     *  <li>{@code roundingMode} cannot be null.</li>
      *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#UNNECESSARY}, {@code this} must be an
      *  integer.</li>
      *  <li>The result is not null.</li>
@@ -981,7 +981,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      * </ul>
      *
      * @param roundingMode specifies the details of how to round {@code this}.
-     * @return {@code this}, rounded
+     * @return {@code this}, rounded to a {@code float}
      */
     public float floatValue(@NotNull RoundingMode roundingMode) {
         if (this == ZERO) return 0.0f;
@@ -993,7 +993,7 @@ public final class Algebraic implements Comparable<Algebraic> {
                 throw new ArithmeticException("If roundingMode is UNNECESSARY, this must be exactly equal to a" +
                         " float. Invalid this: " + this);
             }
-            return realValue().floatValue(roundingMode);
+            return realValue().floatValueUnsafe(roundingMode);
         }
     }
 
@@ -1011,7 +1011,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      *  <li>The result may be any {@code float} except {@code NaN}.</li>
      * </ul>
      *
-     * @return {@code this}, rounded
+     * @return {@code this}, rounded to a {@code float}
      */
     public float floatValue() {
         return floatValue(RoundingMode.HALF_EVEN);
@@ -1095,7 +1095,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      * </ul>
      *
      * @param roundingMode specifies the details of how to round {@code this}.
-     * @return {@code this}, rounded
+     * @return {@code this}, rounded to a {@code double}
      */
     public double doubleValue(@NotNull RoundingMode roundingMode) {
         if (this == ZERO) return 0.0;
@@ -1107,7 +1107,7 @@ public final class Algebraic implements Comparable<Algebraic> {
                 throw new ArithmeticException("If roundingMode is UNNECESSARY, this must be exactly equal to a" +
                         " double. Invalid this: " + this);
             }
-            return realValue().doubleValue(roundingMode);
+            return realValue().doubleValueUnsafe(roundingMode);
         }
     }
 
@@ -1125,7 +1125,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      *  <li>The result may be any {@code double} except {@code NaN}.</li>
      * </ul>
      *
-     * @return {@code this}, rounded
+     * @return {@code this}, rounded to a {@code double}
      */
     public double doubleValue() {
         return doubleValue(RoundingMode.HALF_EVEN);
@@ -1179,7 +1179,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      * <ul>
      *  <li>{@code this} may be any {@code Algebraic}.</li>
      *  <li>{@code precision} cannot be negative.</li>
-     *  <li>{@code roundingMode} may be any {@code RoundingMode}.</li>
+     *  <li>{@code roundingMode} cannot be null.</li>
      *  <li>If {@code precision} is 0, then {@code this} must be an {@code Algebraic} with a terminating decimal
      *  expansion; that is, it must be rational and its denominator must only have 2 or 5 as prime factors.</li>
      *  <li>If {@code roundingMode} is {@code RoundingMode.UNNECESSARY}, then {@code precision} must be at least as
@@ -1215,7 +1215,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      * <ul>
      *  <li>{@code this} may be any {@code Rational}.</li>
      *  <li>{@code scale} may be any {@code int}.</li>
-     *  <li>{@code roundingMode} may be any {@code RoundingMode}.</li>
+     *  <li>{@code roundingMode} cannot be null.</li>
      *  <li>If {@code roundingMode} is {@code RoundingMode.UNNECESSARY}, then {@code scale} must be at least as large
      *  as the smallest n such that {@code this}×10<sup>n</sup> is an integer (and such an n must exist).</li>
      *  <li>The result is non-null.</li>

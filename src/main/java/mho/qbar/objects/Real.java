@@ -855,7 +855,7 @@ public final class Real implements Iterable<Interval> {
      *
      * <ul>
      *  <li>{@code this} may be any {@code Real}.</li>
-     *  <li>{@code roundingMode} may be any {@code RoundingMode}.</li>
+     *  <li>{@code roundingMode} cannot be null.</li>
      *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#UP}, {@code this} cannot be a positive integer
      *  that is fuzzy on the right, a negative integer that is fuzzy on the left, or a fuzzy zero.</li>
      *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#DOWN}, {@code this} cannot be a positive integer
@@ -906,7 +906,7 @@ public final class Real implements Iterable<Interval> {
      *
      * <ul>
      *  <li>{@code this} may be any {@code Real}.</li>
-     *  <li>{@code roundingMode} may be any {@code RoundingMode}.</li>
+     *  <li>{@code roundingMode} cannot be null.</li>
      *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#UNNECESSARY}, {@code this} must be an exact
      *  integer.</li>
      *  <li>{@code resolution} must be positive.</li>
@@ -918,6 +918,7 @@ public final class Real implements Iterable<Interval> {
      * {@link java.math.RoundingMode#FLOOR}, {@link java.math.RoundingMode#HALF_UP},
      * {@link java.math.RoundingMode#HALF_DOWN}, {@link java.math.RoundingMode#HALF_EVEN}, and
      * {@link java.math.RoundingMode#UNNECESSARY}.
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
      * @return {@code this}, rounded
      */
     public @NotNull Optional<BigInteger> bigIntegerValue(
@@ -927,7 +928,10 @@ public final class Real implements Iterable<Interval> {
         if (resolution.signum() != 1) {
             throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
         }
-        if (roundingMode == RoundingMode.UNNECESSARY && !isExactInteger()) {
+        if (rational.isPresent()) {
+            return Optional.of(rational.get().bigIntegerValue(roundingMode));
+        }
+        if (roundingMode == RoundingMode.UNNECESSARY) {
             throw new ArithmeticException("If roundingMode is UNNECESSARY, this must be an exact integer. Invalid" +
                     " this: " + this);
         }
@@ -964,6 +968,7 @@ public final class Real implements Iterable<Interval> {
      *  <li>The result is not null.</li>
      * </ul>
      *
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
      * @return {@code this}, rounded
      */
     public @NotNull Optional<BigInteger> bigIntegerValue(@NotNull Rational resolution) {
@@ -995,6 +1000,7 @@ public final class Real implements Iterable<Interval> {
      *  <li>The result is not null.</li>
      * </ul>
      *
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
      * @return ⌊{@code this}⌋
      */
     public @NotNull Optional<BigInteger> floor(@NotNull Rational resolution) {
@@ -1026,6 +1032,7 @@ public final class Real implements Iterable<Interval> {
      *  <li>The result is not null.</li>
      * </ul>
      *
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
      * @return ⌈{@code this}⌉
      */
     public @NotNull Optional<BigInteger> ceiling(@NotNull Rational resolution) {
@@ -1047,7 +1054,7 @@ public final class Real implements Iterable<Interval> {
         if (rational.isPresent()) {
             return rational.get().bigIntegerValueExact();
         } else {
-            throw new ArithmeticException("this must be an integer. Invalid this: " + this);
+            throw new ArithmeticException("this must be an exact integer. Invalid this: " + this);
         }
     }
 
@@ -1160,6 +1167,7 @@ public final class Real implements Iterable<Interval> {
      *  but the result itself is not necessarily an integer.)</li>
      * </ul>
      *
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
      * @return the smallest integer power of 2 greater than or equal to {@code this}.
      */
     public @NotNull Optional<BinaryFraction> roundUpToIntegerPowerOfTwo(@NotNull Rational resolution) {
@@ -1262,6 +1270,7 @@ public final class Real implements Iterable<Interval> {
      *  <li>The result can be any integer.</li>
      * </ul>
      *
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
      * @return ⌊{@code log<sub>2</sub>this}⌋
      */
     public @NotNull Optional<Integer> binaryExponent(@NotNull Rational resolution) {
@@ -1270,7 +1279,7 @@ public final class Real implements Iterable<Interval> {
 
     /**
      * Determines whether {@code this} is exact and exactly equal to some {@code float}. If true, the {@code float} may
-     * be found using //todo
+     * be found using {@link Real#floatValueExact()}.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Real}.</li>
@@ -1285,7 +1294,7 @@ public final class Real implements Iterable<Interval> {
 
     /**
      * Determines whether {@code this} is exact and exactly equal to some {@code double}. If true, the {@code double}
-     * may be found using //todo
+     * may be found using {@link Real#doubleValueExact()}.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Real}.</li>
@@ -1298,20 +1307,280 @@ public final class Real implements Iterable<Interval> {
         return rational.isPresent() && rational.get().isEqualToDouble();
     }
 
-    public float floatValue(@NotNull RoundingMode roundingMode) {
+    /**
+     * Rounds {@code this} to a {@code float}. The details of the rounding are specified by {@code roundingMode}. If
+     * {@code this} is a fuzzy and exactly equal to a {@code float} or a fuzzy and exactly between two adjacent
+     * {@code float}s, this method may loop forever, depending on the rounding mode and the nature of the fuzziness. To
+     * prevent this behavior, use {@link Real#floatValue(RoundingMode, Rational)} instead.
+     * <ul>
+     *  <li>{@code RoundingMode.UNNECESSARY}: If {@code this} is exactly equal to a {@code float}, that {@code float}
+     *  is returned. Otherwise, an {@link java.lang.ArithmeticException} is thrown. If {@code this} is zero, positive
+     *  zero is returned. Negative zero, {@code Infinity}, and {@code -Infinity} cannot be returned.</li>
+     *  <li>{@code RoundingMode.FLOOR}: The largest {@code float} less than or equal to {@code this} is returned. If
+     *  {@code this} is greater than or equal to zero and less than {@code Float.MIN_VALUE}, positive zero is returned.
+     *  If {@code this} is less than –{@code Float.MAX_VALUE}, {@code -Infinity} is returned. If {@code this} is
+     *  greater than or equal to {@code Float.MAX_VALUE}, {@code Float.MAX_VALUE} is returned. Negative zero and
+     *  {@code Infinity} cannot be returned.</li>
+     *  <li>{@code RoundingMode.CEILING}: The smallest {@code float} greater than or equal to {@code this} is returned.
+     *  If {@code this} is equal to zero, positive zero is returned. If {@code this} is less than zero and greater than
+     *  –{@code Float.MIN_VALUE}, negative zero is returned. If {@code this} is greater than {@code Float.MAX_VALUE},
+     *  Infinity is returned. If {@code this} is less than or equal to –{@code Float.MAX_VALUE},
+     *  –{@code Float.MAX_VALUE} is returned. {@code -Infinity} cannot be returned.</li>
+     *  <li>{@code RoundingMode.DOWN}: The first {@code float} going from {@code this} to 0 (possibly equal to
+     *  {@code this}) is returned. If {@code this} is greater than or equal to zero and less than
+     *  {@code Float.MIN_VALUE}, positive zero is returned. If {@code this} is less than zero and greater than
+     *  –{@code Float.MIN_VALUE}, negative zero is returned. If {@code this} is greater than or equal to
+     *  {@code Float.MAX_VALUE}, {@code Float.MAX_VALUE} is returned. If {@code this} is less than or equal to
+     *  –{@code Float.MAX_VALUE}, –{@code Float.MAX_VALUE} is returned. {@code Infinity} and {@code -Infinity} cannot
+     *  be returned.</li>
+     *  <li>{@code RoundingMode.UP}: The first {@code float} going from {@code this} to the infinity of the same sign
+     *  (possibly equal to {@code this}) is returned. If {@code this} is equal to zero, positive zero is returned. If
+     *  {@code this} is greater than {@code Float.MAX_VALUE}, {@code Infinity} is returned. If {@code this} is less
+     *  than {@code Float.MIN_VALUE}, {@code -Infinity} is returned. Negative zero cannot be returned.</li>
+     *  <li>{@code RoundingMode.HALF_DOWN}: If {@code this} is closest to one {@code float}, that {@code float} is
+     *  returned. If there are two closest {@code float}s, the one with the lower absolute value is returned. If
+     *  {@code this} is greater than or equal to zero and less than or equal to {@code Float.MIN_VALUE}/2, positive
+     *  zero is returned. If {@code this} is greater than or equal to –{@code Float.MIN_VALUE}/2 and less than zero,
+     *  negative zero is returned. If {@code this} is greater than or equal to {@code Float.MAX_VALUE},
+     *  {@code Float.MAX_VALUE} is returned. If {@code this} is less than or equal to –{@code Float.MAX_VALUE},
+     *  –{@code Float.MAX_VALUE} is returned. {@code Infinity} and {@code -Infinity} cannot be returned.</li>
+     *  <li>{@code RoundingMode.HALF_UP}: If {@code this} is closest to one {@code float}, that {@code float} is
+     *  returned. If there are two closest {@code float}s, the one with the higher absolute value is returned. If
+     *  {@code this} is greater than or equal to zero and less than {@code Float.MIN_VALUE}/2, positive zero is
+     *  returned. If {@code this} is greater than –{@code Float.MIN_VALUE}/2 and less than zero, negative zero is
+     *  returned. If {@code this} is greater than {@code Float.MAX_VALUE}, {@code Infinity} is returned. If
+     *  {@code this} is less than –{@code Float.MAX_VALUE}, {@code -Infinity} is returned.</li>
+     *  <li>{@code RoundingMode.HALF_EVEN}: If {@code this} is closest to one {@code float}, that {@code float} is
+     *  returned. If there are two closest {@code float}s, the one with the unset lowest-order bit is returned. If
+     *  {@code this} is greater than or equal to zero and less than or equal to {@code Float.MIN_VALUE}/2, positive
+     *  zero is returned. If {@code this} is greater than or equal to –{@code Float.MIN_VALUE}/2 and less than zero,
+     *  negative zero is returned. If {@code this} is greater than {@code Float.MAX_VALUE}, {@code Infinity} is
+     *  returned. If {@code this} is less than –{@code Float.MAX_VALUE}, {@code -Infinity} is returned.</li>
+     * </ul>
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code roundingMode} cannot be null.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#UP}, {@code this} cannot be equal to a positive
+     *  {@code float} and be fuzzy on the right, a negative {@code float} and fuzzy on the left, or a fuzzy zero.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#DOWN}, {@code this} cannot equal to a positive
+     *  {@code float} and be fuzzy on the left, a negative {@code float} and fuzzy on the right, or a fuzzy zero.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#CEILING}, {@code this} cannot equal a
+     *  {@code float} and be fuzzy on the right, and cannot be a fuzzy zero.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#FLOOR}, {@code this} cannot equal a {@code float}
+     *  and be fuzzy on the left.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#HALF_UP}, {@code this} cannot be halfway between
+     *  two adjacent non-negative {@code float}s and be fuzzy on the left or halfway between two adjacent non-positive
+     *  {@code float}s and fuzzy on the right. However, it may be fuzzy and equal to a {@code float}.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#HALF_DOWN}, {@code this} cannot be halfway between
+     *  two adjacent non-positive {@code float}s and be fuzzy on the right or halfway between two adjacent non-positive
+     *  {@code float}s and fuzzy on the left, and cannot be a zero fuzzy on the left.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#HALF_EVEN}, and {@code this} this is halfway
+     *  between two adjacent {@code float}s, then one of the floats will have a one in its least significant bit, and
+     *  {@code this} cannot be fuzzy in the direction closest to that float. It also cannot be a zero fuzzy on the
+     *  left.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#UNNECESSARY}, {@code this} must be exact and
+     *  exactly equal to a {@code float}.</li>
+     *  <li>The result may be any {@code float} except {@code NaN}.</li>
+     * </ul>
+     *
+     * @param roundingMode specifies the details of how to round {@code this}.
+     * @return {@code this}, rounded to a {@code float}
+     */
+    public float floatValueUnsafe(@NotNull RoundingMode roundingMode) {
+        if (rational.isPresent()) {
+            return rational.get().floatValue(roundingMode);
+        }
+        if (roundingMode == RoundingMode.UNNECESSARY) {
+            throw new ArithmeticException("If roundingMode is UNNECESSARY, this must be exact and exactly equal to a" +
+                    " float. Invalid this: " + this);
+        }
+        //noinspection ConstantConditions
         return limitValueUnsafe(r -> r.floatValue(roundingMode));
     }
 
-    public float floatValue() {
-        return floatValue(RoundingMode.HALF_EVEN);
+    /**
+     * Rounds {@code this} to a {@code float}. The details of the rounding are specified by {@code roundingMode}. If
+     * {@code this} is a fuzzy and exactly equal to a {@code float} or a fuzzy and exactly between two adjacent
+     * {@code float}s, this method will give up and return empty once the approximating interval's diameter is less
+     * than the specified resolution.
+     * <ul>
+     *  <li>{@code RoundingMode.UNNECESSARY}: If {@code this} is exactly equal to a {@code float}, that {@code float}
+     *  is returned. Otherwise, an {@link java.lang.ArithmeticException} is thrown. If {@code this} is zero, positive
+     *  zero is returned. Negative zero, {@code Infinity}, and {@code -Infinity} cannot be returned.</li>
+     *  <li>{@code RoundingMode.FLOOR}: The largest {@code float} less than or equal to {@code this} is returned. If
+     *  {@code this} is greater than or equal to zero and less than {@code Float.MIN_VALUE}, positive zero is returned.
+     *  If {@code this} is less than –{@code Float.MAX_VALUE}, {@code -Infinity} is returned. If {@code this} is
+     *  greater than or equal to {@code Float.MAX_VALUE}, {@code Float.MAX_VALUE} is returned. Negative zero and
+     *  {@code Infinity} cannot be returned.</li>
+     *  <li>{@code RoundingMode.CEILING}: The smallest {@code float} greater than or equal to {@code this} is returned.
+     *  If {@code this} is equal to zero, positive zero is returned. If {@code this} is less than zero and greater than
+     *  –{@code Float.MIN_VALUE}, negative zero is returned. If {@code this} is greater than {@code Float.MAX_VALUE},
+     *  Infinity is returned. If {@code this} is less than or equal to –{@code Float.MAX_VALUE},
+     *  –{@code Float.MAX_VALUE} is returned. {@code -Infinity} cannot be returned.</li>
+     *  <li>{@code RoundingMode.DOWN}: The first {@code float} going from {@code this} to 0 (possibly equal to
+     *  {@code this}) is returned. If {@code this} is greater than or equal to zero and less than
+     *  {@code Float.MIN_VALUE}, positive zero is returned. If {@code this} is less than zero and greater than
+     *  –{@code Float.MIN_VALUE}, negative zero is returned. If {@code this} is greater than or equal to
+     *  {@code Float.MAX_VALUE}, {@code Float.MAX_VALUE} is returned. If {@code this} is less than or equal to
+     *  –{@code Float.MAX_VALUE}, –{@code Float.MAX_VALUE} is returned. {@code Infinity} and {@code -Infinity} cannot
+     *  be returned.</li>
+     *  <li>{@code RoundingMode.UP}: The first {@code float} going from {@code this} to the infinity of the same sign
+     *  (possibly equal to {@code this}) is returned. If {@code this} is equal to zero, positive zero is returned. If
+     *  {@code this} is greater than {@code Float.MAX_VALUE}, {@code Infinity} is returned. If {@code this} is less
+     *  than {@code Float.MIN_VALUE}, {@code -Infinity} is returned. Negative zero cannot be returned.</li>
+     *  <li>{@code RoundingMode.HALF_DOWN}: If {@code this} is closest to one {@code float}, that {@code float} is
+     *  returned. If there are two closest {@code float}s, the one with the lower absolute value is returned. If
+     *  {@code this} is greater than or equal to zero and less than or equal to {@code Float.MIN_VALUE}/2, positive
+     *  zero is returned. If {@code this} is greater than or equal to –{@code Float.MIN_VALUE}/2 and less than zero,
+     *  negative zero is returned. If {@code this} is greater than or equal to {@code Float.MAX_VALUE},
+     *  {@code Float.MAX_VALUE} is returned. If {@code this} is less than or equal to –{@code Float.MAX_VALUE},
+     *  –{@code Float.MAX_VALUE} is returned. {@code Infinity} and {@code -Infinity} cannot be returned.</li>
+     *  <li>{@code RoundingMode.HALF_UP}: If {@code this} is closest to one {@code float}, that {@code float} is
+     *  returned. If there are two closest {@code float}s, the one with the higher absolute value is returned. If
+     *  {@code this} is greater than or equal to zero and less than {@code Float.MIN_VALUE}/2, positive zero is
+     *  returned. If {@code this} is greater than –{@code Float.MIN_VALUE}/2 and less than zero, negative zero is
+     *  returned. If {@code this} is greater than {@code Float.MAX_VALUE}, {@code Infinity} is returned. If
+     *  {@code this} is less than –{@code Float.MAX_VALUE}, {@code -Infinity} is returned.</li>
+     *  <li>{@code RoundingMode.HALF_EVEN}: If {@code this} is closest to one {@code float}, that {@code float} is
+     *  returned. If there are two closest {@code float}s, the one with the unset lowest-order bit is returned. If
+     *  {@code this} is greater than or equal to zero and less than or equal to {@code Float.MIN_VALUE}/2, positive
+     *  zero is returned. If {@code this} is greater than or equal to –{@code Float.MIN_VALUE}/2 and less than zero,
+     *  negative zero is returned. If {@code this} is greater than {@code Float.MAX_VALUE}, {@code Infinity} is
+     *  returned. If {@code this} is less than –{@code Float.MAX_VALUE}, {@code -Infinity} is returned.</li>
+     * </ul>
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code roundingMode} cannot be null.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#UNNECESSARY}, {@code this} must be exact and
+     *  exactly equal to a {@code float}.</li>
+     *  <li>The result may be empty or any {@code float} except {@code NaN}.</li>
+     * </ul>
+     *
+     * @param roundingMode specifies the details of how to round {@code this}.
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return {@code this}, rounded to a {@code float}
+     */
+    public @NotNull Optional<Float> floatValue(@NotNull RoundingMode roundingMode, @NotNull Rational resolution) {
+        if (resolution.signum() != 1) {
+            throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
+        }
+        if (rational.isPresent()) {
+            return Optional.of(rational.get().floatValue(roundingMode));
+        }
+        if (roundingMode == RoundingMode.UNNECESSARY) {
+            throw new ArithmeticException("If roundingMode is UNNECESSARY, this must be exact and exactly equal to a" +
+                    " float. Invalid this: " + this);
+        }
+        return limitValue(r -> r.floatValue(roundingMode), resolution);
     }
 
-    public double doubleValue(@NotNull RoundingMode roundingMode) {
+    /**
+     * Rounds {@code this} to a {@code float} using {@code RoundingMode.HALF_EVEN}. If {@code this} is closest to one
+     * {@code float}, that {@code float} is returned. If there are two closest {@code float}s, the one with the unset
+     * lowest-order bit is returned. If {@code this} is greater than or equal to zero and less than or equal to
+     * {@code Float.MIN_VALUE}/2, positive zero is returned. If {@code this} is greater than or equal to
+     * –{@code Float.MIN_VALUE}/2 and less than zero, negative zero is returned. If {@code this} is greater than
+     * {@code Float.MAX_VALUE}, Infinity is returned. If {@code this} is less than –{@code Float.MAX_VALUE},
+     * {@code -Infinity} is returned. If {@code this} is fuzzy and exactly between two adjacent {@code float}s, this
+     * method may loop forever, depending on the nature of the fuzziness. To prevent this behavior, use
+     * {@link Real#floatValue(Rational)} instead.
+     *
+     * <ul>
+     *  <li>If {@code this} this is halfway between two adjacent {@code float}s, then one of the floats will have a one
+     *  in its least significant bit, and {@code this} cannot be fuzzy in the direction closest to that float. However,
+     *  it may be fuzzy and equal to a {@code float}.</li>
+     *  <li>The result may be any {@code float}.</li>
+     * </ul>
+     *
+     * @return {@code this}, rounded to a {@code float}
+     */
+    public float floatValueUnsafe() {
+        return floatValueUnsafe(RoundingMode.HALF_EVEN);
+    }
+
+    /**
+     * Rounds {@code this} to a {@code float} using {@code RoundingMode.HALF_EVEN}. If {@code this} is closest to one
+     * {@code float}, that {@code float} is returned. If there are two closest {@code float}s, the one with the unset
+     * lowest-order bit is returned. If {@code this} is greater than or equal to zero and less than or equal to
+     * {@code Float.MIN_VALUE}/2, positive zero is returned. If {@code this} is greater than or equal to
+     * –{@code Float.MIN_VALUE}/2 and less than zero, negative zero is returned. If {@code this} is greater than
+     * {@code Float.MAX_VALUE}, Infinity is returned. If {@code this} is less than –{@code Float.MAX_VALUE},
+     * {@code -Infinity} is returned. If {@code this} is fuzzy and exactly between two adjacent {@code float}s, this
+     * method will give up and return empty once the approximating interval's diameter is less than the specified
+     * resolution.
+     *
+     * <ul>
+     *  <li>If {@code this} may be any {@code Real}.</li>
+     *  <li>The result may be any {@code float}.</li>
+     * </ul>
+     *
+     * @return {@code this}, rounded to a {@code float}
+     */
+    public @NotNull Optional<Float> floatValue(@NotNull Rational resolution) {
+        return floatValue(RoundingMode.HALF_EVEN, resolution);
+    }
+
+    /**
+     * Returns a {@code float} exactly equal to {@code this}. Throws an {@code ArithmeticException} if {@code this} is
+     * not exact and exactly equal to a {@code float}.
+     *
+     * <ul>
+     *  <li>{@code this} must be exact and equal to a {@code float}.</li>
+     *  <li>The result is not {@code NaN}, infinite, or negative 0.</li>
+     * </ul>
+     *
+     * @return {@code this}, in {@code float} form
+     */
+    public float floatValueExact() {
+        if (rational.isPresent()) {
+            return rational.get().floatValueExact();
+        } else {
+            throw new ArithmeticException("this must be exact and equal to a float. Invalid this: " + this);
+        }
+    }
+
+    public double doubleValueUnsafe(@NotNull RoundingMode roundingMode) {
+        if (rational.isPresent()) {
+            return rational.get().doubleValue(roundingMode);
+        }
+        if (roundingMode == RoundingMode.UNNECESSARY) {
+            throw new ArithmeticException("If roundingMode is UNNECESSARY, this must be exact and exactly equal to a" +
+                    " double. Invalid this: " + this);
+        }
+        //noinspection ConstantConditions
         return limitValueUnsafe(r -> r.doubleValue(roundingMode));
     }
 
-    public double doubleValue() {
-        return doubleValue(RoundingMode.HALF_EVEN);
+    public @NotNull Optional<Double> doubleValue(@NotNull RoundingMode roundingMode, @NotNull Rational resolution) {
+        if (resolution.signum() != 1) {
+            throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
+        }
+        if (rational.isPresent()) {
+            return Optional.of(rational.get().doubleValue(roundingMode));
+        }
+        if (roundingMode == RoundingMode.UNNECESSARY) {
+            throw new ArithmeticException("If roundingMode is UNNECESSARY, this must be exact and exactly equal to a" +
+                    " double. Invalid this: " + this);
+        }
+        return limitValue(r -> r.doubleValue(roundingMode), resolution);
+    }
+
+    public double doubleValueUnsafe() {
+        return doubleValueUnsafe(RoundingMode.HALF_EVEN);
+    }
+
+    public @NotNull Optional<Double> doubleValue(@NotNull Rational resolution) {
+        return doubleValue(RoundingMode.HALF_EVEN, resolution);
+    }
+
+    public double doubleValueExact() {
+        if (rational.isPresent()) {
+            return rational.get().doubleValueExact();
+        } else {
+            throw new ArithmeticException("this must be exact and equal to a double. Invalid this: " + this);
+        }
     }
 
     public @NotNull BigDecimal bigDecimalValueByPrecision(int precision, @NotNull RoundingMode roundingMode) {
@@ -1722,8 +1991,8 @@ public final class Real implements Iterable<Interval> {
     private static @NotNull Real atan01(@NotNull Rational x) {
         if (x == Rational.ZERO) return ZERO;
         if (x == Rational.ONE) return PI.shiftRight(2);
+        Rational xSquared = x.pow(2);
         return new Real(() -> new Iterator<Interval>() {
-            private @NotNull Rational xSquared = x.pow(2);
             private @NotNull Rational partialSum = x;
             private @NotNull Rational xPower = x;
             private @NotNull BigInteger denominator = BigInteger.ONE;
