@@ -1113,8 +1113,8 @@ public class AlgebraicProperties extends QBarTestProperties {
 
         xs = filterInfinite(
                 x -> !x.equals(of(Rational.LARGEST_FLOAT)),
-                P.withScale(2).algebraicsIn(Interval.greaterThanOrEqualTo(Rational.LARGEST_FLOAT)
-        ));
+                P.withScale(2).algebraicsIn(Interval.greaterThanOrEqualTo(Rational.LARGEST_FLOAT))
+        );
         for (Algebraic x : take(SMALL_LIMIT, xs)) {
             float rounded = x.floatValue();
             aeqf(x, rounded, Float.POSITIVE_INFINITY);

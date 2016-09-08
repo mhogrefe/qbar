@@ -1370,11 +1370,11 @@ public final class Real implements Iterable<Interval> {
      *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#FLOOR}, {@code this} cannot equal a {@code float}
      *  and be fuzzy on the left.</li>
      *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#HALF_UP}, {@code this} cannot be halfway between
-     *  two adjacent non-negative {@code float}s and be fuzzy on the left or halfway between two adjacent non-positive
-     *  {@code float}s and fuzzy on the right. However, it may be fuzzy and equal to a {@code float}.</li>
+     *  two adjacent non-negative {@code float}s and be fuzzy on the left, halfway between two adjacent non-positive
+     *  {@code float}s and fuzzy on the right, or a zero and fuzzy on the left.</li>
      *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#HALF_DOWN}, {@code this} cannot be halfway between
-     *  two adjacent non-positive {@code float}s and be fuzzy on the right or halfway between two adjacent non-positive
-     *  {@code float}s and fuzzy on the left, and cannot be a zero fuzzy on the left.</li>
+     *  two adjacent non-positive {@code float}s and be fuzzy on the right, halfway between two adjacent non-positive
+     *  {@code float}s and fuzzy on the left, or a zero fuzzy on the left.</li>
      *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#HALF_EVEN}, and {@code this} this is halfway
      *  between two adjacent {@code float}s, then one of the floats will have a one in its least significant bit, and
      *  {@code this} cannot be fuzzy in the direction closest to that float. It also cannot be a zero fuzzy on the

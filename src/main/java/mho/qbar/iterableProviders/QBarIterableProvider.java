@@ -4048,6 +4048,165 @@ public strictfp abstract class QBarIterableProvider {
     }
 
     /**
+     * Generates clean {@code Real}s contained in a given {@code Interval}.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     * </ul>
+     *
+     * @param a an {@code Interval}
+     */
+    public @NotNull Iterable<Real> cleanRealsIn(@NotNull Interval a) {
+        return map(Algebraic::realValue, algebraicsIn(a));
+    }
+
+    /**
+     * Generates {@code Real}s contained in a given {@code Interval}.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     * </ul>
+     *
+     * @param a an {@code Interval}
+     */
+    public @NotNull Iterable<Real> realsIn(@NotNull Interval a) {
+        if (!a.getLower().isPresent() && !a.getUpper().isPresent()) {
+            return reals();
+        } else if (!a.getLower().isPresent()) {
+            return realRangeDown(Algebraic.of(a.getUpper().get()));
+        } else if (!a.getUpper().isPresent()) {
+            return realRangeUp(Algebraic.of(a.getLower().get()));
+        } else {
+            return realRange(Algebraic.of(a.getLower().get()), Algebraic.of(a.getUpper().get()));
+        }
+    }
+
+    /**
+     * Generates {@code Real}s not contained in a given {@code Interval}.
+     *
+     * <ul>
+     *  <li>{@code degree} must be positive.</li>
+     *  <li>{@code a} cannot be (–∞, ∞).</li>
+     * </ul>
+     *
+     * @param a an {@code Interval}
+     */
+    public @NotNull Iterable<Real> cleanRealsNotIn(@NotNull Interval a) {
+        return map(Algebraic::realValue, algebraicsNotIn(a));
+    }
+
+    /**
+     * Generates {@code Real}s not contained in a given {@code Interval}.
+     *
+     * <ul>
+     *  <li>{@code degree} must be positive.</li>
+     *  <li>{@code a} cannot be (–∞, ∞).</li>
+     * </ul>
+     *
+     * @param a an {@code Interval}
+     */
+    public @NotNull Iterable<Real> realsNotIn(@NotNull Interval a) {
+        List<Interval> complement = a.complement();
+        switch (complement.size()) {
+            case 0:
+                return Collections.emptyList();
+            case 1:
+                if (a.getLower().isPresent()) {
+                    Algebraic lower = Algebraic.of(a.getLower().get());
+                    Iterable<Algebraic> rationalRange = filterInfinite(r -> !r.equals(lower), rangeUp(1, lower));
+                    return withScale(1).choose(
+                            map(Algebraic::realValue, filterInfinite(r -> !r.equals(lower), rangeUp(lower))),
+                            choose(
+                                    Arrays.asList(
+                                            map(
+                                                    x -> Real.leftFuzzyRepresentation(x.rationalValueExact()),
+                                                    rationalRange
+                                            ),
+                                            map(
+                                                    x -> Real.rightFuzzyRepresentation(x.rationalValueExact()),
+                                                    rationalRange
+                                            ),
+                                            map(
+                                                    x -> Real.fuzzyRepresentation(x.rationalValueExact()),
+                                                    rationalRange
+                                            )
+                                    )
+                            )
+                    );
+                } else {
+                    Algebraic upper = Algebraic.of(a.getUpper().get());
+                    Iterable<Algebraic> rationalRange = filterInfinite(r -> !r.equals(upper), rangeDown(1, upper));
+                    return withScale(1).choose(
+                            map(Algebraic::realValue, filterInfinite(r -> !r.equals(upper), rangeDown(upper))),
+                            choose(
+                                    Arrays.asList(
+                                            map(
+                                                    x -> Real.leftFuzzyRepresentation(x.rationalValueExact()),
+                                                    rationalRange
+                                            ),
+                                            map(
+                                                    x -> Real.rightFuzzyRepresentation(x.rationalValueExact()),
+                                                    rationalRange
+                                            ),
+                                            map(
+                                                    x -> Real.fuzzyRepresentation(x.rationalValueExact()),
+                                                    rationalRange
+                                            )
+                                    )
+                            )
+                    );
+                }
+            case 2:
+                Algebraic x = Algebraic.of(complement.get(0).getUpper().get());
+                Algebraic y = Algebraic.of(complement.get(1).getLower().get());
+                Iterable<Algebraic> rationalRangeUp = filterInfinite(r -> !r.equals(y), rangeUp(1, y));
+                Iterable<Algebraic> rationalRangeDown = filterInfinite(r -> !r.equals(x), rangeDown(1, x));
+                //noinspection RedundantCast
+                return withScale(1).choose(
+                        withScale(1).choose(
+                                map(Algebraic::realValue, filterInfinite(r -> !r.equals(x), rangeDown(x))),
+                                choose(
+                                        Arrays.asList(
+                                                map(
+                                                        r -> Real.leftFuzzyRepresentation(r.rationalValueExact()),
+                                                        rationalRangeDown
+                                                ),
+                                                map(
+                                                        r -> Real.rightFuzzyRepresentation(r.rationalValueExact()),
+                                                        rationalRangeDown
+                                                ),
+                                                map(
+                                                        r -> Real.fuzzyRepresentation(r.rationalValueExact()),
+                                                        rationalRangeDown
+                                                )
+                                        )
+                                )
+                        ),
+                        withScale(1).choose(
+                                map(Algebraic::realValue, filterInfinite(r -> !r.equals(y), rangeUp(y))),
+                                choose(
+                                        Arrays.asList(
+                                                map(
+                                                        r -> Real.leftFuzzyRepresentation(r.rationalValueExact()),
+                                                        rationalRangeUp
+                                                ),
+                                                map(
+                                                        r -> Real.rightFuzzyRepresentation(r.rationalValueExact()),
+                                                        rationalRangeUp
+                                                ),
+                                                map(
+                                                        r -> Real.fuzzyRepresentation(r.rationalValueExact()),
+                                                        rationalRangeUp
+                                                )
+                                        )
+                                )
+                        )
+                );
+            default: throw new IllegalStateException("unreachable");
+        }
+    }
+
+    /**
      * Generates positive {@code Algebraic}s with a given degree.
      *
      * <ul>

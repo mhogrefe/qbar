@@ -2455,7 +2455,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * {@code secondaryScale} corresponds to {@code Algebraic}s with higher degrees. Does not support removal.
      *
      * <ul>
-     *  <li>{@code this} must have a {@code scale} of at least 2.</li>
+     *  <li>{@code this} must have a {@code scale} of at least 2 and a secondary scale of at least 4.</li>
      *  <li>{@code degree} must be positive.</li>
      *  <li>{@code a} cannot be null.</li>
      *  <li>The result is a non-removable {@code Iterable} containing {@code Algebraic}s.</li>

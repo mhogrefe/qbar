@@ -3,6 +3,7 @@ package mho.qbar.objects;
 import mho.qbar.testing.QBarDemos;
 import mho.wheels.iterables.CachedIterator;
 import mho.wheels.math.BinaryFraction;
+import mho.wheels.numberUtils.FloatingPointUtils;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
@@ -581,6 +582,344 @@ public class RealDemos extends QBarDemos {
         for (Real x : take(LIMIT, P.withScale(4).reals())) {
             System.out.println(x + " is " + (x.isExactAndEqualToDouble() ? "" : "not ") +
                     "exact and equal to a double");
+        }
+    }
+
+    private static boolean rmFloatCheck(@NotNull Algebraic x, @NotNull RoundingMode rm, @NotNull FuzzinessType ft) {
+        boolean left = ft == FuzzinessType.LEFT || ft == FuzzinessType.BOTH;
+        boolean right = ft == FuzzinessType.RIGHT || ft == FuzzinessType.BOTH;
+        if (x.isEqualToFloat()) {
+            int sign = x.signum();
+            switch (rm) {
+                case UP:
+                    return sign != 0 && !(sign == 1 && right) && !(sign == -1 && left);
+                case DOWN:
+                    return sign != 0 && !(sign == 1 && left) && !(sign == -1 && right);
+                case CEILING:
+                    return sign != 0 && !right;
+                case FLOOR:
+                    return !left;
+                case UNNECESSARY:
+                    return ft == FuzzinessType.NONE;
+                default:
+                    return !(sign == 0 && left);
+            }
+        } else if (x.isRational()) {
+            Rational r = x.rationalValueExact();
+            float predecessor = r.floatValue(RoundingMode.FLOOR);
+            if (Float.isFinite(predecessor) && predecessor != Float.MAX_VALUE &&
+                    r.equals(Rational.ofExact(predecessor).get()
+                            .add(Rational.ofExact(FloatingPointUtils.successor(predecessor)).get()).shiftRight(1))) {
+                int sign = x.signum();
+                switch (rm) {
+                    case HALF_UP:
+                        return !(sign == 1 && left) && !(sign == -1 && right);
+                    case HALF_DOWN:
+                        return !(sign == 1 && right) && !(sign == -1 && left);
+                    case HALF_EVEN:
+                        return (Float.floatToIntBits(predecessor) & 1) == 0 ? !right : !left;
+                    case UNNECESSARY:
+                        return false;
+                    default:
+                        return true;
+                }
+            }
+        }
+        return rm != RoundingMode.UNNECESSARY;
+    }
+
+    private void demoFloatValueUnsafe_RoundingMode() {
+        //noinspection RedundantCast
+        Iterable<Pair<Real, RoundingMode>> ps = map(
+                q -> {
+                    Real r;
+                    switch (q.a.b) {
+                        case NONE:
+                            r = q.a.a.realValue();
+                            break;
+                        case LEFT:
+                            r = leftFuzzyRepresentation(q.a.a.rationalValueExact());
+                            break;
+                        case RIGHT:
+                            r = rightFuzzyRepresentation(q.a.a.rationalValueExact());
+                            break;
+                        case BOTH:
+                            r = fuzzyRepresentation(q.a.a.rationalValueExact());
+                            break;
+                        default:
+                            throw new IllegalStateException("unreachable");
+                    }
+                    return new Pair<>(r, q.b);
+                },
+                filterInfinite(
+                        p -> rmFloatCheck(p.a.a, p.b, p.a.b),
+                        P.pairsLogarithmicOrder(
+                                P.withScale(1).choose(
+                                        map(x -> new Pair<>(x, FuzzinessType.NONE), P.withScale(4).algebraics()),
+                                        P.choose(
+                                                (List<Iterable<Pair<Algebraic, FuzzinessType>>>) Arrays.asList(
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.LEFT),
+                                                                P.withScale(4).rationals()
+                                                        ),
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.RIGHT),
+                                                                P.withScale(4).rationals()
+                                                        ),
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.BOTH),
+                                                                P.withScale(4).rationals()
+                                                        )
+                                                )
+                                        )
+                                ),
+                                P.roundingModes()
+                        )
+                )
+        );
+        for (Pair<Real, RoundingMode> p : take(LIMIT, ps)) {
+            System.out.println("floatValueUnsafe(" + p.a + ", " + p.b + ") = " + p.a.floatValueUnsafe(p.b));
+        }
+    }
+
+    private void demoFloatValue_RoundingMode_Rational() {
+        Iterable<Triple<Real, RoundingMode, Rational>> ts = filterInfinite(
+                s -> s.b != RoundingMode.UNNECESSARY || s.a.isExactAndEqualToFloat(),
+                P.triples(P.withScale(4).reals(), P.roundingModes(), P.positiveRationals())
+        );
+        for (Triple<Real, RoundingMode, Rational> t : take(LIMIT, ts)) {
+            System.out.println("floatValue(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.floatValue(t.b, t.c));
+        }
+    }
+
+    private void demoFloatValueUnsafe() {
+        //noinspection RedundantCast
+        Iterable<Real> xs = map(
+                q -> {
+                    switch (q.b) {
+                        case NONE:
+                            return q.a.realValue();
+                        case LEFT:
+                            return leftFuzzyRepresentation(q.a.rationalValueExact());
+                        case RIGHT:
+                            return rightFuzzyRepresentation(q.a.rationalValueExact());
+                        case BOTH:
+                            return fuzzyRepresentation(q.a.rationalValueExact());
+                        default:
+                            throw new IllegalStateException("unreachable");
+                    }
+                },
+                filterInfinite(
+                        p -> rmFloatCheck(p.a, RoundingMode.HALF_EVEN, p.b),
+                        P.withScale(1).choose(
+                                map(x -> new Pair<>(x, FuzzinessType.NONE), P.withScale(4).algebraics()),
+                                P.choose(
+                                        (List<Iterable<Pair<Algebraic, FuzzinessType>>>) Arrays.asList(
+                                                map(
+                                                        r -> new Pair<>(Algebraic.of(r), FuzzinessType.LEFT),
+                                                        P.withScale(4).rationals()
+                                                ),
+                                                map(
+                                                        r -> new Pair<>(Algebraic.of(r), FuzzinessType.RIGHT),
+                                                        P.withScale(4).rationals()
+                                                ),
+                                                map(
+                                                        r -> new Pair<>(Algebraic.of(r), FuzzinessType.BOTH),
+                                                        P.withScale(4).rationals()
+                                                )
+                                        )
+                                )
+                        )
+                )
+        );
+        for (Real x : take(LIMIT, xs)) {
+            System.out.println("floatValueUnsafe(" + x + ") = " + x.floatValueUnsafe());
+        }
+    }
+
+    private void demoFloatValue_Rational() {
+        Iterable<Pair<Real, Rational>> ps = P.pairs(P.withScale(4).reals(), P.withScale(4).positiveRationals());
+        for (Pair<Real, Rational> p : take(LIMIT, ps)) {
+            System.out.println("floatValue(" + p.a + ", " + p.b + ") = " + p.a.floatValue(p.b));
+        }
+    }
+
+    private void demoFloatValueExact() {
+        Iterable<Real> xs = map(
+                f -> ofExact(f).get(),
+                filter(f -> Float.isFinite(f) && !FloatingPointUtils.isNegativeZero(f), P.floats())
+        );
+        for (Real x : take(LIMIT, xs)) {
+            System.out.println("floatValueExact(" + x + ") = " + x.floatValueExact());
+        }
+    }
+
+    private static boolean rmDoubleCheck(@NotNull Algebraic x, @NotNull RoundingMode rm, @NotNull FuzzinessType ft) {
+        boolean left = ft == FuzzinessType.LEFT || ft == FuzzinessType.BOTH;
+        boolean right = ft == FuzzinessType.RIGHT || ft == FuzzinessType.BOTH;
+        if (x.isEqualToDouble()) {
+            int sign = x.signum();
+            switch (rm) {
+                case UP:
+                    return sign != 0 && !(sign == 1 && right) && !(sign == -1 && left);
+                case DOWN:
+                    return sign != 0 && !(sign == 1 && left) && !(sign == -1 && right);
+                case CEILING:
+                    return sign != 0 && !right;
+                case FLOOR:
+                    return !left;
+                case UNNECESSARY:
+                    return ft == FuzzinessType.NONE;
+                default:
+                    return !(sign == 0 && left);
+            }
+        } else if (x.isRational()) {
+            Rational r = x.rationalValueExact();
+            double predecessor = r.doubleValue(RoundingMode.FLOOR);
+            if (Double.isFinite(predecessor) && predecessor != Double.MAX_VALUE &&
+                    r.equals(Rational.ofExact(predecessor).get()
+                            .add(Rational.ofExact(FloatingPointUtils.successor(predecessor)).get()).shiftRight(1))) {
+                int sign = x.signum();
+                switch (rm) {
+                    case HALF_UP:
+                        return !(sign == 1 && left) && !(sign == -1 && right);
+                    case HALF_DOWN:
+                        return !(sign == 1 && right) && !(sign == -1 && left);
+                    case HALF_EVEN:
+                        return (Double.doubleToLongBits(predecessor) & 1) == 0 ? !right : !left;
+                    case UNNECESSARY:
+                        return false;
+                    default:
+                        return true;
+                }
+            }
+        }
+        return rm != RoundingMode.UNNECESSARY;
+    }
+
+    private void demoDoubleValueUnsafe_RoundingMode() {
+        //noinspection RedundantCast
+        Iterable<Pair<Real, RoundingMode>> ps = map(
+                q -> {
+                    Real r;
+                    switch (q.a.b) {
+                        case NONE:
+                            r = q.a.a.realValue();
+                            break;
+                        case LEFT:
+                            r = leftFuzzyRepresentation(q.a.a.rationalValueExact());
+                            break;
+                        case RIGHT:
+                            r = rightFuzzyRepresentation(q.a.a.rationalValueExact());
+                            break;
+                        case BOTH:
+                            r = fuzzyRepresentation(q.a.a.rationalValueExact());
+                            break;
+                        default:
+                            throw new IllegalStateException("unreachable");
+                    }
+                    return new Pair<>(r, q.b);
+                },
+                filterInfinite(
+                        p -> rmDoubleCheck(p.a.a, p.b, p.a.b),
+                        P.pairsLogarithmicOrder(
+                                P.withScale(1).choose(
+                                        map(x -> new Pair<>(x, FuzzinessType.NONE), P.withScale(4).algebraics()),
+                                        P.choose(
+                                                (List<Iterable<Pair<Algebraic, FuzzinessType>>>) Arrays.asList(
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.LEFT),
+                                                                P.withScale(4).rationals()
+                                                        ),
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.RIGHT),
+                                                                P.withScale(4).rationals()
+                                                        ),
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.BOTH),
+                                                                P.withScale(4).rationals()
+                                                        )
+                                                )
+                                        )
+                                ),
+                                P.roundingModes()
+                        )
+                )
+        );
+        for (Pair<Real, RoundingMode> p : take(LIMIT, ps)) {
+            System.out.println("doubleValueUnsafe(" + p.a + ", " + p.b + ") = " + p.a.doubleValueUnsafe(p.b));
+        }
+    }
+
+    private void demoDoubleValue_RoundingMode_Rational() {
+        Iterable<Triple<Real, RoundingMode, Rational>> ts = filterInfinite(
+                s -> s.b != RoundingMode.UNNECESSARY || s.a.isExactAndEqualToFloat(),
+                P.triples(P.withScale(4).reals(), P.roundingModes(), P.positiveRationals())
+        );
+        for (Triple<Real, RoundingMode, Rational> t : take(LIMIT, ts)) {
+            System.out.println("doubleValue(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.doubleValue(t.b, t.c));
+        }
+    }
+
+    private void demoDoubleValueUnsafe() {
+        //noinspection RedundantCast
+        Iterable<Real> xs = map(
+                q -> {
+                    switch (q.b) {
+                        case NONE:
+                            return q.a.realValue();
+                        case LEFT:
+                            return leftFuzzyRepresentation(q.a.rationalValueExact());
+                        case RIGHT:
+                            return rightFuzzyRepresentation(q.a.rationalValueExact());
+                        case BOTH:
+                            return fuzzyRepresentation(q.a.rationalValueExact());
+                        default:
+                            throw new IllegalStateException("unreachable");
+                    }
+                },
+                filterInfinite(
+                        p -> rmDoubleCheck(p.a, RoundingMode.HALF_EVEN, p.b),
+                        P.withScale(1).choose(
+                                map(x -> new Pair<>(x, FuzzinessType.NONE), P.withScale(4).algebraics()),
+                                P.choose(
+                                        (List<Iterable<Pair<Algebraic, FuzzinessType>>>) Arrays.asList(
+                                                map(
+                                                        r -> new Pair<>(Algebraic.of(r), FuzzinessType.LEFT),
+                                                        P.withScale(4).rationals()
+                                                ),
+                                                map(
+                                                        r -> new Pair<>(Algebraic.of(r), FuzzinessType.RIGHT),
+                                                        P.withScale(4).rationals()
+                                                ),
+                                                map(
+                                                        r -> new Pair<>(Algebraic.of(r), FuzzinessType.BOTH),
+                                                        P.withScale(4).rationals()
+                                                )
+                                        )
+                                )
+                        )
+                )
+        );
+        for (Real x : take(LIMIT, xs)) {
+            System.out.println("doubleValueUnsafe(" + x + ") = " + x.doubleValueUnsafe());
+        }
+    }
+
+    private void demoDoubleValue_Rational() {
+        Iterable<Pair<Real, Rational>> ps = P.pairs(P.withScale(4).reals(), P.withScale(4).positiveRationals());
+        for (Pair<Real, Rational> p : take(LIMIT, ps)) {
+            System.out.println("doubleValue(" + p.a + ", " + p.b + ") = " + p.a.doubleValue(p.b));
+        }
+    }
+
+    private void demoDoubleValueExact() {
+        Iterable<Real> xs = map(
+                d -> ofExact(d).get(),
+                filter(d -> Double.isFinite(d) && !FloatingPointUtils.isNegativeZero(d), P.doubles())
+        );
+        for (Real x : take(LIMIT, xs)) {
+            System.out.println("doubleValueExact(" + x + ") = " + x.doubleValueExact());
         }
     }
 }
