@@ -1376,9 +1376,9 @@ public final class Real implements Iterable<Interval> {
      *  two adjacent non-positive {@code float}s and be fuzzy on the right, halfway between two adjacent non-positive
      *  {@code float}s and fuzzy on the left, or a zero fuzzy on the left.</li>
      *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#HALF_EVEN}, and {@code this} this is halfway
-     *  between two adjacent {@code float}s, then one of the floats will have a one in its least significant bit, and
-     *  {@code this} cannot be fuzzy in the direction closest to that float. It also cannot be a zero fuzzy on the
-     *  left.</li>
+     *  between two adjacent {@code float}s, then one of the {@code float}s will have a one in its least significant
+     *  bit, and {@code this} cannot be fuzzy in the direction closest to that {@code float}. It also cannot be a zero
+     *  fuzzy on the left.</li>
      *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#UNNECESSARY}, {@code this} must be exact and
      *  exactly equal to a {@code float}.</li>
      *  <li>The result may be any {@code float} except {@code NaN}.</li>
@@ -1488,9 +1488,9 @@ public final class Real implements Iterable<Interval> {
      * {@link Real#floatValue(Rational)} instead.
      *
      * <ul>
-     *  <li>If {@code this} this is halfway between two adjacent {@code float}s, then one of the floats will have a one
-     *  in its least significant bit, and {@code this} cannot be fuzzy in the direction closest to that float. However,
-     *  it may be fuzzy and equal to a {@code float}.</li>
+     *  <li>If {@code this} this is halfway between two adjacent {@code float}s, then one of the {@code float}s will
+     *  have a one in its least significant bit, and {@code this} cannot be fuzzy in the direction closest to that
+     *  {@code float}. However, it may be fuzzy and equal to a {@code float}.</li>
      *  <li>The result may be any {@code float}.</li>
      * </ul>
      *
@@ -1541,6 +1541,88 @@ public final class Real implements Iterable<Interval> {
         }
     }
 
+    /**
+     * Rounds {@code this} to a {@code double}. The details of the rounding are specified by {@code roundingMode}. If
+     * {@code this} is a fuzzy and exactly equal to a {@code double} or a fuzzy and exactly between two adjacent
+     * {@code double}s, this method may loop forever, depending on the rounding mode and the nature of the fuzziness.
+     * To prevent this behavior, use {@link Real#doubleValue(RoundingMode, Rational)} instead.
+     * <ul>
+     *  <li>{@code RoundingMode.UNNECESSARY}: If {@code this} is exactly equal to a {@code double}, that {@code double}
+     *  is returned. Otherwise, an {@link java.lang.ArithmeticException} is thrown. If {@code this} is zero, positive
+     *  zero is returned. Negative zero, {@code Infinity}, and {@code -Infinity} cannot be returned.</li>
+     *  <li>{@code RoundingMode.FLOOR}: The largest {@code double} less than or equal to {@code this} is returned. If
+     *  {@code this} is greater than or equal to zero and less than {@code Double.MIN_VALUE}, positive zero is
+     *  returned. If {@code this} is less than –{@code Double.MAX_VALUE}, {@code -Infinity} is returned. If
+     *  {@code this} is greater than or equal to {@code Double.MAX_VALUE}, {@code Double.MAX_VALUE} is returned.
+     *  Negative zero and {@code Infinity} cannot be returned.</li>
+     *  <li>{@code RoundingMode.CEILING}: The smallest {@code double} greater than or equal to {@code this} is
+     *  returned. If {@code this} is equal to zero, positive zero is returned. If {@code this} is less than zero and
+     *  greater than –{@code Double.MIN_VALUE}, negative zero is returned. If {@code this} is greater than
+     *  {@code Double.MAX_VALUE}, Infinity is returned. If {@code this} is less than or equal to
+     *  –{@code Double.MAX_VALUE}, –{@code Double.MAX_VALUE} is returned. {@code -Infinity} cannot be returned.</li>
+     *  <li>{@code RoundingMode.DOWN}: The first {@code double} going from {@code this} to 0 (possibly equal to
+     *  {@code this}) is returned. If {@code this} is greater than or equal to zero and less than
+     *  {@code Double.MIN_VALUE}, positive zero is returned. If {@code this} is less than zero and greater than
+     *  –{@code Double.MIN_VALUE}, negative zero is returned. If {@code this} is greater than or equal to
+     *  {@code Double.MAX_VALUE}, {@code Double.MAX_VALUE} is returned. If {@code this} is less than or equal to
+     *  –{@code Double.MAX_VALUE}, –{@code Double.MAX_VALUE} is returned. {@code Infinity} and {@code -Infinity} cannot
+     *  be returned.</li>
+     *  <li>{@code RoundingMode.UP}: The first {@code double} going from {@code this} to the infinity of the same sign
+     *  (possibly equal to {@code this}) is returned. If {@code this} is equal to zero, positive zero is returned. If
+     *  {@code this} is greater than {@code Double.MAX_VALUE}, {@code Infinity} is returned. If {@code this} is less
+     *  than {@code Double.MIN_VALUE}, {@code -Infinity} is returned. Negative zero cannot be returned.</li>
+     *  <li>{@code RoundingMode.HALF_DOWN}: If {@code this} is closest to one {@code double}, that {@code double} is
+     *  returned. If there are two closest {@code double}s, the one with the lower absolute value is returned. If
+     *  {@code this} is greater than or equal to zero and less than or equal to {@code Double.MIN_VALUE}/2, positive
+     *  zero is returned. If {@code this} is greater than or equal to –{@code Double.MIN_VALUE}/2 and less than zero,
+     *  negative zero is returned. If {@code this} is greater than or equal to {@code Double.MAX_VALUE},
+     *  {@code Double.MAX_VALUE} is returned. If {@code this} is less than or equal to –{@code Double.MAX_VALUE},
+     *  –{@code Double.MAX_VALUE} is returned. {@code Infinity} and {@code -Infinity} cannot be returned.</li>
+     *  <li>{@code RoundingMode.HALF_UP}: If {@code this} is closest to one {@code double}, that {@code double} is
+     *  returned. If there are two closest {@code double}s, the one with the higher absolute value is returned. If
+     *  {@code this} is greater than or equal to zero and less than {@code Double.MIN_VALUE}/2, positive zero is
+     *  returned. If {@code this} is greater than –{@code Double.MIN_VALUE}/2 and less than zero, negative zero is
+     *  returned. If {@code this} is greater than {@code Double.MAX_VALUE}, {@code Infinity} is returned. If
+     *  {@code this} is less than –{@code Double.MAX_VALUE}, {@code -Infinity} is returned.</li>
+     *  <li>{@code RoundingMode.HALF_EVEN}: If {@code this} is closest to one {@code double}, that {@code double} is
+     *  returned. If there are two closest {@code double}s, the one with the unset lowest-order bit is returned. If
+     *  {@code this} is greater than or equal to zero and less than or equal to {@code Double.MIN_VALUE}/2, positive
+     *  zero is returned. If {@code this} is greater than or equal to –{@code Double.MIN_VALUE}/2 and less than zero,
+     *  negative zero is returned. If {@code this} is greater than {@code Double.MAX_VALUE}, {@code Infinity} is
+     *  returned. If {@code this} is less than –{@code Double.MAX_VALUE}, {@code -Infinity} is returned.</li>
+     * </ul>
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code roundingMode} cannot be null.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#UP}, {@code this} cannot be equal to a positive
+     *  {@code double} and be fuzzy on the right, a negative {@code double} and fuzzy on the left, or a fuzzy
+     *  zero.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#DOWN}, {@code this} cannot equal to a positive
+     *  {@code double} and be fuzzy on the left, a negative {@code double} and fuzzy on the right, or a fuzzy
+     *  zero.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#CEILING}, {@code this} cannot equal a
+     *  {@code double} and be fuzzy on the right, and cannot be a fuzzy zero.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#FLOOR}, {@code this} cannot equal a {@code double}
+     *  and be fuzzy on the left.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#HALF_UP}, {@code this} cannot be halfway between
+     *  two adjacent non-negative {@code double}s and be fuzzy on the left, halfway between two adjacent non-positive
+     *  {@code double}s and fuzzy on the right, or a zero and fuzzy on the left.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#HALF_DOWN}, {@code this} cannot be halfway between
+     *  two adjacent non-positive {@code double}s and be fuzzy on the right, halfway between two adjacent non-positive
+     *  {@code double}s and fuzzy on the left, or a zero fuzzy on the left.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#HALF_EVEN}, and {@code this} this is halfway
+     *  between two adjacent {@code double}s, then one of the {@code double}s will have a one in its least significant
+     *  bit, and {@code this} cannot be fuzzy in the direction closest to that {@code double}. It also cannot be a zero
+     *  fuzzy on the left.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#UNNECESSARY}, {@code this} must be exact and
+     *  exactly equal to a {@code double}.</li>
+     *  <li>The result may be any {@code double} except {@code NaN}.</li>
+     * </ul>
+     *
+     * @param roundingMode specifies the details of how to round {@code this}.
+     * @return {@code this}, rounded to a {@code double}
+     */
     public double doubleValueUnsafe(@NotNull RoundingMode roundingMode) {
         if (rational.isPresent()) {
             return rational.get().doubleValue(roundingMode);
@@ -1553,6 +1635,69 @@ public final class Real implements Iterable<Interval> {
         return limitValueUnsafe(r -> r.doubleValue(roundingMode));
     }
 
+    /**
+     * Rounds {@code this} to a {@code double}. The details of the rounding are specified by {@code roundingMode}. If
+     * {@code this} is a fuzzy and exactly equal to a {@code double} or a fuzzy and exactly between two adjacent
+     * {@code double}s, this method will give up and return empty once the approximating interval's diameter is less
+     * than the specified resolution.
+     * <ul>
+     *  <li>{@code RoundingMode.UNNECESSARY}: If {@code this} is exactly equal to a {@code double}, that {@code double}
+     *  is returned. Otherwise, an {@link java.lang.ArithmeticException} is thrown. If {@code this} is zero, positive
+     *  zero is returned. Negative zero, {@code Infinity}, and {@code -Infinity} cannot be returned.</li>
+     *  <li>{@code RoundingMode.FLOOR}: The largest {@code double} less than or equal to {@code this} is returned. If
+     *  {@code this} is greater than or equal to zero and less than {@code Double.MIN_VALUE}, positive zero is
+     *  returned. If {@code this} is less than –{@code Double.MAX_VALUE}, {@code -Infinity} is returned. If
+     *  {@code this} is greater than or equal to {@code Double.MAX_VALUE}, {@code Double.MAX_VALUE} is returned.
+     *  Negative zero and {@code Infinity} cannot be returned.</li>
+     *  <li>{@code RoundingMode.CEILING}: The smallest {@code double} greater than or equal to {@code this} is
+     *  returned. If {@code this} is equal to zero, positive zero is returned. If {@code this} is less than zero and
+     *  greater than –{@code Double.MIN_VALUE}, negative zero is returned. If {@code this} is greater than
+     *  {@code Double.MAX_VALUE}, Infinity is returned. If {@code this} is less than or equal to
+     *  –{@code Double.MAX_VALUE}, –{@code Double.MAX_VALUE} is returned. {@code -Infinity} cannot be returned.</li>
+     *  <li>{@code RoundingMode.DOWN}: The first {@code double} going from {@code this} to 0 (possibly equal to
+     *  {@code this}) is returned. If {@code this} is greater than or equal to zero and less than
+     *  {@code Double.MIN_VALUE}, positive zero is returned. If {@code this} is less than zero and greater than
+     *  –{@code Double.MIN_VALUE}, negative zero is returned. If {@code this} is greater than or equal to
+     *  {@code Double.MAX_VALUE}, {@code Double.MAX_VALUE} is returned. If {@code this} is less than or equal to
+     *  –{@code Double.MAX_VALUE}, –{@code Double.MAX_VALUE} is returned. {@code Infinity} and {@code -Infinity} cannot
+     *  be returned.</li>
+     *  <li>{@code RoundingMode.UP}: The first {@code double} going from {@code this} to the infinity of the same sign
+     *  (possibly equal to {@code this}) is returned. If {@code this} is equal to zero, positive zero is returned. If
+     *  {@code this} is greater than {@code Double.MAX_VALUE}, {@code Infinity} is returned. If {@code this} is less
+     *  than {@code Double.MIN_VALUE}, {@code -Infinity} is returned. Negative zero cannot be returned.</li>
+     *  <li>{@code RoundingMode.HALF_DOWN}: If {@code this} is closest to one {@code double}, that {@code double} is
+     *  returned. If there are two closest {@code double}s, the one with the lower absolute value is returned. If
+     *  {@code this} is greater than or equal to zero and less than or equal to {@code Double.MIN_VALUE}/2, positive
+     *  zero is returned. If {@code this} is greater than or equal to –{@code Double.MIN_VALUE}/2 and less than zero,
+     *  negative zero is returned. If {@code this} is greater than or equal to {@code Double.MAX_VALUE},
+     *  {@code Double.MAX_VALUE} is returned. If {@code this} is less than or equal to –{@code Double.MAX_VALUE},
+     *  –{@code Double.MAX_VALUE} is returned. {@code Infinity} and {@code -Infinity} cannot be returned.</li>
+     *  <li>{@code RoundingMode.HALF_UP}: If {@code this} is closest to one {@code double}, that {@code double} is
+     *  returned. If there are two closest {@code double}s, the one with the higher absolute value is returned. If
+     *  {@code this} is greater than or equal to zero and less than {@code Double.MIN_VALUE}/2, positive zero is
+     *  returned. If {@code this} is greater than –{@code Double.MIN_VALUE}/2 and less than zero, negative zero is
+     *  returned. If {@code this} is greater than {@code Double.MAX_VALUE}, {@code Infinity} is returned. If
+     *  {@code this} is less than –{@code Double.MAX_VALUE}, {@code -Infinity} is returned.</li>
+     *  <li>{@code RoundingMode.HALF_EVEN}: If {@code this} is closest to one {@code double}, that {@code double} is
+     *  returned. If there are two closest {@code double}s, the one with the unset lowest-order bit is returned. If
+     *  {@code this} is greater than or equal to zero and less than or equal to {@code Double.MIN_VALUE}/2, positive
+     *  zero is returned. If {@code this} is greater than or equal to –{@code Double.MIN_VALUE}/2 and less than zero,
+     *  negative zero is returned. If {@code this} is greater than {@code Double.MAX_VALUE}, {@code Infinity} is
+     *  returned. If {@code this} is less than –{@code Double.MAX_VALUE}, {@code -Infinity} is returned.</li>
+     * </ul>
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code roundingMode} cannot be null.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#UNNECESSARY}, {@code this} must be exact and
+     *  exactly equal to a {@code double}.</li>
+     *  <li>The result may be empty or any {@code double} except {@code NaN}.</li>
+     * </ul>
+     *
+     * @param roundingMode specifies the details of how to round {@code this}.
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return {@code this}, rounded to a {@code double}
+     */
     public @NotNull Optional<Double> doubleValue(@NotNull RoundingMode roundingMode, @NotNull Rational resolution) {
         if (resolution.signum() != 1) {
             throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
@@ -1567,14 +1712,63 @@ public final class Real implements Iterable<Interval> {
         return limitValue(r -> r.doubleValue(roundingMode), resolution);
     }
 
+    /**
+     * Rounds {@code this} to a {@code double} using {@code RoundingMode.HALF_EVEN}. If {@code this} is closest to one
+     * {@code double}, that {@code double} is returned. If there are two closest {@code double}s, the one with the
+     * unset lowest-order bit is returned. If {@code this} is greater than or equal to zero and less than or equal to
+     * {@code Double.MIN_VALUE}/2, positive zero is returned. If {@code this} is greater than or equal to
+     * –{@code Double.MIN_VALUE}/2 and less than zero, negative zero is returned. If {@code this} is greater than
+     * {@code Double.MAX_VALUE}, Infinity is returned. If {@code this} is less than –{@code Double.MAX_VALUE},
+     * {@code -Infinity} is returned. If {@code this} is fuzzy and exactly between two adjacent {@code double}s, this
+     * method may loop forever, depending on the nature of the fuzziness. To prevent this behavior, use
+     * {@link Real#doubleValue(Rational)} instead.
+     *
+     * <ul>
+     *  <li>If {@code this} this is halfway between two adjacent {@code double}s, then one of the {@code double}s will
+     *  have a one in its least significant bit, and {@code this} cannot be fuzzy in the direction closest to that
+     *  {@code double}. However, it may be fuzzy and equal to a {@code double}.</li>
+     *  <li>The result may be any {@code double}.</li>
+     * </ul>
+     *
+     * @return {@code this}, rounded to a {@code double}
+     */
     public double doubleValueUnsafe() {
         return doubleValueUnsafe(RoundingMode.HALF_EVEN);
     }
 
+    /**
+     * Rounds {@code this} to a {@code double} using {@code RoundingMode.HALF_EVEN}. If {@code this} is closest to one
+     * {@code double}, that {@code double} is returned. If there are two closest {@code double}s, the one with the
+     * unset lowest-order bit is returned. If {@code this} is greater than or equal to zero and less than or equal to
+     * {@code Double.MIN_VALUE}/2, positive zero is returned. If {@code this} is greater than or equal to
+     * –{@code Double.MIN_VALUE}/2 and less than zero, negative zero is returned. If {@code this} is greater than
+     * {@code Double.MAX_VALUE}, Infinity is returned. If {@code this} is less than –{@code Double.MAX_VALUE},
+     * {@code -Infinity} is returned. If {@code this} is fuzzy and exactly between two adjacent {@code double}s, this
+     * method will give up and return empty once the approximating interval's diameter is less than the specified
+     * resolution.
+     *
+     * <ul>
+     *  <li>If {@code this} may be any {@code Real}.</li>
+     *  <li>The result may be any {@code double}.</li>
+     * </ul>
+     *
+     * @return {@code this}, rounded to a {@code double}
+     */
     public @NotNull Optional<Double> doubleValue(@NotNull Rational resolution) {
         return doubleValue(RoundingMode.HALF_EVEN, resolution);
     }
 
+    /**
+     * Returns a {@code double} exactly equal to {@code this}. Throws an {@code ArithmeticException} if {@code this} is
+     * not exact and exactly equal to a {@code double}.
+     *
+     * <ul>
+     *  <li>{@code this} must be exact and equal to a {@code double}.</li>
+     *  <li>The result is not {@code NaN}, infinite, or negative 0.</li>
+     * </ul>
+     *
+     * @return {@code this}, in {@code double} form
+     */
     public double doubleValueExact() {
         if (rational.isPresent()) {
             return rational.get().doubleValueExact();
