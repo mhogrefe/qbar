@@ -532,7 +532,7 @@ public final class Algebraic implements Comparable<Algebraic> {
             return roots;
         }
 
-        SortedMap<Real, Algebraic> rootMap = new TreeMap<>();
+        SortedMap<Real, Algebraic> rootMap = new TreeMap<>(Real::compareToUnsafe);
         for (Polynomial factor : factors) {
             if (factor.degree() == 1) {
                 Rational r = Rational.of(factor.coefficient(0).negate(), factor.coefficient(1));

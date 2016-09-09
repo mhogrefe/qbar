@@ -4418,12 +4418,12 @@ public class AlgebraicTest {
         toStringBase_helper("198", "83", -1, "(2)(0)");
         toStringBase_helper("198", "83", -2, "(0)");
 
-        toStringBase_helper("-1/7", "10", -1, "0");
-        toStringBase_helper("-1/7", "10", 0, "0");
+        toStringBase_helper("-1/7", "10", -1, "-0");
+        toStringBase_helper("-1/7", "10", 0, "-0");
         toStringBase_helper("-1/7", "10", 5, "-0.14285...");
         toStringBase_helper("-1/7", "10", 20, "-0.14285714285714285714...");
-        toStringBase_helper("-1/7", "83", -1, "(0)");
-        toStringBase_helper("-1/7", "83", 0, "(0)");
+        toStringBase_helper("-1/7", "83", -1, "-(0)");
+        toStringBase_helper("-1/7", "83", 0, "-(0)");
         toStringBase_helper("-1/7", "83", 5, "-(0).(11)(71)(11)(71)(11)...");
         toStringBase_helper("-1/7", "83", 20,
                 "-(0).(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)...");
