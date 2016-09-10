@@ -4111,8 +4111,31 @@ public strictfp abstract class QBarIterableProvider {
             case 0:
                 return Collections.emptyList();
             case 1:
-                if (a.getLower().isPresent()) {
-                    Algebraic lower = Algebraic.of(a.getLower().get());
+                Interval c = complement.get(0);
+                if (c.equals(Interval.ALL)) {
+                    Algebraic y = Algebraic.of(a.getLower().get());
+                    Iterable<Algebraic> rationalRange = filterInfinite(r -> !r.equals(y), algebraics(1));
+                    return withScale(1).choose(
+                            map(Algebraic::realValue, filterInfinite(r -> !r.equals(y), algebraics(1))),
+                            choose(
+                                    Arrays.asList(
+                                            map(
+                                                    x -> Real.leftFuzzyRepresentation(x.rationalValueExact()),
+                                                    rationalRange
+                                            ),
+                                            map(
+                                                    x -> Real.rightFuzzyRepresentation(x.rationalValueExact()),
+                                                    rationalRange
+                                            ),
+                                            map(
+                                                    x -> Real.fuzzyRepresentation(x.rationalValueExact()),
+                                                    rationalRange
+                                            )
+                                    )
+                            )
+                    );
+                } else if (c.getLower().isPresent()) {
+                    Algebraic lower = Algebraic.of(c.getLower().get());
                     Iterable<Algebraic> rationalRange = filterInfinite(r -> !r.equals(lower), rangeUp(1, lower));
                     return withScale(1).choose(
                             map(Algebraic::realValue, filterInfinite(r -> !r.equals(lower), rangeUp(lower))),
@@ -4134,7 +4157,7 @@ public strictfp abstract class QBarIterableProvider {
                             )
                     );
                 } else {
-                    Algebraic upper = Algebraic.of(a.getUpper().get());
+                    Algebraic upper = Algebraic.of(c.getUpper().get());
                     Iterable<Algebraic> rationalRange = filterInfinite(r -> !r.equals(upper), rangeDown(1, upper));
                     return withScale(1).choose(
                             map(Algebraic::realValue, filterInfinite(r -> !r.equals(upper), rangeDown(upper))),

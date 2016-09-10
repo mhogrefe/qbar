@@ -309,6 +309,30 @@ public class QBarExhaustiveProviderDemos extends QBarDemos {
         }
     }
 
+    private void demoCleanRealsIn() {
+        for (Interval a : take(MEDIUM_LIMIT, P.intervals())) {
+            System.out.println("cleanRealsIn(" + a + ") = " + its(QEP.cleanRealsIn(a)));
+        }
+    }
+
+    private void demoRealsIn() {
+        for (Interval a : take(MEDIUM_LIMIT, P.intervals())) {
+            System.out.println("realsIn(" + a + ") = " + its(QEP.realsIn(a)));
+        }
+    }
+
+    private void demoCleanRealsNotIn() {
+        for (Interval a : take(MEDIUM_LIMIT, P.intervals())) {
+            System.out.println("cleanRealsNotIn(" + a + ") = " + its(QEP.cleanRealsNotIn(a)));
+        }
+    }
+
+    private void demoRealsNotIn() {
+        for (Interval a : take(MEDIUM_LIMIT, P.intervals())) {
+            System.out.println("realsNotIn(" + a + ") = " + its(QEP.realsNotIn(a)));
+        }
+    }
+
     private void demoPositiveAlgebraics_int() {
         for (int i : take(TINY_LIMIT, P.withScale(2).positiveIntegersGeometric())) {
             System.out.println("positiveAlgebraics(" + i + ") = " + its(QEP.positiveAlgebraics(i)));

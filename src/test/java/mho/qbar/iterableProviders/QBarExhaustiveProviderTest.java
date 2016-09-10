@@ -1280,6 +1280,62 @@ public class QBarExhaustiveProviderTest {
         realRange_fail_helper("6369051672525773/4503599627370496", "sqrt(2)");
     }
 
+    private static void cleanRealsIn_helper(@NotNull String a, @NotNull String output) {
+        simpleProviderHelper(QEP.cleanRealsIn(Interval.readStrict(a).get()), output);
+    }
+
+    @Test
+    public void testCleanRealsIn() {
+        cleanRealsIn_helper("[0, 0]", "QBarExhaustiveProvider_cleanRealsIn_i");
+        cleanRealsIn_helper("[1, 1]", "QBarExhaustiveProvider_cleanRealsIn_ii");
+        cleanRealsIn_helper("(-Infinity, Infinity)", "QBarExhaustiveProvider_cleanRealsIn_iii");
+        cleanRealsIn_helper("[1, 4]", "QBarExhaustiveProvider_cleanRealsIn_iv");
+        cleanRealsIn_helper("(-Infinity, 1/2]", "QBarExhaustiveProvider_cleanRealsIn_v");
+        cleanRealsIn_helper("[1/2, Infinity)", "QBarExhaustiveProvider_cleanRealsIn_vi");
+    }
+
+    private static void realsIn_helper(@NotNull String a, @NotNull String output) {
+        simpleProviderHelper(QEP.realsIn(Interval.readStrict(a).get()), output);
+    }
+
+    @Test
+    public void testRealsIn() {
+        realsIn_helper("[0, 0]", "QBarExhaustiveProvider_realsIn_i");
+        realsIn_helper("[1, 1]", "QBarExhaustiveProvider_realsIn_ii");
+        realsIn_helper("(-Infinity, Infinity)", "QBarExhaustiveProvider_realsIn_iii");
+        realsIn_helper("[1, 4]", "QBarExhaustiveProvider_realsIn_iv");
+        realsIn_helper("(-Infinity, 1/2]", "QBarExhaustiveProvider_realsIn_v");
+        realsIn_helper("[1/2, Infinity)", "QBarExhaustiveProvider_realsIn_vi");
+    }
+
+    private static void cleanRealsNotIn_helper(@NotNull String a, @NotNull String output) {
+        simpleProviderHelper(QEP.cleanRealsNotIn(Interval.readStrict(a).get()), output);
+    }
+
+    @Test
+    public void testCleanRealsNotIn() {
+        cleanRealsNotIn_helper("[0, 0]", "QBarExhaustiveProvider_cleanRealsNotIn_i");
+        cleanRealsNotIn_helper("[1, 1]", "QBarExhaustiveProvider_cleanRealsNotIn_ii");
+        cleanRealsNotIn_helper("(-Infinity, Infinity)", "QBarExhaustiveProvider_cleanRealsNotIn_iii");
+        cleanRealsNotIn_helper("[1, 4]", "QBarExhaustiveProvider_cleanRealsNotIn_iv");
+        cleanRealsNotIn_helper("(-Infinity, 1/2]", "QBarExhaustiveProvider_cleanRealsNotIn_v");
+        cleanRealsNotIn_helper("[1/2, Infinity)", "QBarExhaustiveProvider_cleanRealsNotIn_vi");
+    }
+
+    private static void realsNotIn_helper(@NotNull String a, @NotNull String output) {
+        simpleProviderHelper(QEP.realsNotIn(Interval.readStrict(a).get()), output);
+    }
+
+    @Test
+    public void testRealsNotIn() {
+        realsNotIn_helper("[0, 0]", "QBarExhaustiveProvider_realsNotIn_i");
+        realsNotIn_helper("[1, 1]", "QBarExhaustiveProvider_realsNotIn_ii");
+        realsNotIn_helper("(-Infinity, Infinity)", "QBarExhaustiveProvider_realsNotIn_iii");
+        realsNotIn_helper("[1, 4]", "QBarExhaustiveProvider_realsNotIn_iv");
+        realsNotIn_helper("(-Infinity, 1/2]", "QBarExhaustiveProvider_realsNotIn_v");
+        realsNotIn_helper("[1/2, Infinity)", "QBarExhaustiveProvider_realsNotIn_vi");
+    }
+
     private static void positiveAlgebraics_int_helper(int degree, @NotNull String output) {
         simpleProviderHelper(QEP.positiveAlgebraics(degree), output);
     }

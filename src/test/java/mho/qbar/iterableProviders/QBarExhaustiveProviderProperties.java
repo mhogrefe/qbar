@@ -126,6 +126,10 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesRealRangeDown();
         propertiesCleanRealRange();
         propertiesRealRange();
+        propertiesCleanRealsIn();
+        propertiesRealsIn();
+        propertiesCleanRealsNotIn();
+        propertiesRealsNotIn();
         propertiesPositiveAlgebraics_int();
         propertiesNegativeAlgebraics_int();
         propertiesNonzeroAlgebraics_int();
@@ -1186,6 +1190,44 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
                 QEP.realRange(p.b, p.a);
                 fail(p);
             } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesCleanRealsIn() {
+        initialize("cleanRealsIn(Interval)");
+        for (Interval a : take(SMALL_LIMIT, P.intervals())) {
+            Iterable<Real> xs = QEP.cleanRealsIn(a);
+            simpleTestNoUnique(a, xs, a::containsUnsafe);
+        }
+    }
+
+    private void propertiesRealsIn() {
+        initialize("realsIn(Interval)");
+        for (Interval a : take(SMALL_LIMIT, P.intervals())) {
+            Iterable<Real> xs = QEP.realsIn(a);
+            simpleTestNoUnique(a, xs, x -> {
+                Optional<Boolean> ob = a.contains(x, Real.DEFAULT_RESOLUTION);
+                return !ob.isPresent() || ob.get();
+            });
+        }
+    }
+
+    private void propertiesCleanRealsNotIn() {
+        initialize("cleanRealsNotIn(Interval)");
+        for (Interval a : take(SMALL_LIMIT, P.intervals())) {
+            Iterable<Real> xs = QEP.cleanRealsNotIn(a);
+            simpleTestNoUnique(a, xs, x -> !a.containsUnsafe(x));
+        }
+    }
+
+    private void propertiesRealsNotIn() {
+        initialize("realsNotIn(Interval)");
+        for (Interval a : take(SMALL_LIMIT, P.intervals())) {
+            Iterable<Real> xs = QEP.realsNotIn(a);
+            simpleTestNoUnique(a, xs, x -> {
+                Optional<Boolean> ob = a.contains(x, Real.DEFAULT_RESOLUTION).map(b -> !b);
+                return !ob.isPresent() || ob.get();
+            });
         }
     }
 
