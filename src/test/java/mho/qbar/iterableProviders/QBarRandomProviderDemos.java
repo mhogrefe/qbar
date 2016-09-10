@@ -1224,6 +1224,58 @@ public class QBarRandomProviderDemos extends QBarDemos {
         }
     }
 
+    private void demoCleanRealsIn() {
+        Iterable<Pair<QBarRandomProvider, Interval>> ps = P.pairs(
+                filterInfinite(
+                        rp -> rp.getScale() >= 2 && rp.getSecondaryScale() >= 4,
+                        P.withScale(1).qbarRandomProvidersDefaultTertiaryScale()
+                ),
+                P.withScale(6).intervals()
+        );
+        for (Pair<QBarRandomProvider, Interval> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("cleanRealsIn(" + p.a + ", " + p.b + ") = " + its(p.a.cleanRealsIn(p.b)));
+        }
+    }
+
+    private void demoRealsIn() {
+        Iterable<Pair<QBarRandomProvider, Interval>> ps = P.pairs(
+                filterInfinite(
+                        rp -> rp.getScale() >= 3 && rp.getSecondaryScale() >= 4,
+                        P.withScale(1).qbarRandomProvidersDefaultTertiaryScale()
+                ),
+                P.withScale(6).intervals()
+        );
+        for (Pair<QBarRandomProvider, Interval> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("realsIn(" + p.a + ", " + p.b + ") = " + its(p.a.realsIn(p.b)));
+        }
+    }
+
+    private void demoCleanRealsNotIn() {
+        Iterable<Pair<QBarRandomProvider, Interval>> ps = P.pairs(
+                filterInfinite(
+                        rp -> rp.getScale() >= 2 && rp.getSecondaryScale() >= 4,
+                        P.withScale(1).qbarRandomProvidersDefaultTertiaryScale()
+                ),
+                filterInfinite(a -> !a.equals(Interval.ALL), P.withScale(6).intervals())
+        );
+        for (Pair<QBarRandomProvider, Interval> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("cleanRealsNotIn(" + p.a + ", " + p.b + ") = " + its(p.a.cleanRealsNotIn(p.b)));
+        }
+    }
+
+    private void demoRealsNotIn() {
+        Iterable<Pair<QBarRandomProvider, Interval>> ps = P.pairs(
+                filterInfinite(
+                        rp -> rp.getScale() >= 2 && rp.getSecondaryScale() >= 4,
+                        P.withScale(1).qbarRandomProvidersDefaultTertiaryScale()
+                ),
+                filterInfinite(a -> !a.equals(Interval.ALL), P.withScale(6).intervals())
+        );
+        for (Pair<QBarRandomProvider, Interval> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("realsNotIn(" + p.a + ", " + p.b + ") = " + its(p.a.realsNotIn(p.b)));
+        }
+    }
+
     private void demoPositiveAlgebraics_int() {
         Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairs(
                 filterInfinite(

@@ -2020,6 +2020,182 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     /**
+     * An {@code Iterable} that generates {@code Real}s contained in a given {@code Interval}. A larger {@code scale}
+     * corresponds to algebraic {@code Real}s whose minimal polynomials have larger coefficients, and a larger
+     * {@code secondaryScale} corresponds to algebraic {@code Real}s with higher degrees. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 3 and a secondary scale of at least 4.</li>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Real}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param a an {@code Interval}
+     * @return {@code Real}s in {@code a}
+     */
+    @Override
+    public @NotNull Iterable<Real> realsIn(@NotNull Interval a) {
+        int scale = getScale();
+        if (scale < 3) {
+            throw new IllegalStateException("this must have a scale of at least 3. Invalid scale: " + scale);
+        }
+        return super.realsIn(a);
+    }
+
+    /**
+     * An {@code Iterable} that generates {@code Real}s not contained in a given {@code Interval}. A larger
+     * {@code scale} corresponds to algebraic {@code Real}s whose minimal polynomials have larger coefficients, and a
+     * larger {@code secondaryScale} corresponds to algebraic {@code Real}s with higher degrees. Does not support
+     * removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 2 and a {@code secondaryScale} of at least 4.</li>
+     *  <li>{@code a} cannot be (–∞, ∞).</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Real}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param a an {@code Interval}
+     * @return {@code Real}s not in {@code a}
+     */
+    @Override
+    public @NotNull Iterable<Real> realsNotIn(@NotNull Interval a) {
+        int scale = getScale();
+        if (scale < 2) {
+            throw new IllegalStateException("this must have a scale of at least 2. Invalid scale: " + scale);
+        }
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 4) {
+            throw new IllegalStateException("this must have a secondaryScale of at least 4. Invalid" +
+                    " secondaryScale: " + secondaryScale);
+        }
+        List<Interval> complement = a.complement();
+        switch (complement.size()) {
+            case 0:
+                throw new IllegalArgumentException("a cannot be (-Infinity, Infinity).");
+            case 1:
+                Interval c = complement.get(0);
+                if (c.equals(Interval.ALL)) {
+                    Algebraic y = Algebraic.of(a.getLower().get());
+                    Iterable<Algebraic> rationalRange = filterInfinite(r -> !r.equals(y), algebraics(1));
+                    return withScale(1).choose(
+                            map(Algebraic::realValue, filterInfinite(r -> !r.equals(y), algebraics(1))),
+                            choose(
+                                    Arrays.asList(
+                                            map(
+                                                    x -> Real.leftFuzzyRepresentation(x.rationalValueExact()),
+                                                    rationalRange
+                                            ),
+                                            map(
+                                                    x -> Real.rightFuzzyRepresentation(x.rationalValueExact()),
+                                                    rationalRange
+                                            ),
+                                            map(
+                                                    x -> Real.fuzzyRepresentation(x.rationalValueExact()),
+                                                    rationalRange
+                                            )
+                                    )
+                            )
+                    );
+                } else if (c.getLower().isPresent()) {
+                    Algebraic lower = Algebraic.of(c.getLower().get());
+                    Iterable<Algebraic> rationalRange = filterInfinite(r -> !r.equals(lower), rangeUp(1, lower));
+                    return withScale(1).choose(
+                            map(Algebraic::realValue, filterInfinite(r -> !r.equals(lower), rangeUp(lower))),
+                            choose(
+                                    Arrays.asList(
+                                            map(
+                                                    x -> Real.leftFuzzyRepresentation(x.rationalValueExact()),
+                                                    rationalRange
+                                            ),
+                                            map(
+                                                    x -> Real.rightFuzzyRepresentation(x.rationalValueExact()),
+                                                    rationalRange
+                                            ),
+                                            map(
+                                                    x -> Real.fuzzyRepresentation(x.rationalValueExact()),
+                                                    rationalRange
+                                            )
+                                    )
+                            )
+                    );
+                } else {
+                    Algebraic upper = Algebraic.of(c.getUpper().get());
+                    Iterable<Algebraic> rationalRange = filterInfinite(r -> !r.equals(upper), rangeDown(1, upper));
+                    return withScale(1).choose(
+                            map(Algebraic::realValue, filterInfinite(r -> !r.equals(upper), rangeDown(upper))),
+                            choose(
+                                    Arrays.asList(
+                                            map(
+                                                    x -> Real.leftFuzzyRepresentation(x.rationalValueExact()),
+                                                    rationalRange
+                                            ),
+                                            map(
+                                                    x -> Real.rightFuzzyRepresentation(x.rationalValueExact()),
+                                                    rationalRange
+                                            ),
+                                            map(
+                                                    x -> Real.fuzzyRepresentation(x.rationalValueExact()),
+                                                    rationalRange
+                                            )
+                                    )
+                            )
+                    );
+                }
+            case 2:
+                Algebraic x = Algebraic.of(complement.get(0).getUpper().get());
+                Algebraic y = Algebraic.of(complement.get(1).getLower().get());
+                Iterable<Algebraic> rationalRangeUp = filterInfinite(r -> !r.equals(y), rangeUp(1, y));
+                Iterable<Algebraic> rationalRangeDown = filterInfinite(r -> !r.equals(x), rangeDown(1, x));
+                //noinspection RedundantCast
+                return withScale(1).choose(
+                        withScale(1).choose(
+                                map(Algebraic::realValue, filterInfinite(r -> !r.equals(x), rangeDown(x))),
+                                choose(
+                                        Arrays.asList(
+                                                map(
+                                                        r -> Real.leftFuzzyRepresentation(r.rationalValueExact()),
+                                                        rationalRangeDown
+                                                ),
+                                                map(
+                                                        r -> Real.rightFuzzyRepresentation(r.rationalValueExact()),
+                                                        rationalRangeDown
+                                                ),
+                                                map(
+                                                        r -> Real.fuzzyRepresentation(r.rationalValueExact()),
+                                                        rationalRangeDown
+                                                )
+                                        )
+                                )
+                        ),
+                        withScale(1).choose(
+                                map(Algebraic::realValue, filterInfinite(r -> !r.equals(y), rangeUp(y))),
+                                choose(
+                                        Arrays.asList(
+                                                map(
+                                                        r -> Real.leftFuzzyRepresentation(r.rationalValueExact()),
+                                                        rationalRangeUp
+                                                ),
+                                                map(
+                                                        r -> Real.rightFuzzyRepresentation(r.rationalValueExact()),
+                                                        rationalRangeUp
+                                                ),
+                                                map(
+                                                        r -> Real.fuzzyRepresentation(r.rationalValueExact()),
+                                                        rationalRangeUp
+                                                )
+                                        )
+                                )
+                        )
+                );
+            default: throw new IllegalStateException("unreachable");
+        }
+    }
+
+    /**
      * An {@code Iterable} that generates all positive {@code Algebraic}s. A larger {@code scale} corresponds to a
      * {@code Algebraic}s whose minimal polynomials have larger coefficients, and the {@code secondaryScale} is twice
      * the mean of the {@code Algebraic}s' degrees. Does not support removal.
@@ -2456,7 +2632,6 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      *
      * <ul>
      *  <li>{@code this} must have a {@code scale} of at least 2 and a secondary scale of at least 4.</li>
-     *  <li>{@code degree} must be positive.</li>
      *  <li>{@code a} cannot be null.</li>
      *  <li>The result is a non-removable {@code Iterable} containing {@code Algebraic}s.</li>
      * </ul>
@@ -2464,7 +2639,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * Length is infinite
      *
      * @param a an {@code Interval}
-     * @return {x|x∈{@code a} and deg(x)={@code degree}}
+     * @return {x|x∈{@code a}}
      */
     @Override
     public @NotNull Iterable<Algebraic> algebraicsIn(@NotNull Interval a) {
@@ -2497,7 +2672,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * Length is infinite
      *
      * @param a an {@code Interval}
-     * @return {r|r∉{@code a} and deg(x)={@code degree}
+     * @return {r|r∉{@code a} and deg(x)={@code degree}}
      */
     @Override
     public @NotNull Iterable<Algebraic> algebraicsNotIn(int degree, @NotNull Interval a) {
