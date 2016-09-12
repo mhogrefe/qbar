@@ -1203,7 +1203,7 @@ public final class Algebraic implements Comparable<Algebraic> {
                 throw new ArithmeticException("If roundingMode is RoundingMode.UNNECESSARY, then precision must" +
                         " be as large as the number of digits in this's decimal expansion. Invalid this: " + this);
             }
-            return realValue().bigDecimalValueByPrecision(precision, roundingMode);
+            return realValue().bigDecimalValueByPrecisionUnsafe(precision, roundingMode);
         }
     }
 
@@ -1234,7 +1234,7 @@ public final class Algebraic implements Comparable<Algebraic> {
                         " at least as large as the smallest n such that this*10^n is an integer. But n does not" +
                         " exist, since this = " + this);
             }
-            return realValue().bigDecimalValueByScale(scale, roundingMode);
+            return realValue().bigDecimalValueByScaleUnsafe(scale, roundingMode);
         }
     }
 

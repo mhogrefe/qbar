@@ -1455,6 +1455,7 @@ public final class Real implements Iterable<Interval> {
      *  <li>{@code roundingMode} cannot be null.</li>
      *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#UNNECESSARY}, {@code this} must be exact and
      *  exactly equal to a {@code float}.</li>
+     *  <li>{@code resolution} must be positive.</li>
      *  <li>The result may be empty or any {@code float} except {@code NaN}.</li>
      * </ul>
      *
@@ -1513,9 +1514,11 @@ public final class Real implements Iterable<Interval> {
      *
      * <ul>
      *  <li>If {@code this} may be any {@code Real}.</li>
+     *  <li>{@code resolution} must be positive.</li>
      *  <li>The result may be any {@code float}.</li>
      * </ul>
      *
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
      * @return {@code this}, rounded to a {@code float}
      */
     public @NotNull Optional<Float> floatValue(@NotNull Rational resolution) {
@@ -1691,6 +1694,7 @@ public final class Real implements Iterable<Interval> {
      *  <li>{@code roundingMode} cannot be null.</li>
      *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#UNNECESSARY}, {@code this} must be exact and
      *  exactly equal to a {@code double}.</li>
+     *  <li>{@code resolution} must be positive.</li>
      *  <li>The result may be empty or any {@code double} except {@code NaN}.</li>
      * </ul>
      *
@@ -1749,9 +1753,11 @@ public final class Real implements Iterable<Interval> {
      *
      * <ul>
      *  <li>If {@code this} may be any {@code Real}.</li>
+     *  <li>{@code resolution} must be positive.</li>
      *  <li>The result may be any {@code double}.</li>
      * </ul>
      *
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
      * @return {@code this}, rounded to a {@code double}
      */
     public @NotNull Optional<Double> doubleValue(@NotNull Rational resolution) {
@@ -1777,20 +1783,195 @@ public final class Real implements Iterable<Interval> {
         }
     }
 
-    public @NotNull BigDecimal bigDecimalValueByPrecision(int precision, @NotNull RoundingMode roundingMode) {
+    /**
+     * Rounds {@code this} to a {@link java.math.BigDecimal} with a specified rounding mode (see documentation for
+     * {@code java.math.RoundingMode} for details) and with a specified precision (number of significant digits), or
+     * to full precision if {@code precision} is 0. If {@code this} is fuzzy, this method may loop forever,
+     * depending on the rounding mode and the nature of the fuzziness. To prevent this behavior, use
+     * {@link Real#bigDecimalValueByPrecision(int, RoundingMode, Rational)} instead.
+     *
+     *
+     * Define a {@code Real} to be n-precision-alpha-borderline if its decimal expansion is terminating and it has at
+     * most n significant figures after removing all trailing zeros. Define a {@code Real} to be
+     * n-precision-beta-borderline if its decimal expansion is terminating, it has exactly n+1 significant figures
+     * after removing all trailing zeros, and the least significant digit is 5. 0 is n-precision-alpha-borderline for
+     * all non-negative n and not n-precision-beta-borderline for any n.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be a fuzzy zero.</li>
+     *  <li>{@code precision} cannot be negative.</li>
+     *  <li>{@code roundingMode} cannot be null.</li>
+     *  <li>If {@code precision} is 0, then {@code this} must be an exact {@code Real} with a terminating decimal
+     *  expansion; that is, its denominator must only have 2 or 5 as prime factors.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#UP}, {@code this} cannot be positive,
+     *  {@code precision}-precision-alpha-borderline and be fuzzy on the right, or negative,
+     *  {@code precision}-precision-alpha-borderline, and fuzzy on the left.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#DOWN}, {@code this} cannot be positive,
+     *  {@code precision}-precision-alpha-borderline and be fuzzy on the left, or negative,
+     *  {@code precision}-precision-alpha-borderline, and fuzzy on the right.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#CEILING}, {@code this} cannot be
+     *  {@code precision}-precision-alpha-borderline and be fuzzy on the right.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#FLOOR}, {@code this} cannot be
+     *  {@code precision}-precision-alpha-borderline and be fuzzy on the left.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#HALF_UP}, {@code this} cannot be positive,
+     *  {@code precision}-precision-beta-borderline and be fuzzy on the left, or negative,
+     *  {@code precision}-precision-beta-borderline, and fuzzy on the right.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#HALF_DOWN}, {@code this} cannot be positive,
+     *  {@code precision}-precision-beta-borderline and be fuzzy on the right, or negative,
+     *  {@code precision}-precision-beta-borderline, and fuzzy on the left.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#HALF_EVEN}, and {@code this} is
+     *  {@code precision}-precision-beta-borderline, then one of its adjacent {@code BigDecimal}s with precision
+     *  {@code precision} will have a one in the least significant bit of its unscaled value, and {@code this} cannot
+     *  be fuzzy in the direction closest to that {@code BigDecimal}.</li>
+     *  <li>If {@code roundingMode} is {@code RoundingMode.UNNECESSARY}, then it must be exact and {@code precision}
+     *  must be at least as large as the number of digits in {@code this}'s decimal expansion.</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * @param precision the precision with which to round {@code this}. 0 indicates full precision.
+     * @param roundingMode specifies the details of how to round {@code this}.
+     * @return {@code this}, in {@code BigDecimal} form
+     */
+    public @NotNull BigDecimal bigDecimalValueByPrecisionUnsafe(int precision, @NotNull RoundingMode roundingMode) {
+        if (rational.isPresent()) {
+            return rational.get().bigDecimalValueByPrecision(precision, roundingMode);
+        }
+        if (roundingMode == RoundingMode.UNNECESSARY) {
+            throw new ArithmeticException("If roundingMode is UNNECESSARY, this must be exact. Invalid this: " + this);
+        }
+        //noinspection ConstantConditions
         return limitValueUnsafe(r -> r.bigDecimalValueByPrecision(precision, roundingMode));
     }
 
-    public @NotNull BigDecimal bigDecimalValueByScale(int scale, @NotNull RoundingMode roundingMode) {
+    /**
+     * Rounds {@code this} to a {@link java.math.BigDecimal} with a specified rounding mode (see documentation for
+     * {@code java.math.RoundingMode} for details) and with a specified precision (number of significant digits), or
+     * to full precision if {@code precision} is 0. If {@code this} is fuzzy, depending on the rounding mode and the
+     * nature of the fuzziness (see {@link Real#bigDecimalValueByPrecisionUnsafe(int, RoundingMode)}, this method will
+     * give up and return empty once the approximating interval's diameter is less than the specified resolution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code precision} cannot be negative.</li>
+     *  <li>{@code roundingMode} cannot be null.</li>
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>If {@code precision} is 0, then {@code this} must be an exact {@code Real} with a terminating decimal
+     *  expansion; that is, its denominator must only have 2 or 5 as prime factors.</li>
+     *  <li>If {@code roundingMode} is {@code RoundingMode.UNNECESSARY}, then {@code precision} must be at least as
+     *  large as the number of digits in {@code this}'s decimal expansion.</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * @param precision the precision with which to round {@code this}. 0 indicates full precision.
+     * @param roundingMode specifies the details of how to round {@code this}.
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return {@code this}, in {@code BigDecimal} form
+     */
+    public @NotNull Optional<BigDecimal> bigDecimalValueByPrecision(
+            int precision,
+            @NotNull RoundingMode roundingMode,
+            @NotNull Rational resolution
+    ) {
+        if (resolution.signum() != 1) {
+            throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
+        }
+        if (rational.isPresent()) {
+            return Optional.of(rational.get().bigDecimalValueByPrecision(precision, roundingMode));
+        }
+        if (roundingMode == RoundingMode.UNNECESSARY) {
+            throw new ArithmeticException("If roundingMode is UNNECESSARY, this must be exact. Invalid this: " + this);
+        }
+        return limitValue(r -> r.bigDecimalValueByPrecision(precision, roundingMode), resolution);
+    }
+
+    public @NotNull BigDecimal bigDecimalValueByScaleUnsafe(int scale, @NotNull RoundingMode roundingMode) {
+        if (rational.isPresent()) {
+            return rational.get().bigDecimalValueByScale(scale, roundingMode);
+        }
+        if (roundingMode == RoundingMode.UNNECESSARY) {
+            throw new ArithmeticException("If roundingMode is UNNECESSARY, this must be exact. Invalid this: " + this);
+        }
+        //noinspection ConstantConditions
         return limitValueUnsafe(r -> r.bigDecimalValueByScale(scale, roundingMode));
     }
 
-    public @NotNull BigDecimal bigDecimalValueByPrecision(int precision) {
-        return bigDecimalValueByPrecision(precision, RoundingMode.HALF_EVEN);
+    public @NotNull Optional<BigDecimal> bigDecimalValueByScale(
+            int scale,
+            @NotNull RoundingMode roundingMode,
+            @NotNull Rational resolution
+    ) {
+        if (resolution.signum() != 1) {
+            throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
+        }
+        if (rational.isPresent()) {
+            return Optional.of(rational.get().bigDecimalValueByScale(scale, roundingMode));
+        }
+        if (roundingMode == RoundingMode.UNNECESSARY) {
+            throw new ArithmeticException("If roundingMode is UNNECESSARY, this must be exact. Invalid this: " + this);
+        }
+        return limitValue(r -> r.bigDecimalValueByScale(scale, roundingMode), resolution);
     }
 
-    public @NotNull BigDecimal bigDecimalValueByScale(int scale) {
-        return bigDecimalValueByScale(scale, RoundingMode.HALF_EVEN);
+    /**
+     * Rounds {@code this} to a {@link java.math.BigDecimal} using the half-even rounding mode and with a specified
+     * precision (number of significant digits), or to full precision if {@code precision} is 0. If {@code this} is
+     * fuzzy, this method may loop forever, depending on the nature of the fuzziness. To prevent this behavior, use
+     * {@link Real#bigDecimalValueByPrecision(int, Rational)} instead.
+     *
+     *
+     * Define a {@code Real} to be n-precision-beta-borderline if its decimal expansion is terminating, it has exactly
+     * n+1 significant figures after removing all trailing zeros, and the least significant digit is 5. 0 is not
+     * n-precision-beta-borderline for any n.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be a fuzzy zero.</li>
+     *  <li>{@code precision} cannot be negative.</li>
+     *  <li>{@code roundingMode} cannot be null.</li>
+     *  <li>If {@code precision} is 0, then {@code this} must be an exact {@code Real} with a terminating decimal
+     *  expansion; that is, its denominator must only have 2 or 5 as prime factors.</li>
+     *  <li>If {@code this} is {@code precision}-precision-beta-borderline, then one of its adjacent
+     *  {@code BigDecimal}s with precision {@code precision} will have a one in the least significant bit of its
+     *  unscaled value, and {@code this} cannot be fuzzy in the direction closest to that {@code BigDecimal}.</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * @param precision the precision with which to round {@code this}. 0 indicates full precision.
+     * @return {@code this}, in {@code BigDecimal} form
+     */
+    public @NotNull BigDecimal bigDecimalValueByPrecisionUnsafe(int precision) {
+        return bigDecimalValueByPrecisionUnsafe(precision, RoundingMode.HALF_EVEN);
+    }
+
+    /**
+     * Rounds {@code this} to a {@link java.math.BigDecimal} using the half-even rounding mode and with a specified
+     * precision (number of significant digits), or to full precision if {@code precision} is 0. If {@code this} is
+     * fuzzy, depending on the nature of the fuzziness (see {@link Real#bigDecimalValueByPrecisionUnsafe(int)}, this
+     * method will give up and return empty once the approximating interval's diameter is less than the specified
+     * resolution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code precision} cannot be negative.</li>
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>If {@code precision} is 0, then {@code this} must be an exact {@code Real} with a terminating decimal
+     *  expansion; that is, its denominator must only have 2 or 5 as prime factors.</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * @param precision the precision with which to round {@code this}. 0 indicates full precision.
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return {@code this}, in {@code BigDecimal} form
+     */
+    public @NotNull Optional<BigDecimal> bigDecimalValueByPrecision(int precision, @NotNull Rational resolution) {
+        return bigDecimalValueByPrecision(precision, RoundingMode.HALF_EVEN, resolution);
+    }
+
+    public @NotNull BigDecimal bigDecimalValueByScaleUnsafe(int scale) {
+        return bigDecimalValueByScaleUnsafe(scale, RoundingMode.HALF_EVEN);
+    }
+
+    public @NotNull Optional<BigDecimal> bigDecimalValueByScale(int scale, @NotNull Rational resolution) {
+        return bigDecimalValueByScale(scale, RoundingMode.HALF_EVEN, resolution);
     }
 
     public @NotNull Real negate() {
