@@ -1839,6 +1839,9 @@ public final class Real implements Iterable<Interval> {
         if (roundingMode == RoundingMode.UNNECESSARY) {
             throw new ArithmeticException("If roundingMode is UNNECESSARY, this must be exact. Invalid this: " + this);
         }
+        if (precision == 0) {
+            throw new ArithmeticException("If precision is zero, this must be exact. Invalid this: " + this);
+        }
         //noinspection ConstantConditions
         return limitValueUnsafe(r -> r.bigDecimalValueByPrecision(precision, roundingMode));
     }
@@ -1880,6 +1883,9 @@ public final class Real implements Iterable<Interval> {
         }
         if (roundingMode == RoundingMode.UNNECESSARY) {
             throw new ArithmeticException("If roundingMode is UNNECESSARY, this must be exact. Invalid this: " + this);
+        }
+        if (precision == 0) {
+            throw new ArithmeticException("If precision is zero, this must be exact. Invalid this: " + this);
         }
         return limitValue(r -> r.bigDecimalValueByPrecision(precision, roundingMode), resolution);
     }

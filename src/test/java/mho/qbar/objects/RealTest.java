@@ -3290,6 +3290,47 @@ public class RealTest {
         bigDecimalValueByPrecisionUnsafe_int_RoundingMode_fail_helper(PI, 4, "UNNECESSARY");
         bigDecimalValueByPrecisionUnsafe_int_RoundingMode_fail_helper(PI, 5, "UNNECESSARY");
 
+        bigDecimalValueByPrecisionUnsafe_int_RoundingMode_fail_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                0,
+                "FLOOR"
+        );
+        bigDecimalValueByPrecisionUnsafe_int_RoundingMode_fail_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                0,
+                "CEILING"
+        );
+        bigDecimalValueByPrecisionUnsafe_int_RoundingMode_fail_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                0,
+                "DOWN"
+        );
+        bigDecimalValueByPrecisionUnsafe_int_RoundingMode_fail_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                0,
+                "UP"
+        );
+        bigDecimalValueByPrecisionUnsafe_int_RoundingMode_fail_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                0,
+                "HALF_DOWN"
+        );
+        bigDecimalValueByPrecisionUnsafe_int_RoundingMode_fail_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                0,
+                "HALF_UP"
+        );
+        bigDecimalValueByPrecisionUnsafe_int_RoundingMode_fail_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                0,
+                "HALF_EVEN"
+        );
+        bigDecimalValueByPrecisionUnsafe_int_RoundingMode_fail_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                0,
+                "UNNECESSARY"
+        );
+
         bigDecimalValueByPrecisionUnsafe_int_RoundingMode_fail_helper(ONE, -1, "FLOOR");
         bigDecimalValueByPrecisionUnsafe_int_RoundingMode_fail_helper(ONE, -1, "CEILING");
         bigDecimalValueByPrecisionUnsafe_int_RoundingMode_fail_helper(ONE, -1, "DOWN");
@@ -4309,6 +4350,55 @@ public class RealTest {
         bigDecimalValueByPrecision_int_RoundingMode_Rational_fail_helper(PI, 4, "UNNECESSARY", DEFAULT_RESOLUTION);
         bigDecimalValueByPrecision_int_RoundingMode_Rational_fail_helper(PI, 5, "UNNECESSARY", DEFAULT_RESOLUTION);
 
+        bigDecimalValueByPrecision_int_RoundingMode_Rational_fail_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                0,
+                "FLOOR",
+                DEFAULT_RESOLUTION
+        );
+        bigDecimalValueByPrecision_int_RoundingMode_Rational_fail_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                0,
+                "CEILING",
+                DEFAULT_RESOLUTION
+        );
+        bigDecimalValueByPrecision_int_RoundingMode_Rational_fail_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                0,
+                "DOWN",
+                DEFAULT_RESOLUTION
+        );
+        bigDecimalValueByPrecision_int_RoundingMode_Rational_fail_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                0,
+                "UP",
+                DEFAULT_RESOLUTION
+        );
+        bigDecimalValueByPrecision_int_RoundingMode_Rational_fail_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                0,
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION
+        );
+        bigDecimalValueByPrecision_int_RoundingMode_Rational_fail_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                0,
+                "HALF_UP",
+                DEFAULT_RESOLUTION
+        );
+        bigDecimalValueByPrecision_int_RoundingMode_Rational_fail_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                0,
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION
+        );
+        bigDecimalValueByPrecision_int_RoundingMode_Rational_fail_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                0,
+                "UNNECESSARY",
+                DEFAULT_RESOLUTION
+        );
+
         bigDecimalValueByPrecision_int_RoundingMode_Rational_fail_helper(ONE, -1, "FLOOR", DEFAULT_RESOLUTION);
         bigDecimalValueByPrecision_int_RoundingMode_Rational_fail_helper(ONE, -1, "CEILING", DEFAULT_RESOLUTION);
         bigDecimalValueByPrecision_int_RoundingMode_Rational_fail_helper(ONE, -1, "DOWN", DEFAULT_RESOLUTION);
@@ -4369,6 +4459,7 @@ public class RealTest {
         bigDecimalValueByPrecisionUnsafe_int_helper(leftFuzzyRepresentation(Rational.of(-1235)), 3, "-1.24E+3");
 
         bigDecimalValueByPrecisionUnsafe_int_fail_helper(PI, 0);
+        bigDecimalValueByPrecisionUnsafe_int_fail_helper(fuzzyRepresentation(Rational.ZERO), 0);
         bigDecimalValueByPrecisionUnsafe_int_fail_helper(ONE, -1);
         bigDecimalValueByPrecisionUnsafe_int_fail_helper(PI, -1);
     }
@@ -4444,6 +4535,8 @@ public class RealTest {
                 DEFAULT_RESOLUTION,
                 "Optional.empty"
         );
+
+        bigDecimalValueByPrecision_int_Rational_fail_helper(fuzzyRepresentation(Rational.ZERO), 0, DEFAULT_RESOLUTION);
         bigDecimalValueByPrecision_int_Rational_fail_helper(PI, 0, DEFAULT_RESOLUTION);
         bigDecimalValueByPrecision_int_Rational_fail_helper(ONE, -1, DEFAULT_RESOLUTION);
         bigDecimalValueByPrecision_int_Rational_fail_helper(PI, -1, DEFAULT_RESOLUTION);

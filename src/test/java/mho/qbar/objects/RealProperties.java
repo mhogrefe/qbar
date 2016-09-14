@@ -6,6 +6,7 @@ import mho.wheels.math.BinaryFraction;
 import mho.wheels.numberUtils.FloatingPointUtils;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.structures.Pair;
+import mho.wheels.structures.Quadruple;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static mho.qbar.objects.Real.*;
 import static mho.wheels.iterables.IterableUtils.*;
@@ -83,6 +85,10 @@ public class RealProperties extends QBarTestProperties {
         propertiesDoubleValueUnsafe();
         propertiesDoubleValue_Rational();
         propertiesDoubleValueExact();
+        propertiesBigDecimalValueByPrecisionUnsafe_int_RoundingMode();
+        propertiesBigDecimalValueByPrecision_int_RoundingMode_Rational();
+        propertiesBigDecimalValueByPrecisionUnsafe_int();
+        propertiesBigDecimalValueByPrecision_int_Rational();
     }
 
     private void propertiesOf_Rational() {
@@ -2440,6 +2446,517 @@ public class RealProperties extends QBarTestProperties {
                 x.doubleValueExact();
                 fail(x);
             } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private static boolean precisionAlphaBorderline(int n, @NotNull Rational x) {
+        return x.hasTerminatingBaseExpansion(BigInteger.TEN) && x.bigDecimalValueExact().precision() <= n;
+    }
+
+    private static boolean precisionBetaBorderline(int n, @NotNull Rational x) {
+        if (!x.hasTerminatingBaseExpansion(BigInteger.TEN)) {
+            return false;
+        }
+        BigDecimal bd = x.bigDecimalValueExact();
+        return bd.precision() == n + 1 && bd.unscaledValue().mod(BigInteger.TEN).intValueExact() == 5;
+    }
+
+    private static boolean rmBigDecimalPrecisionCheck(
+            @NotNull Algebraic x,
+            int precision,
+            @NotNull RoundingMode rm,
+            @NotNull FuzzinessType ft
+    ) {
+        int sign = x.signum();
+        if (sign == 0) {
+            return ft == FuzzinessType.NONE;
+        }
+        if (precision == 0) {
+            return x.hasTerminatingBaseExpansion(BigInteger.TEN) && ft == FuzzinessType.NONE;
+        }
+        boolean left = ft == FuzzinessType.LEFT || ft == FuzzinessType.BOTH;
+        boolean right = ft == FuzzinessType.RIGHT || ft == FuzzinessType.BOTH;
+        if (x.isRational() && precisionAlphaBorderline(precision, x.rationalValueExact())) {
+            switch (rm) {
+                case UP:
+                    return !(sign == 1 && right) && !(sign == -1 && left);
+                case DOWN:
+                    return !(sign == 1 && left) && !(sign == -1 && right);
+                case CEILING:
+                    return !right;
+                case FLOOR:
+                    return !left;
+                case UNNECESSARY:
+                    return ft == FuzzinessType.NONE;
+                default:
+                    return true;
+            }
+        } else if (x.isRational() && precisionBetaBorderline(precision, x.rationalValueExact())) {
+            switch (rm) {
+                case HALF_UP:
+                    return !(sign == 1 && left) && !(sign == -1 && right);
+                case HALF_DOWN:
+                    return !(sign == 1 && right) && !(sign == -1 && left);
+                case HALF_EVEN:
+                    boolean lowerEven = x.bigDecimalValueByPrecision(precision, RoundingMode.FLOOR).unscaledValue()
+                            .and(BigInteger.ONE).equals(BigInteger.ZERO);
+                    return !(lowerEven ? right : left);
+                case UNNECESSARY:
+                    return false;
+                default:
+                    return true;
+            }
+        }
+        return rm != RoundingMode.UNNECESSARY;
+    }
+
+    private void propertiesBigDecimalValueByPrecisionUnsafe_int_RoundingMode() {
+        initialize("bigDecimalValueByPrecisionUnsafe(int, RoundingMode)");
+        //noinspection RedundantCast
+        Iterable<Triple<Real, Integer, RoundingMode>> ts = map(
+                u -> {
+                    Real r;
+                    switch (u.a.b) {
+                        case NONE:
+                            r = u.a.a.realValue();
+                            break;
+                        case LEFT:
+                            r = leftFuzzyRepresentation(u.a.a.rationalValueExact());
+                            break;
+                        case RIGHT:
+                            r = rightFuzzyRepresentation(u.a.a.rationalValueExact());
+                            break;
+                        case BOTH:
+                            r = fuzzyRepresentation(u.a.a.rationalValueExact());
+                            break;
+                        default:
+                            throw new IllegalStateException("unreachable");
+                    }
+                    return new Triple<>(r, u.b, u.c);
+                },
+                filterInfinite(
+                        t -> rmBigDecimalPrecisionCheck(t.a.a, t.b, t.c, t.a.b),
+                        P.triples(
+                                P.withScale(1).choose(
+                                        map(x -> new Pair<>(x, FuzzinessType.NONE), P.withScale(4).algebraics()),
+                                        P.choose(
+                                                (List<Iterable<Pair<Algebraic, FuzzinessType>>>) Arrays.asList(
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.LEFT),
+                                                                P.withScale(4).rationals()
+                                                        ),
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.RIGHT),
+                                                                P.withScale(4).rationals()
+                                                        ),
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.BOTH),
+                                                                P.withScale(4).rationals()
+                                                        )
+                                                )
+                                        )
+                                ),
+                                P.naturalIntegersGeometric(),
+                                P.roundingModes()
+                        )
+                )
+        );
+        for (Triple<Real, Integer, RoundingMode> t : take(LIMIT, ts)) {
+            t.a.bigDecimalValueByPrecisionUnsafe(t.b, t.c);
+        }
+
+        Predicate<Triple<Real, Integer, RoundingMode>> valid = t -> {
+            try {
+                t.a.bigDecimalValueByPrecisionUnsafe(t.b, t.c);
+                return true;
+            } catch (ArithmeticException e) {
+                return false;
+            }
+        };
+        ts = filterInfinite(valid, P.triples(P.cleanReals(), P.naturalIntegersGeometric(), P.roundingModes()));
+        for (Triple<Real, Integer, RoundingMode> t : take(LIMIT, ts)) {
+            BigDecimal bd = t.a.bigDecimalValueByPrecisionUnsafe(t.b, t.c);
+            assertTrue(t, eq(bd, BigDecimal.ZERO) || bd.signum() == t.a.signumUnsafe());
+        }
+
+        ts = filterInfinite(valid, P.triples(P.nonzeroCleanReals(), P.positiveIntegersGeometric(), P.roundingModes()));
+        for (Triple<Real, Integer, RoundingMode> t : take(LIMIT, ts)) {
+            BigDecimal bd = t.a.bigDecimalValueByPrecisionUnsafe(t.b, t.c);
+            assertTrue(t, bd.precision() == t.b);
+        }
+
+        Iterable<Pair<Real, Integer>> ps = filterInfinite(
+                q -> valid.test(new Triple<>(q.a, q.b, RoundingMode.UNNECESSARY)),
+                P.pairsSquareRootOrder(map(Algebraic::realValue, P.algebraics(1)), P.naturalIntegersGeometric())
+        );
+        for (Pair<Real, Integer> p : take(LIMIT, ps)) {
+            BigDecimal bd = p.a.bigDecimalValueByPrecisionUnsafe(p.b, RoundingMode.UNNECESSARY);
+            assertEquals(p, bd, p.a.bigDecimalValueByPrecisionUnsafe(p.b, RoundingMode.FLOOR));
+            assertEquals(p, bd, p.a.bigDecimalValueByPrecisionUnsafe(p.b, RoundingMode.CEILING));
+            assertEquals(p, bd, p.a.bigDecimalValueByPrecisionUnsafe(p.b, RoundingMode.DOWN));
+            assertEquals(p, bd, p.a.bigDecimalValueByPrecisionUnsafe(p.b, RoundingMode.UP));
+            assertEquals(p, bd, p.a.bigDecimalValueByPrecisionUnsafe(p.b, RoundingMode.HALF_DOWN));
+            assertEquals(p, bd, p.a.bigDecimalValueByPrecisionUnsafe(p.b, RoundingMode.HALF_UP));
+            assertEquals(p, bd, p.a.bigDecimalValueByPrecisionUnsafe(p.b, RoundingMode.HALF_EVEN));
+        }
+
+        ps = filterInfinite(
+                q -> valid.test(new Triple<>(q.a, q.b, RoundingMode.FLOOR)) &&
+                        (!q.a.isExact() ||
+                                !Rational.of(q.a.bigDecimalValueByPrecisionUnsafe(q.b))
+                                        .equals(q.a.rationalValueExact().get())),
+                P.pairsSquareRootOrder(P.cleanReals(), P.naturalIntegersGeometric())
+        );
+        for (Pair<Real, Integer> p : take(LIMIT, ps)) {
+            BigDecimal low = p.a.bigDecimalValueByPrecisionUnsafe(p.b, RoundingMode.FLOOR);
+            BigDecimal high = p.a.bigDecimalValueByPrecisionUnsafe(p.b, RoundingMode.CEILING);
+            assertTrue(p, lt(low, high));
+        }
+
+        ps = filterInfinite(
+                q -> valid.test(new Triple<>(q.a, q.b, RoundingMode.FLOOR)) &&
+                        (!q.a.isExact() ||
+                                !Rational.of(q.a.bigDecimalValueByPrecisionUnsafe(q.b))
+                                        .equals(q.a.rationalValueExact().get())),
+                P.pairsSquareRootOrder(P.positiveCleanReals(), P.naturalIntegersGeometric())
+        );
+        for (Pair<Real, Integer> p : take(LIMIT, ps)) {
+            BigDecimal floor = p.a.bigDecimalValueByPrecisionUnsafe(p.b, RoundingMode.FLOOR);
+            BigDecimal down = p.a.bigDecimalValueByPrecisionUnsafe(p.b, RoundingMode.DOWN);
+            BigDecimal ceiling = p.a.bigDecimalValueByPrecisionUnsafe(p.b, RoundingMode.CEILING);
+            BigDecimal up = p.a.bigDecimalValueByPrecisionUnsafe(p.b, RoundingMode.UP);
+            assertEquals(p, floor, down);
+            assertEquals(p, ceiling, up);
+        }
+
+        ps = filterInfinite(
+                q -> valid.test(new Triple<>(q.a, q.b, RoundingMode.FLOOR)) &&
+                        (!q.a.isExact() ||
+                                !Rational.of(q.a.bigDecimalValueByPrecisionUnsafe(q.b))
+                                        .equals(q.a.rationalValueExact().get())),
+                P.pairsSquareRootOrder(P.negativeCleanReals(), P.naturalIntegersGeometric())
+        );
+        for (Pair<Real, Integer> p : take(LIMIT, ps)) {
+            BigDecimal floor = p.a.bigDecimalValueByPrecisionUnsafe(p.b, RoundingMode.FLOOR);
+            BigDecimal down = p.a.bigDecimalValueByPrecisionUnsafe(p.b, RoundingMode.DOWN);
+            BigDecimal ceiling = p.a.bigDecimalValueByPrecisionUnsafe(p.b, RoundingMode.CEILING);
+            BigDecimal up = p.a.bigDecimalValueByPrecisionUnsafe(p.b, RoundingMode.UP);
+            assertEquals(p, floor, up);
+            assertEquals(p, ceiling, down);
+        }
+
+        BigInteger five = BigInteger.valueOf(5);
+        Iterable<BigDecimal> bds = filterInfinite(
+                bd -> bd.precision() > 1 && !bd.abs().unscaledValue().mod(BigInteger.TEN).equals(five),
+                P.bigDecimals()
+        );
+        for (BigDecimal bd : take(LIMIT, bds)) {
+            int precision = bd.precision() - 1;
+            Real x = of(bd);
+            BigDecimal down = x.bigDecimalValueByPrecisionUnsafe(precision, RoundingMode.DOWN);
+            BigDecimal up = x.bigDecimalValueByPrecisionUnsafe(precision, RoundingMode.UP);
+            BigDecimal halfDown = x.bigDecimalValueByPrecisionUnsafe(precision, RoundingMode.HALF_DOWN);
+            BigDecimal halfUp = x.bigDecimalValueByPrecisionUnsafe(precision, RoundingMode.HALF_UP);
+            BigDecimal halfEven = x.bigDecimalValueByPrecisionUnsafe(precision, RoundingMode.HALF_EVEN);
+            BigDecimal closest = ltUnsafe(x.subtract(of(down)).abs(), x.subtract(of(up)).abs()) ? down : up;
+            assertEquals(bd, halfDown, closest);
+            assertEquals(bd, halfUp, closest);
+            assertEquals(bd, halfEven, closest);
+        }
+
+        bds = filterInfinite(
+                bd -> bd.precision() > 1,
+                map(
+                        bd -> new BigDecimal(bd.unscaledValue().multiply(BigInteger.TEN).add(five), bd.scale()),
+                        P.bigDecimals()
+                )
+        );
+        for (BigDecimal bd : take(LIMIT, bds)) {
+            int precision = bd.precision() - 1;
+            Real x = of(bd);
+            BigDecimal down = x.bigDecimalValueByPrecisionUnsafe(precision, RoundingMode.DOWN);
+            BigDecimal up = x.bigDecimalValueByPrecisionUnsafe(precision, RoundingMode.UP);
+            BigDecimal halfDown = x.bigDecimalValueByPrecisionUnsafe(precision, RoundingMode.HALF_DOWN);
+            BigDecimal halfUp = x.bigDecimalValueByPrecisionUnsafe(precision, RoundingMode.HALF_UP);
+            BigDecimal halfEven = x.bigDecimalValueByPrecisionUnsafe(precision, RoundingMode.HALF_EVEN);
+            assertEquals(bd, down, halfDown);
+            assertEquals(bd, up, halfUp);
+            assertTrue(bd, bd.scale() != halfEven.scale() + 1 || !halfEven.unscaledValue().testBit(0));
+        }
+
+        Iterable<Triple<Real, Integer, RoundingMode>> tsFail = P.triples(
+                P.nonzeroCleanReals(),
+                P.negativeIntegers(),
+                P.roundingModes()
+        );
+        for (Triple<Real, Integer, RoundingMode> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.bigDecimalValueByPrecisionUnsafe(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException | ArithmeticException ignored) {}
+        }
+
+        Iterable<Pair<Real, Integer>> psFail = P.pairsSquareRootOrder(
+                filterInfinite(
+                        x -> !x.isExact() || !x.rationalValueExact().get().hasTerminatingBaseExpansion(BigInteger.TEN),
+                        P.cleanReals()
+                ),
+                P.naturalIntegersGeometric()
+        );
+        for (Pair<Real, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.bigDecimalValueByPrecisionUnsafe(p.b, RoundingMode.UNNECESSARY);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesBigDecimalValueByPrecision_int_RoundingMode_Rational() {
+        initialize("bigDecimalValueByPrecision(int, RoundingMode, Rational)");
+        Iterable<Quadruple<Real, Integer, RoundingMode, Rational>> qs = filterInfinite(
+                q -> {
+                    try {
+                        q.a.bigDecimalValueByPrecision(q.b, q.c, q.d);
+                        return true;
+                    } catch (ArithmeticException e) {
+                        return false;
+                    }
+                },
+                P.quadruples(
+                        P.withScale(4).reals(),
+                        P.naturalIntegersGeometric(),
+                        P.roundingModes(),
+                        P.positiveRationals()
+                )
+        );
+        for (Quadruple<Real, Integer, RoundingMode, Rational> q : take(LIMIT, qs)) {
+            Optional<BigDecimal> obd = q.a.bigDecimalValueByPrecision(q.b, q.c, q.d);
+            if (obd.isPresent()) {
+                assertEquals(q, q.a.bigDecimalValueByPrecisionUnsafe(q.b, q.c), obd.get());
+            }
+        }
+
+        Iterable<Triple<Real, Integer, Rational>> tsFail = filterInfinite(
+                t -> {
+                    if (!t.a.isExact()) {
+                        return true;
+                    }
+                    Rational r = t.a.rationalValueExact().get();
+                    return !r.hasTerminatingBaseExpansion(BigInteger.TEN) ||
+                            (r != Rational.ZERO && t.b != 0 && r.bigDecimalValueExact().precision() > t.b);
+                },
+                P.triples(P.withScale(4).reals(), P.naturalIntegersGeometric(), P.positiveRationals())
+        );
+        for (Triple<Real, Integer, Rational> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.bigDecimalValueByPrecision(t.b, RoundingMode.UNNECESSARY, t.c);
+                fail(t);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<Triple<Real, RoundingMode, Rational>> tsFail2 = filterInfinite(
+                t -> {
+                    if (!t.a.isExact()) {
+                        return true;
+                    }
+                    Rational r = t.a.rationalValueExact().get();
+                    try {
+                        r.bigDecimalValueByPrecision(0, t.b);
+                        return false;
+                    } catch (ArithmeticException ignored) {
+                        return true;
+                    }
+                },
+                P.triples(P.withScale(4).reals(), P.roundingModes(), P.positiveRationals())
+        );
+        for (Triple<Real, RoundingMode, Rational> t : take(LIMIT, tsFail2)) {
+            try {
+                t.a.bigDecimalValueByPrecision(0, t.b, t.c);
+                fail(t);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<Quadruple<Real, Integer, RoundingMode, Rational>> qsFail = P.quadruples(
+                P.withScale(4).reals(),
+                P.naturalIntegersGeometric(),
+                P.roundingModes(),
+                P.withElement(Rational.ZERO, P.negativeRationals())
+        );
+        for (Quadruple<Real, Integer, RoundingMode, Rational> q : take(LIMIT, qsFail)) {
+            try {
+                q.a.bigDecimalValueByPrecision(q.b, q.c, q.d);
+                fail(q);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesBigDecimalValueByPrecisionUnsafe_int() {
+        initialize("bigDecimalValueByPrecisionUnsafe(int)");
+        //noinspection RedundantCast
+        Iterable<Pair<Real, Integer>> ps = map(
+                q -> {
+                    Real r;
+                    switch (q.a.b) {
+                        case NONE:
+                            r = q.a.a.realValue();
+                            break;
+                        case LEFT:
+                            r = leftFuzzyRepresentation(q.a.a.rationalValueExact());
+                            break;
+                        case RIGHT:
+                            r = rightFuzzyRepresentation(q.a.a.rationalValueExact());
+                            break;
+                        case BOTH:
+                            r = fuzzyRepresentation(q.a.a.rationalValueExact());
+                            break;
+                        default:
+                            throw new IllegalStateException("unreachable");
+                    }
+                    return new Pair<>(r, q.b);
+                },
+                filterInfinite(
+                        p -> rmBigDecimalPrecisionCheck(p.a.a, p.b, RoundingMode.HALF_EVEN, p.a.b),
+                        P.pairsSquareRootOrder(
+                                P.withScale(1).choose(
+                                        map(x -> new Pair<>(x, FuzzinessType.NONE), P.withScale(4).algebraics()),
+                                        P.choose(
+                                                (List<Iterable<Pair<Algebraic, FuzzinessType>>>) Arrays.asList(
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.LEFT),
+                                                                P.withScale(4).rationals()
+                                                        ),
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.RIGHT),
+                                                                P.withScale(4).rationals()
+                                                        ),
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.BOTH),
+                                                                P.withScale(4).rationals()
+                                                        )
+                                                )
+                                        )
+                                ),
+                                P.naturalIntegersGeometric()
+                        )
+                )
+        );
+        for (Pair<Real, Integer> p : take(LIMIT, ps)) {
+            p.a.bigDecimalValueByPrecisionUnsafe(p.b);
+        }
+
+        Predicate<Pair<Real, Integer>> valid = p -> {
+            try {
+                p.a.bigDecimalValueByPrecisionUnsafe(p.b);
+                return true;
+            } catch (ArithmeticException e) {
+                return false;
+            }
+        };
+        ps = filterInfinite(
+                valid,
+                P.pairsSquareRootOrder(P.cleanReals(), P.naturalIntegersGeometric())
+        );
+        for (Pair<Real, Integer> p : take(LIMIT, ps)) {
+            BigDecimal bd = p.a.bigDecimalValueByPrecisionUnsafe(p.b);
+            assertEquals(p, bd, p.a.bigDecimalValueByPrecisionUnsafe(p.b, RoundingMode.HALF_EVEN));
+            assertTrue(p, eq(bd, BigDecimal.ZERO) || bd.signum() == p.a.signumUnsafe());
+        }
+
+        ps = filterInfinite(valid::test, P.pairsSquareRootOrder(P.nonzeroCleanReals(), P.positiveIntegersGeometric()));
+        for (Pair<Real, Integer> p : take(LIMIT, ps)) {
+            BigDecimal bd = p.a.bigDecimalValueByPrecisionUnsafe(p.b);
+            assertTrue(p, bd.precision() == p.b);
+        }
+
+        BigInteger five = BigInteger.valueOf(5);
+        Iterable<BigDecimal> bds = filterInfinite(
+                bd -> bd.precision() > 1 && !bd.abs().unscaledValue().mod(BigInteger.TEN).equals(five),
+                P.bigDecimals()
+        );
+        for (BigDecimal bd : take(LIMIT, bds)) {
+            int precision = bd.precision() - 1;
+            Real x = of(bd);
+            BigDecimal down = x.bigDecimalValueByPrecisionUnsafe(precision, RoundingMode.DOWN);
+            BigDecimal up = x.bigDecimalValueByPrecisionUnsafe(precision, RoundingMode.UP);
+            BigDecimal halfEven = x.bigDecimalValueByPrecisionUnsafe(precision);
+            boolean closerToDown = ltUnsafe(x.subtract(of(down)).abs(), x.subtract(of(up)).abs());
+            assertEquals(bd, halfEven, closerToDown ? down : up);
+        }
+
+        bds = filterInfinite(
+                bd -> bd.precision() > 1,
+                map(
+                        bd -> new BigDecimal(bd.unscaledValue().multiply(BigInteger.TEN).add(five), bd.scale()),
+                        P.bigDecimals()
+                )
+        );
+        for (BigDecimal bd : take(LIMIT, bds)) {
+            int precision = bd.precision() - 1;
+            Real x = of(bd);
+            BigDecimal halfEven = x.bigDecimalValueByPrecisionUnsafe(precision);
+            assertTrue(bd, bd.scale() != halfEven.scale() + 1 || !halfEven.unscaledValue().testBit(0));
+        }
+
+        for (Pair<Real, Integer> p : take(LIMIT, P.pairs(P.cleanReals(), P.negativeIntegers()))) {
+            try {
+                p.a.bigDecimalValueByPrecisionUnsafe(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesBigDecimalValueByPrecision_int_Rational() {
+        initialize("bigDecimalValueByPrecision(int, Rational)");
+        Iterable<Triple<Real, Integer, Rational>> ts = filterInfinite(
+                t -> {
+                    try {
+                        t.a.bigDecimalValueByPrecision(t.b, t.c);
+                        return true;
+                    } catch (ArithmeticException e) {
+                        return false;
+                    }
+                },
+                P.triples(P.withScale(4).reals(), P.naturalIntegersGeometric(), P.positiveRationals())
+        );
+        for (Triple<Real, Integer, Rational> t : take(LIMIT, ts)) {
+            Optional<BigDecimal> obd = t.a.bigDecimalValueByPrecision(t.b, t.c);
+            if (obd.isPresent()) {
+                assertEquals(t, t.a.bigDecimalValueByPrecisionUnsafe(t.b), obd.get());
+            }
+        }
+
+        Iterable<Pair<Real, Rational>> psFail2 = filterInfinite(
+                p -> {
+                    if (!p.a.isExact()) {
+                        return true;
+                    }
+                    Rational r = p.a.rationalValueExact().get();
+                    try {
+                        r.bigDecimalValueByPrecision(0);
+                        return false;
+                    } catch (ArithmeticException ignored) {
+                        return true;
+                    }
+                },
+                P.pairs(P.withScale(4).reals(), P.positiveRationals())
+        );
+        for (Pair<Real, Rational> p : take(LIMIT, psFail2)) {
+            try {
+                p.a.bigDecimalValueByPrecision(0, p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<Triple<Real, Integer, Rational>> tsFail = P.triples(
+                P.withScale(4).reals(),
+                P.naturalIntegersGeometric(),
+                P.withElement(Rational.ZERO, P.negativeRationals())
+        );
+        for (Triple<Real, Integer, Rational> q : take(LIMIT, tsFail)) {
+            try {
+                q.a.bigDecimalValueByPrecision(q.b, q.c);
+                fail(q);
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 }
