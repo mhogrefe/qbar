@@ -597,8 +597,7 @@ public class AlgebraicDemos extends QBarDemos {
         BigInteger lower = BigInteger.valueOf(Integer.MIN_VALUE);
         BigInteger upper = BigInteger.valueOf(Integer.MAX_VALUE);
         Iterable<Pair<Algebraic, Rational>> ps = filterInfinite(
-                p -> (p.a != ZERO || p.b.signum() != -1) &&
-                        (p.a.signum() != -1 || !p.b.getDenominator().and(BigInteger.ONE).equals(BigInteger.ZERO)),
+                p -> (p.a != ZERO || p.b.signum() != -1) && (p.a.signum() != -1 || p.b.getDenominator().testBit(0)),
                 P.pairsSquareRootOrder(
                         P.withScale(1).withSecondaryScale(4).algebraics(),
                         filterInfinite(

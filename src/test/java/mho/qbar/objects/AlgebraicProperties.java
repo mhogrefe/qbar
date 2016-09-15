@@ -3204,8 +3204,7 @@ public class AlgebraicProperties extends QBarTestProperties {
                 P.withScale(3).rationals()
         );
         Iterable<Pair<Algebraic, Rational>> ps = filterInfinite(
-                p -> (p.a != ZERO || p.b.signum() != -1) &&
-                        (p.a.signum() != -1 || !p.b.getDenominator().and(BigInteger.ONE).equals(BigInteger.ZERO)),
+                p -> (p.a != ZERO || p.b.signum() != -1) && (p.a.signum() != -1 || p.b.getDenominator().testBit(0)),
                 P.pairsSquareRootOrder(P.withScale(1).withSecondaryScale(4).algebraics(), rs)
         );
         for (Pair<Algebraic, Rational> p : take(SMALL_LIMIT, ps)) {
@@ -3219,20 +3218,18 @@ public class AlgebraicProperties extends QBarTestProperties {
                 P.withScale(3).rationals()
         );
         ps = filterInfinite(
-                p -> (p.a != ZERO || p.b.signum() != -1) &&
-                        (p.a.signum() != -1 || !p.b.getDenominator().and(BigInteger.ONE).equals(BigInteger.ZERO)),
+                p -> (p.a != ZERO || p.b.signum() != -1) && (p.a.signum() != -1 || p.b.getDenominator().testBit(0)),
                 P.pairsSquareRootOrder(P.withScale(1).withSecondaryScale(4).algebraics(), simpleRs)
         );
         for (Pair<Algebraic, Rational> p : take(SMALL_LIMIT, ps)) {
             assertEquals(p, p.a.pow(p.b), pow_Rational_alt(p.a, p.b));
-            if (p.b != Rational.ZERO &&
-                    (p.b.getNumerator().and(BigInteger.ONE).equals(BigInteger.ONE) || p.a.signum() != -1)) {
+            if (p.b != Rational.ZERO && (p.b.getNumerator().testBit(0) || p.a.signum() != -1)) {
                 inverse(y -> y.pow(p.b), (Algebraic y) -> y.pow(p.b.invert()), p.a);
             }
         }
 
         ps = filterInfinite(
-                p -> p.b.getDenominator().and(BigInteger.ONE).equals(BigInteger.ONE) || p.a.signum() == 1,
+                p -> p.b.getDenominator().testBit(0) || p.a.signum() == 1,
                 P.pairs(P.withScale(1).withSecondaryScale(4).nonzeroAlgebraics(), simpleRs)
         );
         for (Pair<Algebraic, Rational> p : take(SMALL_LIMIT, ps)) {
@@ -3320,7 +3317,7 @@ public class AlgebraicProperties extends QBarTestProperties {
 
         Iterable<Pair<Algebraic, Rational>> psFail = P.pairs(
                 P.negativeAlgebraics(),
-                filterInfinite(r -> r.getDenominator().and(BigInteger.ONE).equals(BigInteger.ZERO), rs)
+                filterInfinite(r -> !r.getDenominator().testBit(0), rs)
         );
         for (Pair<Algebraic, Rational> p : take(LIMIT, psFail)) {
             try {
@@ -3366,8 +3363,7 @@ public class AlgebraicProperties extends QBarTestProperties {
                 P.withScale(3).rationals()
         );
         Iterable<Pair<Algebraic, Rational>> ps = filterInfinite(
-                p -> (p.a != ZERO || p.b.signum() != -1) &&
-                        (p.a.signum() != -1 || !p.b.getDenominator().and(BigInteger.ONE).equals(BigInteger.ZERO)),
+                p -> (p.a != ZERO || p.b.signum() != -1) && (p.a.signum() != -1 || p.b.getDenominator().testBit(0)),
                 P.pairsSquareRootOrder(P.withScale(1).withSecondaryScale(4).algebraics(), simpleRs)
         );
         compareImplementations("pow(Rational)", take(SMALL_LIMIT, ps), functions, v -> P.reset());

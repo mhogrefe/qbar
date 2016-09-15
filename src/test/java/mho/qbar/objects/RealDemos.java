@@ -973,8 +973,8 @@ public class RealDemos extends QBarDemos {
                 case HALF_DOWN:
                     return !(sign == 1 && right) && !(sign == -1 && left);
                 case HALF_EVEN:
-                    boolean lowerEven = x.bigDecimalValueByPrecision(precision, RoundingMode.FLOOR).unscaledValue()
-                            .and(BigInteger.ONE).equals(BigInteger.ZERO);
+                    boolean lowerEven = !x.bigDecimalValueByPrecision(precision, RoundingMode.FLOOR).unscaledValue()
+                            .testBit(0);
                     return !(lowerEven ? right : left);
                 case UNNECESSARY:
                     return false;

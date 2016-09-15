@@ -2354,14 +2354,12 @@ public final class Real implements Iterable<Interval> {
         Interval derivativeBounds = Interval.of(Rational.NEGATIVE_ONE, Rational.ONE);
         return fromMaclaurinSeries(
                 map(
-                        i -> i.and(BigInteger.ONE).equals(BigInteger.ZERO) ?
-                                Rational.ZERO :
+                        i -> i.testBit(0) ?
                                 Rational.of(
-                                        i.and(IntegerUtils.TWO).equals(BigInteger.ZERO) ?
-                                                BigInteger.ONE :
-                                                IntegerUtils.NEGATIVE_ONE,
+                                        i.testBit(1) ? IntegerUtils.NEGATIVE_ONE : BigInteger.ONE,
                                         MathUtils.factorial(i)
-                                ),
+                                ) :
+                                Rational.ZERO,
                         ExhaustiveProvider.INSTANCE.rangeUpIncreasing(BigInteger.ZERO)
                 ),
                 k -> derivativeBounds,

@@ -2425,7 +2425,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      * @return {@code this}<sup>{@code p}</sup>
      */
     public @NotNull Algebraic pow(@NotNull Rational p) {
-        if (p.getDenominator().and(BigInteger.ONE).equals(BigInteger.ZERO) && signum() == -1) {
+        if (!p.getDenominator().testBit(0) && signum() == -1) {
             throw new ArithmeticException("If p has an even denominator, this cannot be negative. this: " +
                     this + ", p: " + p);
         }
