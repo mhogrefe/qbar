@@ -1790,7 +1790,6 @@ public final class Real implements Iterable<Interval> {
      * depending on the rounding mode and the nature of the fuzziness. To prevent this behavior, use
      * {@link Real#bigDecimalValueByPrecision(int, RoundingMode, Rational)} instead.
      *
-     *
      * Define a {@code Real} to be n-precision-alpha-borderline if its decimal expansion is terminating and it has at
      * most n significant figures after removing all trailing zeros. Define a {@code Real} to be
      * n-precision-beta-borderline if its decimal expansion is terminating, it has exactly n+1 significant figures
@@ -1890,6 +1889,50 @@ public final class Real implements Iterable<Interval> {
         return limitValue(r -> r.bigDecimalValueByPrecision(precision, roundingMode), resolution);
     }
 
+    /**
+     * Rounds {@code this} to a {@link java.math.BigDecimal} with a specified rounding mode (see documentation for
+     * {@code java.math.RoundingMode} for details) and with a specified scale (number digits after the decimal point).
+     * Scale may be negative; for example, {@code 1E+1} has a scale of –1. If {@code this} is fuzzy, this method may
+     * loop forever, depending on the rounding mode and the nature of the fuzziness. To prevent this behavior, use
+     * {@link Real#bigDecimalValueByScale(int, RoundingMode, Rational)} instead.
+     *
+     * Define a {@code Real} to be n-scale-alpha-borderline if it is an integer multiple of 10<sup>–n</sup>. Define a
+     * {@code Real} to be n-scale-beta-borderline if it is equal to (10k+5)10<sup>–n–1</sup> for some integer k. 0 is
+     * n-scale-alpha-borderline for all non-negative n and not n-scale-beta-borderline for any n.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code scale} may be any {@code int}.</li>
+     *  <li>{@code roundingMode} cannot be null.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#UP}, {@code this} cannot be positive,
+     *  {@code scale}-scale-alpha-borderline and be fuzzy on the right, or negative,
+     *  {@code scale}-scale-alpha-borderline, and fuzzy on the left, or a fuzzy zero.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#DOWN}, {@code this} cannot be positive,
+     *  {@code scale}-scale-alpha-borderline and be fuzzy on the left, or negative,
+     *  {@code scale}-scale-alpha-borderline, and fuzzy on the right. It may be a fuzzy zero.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#CEILING}, {@code this} cannot be
+     *  {@code scale}-scale-alpha-borderline and be fuzzy on the right.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#FLOOR}, {@code this} cannot be
+     *  {@code scale}-scale-alpha-borderline and be fuzzy on the left.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#HALF_UP}, {@code this} cannot be positive,
+     *  {@code scale}-scale-beta-borderline and be fuzzy on the left, or negative,
+     *  {@code scale}-scale-beta-borderline, and fuzzy on the right.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#HALF_DOWN}, {@code this} cannot be positive,
+     *  {@code scale}-scale-beta-borderline and be fuzzy on the right, or negative,
+     *  {@code scale}-scale-beta-borderline, and fuzzy on the left.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#HALF_EVEN}, and {@code this} is
+     *  {@code scale}-scale-beta-borderline, then one of its adjacent {@code BigDecimal}s with scale {@code scale} will
+     *  have a one in the least significant bit of its unscaled value, and {@code this} cannot be fuzzy in the
+     *  direction closest to that {@code BigDecimal}.</li>
+     *  <li>If {@code roundingMode} is {@code RoundingMode.UNNECESSARY}, then {@code scale} must be at least as large
+     *  as the smallest n such that {@code this}×10<sup>n</sup> is an integer (and such an n must exist).</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * @param scale the scale with which to round {@code this}.
+     * @param roundingMode specifies the details of how to round {@code this}.
+     * @return {@code this}, in {@code BigDecimal} form
+     */
     public @NotNull BigDecimal bigDecimalValueByScaleUnsafe(int scale, @NotNull RoundingMode roundingMode) {
         if (rational.isPresent()) {
             return rational.get().bigDecimalValueByScale(scale, roundingMode);
@@ -1901,6 +1944,29 @@ public final class Real implements Iterable<Interval> {
         return limitValueUnsafe(r -> r.bigDecimalValueByScale(scale, roundingMode));
     }
 
+    /**
+     * Rounds {@code this} to a {@link java.math.BigDecimal} with a specified rounding mode (see documentation for
+     * {@code java.math.RoundingMode} for details) and with a specified scale (number digits after the decimal point).
+     * Scale may be negative; for example, {@code 1E+1} has a scale of –1. If {@code this} is fuzzy, depending on the
+     * rounding mode and the nature of the fuzziness (see {@link Real#bigDecimalValueByScaleUnsafe(int, RoundingMode)},
+     * this method will give up and return empty once the approximating interval's diameter is less than the specified
+     * resolution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code scale} may be any {@code int}.</li>
+     *  <li>{@code roundingMode} cannot be null.</li>
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>If {@code roundingMode} is {@code RoundingMode.UNNECESSARY}, then {@code scale} must be at least as large
+     *  as the smallest n such that {@code this}×10<sup>n</sup> is an integer (and such an n must exist).</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * @param scale the scale with which to round {@code this}.
+     * @param roundingMode specifies the details of how to round {@code this}.
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return {@code this}, in {@code BigDecimal} form
+     */
     public @NotNull Optional<BigDecimal> bigDecimalValueByScale(
             int scale,
             @NotNull RoundingMode roundingMode,
@@ -1972,10 +2038,57 @@ public final class Real implements Iterable<Interval> {
         return bigDecimalValueByPrecision(precision, RoundingMode.HALF_EVEN, resolution);
     }
 
+    /**
+     * Rounds {@code this} to a {@code BigDecimal} with a specified scale (number digits after the decimal point).
+     * Scale may be negative; for example, {@code 1E+1} has a scale of –1. {@code RoundingMode.HALF_EVEN} is used for
+     * rounding. If {@code this} is fuzzy, this method may loop forever, depending on the rounding mode and the nature
+     * of the fuzziness. To prevent this behavior, use {@link Real#bigDecimalValueByScale(int, Rational)} instead.
+     *
+     * Define a {@code Real} to be n-scale-alpha-borderline if it is an integer multiple of 10<sup>–n</sup>. Define a
+     * {@code Real} to be n-scale-beta-borderline if it is equal to (10k+5)10<sup>–n–1</sup> for some integer k. 0 is
+     * n-scale-alpha-borderline for all non-negative n and not n-scale-beta-borderline for any n.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code scale} may be any {@code int}.</li>
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>If  {@code this} is {@code scale}-scale-beta-borderline, then one of its adjacent {@code BigDecimal}s with
+     *  scale {@code scale} will have a one in the least significant bit of its unscaled value, and {@code this} cannot
+     *  be fuzzy in the direction closest to that {@code BigDecimal}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param scale the scale with which to round {@code this}.
+     * @return {@code this}, in {@code BigDecimal} form
+     */
     public @NotNull BigDecimal bigDecimalValueByScaleUnsafe(int scale) {
         return bigDecimalValueByScaleUnsafe(scale, RoundingMode.HALF_EVEN);
     }
 
+    /**
+     * Rounds {@code this} to a {@code BigDecimal} with a specified scale (number digits after the decimal point).
+     * Scale may be negative; for example, {@code 1E+1} has a scale of –1. {@code RoundingMode.HALF_EVEN} is used for
+     * rounding. If {@code this} is fuzzy, depending on the nature of the fuzziness (see
+     * {@link Real#bigDecimalValueByScaleUnsafe(int)}, this method will give up and return empty once the approximating
+     * interval's diameter is less than the specified resolution.
+     *
+     * Define a {@code Real} to be n-scale-alpha-borderline if it is an integer multiple of 10<sup>–n</sup>. Define a
+     * {@code Real} to be n-scale-beta-borderline if it is equal to (10k+5)10<sup>–n–1</sup> for some integer k. 0 is
+     * n-scale-alpha-borderline for all non-negative n and not n-scale-beta-borderline for any n.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code scale} may be any {@code int}.</li>
+     *  <li>If  {@code this} is {@code scale}-scale-beta-borderline, then one of its adjacent {@code BigDecimal}s with
+     *  scale {@code scale} will have a one in the least significant bit of its unscaled value, and {@code this} cannot
+     *  be fuzzy in the direction closest to that {@code BigDecimal}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param scale the scale with which to round {@code this}.
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return {@code this}, in {@code BigDecimal} form
+     */
     public @NotNull Optional<BigDecimal> bigDecimalValueByScale(int scale, @NotNull Rational resolution) {
         return bigDecimalValueByScale(scale, RoundingMode.HALF_EVEN, resolution);
     }

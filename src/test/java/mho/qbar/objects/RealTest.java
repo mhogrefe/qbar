@@ -4282,7 +4282,8 @@ public class RealTest {
                 fuzzyRepresentation(Rational.of(1235)),
                 3,
                 "HALF_EVEN",
-                DEFAULT_RESOLUTION, "Optional.empty"
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
         );
 
         bigDecimalValueByPrecision_int_RoundingMode_Rational_helper(
@@ -4543,5 +4544,1399 @@ public class RealTest {
 
         bigDecimalValueByPrecision_int_Rational_fail_helper(ZERO, 0, Rational.ZERO);
         bigDecimalValueByPrecision_int_Rational_fail_helper(ZERO, 0, Rational.NEGATIVE_ONE);
+    }
+
+    private static void bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(
+            @NotNull Real x,
+            int scale,
+            @NotNull String rm,
+            @NotNull String output
+    ) {
+        aeq(x.bigDecimalValueByScaleUnsafe(scale, Readers.readRoundingModeStrict(rm).get()), output);
+    }
+
+    private static void bigDecimalValueByScaleUnsafe_int_RoundingMode_fail_helper(
+            @NotNull Real x,
+            int scale,
+            @NotNull String roundingMode
+    ) {
+        try {
+            x.bigDecimalValueByScaleUnsafe(scale, Readers.readRoundingModeStrict(roundingMode).get());
+            fail();
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testBigDecimalValueByScaleUnsafe_int_RoundingMode() {
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ZERO, 0, "FLOOR", "0");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ZERO, 0, "CEILING", "0");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ZERO, 0, "DOWN", "0");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ZERO, 0, "UP", "0");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ZERO, 0, "HALF_DOWN", "0");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ZERO, 0, "HALF_UP", "0");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ZERO, 0, "HALF_EVEN", "0");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ZERO, 0, "UNNECESSARY", "0");
+
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ZERO, 3, "FLOOR", "0.000");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ZERO, 3, "CEILING", "0.000");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ZERO, 3, "DOWN", "0.000");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ZERO, 3, "UP", "0.000");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ZERO, 3, "HALF_DOWN", "0.000");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ZERO, 3, "HALF_UP", "0.000");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ZERO, 3, "HALF_EVEN", "0.000");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ZERO, 3, "UNNECESSARY", "0.000");
+
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ZERO, -3, "FLOOR", "0E+3");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ZERO, -3, "CEILING", "0E+3");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ZERO, -3, "DOWN", "0E+3");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ZERO, -3, "UP", "0E+3");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ZERO, -3, "HALF_DOWN", "0E+3");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ZERO, -3, "HALF_UP", "0E+3");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ZERO, -3, "HALF_EVEN", "0E+3");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ZERO, -3, "UNNECESSARY", "0E+3");
+
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE, 0, "FLOOR", "1");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE, 0, "CEILING", "1");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE, 0, "DOWN", "1");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE, 0, "UP", "1");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE, 0, "HALF_DOWN", "1");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE, 0, "HALF_UP", "1");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE, 0, "HALF_EVEN", "1");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE, 0, "UNNECESSARY", "1");
+
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE, 3, "FLOOR", "1.000");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE, 3, "CEILING", "1.000");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE, 3, "DOWN", "1.000");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE, 3, "UP", "1.000");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE, 3, "HALF_DOWN", "1.000");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE, 3, "HALF_UP", "1.000");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE, 3, "HALF_EVEN", "1.000");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE, 3, "UNNECESSARY", "1.000");
+
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE, -3, "FLOOR", "0E+3");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE, -3, "CEILING", "1E+3");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE, -3, "DOWN", "0E+3");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE, -3, "UP", "1E+3");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE, -3, "HALF_DOWN", "0E+3");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE, -3, "HALF_UP", "0E+3");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE, -3, "HALF_EVEN", "0E+3");
+
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE_HALF, 0, "FLOOR", "0");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE_HALF, 0, "CEILING", "1");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE_HALF, 0, "DOWN", "0");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE_HALF, 0, "UP", "1");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE_HALF, 0, "HALF_DOWN", "0");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE_HALF, 0, "HALF_UP", "1");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE_HALF, 0, "HALF_EVEN", "0");
+
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE_HALF, 4, "FLOOR", "0.5000");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE_HALF, 4, "CEILING", "0.5000");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE_HALF, 4, "DOWN", "0.5000");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE_HALF, 4, "UP", "0.5000");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE_HALF, 4, "HALF_DOWN", "0.5000");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE_HALF, 4, "HALF_UP", "0.5000");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE_HALF, 4, "HALF_EVEN", "0.5000");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(ONE_HALF, 4, "UNNECESSARY", "0.5000");
+
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, 0, "FLOOR", "-2");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, 0, "CEILING", "-1");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, 0, "DOWN", "-1");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, 0, "UP", "-2");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, 0, "HALF_DOWN", "-1");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, 0, "HALF_UP", "-1");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, 0, "HALF_EVEN", "-1");
+
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, 1, "FLOOR", "-1.4");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, 1, "CEILING", "-1.3");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, 1, "DOWN", "-1.3");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, 1, "UP", "-1.4");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, 1, "HALF_DOWN", "-1.3");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, 1, "HALF_UP", "-1.3");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, 1, "HALF_EVEN", "-1.3");
+
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, 2, "FLOOR", "-1.34");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, 2, "CEILING", "-1.33");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, 2, "DOWN", "-1.33");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, 2, "UP", "-1.34");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, 2, "HALF_DOWN", "-1.33");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, 2, "HALF_UP", "-1.33");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, 2, "HALF_EVEN", "-1.33");
+
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, 3, "FLOOR", "-1.334");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, 3, "CEILING", "-1.333");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, 3, "DOWN", "-1.333");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, 3, "UP", "-1.334");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, 3, "HALF_DOWN", "-1.333");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, 3, "HALF_UP", "-1.333");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(NEGATIVE_FOUR_THIRDS, 3, "HALF_EVEN", "-1.333");
+
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(PI, 0, "FLOOR", "3");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(PI, 0, "CEILING", "4");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(PI, 0, "DOWN", "3");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(PI, 0, "UP", "4");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(PI, 0, "HALF_DOWN", "3");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(PI, 0, "HALF_UP", "3");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(PI, 0, "HALF_EVEN", "3");
+
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(PI, 1, "FLOOR", "3.1");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(PI, 1, "CEILING", "3.2");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(PI, 1, "DOWN", "3.1");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(PI, 1, "UP", "3.2");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(PI, 1, "HALF_DOWN", "3.1");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(PI, 1, "HALF_UP", "3.1");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(PI, 1, "HALF_EVEN", "3.1");
+
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(PI, 2, "FLOOR", "3.14");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(PI, 2, "CEILING", "3.15");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(PI, 2, "DOWN", "3.14");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(PI, 2, "UP", "3.15");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(PI, 2, "HALF_DOWN", "3.14");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(PI, 2, "HALF_UP", "3.14");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(PI, 2, "HALF_EVEN", "3.14");
+
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(PI, 3, "FLOOR", "3.141");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(PI, 3, "CEILING", "3.142");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(PI, 3, "DOWN", "3.141");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(PI, 3, "UP", "3.142");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(PI, 3, "HALF_DOWN", "3.142");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(PI, 3, "HALF_UP", "3.142");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(PI, 3, "HALF_EVEN", "3.142");
+
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(fuzzyRepresentation(Rational.ZERO), 0, "DOWN", "0");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                0,
+                "CEILING",
+                "0"
+        );
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(rightFuzzyRepresentation(Rational.ZERO), 0, "FLOOR", "0");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                0,
+                "HALF_UP",
+                "0"
+        );
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                0,
+                "HALF_DOWN",
+                "0"
+        );
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                0,
+                "HALF_EVEN",
+                "0"
+        );
+
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(
+                leftFuzzyRepresentation(Rational.of(123)),
+                0,
+                "UP",
+                "123"
+        );
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(
+                rightFuzzyRepresentation(Rational.of(123)),
+                0,
+                "DOWN",
+                "123"
+        );
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(
+                leftFuzzyRepresentation(Rational.of(123)),
+                0,
+                "CEILING",
+                "123"
+        );
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(
+                rightFuzzyRepresentation(Rational.of(123)),
+                0,
+                "FLOOR",
+                "123"
+        );
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(
+                fuzzyRepresentation(Rational.of(123)),
+                0,
+                "HALF_UP",
+                "123"
+        );
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(
+                fuzzyRepresentation(Rational.of(123)),
+                0,
+                "HALF_DOWN",
+                "123"
+        );
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(
+                fuzzyRepresentation(Rational.of(123)),
+                0,
+                "HALF_EVEN",
+                "123"
+        );
+
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(
+                rightFuzzyRepresentation(Rational.of(-123)),
+                0,
+                "UP",
+                "-123"
+        );
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(
+                leftFuzzyRepresentation(Rational.of(-123)),
+                0,
+                "DOWN",
+                "-123"
+        );
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(
+                leftFuzzyRepresentation(Rational.of(-123)),
+                0,
+                "CEILING",
+                "-123"
+        );
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(
+                rightFuzzyRepresentation(Rational.of(-123)),
+                0,
+                "FLOOR",
+                "-123"
+        );
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(
+                fuzzyRepresentation(Rational.of(-123)),
+                0,
+                "HALF_UP",
+                "-123"
+        );
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(
+                fuzzyRepresentation(Rational.of(-123)),
+                0,
+                "HALF_DOWN",
+                "-123"
+        );
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(
+                fuzzyRepresentation(Rational.of(-123)),
+                0,
+                "HALF_EVEN",
+                "-123"
+        );
+
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(
+                fuzzyRepresentation(Rational.of(1235)),
+                -1,
+                "UP",
+                "1.24E+3"
+        );
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(
+                fuzzyRepresentation(Rational.of(1235)),
+                -1,
+                "DOWN",
+                "1.23E+3"
+        );
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(
+                fuzzyRepresentation(Rational.of(1235)),
+                -1,
+                "CEILING",
+                "1.24E+3"
+        );
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(
+                fuzzyRepresentation(Rational.of(1235)),
+                -1,
+                "FLOOR",
+                "1.23E+3"
+        );
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(
+                rightFuzzyRepresentation(Rational.of(1235)),
+                -1,
+                "HALF_UP",
+                "1.24E+3"
+        );
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(
+                leftFuzzyRepresentation(Rational.of(1235)),
+                -1,
+                "HALF_DOWN",
+                "1.23E+3"
+        );
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(
+                rightFuzzyRepresentation(Rational.of(1235)),
+                -1,
+                "HALF_EVEN",
+                "1.24E+3"
+        );
+
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(
+                fuzzyRepresentation(Rational.of(-1235)),
+                -1,
+                "UP",
+                "-1.24E+3"
+        );
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(
+                fuzzyRepresentation(Rational.of(-1235)),
+                -1,
+                "DOWN",
+                "-1.23E+3"
+        );
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(
+                fuzzyRepresentation(Rational.of(-1235)),
+                -1,
+                "CEILING",
+                "-1.23E+3"
+        );
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(
+                fuzzyRepresentation(Rational.of(-1235)),
+                -1,
+                "FLOOR",
+                "-1.24E+3"
+        );
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(
+                leftFuzzyRepresentation(Rational.of(-1235)),
+                -1,
+                "HALF_UP",
+                "-1.24E+3"
+        );
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(
+                rightFuzzyRepresentation(Rational.of(-1235)),
+                -1,
+                "HALF_DOWN",
+                "-1.23E+3"
+        );
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_helper(
+                leftFuzzyRepresentation(Rational.of(-1235)),
+                -1,
+                "HALF_EVEN",
+                "-1.24E+3"
+        );
+
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_fail_helper(ONE, -1, "UNNECESSARY");
+
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_fail_helper(PI, -1, "UNNECESSARY");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_fail_helper(PI, 0, "UNNECESSARY");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_fail_helper(PI, 1, "UNNECESSARY");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_fail_helper(PI, 2, "UNNECESSARY");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_fail_helper(PI, 3, "UNNECESSARY");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_fail_helper(PI, 4, "UNNECESSARY");
+        bigDecimalValueByScaleUnsafe_int_RoundingMode_fail_helper(PI, 5, "UNNECESSARY");
+    }
+
+    private static void bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+            @NotNull Real x,
+            int scale,
+            @NotNull String rm,
+            @NotNull Rational resolution,
+            @NotNull String output
+    ) {
+        aeq(x.bigDecimalValueByScale(scale, Readers.readRoundingModeStrict(rm).get(), resolution), output);
+    }
+
+    private static void bigDecimalValueByScale_int_RoundingMode_Rational_fail_helper(
+            @NotNull Real x,
+            int scale,
+            @NotNull String roundingMode,
+            @NotNull Rational resolution
+    ) {
+        try {
+            x.bigDecimalValueByScale(scale, Readers.readRoundingModeStrict(roundingMode).get(), resolution);
+            fail();
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testBigDecimalValueByScale_int_RoundingMode_Rational() {
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(ZERO, 0, "FLOOR", DEFAULT_RESOLUTION, "Optional[0]");
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(ZERO, 0, "CEILING", DEFAULT_RESOLUTION, "Optional[0]");
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(ZERO, 0, "DOWN", DEFAULT_RESOLUTION, "Optional[0]");
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(ZERO, 0, "UP", DEFAULT_RESOLUTION, "Optional[0]");
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ZERO,
+                0,
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[0]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(ZERO, 0, "HALF_UP", DEFAULT_RESOLUTION, "Optional[0]");
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ZERO,
+                0,
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional[0]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ZERO,
+                0,
+                "UNNECESSARY",
+                DEFAULT_RESOLUTION,
+                "Optional[0]"
+        );
+
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ZERO,
+                3,
+                "FLOOR",
+                DEFAULT_RESOLUTION,
+                "Optional[0.000]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ZERO,
+                3,
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional[0.000]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ZERO,
+                3,
+                "DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[0.000]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(ZERO, 3, "UP", DEFAULT_RESOLUTION, "Optional[0.000]");
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ZERO,
+                3,
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[0.000]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ZERO,
+                3,
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional[0.000]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ZERO,
+                3,
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional[0.000]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ZERO,
+                3,
+                "UNNECESSARY",
+                DEFAULT_RESOLUTION,
+                "Optional[0.000]"
+        );
+
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ZERO,
+                -3,
+                "FLOOR",
+                DEFAULT_RESOLUTION,
+                "Optional[0E+3]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ZERO,
+                -3,
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional[0E+3]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ZERO,
+                -3,
+                "DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[0E+3]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(ZERO, -3, "UP", DEFAULT_RESOLUTION, "Optional[0E+3]");
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ZERO,
+                -3,
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[0E+3]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ZERO,
+                -3,
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional[0E+3]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ZERO,
+                -3,
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional[0E+3]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ZERO,
+                -3,
+                "UNNECESSARY",
+                DEFAULT_RESOLUTION,
+                "Optional[0E+3]"
+        );
+
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(ONE, 0, "FLOOR", DEFAULT_RESOLUTION, "Optional[1]");
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(ONE, 0, "CEILING", DEFAULT_RESOLUTION, "Optional[1]");
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(ONE, 0, "DOWN", DEFAULT_RESOLUTION, "Optional[1]");
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(ONE, 0, "UP", DEFAULT_RESOLUTION, "Optional[1]");
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ONE,
+                0,
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[1]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(ONE, 0, "HALF_UP", DEFAULT_RESOLUTION, "Optional[1]");
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ONE,
+                0,
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional[1]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ONE,
+                0,
+                "UNNECESSARY",
+                DEFAULT_RESOLUTION,
+                "Optional[1]"
+        );
+
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ONE,
+                3,
+                "FLOOR",
+                DEFAULT_RESOLUTION,
+                "Optional[1.000]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ONE,
+                3,
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional[1.000]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(ONE, 3, "DOWN", DEFAULT_RESOLUTION, "Optional[1.000]");
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(ONE, 3, "UP", DEFAULT_RESOLUTION, "Optional[1.000]");
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ONE,
+                3,
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[1.000]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ONE,
+                3,
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional[1.000]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ONE,
+                3,
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional[1.000]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ONE,
+                3,
+                "UNNECESSARY",
+                DEFAULT_RESOLUTION,
+                "Optional[1.000]"
+        );
+
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ONE,
+                -3,
+                "FLOOR",
+                DEFAULT_RESOLUTION,
+                "Optional[0E+3]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ONE,
+                -3,
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional[1E+3]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(ONE, -3, "DOWN", DEFAULT_RESOLUTION, "Optional[0E+3]");
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(ONE, -3, "UP", DEFAULT_RESOLUTION, "Optional[1E+3]");
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ONE,
+                -3,
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[0E+3]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ONE,
+                -3,
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional[0E+3]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ONE,
+                -3,
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional[0E+3]"
+        );
+
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ONE_HALF,
+                0,
+                "FLOOR",
+                DEFAULT_RESOLUTION,
+                "Optional[0]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ONE_HALF,
+                0,
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional[1]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ONE_HALF,
+                0,
+                "DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[0]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(ONE_HALF, 0, "UP", DEFAULT_RESOLUTION, "Optional[1]");
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ONE_HALF,
+                0,
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[0]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ONE_HALF,
+                0,
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional[1]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ONE_HALF,
+                0,
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional[0]"
+        );
+
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ONE_HALF,
+                4,
+                "FLOOR",
+                DEFAULT_RESOLUTION,
+                "Optional[0.5000]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ONE_HALF,
+                4,
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional[0.5000]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ONE_HALF,
+                4,
+                "DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[0.5000]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ONE_HALF,
+                4,
+                "UP",
+                DEFAULT_RESOLUTION,
+                "Optional[0.5000]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ONE_HALF,
+                4,
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[0.5000]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ONE_HALF,
+                4,
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional[0.5000]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ONE_HALF,
+                4,
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional[0.5000]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                ONE_HALF,
+                4,
+                "UNNECESSARY",
+                DEFAULT_RESOLUTION,
+                "Optional[0.5000]"
+        );
+
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                0,
+                "FLOOR",
+                DEFAULT_RESOLUTION,
+                "Optional[-2]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                0,
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional[-1]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                0,
+                "DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[-1]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                0,
+                "UP",
+                DEFAULT_RESOLUTION,
+                "Optional[-2]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                0,
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[-1]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                0,
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional[-1]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                0,
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional[-1]"
+        );
+
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                1,
+                "FLOOR",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.4]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                1,
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.3]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                1,
+                "DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.3]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                1,
+                "UP",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.4]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                1,
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.3]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                1,
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.3]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                1,
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.3]"
+        );
+
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                2,
+                "FLOOR",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.34]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                2,
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.33]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                2,
+                "DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.33]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                2,
+                "UP",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.34]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                2,
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.33]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                2,
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.33]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                2,
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.33]"
+        );
+
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                3,
+                "FLOOR",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.334]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                3,
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.333]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                3,
+                "DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.333]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                3,
+                "UP",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.334]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                3,
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.333]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                3,
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.333]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                3,
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.333]"
+        );
+
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(PI, 0, "FLOOR", DEFAULT_RESOLUTION, "Optional[3]");
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(PI, 0, "CEILING", DEFAULT_RESOLUTION, "Optional[4]");
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(PI, 0, "DOWN", DEFAULT_RESOLUTION, "Optional[3]");
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(PI, 0, "UP", DEFAULT_RESOLUTION, "Optional[4]");
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(PI, 0, "HALF_DOWN", DEFAULT_RESOLUTION, "Optional[3]");
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(PI, 0, "HALF_UP", DEFAULT_RESOLUTION, "Optional[3]");
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(PI, 0, "HALF_EVEN", DEFAULT_RESOLUTION, "Optional[3]");
+
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(PI, 1, "FLOOR", DEFAULT_RESOLUTION, "Optional[3.1]");
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(PI, 1, "CEILING", DEFAULT_RESOLUTION, "Optional[3.2]");
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(PI, 1, "DOWN", DEFAULT_RESOLUTION, "Optional[3.1]");
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(PI, 1, "UP", DEFAULT_RESOLUTION, "Optional[3.2]");
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                PI,
+                1,
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[3.1]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(PI, 1, "HALF_UP", DEFAULT_RESOLUTION, "Optional[3.1]");
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                PI,
+                1,
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional[3.1]"
+        );
+
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(PI, 2, "FLOOR", DEFAULT_RESOLUTION, "Optional[3.14]");
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                PI,
+                2,
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional[3.15]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(PI, 2, "DOWN", DEFAULT_RESOLUTION, "Optional[3.14]");
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(PI, 2, "UP", DEFAULT_RESOLUTION, "Optional[3.15]");
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                PI,
+                2,
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[3.14]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                PI,
+                2,
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional[3.14]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                PI,
+                2,
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional[3.14]"
+        );
+
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(PI, 3, "FLOOR", DEFAULT_RESOLUTION, "Optional[3.141]");
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                PI,
+                3,
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional[3.142]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(PI, 3, "DOWN", DEFAULT_RESOLUTION, "Optional[3.141]");
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(PI, 3, "UP", DEFAULT_RESOLUTION, "Optional[3.142]");
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                PI,
+                3,
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[3.142]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                PI,
+                3,
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional[3.142]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                PI,
+                3,
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional[3.142]"
+        );
+
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                0,
+                "UP",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                0,
+                "DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[0]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                0,
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                0,
+                "FLOOR",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                0,
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional[0]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                0,
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[0]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                0,
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional[0]"
+        );
+
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(123)),
+                0,
+                "UP",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(123)),
+                0,
+                "DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(123)),
+                0,
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(123)),
+                0,
+                "FLOOR",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(123)),
+                0,
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional[123]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(123)),
+                0,
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[123]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(123)),
+                0,
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional[123]"
+        );
+
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(-123)),
+                0,
+                "UP",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(-123)),
+                0,
+                "DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(-123)),
+                0,
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(-123)),
+                0,
+                "FLOOR",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(-123)),
+                0,
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional[-123]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(-123)),
+                0,
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[-123]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(-123)),
+                0,
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional[-123]"
+        );
+
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(1235)),
+                -1,
+                "UP",
+                DEFAULT_RESOLUTION,
+                "Optional[1.24E+3]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(1235)),
+                -1,
+                "DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[1.23E+3]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(1235)),
+                -1,
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional[1.24E+3]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(1235)),
+                -1,
+                "FLOOR",
+                DEFAULT_RESOLUTION,
+                "Optional[1.23E+3]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(1235)),
+                -1,
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(1235)),
+                -1,
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(1235)),
+                -1,
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(-1235)),
+                -1,
+                "UP",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.24E+3]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(-1235)),
+                -1,
+                "DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.23E+3]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(-1235)),
+                -1,
+                "CEILING",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.23E+3]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(-1235)),
+                -1,
+                "FLOOR",
+                DEFAULT_RESOLUTION,
+                "Optional[-1.24E+3]"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(-1235)),
+                -1,
+                "HALF_UP",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(-1235)),
+                -1,
+                "HALF_DOWN",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigDecimalValueByScale_int_RoundingMode_Rational_helper(
+                fuzzyRepresentation(Rational.of(-1235)),
+                -1,
+                "HALF_EVEN",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        bigDecimalValueByScale_int_RoundingMode_Rational_fail_helper(PI, -1, "UNNECESSARY", DEFAULT_RESOLUTION);
+        bigDecimalValueByScale_int_RoundingMode_Rational_fail_helper(PI, 0, "UNNECESSARY", DEFAULT_RESOLUTION);
+        bigDecimalValueByScale_int_RoundingMode_Rational_fail_helper(PI, 1, "UNNECESSARY", DEFAULT_RESOLUTION);
+        bigDecimalValueByScale_int_RoundingMode_Rational_fail_helper(PI, 2, "UNNECESSARY", DEFAULT_RESOLUTION);
+        bigDecimalValueByScale_int_RoundingMode_Rational_fail_helper(PI, 3, "UNNECESSARY", DEFAULT_RESOLUTION);
+        bigDecimalValueByScale_int_RoundingMode_Rational_fail_helper(PI, 4, "UNNECESSARY", DEFAULT_RESOLUTION);
+        bigDecimalValueByScale_int_RoundingMode_Rational_fail_helper(PI, 5, "UNNECESSARY", DEFAULT_RESOLUTION);
+
+        bigDecimalValueByScale_int_RoundingMode_Rational_fail_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                0,
+                "UNNECESSARY",
+                DEFAULT_RESOLUTION
+        );
+
+        bigDecimalValueByScale_int_RoundingMode_Rational_fail_helper(ZERO, 0, "FLOOR", Rational.ZERO);
+        bigDecimalValueByScale_int_RoundingMode_Rational_fail_helper(ZERO, 0, "FLOOR", Rational.NEGATIVE_ONE);
+    }
+
+    private static void bigDecimalValueByScaleUnsafe_int_helper(@NotNull Real x, int scale, @NotNull String output) {
+        aeq(x.bigDecimalValueByScaleUnsafe(scale), output);
+    }
+
+    @Test
+    public void testBigDecimalValueByScaleUnsafe_int() {
+        bigDecimalValueByScaleUnsafe_int_helper(ZERO, 0, "0");
+        bigDecimalValueByScaleUnsafe_int_helper(ZERO, 3, "0.000");
+        bigDecimalValueByScaleUnsafe_int_helper(ZERO, -3, "0E+3");
+        bigDecimalValueByScaleUnsafe_int_helper(ONE, 0, "1");
+        bigDecimalValueByScaleUnsafe_int_helper(ONE, 3, "1.000");
+        bigDecimalValueByScaleUnsafe_int_helper(ONE, -3, "0E+3");
+        bigDecimalValueByScaleUnsafe_int_helper(ONE_HALF, 0, "0");
+        bigDecimalValueByScaleUnsafe_int_helper(ONE_HALF, 4, "0.5000");
+        bigDecimalValueByScaleUnsafe_int_helper(NEGATIVE_FOUR_THIRDS, 0, "-1");
+        bigDecimalValueByScaleUnsafe_int_helper(NEGATIVE_FOUR_THIRDS, 1, "-1.3");
+        bigDecimalValueByScaleUnsafe_int_helper(NEGATIVE_FOUR_THIRDS, 3, "-1.333");
+        bigDecimalValueByScaleUnsafe_int_helper(PI, 0, "3");
+        bigDecimalValueByScaleUnsafe_int_helper(PI, 1, "3.1");
+        bigDecimalValueByScaleUnsafe_int_helper(PI, 2, "3.14");
+        bigDecimalValueByScaleUnsafe_int_helper(PI, 3, "3.142");
+
+        bigDecimalValueByScaleUnsafe_int_helper(fuzzyRepresentation(Rational.ZERO), 0, "0");
+        bigDecimalValueByScaleUnsafe_int_helper(fuzzyRepresentation(Rational.of(123)), 0, "123");
+        bigDecimalValueByScaleUnsafe_int_helper(fuzzyRepresentation(Rational.of(-123)), 0, "-123");
+        bigDecimalValueByScaleUnsafe_int_helper(rightFuzzyRepresentation(Rational.of(1235)), -1, "1.24E+3");
+        bigDecimalValueByScaleUnsafe_int_helper(leftFuzzyRepresentation(Rational.of(-1235)), -1, "-1.24E+3");
+    }
+
+    private static void bigDecimalValueByScale_int_Rational_helper(
+            @NotNull Real x,
+            int scale,
+            @NotNull Rational resolution,
+            @NotNull String output
+    ) {
+        aeq(x.bigDecimalValueByScale(scale, resolution), output);
+    }
+
+    private static void bigDecimalValueByScale_int_Rational_fail_helper(
+            @NotNull Real x,
+            int scale,
+            @NotNull Rational resolution
+    ) {
+        try {
+            x.bigDecimalValueByScale(scale, resolution);
+            fail();
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testBigDecimalValueByScale_int_Rational() {
+        bigDecimalValueByScale_int_Rational_helper(ZERO, 0, DEFAULT_RESOLUTION, "Optional[0]");
+        bigDecimalValueByScale_int_Rational_helper(ZERO, 3, DEFAULT_RESOLUTION, "Optional[0.000]");
+        bigDecimalValueByScale_int_Rational_helper(ZERO, -3, DEFAULT_RESOLUTION, "Optional[0E+3]");
+        bigDecimalValueByScale_int_Rational_helper(ONE, 0, DEFAULT_RESOLUTION, "Optional[1]");
+        bigDecimalValueByScale_int_Rational_helper(ONE, 3, DEFAULT_RESOLUTION, "Optional[1.000]");
+        bigDecimalValueByScale_int_Rational_helper(ONE, -3, DEFAULT_RESOLUTION, "Optional[0E+3]");
+        bigDecimalValueByScale_int_Rational_helper(ONE_HALF, 0, DEFAULT_RESOLUTION, "Optional[0]");
+        bigDecimalValueByScale_int_Rational_helper(ONE_HALF, 4, DEFAULT_RESOLUTION, "Optional[0.5000]");
+        bigDecimalValueByScale_int_Rational_helper(NEGATIVE_FOUR_THIRDS, 0, DEFAULT_RESOLUTION, "Optional[-1]");
+        bigDecimalValueByScale_int_Rational_helper(NEGATIVE_FOUR_THIRDS, 1, DEFAULT_RESOLUTION, "Optional[-1.3]");
+        bigDecimalValueByScale_int_Rational_helper(NEGATIVE_FOUR_THIRDS, 2, DEFAULT_RESOLUTION, "Optional[-1.33]");
+        bigDecimalValueByScale_int_Rational_helper(NEGATIVE_FOUR_THIRDS, 3, DEFAULT_RESOLUTION, "Optional[-1.333]");
+        bigDecimalValueByScale_int_Rational_helper(PI, 0, DEFAULT_RESOLUTION, "Optional[3]");
+        bigDecimalValueByScale_int_Rational_helper(PI, 1, DEFAULT_RESOLUTION, "Optional[3.1]");
+        bigDecimalValueByScale_int_Rational_helper(PI, 2, DEFAULT_RESOLUTION, "Optional[3.14]");
+        bigDecimalValueByScale_int_Rational_helper(PI, 3, DEFAULT_RESOLUTION, "Optional[3.142]");
+
+        bigDecimalValueByScale_int_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                0,
+                DEFAULT_RESOLUTION,
+                "Optional[0]"
+        );
+        bigDecimalValueByScale_int_Rational_helper(
+                fuzzyRepresentation(Rational.of(123)),
+                0,
+                DEFAULT_RESOLUTION,
+                "Optional[123]"
+        );
+        bigDecimalValueByScale_int_Rational_helper(
+                fuzzyRepresentation(Rational.of(-123)),
+                0,
+                DEFAULT_RESOLUTION,
+                "Optional[-123]"
+        );
+        bigDecimalValueByScale_int_Rational_helper(
+                fuzzyRepresentation(Rational.of(1235)),
+                -1,
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        bigDecimalValueByScale_int_Rational_helper(
+                fuzzyRepresentation(Rational.of(-1235)),
+                -1,
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        bigDecimalValueByScale_int_Rational_fail_helper(ZERO, 0, Rational.ZERO);
+        bigDecimalValueByScale_int_Rational_fail_helper(ZERO, 0, Rational.NEGATIVE_ONE);
     }
 }

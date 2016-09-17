@@ -1213,7 +1213,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      * Scale may be negative; for example, {@code 1E+1} has a scale of –1.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
      *  <li>{@code scale} may be any {@code int}.</li>
      *  <li>{@code roundingMode} cannot be null.</li>
      *  <li>If {@code roundingMode} is {@code RoundingMode.UNNECESSARY}, then {@code scale} must be at least as large
