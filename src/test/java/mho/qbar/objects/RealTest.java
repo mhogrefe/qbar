@@ -5979,4 +5979,180 @@ public class RealTest {
         bigDecimalValueExact_fail_helper(NEGATIVE_FOUR_THIRDS);
         bigDecimalValueExact_fail_helper(PI);
     }
+
+    private static void add_Rational_helper(@NotNull Real a, @NotNull String b, @NotNull String output) {
+        Real x = a.add(Rational.readStrict(b).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testAdd_Rational() {
+        add_Rational_helper(ZERO, "0", "0");
+        add_Rational_helper(ZERO, "1", "1");
+        add_Rational_helper(ZERO, "-1", "-1");
+        add_Rational_helper(ZERO, "100/3", "33.33333333333333333333...");
+        add_Rational_helper(ZERO, "1/100", "0.01");
+
+        add_Rational_helper(ONE, "0", "1");
+        add_Rational_helper(ONE, "1", "2");
+        add_Rational_helper(ONE, "-1", "0");
+        add_Rational_helper(ONE, "100/3", "34.33333333333333333333...");
+        add_Rational_helper(ONE, "1/100", "1.01");
+
+        add_Rational_helper(NEGATIVE_ONE, "0", "-1");
+        add_Rational_helper(NEGATIVE_ONE, "1", "0");
+        add_Rational_helper(NEGATIVE_ONE, "-1", "-2");
+        add_Rational_helper(NEGATIVE_ONE, "100/3", "32.33333333333333333333...");
+        add_Rational_helper(NEGATIVE_ONE, "1/100", "-0.99");
+
+        add_Rational_helper(ONE_HALF, "0", "0.5");
+        add_Rational_helper(ONE_HALF, "1", "1.5");
+        add_Rational_helper(ONE_HALF, "-1", "-0.5");
+        add_Rational_helper(ONE_HALF, "100/3", "33.83333333333333333333...");
+        add_Rational_helper(ONE_HALF, "1/100", "0.51");
+
+        add_Rational_helper(NEGATIVE_FOUR_THIRDS, "0", "-1.33333333333333333333...");
+        add_Rational_helper(NEGATIVE_FOUR_THIRDS, "1", "-0.33333333333333333333...");
+        add_Rational_helper(NEGATIVE_FOUR_THIRDS, "-1", "-2.33333333333333333333...");
+        add_Rational_helper(NEGATIVE_FOUR_THIRDS, "100/3", "32");
+        add_Rational_helper(NEGATIVE_FOUR_THIRDS, "1/100", "-1.32333333333333333333...");
+
+        add_Rational_helper(SQRT_TWO, "0", "1.41421356237309504880...");
+        add_Rational_helper(SQRT_TWO, "1", "2.41421356237309504880...");
+        add_Rational_helper(SQRT_TWO, "-1", "0.41421356237309504880...");
+        add_Rational_helper(SQRT_TWO, "100/3", "34.74754689570642838213...");
+        add_Rational_helper(SQRT_TWO, "1/100", "1.42421356237309504880...");
+
+        add_Rational_helper(E, "0", "2.71828182845904523536...");
+        add_Rational_helper(E, "1", "3.71828182845904523536...");
+        add_Rational_helper(E, "-1", "1.71828182845904523536...");
+        add_Rational_helper(E, "100/3", "36.05161516179237856869...");
+        add_Rational_helper(E, "1/100", "2.72828182845904523536...");
+
+        add_Rational_helper(PI, "0", "3.14159265358979323846...");
+        add_Rational_helper(PI, "1", "4.14159265358979323846...");
+        add_Rational_helper(PI, "-1", "2.14159265358979323846...");
+        add_Rational_helper(PI, "100/3", "36.47492598692312657179...");
+        add_Rational_helper(PI, "1/100", "3.15159265358979323846...");
+
+        add_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "0", "~0");
+        add_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "1", "+...");
+        add_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "-1", "-1.00000000000000000000...");
+        add_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "100/3", "33.33333333333333333333...");
+        add_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "1/100", "0.0...");
+
+        add_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "0", "~0");
+        add_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "1", "1.00000000000000000000...");
+        add_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "-1", "-...");
+        add_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "100/3", "33.33333333333333333333...");
+        add_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "1/100", "0.01000000000000000000...");
+
+        add_Rational_helper(fuzzyRepresentation(Rational.ZERO), "0", "~0");
+        add_Rational_helper(fuzzyRepresentation(Rational.ZERO), "1", "+...");
+        add_Rational_helper(fuzzyRepresentation(Rational.ZERO), "-1", "-...");
+        add_Rational_helper(fuzzyRepresentation(Rational.ZERO), "100/3", "33.33333333333333333333...");
+        add_Rational_helper(fuzzyRepresentation(Rational.ZERO), "1/100", "0.0...");
+    }
+
+    private static void add_Real_helper(@NotNull Real a, @NotNull Real b, @NotNull String output) {
+        Real x = a.add(b);
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testAdd_Real() {
+        add_Real_helper(ZERO, ZERO, "0");
+        add_Real_helper(ZERO, ONE, "1");
+        add_Real_helper(ZERO, NEGATIVE_FOUR_THIRDS, "-1.33333333333333333333...");
+        add_Real_helper(ZERO, SQRT_TWO, "1.41421356237309504880...");
+        add_Real_helper(ZERO, E, "2.71828182845904523536...");
+        add_Real_helper(ZERO, PI, "3.14159265358979323846...");
+        add_Real_helper(ZERO, leftFuzzyRepresentation(Rational.ZERO), "~0");
+        add_Real_helper(ZERO, rightFuzzyRepresentation(Rational.ZERO), "~0");
+        add_Real_helper(ZERO, fuzzyRepresentation(Rational.ZERO), "~0");
+
+        add_Real_helper(ONE, ZERO, "1");
+        add_Real_helper(ONE, ONE, "2");
+        add_Real_helper(ONE, NEGATIVE_FOUR_THIRDS, "-0.33333333333333333333...");
+        add_Real_helper(ONE, SQRT_TWO, "2.41421356237309504880...");
+        add_Real_helper(ONE, E, "3.71828182845904523536...");
+        add_Real_helper(ONE, PI, "4.14159265358979323846...");
+        add_Real_helper(ONE, leftFuzzyRepresentation(Rational.ZERO), "+...");
+        add_Real_helper(ONE, rightFuzzyRepresentation(Rational.ZERO), "1.00000000000000000000...");
+        add_Real_helper(ONE, fuzzyRepresentation(Rational.ZERO), "+...");
+
+        add_Real_helper(NEGATIVE_FOUR_THIRDS, ZERO, "-1.33333333333333333333...");
+        add_Real_helper(NEGATIVE_FOUR_THIRDS, ONE, "-0.33333333333333333333...");
+        add_Real_helper(NEGATIVE_FOUR_THIRDS, NEGATIVE_FOUR_THIRDS, "-2.66666666666666666666...");
+        add_Real_helper(NEGATIVE_FOUR_THIRDS, SQRT_TWO, "0.08088022903976171546...");
+        add_Real_helper(NEGATIVE_FOUR_THIRDS, E, "1.38494849512571190202...");
+        add_Real_helper(NEGATIVE_FOUR_THIRDS, PI, "1.80825932025645990512...");
+        add_Real_helper(NEGATIVE_FOUR_THIRDS, leftFuzzyRepresentation(Rational.ZERO), "-1.33333333333333333333...");
+        add_Real_helper(NEGATIVE_FOUR_THIRDS, rightFuzzyRepresentation(Rational.ZERO), "-1.33333333333333333333...");
+        add_Real_helper(NEGATIVE_FOUR_THIRDS, fuzzyRepresentation(Rational.ZERO), "-1.33333333333333333333...");
+
+        add_Real_helper(SQRT_TWO, ZERO, "1.41421356237309504880...");
+        add_Real_helper(SQRT_TWO, ONE, "2.41421356237309504880...");
+        add_Real_helper(SQRT_TWO, NEGATIVE_FOUR_THIRDS, "0.08088022903976171546...");
+        add_Real_helper(SQRT_TWO, SQRT_TWO, "2.82842712474619009760...");
+        add_Real_helper(SQRT_TWO, E, "4.13249539083214028416...");
+        add_Real_helper(SQRT_TWO, PI, "4.55580621596288828726...");
+        add_Real_helper(SQRT_TWO, leftFuzzyRepresentation(Rational.ZERO), "1.41421356237309504880...");
+        add_Real_helper(SQRT_TWO, rightFuzzyRepresentation(Rational.ZERO), "1.41421356237309504880...");
+        add_Real_helper(SQRT_TWO, fuzzyRepresentation(Rational.ZERO), "1.41421356237309504880...");
+
+        add_Real_helper(E, ZERO, "2.71828182845904523536...");
+        add_Real_helper(E, ONE, "3.71828182845904523536...");
+        add_Real_helper(E, NEGATIVE_FOUR_THIRDS, "1.38494849512571190202...");
+        add_Real_helper(E, SQRT_TWO, "4.13249539083214028416...");
+        add_Real_helper(E, E, "5.43656365691809047072...");
+        add_Real_helper(E, PI, "5.85987448204883847382...");
+        add_Real_helper(E, leftFuzzyRepresentation(Rational.ZERO), "2.71828182845904523536...");
+        add_Real_helper(E, rightFuzzyRepresentation(Rational.ZERO), "2.71828182845904523536...");
+        add_Real_helper(E, fuzzyRepresentation(Rational.ZERO), "2.71828182845904523536...");
+
+        add_Real_helper(PI, ZERO, "3.14159265358979323846...");
+        add_Real_helper(PI, ONE, "4.14159265358979323846...");
+        add_Real_helper(PI, NEGATIVE_FOUR_THIRDS, "1.80825932025645990512...");
+        add_Real_helper(PI, SQRT_TWO, "4.55580621596288828726...");
+        add_Real_helper(PI, E, "5.85987448204883847382...");
+        add_Real_helper(PI, PI, "6.28318530717958647692...");
+        add_Real_helper(PI, leftFuzzyRepresentation(Rational.ZERO), "3.14159265358979323846...");
+        add_Real_helper(PI, rightFuzzyRepresentation(Rational.ZERO), "3.14159265358979323846...");
+        add_Real_helper(PI, fuzzyRepresentation(Rational.ZERO), "3.14159265358979323846...");
+
+        add_Real_helper(leftFuzzyRepresentation(Rational.ZERO), ZERO, "~0");
+        add_Real_helper(leftFuzzyRepresentation(Rational.ZERO), ONE, "+...");
+        add_Real_helper(leftFuzzyRepresentation(Rational.ZERO), NEGATIVE_FOUR_THIRDS, "-1.33333333333333333333...");
+        add_Real_helper(leftFuzzyRepresentation(Rational.ZERO), SQRT_TWO, "1.41421356237309504880...");
+        add_Real_helper(leftFuzzyRepresentation(Rational.ZERO), E, "2.71828182845904523536...");
+        add_Real_helper(leftFuzzyRepresentation(Rational.ZERO), PI, "3.14159265358979323846...");
+        add_Real_helper(leftFuzzyRepresentation(Rational.ZERO), leftFuzzyRepresentation(Rational.ZERO), "~0");
+        add_Real_helper(leftFuzzyRepresentation(Rational.ZERO), rightFuzzyRepresentation(Rational.ZERO), "~0");
+        add_Real_helper(leftFuzzyRepresentation(Rational.ZERO), fuzzyRepresentation(Rational.ZERO), "~0");
+
+        add_Real_helper(rightFuzzyRepresentation(Rational.ZERO), ZERO, "~0");
+        add_Real_helper(rightFuzzyRepresentation(Rational.ZERO), ONE, "1.00000000000000000000...");
+        add_Real_helper(rightFuzzyRepresentation(Rational.ZERO), NEGATIVE_FOUR_THIRDS, "-1.33333333333333333333...");
+        add_Real_helper(rightFuzzyRepresentation(Rational.ZERO), SQRT_TWO, "1.41421356237309504880...");
+        add_Real_helper(rightFuzzyRepresentation(Rational.ZERO), E, "2.71828182845904523536...");
+        add_Real_helper(rightFuzzyRepresentation(Rational.ZERO), PI, "3.14159265358979323846...");
+        add_Real_helper(rightFuzzyRepresentation(Rational.ZERO), leftFuzzyRepresentation(Rational.ZERO), "~0");
+        add_Real_helper(rightFuzzyRepresentation(Rational.ZERO), rightFuzzyRepresentation(Rational.ZERO), "~0");
+        add_Real_helper(rightFuzzyRepresentation(Rational.ZERO), fuzzyRepresentation(Rational.ZERO), "~0");
+
+        add_Real_helper(fuzzyRepresentation(Rational.ZERO), ZERO, "~0");
+        add_Real_helper(fuzzyRepresentation(Rational.ZERO), ONE, "+...");
+        add_Real_helper(fuzzyRepresentation(Rational.ZERO), NEGATIVE_FOUR_THIRDS, "-1.33333333333333333333...");
+        add_Real_helper(fuzzyRepresentation(Rational.ZERO), SQRT_TWO, "1.41421356237309504880...");
+        add_Real_helper(fuzzyRepresentation(Rational.ZERO), E, "2.71828182845904523536...");
+        add_Real_helper(fuzzyRepresentation(Rational.ZERO), PI, "3.14159265358979323846...");
+        add_Real_helper(fuzzyRepresentation(Rational.ZERO), leftFuzzyRepresentation(Rational.ZERO), "~0");
+        add_Real_helper(fuzzyRepresentation(Rational.ZERO), rightFuzzyRepresentation(Rational.ZERO), "~0");
+        add_Real_helper(fuzzyRepresentation(Rational.ZERO), fuzzyRepresentation(Rational.ZERO), "~0");
+
+        add_Real_helper(PI, PI.negate(), "~0");
+    }
 }

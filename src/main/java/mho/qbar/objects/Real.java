@@ -2115,6 +2115,49 @@ public final class Real implements Iterable<Interval> {
         }
     }
 
+    /**
+     * Returns the sum of {@code this} and {@code that}. If {@code this} is clean, so is the result.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code Rational} added to {@code this}
+     * @return {@code this}+{@code that}
+     */
+    public @NotNull Real add(@NotNull Rational that) {
+        if (this == ZERO) return of(that);
+        if (that == Rational.ZERO) return this;
+        if (isExact()) {
+            return of(rational.get().add(that));
+        }
+        Interval ri = Interval.of(that);
+        return new Real(map(i -> i.add(ri), intervals));
+    }
+
+    /**
+     * Returns the sum of {@code this} and {@code that}. The result may be fuzzy even if both arguments are clean.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code Real} added to {@code this}
+     * @return {@code this}+{@code that}
+     */
+    public @NotNull Real add(@NotNull Real that) {
+        if (this == ZERO) return that;
+        if (that == ZERO) return this;
+        if (this == that) return shiftLeft(1);
+        if (isExact()) return that.add(rational.get());
+        if (that.isExact()) return add(that.rational.get());
+        return new Real(zipWith(Interval::add, intervals, that.intervals));
+    }
+
     public @NotNull Real negate() {
         if (rational.isPresent()) {
             return new Real(rational.get().negate());
@@ -2123,12 +2166,22 @@ public final class Real implements Iterable<Interval> {
         }
     }
 
-    public @NotNull Real add(@NotNull Real that) {
-        return new Real(zipWith(Interval::add, intervals, that.intervals));
+    public @NotNull Real subtract(@NotNull Rational that) {
+        if (this == ZERO) return new Real(that.negate());
+        if (that == Rational.ZERO) return this;
+        if (isExact()) {
+            return of(rational.get().subtract(that));
+        }
+        Interval ri = Interval.of(that);
+        return new Real(map(i -> i.subtract(ri), intervals));
     }
 
     public @NotNull Real subtract(@NotNull Real that) {
         if (this == that) return ZERO;
+        if (this == ZERO) return that.negate();
+        if (that == ZERO) return this;
+        if (isExact()) return that.subtract(rational.get()).negate();
+        if (that.isExact()) return subtract(that.rational.get());
         return new Real(zipWith(Interval::subtract, intervals, that.intervals));
     }
 
@@ -2171,11 +2224,19 @@ public final class Real implements Iterable<Interval> {
     }
 
     public @NotNull Real shiftLeft(int bits) {
-        return new Real(map(a -> a.shiftLeft(bits), intervals));
+        if (isExact()) {
+            return new Real(rational.get().shiftLeft(bits));
+        } else {
+            return new Real(map(a -> a.shiftLeft(bits), intervals));
+        }
     }
 
     public @NotNull Real shiftRight(int bits) {
-        return new Real(map(a -> a.shiftRight(bits), intervals));
+        if (isExact()) {
+            return new Real(rational.get().shiftRight(bits));
+        } else {
+            return new Real(map(a -> a.shiftRight(bits), intervals));
+        }
     }
 
     public int signumUnsafe() {

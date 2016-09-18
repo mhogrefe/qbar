@@ -95,6 +95,8 @@ public class RealProperties extends QBarTestProperties {
         propertiesBigDecimalValueByScaleUnsafe_int();
         propertiesBigDecimalValueByScale_int_Rational();
         propertiesBigDecimalValueExact();
+        propertiesAdd_Rational();
+        propertiesAdd_Real();
     }
 
     private void propertiesOf_Rational() {
@@ -3390,6 +3392,48 @@ public class RealProperties extends QBarTestProperties {
                 x.bigDecimalValueExact();
                 fail(x);
             } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesAdd_Rational() {
+        initialize("add(Rational)");
+        for (Pair<Real, Rational> p : take(LIMIT, P.pairs(P.reals(), P.rationals()))) {
+            Real sum = p.a.add(p.b);
+            sum.validate();
+            Optional<Boolean> inverse = eq(sum.subtract(p.b), p.a, DEFAULT_RESOLUTION);
+            assertTrue(p, !inverse.isPresent() || inverse.get());
+        }
+
+        for (Real x : take(LIMIT, P.reals())) {
+            assertTrue(x, x.add(Rational.ZERO) == x);
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertEquals(r, ZERO.add(r).rationalValueExact().get(), r);
+        }
+    }
+
+    private void propertiesAdd_Real() {
+        initialize("add(Real)");
+        for (Pair<Real, Real> p : take(LIMIT, P.pairs(P.reals()))) {
+            Real sum = p.a.add(p.b);
+            sum.validate();
+            Optional<Boolean> commutative = eq(p.b.add(p.a), sum, DEFAULT_RESOLUTION);
+            assertTrue(p, !commutative.isPresent() || commutative.get());
+            Optional<Boolean> inverse = eq(sum.subtract(p.b), p.a, DEFAULT_RESOLUTION);
+            assertTrue(p, !inverse.isPresent() || inverse.get());
+        }
+
+        for (Real x : take(LIMIT, P.reals())) {
+            assertTrue(x, x.add(ZERO) == x);
+            assertTrue(x, ZERO.add(x) == x);
+            Optional<Boolean> zero = eq(x.add(x.negate()), ZERO, DEFAULT_RESOLUTION);
+            assertTrue(x, !zero.isPresent() || zero.get());
+        }
+
+        for (Triple<Real, Real, Real> t : take(SMALL_LIMIT, P.triples(P.reals()))) {
+            Optional<Boolean> associative = eq(t.a.add(t.b).add(t.c), t.a.add(t.b.add(t.c)), DEFAULT_RESOLUTION);
+            assertTrue(t, !associative.isPresent() || associative.get());
         }
     }
 }
