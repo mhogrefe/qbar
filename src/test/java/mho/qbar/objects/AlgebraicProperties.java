@@ -1981,7 +1981,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             BigDecimal bd = x.bigDecimalValueExact();
             assertTrue(bd, BigDecimalUtils.isCanonical(bd));
             assertEquals(x, bd, x.bigDecimalValueByPrecision(0, RoundingMode.UNNECESSARY));
-            assertTrue(x, bd.signum() == x.signum());
+            assertEquals(x, bd.signum(), x.signum());
             inverse(Algebraic::bigDecimalValueExact, Algebraic::of, x);
             homomorphic(
                     Algebraic::negate,
@@ -1990,13 +1990,6 @@ public class AlgebraicProperties extends QBarTestProperties {
                     Algebraic::bigDecimalValueExact,
                     x
             );
-        }
-
-        for (Pair<Algebraic, Integer> p : take(LIMIT, P.pairs(P.algebraics(), P.negativeIntegers()))) {
-            try {
-                p.a.bigDecimalValueByPrecision(p.b);
-                fail(p);
-            } catch (IllegalArgumentException ignored) {}
         }
 
         Iterable<Algebraic> xsFail = filterInfinite(

@@ -2093,6 +2093,28 @@ public final class Real implements Iterable<Interval> {
         return bigDecimalValueByScale(scale, RoundingMode.HALF_EVEN, resolution);
     }
 
+    /**
+     * Returns a {@code BigDecimal} exactly equal to {@code this}. Throws an {@code ArithmeticException} if
+     * {@code this} is not exact or cannot be represented as a terminating decimal.
+     *
+     * <ul>
+     *  <li>{@code this} must be an exact {@code Real} with a terminating decimal expansion; that is, it must be
+     *  rational and its denominator must only have 2 or 5 as prime factors.</li>
+     *  <li>The result is a canonical {@code BigDecimal} (see
+     *  {@link mho.wheels.numberUtils.BigDecimalUtils#isCanonical(BigDecimal)}.)</li>
+     * </ul>
+     *
+     * @return {@code this}, in {@code BigDecimal} form
+     */
+    public @NotNull BigDecimal bigDecimalValueExact() {
+        if (rational.isPresent()) {
+            return rational.get().bigDecimalValueExact();
+        } else {
+            throw new ArithmeticException("this must be a Real with a terminating decimal expansion. Invalid this: " +
+                    this);
+        }
+    }
+
     public @NotNull Real negate() {
         if (rational.isPresent()) {
             return new Real(rational.get().negate());

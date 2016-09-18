@@ -1926,7 +1926,7 @@ public class RationalProperties extends QBarTestProperties {
             BigDecimal bd = r.bigDecimalValueExact();
             assertTrue(bd, BigDecimalUtils.isCanonical(bd));
             assertEquals(r, bd, r.bigDecimalValueByPrecision(0, RoundingMode.UNNECESSARY));
-            assertTrue(r, bd.signum() == r.signum());
+            assertEquals(r, bd.signum(), r.signum());
             inverse(Rational::bigDecimalValueExact, Rational::of, r);
             homomorphic(
                     Rational::negate,
@@ -1935,13 +1935,6 @@ public class RationalProperties extends QBarTestProperties {
                     Rational::bigDecimalValueExact,
                     r
             );
-        }
-
-        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.negativeIntegers()))) {
-            try {
-                p.a.bigDecimalValueByPrecision(p.b);
-                fail(p);
-            } catch (IllegalArgumentException ignored) {}
         }
 
         Iterable<Rational> rsFail = filterInfinite(r -> !r.hasTerminatingBaseExpansion(BigInteger.TEN), P.rationals());

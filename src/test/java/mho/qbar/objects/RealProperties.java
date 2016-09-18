@@ -3,6 +3,7 @@ package mho.qbar.objects;
 import mho.qbar.testing.QBarTestProperties;
 import mho.wheels.iterables.CachedIterator;
 import mho.wheels.math.BinaryFraction;
+import mho.wheels.numberUtils.BigDecimalUtils;
 import mho.wheels.numberUtils.FloatingPointUtils;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.structures.Pair;
@@ -93,6 +94,7 @@ public class RealProperties extends QBarTestProperties {
         propertiesBigDecimalValueByPrecision_int_Rational();
         propertiesBigDecimalValueByScaleUnsafe_int();
         propertiesBigDecimalValueByScale_int_Rational();
+        propertiesBigDecimalValueExact();
     }
 
     private void propertiesOf_Rational() {
@@ -3362,6 +3364,32 @@ public class RealProperties extends QBarTestProperties {
                 q.a.bigDecimalValueByScale(q.b, q.c);
                 fail(q);
             } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesBigDecimalValueExact() {
+        initialize("bigDecimalValueExact()");
+        Iterable<Real> xs = map(
+                Real::of,
+                filterInfinite(r -> r.hasTerminatingBaseExpansion(BigInteger.TEN), P.rationals())
+        );
+        for (Real x : take(LIMIT, xs)) {
+            BigDecimal bd = x.bigDecimalValueExact();
+            assertTrue(bd, BigDecimalUtils.isCanonical(bd));
+            assertEquals(x, bd, x.bigDecimalValueByPrecisionUnsafe(0, RoundingMode.UNNECESSARY));
+            assertEquals(x, bd.signum(), x.signumUnsafe());
+            homomorphic(Real::negate, BigDecimal::negate, Real::bigDecimalValueExact, Real::bigDecimalValueExact, x);
+        }
+
+        Iterable<Real> xsFail = filterInfinite(
+                x -> !x.isExact() || !x.rationalValueExact().get().hasTerminatingBaseExpansion(BigInteger.TEN),
+                P.reals()
+        );
+        for (Real x : take(LIMIT, xsFail)) {
+            try {
+                x.bigDecimalValueExact();
+                fail(x);
+            } catch (ArithmeticException ignored) {}
         }
     }
 }

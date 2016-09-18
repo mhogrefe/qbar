@@ -1335,4 +1335,14 @@ public class RealDemos extends QBarDemos {
                     t.a.bigDecimalValueByScale(t.b, t.c));
         }
     }
+
+    private void demoBigDecimalValueExact() {
+        Iterable<Real> xs = map(
+                Real::of,
+                filterInfinite(r -> r.hasTerminatingBaseExpansion(BigInteger.TEN), P.rationals())
+        );
+        for (Real x : take(LIMIT, xs)) {
+            System.out.println("bigDecimalValueExact(" + x + ") = " + x.bigDecimalValueExact());
+        }
+    }
 }
