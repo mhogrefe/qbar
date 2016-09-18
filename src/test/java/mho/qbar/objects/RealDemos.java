@@ -973,8 +973,8 @@ public class RealDemos extends QBarDemos {
                 case HALF_DOWN:
                     return !(sign == 1 && right) && !(sign == -1 && left);
                 case HALF_EVEN:
-                    boolean lowerEven = !x.bigDecimalValueByPrecision(precision, RoundingMode.FLOOR).unscaledValue()
-                            .testBit(0);
+                    boolean lowerEven =
+                            !x.bigDecimalValueByPrecision(precision, RoundingMode.FLOOR).unscaledValue().testBit(0);
                     return !(lowerEven ? right : left);
                 case UNNECESSARY:
                     return false;
@@ -1064,6 +1064,132 @@ public class RealDemos extends QBarDemos {
         }
     }
 
+    private static boolean scaleAlphaBorderline(int n, @NotNull Rational x) {
+        return x.multiply(Rational.TEN.pow(n)).isInteger();
+    }
+
+    private static boolean scaleBetaBorderline(int n, @NotNull Rational x) {
+        Rational scaled = x.multiply(Rational.TEN.pow(n + 1));
+        return scaled.isInteger() && scaled.bigIntegerValueExact().mod(BigInteger.TEN).equals(BigInteger.valueOf(5));
+    }
+
+    private static boolean rmBigDecimalScaleCheck(
+            @NotNull Algebraic x,
+            int scale,
+            @NotNull RoundingMode rm,
+            @NotNull FuzzinessType ft
+    ) {
+        int sign = x.signum();
+        boolean left = ft == FuzzinessType.LEFT || ft == FuzzinessType.BOTH;
+        boolean right = ft == FuzzinessType.RIGHT || ft == FuzzinessType.BOTH;
+        if (x.isRational() && scaleAlphaBorderline(scale, x.rationalValueExact())) {
+            switch (rm) {
+                case UP:
+                    return sign != 0 && !(sign == 1 && right) && !(sign == -1 && left);
+                case DOWN:
+                    return !(sign == 1 && left) && !(sign == -1 && right);
+                case CEILING:
+                    return !right;
+                case FLOOR:
+                    return !left;
+                case UNNECESSARY:
+                    return ft == FuzzinessType.NONE;
+                default:
+                    return true;
+            }
+        } else if (x.isRational() && scaleBetaBorderline(scale, x.rationalValueExact())) {
+            switch (rm) {
+                case HALF_UP:
+                    return !(sign == 1 && left) && !(sign == -1 && right);
+                case HALF_DOWN:
+                    return !(sign == 1 && right) && !(sign == -1 && left);
+                case HALF_EVEN:
+                    boolean lowerEven =
+                            !x.bigDecimalValueByScale(scale, RoundingMode.FLOOR).unscaledValue().testBit(0);
+                    return !(lowerEven ? right : left);
+                case UNNECESSARY:
+                    return false;
+                default:
+                    return true;
+            }
+        }
+        return rm != RoundingMode.UNNECESSARY;
+    }
+
+    private void demoBigDecimalValueByScaleUnsafe_int_RoundingMode() {
+        //noinspection RedundantCast
+        Iterable<Triple<Real, Integer, RoundingMode>> ts = map(
+                u -> {
+                    Real r;
+                    switch (u.a.b) {
+                        case NONE:
+                            r = u.a.a.realValue();
+                            break;
+                        case LEFT:
+                            r = leftFuzzyRepresentation(u.a.a.rationalValueExact());
+                            break;
+                        case RIGHT:
+                            r = rightFuzzyRepresentation(u.a.a.rationalValueExact());
+                            break;
+                        case BOTH:
+                            r = fuzzyRepresentation(u.a.a.rationalValueExact());
+                            break;
+                        default:
+                            throw new IllegalStateException("unreachable");
+                    }
+                    return new Triple<>(r, u.b, u.c);
+                },
+                filterInfinite(
+                        t -> rmBigDecimalScaleCheck(t.a.a, t.b, t.c, t.a.b),
+                        P.triples(
+                                P.withScale(1).choose(
+                                        map(x -> new Pair<>(x, FuzzinessType.NONE), P.withScale(4).algebraics()),
+                                        P.choose(
+                                                (List<Iterable<Pair<Algebraic, FuzzinessType>>>) Arrays.asList(
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.LEFT),
+                                                                P.withScale(4).rationals()
+                                                        ),
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.RIGHT),
+                                                                P.withScale(4).rationals()
+                                                        ),
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.BOTH),
+                                                                P.withScale(4).rationals()
+                                                        )
+                                                )
+                                        )
+                                ),
+                                P.integersGeometric(),
+                                P.roundingModes()
+                        )
+                )
+        );
+        for (Triple<Real, Integer, RoundingMode> t : take(LIMIT, ts)) {
+            System.out.println("bigDecimalValueByScaleUnsafe(" + t.a + ", " + t.b + ", " + t.c + ") = " +
+                    t.a.bigDecimalValueByScaleUnsafe(t.b, t.c));
+        }
+    }
+
+    private void demoBigDecimalValueByScale_int_RoundingMode_Rational() {
+        Iterable<Quadruple<Real, Integer, RoundingMode, Rational>> qs = filterInfinite(
+                q -> {
+                    try {
+                        q.a.bigDecimalValueByScale(q.b, q.c, q.d);
+                        return true;
+                    } catch (ArithmeticException e) {
+                        return false;
+                    }
+                },
+                P.quadruples(P.withScale(4).reals(), P.integersGeometric(), P.roundingModes(), P.positiveRationals())
+        );
+        for (Quadruple<Real, Integer, RoundingMode, Rational> q : take(LIMIT, qs)) {
+            System.out.println("bigDecimalValueByScale(" + q.a + ", " + q.b + ", " + q.c + ", " + q.d + ") = " +
+                    q.a.bigDecimalValueByScale(q.b, q.c, q.d));
+        }
+    }
+
     private void demoBigDecimalValueByPrecisionUnsafe_int() {
         //noinspection RedundantCast
         Iterable<Pair<Real, Integer>> ps = map(
@@ -1134,6 +1260,79 @@ public class RealDemos extends QBarDemos {
         for (Triple<Real, Integer, Rational> t : take(LIMIT, ts)) {
             System.out.println("bigDecimalValueByPrecision(" + t.a + ", " + t.b + ", " + t.c + ") = " +
                     t.a.bigDecimalValueByPrecision(t.b, t.c));
+        }
+    }
+
+    private void demoBigDecimalValueByScaleUnsafe_int() {
+        //noinspection RedundantCast
+        Iterable<Pair<Real, Integer>> ps = map(
+                q -> {
+                    Real r;
+                    switch (q.a.b) {
+                        case NONE:
+                            r = q.a.a.realValue();
+                            break;
+                        case LEFT:
+                            r = leftFuzzyRepresentation(q.a.a.rationalValueExact());
+                            break;
+                        case RIGHT:
+                            r = rightFuzzyRepresentation(q.a.a.rationalValueExact());
+                            break;
+                        case BOTH:
+                            r = fuzzyRepresentation(q.a.a.rationalValueExact());
+                            break;
+                        default:
+                            throw new IllegalStateException("unreachable");
+                    }
+                    return new Pair<>(r, q.b);
+                },
+                filterInfinite(
+                        p -> rmBigDecimalScaleCheck(p.a.a, p.b, RoundingMode.HALF_EVEN, p.a.b),
+                        P.pairsSquareRootOrder(
+                                P.withScale(1).choose(
+                                        map(x -> new Pair<>(x, FuzzinessType.NONE), P.withScale(4).algebraics()),
+                                        P.choose(
+                                                (List<Iterable<Pair<Algebraic, FuzzinessType>>>) Arrays.asList(
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.LEFT),
+                                                                P.withScale(4).rationals()
+                                                        ),
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.RIGHT),
+                                                                P.withScale(4).rationals()
+                                                        ),
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.BOTH),
+                                                                P.withScale(4).rationals()
+                                                        )
+                                                )
+                                        )
+                                ),
+                                P.integersGeometric()
+                        )
+                )
+        );
+        for (Pair<Real, Integer> p : take(LIMIT, ps)) {
+            System.out.println("bigDecimalValueByScaleUnsafe(" + p.a + ", " + p.b + ") = " +
+                    p.a.bigDecimalValueByScaleUnsafe(p.b));
+        }
+    }
+
+    private void demoBigDecimalValueByScale_int_Rational() {
+        Iterable<Triple<Real, Integer, Rational>> ts = filterInfinite(
+                t -> {
+                    try {
+                        t.a.bigDecimalValueByScale(t.b, t.c);
+                        return true;
+                    } catch (ArithmeticException e) {
+                        return false;
+                    }
+                },
+                P.triples(P.withScale(4).reals(), P.integersGeometric(), P.positiveRationals())
+        );
+        for (Triple<Real, Integer, Rational> t : take(LIMIT, ts)) {
+            System.out.println("bigDecimalValueByScale(" + t.a + ", " + t.b + ", " + t.c + ") = " +
+                    t.a.bigDecimalValueByScale(t.b, t.c));
         }
     }
 }
