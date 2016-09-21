@@ -3404,6 +3404,7 @@ public class RealProperties extends QBarTestProperties {
         for (Real x : take(LIMIT, P.reals())) {
             Real negative = x.negate();
             negative.validate();
+            //noinspection SuspiciousNameCombination
             Optional<Boolean> involution = eq(negative.negate(), x, DEFAULT_RESOLUTION);
             assertTrue(x, !involution.isPresent() || involution.get());
             Optional<Boolean> inverse = eq(x.add(negative), Rational.ZERO, DEFAULT_RESOLUTION);
@@ -3430,6 +3431,7 @@ public class RealProperties extends QBarTestProperties {
         }
 
         for (Real x : take(LIMIT, P.positiveReals())) {
+            //noinspection SuspiciousNameCombination
             Optional<Boolean> fixedPoint = eq(x.abs(), x, DEFAULT_RESOLUTION);
             assertTrue(x, !fixedPoint.isPresent() || fixedPoint.get());
         }
