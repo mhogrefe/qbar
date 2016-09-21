@@ -95,6 +95,10 @@ public class RealProperties extends QBarTestProperties {
         propertiesBigDecimalValueByScaleUnsafe_int();
         propertiesBigDecimalValueByScale_int_Rational();
         propertiesBigDecimalValueExact();
+        propertiesNegate();
+        propertiesAbs();
+        propertiesSignumUnsafe();
+        propertiesSignum();
         propertiesAdd_Rational();
         propertiesAdd_Real();
     }
@@ -3392,6 +3396,71 @@ public class RealProperties extends QBarTestProperties {
                 x.bigDecimalValueExact();
                 fail(x);
             } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesNegate() {
+        initialize("negate()");
+        for (Real x : take(LIMIT, P.reals())) {
+            Real negative = x.negate();
+            negative.validate();
+            Optional<Boolean> involution = eq(negative.negate(), x, DEFAULT_RESOLUTION);
+            assertTrue(x, !involution.isPresent() || involution.get());
+            Optional<Boolean> inverse = eq(x.add(negative), Rational.ZERO, DEFAULT_RESOLUTION);
+            assertTrue(x, !inverse.isPresent() || inverse.get());
+        }
+
+        for (Real x : take(LIMIT, P.nonzeroReals())) {
+            Optional<Boolean> unequal = ne(x, x.negate(), DEFAULT_RESOLUTION);
+            assertTrue(x, !unequal.isPresent() || unequal.get());
+        }
+    }
+
+    private void propertiesAbs() {
+        initialize("abs()");
+        for (Real x : take(LIMIT, P.reals())) {
+            Real abs = x.abs();
+            abs.validate();
+            Optional<Boolean> idempotent = eq(abs, abs.abs(), DEFAULT_RESOLUTION);
+            assertTrue(x, !idempotent.isPresent() || idempotent.get());
+            Optional<Integer> signum = abs.signum(DEFAULT_RESOLUTION);
+            assertTrue(x, !signum.isPresent() || signum.get() != -1);
+            Optional<Boolean> nonNegative = ge(abs, Rational.ZERO, DEFAULT_RESOLUTION);
+            assertTrue(x, !nonNegative.isPresent() || nonNegative.get());
+        }
+
+        for (Real x : take(LIMIT, P.positiveReals())) {
+            Optional<Boolean> fixedPoint = eq(x.abs(), x, DEFAULT_RESOLUTION);
+            assertTrue(x, !fixedPoint.isPresent() || fixedPoint.get());
+        }
+    }
+
+    private void propertiesSignumUnsafe() {
+        initialize("signumUnsafe()");
+        Iterable<Real> xs = P.withScale(1).choose(
+                map(Algebraic::realValue, P.algebraics()),
+                P.choose(
+                        Arrays.asList(
+                                map(Real::leftFuzzyRepresentation, P.nonzeroRationals()),
+                                map(Real::rightFuzzyRepresentation, P.nonzeroRationals()),
+                                map(Real::fuzzyRepresentation, P.nonzeroRationals())
+                        )
+                )
+        );
+        for (Real x : take(LIMIT, xs)) {
+            int signum = x.signumUnsafe();
+            assertEquals(x, signum, x.compareToUnsafe(Rational.ZERO));
+            assertTrue(x, signum == -1 || signum == 0 || signum == 1);
+        }
+    }
+
+    private void propertiesSignum() {
+        initialize("signum(Rational)");
+        for (Pair<Real, Rational> p : take(LIMIT, P.pairs(P.reals(), P.positiveRationals()))) {
+            Optional<Integer> oi = p.a.signum(p.b);
+            if (oi.isPresent()) {
+                assertEquals(p, p.a.signumUnsafe(), oi.get());
+            }
         }
     }
 

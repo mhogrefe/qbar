@@ -1346,6 +1346,40 @@ public class RealDemos extends QBarDemos {
         }
     }
 
+    private void demoNegate() {
+        for (Real x : take(LIMIT, P.withScale(4).reals())) {
+            System.out.println("-(" + x + ") = " + x.negate());
+        }
+    }
+
+    private void demoAbs() {
+        for (Real x : take(LIMIT, P.withScale(4).reals())) {
+            System.out.println("|" + x + "| = " + x.abs());
+        }
+    }
+
+    private void demoSignumUnsafe() {
+        Iterable<Real> xs = P.withScale(1).choose(
+                map(Algebraic::realValue, P.withScale(4).algebraics()),
+                P.choose(
+                        Arrays.asList(
+                                map(Real::leftFuzzyRepresentation, P.withScale(4).nonzeroRationals()),
+                                map(Real::rightFuzzyRepresentation, P.withScale(4).nonzeroRationals()),
+                                map(Real::fuzzyRepresentation, P.withScale(4).nonzeroRationals())
+                        )
+                )
+        );
+        for (Real x : take(LIMIT, xs)) {
+            System.out.println("signumUnsafe(" + x + ") = " + x.signumUnsafe());
+        }
+    }
+
+    private void demoSignum() {
+        for (Pair<Real, Rational> p : take(LIMIT, P.pairs(P.withScale(4).reals(), P.positiveRationals()))) {
+            System.out.println("signum(" + p.a + ", " + p.b + ") = " + p.a.signum(p.b));
+        }
+    }
+
     private void demoAdd_Rational() {
         for (Pair<Real, Rational> p : take(LIMIT, P.pairs(P.withScale(4).reals(), P.rationals()))) {
             System.out.println(p.a + " + " + p.b + " = " + p.a.add(p.b));

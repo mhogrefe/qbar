@@ -5980,6 +5980,90 @@ public class RealTest {
         bigDecimalValueExact_fail_helper(PI);
     }
 
+    private static void negate_helper(@NotNull Real input, @NotNull String output) {
+        Real x = input.negate();
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testNegate() {
+        negate_helper(ZERO, "0");
+        negate_helper(ONE, "-1");
+        negate_helper(NEGATIVE_ONE, "1");
+        negate_helper(ONE_HALF, "-0.5");
+        negate_helper(NEGATIVE_FOUR_THIRDS, "1.33333333333333333333...");
+        negate_helper(SQRT_TWO, "-1.41421356237309504880...");
+        negate_helper(E, "-2.71828182845904523536...");
+        negate_helper(PI, "-3.14159265358979323846...");
+        negate_helper(leftFuzzyRepresentation(Rational.ZERO), "~0");
+        negate_helper(rightFuzzyRepresentation(Rational.ZERO), "~0");
+        negate_helper(fuzzyRepresentation(Rational.ZERO), "~0");
+    }
+
+    private static void abs_helper(@NotNull Real input, @NotNull String output) {
+        Real x = input.abs();
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testAbs() {
+        abs_helper(ZERO, "0");
+        abs_helper(ONE, "1");
+        abs_helper(NEGATIVE_ONE, "1");
+        abs_helper(ONE_HALF, "0.5");
+        abs_helper(NEGATIVE_FOUR_THIRDS, "1.33333333333333333333...");
+        abs_helper(SQRT_TWO, "1.41421356237309504880...");
+        abs_helper(E, "2.71828182845904523536...");
+        abs_helper(PI, "3.14159265358979323846...");
+        abs_helper(leftFuzzyRepresentation(Rational.ZERO), "~0");
+        abs_helper(rightFuzzyRepresentation(Rational.ZERO), "~0");
+        abs_helper(fuzzyRepresentation(Rational.ZERO), "~0");
+    }
+
+    private static void signumUnsafe_helper(@NotNull Real input, int output) {
+        aeq(input.signumUnsafe(), output);
+    }
+
+    @Test
+    public void testSignumUnsafe() {
+        signumUnsafe_helper(ZERO, 0);
+        signumUnsafe_helper(ONE, 1);
+        signumUnsafe_helper(NEGATIVE_ONE, -1);
+        signumUnsafe_helper(ONE_HALF, 1);
+        signumUnsafe_helper(NEGATIVE_FOUR_THIRDS, -1);
+        signumUnsafe_helper(SQRT_TWO, 1);
+        signumUnsafe_helper(SQRT_TWO.negate(), -1);
+        signumUnsafe_helper(E, 1);
+        signumUnsafe_helper(E.negate(), -1);
+        signumUnsafe_helper(PI, 1);
+        signumUnsafe_helper(PI.negate(), -1);
+    }
+
+    private static void signum_helper(@NotNull Real input, @NotNull Rational resolution, @NotNull String output) {
+        aeq(input.signum(resolution), output);
+    }
+
+    @Test
+    public void testSignum() {
+        signum_helper(ZERO, DEFAULT_RESOLUTION, "Optional[0]");
+        signum_helper(ONE, DEFAULT_RESOLUTION, "Optional[1]");
+        signum_helper(NEGATIVE_ONE, DEFAULT_RESOLUTION, "Optional[-1]");
+        signum_helper(ONE_HALF, DEFAULT_RESOLUTION, "Optional[1]");
+        signum_helper(NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[-1]");
+        signum_helper(SQRT_TWO, DEFAULT_RESOLUTION, "Optional[1]");
+        signum_helper(SQRT_TWO.negate(), DEFAULT_RESOLUTION, "Optional[-1]");
+        signum_helper(E, DEFAULT_RESOLUTION, "Optional[1]");
+        signum_helper(E.negate(), DEFAULT_RESOLUTION, "Optional[-1]");
+        signum_helper(PI, DEFAULT_RESOLUTION, "Optional[1]");
+        signum_helper(PI.negate(), DEFAULT_RESOLUTION, "Optional[-1]");
+
+        signum_helper(leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        signum_helper(rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        signum_helper(fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+    }
+
     private static void add_Rational_helper(@NotNull Real a, @NotNull String b, @NotNull String output) {
         Real x = a.add(Rational.readStrict(b).get());
         x.validate();

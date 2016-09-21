@@ -2051,7 +2051,6 @@ public final class Real implements Iterable<Interval> {
      * <ul>
      *  <li>{@code this} may be any {@code Real}.</li>
      *  <li>{@code scale} may be any {@code int}.</li>
-     *  <li>{@code resolution} must be positive.</li>
      *  <li>If  {@code this} is {@code scale}-scale-beta-borderline, then one of its adjacent {@code BigDecimal}s with
      *  scale {@code scale} will have a one in the least significant bit of its unscaled value, and {@code this} cannot
      *  be fuzzy in the direction closest to that {@code BigDecimal}.</li>
@@ -2079,7 +2078,8 @@ public final class Real implements Iterable<Interval> {
      * <ul>
      *  <li>{@code this} may be any {@code Real}.</li>
      *  <li>{@code scale} may be any {@code int}.</li>
-     *  <li>If  {@code this} is {@code scale}-scale-beta-borderline, then one of its adjacent {@code BigDecimal}s with
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>If {@code this} is {@code scale}-scale-beta-borderline, then one of its adjacent {@code BigDecimal}s with
      *  scale {@code scale} will have a one in the least significant bit of its unscaled value, and {@code this} cannot
      *  be fuzzy in the direction closest to that {@code BigDecimal}.</li>
      *  <li>The result is not null.</li>
@@ -2113,6 +2113,79 @@ public final class Real implements Iterable<Interval> {
             throw new ArithmeticException("this must be a Real with a terminating decimal expansion. Invalid this: " +
                     this);
         }
+    }
+
+    /**
+     * Returns the negative of {@code this}. If {@code this} is clean, so is the result.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * @return –{@code this}
+     */
+    public @NotNull Real negate() {
+        if (rational.isPresent()) {
+            Rational r = rational.get();
+            return r == Rational.ZERO ? ZERO : new Real(r.negate());
+        } else {
+            return new Real(map(Interval::negate, intervals));
+        }
+    }
+
+    /**
+     * Returns the absolute value of {@code this}. If {@code this} is clean, so is the result.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>The result is a non-negative {@code Real}.</li>
+     * </ul>
+     *
+     * @return |{@code this}|
+     */
+    public @NotNull Real abs() {
+        if (rational.isPresent()) {
+            Rational r = rational.get();
+            return r.signum() == -1 ? new Real(r.negate()) : this;
+        }
+        return new Real(map(Interval::abs, intervals));
+    }
+
+    /**
+     * Returns the sign of {@code this}: 1 if positive, –1 if negative, 0 if equal to 0. If {@code this} is a fuzzy
+     * zero, this method will loop forever. To prevent this behavior, use {@link Real#signum(Rational)} instead.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be a fuzzy zero.</li>
+     *  <li>The result is –1, 0, or 1.</li>
+     * </ul>
+     *
+     * @return sgn({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public int signumUnsafe() {
+        //noinspection ConstantConditions
+        return limitValueUnsafe(Rational::signum);
+    }
+
+    /**
+     * Returns the sign of {@code this}: 1 if positive, –1 if negative, 0 if equal to 0. If {@code this} is a fuzzy
+     * zero, this method will give up and return empty once the approximating interval's diameter is less than the
+     * specified resolution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>The result may be empty, –1, 0, or 1.</li>
+     * </ul>
+     *
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return sgn({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Optional<Integer> signum(@NotNull Rational resolution) {
+        return limitValue(Rational::signum, resolution);
     }
 
     /**
@@ -2156,14 +2229,6 @@ public final class Real implements Iterable<Interval> {
         if (isExact()) return that.add(rational.get());
         if (that.isExact()) return add(that.rational.get());
         return new Real(zipWith(Interval::add, intervals, that.intervals));
-    }
-
-    public @NotNull Real negate() {
-        if (rational.isPresent()) {
-            return new Real(rational.get().negate());
-        } else {
-            return new Real(map(Interval::negate, intervals));
-        }
     }
 
     public @NotNull Real subtract(@NotNull Rational that) {
@@ -2237,18 +2302,6 @@ public final class Real implements Iterable<Interval> {
         } else {
             return new Real(map(a -> a.shiftRight(bits), intervals));
         }
-    }
-
-    public int signumUnsafe() {
-        return limitValueUnsafe(Rational::signum);
-    }
-
-    public @NotNull Optional<Integer> signum(@NotNull Rational resolution) {
-        return limitValue(Rational::signum, resolution);
-    }
-
-    public @NotNull Real abs() {
-        return new Real(map(Interval::abs, intervals));
     }
 
     public @NotNull Pair<List<BigInteger>, Iterable<BigInteger>> digitsUnsafe(@NotNull BigInteger base) {
