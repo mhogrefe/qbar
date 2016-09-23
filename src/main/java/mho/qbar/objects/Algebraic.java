@@ -1612,8 +1612,8 @@ public final class Algebraic implements Comparable<Algebraic> {
      * @return {@code this}–{@code that}
      */
     public @NotNull Algebraic subtract(@NotNull Rational that) {
-        if (this == ZERO) return of(that.negate());
         if (that == Rational.ZERO) return this;
+        if (this == ZERO) return of(that.negate());
         if (isRational()) {
             return of(rational.get().subtract(that));
         }

@@ -101,6 +101,8 @@ public class RealProperties extends QBarTestProperties {
         propertiesSignum();
         propertiesAdd_Rational();
         propertiesAdd_Real();
+        propertiesSubtract_Rational();
+        propertiesSubtract_Real();
     }
 
     private void propertiesOf_Rational() {
@@ -3505,6 +3507,43 @@ public class RealProperties extends QBarTestProperties {
         for (Triple<Real, Real, Real> t : take(SMALL_LIMIT, P.triples(P.reals()))) {
             Optional<Boolean> associative = eq(t.a.add(t.b).add(t.c), t.a.add(t.b.add(t.c)), DEFAULT_RESOLUTION);
             assertTrue(t, !associative.isPresent() || associative.get());
+        }
+    }
+
+    private void propertiesSubtract_Rational() {
+        initialize("subtract(Rational)");
+        for (Pair<Real, Rational> p : take(LIMIT, P.pairs(P.reals(), P.rationals()))) {
+            Real difference = p.a.subtract(p.b);
+            difference.validate();
+            Optional<Boolean> inverse = eq(difference.add(p.b), p.a, DEFAULT_RESOLUTION);
+            assertTrue(p, !inverse.isPresent() || inverse.get());
+        }
+
+        for (Real x : take(LIMIT, P.reals())) {
+            assertTrue(x, x.subtract(Rational.ZERO) == x);
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertEquals(r, ZERO.subtract(r).rationalValueExact().get(), r.negate());
+        }
+    }
+
+    private void propertiesSubtract_Real() {
+        initialize("subtract(Real)");
+        for (Pair<Real, Real> p : take(SMALL_LIMIT, P.pairs(P.reals()))) {
+            Real difference = p.a.subtract(p.b);
+            difference.validate();
+            Optional<Boolean> anticommutative = eq(p.b.subtract(p.a), difference.negate(), DEFAULT_RESOLUTION);
+            assertTrue(p, !anticommutative.isPresent() || anticommutative.get());
+            Optional<Boolean> inverse = eq(difference.add(p.b), p.a, DEFAULT_RESOLUTION);
+            assertTrue(p, !inverse.isPresent() || inverse.get());
+        }
+
+        for (Real x : take(LIMIT, P.reals())) {
+            Optional<Boolean> negate = eq(ZERO.subtract(x), x.negate(), DEFAULT_RESOLUTION);
+            assertTrue(x, !negate.isPresent() || negate.get());
+            assertTrue(x, x.subtract(ZERO) == x);
+            assertTrue(x, x.subtract(x) == ZERO);
         }
     }
 }

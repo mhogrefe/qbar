@@ -1391,4 +1391,16 @@ public class RealDemos extends QBarDemos {
             System.out.println(p.a + " + " + p.b + " = " + p.a.add(p.b));
         }
     }
+
+    private void demoSubtract_Rational() {
+        for (Pair<Real, Rational> p : take(LIMIT, P.pairs(P.withScale(4).reals(), P.rationals()))) {
+            System.out.println(p.a + " - " + p.b + " = " + p.a.subtract(p.b));
+        }
+    }
+
+    private void demoSubtract_Real() {
+        for (Pair<Real, Real> p : take(LIMIT, P.pairs(P.withScale(4).reals()))) {
+            System.out.println(p.a + " - " + p.b + " = " + p.a.subtract(p.b));
+        }
+    }
 }

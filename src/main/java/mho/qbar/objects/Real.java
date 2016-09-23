@@ -2231,9 +2231,21 @@ public final class Real implements Iterable<Interval> {
         return new Real(zipWith(Interval::add, intervals, that.intervals));
     }
 
+    /**
+     * Returns the difference of {@code this} and {@code that}. If {@code this} is clean, so is the result.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code Rational} subtracted from {@code this}
+     * @return {@code this}–{@code that}
+     */
     public @NotNull Real subtract(@NotNull Rational that) {
-        if (this == ZERO) return new Real(that.negate());
         if (that == Rational.ZERO) return this;
+        if (this == ZERO) return new Real(that.negate());
         if (isExact()) {
             return of(rational.get().subtract(that));
         }
@@ -2241,6 +2253,19 @@ public final class Real implements Iterable<Interval> {
         return new Real(map(i -> i.subtract(ri), intervals));
     }
 
+    /**
+     * Returns the difference of {@code this} and {@code that}. The result may be fuzzy even if both arguments are
+     * clean.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code Real} subtracted from {@code this}
+     * @return {@code this}–{@code that}
+     */
     public @NotNull Real subtract(@NotNull Real that) {
         if (this == that) return ZERO;
         if (this == ZERO) return that.negate();

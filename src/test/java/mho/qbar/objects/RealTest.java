@@ -6239,4 +6239,184 @@ public class RealTest {
 
         add_Real_helper(PI, PI.negate(), "~0");
     }
+
+    private static void subtract_Rational_helper(@NotNull Real a, @NotNull String b, @NotNull String output) {
+        Real x = a.subtract(Rational.readStrict(b).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testSubtract_Rational() {
+        subtract_Rational_helper(ZERO, "0", "0");
+        subtract_Rational_helper(ZERO, "1", "-1");
+        subtract_Rational_helper(ZERO, "-1", "1");
+        subtract_Rational_helper(ZERO, "100/3", "-33.33333333333333333333...");
+        subtract_Rational_helper(ZERO, "1/100", "-0.01");
+
+        subtract_Rational_helper(ONE, "0", "1");
+        subtract_Rational_helper(ONE, "1", "0");
+        subtract_Rational_helper(ONE, "-1", "2");
+        subtract_Rational_helper(ONE, "100/3", "-32.33333333333333333333...");
+        subtract_Rational_helper(ONE, "1/100", "0.99");
+
+        subtract_Rational_helper(NEGATIVE_ONE, "0", "-1");
+        subtract_Rational_helper(NEGATIVE_ONE, "1", "-2");
+        subtract_Rational_helper(NEGATIVE_ONE, "-1", "0");
+        subtract_Rational_helper(NEGATIVE_ONE, "100/3", "-34.33333333333333333333...");
+        subtract_Rational_helper(NEGATIVE_ONE, "1/100", "-1.01");
+
+        subtract_Rational_helper(ONE_HALF, "0", "0.5");
+        subtract_Rational_helper(ONE_HALF, "1", "-0.5");
+        subtract_Rational_helper(ONE_HALF, "-1", "1.5");
+        subtract_Rational_helper(ONE_HALF, "100/3", "-32.83333333333333333333...");
+        subtract_Rational_helper(ONE_HALF, "1/100", "0.49");
+
+        subtract_Rational_helper(NEGATIVE_FOUR_THIRDS, "0", "-1.33333333333333333333...");
+        subtract_Rational_helper(NEGATIVE_FOUR_THIRDS, "1", "-2.33333333333333333333...");
+        subtract_Rational_helper(NEGATIVE_FOUR_THIRDS, "-1", "-0.33333333333333333333...");
+        subtract_Rational_helper(NEGATIVE_FOUR_THIRDS, "100/3", "-34.66666666666666666666...");
+        subtract_Rational_helper(NEGATIVE_FOUR_THIRDS, "1/100", "-1.34333333333333333333...");
+
+        subtract_Rational_helper(SQRT_TWO, "0", "1.41421356237309504880...");
+        subtract_Rational_helper(SQRT_TWO, "1", "0.41421356237309504880...");
+        subtract_Rational_helper(SQRT_TWO, "-1", "2.41421356237309504880...");
+        subtract_Rational_helper(SQRT_TWO, "100/3", "-31.91911977096023828453...");
+        subtract_Rational_helper(SQRT_TWO, "1/100", "1.40421356237309504880...");
+
+        subtract_Rational_helper(E, "0", "2.71828182845904523536...");
+        subtract_Rational_helper(E, "1", "1.71828182845904523536...");
+        subtract_Rational_helper(E, "-1", "3.71828182845904523536...");
+        subtract_Rational_helper(E, "100/3", "-30.61505150487428809797...");
+        subtract_Rational_helper(E, "1/100", "2.70828182845904523536...");
+
+        subtract_Rational_helper(PI, "0", "3.14159265358979323846...");
+        subtract_Rational_helper(PI, "1", "2.14159265358979323846...");
+        subtract_Rational_helper(PI, "-1", "4.14159265358979323846...");
+        subtract_Rational_helper(PI, "100/3", "-30.19174067974354009487...");
+        subtract_Rational_helper(PI, "1/100", "3.13159265358979323846...");
+
+        subtract_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "0", "~0");
+        subtract_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "1", "-1.00000000000000000000...");
+        subtract_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "-1", "+...");
+        subtract_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "100/3", "-33.33333333333333333333...");
+        subtract_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "1/100", "-0.01000000000000000000...");
+
+        subtract_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "0", "~0");
+        subtract_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "1", "-...");
+        subtract_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "-1", "1.00000000000000000000...");
+        subtract_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "100/3", "-33.33333333333333333333...");
+        subtract_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "1/100", "-0.0...");
+
+        subtract_Rational_helper(fuzzyRepresentation(Rational.ZERO), "0", "~0");
+        subtract_Rational_helper(fuzzyRepresentation(Rational.ZERO), "1", "-...");
+        subtract_Rational_helper(fuzzyRepresentation(Rational.ZERO), "-1", "+...");
+        subtract_Rational_helper(fuzzyRepresentation(Rational.ZERO), "100/3", "-33.33333333333333333333...");
+        subtract_Rational_helper(fuzzyRepresentation(Rational.ZERO), "1/100", "-0.0...");
+    }
+
+    private static void subtract_Real_helper(@NotNull Real a, @NotNull Real b, @NotNull String output) {
+        Real x = a.subtract(b);
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testSubtract_Real() {
+        subtract_Real_helper(ZERO, ZERO, "0");
+        subtract_Real_helper(ZERO, ONE, "-1");
+        subtract_Real_helper(ZERO, NEGATIVE_FOUR_THIRDS, "1.33333333333333333333...");
+        subtract_Real_helper(ZERO, SQRT_TWO, "-1.41421356237309504880...");
+        subtract_Real_helper(ZERO, E, "-2.71828182845904523536...");
+        subtract_Real_helper(ZERO, PI, "-3.14159265358979323846...");
+        subtract_Real_helper(ZERO, leftFuzzyRepresentation(Rational.ZERO), "~0");
+        subtract_Real_helper(ZERO, rightFuzzyRepresentation(Rational.ZERO), "~0");
+        subtract_Real_helper(ZERO, fuzzyRepresentation(Rational.ZERO), "~0");
+
+        subtract_Real_helper(ONE, ZERO, "1");
+        subtract_Real_helper(ONE, ONE, "0");
+        subtract_Real_helper(ONE, NEGATIVE_FOUR_THIRDS, "2.33333333333333333333...");
+        subtract_Real_helper(ONE, SQRT_TWO, "-0.41421356237309504880...");
+        subtract_Real_helper(ONE, E, "-1.71828182845904523536...");
+        subtract_Real_helper(ONE, PI, "-2.14159265358979323846...");
+        subtract_Real_helper(ONE, leftFuzzyRepresentation(Rational.ZERO), "1.00000000000000000000...");
+        subtract_Real_helper(ONE, rightFuzzyRepresentation(Rational.ZERO), "+...");
+        subtract_Real_helper(ONE, fuzzyRepresentation(Rational.ZERO), "+...");
+
+        subtract_Real_helper(NEGATIVE_FOUR_THIRDS, ZERO, "-1.33333333333333333333...");
+        subtract_Real_helper(NEGATIVE_FOUR_THIRDS, ONE, "-2.33333333333333333333...");
+        subtract_Real_helper(NEGATIVE_FOUR_THIRDS, NEGATIVE_FOUR_THIRDS, "0");
+        subtract_Real_helper(NEGATIVE_FOUR_THIRDS, SQRT_TWO, "-2.74754689570642838213...");
+        subtract_Real_helper(NEGATIVE_FOUR_THIRDS, E, "-4.05161516179237856869...");
+        subtract_Real_helper(NEGATIVE_FOUR_THIRDS, PI, "-4.47492598692312657179...");
+        subtract_Real_helper(NEGATIVE_FOUR_THIRDS, leftFuzzyRepresentation(Rational.ZERO),
+                "-1.33333333333333333333...");
+        subtract_Real_helper(NEGATIVE_FOUR_THIRDS, rightFuzzyRepresentation(Rational.ZERO),
+                "-1.33333333333333333333...");
+        subtract_Real_helper(NEGATIVE_FOUR_THIRDS, fuzzyRepresentation(Rational.ZERO), "-1.33333333333333333333...");
+
+        subtract_Real_helper(SQRT_TWO, ZERO, "1.41421356237309504880...");
+        subtract_Real_helper(SQRT_TWO, ONE, "0.41421356237309504880...");
+        subtract_Real_helper(SQRT_TWO, NEGATIVE_FOUR_THIRDS, "2.74754689570642838213...");
+        subtract_Real_helper(SQRT_TWO, SQRT_TWO, "0");
+        subtract_Real_helper(SQRT_TWO, E, "-1.30406826608595018655...");
+        subtract_Real_helper(SQRT_TWO, PI, "-1.72737909121669818966...");
+        subtract_Real_helper(SQRT_TWO, leftFuzzyRepresentation(Rational.ZERO), "1.41421356237309504880...");
+        subtract_Real_helper(SQRT_TWO, rightFuzzyRepresentation(Rational.ZERO), "1.41421356237309504880...");
+        subtract_Real_helper(SQRT_TWO, fuzzyRepresentation(Rational.ZERO), "1.41421356237309504880...");
+
+        subtract_Real_helper(E, ZERO, "2.71828182845904523536...");
+        subtract_Real_helper(E, ONE, "1.71828182845904523536...");
+        subtract_Real_helper(E, NEGATIVE_FOUR_THIRDS, "4.05161516179237856869...");
+        subtract_Real_helper(E, SQRT_TWO, "1.30406826608595018655...");
+        subtract_Real_helper(E, E, "0");
+        subtract_Real_helper(E, PI, "-0.42331082513074800310...");
+        subtract_Real_helper(E, leftFuzzyRepresentation(Rational.ZERO), "2.71828182845904523536...");
+        subtract_Real_helper(E, rightFuzzyRepresentation(Rational.ZERO), "2.71828182845904523536...");
+        subtract_Real_helper(E, fuzzyRepresentation(Rational.ZERO), "2.71828182845904523536...");
+
+        subtract_Real_helper(PI, ZERO, "3.14159265358979323846...");
+        subtract_Real_helper(PI, ONE, "2.14159265358979323846...");
+        subtract_Real_helper(PI, NEGATIVE_FOUR_THIRDS, "4.47492598692312657179...");
+        subtract_Real_helper(PI, SQRT_TWO, "1.72737909121669818966...");
+        subtract_Real_helper(PI, E, "0.42331082513074800310...");
+        subtract_Real_helper(PI, PI, "0");
+        subtract_Real_helper(PI, leftFuzzyRepresentation(Rational.ZERO), "3.14159265358979323846...");
+        subtract_Real_helper(PI, rightFuzzyRepresentation(Rational.ZERO), "3.14159265358979323846...");
+        subtract_Real_helper(PI, fuzzyRepresentation(Rational.ZERO), "3.14159265358979323846...");
+
+        subtract_Real_helper(leftFuzzyRepresentation(Rational.ZERO), ZERO, "~0");
+        subtract_Real_helper(leftFuzzyRepresentation(Rational.ZERO), ONE, "-1.00000000000000000000...");
+        subtract_Real_helper(leftFuzzyRepresentation(Rational.ZERO), NEGATIVE_FOUR_THIRDS,
+                "1.33333333333333333333...");
+        subtract_Real_helper(leftFuzzyRepresentation(Rational.ZERO), SQRT_TWO, "-1.41421356237309504880...");
+        subtract_Real_helper(leftFuzzyRepresentation(Rational.ZERO), E, "-2.71828182845904523536...");
+        subtract_Real_helper(leftFuzzyRepresentation(Rational.ZERO), PI, "-3.14159265358979323846...");
+        subtract_Real_helper(leftFuzzyRepresentation(Rational.ZERO), leftFuzzyRepresentation(Rational.ZERO), "~0");
+        subtract_Real_helper(leftFuzzyRepresentation(Rational.ZERO), rightFuzzyRepresentation(Rational.ZERO), "~0");
+        subtract_Real_helper(leftFuzzyRepresentation(Rational.ZERO), fuzzyRepresentation(Rational.ZERO), "~0");
+
+        subtract_Real_helper(rightFuzzyRepresentation(Rational.ZERO), ZERO, "~0");
+        subtract_Real_helper(rightFuzzyRepresentation(Rational.ZERO), ONE, "-...");
+        subtract_Real_helper(rightFuzzyRepresentation(Rational.ZERO), NEGATIVE_FOUR_THIRDS,
+                "1.33333333333333333333...");
+        subtract_Real_helper(rightFuzzyRepresentation(Rational.ZERO), SQRT_TWO, "-1.41421356237309504880...");
+        subtract_Real_helper(rightFuzzyRepresentation(Rational.ZERO), E, "-2.71828182845904523536...");
+        subtract_Real_helper(rightFuzzyRepresentation(Rational.ZERO), PI, "-3.14159265358979323846...");
+        subtract_Real_helper(rightFuzzyRepresentation(Rational.ZERO), leftFuzzyRepresentation(Rational.ZERO), "~0");
+        subtract_Real_helper(rightFuzzyRepresentation(Rational.ZERO), rightFuzzyRepresentation(Rational.ZERO), "~0");
+        subtract_Real_helper(rightFuzzyRepresentation(Rational.ZERO), fuzzyRepresentation(Rational.ZERO), "~0");
+
+        subtract_Real_helper(fuzzyRepresentation(Rational.ZERO), ZERO, "~0");
+        subtract_Real_helper(fuzzyRepresentation(Rational.ZERO), ONE, "-...");
+        subtract_Real_helper(fuzzyRepresentation(Rational.ZERO), NEGATIVE_FOUR_THIRDS, "1.33333333333333333333...");
+        subtract_Real_helper(fuzzyRepresentation(Rational.ZERO), SQRT_TWO, "-1.41421356237309504880...");
+        subtract_Real_helper(fuzzyRepresentation(Rational.ZERO), E, "-2.71828182845904523536...");
+        subtract_Real_helper(fuzzyRepresentation(Rational.ZERO), PI, "-3.14159265358979323846...");
+        subtract_Real_helper(fuzzyRepresentation(Rational.ZERO), leftFuzzyRepresentation(Rational.ZERO), "~0");
+        subtract_Real_helper(fuzzyRepresentation(Rational.ZERO), rightFuzzyRepresentation(Rational.ZERO), "~0");
+        subtract_Real_helper(fuzzyRepresentation(Rational.ZERO), fuzzyRepresentation(Rational.ZERO), "~0");
+
+        subtract_Real_helper(PI, PI.negate().negate(), "~0");
+    }
 }
