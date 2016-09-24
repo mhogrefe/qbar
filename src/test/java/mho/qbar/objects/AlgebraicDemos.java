@@ -750,13 +750,13 @@ public class AlgebraicDemos extends QBarDemos {
 
     private void demoReadStrict_String() {
         for (String s : take(LIMIT, P.strings())) {
-            System.out.println("readStrict(" + nicePrint(s) + ") = " + readStrict(s));
+            System.out.println("readStrict(" + nicePrint(s) + ") = " + Algebraic.readStrict(s));
         }
     }
 
     private void demoReadStrict_String_targeted() {
         for (String s : take(LIMIT, P.strings(ALGEBRAIC_CHARS))) {
-            System.out.println("readStrict(" + s + ") = " + readStrict(s));
+            System.out.println("readStrict(" + s + ") = " + Algebraic.readStrict(s));
         }
     }
 

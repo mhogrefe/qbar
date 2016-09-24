@@ -3451,6 +3451,7 @@ public class RationalProperties extends QBarTestProperties {
             }
         }
 
+        //noinspection Convert2MethodRef
         ts = P.triples(
                 P.negativeRationals(),
                 map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2)),
@@ -3632,7 +3633,7 @@ public class RationalProperties extends QBarTestProperties {
 
         Pair<Iterable<String>, Iterable<String>> slashPartition = partition(
                 s -> s.contains("/"),
-                filterInfinite(s -> readStrict(s).isPresent(), P.strings(RATIONAL_CHARS))
+                filterInfinite(s -> Rational.readStrict(s).isPresent(), P.strings(RATIONAL_CHARS))
         );
         for (String s : take(LIMIT, slashPartition.a)) {
             int slashIndex = s.indexOf('/');
