@@ -1427,4 +1427,29 @@ public class RealDemos extends QBarDemos {
             System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
         }
     }
+
+    private void demoInvertUnsafe() {
+        for (Real x : take(LIMIT, P.withScale(4).nonzeroReals())) {
+            System.out.println("invertUnsafe(" + x + ") = " + x.invertUnsafe());
+        }
+    }
+
+    private void demoInvert() {
+        Iterable<Pair<Real, Rational>> ps = P.pairs(
+                P.withScale(1).choose(
+                        map(Algebraic::realValue, P.withScale(4).nonzeroAlgebraics()),
+                        P.choose(
+                                Arrays.asList(
+                                        map(Real::leftFuzzyRepresentation, P.withScale(4).rationals()),
+                                        map(Real::rightFuzzyRepresentation, P.withScale(4).rationals()),
+                                        map(Real::fuzzyRepresentation, P.withScale(4).rationals())
+                                )
+                        )
+                ),
+                P.positiveRationals()
+        );
+        for (Pair<Real, Rational> p : take(LIMIT, P.pairs(P.withScale(4).nonzeroReals(), P.positiveRationals()))) {
+            System.out.println("invert(" + p.a + ", " + p.b + ") = " + p.a.invert(p.b));
+        }
+    }
 }

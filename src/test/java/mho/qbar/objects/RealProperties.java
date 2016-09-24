@@ -107,6 +107,8 @@ public class RealProperties extends QBarTestProperties {
         propertiesMultiply_BigInteger();
         propertiesMultiply_Rational();
         propertiesMultiply_Real();
+        propertiesInvertUnsafe();
+        propertiesInvert();
     }
 
     private void propertiesOf_Rational() {
@@ -3579,10 +3581,10 @@ public class RealProperties extends QBarTestProperties {
             assertTrue(x, x.multiply(0) == ZERO);
         }
 
-        //todo
-        //for (int i : take(LIMIT, P.nonzeroIntegers())) {
-        //    assertEquals(i, of(i).invert().multiply(i), ONE);
-        //}
+        for (int i : take(LIMIT, P.nonzeroIntegers())) {
+            Optional<Boolean> inverse = eq(of(i).invertUnsafe().multiply(i), Rational.ONE, DEFAULT_RESOLUTION);
+            assertTrue(i, !inverse.isPresent() || inverse.get());
+        }
 
         for (Triple<Real, Real, Integer> t : take(SMALL_LIMIT, P.triples(P.reals(), P.reals(), P.integers()))) {
             Optional<Boolean> rightDistributive = eq(
@@ -3621,10 +3623,10 @@ public class RealProperties extends QBarTestProperties {
             assertTrue(x, x.multiply(BigInteger.ZERO) == ZERO);
         }
 
-        //todo
-        //for (int i : take(LIMIT, P.nonzeroIntegers())) {
-        //    assertEquals(i, of(i).invert().multiply(i), ONE);
-        //}
+        for (BigInteger i : take(LIMIT, P.nonzeroBigIntegers())) {
+            Optional<Boolean> inverse = eq(of(i).invertUnsafe().multiply(i), Rational.ONE, DEFAULT_RESOLUTION);
+            assertTrue(i, !inverse.isPresent() || inverse.get());
+        }
 
         for (Triple<Real, Real, BigInteger> t : take(SMALL_LIMIT, P.triples(P.reals(), P.reals(), P.bigIntegers()))) {
             Optional<Boolean> rightDistributive = eq(
@@ -3663,10 +3665,10 @@ public class RealProperties extends QBarTestProperties {
             assertTrue(x, x.multiply(Rational.ZERO) == ZERO);
         }
 
-        //todo
-        //for (int i : take(LIMIT, P.nonzeroIntegers())) {
-        //    assertEquals(i, of(i).invert().multiply(i), ONE);
-        //}
+        for (Rational r : take(LIMIT, P.nonzeroRationals())) {
+            Optional<Boolean> inverse = eq(of(r).invertUnsafe().multiply(r), Rational.ONE, DEFAULT_RESOLUTION);
+            assertTrue(r, !inverse.isPresent() || inverse.get());
+        }
 
         for (Triple<Real, Real, Rational> t : take(SMALL_LIMIT, P.triples(P.reals(), P.reals(), P.rationals()))) {
             Optional<Boolean> rightDistributive = eq(
@@ -3698,10 +3700,10 @@ public class RealProperties extends QBarTestProperties {
             assertTrue(x, x.multiply(Rational.ZERO) == ZERO);
         }
 
-        //todo
-        //for (Algebraic x : take(LIMIT, P.nonzeroAlgebraics())) {
-        //    assertTrue(x, x.multiply(x.invert()) == ONE);
-        //}
+        for (Real x : take(LIMIT, P.nonzeroReals())) {
+            Optional<Boolean> inverse = eq(x.invertUnsafe().multiply(x), Rational.ONE, DEFAULT_RESOLUTION);
+            assertTrue(x, !inverse.isPresent() || inverse.get());
+        }
 
         for (Triple<Real, Real, Real> t : take(TINY_LIMIT, P.triples(P.reals()))) {
             Optional<Boolean> associative = eq(
@@ -3722,6 +3724,72 @@ public class RealProperties extends QBarTestProperties {
                     DEFAULT_RESOLUTION
             );
             assertTrue(t, !rightDistributive.isPresent() || rightDistributive.get());
+        }
+    }
+
+    private void propertiesInvertUnsafe() {
+        initialize("invertUnsafe()");
+        for (Real x : take(LIMIT, P.nonzeroReals())) {
+            Real y = x.invertUnsafe();
+            y.validate();
+            //noinspection SuspiciousNameCombination
+            Optional<Boolean> involution = eq(y.invertUnsafe(), x, DEFAULT_RESOLUTION);
+            assertTrue(x, !involution.isPresent() || involution.get());
+            Optional<Boolean> inverse = eq(x.invertUnsafe().multiply(x), Rational.ONE, DEFAULT_RESOLUTION);
+            assertTrue(x, !inverse.isPresent() || inverse.get());
+            Optional<Integer> signum = y.signum(DEFAULT_RESOLUTION);
+            assertTrue(x, !signum.isPresent() || signum.get() != 0);
+        }
+
+        Iterable<Rational> rs = filterInfinite(r -> r.abs() != Rational.ONE, P.withScale(4).nonzeroRationals());
+        Iterable<Real> xs = P.withScale(1).choose(
+                map(
+                        Algebraic::realValue,
+                        filterInfinite(x -> x.abs() != Algebraic.ONE, P.withScale(4).nonzeroAlgebraics())
+                ),
+                P.choose(
+                        Arrays.asList(
+                                map(Real::leftFuzzyRepresentation, rs),
+                                map(Real::rightFuzzyRepresentation, rs),
+                                map(Real::fuzzyRepresentation, rs)
+                        )
+                )
+        );
+        for (Real x : take(LIMIT, xs)) {
+            Optional<Boolean> unequal = ne(x, x.invertUnsafe(), DEFAULT_RESOLUTION);
+            assertTrue(x, !unequal.isPresent() || unequal.get());
+        }
+    }
+
+    private void propertiesInvert() {
+        initialize("invert(Rational)");
+        Iterable<Pair<Real, Rational>> ps = P.pairs(
+                P.withScale(1).choose(
+                        map(Algebraic::realValue, P.withScale(4).nonzeroAlgebraics()),
+                        P.choose(
+                                Arrays.asList(
+                                        map(Real::leftFuzzyRepresentation, P.withScale(4).rationals()),
+                                        map(Real::rightFuzzyRepresentation, P.withScale(4).rationals()),
+                                        map(Real::fuzzyRepresentation, P.withScale(4).rationals())
+                                )
+                        )
+                ),
+                P.positiveRationals()
+        );
+        for (Pair<Real, Rational> p : take(LIMIT, ps)) {
+            Optional<Real> ox = p.a.invert(p.b);
+            if (ox.isPresent()) {
+                ox.get().validate();
+                Optional<Boolean> equal = eq(p.a.invertUnsafe(), ox.get(), DEFAULT_RESOLUTION);
+                assertTrue(p, !equal.isPresent() || equal.get());
+            }
+        }
+
+        for (Rational r : take(LIMIT, P.positiveRationals())) {
+            try {
+                ZERO.invert(r);
+                fail(r);
+            } catch (ArithmeticException ignored) {}
         }
     }
 }

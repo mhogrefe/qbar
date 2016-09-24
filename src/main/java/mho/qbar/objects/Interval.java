@@ -1045,14 +1045,12 @@ public final class Interval implements Comparable<Interval> {
             }
         } else if (lower.signum() == 1) {
             return new Interval(upper.invert(), lower.invert());
+        } else if (upper == Rational.ZERO) {
+            return new Interval(null, lower.invert());
+        } else if (upper.signum() == -1) {
+            return new Interval(upper.invert(), lower.invert());
         } else {
-            if (upper == Rational.ZERO) {
-                return new Interval(null, lower.invert());
-            } else if (upper.signum() == -1) {
-                return new Interval(upper.invert(), lower.invert());
-            } else {
-                return ALL;
-            }
+            return ALL;
         }
     }
 

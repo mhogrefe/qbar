@@ -6711,6 +6711,64 @@ public class RealTest {
         multiply_Real_helper(fuzzyRepresentation(Rational.ZERO), rightFuzzyRepresentation(Rational.ZERO), "~0");
         multiply_Real_helper(fuzzyRepresentation(Rational.ZERO), fuzzyRepresentation(Rational.ZERO), "~0");
 
-        //todo inverse
+        multiply_Real_helper(PI, PI.invertUnsafe(), "+...");
+    }
+
+    private static void invertUnsafe_helper(@NotNull Real input, @NotNull String output) {
+        Real x = input.invertUnsafe();
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void invertUnsafe_fail_helper(@NotNull Real input) {
+        try {
+            input.invertUnsafe();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testInvertUnsafe() {
+        invertUnsafe_helper(ONE, "1");
+        invertUnsafe_helper(NEGATIVE_ONE, "-1");
+        invertUnsafe_helper(ONE_HALF, "2");
+        invertUnsafe_helper(NEGATIVE_FOUR_THIRDS, "-0.75");
+        invertUnsafe_helper(SQRT_TWO, "0.70710678118654752440...");
+        invertUnsafe_helper(E, "0.36787944117144232159...");
+        invertUnsafe_helper(PI, "0.31830988618379067153...");
+
+        invertUnsafe_fail_helper(ZERO);
+    }
+
+    private static void invert_helper(@NotNull Real input, @NotNull Rational resolution, @NotNull String output) {
+        Optional<Real> ox = input.invert(resolution);
+        if (ox.isPresent()) {
+            ox.get().validate();
+        }
+        aeq(ox, output);
+    }
+
+    private static void invert_fail_helper(@NotNull Real input, @NotNull Rational resolution) {
+        try {
+            input.invert(resolution);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testInvert() {
+        invert_helper(ONE, DEFAULT_RESOLUTION, "Optional[1]");
+        invert_helper(NEGATIVE_ONE, DEFAULT_RESOLUTION, "Optional[-1]");
+        invert_helper(ONE_HALF, DEFAULT_RESOLUTION, "Optional[2]");
+        invert_helper(NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[-0.75]");
+        invert_helper(SQRT_TWO, DEFAULT_RESOLUTION, "Optional[0.70710678118654752440...]");
+        invert_helper(E, DEFAULT_RESOLUTION, "Optional[0.36787944117144232159...]");
+        invert_helper(PI, DEFAULT_RESOLUTION, "Optional[0.31830988618379067153...]");
+
+        invert_helper(leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        invert_helper(rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        invert_helper(fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+
+        invert_fail_helper(ZERO, DEFAULT_RESOLUTION);
     }
 }

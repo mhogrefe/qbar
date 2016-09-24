@@ -2363,6 +2363,48 @@ public final class Real implements Iterable<Interval> {
         return new Real(zipWith(Interval::multiply, intervals, that.intervals));
     }
 
+    /**
+     * Returns the multiplicative inverse of {@code this}. If {@code this} is a fuzzy zero, this method will loop
+     * forever. To prevent this behavior, use {@link Real#invert(Rational)} instead.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>The result is a nonzero {@code Real}.</li>
+     * </ul>
+     *
+     * @return 1/{@code this}
+     */
+    public @NotNull Real invertUnsafe() {
+        if (rational.isPresent()) {
+            Rational r = rational.get();
+            return r == Rational.ONE ? ONE : new Real(r.invert());
+        } else {
+            signumUnsafe(); // if this is 0, loop forever here instead of returning an invalid Real
+            return new Real(map(Interval::invertHull, intervals));
+        }
+    }
+
+    /**
+     * Returns the multiplicative inverse of {@code this}. If {@code this} is a fuzzy zero, this method will give up
+     * and return empty once the approximating interval's diameter is less than the specified resolution.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be an exact zero.</li>
+     *  <li>The result is a nonzero {@code Real}, or empty.</li>
+     * </ul>
+     *
+     * @return 1/{@code this}
+     */
+    public @NotNull Optional<Real> invert(@NotNull Rational resolution) {
+        if (rational.isPresent()) {
+            Rational r = rational.get();
+            return Optional.of(r == Rational.ONE ? ONE : new Real(r.invert()));
+        } else {
+            Optional<Integer> signum = signum(resolution);
+            return signum.isPresent() ? Optional.of(new Real(map(Interval::invertHull, intervals))) : Optional.empty();
+        }
+    }
+
     public @NotNull Real divide(@NotNull Rational that) {
         return new Real(map(i -> i.divide(that), intervals));
     }
