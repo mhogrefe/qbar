@@ -2245,8 +2245,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             assertEquals(p, product, of(p.b).multiply(p.a));
         }
 
-        for (Pair<Algebraic, BigInteger> p : take(LIMIT, P.pairs(P.algebraics(), P.nonzeroBigIntegers()))) {
-            assertEquals(p, p.a.multiply(p.b).divide(p.b), p.a);
+        for (Pair<Algebraic, Integer> p : take(LIMIT, P.pairs(P.algebraics(), P.nonzeroIntegers()))) {
             inverse(x -> x.multiply(p.b), (Algebraic x) -> x.divide(p.b), p.a);
         }
 
@@ -2284,7 +2283,6 @@ public class AlgebraicProperties extends QBarTestProperties {
         }
 
         for (Pair<Algebraic, BigInteger> p : take(LIMIT, P.pairs(P.algebraics(), P.nonzeroBigIntegers()))) {
-            assertEquals(p, p.a.multiply(p.b).divide(p.b), p.a);
             inverse(x -> x.multiply(p.b), (Algebraic x) -> x.divide(p.b), p.a);
         }
 
@@ -2321,8 +2319,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             assertEquals(p, product, of(p.b).multiply(p.a));
         }
 
-        for (Pair<Algebraic, BigInteger> p : take(LIMIT, P.pairs(P.algebraics(), P.nonzeroBigIntegers()))) {
-            assertEquals(p, p.a.multiply(p.b).divide(p.b), p.a);
+        for (Pair<Algebraic, Rational> p : take(LIMIT, P.pairs(P.algebraics(), P.nonzeroRationals()))) {
             inverse(x -> x.multiply(p.b), (Algebraic x) -> x.divide(p.b), p.a);
         }
 

@@ -1403,4 +1403,28 @@ public class RealDemos extends QBarDemos {
             System.out.println(p.a + " - " + p.b + " = " + p.a.subtract(p.b));
         }
     }
+
+    private void demoMultiply_int() {
+        for (Pair<Real, Integer> p : take(LIMIT, P.pairs(P.withScale(4).reals(), P.integers()))) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoMultiply_BigInteger() {
+        for (Pair<Real, BigInteger> p : take(LIMIT, P.pairs(P.withScale(4).reals(), P.bigIntegers()))) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoMultiply_Rational() {
+        for (Pair<Real, Rational> p : take(LIMIT, P.pairs(P.withScale(4).reals(), P.rationals()))) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoMultiply_Real() {
+        for (Pair<Real, Real> p : take(LIMIT, P.pairs(P.withScale(4).withSecondaryScale(4).reals()))) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
 }

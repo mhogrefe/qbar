@@ -6419,4 +6419,298 @@ public class RealTest {
 
         subtract_Real_helper(PI, PI.negate().negate(), "~0");
     }
+
+    private static void multiply_int_helper(@NotNull Real a, int b, @NotNull String output) {
+        Real x = a.multiply(b);
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testMultiply_int() {
+        multiply_int_helper(ZERO, 0, "0");
+        multiply_int_helper(ZERO, 1, "0");
+        multiply_int_helper(ZERO, -1, "0");
+        multiply_int_helper(ZERO, 100, "0");
+
+        multiply_int_helper(ONE, 0, "0");
+        multiply_int_helper(ONE, 1, "1");
+        multiply_int_helper(ONE, -1, "-1");
+        multiply_int_helper(ONE, 100, "100");
+
+        multiply_int_helper(NEGATIVE_ONE, 0, "0");
+        multiply_int_helper(NEGATIVE_ONE, 1, "-1");
+        multiply_int_helper(NEGATIVE_ONE, -1, "1");
+        multiply_int_helper(NEGATIVE_ONE, 100, "-100");
+
+        multiply_int_helper(ONE_HALF, 0, "0");
+        multiply_int_helper(ONE_HALF, 1, "0.5");
+        multiply_int_helper(ONE_HALF, -1, "-0.5");
+        multiply_int_helper(ONE_HALF, 100, "50");
+
+        multiply_int_helper(NEGATIVE_FOUR_THIRDS, 0, "0");
+        multiply_int_helper(NEGATIVE_FOUR_THIRDS, 1, "-1.33333333333333333333...");
+        multiply_int_helper(NEGATIVE_FOUR_THIRDS, -1, "1.33333333333333333333...");
+        multiply_int_helper(NEGATIVE_FOUR_THIRDS, 100, "-133.33333333333333333333...");
+
+        multiply_int_helper(SQRT_TWO, 0, "0");
+        multiply_int_helper(SQRT_TWO, 1, "1.41421356237309504880...");
+        multiply_int_helper(SQRT_TWO, -1, "-1.41421356237309504880...");
+        multiply_int_helper(SQRT_TWO, 100, "141.42135623730950488016...");
+
+        multiply_int_helper(E, 0, "0");
+        multiply_int_helper(E, 1, "2.71828182845904523536...");
+        multiply_int_helper(E, -1, "-2.71828182845904523536...");
+        multiply_int_helper(E, 100, "271.82818284590452353602...");
+
+        multiply_int_helper(PI, 0, "0");
+        multiply_int_helper(PI, 1, "3.14159265358979323846...");
+        multiply_int_helper(PI, -1, "-3.14159265358979323846...");
+        multiply_int_helper(PI, 100, "314.15926535897932384626...");
+
+        multiply_int_helper(leftFuzzyRepresentation(Rational.ZERO), 0, "0");
+        multiply_int_helper(leftFuzzyRepresentation(Rational.ZERO), 1, "~0");
+        multiply_int_helper(leftFuzzyRepresentation(Rational.ZERO), -1, "~0");
+        multiply_int_helper(leftFuzzyRepresentation(Rational.ZERO), 100, "~0");
+
+        multiply_int_helper(rightFuzzyRepresentation(Rational.ZERO), 0, "0");
+        multiply_int_helper(rightFuzzyRepresentation(Rational.ZERO), 1, "~0");
+        multiply_int_helper(rightFuzzyRepresentation(Rational.ZERO), -1, "~0");
+        multiply_int_helper(rightFuzzyRepresentation(Rational.ZERO), 100, "~0");
+
+        multiply_int_helper(fuzzyRepresentation(Rational.ZERO), 0, "0");
+        multiply_int_helper(fuzzyRepresentation(Rational.ZERO), 1, "~0");
+        multiply_int_helper(fuzzyRepresentation(Rational.ZERO), -1, "~0");
+        multiply_int_helper(fuzzyRepresentation(Rational.ZERO), 100, "~0");
+    }
+
+    private static void multiply_BigInteger_helper(@NotNull Real a, @NotNull String b, @NotNull String output) {
+        Real x = a.multiply(Readers.readBigIntegerStrict(b).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testMultiply_BigInteger() {
+        multiply_BigInteger_helper(ZERO, "0", "0");
+        multiply_BigInteger_helper(ZERO, "1", "0");
+        multiply_BigInteger_helper(ZERO, "-1", "0");
+        multiply_BigInteger_helper(ZERO, "100", "0");
+
+        multiply_BigInteger_helper(ONE, "0", "0");
+        multiply_BigInteger_helper(ONE, "1", "1");
+        multiply_BigInteger_helper(ONE, "-1", "-1");
+        multiply_BigInteger_helper(ONE, "100", "100");
+
+        multiply_BigInteger_helper(NEGATIVE_ONE, "0", "0");
+        multiply_BigInteger_helper(NEGATIVE_ONE, "1", "-1");
+        multiply_BigInteger_helper(NEGATIVE_ONE, "-1", "1");
+        multiply_BigInteger_helper(NEGATIVE_ONE, "100", "-100");
+
+        multiply_BigInteger_helper(ONE_HALF, "0", "0");
+        multiply_BigInteger_helper(ONE_HALF, "1", "0.5");
+        multiply_BigInteger_helper(ONE_HALF, "-1", "-0.5");
+        multiply_BigInteger_helper(ONE_HALF, "100", "50");
+
+        multiply_BigInteger_helper(NEGATIVE_FOUR_THIRDS, "0", "0");
+        multiply_BigInteger_helper(NEGATIVE_FOUR_THIRDS, "1", "-1.33333333333333333333...");
+        multiply_BigInteger_helper(NEGATIVE_FOUR_THIRDS, "-1", "1.33333333333333333333...");
+        multiply_BigInteger_helper(NEGATIVE_FOUR_THIRDS, "100", "-133.33333333333333333333...");
+
+        multiply_BigInteger_helper(SQRT_TWO, "0", "0");
+        multiply_BigInteger_helper(SQRT_TWO, "1", "1.41421356237309504880...");
+        multiply_BigInteger_helper(SQRT_TWO, "-1", "-1.41421356237309504880...");
+        multiply_BigInteger_helper(SQRT_TWO, "100", "141.42135623730950488016...");
+
+        multiply_BigInteger_helper(E, "0", "0");
+        multiply_BigInteger_helper(E, "1", "2.71828182845904523536...");
+        multiply_BigInteger_helper(E, "-1", "-2.71828182845904523536...");
+        multiply_BigInteger_helper(E, "100", "271.82818284590452353602...");
+
+        multiply_BigInteger_helper(PI, "0", "0");
+        multiply_BigInteger_helper(PI, "1", "3.14159265358979323846...");
+        multiply_BigInteger_helper(PI, "-1", "-3.14159265358979323846...");
+        multiply_BigInteger_helper(PI, "100", "314.15926535897932384626...");
+
+        multiply_BigInteger_helper(leftFuzzyRepresentation(Rational.ZERO), "0", "0");
+        multiply_BigInteger_helper(leftFuzzyRepresentation(Rational.ZERO), "1", "~0");
+        multiply_BigInteger_helper(leftFuzzyRepresentation(Rational.ZERO), "-1", "~0");
+        multiply_BigInteger_helper(leftFuzzyRepresentation(Rational.ZERO), "100", "~0");
+
+        multiply_BigInteger_helper(rightFuzzyRepresentation(Rational.ZERO), "0", "0");
+        multiply_BigInteger_helper(rightFuzzyRepresentation(Rational.ZERO), "1", "~0");
+        multiply_BigInteger_helper(rightFuzzyRepresentation(Rational.ZERO), "-1", "~0");
+        multiply_BigInteger_helper(rightFuzzyRepresentation(Rational.ZERO), "100", "~0");
+
+        multiply_BigInteger_helper(fuzzyRepresentation(Rational.ZERO), "0", "0");
+        multiply_BigInteger_helper(fuzzyRepresentation(Rational.ZERO), "1", "~0");
+        multiply_BigInteger_helper(fuzzyRepresentation(Rational.ZERO), "-1", "~0");
+        multiply_BigInteger_helper(fuzzyRepresentation(Rational.ZERO), "100", "~0");
+    }
+
+    private static void multiply_Rational_helper(@NotNull Real a, @NotNull String b, @NotNull String output) {
+        Real x = a.multiply(Rational.readStrict(b).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testMultiply_Rational() {
+        multiply_Rational_helper(ZERO, "0", "0");
+        multiply_Rational_helper(ZERO, "1", "0");
+        multiply_Rational_helper(ZERO, "-1", "0");
+        multiply_Rational_helper(ZERO, "100/3", "0");
+        multiply_Rational_helper(ZERO, "1/100", "0");
+
+        multiply_Rational_helper(ONE, "0", "0");
+        multiply_Rational_helper(ONE, "1", "1");
+        multiply_Rational_helper(ONE, "-1", "-1");
+        multiply_Rational_helper(ONE, "100/3", "33.33333333333333333333...");
+        multiply_Rational_helper(ONE, "1/100", "0.01");
+
+        multiply_Rational_helper(NEGATIVE_ONE, "0", "0");
+        multiply_Rational_helper(NEGATIVE_ONE, "1", "-1");
+        multiply_Rational_helper(NEGATIVE_ONE, "-1", "1");
+        multiply_Rational_helper(NEGATIVE_ONE, "100/3", "-33.33333333333333333333...");
+        multiply_Rational_helper(NEGATIVE_ONE, "1/100", "-0.01");
+
+        multiply_Rational_helper(ONE_HALF, "0", "0");
+        multiply_Rational_helper(ONE_HALF, "1", "0.5");
+        multiply_Rational_helper(ONE_HALF, "-1", "-0.5");
+        multiply_Rational_helper(ONE_HALF, "100/3", "16.66666666666666666666...");
+        multiply_Rational_helper(ONE_HALF, "1/100", "0.005");
+
+        multiply_Rational_helper(NEGATIVE_FOUR_THIRDS, "0", "0");
+        multiply_Rational_helper(NEGATIVE_FOUR_THIRDS, "1", "-1.33333333333333333333...");
+        multiply_Rational_helper(NEGATIVE_FOUR_THIRDS, "-1", "1.33333333333333333333...");
+        multiply_Rational_helper(NEGATIVE_FOUR_THIRDS, "100/3", "-44.44444444444444444444...");
+        multiply_Rational_helper(NEGATIVE_FOUR_THIRDS, "1/100", "-0.01333333333333333333...");
+
+        multiply_Rational_helper(SQRT_TWO, "0", "0");
+        multiply_Rational_helper(SQRT_TWO, "1", "1.41421356237309504880...");
+        multiply_Rational_helper(SQRT_TWO, "-1", "-1.41421356237309504880...");
+        multiply_Rational_helper(SQRT_TWO, "100/3", "47.14045207910316829338...");
+        multiply_Rational_helper(SQRT_TWO, "1/100", "0.01414213562373095048...");
+
+        multiply_Rational_helper(E, "0", "0");
+        multiply_Rational_helper(E, "1", "2.71828182845904523536...");
+        multiply_Rational_helper(E, "-1", "-2.71828182845904523536...");
+        multiply_Rational_helper(E, "100/3", "90.60939428196817451200...");
+        multiply_Rational_helper(E, "1/100", "0.02718281828459045235...");
+
+        multiply_Rational_helper(PI, "0", "0");
+        multiply_Rational_helper(PI, "1", "3.14159265358979323846...");
+        multiply_Rational_helper(PI, "-1", "-3.14159265358979323846...");
+        multiply_Rational_helper(PI, "100/3", "104.71975511965977461542...");
+        multiply_Rational_helper(PI, "1/100", "0.03141592653589793238...");
+
+        multiply_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "0", "0");
+        multiply_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "1", "~0");
+        multiply_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "-1", "~0");
+        multiply_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "100/3", "~0");
+        multiply_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "1/100", "~0");
+
+        multiply_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "0", "0");
+        multiply_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "1", "~0");
+        multiply_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "-1", "~0");
+        multiply_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "100/3", "~0");
+        multiply_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "1/100", "~0");
+
+        multiply_Rational_helper(fuzzyRepresentation(Rational.ZERO), "0", "0");
+        multiply_Rational_helper(fuzzyRepresentation(Rational.ZERO), "1", "~0");
+        multiply_Rational_helper(fuzzyRepresentation(Rational.ZERO), "-1", "~0");
+        multiply_Rational_helper(fuzzyRepresentation(Rational.ZERO), "100/3", "~0");
+        multiply_Rational_helper(fuzzyRepresentation(Rational.ZERO), "1/100", "~0");
+    }
+
+    private static void multiply_Real_helper(@NotNull Real a, @NotNull Real b, @NotNull String output) {
+        Real x = a.multiply(b);
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testMultiply_Real() {
+        multiply_Real_helper(ZERO, ZERO, "0");
+        multiply_Real_helper(ZERO, ONE, "0");
+        multiply_Real_helper(ZERO, NEGATIVE_FOUR_THIRDS, "0");
+        multiply_Real_helper(ZERO, SQRT_TWO, "0");
+        multiply_Real_helper(ZERO, E, "0");
+        multiply_Real_helper(ZERO, PI, "0");
+        multiply_Real_helper(ZERO, leftFuzzyRepresentation(Rational.ZERO), "0");
+        multiply_Real_helper(ZERO, rightFuzzyRepresentation(Rational.ZERO), "0");
+        multiply_Real_helper(ZERO, fuzzyRepresentation(Rational.ZERO), "0");
+
+        multiply_Real_helper(ONE, ZERO, "0");
+        multiply_Real_helper(ONE, ONE, "1");
+        multiply_Real_helper(ONE, NEGATIVE_FOUR_THIRDS, "-1.33333333333333333333...");
+        multiply_Real_helper(ONE, SQRT_TWO, "1.41421356237309504880...");
+        multiply_Real_helper(ONE, E, "2.71828182845904523536...");
+        multiply_Real_helper(ONE, PI, "3.14159265358979323846...");
+        multiply_Real_helper(ONE, leftFuzzyRepresentation(Rational.ZERO), "~0");
+        multiply_Real_helper(ONE, rightFuzzyRepresentation(Rational.ZERO), "~0");
+        multiply_Real_helper(ONE, fuzzyRepresentation(Rational.ZERO), "~0");
+
+        multiply_Real_helper(NEGATIVE_FOUR_THIRDS, ZERO, "0");
+        multiply_Real_helper(NEGATIVE_FOUR_THIRDS, ONE, "-1.33333333333333333333...");
+        multiply_Real_helper(NEGATIVE_FOUR_THIRDS, NEGATIVE_FOUR_THIRDS, "1.77777777777777777777...");
+        multiply_Real_helper(NEGATIVE_FOUR_THIRDS, SQRT_TWO, "-1.88561808316412673173...");
+        multiply_Real_helper(NEGATIVE_FOUR_THIRDS, E, "-3.62437577127872698048...");
+        multiply_Real_helper(NEGATIVE_FOUR_THIRDS, PI, "-4.18879020478639098461...");
+        multiply_Real_helper(NEGATIVE_FOUR_THIRDS, leftFuzzyRepresentation(Rational.ZERO), "~0");
+        multiply_Real_helper(NEGATIVE_FOUR_THIRDS, rightFuzzyRepresentation(Rational.ZERO), "~0");
+        multiply_Real_helper(NEGATIVE_FOUR_THIRDS, fuzzyRepresentation(Rational.ZERO), "~0");
+
+        multiply_Real_helper(SQRT_TWO, ZERO, "0");
+        multiply_Real_helper(SQRT_TWO, ONE, "1.41421356237309504880...");
+        multiply_Real_helper(SQRT_TWO, NEGATIVE_FOUR_THIRDS, "-1.88561808316412673173...");
+        multiply_Real_helper(SQRT_TWO, SQRT_TWO, "+...");
+        multiply_Real_helper(SQRT_TWO, E, "3.84423102815911682486...");
+        multiply_Real_helper(SQRT_TWO, PI, "4.44288293815836624701...");
+        multiply_Real_helper(SQRT_TWO, leftFuzzyRepresentation(Rational.ZERO), "~0");
+        multiply_Real_helper(SQRT_TWO, rightFuzzyRepresentation(Rational.ZERO), "~0");
+        multiply_Real_helper(SQRT_TWO, fuzzyRepresentation(Rational.ZERO), "~0");
+
+        multiply_Real_helper(E, ZERO, "0");
+        multiply_Real_helper(E, ONE, "2.71828182845904523536...");
+        multiply_Real_helper(E, NEGATIVE_FOUR_THIRDS, "-3.62437577127872698048...");
+        multiply_Real_helper(E, SQRT_TWO, "3.84423102815911682486...");
+        multiply_Real_helper(E, E, "7.38905609893065022723...");
+        multiply_Real_helper(E, PI, "8.53973422267356706546...");
+        multiply_Real_helper(E, leftFuzzyRepresentation(Rational.ZERO), "~0");
+        multiply_Real_helper(E, rightFuzzyRepresentation(Rational.ZERO), "~0");
+        multiply_Real_helper(E, fuzzyRepresentation(Rational.ZERO), "~0");
+
+        multiply_Real_helper(PI, ZERO, "0");
+        multiply_Real_helper(PI, ONE, "3.14159265358979323846...");
+        multiply_Real_helper(PI, NEGATIVE_FOUR_THIRDS, "-4.18879020478639098461...");
+        multiply_Real_helper(PI, SQRT_TWO, "4.44288293815836624701...");
+        multiply_Real_helper(PI, E, "8.53973422267356706546...");
+        multiply_Real_helper(PI, PI, "9.86960440108935861883...");
+        multiply_Real_helper(PI, leftFuzzyRepresentation(Rational.ZERO), "~0");
+        multiply_Real_helper(PI, rightFuzzyRepresentation(Rational.ZERO), "~0");
+        multiply_Real_helper(PI, fuzzyRepresentation(Rational.ZERO), "~0");
+
+        multiply_Real_helper(rightFuzzyRepresentation(Rational.ZERO), ZERO, "0");
+        multiply_Real_helper(rightFuzzyRepresentation(Rational.ZERO), ONE, "~0");
+        multiply_Real_helper(rightFuzzyRepresentation(Rational.ZERO), NEGATIVE_FOUR_THIRDS, "~0");
+        multiply_Real_helper(rightFuzzyRepresentation(Rational.ZERO), SQRT_TWO, "~0");
+        multiply_Real_helper(rightFuzzyRepresentation(Rational.ZERO), E, "~0");
+        multiply_Real_helper(rightFuzzyRepresentation(Rational.ZERO), PI, "~0");
+        multiply_Real_helper(rightFuzzyRepresentation(Rational.ZERO), leftFuzzyRepresentation(Rational.ZERO), "~0");
+        multiply_Real_helper(rightFuzzyRepresentation(Rational.ZERO), rightFuzzyRepresentation(Rational.ZERO), "~0");
+        multiply_Real_helper(rightFuzzyRepresentation(Rational.ZERO), fuzzyRepresentation(Rational.ZERO), "~0");
+
+        multiply_Real_helper(fuzzyRepresentation(Rational.ZERO), ZERO, "0");
+        multiply_Real_helper(fuzzyRepresentation(Rational.ZERO), ONE, "~0");
+        multiply_Real_helper(fuzzyRepresentation(Rational.ZERO), NEGATIVE_FOUR_THIRDS, "~0");
+        multiply_Real_helper(fuzzyRepresentation(Rational.ZERO), SQRT_TWO, "~0");
+        multiply_Real_helper(fuzzyRepresentation(Rational.ZERO), E, "~0");
+        multiply_Real_helper(fuzzyRepresentation(Rational.ZERO), PI, "~0");
+        multiply_Real_helper(fuzzyRepresentation(Rational.ZERO), leftFuzzyRepresentation(Rational.ZERO), "~0");
+        multiply_Real_helper(fuzzyRepresentation(Rational.ZERO), rightFuzzyRepresentation(Rational.ZERO), "~0");
+        multiply_Real_helper(fuzzyRepresentation(Rational.ZERO), fuzzyRepresentation(Rational.ZERO), "~0");
+
+        //todo inverse
+    }
 }

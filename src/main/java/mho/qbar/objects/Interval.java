@@ -2,7 +2,6 @@ package mho.qbar.objects;
 
 import mho.wheels.numberUtils.FloatingPointUtils;
 import mho.wheels.ordering.Ordering;
-import mho.wheels.ordering.comparators.WithNullComparator;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
@@ -404,7 +403,7 @@ public final class Interval implements Comparable<Interval> {
             throw new NullPointerException();
         }
         if (as.size() < 2) return as;
-        Map<Rational, Rational> lowerMap = new TreeMap<>(new WithNullComparator<>());
+        Map<Rational, Rational> lowerMap = new TreeMap<>(Comparator.nullsFirst(Comparator.naturalOrder()));
         for (Interval a : as) {
             Rational lower = a.lower;
             Rational upper = a.upper;

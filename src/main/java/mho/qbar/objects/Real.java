@@ -2275,34 +2275,92 @@ public final class Real implements Iterable<Interval> {
         return new Real(zipWith(Interval::subtract, intervals, that.intervals));
     }
 
-    public @NotNull Real multiply(@NotNull Real that) {
-        if (rational.isPresent()) {
-            if (that.rational.isPresent()) {
-                return new Real(rational.get().multiply(that.rational.get()));
-            } else {
-                Rational thisR = rational.get();
-                return new Real(map(i -> i.multiply(thisR), that.intervals));
-            }
-        } else {
-            if (that.rational.isPresent()) {
-                Rational thatR = that.rational.get();
-                return new Real(map(i -> i.multiply(thatR), intervals));
-            } else {
-                return new Real(zipWith(Interval::multiply, intervals, that.intervals));
-            }
-        }
-    }
-
-    public @NotNull Real multiply(@NotNull Rational that) {
-        if (rational.isPresent()) {
+    /**
+     * Returns the product of {@code this} and {@code that}. If {@code this} is clean, so is the result.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code that} may be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code int} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull Real multiply(int that) {
+        if (this == ZERO || that == 0) return ZERO;
+        if (that == 1) return this;
+        if (this == ONE) return of(that);
+        if (isExact()) {
             return new Real(rational.get().multiply(that));
-        } else {
-            return new Real(map(i -> i.multiply(that), intervals));
         }
+        return new Real(map(i -> i.multiply(that), intervals));
     }
 
+    /**
+     * Returns the product of {@code this} and {@code that}. If {@code this} is clean, so is the result.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code BigInteger} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
     public @NotNull Real multiply(@NotNull BigInteger that) {
+        if (this == ZERO || that.equals(BigInteger.ZERO)) return ZERO;
+        if (that.equals(BigInteger.ONE)) return this;
+        if (this == ONE) return of(that);
+        if (isExact()) {
+            return new Real(rational.get().multiply(that));
+        }
         return new Real(map(i -> i.multiply(that), intervals));
+    }
+
+    /**
+     * Returns the product of {@code this} and {@code that}. If {@code this} is clean, so is the result.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code Rational} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull Real multiply(@NotNull Rational that) {
+        if (this == ZERO || that == Rational.ZERO) return ZERO;
+        if (that == Rational.ONE) return this;
+        if (this == ONE) return of(that);
+        if (isExact()) {
+            return new Real(rational.get().multiply(that));
+        }
+        return new Real(map(i -> i.multiply(that), intervals));
+    }
+
+    /**
+     * Returns the product of {@code this} and {@code that}. The result may be fuzzy even if both arguments are clean.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code Real} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull Real multiply(@NotNull Real that) {
+        if (this == ZERO || that == ZERO) return ZERO;
+        if (this == ONE) return that;
+        if (that == ONE) return this;
+        //todo pow(2)
+        if (isExact()) return that.multiply(rational.get());
+        if (that.isExact()) return multiply(that.rational.get());
+        return new Real(zipWith(Interval::multiply, intervals, that.intervals));
     }
 
     public @NotNull Real divide(@NotNull Rational that) {

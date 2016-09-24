@@ -103,6 +103,10 @@ public class RealProperties extends QBarTestProperties {
         propertiesAdd_Real();
         propertiesSubtract_Rational();
         propertiesSubtract_Real();
+        propertiesMultiply_int();
+        propertiesMultiply_BigInteger();
+        propertiesMultiply_Rational();
+        propertiesMultiply_Real();
     }
 
     private void propertiesOf_Rational() {
@@ -161,7 +165,7 @@ public class RealProperties extends QBarTestProperties {
                     x.rationalValueExact().get()
             );
             assertTrue(bf, x.isExactBinaryFraction());
-            inverse(Algebraic::of, Algebraic::binaryFractionValueExact, bf);
+            inverse(Real::of, Real::binaryFractionValueExact, bf);
         }
     }
 
@@ -264,7 +268,7 @@ public class RealProperties extends QBarTestProperties {
         }
 
         for (BigDecimal bd : take(LIMIT, P.canonicalBigDecimals())) {
-            inverse(Algebraic::of, Algebraic::bigDecimalValueExact, bd);
+            inverse(Real::of, Real::bigDecimalValueExact, bd);
         }
     }
 
@@ -3544,6 +3548,180 @@ public class RealProperties extends QBarTestProperties {
             assertTrue(x, !negate.isPresent() || negate.get());
             assertTrue(x, x.subtract(ZERO) == x);
             assertTrue(x, x.subtract(x) == ZERO);
+        }
+    }
+
+    private void propertiesMultiply_int() {
+        initialize("multiply(int)");
+        for (Pair<Real, Integer> p : take(LIMIT, P.pairs(P.reals(), P.integers()))) {
+            Real product = p.a.multiply(p.b);
+            product.validate();
+            Optional<Boolean> eq1 = eq(p.a.multiply(of(p.b)), product, DEFAULT_RESOLUTION);
+            assertTrue(p, !eq1.isPresent() || eq1.get());
+            Optional<Boolean> eq2 = eq(of(p.b).multiply(p.a), product, DEFAULT_RESOLUTION);
+            assertTrue(p, !eq2.isPresent() || eq2.get());
+        }
+
+        for (Pair<Real, Integer> p : take(LIMIT, P.pairs(P.reals(), P.nonzeroIntegers()))) {
+            //todo divide int
+            Optional<Boolean> inverse = eq(p.a.multiply(p.b).divide(BigInteger.valueOf(p.b)), p.a, DEFAULT_RESOLUTION);
+            assertTrue(p, !inverse.isPresent() || inverse.get());
+        }
+
+        for (int i : take(LIMIT, P.integers())) {
+            Optional<Boolean> identity = eq(ONE.multiply(i), Rational.of(i), DEFAULT_RESOLUTION);
+            assertTrue(i, !identity.isPresent() || identity.get());
+            assertTrue(i, ZERO.multiply(i) == ZERO);
+        }
+
+        for (Real x : take(LIMIT, P.reals())) {
+            assertTrue(x, x.multiply(1) == x);
+            assertTrue(x, x.multiply(0) == ZERO);
+        }
+
+        //todo
+        //for (int i : take(LIMIT, P.nonzeroIntegers())) {
+        //    assertEquals(i, of(i).invert().multiply(i), ONE);
+        //}
+
+        for (Triple<Real, Real, Integer> t : take(SMALL_LIMIT, P.triples(P.reals(), P.reals(), P.integers()))) {
+            Optional<Boolean> rightDistributive = eq(
+                    t.a.add(t.b).multiply(t.c),
+                    t.a.multiply(t.c).add(t.b.multiply(t.c)),
+                    DEFAULT_RESOLUTION
+            );
+            assertTrue(t, !rightDistributive.isPresent() || rightDistributive.get());
+        }
+    }
+
+    private void propertiesMultiply_BigInteger() {
+        initialize("multiply(BigInteger)");
+        for (Pair<Real, BigInteger> p : take(LIMIT, P.pairs(P.reals(), P.bigIntegers()))) {
+            Real product = p.a.multiply(p.b);
+            product.validate();
+            Optional<Boolean> eq1 = eq(p.a.multiply(of(p.b)), product, DEFAULT_RESOLUTION);
+            assertTrue(p, !eq1.isPresent() || eq1.get());
+            Optional<Boolean> eq2 = eq(of(p.b).multiply(p.a), product, DEFAULT_RESOLUTION);
+            assertTrue(p, !eq2.isPresent() || eq2.get());
+        }
+
+        for (Pair<Real, BigInteger> p : take(LIMIT, P.pairs(P.reals(), P.nonzeroBigIntegers()))) {
+            Optional<Boolean> inverse = eq(p.a.multiply(p.b).divide(p.b), p.a, DEFAULT_RESOLUTION);
+            assertTrue(p, !inverse.isPresent() || inverse.get());
+        }
+
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            Optional<Boolean> identity = eq(ONE.multiply(i), Rational.of(i), DEFAULT_RESOLUTION);
+            assertTrue(i, !identity.isPresent() || identity.get());
+            assertTrue(i, ZERO.multiply(i) == ZERO);
+        }
+
+        for (Real x : take(LIMIT, P.reals())) {
+            assertTrue(x, x.multiply(BigInteger.ONE) == x);
+            assertTrue(x, x.multiply(BigInteger.ZERO) == ZERO);
+        }
+
+        //todo
+        //for (int i : take(LIMIT, P.nonzeroIntegers())) {
+        //    assertEquals(i, of(i).invert().multiply(i), ONE);
+        //}
+
+        for (Triple<Real, Real, BigInteger> t : take(SMALL_LIMIT, P.triples(P.reals(), P.reals(), P.bigIntegers()))) {
+            Optional<Boolean> rightDistributive = eq(
+                    t.a.add(t.b).multiply(t.c),
+                    t.a.multiply(t.c).add(t.b.multiply(t.c)),
+                    DEFAULT_RESOLUTION
+            );
+            assertTrue(t, !rightDistributive.isPresent() || rightDistributive.get());
+        }
+    }
+
+    private void propertiesMultiply_Rational() {
+        initialize("multiply(Rational)");
+        for (Pair<Real, Rational> p : take(LIMIT, P.pairs(P.reals(), P.rationals()))) {
+            Real product = p.a.multiply(p.b);
+            product.validate();
+            Optional<Boolean> eq1 = eq(p.a.multiply(of(p.b)), product, DEFAULT_RESOLUTION);
+            assertTrue(p, !eq1.isPresent() || eq1.get());
+            Optional<Boolean> eq2 = eq(of(p.b).multiply(p.a), product, DEFAULT_RESOLUTION);
+            assertTrue(p, !eq2.isPresent() || eq2.get());
+        }
+
+        for (Pair<Real, Rational> p : take(LIMIT, P.pairs(P.reals(), P.nonzeroRationals()))) {
+            Optional<Boolean> inverse = eq(p.a.multiply(p.b).divide(p.b), p.a, DEFAULT_RESOLUTION);
+            assertTrue(p, !inverse.isPresent() || inverse.get());
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            Optional<Boolean> identity = eq(ONE.multiply(r), r, DEFAULT_RESOLUTION);
+            assertTrue(r, !identity.isPresent() || identity.get());
+            assertTrue(r, ZERO.multiply(r) == ZERO);
+        }
+
+        for (Real x : take(LIMIT, P.reals())) {
+            assertTrue(x, x.multiply(Rational.ONE) == x);
+            assertTrue(x, x.multiply(Rational.ZERO) == ZERO);
+        }
+
+        //todo
+        //for (int i : take(LIMIT, P.nonzeroIntegers())) {
+        //    assertEquals(i, of(i).invert().multiply(i), ONE);
+        //}
+
+        for (Triple<Real, Real, Rational> t : take(SMALL_LIMIT, P.triples(P.reals(), P.reals(), P.rationals()))) {
+            Optional<Boolean> rightDistributive = eq(
+                    t.a.add(t.b).multiply(t.c),
+                    t.a.multiply(t.c).add(t.b.multiply(t.c)),
+                    DEFAULT_RESOLUTION
+            );
+            assertTrue(t, !rightDistributive.isPresent() || rightDistributive.get());
+        }
+    }
+
+    private void propertiesMultiply_Real() {
+        initialize("multiply(Real)");
+        for (Pair<Real, Real> p : take(SMALL_LIMIT, P.pairs(P.reals()))) {
+            Real product = p.a.multiply(p.b);
+            product.validate();
+            Optional<Boolean> commutative = eq(p.b.multiply(p.a), product, DEFAULT_RESOLUTION);
+            assertTrue(p, !commutative.isPresent() || commutative.get());
+        }
+
+        //todo
+        //for (Pair<Algebraic, Algebraic> p : take(TINY_LIMIT, P.pairs(P.reals(), P.nonzeroReals()))) {
+        //    inverse(x -> x.multiply(p.b), (Algebraic x) -> x.divide(p.b), p.a);
+        //    assertEquals(p, p.a.multiply(p.b), p.a.divide(p.b.invert()));
+        //}
+
+        for (Real x : take(LIMIT, P.reals())) {
+            assertTrue(x, x.multiply(Rational.ONE) == x);
+            assertTrue(x, x.multiply(Rational.ZERO) == ZERO);
+        }
+
+        //todo
+        //for (Algebraic x : take(LIMIT, P.nonzeroAlgebraics())) {
+        //    assertTrue(x, x.multiply(x.invert()) == ONE);
+        //}
+
+        for (Triple<Real, Real, Real> t : take(TINY_LIMIT, P.triples(P.reals()))) {
+            Optional<Boolean> associative = eq(
+                    t.a.multiply(t.b).multiply(t.c),
+                    t.a.multiply(t.b.multiply(t.c)),
+                    DEFAULT_RESOLUTION
+            );
+            assertTrue(t, !associative.isPresent() || associative.get());
+            Optional<Boolean> leftDistributive = eq(
+                    t.c.multiply(t.a.add(t.b)),
+                    t.c.multiply(t.a).add(t.c.multiply(t.b)),
+                    DEFAULT_RESOLUTION
+            );
+            assertTrue(t, !leftDistributive.isPresent() || leftDistributive.get());
+            Optional<Boolean> rightDistributive = eq(
+                    t.a.add(t.b).multiply(t.c),
+                    t.a.multiply(t.c).add(t.b.multiply(t.c)),
+                    DEFAULT_RESOLUTION
+            );
+            assertTrue(t, !rightDistributive.isPresent() || rightDistributive.get());
         }
     }
 }

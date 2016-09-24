@@ -101,13 +101,13 @@ public final class Algebraic implements Comparable<Algebraic> {
     );
 
     /**
-     * A {@code Comparator} that compares two {@code Algebraic}s by complexity. If two {@code Algbraic}s have different
-     * degrees, the lower-degree one is less complex. If they have the same degrees but their minimal polynomials have
-     * different bit lengths (where the bit length of a polynomial is the sum of the bit lengths of its coefficients),
-     * the one with the shorter minimal polynomial is less complex. If they have the same degrees and their minimal
-     * polynomials have the same bit length but the minimal polynomials are different, the one with the smaller minimal
-     * polynomial is less complex. If they have the same minimal polynomial, the one with the smaller root index is
-     * less complex.
+     * A {@code Comparator} that compares two {@code Algebraic}s by complexity. If two {@code Algebraic}s have
+     * different degrees, the lower-degree one is less complex. If they have the same degrees but their minimal
+     * polynomials have different bit lengths (where the bit length of a polynomial is the sum of the bit lengths of
+     * its coefficients), the one with the shorter minimal polynomial is less complex. If they have the same degrees
+     * and their minimal polynomials have the same bit length but the minimal polynomials are different, the one with
+     * the smaller minimal polynomial is less complex. If they have the same minimal polynomial, the one with the
+     * smaller root index is less complex.
      */
     private static final @NotNull Comparator<Algebraic> COMPLEXITY_COMPARATOR = (a, b) -> {
         int aDegree = a.degree();
@@ -1674,7 +1674,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      * Returns the product of {@code this} and {@code that}.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code BigInteger}.</li>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
      *  <li>{@code that} cannot be null.</li>
      *  <li>The result is not null.</li>
      * </ul>
@@ -1701,7 +1701,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      * Returns the product of {@code this} and {@code that}.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
      *  <li>{@code that} cannot be null.</li>
      *  <li>The result is not null.</li>
      * </ul>
@@ -2025,11 +2025,7 @@ public final class Algebraic implements Comparable<Algebraic> {
                         continue;
                     }
                     if (entry.getKey() == 1) {
-                        sums.add(
-                                Algebraic.of(
-                                        Rational.sum(toList(map(Algebraic::rationalValueExact, entry.getValue())))
-                                )
-                        );
+                        sums.add(of(Rational.sum(toList(map(Algebraic::rationalValueExact, entry.getValue())))));
                         continue;
                     }
                     List<Algebraic> equalDegreeXs = entry.getValue();
@@ -2114,9 +2110,7 @@ public final class Algebraic implements Comparable<Algebraic> {
                     }
                     if (entry.getKey() == 1) {
                         products.add(
-                                Algebraic.of(
-                                        Rational.product(toList(map(Algebraic::rationalValueExact, entry.getValue())))
-                                )
+                                of(Rational.product(toList(map(Algebraic::rationalValueExact, entry.getValue()))))
                         );
                         continue;
                     }
