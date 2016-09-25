@@ -4,6 +4,7 @@ import mho.wheels.io.Readers;
 import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.NoRemoveIterable;
 import mho.wheels.numberUtils.IntegerUtils;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.ordering.comparators.ShortlexComparator;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -279,7 +280,7 @@ public final class RationalPolynomial implements
     public int maxCoefficientBitLength() {
         if (this == ZERO) return 0;
         //noinspection RedundantCast
-        return maximum((Iterable<Integer>) map(Rational::bitLength, coefficients));
+        return Ordering.maximum((Iterable<Integer>) map(Rational::bitLength, coefficients));
     }
 
     /**
@@ -1123,7 +1124,7 @@ public final class RationalPolynomial implements
     @SuppressWarnings("JavaDoc")
     public static @NotNull RationalMatrix coefficientMatrix(@NotNull List<RationalPolynomial> ps) {
         if (ps.isEmpty()) return RationalMatrix.zero(0, 0);
-        int width = maximum(map(RationalPolynomial::degree, ps)) + 1;
+        int width = Ordering.maximum(map(RationalPolynomial::degree, ps)) + 1;
         if (ps.size() > width) {
             throw new IllegalArgumentException("ps may not have more elements than one more than the maximum degree" +
                     " of ps. Invalid ps: " + ps);

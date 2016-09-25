@@ -169,7 +169,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      */
     public int maxCoordinateBitLength() {
         if (this == ZERO_DIMENSIONAL) return 0;
-        return maximum(map(Rational::bitLength, coordinates));
+        return Ordering.maximum(map(Rational::bitLength, coordinates));
     }
 
     /**

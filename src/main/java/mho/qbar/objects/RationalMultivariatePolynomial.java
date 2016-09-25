@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.iterables.NoRemoveIterable;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
@@ -390,7 +391,7 @@ public final class RationalMultivariatePolynomial implements
     public int maxCoefficientBitLength() {
         if (this == ZERO) return 0;
         //noinspection RedundantCast
-        return maximum((Iterable<Integer>) map(t -> t.b.bitLength(), terms));
+        return Ordering.maximum((Iterable<Integer>) map(t -> t.b.bitLength(), terms));
     }
 
     /**

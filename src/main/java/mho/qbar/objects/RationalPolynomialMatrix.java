@@ -4,6 +4,7 @@ import mho.wheels.io.Readers;
 import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.NoRemoveIterable;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.ordering.comparators.LexComparator;
 import org.jetbrains.annotations.NotNull;
 
@@ -297,7 +298,7 @@ public final class RationalPolynomialMatrix implements Comparable<RationalPolyno
      */
     public int maxElementBitLength() {
         if (isZero()) return 0;
-        return maximum(map(RationalPolynomialVector::maxCoordinateBitLength, rows));
+        return Ordering.maximum(map(RationalPolynomialVector::maxCoordinateBitLength, rows));
     }
 
     /**

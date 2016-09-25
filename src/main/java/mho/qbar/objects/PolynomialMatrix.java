@@ -4,6 +4,7 @@ import mho.wheels.io.Readers;
 import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.NoRemoveIterable;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.ordering.comparators.LexComparator;
 import org.jetbrains.annotations.NotNull;
 
@@ -280,7 +281,7 @@ public final class PolynomialMatrix implements Comparable<PolynomialMatrix> {
      */
     public int maxElementBitLength() {
         if (isZero()) return 0;
-        return maximum(map(PolynomialVector::maxCoordinateBitLength, rows));
+        return Ordering.maximum(map(PolynomialVector::maxCoordinateBitLength, rows));
     }
 
     /**

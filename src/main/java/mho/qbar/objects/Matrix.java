@@ -4,6 +4,7 @@ import mho.wheels.io.Readers;
 import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.NoRemoveIterable;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.ordering.comparators.LexComparator;
 import org.jetbrains.annotations.NotNull;
 
@@ -261,7 +262,7 @@ public final class Matrix implements Comparable<Matrix> {
      */
     public int maxElementBitLength() {
         if (isZero()) return 0;
-        return maximum(map(Vector::maxCoordinateBitLength, rows));
+        return Ordering.maximum(map(Vector::maxCoordinateBitLength, rows));
     }
 
     /**

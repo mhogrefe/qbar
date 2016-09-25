@@ -2,6 +2,7 @@ package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
 import mho.wheels.iterables.NoRemoveIterable;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.ordering.comparators.ShortlexComparator;
 import org.jetbrains.annotations.NotNull;
 
@@ -173,7 +174,7 @@ public final class PolynomialVector implements Comparable<PolynomialVector>, Ite
     public int maxCoordinateBitLength() {
         if (this == ZERO_DIMENSIONAL) return 0;
         //noinspection RedundantCast
-        return maximum((Iterable<Integer>) map(Polynomial::maxCoefficientBitLength, coordinates));
+        return Ordering.maximum((Iterable<Integer>) map(Polynomial::maxCoefficientBitLength, coordinates));
     }
 
     /**

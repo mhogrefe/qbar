@@ -2,6 +2,7 @@ package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
 import mho.wheels.iterables.NoRemoveIterable;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.ordering.comparators.ShortlexComparator;
 import org.jetbrains.annotations.NotNull;
 
@@ -189,7 +190,7 @@ public final class RationalPolynomialVector implements
      */
     public int maxCoordinateBitLength() {
         if (this == ZERO_DIMENSIONAL) return 0;
-        return maximum(map(RationalPolynomial::maxCoefficientBitLength, coordinates));
+        return Ordering.maximum(map(RationalPolynomial::maxCoefficientBitLength, coordinates));
     }
 
     /**

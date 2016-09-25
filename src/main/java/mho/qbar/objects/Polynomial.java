@@ -7,6 +7,7 @@ import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.NoRemoveIterable;
 import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.IntegerUtils;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.ordering.comparators.ShortlexComparator;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -364,7 +365,7 @@ public final class Polynomial implements
     public int maxCoefficientBitLength() {
         if (this == ZERO) return 0;
         //noinspection RedundantCast
-        return maximum((Iterable<Integer>) map(c -> c.abs().bitLength(), coefficients));
+        return Ordering.maximum((Iterable<Integer>) map(c -> c.abs().bitLength(), coefficients));
     }
 
     /**
@@ -1723,7 +1724,7 @@ public final class Polynomial implements
     @SuppressWarnings("JavaDoc")
     public static @NotNull Matrix coefficientMatrix(@NotNull List<Polynomial> ps) {
         if (ps.isEmpty()) return Matrix.zero(0, 0);
-        int width = maximum(map(Polynomial::degree, ps)) + 1;
+        int width = Ordering.maximum(map(Polynomial::degree, ps)) + 1;
         if (ps.size() > width) {
             throw new IllegalArgumentException("ps may not have more elements than one more than the maximum degree" +
                     " of ps. Invalid ps: " + ps);
@@ -2240,7 +2241,7 @@ public final class Polynomial implements
         if (degree() < 1) return Interval.ZERO;
         BigInteger denominator = leading().get().abs();
         //noinspection RedundantCast
-        Rational max = maximum(
+        Rational max = Ordering.maximum(
                 (Iterable<Rational>) map(c -> Rational.of(c.abs(), denominator), init(coefficients))
         ).add(Rational.ONE);
         max = postProcessor.apply(max);

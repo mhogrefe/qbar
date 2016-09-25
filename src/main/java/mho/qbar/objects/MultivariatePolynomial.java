@@ -4,6 +4,7 @@ import mho.wheels.io.Readers;
 import mho.wheels.iterables.NoRemoveIterable;
 import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.IntegerUtils;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
@@ -360,7 +361,7 @@ public final class MultivariatePolynomial implements
     public int maxCoefficientBitLength() {
         if (this == ZERO) return 0;
         //noinspection RedundantCast
-        return maximum((Iterable<Integer>) map(t -> t.b.abs().bitLength(), terms));
+        return Ordering.maximum((Iterable<Integer>) map(t -> t.b.abs().bitLength(), terms));
     }
 
     /**

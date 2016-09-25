@@ -2,6 +2,7 @@ package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
 import mho.wheels.iterables.NoRemoveIterator;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
@@ -196,7 +197,7 @@ public final class Monomial implements Comparable<Monomial> {
 
         //noinspection RedundantCast
         List<Integer> exponents = toList(
-                replicate(maximum((Iterable<Variable>) map(p -> p.a, terms)).getIndex() + 1, 0)
+                replicate(Ordering.maximum((Iterable<Variable>) map(p -> p.a, terms)).getIndex() + 1, 0)
         );
         for (Pair<Variable, Integer> term : terms) {
             int i = term.a.getIndex();

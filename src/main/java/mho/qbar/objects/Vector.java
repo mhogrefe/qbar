@@ -157,7 +157,7 @@ public final class Vector implements Comparable<Vector>, Iterable<BigInteger> {
     public int maxCoordinateBitLength() {
         if (this == ZERO_DIMENSIONAL) return 0;
         //noinspection RedundantCast
-        return maximum((Iterable<Integer>) map(c -> c.abs().bitLength(), coordinates));
+        return Ordering.maximum((Iterable<Integer>) map(c -> c.abs().bitLength(), coordinates));
     }
 
     /**
