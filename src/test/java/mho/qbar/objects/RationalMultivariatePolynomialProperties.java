@@ -1479,8 +1479,9 @@ public class RationalMultivariatePolynomialProperties extends QBarTestProperties
             assertTrue(
                     ps,
                     ps.isEmpty() ||
-                            sum.degree() <=
-                                    maximum((Iterable<Integer>) map(RationalMultivariatePolynomial::degree, ps))
+                            sum.degree() <= Ordering.maximum(
+                                    (Iterable<Integer>) map(RationalMultivariatePolynomial::degree, ps)
+                            )
             );
         }
 

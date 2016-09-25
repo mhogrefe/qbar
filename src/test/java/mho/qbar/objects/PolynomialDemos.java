@@ -510,7 +510,7 @@ public class PolynomialDemos extends QBarDemos {
         Iterable<List<Polynomial>> pss = P.withElement(
                 Collections.emptyList(),
                 filterInfinite(
-                        ps -> ps.size() <= maximum(map(Polynomial::degree, ps)) + 1,
+                        ps -> ps.size() <= Ordering.maximum(map(Polynomial::degree, ps)) + 1,
                         P.withScale(4).listsAtLeast(1, P.withScale(4).polynomials())
                 )
         );
@@ -523,7 +523,7 @@ public class PolynomialDemos extends QBarDemos {
         Iterable<List<Polynomial>> pss = P.withElement(
                 Collections.emptyList(),
                 filterInfinite(
-                        ps -> ps.size() <= maximum(map(Polynomial::degree, ps)) + 1,
+                        ps -> ps.size() <= Ordering.maximum(map(Polynomial::degree, ps)) + 1,
                         P.withScale(4).listsAtLeast(1, P.withScale(4).polynomials())
                 )
         );
@@ -537,7 +537,7 @@ public class PolynomialDemos extends QBarDemos {
         Iterable<List<Polynomial>> pss = P.withElement(
                 Collections.emptyList(),
                 filterInfinite(
-                        ps -> ps.size() <= maximum(map(Polynomial::degree, ps)) + 1,
+                        ps -> ps.size() <= Ordering.maximum(map(Polynomial::degree, ps)) + 1,
                         P.withScale(4).listsAtLeast(1, P.withScale(4).polynomials())
                 )
         );

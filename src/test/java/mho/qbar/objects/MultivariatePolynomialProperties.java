@@ -1240,7 +1240,8 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
             assertTrue(
                     ps,
                     ps.isEmpty() ||
-                            sum.degree() <= maximum((Iterable<Integer>) map(MultivariatePolynomial::degree, ps))
+                            sum.degree() <=
+                                    Ordering.maximum((Iterable<Integer>) map(MultivariatePolynomial::degree, ps))
             );
         }
 

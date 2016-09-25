@@ -1190,7 +1190,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         for (List<RationalPolynomial> ps : take(LIMIT, P.lists(P.rationalPolynomials()))) {
             RationalPolynomial sum = sum(ps);
             assertEquals(ps, sum, sum_simplest(ps));
-            assertTrue(ps, ps.isEmpty() || sum.degree() <= maximum(map(RationalPolynomial::degree, ps)));
+            assertTrue(ps, ps.isEmpty() || sum.degree() <= Ordering.maximum(map(RationalPolynomial::degree, ps)));
         }
 
         Iterable<Pair<List<RationalPolynomial>, Rational>> ps = P.pairs(
@@ -1969,7 +1969,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         Iterable<List<RationalPolynomial>> pss = P.withElement(
                 Collections.emptyList(),
                 filterInfinite(
-                        ps -> ps.size() <= maximum(map(RationalPolynomial::degree, ps)) + 1,
+                        ps -> ps.size() <= Ordering.maximum(map(RationalPolynomial::degree, ps)) + 1,
                         P.listsAtLeast(1, P.rationalPolynomials())
                 )
         );
@@ -1978,7 +1978,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
             assertEquals(ps, coefficientMatrix.height(), ps.size());
             assertTrue(ps, coefficientMatrix.height() <= coefficientMatrix.width());
             if (!ps.isEmpty()) {
-                assertEquals(ps, coefficientMatrix.width(), maximum(map(RationalPolynomial::degree, ps)) + 1);
+                assertEquals(ps, coefficientMatrix.width(), Ordering.maximum(map(RationalPolynomial::degree, ps)) + 1);
                 assertFalse(
                         ps,
                         coefficientMatrix.submatrix(
@@ -1990,7 +1990,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         }
 
         Iterable<List<RationalPolynomial>> pssFail = filterInfinite(
-                ps -> ps.size() > maximum(map(RationalPolynomial::degree, ps)) + 1,
+                ps -> ps.size() > Ordering.maximum(map(RationalPolynomial::degree, ps)) + 1,
                 P.listsAtLeast(1, P.rationalPolynomials())
         );
         for (List<RationalPolynomial> ps : take(LIMIT, pssFail)) {
