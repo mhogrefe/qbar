@@ -6045,6 +6045,13 @@ public class RealTest {
         aeq(input.signum(resolution), output);
     }
 
+    private static void signum_fail_helper(@NotNull Real input, @NotNull Rational resolution) {
+        try {
+            input.signum(resolution);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
     @Test
     public void testSignum() {
         signum_helper(ZERO, DEFAULT_RESOLUTION, "Optional[0]");
@@ -6062,6 +6069,15 @@ public class RealTest {
         signum_helper(leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
         signum_helper(rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
         signum_helper(fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+
+        signum_fail_helper(ZERO, Rational.ZERO);
+        signum_fail_helper(ZERO, Rational.NEGATIVE_ONE);
+        signum_fail_helper(ONE, Rational.ZERO);
+        signum_fail_helper(ONE, Rational.NEGATIVE_ONE);
+        signum_fail_helper(NEGATIVE_ONE, Rational.ZERO);
+        signum_fail_helper(NEGATIVE_ONE, Rational.NEGATIVE_ONE);
+        signum_fail_helper(PI, Rational.ZERO);
+        signum_fail_helper(PI, Rational.NEGATIVE_ONE);
     }
 
     private static void add_Rational_helper(@NotNull Real a, @NotNull String b, @NotNull String output) {
@@ -6691,6 +6707,16 @@ public class RealTest {
         multiply_Real_helper(PI, rightFuzzyRepresentation(Rational.ZERO), "~0");
         multiply_Real_helper(PI, fuzzyRepresentation(Rational.ZERO), "~0");
 
+        multiply_Real_helper(leftFuzzyRepresentation(Rational.ZERO), ZERO, "0");
+        multiply_Real_helper(leftFuzzyRepresentation(Rational.ZERO), ONE, "~0");
+        multiply_Real_helper(leftFuzzyRepresentation(Rational.ZERO), NEGATIVE_FOUR_THIRDS, "~0");
+        multiply_Real_helper(leftFuzzyRepresentation(Rational.ZERO), SQRT_TWO, "~0");
+        multiply_Real_helper(leftFuzzyRepresentation(Rational.ZERO), E, "~0");
+        multiply_Real_helper(leftFuzzyRepresentation(Rational.ZERO), PI, "~0");
+        multiply_Real_helper(leftFuzzyRepresentation(Rational.ZERO), leftFuzzyRepresentation(Rational.ZERO), "~0");
+        multiply_Real_helper(leftFuzzyRepresentation(Rational.ZERO), rightFuzzyRepresentation(Rational.ZERO), "~0");
+        multiply_Real_helper(leftFuzzyRepresentation(Rational.ZERO), fuzzyRepresentation(Rational.ZERO), "~0");
+
         multiply_Real_helper(rightFuzzyRepresentation(Rational.ZERO), ZERO, "0");
         multiply_Real_helper(rightFuzzyRepresentation(Rational.ZERO), ONE, "~0");
         multiply_Real_helper(rightFuzzyRepresentation(Rational.ZERO), NEGATIVE_FOUR_THIRDS, "~0");
@@ -6752,7 +6778,7 @@ public class RealTest {
         try {
             input.invert(resolution);
             fail();
-        } catch (ArithmeticException ignored) {}
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
     }
 
     @Test
@@ -6770,5 +6796,606 @@ public class RealTest {
         invert_helper(fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
 
         invert_fail_helper(ZERO, DEFAULT_RESOLUTION);
+
+        invert_fail_helper(ZERO, Rational.ZERO);
+        invert_fail_helper(ZERO, Rational.NEGATIVE_ONE);
+        invert_fail_helper(ONE, Rational.ZERO);
+        invert_fail_helper(ONE, Rational.NEGATIVE_ONE);
+        invert_fail_helper(PI, Rational.ZERO);
+        invert_fail_helper(PI, Rational.NEGATIVE_ONE);
+    }
+
+    private static void divide_int_helper(@NotNull Real a, int b, @NotNull String output) {
+        Real x = a.divide(b);
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void divide_int_fail_helper(@NotNull Real a, int b) {
+        try {
+            a.divide(b);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDivide_int() {
+        divide_int_helper(ZERO, 1, "0");
+        divide_int_helper(ZERO, -1, "0");
+        divide_int_helper(ZERO, 100, "0");
+
+        divide_int_helper(ONE, 1, "1");
+        divide_int_helper(ONE, -1, "-1");
+        divide_int_helper(ONE, 100, "0.01");
+
+        divide_int_helper(NEGATIVE_ONE, 1, "-1");
+        divide_int_helper(NEGATIVE_ONE, -1, "1");
+        divide_int_helper(NEGATIVE_ONE, 100, "-0.01");
+
+        divide_int_helper(ONE_HALF, 1, "0.5");
+        divide_int_helper(ONE_HALF, -1, "-0.5");
+        divide_int_helper(ONE_HALF, 100, "0.005");
+
+        divide_int_helper(NEGATIVE_FOUR_THIRDS, 1, "-1.33333333333333333333...");
+        divide_int_helper(NEGATIVE_FOUR_THIRDS, -1, "1.33333333333333333333...");
+        divide_int_helper(NEGATIVE_FOUR_THIRDS, 100, "-0.01333333333333333333...");
+
+        divide_int_helper(SQRT_TWO, 1, "1.41421356237309504880...");
+        divide_int_helper(SQRT_TWO, -1, "-1.41421356237309504880...");
+        divide_int_helper(SQRT_TWO, 100, "0.01414213562373095048...");
+
+        divide_int_helper(E, 1, "2.71828182845904523536...");
+        divide_int_helper(E, -1, "-2.71828182845904523536...");
+        divide_int_helper(E, 100, "0.02718281828459045235...");
+
+        divide_int_helper(PI, 1, "3.14159265358979323846...");
+        divide_int_helper(PI, -1, "-3.14159265358979323846...");
+        divide_int_helper(PI, 100, "0.03141592653589793238...");
+
+        divide_int_helper(leftFuzzyRepresentation(Rational.ZERO), 1, "~0");
+        divide_int_helper(leftFuzzyRepresentation(Rational.ZERO), -1, "~0");
+        divide_int_helper(leftFuzzyRepresentation(Rational.ZERO), 100, "~0");
+
+        divide_int_helper(rightFuzzyRepresentation(Rational.ZERO), 1, "~0");
+        divide_int_helper(rightFuzzyRepresentation(Rational.ZERO), -1, "~0");
+        divide_int_helper(rightFuzzyRepresentation(Rational.ZERO), 100, "~0");
+
+        divide_int_helper(fuzzyRepresentation(Rational.ZERO), 1, "~0");
+        divide_int_helper(fuzzyRepresentation(Rational.ZERO), -1, "~0");
+        divide_int_helper(fuzzyRepresentation(Rational.ZERO), 100, "~0");
+
+        divide_int_fail_helper(ZERO, 0);
+        divide_int_fail_helper(ONE, 0);
+        divide_int_fail_helper(NEGATIVE_ONE, 0);
+        divide_int_fail_helper(ONE_HALF, 0);
+        divide_int_fail_helper(NEGATIVE_FOUR_THIRDS, 0);
+        divide_int_fail_helper(SQRT_TWO, 0);
+        divide_int_fail_helper(E, 0);
+        divide_int_fail_helper(PI, 0);
+        divide_int_fail_helper(leftFuzzyRepresentation(Rational.ZERO), 0);
+        divide_int_fail_helper(rightFuzzyRepresentation(Rational.ZERO), 0);
+        divide_int_fail_helper(fuzzyRepresentation(Rational.ZERO), 0);
+    }
+
+    private static void divide_BigInteger_helper(@NotNull Real a, @NotNull String b, @NotNull String output) {
+        Real x = a.divide(Readers.readBigIntegerStrict(b).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void divide_BigInteger_fail_helper(@NotNull Real a, @NotNull String b) {
+        try {
+            a.divide(Readers.readBigIntegerStrict(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDivide_BigInteger() {
+        divide_BigInteger_helper(ZERO, "1", "0");
+        divide_BigInteger_helper(ZERO, "-1", "0");
+        divide_BigInteger_helper(ZERO, "100", "0");
+
+        divide_BigInteger_helper(ONE, "1", "1");
+        divide_BigInteger_helper(ONE, "-1", "-1");
+        divide_BigInteger_helper(ONE, "100", "0.01");
+
+        divide_BigInteger_helper(NEGATIVE_ONE, "1", "-1");
+        divide_BigInteger_helper(NEGATIVE_ONE, "-1", "1");
+        divide_BigInteger_helper(NEGATIVE_ONE, "100", "-0.01");
+
+        divide_BigInteger_helper(ONE_HALF, "1", "0.5");
+        divide_BigInteger_helper(ONE_HALF, "-1", "-0.5");
+        divide_BigInteger_helper(ONE_HALF, "100", "0.005");
+
+        divide_BigInteger_helper(NEGATIVE_FOUR_THIRDS, "1", "-1.33333333333333333333...");
+        divide_BigInteger_helper(NEGATIVE_FOUR_THIRDS, "-1", "1.33333333333333333333...");
+        divide_BigInteger_helper(NEGATIVE_FOUR_THIRDS, "100", "-0.01333333333333333333...");
+
+        divide_BigInteger_helper(SQRT_TWO, "1", "1.41421356237309504880...");
+        divide_BigInteger_helper(SQRT_TWO, "-1", "-1.41421356237309504880...");
+        divide_BigInteger_helper(SQRT_TWO, "100", "0.01414213562373095048...");
+
+        divide_BigInteger_helper(E, "1", "2.71828182845904523536...");
+        divide_BigInteger_helper(E, "-1", "-2.71828182845904523536...");
+        divide_BigInteger_helper(E, "100", "0.02718281828459045235...");
+
+        divide_BigInteger_helper(PI, "1", "3.14159265358979323846...");
+        divide_BigInteger_helper(PI, "-1", "-3.14159265358979323846...");
+        divide_BigInteger_helper(PI, "100", "0.03141592653589793238...");
+
+        divide_BigInteger_helper(leftFuzzyRepresentation(Rational.ZERO), "1", "~0");
+        divide_BigInteger_helper(leftFuzzyRepresentation(Rational.ZERO), "-1", "~0");
+        divide_BigInteger_helper(leftFuzzyRepresentation(Rational.ZERO), "100", "~0");
+
+        divide_BigInteger_helper(rightFuzzyRepresentation(Rational.ZERO), "1", "~0");
+        divide_BigInteger_helper(rightFuzzyRepresentation(Rational.ZERO), "-1", "~0");
+        divide_BigInteger_helper(rightFuzzyRepresentation(Rational.ZERO), "100", "~0");
+
+        divide_BigInteger_helper(fuzzyRepresentation(Rational.ZERO), "1", "~0");
+        divide_BigInteger_helper(fuzzyRepresentation(Rational.ZERO), "-1", "~0");
+        divide_BigInteger_helper(fuzzyRepresentation(Rational.ZERO), "100", "~0");
+
+        divide_BigInteger_fail_helper(ZERO, "0");
+        divide_BigInteger_fail_helper(ONE, "0");
+        divide_BigInteger_fail_helper(NEGATIVE_ONE, "0");
+        divide_BigInteger_fail_helper(ONE_HALF, "0");
+        divide_BigInteger_fail_helper(NEGATIVE_FOUR_THIRDS, "0");
+        divide_BigInteger_fail_helper(SQRT_TWO, "0");
+        divide_BigInteger_fail_helper(E, "0");
+        divide_BigInteger_fail_helper(PI, "0");
+        divide_BigInteger_fail_helper(leftFuzzyRepresentation(Rational.ZERO), "0");
+        divide_BigInteger_fail_helper(rightFuzzyRepresentation(Rational.ZERO), "0");
+        divide_BigInteger_fail_helper(fuzzyRepresentation(Rational.ZERO), "0");
+    }
+
+    private static void divide_Rational_helper(@NotNull Real a, @NotNull String b, @NotNull String output) {
+        Real x = a.divide(Rational.readStrict(b).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void divide_Rational_fail_helper(@NotNull Real a, @NotNull String b) {
+        try {
+            a.divide(Rational.readStrict(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDivide_Rational() {
+        divide_Rational_helper(ZERO, "1", "0");
+        divide_Rational_helper(ZERO, "-1", "0");
+        divide_Rational_helper(ZERO, "100/3", "0");
+        divide_Rational_helper(ZERO, "1/100", "0");
+
+        divide_Rational_helper(ONE, "1", "1");
+        divide_Rational_helper(ONE, "-1", "-1");
+        divide_Rational_helper(ONE, "100/3", "0.03");
+        divide_Rational_helper(ONE, "1/100", "100");
+
+        divide_Rational_helper(NEGATIVE_ONE, "1", "-1");
+        divide_Rational_helper(NEGATIVE_ONE, "-1", "1");
+        divide_Rational_helper(NEGATIVE_ONE, "100/3", "-0.03");
+        divide_Rational_helper(NEGATIVE_ONE, "1/100", "-100");
+
+        divide_Rational_helper(ONE_HALF, "1", "0.5");
+        divide_Rational_helper(ONE_HALF, "-1", "-0.5");
+        divide_Rational_helper(ONE_HALF, "100/3", "0.015");
+        divide_Rational_helper(ONE_HALF, "1/100", "50");
+
+        divide_Rational_helper(NEGATIVE_FOUR_THIRDS, "1", "-1.33333333333333333333...");
+        divide_Rational_helper(NEGATIVE_FOUR_THIRDS, "-1", "1.33333333333333333333...");
+        divide_Rational_helper(NEGATIVE_FOUR_THIRDS, "100/3", "-0.04");
+        divide_Rational_helper(NEGATIVE_FOUR_THIRDS, "1/100", "-133.33333333333333333333...");
+
+        divide_Rational_helper(SQRT_TWO, "1", "1.41421356237309504880...");
+        divide_Rational_helper(SQRT_TWO, "-1", "-1.41421356237309504880...");
+        divide_Rational_helper(SQRT_TWO, "100/3", "0.04242640687119285146...");
+        divide_Rational_helper(SQRT_TWO, "1/100", "141.42135623730950488016...");
+
+        divide_Rational_helper(E, "1", "2.71828182845904523536...");
+        divide_Rational_helper(E, "-1", "-2.71828182845904523536...");
+        divide_Rational_helper(E, "100/3", "0.08154845485377135706...");
+        divide_Rational_helper(E, "1/100", "271.82818284590452353602...");
+
+        divide_Rational_helper(PI, "1", "3.14159265358979323846...");
+        divide_Rational_helper(PI, "-1", "-3.14159265358979323846...");
+        divide_Rational_helper(PI, "100/3", "0.09424777960769379715...");
+        divide_Rational_helper(PI, "1/100", "314.15926535897932384626...");
+
+        divide_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "1", "~0");
+        divide_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "-1", "~0");
+        divide_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "100/3", "~0");
+        divide_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "1/100", "~0");
+
+        divide_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "1", "~0");
+        divide_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "-1", "~0");
+        divide_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "100/3", "~0");
+        divide_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "1/100", "~0");
+
+        divide_Rational_helper(fuzzyRepresentation(Rational.ZERO), "1", "~0");
+        divide_Rational_helper(fuzzyRepresentation(Rational.ZERO), "-1", "~0");
+        divide_Rational_helper(fuzzyRepresentation(Rational.ZERO), "100/3", "~0");
+        divide_Rational_helper(fuzzyRepresentation(Rational.ZERO), "1/100", "~0");
+
+        divide_Rational_fail_helper(ZERO, "0");
+        divide_Rational_fail_helper(ONE, "0");
+        divide_Rational_fail_helper(NEGATIVE_ONE, "0");
+        divide_Rational_fail_helper(ONE_HALF, "0");
+        divide_Rational_fail_helper(NEGATIVE_FOUR_THIRDS, "0");
+        divide_Rational_fail_helper(SQRT_TWO, "0");
+        divide_Rational_fail_helper(E, "0");
+        divide_Rational_fail_helper(PI, "0");
+        divide_Rational_fail_helper(leftFuzzyRepresentation(Rational.ZERO), "0");
+        divide_Rational_fail_helper(rightFuzzyRepresentation(Rational.ZERO), "0");
+        divide_Rational_fail_helper(fuzzyRepresentation(Rational.ZERO), "0");
+    }
+
+    private static void divideUnsafe_helper(@NotNull Real a, @NotNull Real b, @NotNull String output) {
+        Real x = a.divideUnsafe(b);
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void divideUnsafe_fail_helper(@NotNull Real a, @NotNull Real b) {
+        try {
+            a.divideUnsafe(b);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDivideUnsafe() {
+        divideUnsafe_helper(ZERO, ONE, "0");
+        divideUnsafe_helper(ZERO, NEGATIVE_FOUR_THIRDS, "0");
+        divideUnsafe_helper(ZERO, SQRT_TWO, "0");
+        divideUnsafe_helper(ZERO, E, "0");
+        divideUnsafe_helper(ZERO, PI, "0");
+
+        divideUnsafe_helper(ONE, ONE, "1");
+        divideUnsafe_helper(ONE, NEGATIVE_FOUR_THIRDS, "-0.75");
+        divideUnsafe_helper(ONE, SQRT_TWO, "0.70710678118654752440...");
+        divideUnsafe_helper(ONE, E, "0.36787944117144232159...");
+        divideUnsafe_helper(ONE, PI, "0.31830988618379067153...");
+
+        divideUnsafe_helper(NEGATIVE_FOUR_THIRDS, ONE, "-1.33333333333333333333...");
+        divideUnsafe_helper(NEGATIVE_FOUR_THIRDS, NEGATIVE_FOUR_THIRDS, "1");
+        divideUnsafe_helper(NEGATIVE_FOUR_THIRDS, SQRT_TWO, "-0.94280904158206336586...");
+        divideUnsafe_helper(NEGATIVE_FOUR_THIRDS, E, "-0.49050592156192309546...");
+        divideUnsafe_helper(NEGATIVE_FOUR_THIRDS, PI, "-0.42441318157838756205...");
+
+        divideUnsafe_helper(SQRT_TWO, ONE, "1.41421356237309504880...");
+        divideUnsafe_helper(SQRT_TWO, NEGATIVE_FOUR_THIRDS, "-1.06066017177982128660...");
+        divideUnsafe_helper(SQRT_TWO, SQRT_TWO, "1");
+        divideUnsafe_helper(SQRT_TWO, E, "0.52026009502288889635...");
+        divideUnsafe_helper(SQRT_TWO, PI, "0.45015815807855303477...");
+
+        divideUnsafe_helper(E, ONE, "2.71828182845904523536...");
+        divideUnsafe_helper(E, NEGATIVE_FOUR_THIRDS, "-2.03871137134428392652...");
+        divideUnsafe_helper(E, SQRT_TWO, "1.92211551407955841243...");
+        divideUnsafe_helper(E, E, "1");
+        divideUnsafe_helper(E, PI, "0.86525597943226508721...");
+
+        divideUnsafe_helper(PI, ONE, "3.14159265358979323846...");
+        divideUnsafe_helper(PI, NEGATIVE_FOUR_THIRDS, "-2.35619449019234492884...");
+        divideUnsafe_helper(PI, SQRT_TWO, "2.22144146907918312350...");
+        divideUnsafe_helper(PI, E, "1.15572734979092171791...");
+        divideUnsafe_helper(PI, PI, "1");
+
+        divideUnsafe_helper(leftFuzzyRepresentation(Rational.ZERO), ONE, "~0");
+        divideUnsafe_helper(leftFuzzyRepresentation(Rational.ZERO), NEGATIVE_FOUR_THIRDS, "~0");
+        divideUnsafe_helper(leftFuzzyRepresentation(Rational.ZERO), SQRT_TWO, "~0");
+        divideUnsafe_helper(leftFuzzyRepresentation(Rational.ZERO), E, "~0");
+        divideUnsafe_helper(leftFuzzyRepresentation(Rational.ZERO), PI, "~0");
+
+        divideUnsafe_helper(rightFuzzyRepresentation(Rational.ZERO), ONE, "~0");
+        divideUnsafe_helper(rightFuzzyRepresentation(Rational.ZERO), NEGATIVE_FOUR_THIRDS, "~0");
+        divideUnsafe_helper(rightFuzzyRepresentation(Rational.ZERO), SQRT_TWO, "~0");
+        divideUnsafe_helper(rightFuzzyRepresentation(Rational.ZERO), E, "~0");
+        divideUnsafe_helper(rightFuzzyRepresentation(Rational.ZERO), PI, "~0");
+
+        divideUnsafe_helper(fuzzyRepresentation(Rational.ZERO), ONE, "~0");
+        divideUnsafe_helper(fuzzyRepresentation(Rational.ZERO), NEGATIVE_FOUR_THIRDS, "~0");
+        divideUnsafe_helper(fuzzyRepresentation(Rational.ZERO), SQRT_TWO, "~0");
+        divideUnsafe_helper(fuzzyRepresentation(Rational.ZERO), E, "~0");
+        divideUnsafe_helper(fuzzyRepresentation(Rational.ZERO), PI, "~0");
+
+        divideUnsafe_helper(PI, PI.invertUnsafe().invertUnsafe(), "+...");
+
+        divideUnsafe_fail_helper(ZERO, ZERO);
+        divideUnsafe_fail_helper(ONE, ZERO);
+        divideUnsafe_fail_helper(NEGATIVE_ONE, ZERO);
+        divideUnsafe_fail_helper(ONE_HALF, ZERO);
+        divideUnsafe_fail_helper(NEGATIVE_FOUR_THIRDS, ZERO);
+        divideUnsafe_fail_helper(SQRT_TWO, ZERO);
+        divideUnsafe_fail_helper(E, ZERO);
+        divideUnsafe_fail_helper(PI, ZERO);
+        divideUnsafe_fail_helper(leftFuzzyRepresentation(Rational.ZERO), ZERO);
+        divideUnsafe_fail_helper(rightFuzzyRepresentation(Rational.ZERO), ZERO);
+        divideUnsafe_fail_helper(fuzzyRepresentation(Rational.ZERO), ZERO);
+    }
+
+    private static void divide_Real_Rational_helper(
+            @NotNull Real a,
+            @NotNull Real b,
+            @NotNull Rational resolution,
+            @NotNull String output
+    ) {
+        Optional<Real> ox = a.divide(b, resolution);
+        if (ox.isPresent()) {
+            ox.get().validate();
+        }
+        aeq(ox, output);
+    }
+
+    private static void divide_Real_Rational_fail_helper(
+            @NotNull Real a,
+            @NotNull Real b,
+            @NotNull Rational resolution
+    ) {
+        try {
+            a.divide(b, resolution);
+            fail();
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testDivide_Real_Rational() {
+        divide_Real_Rational_helper(ZERO, ONE, DEFAULT_RESOLUTION, "Optional[0]");
+        divide_Real_Rational_helper(ZERO, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[0]");
+        divide_Real_Rational_helper(ZERO, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[0]");
+        divide_Real_Rational_helper(ZERO, E, DEFAULT_RESOLUTION, "Optional[0]");
+        divide_Real_Rational_helper(ZERO, PI, DEFAULT_RESOLUTION, "Optional[0]");
+        divide_Real_Rational_helper(
+                ZERO,
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        divide_Real_Rational_helper(
+                ZERO,
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        divide_Real_Rational_helper(ZERO, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+
+        divide_Real_Rational_helper(ONE, ONE, DEFAULT_RESOLUTION, "Optional[1]");
+        divide_Real_Rational_helper(ONE, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[-0.75]");
+        divide_Real_Rational_helper(ONE, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[0.70710678118654752440...]");
+        divide_Real_Rational_helper(ONE, E, DEFAULT_RESOLUTION, "Optional[0.36787944117144232159...]");
+        divide_Real_Rational_helper(ONE, PI, DEFAULT_RESOLUTION, "Optional[0.31830988618379067153...]");
+        divide_Real_Rational_helper(ONE, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        divide_Real_Rational_helper(
+                ONE,
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        divide_Real_Rational_helper(ONE, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+
+        divide_Real_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                ONE,
+                DEFAULT_RESOLUTION,
+                "Optional[-1.33333333333333333333...]"
+        );
+        divide_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[1]");
+        divide_Real_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                SQRT_TWO,
+                DEFAULT_RESOLUTION,
+                "Optional[-0.94280904158206336586...]"
+        );
+        divide_Real_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                E,
+                DEFAULT_RESOLUTION,
+                "Optional[-0.49050592156192309546...]"
+        );
+        divide_Real_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                PI,
+                DEFAULT_RESOLUTION,
+                "Optional[-0.42441318157838756205...]"
+        );
+        divide_Real_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        divide_Real_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        divide_Real_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        divide_Real_Rational_helper(SQRT_TWO, ONE, DEFAULT_RESOLUTION, "Optional[1.41421356237309504880...]");
+        divide_Real_Rational_helper(
+                SQRT_TWO,
+                NEGATIVE_FOUR_THIRDS,
+                DEFAULT_RESOLUTION,
+                "Optional[-1.06066017177982128660...]"
+        );
+        divide_Real_Rational_helper(SQRT_TWO, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[1]");
+        divide_Real_Rational_helper(SQRT_TWO, E, DEFAULT_RESOLUTION, "Optional[0.52026009502288889635...]");
+        divide_Real_Rational_helper(SQRT_TWO, PI, DEFAULT_RESOLUTION, "Optional[0.45015815807855303477...]");
+        divide_Real_Rational_helper(
+                SQRT_TWO,
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        divide_Real_Rational_helper(
+                SQRT_TWO,
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        divide_Real_Rational_helper(
+                SQRT_TWO,
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        divide_Real_Rational_helper(E, ONE, DEFAULT_RESOLUTION, "Optional[2.71828182845904523536...]");
+        divide_Real_Rational_helper(
+                E,
+                NEGATIVE_FOUR_THIRDS,
+                DEFAULT_RESOLUTION,
+                "Optional[-2.03871137134428392652...]"
+        );
+        divide_Real_Rational_helper(E, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[1.92211551407955841243...]");
+        divide_Real_Rational_helper(E, E, DEFAULT_RESOLUTION, "Optional[1]");
+        divide_Real_Rational_helper(E, PI, DEFAULT_RESOLUTION,"Optional[0.86525597943226508721...]");
+        divide_Real_Rational_helper(E, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        divide_Real_Rational_helper(E, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        divide_Real_Rational_helper(E, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+
+        divide_Real_Rational_helper(PI, ONE, DEFAULT_RESOLUTION, "Optional[3.14159265358979323846...]");
+        divide_Real_Rational_helper(
+                PI,
+                NEGATIVE_FOUR_THIRDS,
+                DEFAULT_RESOLUTION,
+                "Optional[-2.35619449019234492884...]"
+        );
+        divide_Real_Rational_helper(PI, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[2.22144146907918312350...]");
+        divide_Real_Rational_helper(PI, E, DEFAULT_RESOLUTION, "Optional[1.15572734979092171791...]");
+        divide_Real_Rational_helper(PI, PI, DEFAULT_RESOLUTION, "Optional[1]");
+        divide_Real_Rational_helper(PI, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        divide_Real_Rational_helper(PI, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        divide_Real_Rational_helper(PI, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+
+        divide_Real_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), ONE, DEFAULT_RESOLUTION, "Optional[~0]");
+        divide_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                NEGATIVE_FOUR_THIRDS,
+                DEFAULT_RESOLUTION,
+                "Optional[~0]"
+        );
+        divide_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                SQRT_TWO,
+                DEFAULT_RESOLUTION,
+                "Optional[~0]"
+        );
+        divide_Real_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), E, DEFAULT_RESOLUTION, "Optional[~0]");
+        divide_Real_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), PI, DEFAULT_RESOLUTION, "Optional[~0]");
+        divide_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        divide_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        divide_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        divide_Real_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), ONE, DEFAULT_RESOLUTION, "Optional[~0]");
+        divide_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                NEGATIVE_FOUR_THIRDS,
+                DEFAULT_RESOLUTION,
+                "Optional[~0]"
+        );
+        divide_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                SQRT_TWO,
+                DEFAULT_RESOLUTION,
+                "Optional[~0]"
+        );
+        divide_Real_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), E, DEFAULT_RESOLUTION, "Optional[~0]");
+        divide_Real_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), PI, DEFAULT_RESOLUTION, "Optional[~0]");
+        divide_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        divide_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        divide_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        divide_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), ONE, DEFAULT_RESOLUTION, "Optional[~0]");
+        divide_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                NEGATIVE_FOUR_THIRDS,
+                DEFAULT_RESOLUTION,
+                "Optional[~0]"
+        );
+        divide_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), SQRT_TWO, DEFAULT_RESOLUTION, "Optional[~0]");
+        divide_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), E, DEFAULT_RESOLUTION, "Optional[~0]");
+        divide_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), PI, DEFAULT_RESOLUTION, "Optional[~0]");
+        divide_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        divide_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        divide_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        divide_Real_Rational_helper(PI, PI.invertUnsafe().invertUnsafe(), DEFAULT_RESOLUTION, "Optional[+...]");
+
+        divide_Real_Rational_fail_helper(ZERO, ZERO, DEFAULT_RESOLUTION);
+        divide_Real_Rational_fail_helper(ONE, ZERO, DEFAULT_RESOLUTION);
+        divide_Real_Rational_fail_helper(NEGATIVE_ONE, ZERO, DEFAULT_RESOLUTION);
+        divide_Real_Rational_fail_helper(ONE_HALF, ZERO, DEFAULT_RESOLUTION);
+        divide_Real_Rational_fail_helper(NEGATIVE_FOUR_THIRDS, ZERO, DEFAULT_RESOLUTION);
+        divide_Real_Rational_fail_helper(SQRT_TWO, ZERO, DEFAULT_RESOLUTION);
+        divide_Real_Rational_fail_helper(E, ZERO, DEFAULT_RESOLUTION);
+        divide_Real_Rational_fail_helper(PI, ZERO, DEFAULT_RESOLUTION);
+        divide_Real_Rational_fail_helper(leftFuzzyRepresentation(Rational.ZERO), ZERO, DEFAULT_RESOLUTION);
+        divide_Real_Rational_fail_helper(rightFuzzyRepresentation(Rational.ZERO), ZERO, DEFAULT_RESOLUTION);
+        divide_Real_Rational_fail_helper(fuzzyRepresentation(Rational.ZERO), ZERO, DEFAULT_RESOLUTION);
+
+        divide_Real_Rational_fail_helper(ZERO, ONE, Rational.ZERO);
+        divide_Real_Rational_fail_helper(ZERO, ONE, Rational.NEGATIVE_ONE);
+        divide_Real_Rational_fail_helper(PI, PI, Rational.ZERO);
+        divide_Real_Rational_fail_helper(PI, PI, Rational.NEGATIVE_ONE);
+        divide_Real_Rational_fail_helper(PI, TWO, Rational.ZERO);
+        divide_Real_Rational_fail_helper(PI, TWO, Rational.NEGATIVE_ONE);
+        divide_Real_Rational_fail_helper(TWO, PI, Rational.ZERO);
+        divide_Real_Rational_fail_helper(TWO, PI, Rational.NEGATIVE_ONE);
+        divide_Real_Rational_fail_helper(PI, E, Rational.ZERO);
+        divide_Real_Rational_fail_helper(PI, E, Rational.NEGATIVE_ONE);
     }
 }

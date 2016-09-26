@@ -2390,12 +2390,17 @@ public final class Real implements Iterable<Interval> {
      *
      * <ul>
      *  <li>{@code this} cannot be an exact zero.</li>
+     *  <li>{@code resolution} must be positive.</li>
      *  <li>The result is a nonzero {@code Real}, or empty.</li>
      * </ul>
      *
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
      * @return 1/{@code this}
      */
     public @NotNull Optional<Real> invert(@NotNull Rational resolution) {
+        if (resolution.signum() != 1) {
+            throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
+        }
         if (rational.isPresent()) {
             Rational r = rational.get();
             return Optional.of(r == Rational.ONE ? ONE : new Real(r.invert()));
@@ -2405,12 +2410,143 @@ public final class Real implements Iterable<Interval> {
         }
     }
 
-    public @NotNull Real divide(@NotNull Rational that) {
+    /**
+     * Returns the quotient of {@code this} and {@code that}. If {@code this} is clean, so is the result.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code int} {@code this} is divided by
+     * @return {@code this}/{@code that}
+     */
+    public @NotNull Real divide(int that) {
+        if (that == 0) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        if (this == ZERO) return ZERO;
+        if (that == 1) return this;
+        if (isExact()) {
+            return new Real(rational.get().divide(that));
+        }
         return new Real(map(i -> i.divide(that), intervals));
     }
 
+    /**
+     * Returns the quotient of {@code this} and {@code that}. If {@code this} is clean, so is the result.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code BigInteger} {@code this} is divided by
+     * @return {@code this}/{@code that}
+     */
     public @NotNull Real divide(@NotNull BigInteger that) {
+        if (that.equals(BigInteger.ZERO)) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        if (this == ZERO) return ZERO;
+        if (that.equals(BigInteger.ONE)) return this;
+        if (isExact()) {
+            return new Real(rational.get().divide(that));
+        }
         return new Real(map(i -> i.divide(that), intervals));
+    }
+
+    /**
+     * Returns the quotient of {@code this} and {@code that}. If {@code this} is clean, so is the result.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code Rational} {@code this} is divided by
+     * @return {@code this}/{@code that}
+     */
+    public @NotNull Real divide(@NotNull Rational that) {
+        if (that == Rational.ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        if (this == ZERO) return ZERO;
+        if (that == Rational.ONE) return this;
+        if (isExact()) {
+            return new Real(rational.get().divide(that));
+        }
+        return new Real(map(i -> i.divide(that), intervals));
+    }
+
+    /**
+     * Returns the quotient of {@code this} and {@code that}. The result may be fuzzy even if both arguments are clean.
+     * If {@code that} is a fuzzy zero, this method will loop forever. To prevent this behavior, use
+     * {@link Real#divide(Real, Rational)} instead.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code Real} {@code this} is divided by
+     * @return {@code this}/{@code that}
+     */
+    public @NotNull Real divideUnsafe(@NotNull Real that) {
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        that.signumUnsafe(); // if this is 0, loop forever here instead of returning an invalid Real
+        if (this == ZERO) return ZERO;
+        if (this == that) return ONE;
+        if (that == ONE) return this;
+        if (isExact()) {
+            Rational r = rational.get();
+            return r == Rational.ZERO ? ZERO : that.divide(r).invertUnsafe();
+        }
+        if (that.isExact()) {
+            return divide(that.rational.get());
+        }
+        return new Real(zipWith(Interval::divideHull, intervals, that.intervals));
+    }
+
+    /**
+     * Returns the quotient of {@code this} and {@code that}. The result may be fuzzy even if both arguments are clean.
+     * If {@code that} is a fuzzy zero, this method will give up and return empty once the approximating interval's
+     * diameter is less than the specified resolution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>{@code that} cannot be an exact zero.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code Real} {@code this} is divided by
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return {@code this}/{@code that}
+     */
+    public @NotNull Optional<Real> divide(@NotNull Real that, @NotNull Rational resolution) {
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        Optional<Integer> thatSignum = that.signum(resolution);
+        if (!thatSignum.isPresent()) {
+            return Optional.empty();
+        }
+        if (this == that) return Optional.of(ONE);
+        if (isExact()) {
+            Rational r = rational.get();
+            return r == Rational.ZERO ? Optional.of(ZERO) : that.divide(rational.get()).invert(resolution);
+        }
+        if (that.isExact()) {
+            return Optional.of(divide(that.rational.get()));
+        }
+        return Optional.of(new Real(zipWith(Interval::divideHull, intervals, that.intervals)));
     }
 
     public @NotNull Real shiftLeft(int bits) {

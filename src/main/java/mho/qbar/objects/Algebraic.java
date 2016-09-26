@@ -1934,6 +1934,11 @@ public final class Algebraic implements Comparable<Algebraic> {
      * @return {@code this}/{@code that}
      */
     public @NotNull Algebraic divide(@NotNull Algebraic that) {
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        if (this == ZERO) return ZERO;
+        if (this == that) return ONE;
         return multiply(that.invert());
     }
 

@@ -1448,8 +1448,52 @@ public class RealDemos extends QBarDemos {
                 ),
                 P.positiveRationals()
         );
-        for (Pair<Real, Rational> p : take(LIMIT, P.pairs(P.withScale(4).nonzeroReals(), P.positiveRationals()))) {
+        for (Pair<Real, Rational> p : take(LIMIT, ps)) {
             System.out.println("invert(" + p.a + ", " + p.b + ") = " + p.a.invert(p.b));
+        }
+    }
+
+    private void demoDivide_int() {
+        for (Pair<Real, Integer> p : take(LIMIT, P.pairs(P.withScale(4).reals(), P.nonzeroIntegers()))) {
+            System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
+        }
+    }
+
+    private void demoDivide_BigInteger() {
+        for (Pair<Real, BigInteger> p : take(LIMIT, P.pairs(P.withScale(4).reals(), P.nonzeroBigIntegers()))) {
+            System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
+        }
+    }
+
+    private void demoDivide_Rational() {
+        for (Pair<Real, Rational> p : take(LIMIT, P.pairs(P.withScale(4).reals(), P.nonzeroRationals()))) {
+            System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
+        }
+    }
+
+    private void demoDivideUnsafe() {
+        for (Pair<Real, Real> p : take(LIMIT, P.pairs(P.withScale(4).reals(), P.nonzeroReals()))) {
+            System.out.println("divideUnsafe(" + p.a + ", " + p.b + ") = " + p.a.divideUnsafe(p.b));
+        }
+    }
+
+    private void demoDivide_Real_Rational() {
+        Iterable<Triple<Real, Real, Rational>> ts = P.triples(
+                P.withScale(4).reals(),
+                P.withScale(1).choose(
+                        map(Algebraic::realValue, P.withScale(4).nonzeroAlgebraics()),
+                        P.choose(
+                                Arrays.asList(
+                                        map(Real::leftFuzzyRepresentation, P.withScale(4).rationals()),
+                                        map(Real::rightFuzzyRepresentation, P.withScale(4).rationals()),
+                                        map(Real::fuzzyRepresentation, P.withScale(4).rationals())
+                                )
+                        )
+                ),
+                P.positiveRationals()
+        );
+        for (Triple<Real, Real, Rational> t : take(LIMIT, ts)) {
+            System.out.println("divide(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.divide(t.b, t.c));
         }
     }
 }

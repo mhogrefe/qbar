@@ -109,6 +109,11 @@ public class RealProperties extends QBarTestProperties {
         propertiesMultiply_Real();
         propertiesInvertUnsafe();
         propertiesInvert();
+        propertiesDivide_int();
+        propertiesDivide_BigInteger();
+        propertiesDivide_Rational();
+        propertiesDivideUnsafe_Real();
+        propertiesDivide_Real_Rational();
     }
 
     private void propertiesOf_Rational() {
@@ -3472,6 +3477,17 @@ public class RealProperties extends QBarTestProperties {
                 assertEquals(p, p.a.signumUnsafe(), oi.get());
             }
         }
+
+        Iterable<Pair<Real, Rational>> psFail = P.pairs(
+                P.reals(),
+                P.withElement(Rational.ZERO, P.negativeRationals())
+        );
+        for (Pair<Real, Rational> p : take(LIMIT, psFail)) {
+            try {
+                p.a.signum(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
     }
 
     private void propertiesAdd_Rational() {
@@ -3565,8 +3581,7 @@ public class RealProperties extends QBarTestProperties {
         }
 
         for (Pair<Real, Integer> p : take(LIMIT, P.pairs(P.reals(), P.nonzeroIntegers()))) {
-            //todo divide int
-            Optional<Boolean> inverse = eq(p.a.multiply(p.b).divide(BigInteger.valueOf(p.b)), p.a, DEFAULT_RESOLUTION);
+            Optional<Boolean> inverse = eq(p.a.multiply(p.b).divide(p.b), p.a, DEFAULT_RESOLUTION);
             assertTrue(p, !inverse.isPresent() || inverse.get());
         }
 
@@ -3650,8 +3665,11 @@ public class RealProperties extends QBarTestProperties {
         }
 
         for (Pair<Real, Rational> p : take(LIMIT, P.pairs(P.reals(), P.nonzeroRationals()))) {
-            Optional<Boolean> inverse = eq(p.a.multiply(p.b).divide(p.b), p.a, DEFAULT_RESOLUTION);
-            assertTrue(p, !inverse.isPresent() || inverse.get());
+            Real product = p.a.multiply(p.b);
+            Optional<Boolean> inverse1 = eq(product.divide(p.b), p.a, DEFAULT_RESOLUTION);
+            assertTrue(p, !inverse1.isPresent() || inverse1.get());
+            Optional<Boolean> inverse2 = eq(product, p.a.divide(p.b.invert()), DEFAULT_RESOLUTION);
+            assertTrue(p, !inverse2.isPresent() || inverse2.get());
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
@@ -3689,11 +3707,13 @@ public class RealProperties extends QBarTestProperties {
             assertTrue(p, !commutative.isPresent() || commutative.get());
         }
 
-        //todo
-        //for (Pair<Algebraic, Algebraic> p : take(TINY_LIMIT, P.pairs(P.reals(), P.nonzeroReals()))) {
-        //    inverse(x -> x.multiply(p.b), (Algebraic x) -> x.divide(p.b), p.a);
-        //    assertEquals(p, p.a.multiply(p.b), p.a.divide(p.b.invert()));
-        //}
+        for (Pair<Real, Real> p : take(TINY_LIMIT, P.pairs(P.reals(), P.nonzeroReals()))) {
+            Real product = p.a.multiply(p.b);
+            Optional<Boolean> inverse = eq(product.divideUnsafe(p.b), p.a, DEFAULT_RESOLUTION);
+            assertTrue(p, !inverse.isPresent() || inverse.get());
+            Optional<Boolean> equivalence = eq(product, p.a.divideUnsafe(p.b.invertUnsafe()), DEFAULT_RESOLUTION);
+            assertTrue(p, !equivalence.isPresent() || equivalence.get());
+        }
 
         for (Real x : take(LIMIT, P.reals())) {
             assertTrue(x, x.multiply(Rational.ONE) == x);
@@ -3790,6 +3810,233 @@ public class RealProperties extends QBarTestProperties {
                 ZERO.invert(r);
                 fail(r);
             } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<Pair<Real, Rational>> psFail = P.pairs(
+                P.withScale(1).choose(
+                        map(Algebraic::realValue, P.withScale(4).nonzeroAlgebraics()),
+                        P.choose(
+                                Arrays.asList(
+                                        map(Real::leftFuzzyRepresentation, P.withScale(4).rationals()),
+                                        map(Real::rightFuzzyRepresentation, P.withScale(4).rationals()),
+                                        map(Real::fuzzyRepresentation, P.withScale(4).rationals())
+                                )
+                        )
+                ),
+                P.withElement(Rational.ZERO, P.negativeRationals())
+        );
+        for (Pair<Real, Rational> p : take(LIMIT, psFail)) {
+            try {
+                p.a.invert(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesDivide_int() {
+        initialize("divide(int)");
+        for (Pair<Real, Integer> p : take(LIMIT, P.pairs(P.reals(), P.nonzeroIntegers()))) {
+            Real quotient = p.a.divide(p.b);
+            quotient.validate();
+            Optional<Boolean> inverse = eq(quotient.multiply(p.b), p.a, DEFAULT_RESOLUTION);
+            assertTrue(p, !inverse.isPresent() || inverse.get());
+        }
+
+        for (Pair<Real, Integer> p : take(LIMIT, P.pairs(P.nonzeroReals(), P.nonzeroIntegers()))) {
+            Optional<Boolean> antiCommutative = eq(
+                    p.a.divide(p.b),
+                    of(p.b).divideUnsafe(p.a).invertUnsafe(),
+                    DEFAULT_RESOLUTION
+            );
+            assertTrue(p, !antiCommutative.isPresent() || antiCommutative.get());
+        }
+
+        for (int i : take(LIMIT, P.nonzeroIntegers())) {
+            Optional<Boolean> inverse1 = eq(ONE.divide(i), of(i).invertUnsafe(), DEFAULT_RESOLUTION);
+            assertTrue(i, !inverse1.isPresent() || inverse1.get());
+            Optional<Boolean> inverse2 = eq(of(i).divide(i), Rational.ONE, DEFAULT_RESOLUTION);
+            assertTrue(i, !inverse2.isPresent() || inverse2.get());
+        }
+
+        for (Real x : take(LIMIT, P.reals())) {
+            assertTrue(x, x.divide(1) == x);
+        }
+
+        for (Real x : take(LIMIT, P.reals())) {
+            try {
+                x.divide(0);
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesDivide_BigInteger() {
+        initialize("divide(BigInteger)");
+        for (Pair<Real, BigInteger> p : take(LIMIT, P.pairs(P.reals(), P.nonzeroBigIntegers()))) {
+            Real quotient = p.a.divide(p.b);
+            quotient.validate();
+            Optional<Boolean> inverse = eq(quotient.multiply(p.b), p.a, DEFAULT_RESOLUTION);
+            assertTrue(p, !inverse.isPresent() || inverse.get());
+        }
+
+        for (Pair<Real, BigInteger> p : take(LIMIT, P.pairs(P.nonzeroReals(), P.nonzeroBigIntegers()))) {
+            Optional<Boolean> antiCommutative = eq(
+                    p.a.divide(p.b),
+                    of(p.b).divideUnsafe(p.a).invertUnsafe(),
+                    DEFAULT_RESOLUTION
+            );
+            assertTrue(p, !antiCommutative.isPresent() || antiCommutative.get());
+        }
+
+        for (BigInteger i : take(LIMIT, P.nonzeroBigIntegers())) {
+            Optional<Boolean> inverse1 = eq(ONE.divide(i), of(i).invertUnsafe(), DEFAULT_RESOLUTION);
+            assertTrue(i, !inverse1.isPresent() || inverse1.get());
+            Optional<Boolean> inverse2 = eq(of(i).divide(i), Rational.ONE, DEFAULT_RESOLUTION);
+            assertTrue(i, !inverse2.isPresent() || inverse2.get());
+        }
+
+        for (Real x : take(LIMIT, P.reals())) {
+            assertTrue(x, x.divide(BigInteger.ONE) == x);
+        }
+
+        for (Real x : take(LIMIT, P.reals())) {
+            try {
+                x.divide(BigInteger.ZERO);
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesDivide_Rational() {
+        initialize("divide(Rational)");
+        for (Pair<Real, Rational> p : take(LIMIT, P.pairs(P.reals(), P.nonzeroRationals()))) {
+            Real quotient = p.a.divide(p.b);
+            quotient.validate();
+            Optional<Boolean> inverse = eq(quotient.multiply(p.b), p.a, DEFAULT_RESOLUTION);
+            assertTrue(p, !inverse.isPresent() || inverse.get());
+        }
+
+        for (Pair<Real, Rational> p : take(LIMIT, P.pairs(P.nonzeroReals(), P.nonzeroRationals()))) {
+            Real quotient = p.a.divide(p.b);
+            Optional<Boolean> antiCommutative = eq(
+                    quotient,
+                    of(p.b).divideUnsafe(p.a).invertUnsafe(),
+                    DEFAULT_RESOLUTION
+            );
+            assertTrue(p, !antiCommutative.isPresent() || antiCommutative.get());
+            Optional<Boolean> inverse = eq(quotient, p.a.multiply(p.b.invert()), DEFAULT_RESOLUTION);
+            assertTrue(p, !inverse.isPresent() || inverse.get());
+        }
+
+        for (Rational i : take(LIMIT, P.nonzeroRationals())) {
+            Optional<Boolean> inverse1 = eq(ONE.divide(i), of(i).invertUnsafe(), DEFAULT_RESOLUTION);
+            assertTrue(i, !inverse1.isPresent() || inverse1.get());
+            Optional<Boolean> inverse2 = eq(of(i).divide(i), Rational.ONE, DEFAULT_RESOLUTION);
+            assertTrue(i, !inverse2.isPresent() || inverse2.get());
+        }
+
+        for (Real x : take(LIMIT, P.reals())) {
+            assertTrue(x, x.divide(Rational.ONE) == x);
+        }
+
+        for (Real x : take(LIMIT, P.reals())) {
+            try {
+                x.divide(Rational.ZERO);
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesDivideUnsafe_Real() {
+        initialize("divideUnsafe(Real)");
+        for (Pair<Real, Real> p : take(LIMIT, P.pairs(P.reals(), P.nonzeroReals()))) {
+            Real quotient = p.a.divideUnsafe(p.b);
+            quotient.validate();
+            Optional<Boolean> inverse1 = eq(quotient, p.a.multiply(p.b.invertUnsafe()), DEFAULT_RESOLUTION);
+            assertTrue(p, !inverse1.isPresent() || inverse1.get());
+            Optional<Boolean> inverse2 = eq(quotient.multiply(p.b), p.a, DEFAULT_RESOLUTION);
+            assertTrue(p, !inverse2.isPresent() || inverse2.get());
+        }
+
+        for (Pair<Real, Real> p : take(LIMIT, P.pairs(P.nonzeroReals()))) {
+            Optional<Boolean> equivalence = eq(
+                    p.a.divideUnsafe(p.b),
+                    p.b.divideUnsafe(p.a).invertUnsafe(),
+                    DEFAULT_RESOLUTION
+            );
+            assertTrue(p, !equivalence.isPresent() || equivalence.get());
+        }
+
+        for (Real x : take(LIMIT, P.reals())) {
+            assertTrue(x, x.divideUnsafe(ONE) == x);
+        }
+
+        for (Real x : take(LIMIT, P.nonzeroReals())) {
+            Optional<Boolean> inverse = eq(ONE.divideUnsafe(x), x.invertUnsafe(), DEFAULT_RESOLUTION);
+            assertTrue(x, !inverse.isPresent() || inverse.get());
+            assertTrue(x, x.divideUnsafe(x) == ONE);
+            assertTrue(x, ZERO.divideUnsafe(x) == ZERO);
+        }
+
+        for (Real x : take(LIMIT, P.reals())) {
+            try {
+                x.divideUnsafe(ZERO);
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesDivide_Real_Rational() {
+        initialize("divide(Real, Rational)");
+        Iterable<Triple<Real, Real, Rational>> ts = P.triples(
+                P.withScale(4).reals(),
+                P.withScale(1).choose(
+                        map(Algebraic::realValue, P.withScale(4).nonzeroAlgebraics()),
+                        P.choose(
+                                Arrays.asList(
+                                        map(Real::leftFuzzyRepresentation, P.withScale(4).rationals()),
+                                        map(Real::rightFuzzyRepresentation, P.withScale(4).rationals()),
+                                        map(Real::fuzzyRepresentation, P.withScale(4).rationals())
+                                )
+                        )
+                ),
+                P.positiveRationals()
+        );
+        for (Triple<Real, Real, Rational> t : take(LIMIT, ts)) {
+            Optional<Real> ox = t.a.divide(t.b, t.c);
+            if (ox.isPresent()) {
+                ox.get().validate();
+                Optional<Boolean> equal = eq(t.a.divideUnsafe(t.b), ox.get(), DEFAULT_RESOLUTION);
+                assertTrue(t, !equal.isPresent() || equal.get());
+            }
+        }
+
+        for (Pair<Real, Rational> p : take(LIMIT, P.pairs(P.reals(), P.positiveRationals()))) {
+            try {
+                p.a.divide(ZERO, p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<Triple<Real, Real, Rational>> tsFail = P.triples(
+                P.withScale(4).reals(),
+                P.withScale(1).choose(
+                        map(Algebraic::realValue, P.withScale(4).nonzeroAlgebraics()),
+                        P.choose(
+                                Arrays.asList(
+                                        map(Real::leftFuzzyRepresentation, P.withScale(4).rationals()),
+                                        map(Real::rightFuzzyRepresentation, P.withScale(4).rationals()),
+                                        map(Real::fuzzyRepresentation, P.withScale(4).rationals())
+                                )
+                        )
+                ),
+                P.withElement(Rational.ZERO, P.negativeRationals())
+        );
+        for (Triple<Real, Real, Rational> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.divide(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 }
