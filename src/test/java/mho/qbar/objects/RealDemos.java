@@ -1496,4 +1496,16 @@ public class RealDemos extends QBarDemos {
             System.out.println("divide(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.divide(t.b, t.c));
         }
     }
+
+    private void demoShiftLeft() {
+        for (Pair<Real, Integer> p : take(LIMIT, P.pairs(P.withScale(4).reals(), P.integersGeometric()))) {
+            System.out.println(p.a + " << " + p.b + " = " + p.a.shiftLeft(p.b));
+        }
+    }
+
+    private void demoShiftRight() {
+        for (Pair<Real, Integer> p : take(LIMIT, P.pairs(P.withScale(4).reals(), P.integersGeometric()))) {
+            System.out.println(p.a + " >> " + p.b + " = " + p.a.shiftRight(p.b));
+        }
+    }
 }

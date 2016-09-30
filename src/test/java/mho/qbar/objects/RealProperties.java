@@ -14,10 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -114,6 +111,10 @@ public class RealProperties extends QBarTestProperties {
         propertiesDivide_Rational();
         propertiesDivideUnsafe_Real();
         propertiesDivide_Real_Rational();
+        propertiesShiftLeft();
+        compareImplementationsShiftLeft();
+        propertiesShiftRight();
+        compareImplementationsShiftRight();
     }
 
     private void propertiesOf_Rational() {
@@ -4038,5 +4039,99 @@ public class RealProperties extends QBarTestProperties {
                 fail(t);
             } catch (IllegalArgumentException ignored) {}
         }
+    }
+
+    private static @NotNull Real shiftLeft_simplest(@NotNull Real x, int bits) {
+        if (bits < 0) {
+            return x.divide(BigInteger.ONE.shiftLeft(-bits));
+        } else {
+            return x.multiply(BigInteger.ONE.shiftLeft(bits));
+        }
+    }
+
+    private void propertiesShiftLeft() {
+        initialize("shiftLeft(int)");
+        for (Pair<Real, Integer> p : take(LIMIT, P.pairs(P.reals(), P.integersGeometric()))) {
+            Real shifted = p.a.shiftLeft(p.b);
+            shifted.validate();
+            Optional<Boolean> equal = eq(shifted, shiftLeft_simplest(p.a, p.b), DEFAULT_RESOLUTION);
+            assertTrue(p, !equal.isPresent() || equal.get());
+            Optional<Boolean> inverse = eq(shifted.shiftRight(p.b), p.a, DEFAULT_RESOLUTION);
+            assertTrue(p, !inverse.isPresent() || inverse.get());
+            Optional<Boolean> leftRight = eq(shifted, p.a.shiftRight(-p.b), DEFAULT_RESOLUTION);
+            assertTrue(p, !leftRight.isPresent() || leftRight.get());
+        }
+
+        for (Real x : take(LIMIT, P.reals())) {
+            assertTrue(x, x.shiftLeft(0) == x);
+        }
+
+        for (Pair<Real, Integer> p : take(LIMIT, P.pairs(P.reals(), P.naturalIntegersGeometric()))) {
+            Optional<Boolean> equal = eq(
+                    p.a.shiftLeft(p.b),
+                    p.a.multiply(BigInteger.ONE.shiftLeft(p.b)),
+                    DEFAULT_RESOLUTION
+            );
+            assertTrue(p, !equal.isPresent() || equal.get());
+        }
+    }
+
+    private void compareImplementationsShiftLeft() {
+        Map<String, Function<Pair<Real, Integer>, Real>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> shiftLeft_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.shiftLeft(p.b));
+        compareImplementations(
+                "shiftLeft(int)",
+                take(LIMIT, P.pairs(P.reals(), P.integersGeometric())),
+                functions,
+                v -> P.reset()
+        );
+    }
+
+    private static @NotNull Real shiftRight_simplest(@NotNull Real x, int bits) {
+        if (bits < 0) {
+            return x.multiply(BigInteger.ONE.shiftLeft(-bits));
+        } else {
+            return x.divide(BigInteger.ONE.shiftLeft(bits));
+        }
+    }
+
+    private void propertiesShiftRight() {
+        initialize("shiftRight(int)");
+        for (Pair<Real, Integer> p : take(LIMIT, P.pairs(P.reals(), P.integersGeometric()))) {
+            Real shifted = p.a.shiftRight(p.b);
+            shifted.validate();
+            Optional<Boolean> equal = eq(shifted, shiftRight_simplest(p.a, p.b), DEFAULT_RESOLUTION);
+            assertTrue(p, !equal.isPresent() || equal.get());
+            Optional<Boolean> inverse = eq(shifted.shiftLeft(p.b), p.a, DEFAULT_RESOLUTION);
+            assertTrue(p, !inverse.isPresent() || inverse.get());
+            Optional<Boolean> leftRight = eq(shifted, p.a.shiftLeft(-p.b), DEFAULT_RESOLUTION);
+            assertTrue(p, !leftRight.isPresent() || leftRight.get());
+        }
+
+        for (Real x : take(LIMIT, P.reals())) {
+            assertTrue(x, x.shiftRight(0) == x);
+        }
+
+        for (Pair<Real, Integer> p : take(LIMIT, P.pairs(P.reals(), P.naturalIntegersGeometric()))) {
+            Optional<Boolean> equal = eq(
+                    p.a.shiftRight(p.b),
+                    p.a.divide(BigInteger.ONE.shiftLeft(p.b)),
+                    DEFAULT_RESOLUTION
+            );
+            assertTrue(p, !equal.isPresent() || equal.get());
+        }
+    }
+
+    private void compareImplementationsShiftRight() {
+        Map<String, Function<Pair<Real, Integer>, Real>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> shiftRight_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.shiftRight(p.b));
+        compareImplementations(
+                "shiftRight(int)",
+                take(LIMIT, P.pairs(P.reals(), P.integersGeometric())),
+                functions,
+                v -> P.reset()
+        );
     }
 }

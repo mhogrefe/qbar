@@ -95,10 +95,15 @@ public final class Real implements Iterable<Interval> {
     public static final @NotNull Real E = exp(Rational.ONE);
 
     /**
+     * arctan(1), or π/4
+     */
+    private static final @NotNull Real ARCTAN_1 =
+            arctan01(Rational.of(1, 5)).shiftLeft(2).subtract(arctan01(Rational.of(1, 239)));
+
+    /**
      * π, the ratio of a circle's circumference to its diameter
      */
-    public static final @NotNull Real PI =
-            atan01(Rational.of(1, 5)).shiftLeft(2).subtract(atan01(Rational.of(1, 239))).shiftLeft(2);
+    public static final @NotNull Real PI = ARCTAN_1.shiftLeft(2);
 
     /**
      * 2^(-100), the default resolution of those methods which give up a computation after the bounding interval
@@ -2549,7 +2554,21 @@ public final class Real implements Iterable<Interval> {
         return Optional.of(new Real(zipWith(Interval::divideHull, intervals, that.intervals)));
     }
 
+    /**
+     * Returns the left shift of {@code this} by {@code bits}; {@code this}×2<sup>{@code bits}</sup>. Negative
+     * {@code bits} corresponds to a right shift. If {@code this} is clean, so is the result.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code Real}.</li>
+     *  <li>{@code bits} may be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param bits the number of bits to left-shift by
+     * @return {@code this}≪{@code bits}
+     */
     public @NotNull Real shiftLeft(int bits) {
+        if (this == ZERO || bits == 0) return this;
         if (isExact()) {
             return new Real(rational.get().shiftLeft(bits));
         } else {
@@ -2557,7 +2576,21 @@ public final class Real implements Iterable<Interval> {
         }
     }
 
+    /**
+     * Returns the right shift of {@code this} by {@code bits}; {@code this}×2<sup>–{@code bits}</sup>. Negative
+     * {@code bits} corresponds to a left shift. If {@code this} is clean, so is the result.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code Real}.</li>
+     *  <li>{@code bits} may be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param bits the number of bits to right-shift by
+     * @return {@code this}≫{@code bits}
+     */
     public @NotNull Real shiftRight(int bits) {
+        if (this == ZERO || bits == 0) return this;
         if (isExact()) {
             return new Real(rational.get().shiftRight(bits));
         } else {
@@ -2877,9 +2910,9 @@ public final class Real implements Iterable<Interval> {
         );
     }
 
-    private static @NotNull Real atan01(@NotNull Rational x) {
+    private static @NotNull Real arctan01(@NotNull Rational x) {
         if (x == Rational.ZERO) return ZERO;
-        if (x == Rational.ONE) return PI.shiftRight(2);
+        if (x == Rational.ONE) return ARCTAN_1;
         Rational xSquared = x.pow(2);
         return new Real(() -> new Iterator<Interval>() {
             private @NotNull Rational partialSum = x;

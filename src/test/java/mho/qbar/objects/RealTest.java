@@ -7398,4 +7398,242 @@ public class RealTest {
         divide_Real_Rational_fail_helper(PI, E, Rational.ZERO);
         divide_Real_Rational_fail_helper(PI, E, Rational.NEGATIVE_ONE);
     }
+
+    private static void shiftLeft_helper(@NotNull Real x, int bits, @NotNull String output) {
+        Real y = x.shiftLeft(bits);
+        y.validate();
+        aeq(y, output);
+    }
+
+    @Test
+    public void testShiftLeft() {
+        shiftLeft_helper(ZERO, 0, "0");
+        shiftLeft_helper(ZERO, 1, "0");
+        shiftLeft_helper(ZERO, 2, "0");
+        shiftLeft_helper(ZERO, 3, "0");
+        shiftLeft_helper(ZERO, 4, "0");
+        shiftLeft_helper(ZERO, -1, "0");
+        shiftLeft_helper(ZERO, -2, "0");
+        shiftLeft_helper(ZERO, -3, "0");
+        shiftLeft_helper(ZERO, -4, "0");
+
+        shiftLeft_helper(ONE, 0, "1");
+        shiftLeft_helper(ONE, 1, "2");
+        shiftLeft_helper(ONE, 2, "4");
+        shiftLeft_helper(ONE, 3, "8");
+        shiftLeft_helper(ONE, 4, "16");
+        shiftLeft_helper(ONE, -1, "0.5");
+        shiftLeft_helper(ONE, -2, "0.25");
+        shiftLeft_helper(ONE, -3, "0.125");
+        shiftLeft_helper(ONE, -4, "0.0625");
+
+        shiftLeft_helper(NEGATIVE_ONE, 0, "-1");
+        shiftLeft_helper(NEGATIVE_ONE, 1, "-2");
+        shiftLeft_helper(NEGATIVE_ONE, 2, "-4");
+        shiftLeft_helper(NEGATIVE_ONE, 3, "-8");
+        shiftLeft_helper(NEGATIVE_ONE, 4, "-16");
+        shiftLeft_helper(NEGATIVE_ONE, -1, "-0.5");
+        shiftLeft_helper(NEGATIVE_ONE, -2, "-0.25");
+        shiftLeft_helper(NEGATIVE_ONE, -3, "-0.125");
+        shiftLeft_helper(NEGATIVE_ONE, -4, "-0.0625");
+
+        shiftLeft_helper(ONE_HALF, 0, "0.5");
+        shiftLeft_helper(ONE_HALF, 1, "1");
+        shiftLeft_helper(ONE_HALF, 2, "2");
+        shiftLeft_helper(ONE_HALF, 3, "4");
+        shiftLeft_helper(ONE_HALF, 4, "8");
+        shiftLeft_helper(ONE_HALF, -1, "0.25");
+        shiftLeft_helper(ONE_HALF, -2, "0.125");
+        shiftLeft_helper(ONE_HALF, -3, "0.0625");
+        shiftLeft_helper(ONE_HALF, -4, "0.03125");
+
+        shiftLeft_helper(NEGATIVE_FOUR_THIRDS, 0, "-1.33333333333333333333...");
+        shiftLeft_helper(NEGATIVE_FOUR_THIRDS, 1, "-2.66666666666666666666...");
+        shiftLeft_helper(NEGATIVE_FOUR_THIRDS, 2, "-5.33333333333333333333...");
+        shiftLeft_helper(NEGATIVE_FOUR_THIRDS, 3, "-10.66666666666666666666...");
+        shiftLeft_helper(NEGATIVE_FOUR_THIRDS, 4, "-21.33333333333333333333...");
+        shiftLeft_helper(NEGATIVE_FOUR_THIRDS, -1, "-0.66666666666666666666...");
+        shiftLeft_helper(NEGATIVE_FOUR_THIRDS, -2, "-0.33333333333333333333...");
+        shiftLeft_helper(NEGATIVE_FOUR_THIRDS, -3, "-0.16666666666666666666...");
+        shiftLeft_helper(NEGATIVE_FOUR_THIRDS, -4, "-0.08333333333333333333...");
+
+        shiftLeft_helper(SQRT_TWO, 0, "1.41421356237309504880...");
+        shiftLeft_helper(SQRT_TWO, 1, "2.82842712474619009760...");
+        shiftLeft_helper(SQRT_TWO, 2, "5.65685424949238019520...");
+        shiftLeft_helper(SQRT_TWO, 3, "11.31370849898476039041...");
+        shiftLeft_helper(SQRT_TWO, 4, "22.62741699796952078082...");
+        shiftLeft_helper(SQRT_TWO, -1, "0.70710678118654752440...");
+        shiftLeft_helper(SQRT_TWO, -2, "0.35355339059327376220...");
+        shiftLeft_helper(SQRT_TWO, -3, "0.17677669529663688110...");
+        shiftLeft_helper(SQRT_TWO, -4, "0.08838834764831844055...");
+
+        shiftLeft_helper(E, 0, "2.71828182845904523536...");
+        shiftLeft_helper(E, 1, "5.43656365691809047072...");
+        shiftLeft_helper(E, 2, "10.87312731383618094144...");
+        shiftLeft_helper(E, 3, "21.74625462767236188288...");
+        shiftLeft_helper(E, 4, "43.49250925534472376576...");
+        shiftLeft_helper(E, -1, "1.35914091422952261768...");
+        shiftLeft_helper(E, -2, "0.67957045711476130884...");
+        shiftLeft_helper(E, -3, "0.33978522855738065442...");
+        shiftLeft_helper(E, -4, "0.16989261427869032721...");
+
+        shiftLeft_helper(PI, 0, "3.14159265358979323846...");
+        shiftLeft_helper(PI, 1, "6.28318530717958647692...");
+        shiftLeft_helper(PI, 2, "12.56637061435917295385...");
+        shiftLeft_helper(PI, 3, "25.13274122871834590770...");
+        shiftLeft_helper(PI, 4, "50.26548245743669181540...");
+        shiftLeft_helper(PI, -1, "1.57079632679489661923...");
+        shiftLeft_helper(PI, -2, "0.78539816339744830961...");
+        shiftLeft_helper(PI, -3, "0.39269908169872415480...");
+        shiftLeft_helper(PI, -4, "0.19634954084936207740...");
+
+        shiftLeft_helper(leftFuzzyRepresentation(Rational.ZERO), 0, "~0");
+        shiftLeft_helper(leftFuzzyRepresentation(Rational.ZERO), 1, "~0");
+        shiftLeft_helper(leftFuzzyRepresentation(Rational.ZERO), 2, "~0");
+        shiftLeft_helper(leftFuzzyRepresentation(Rational.ZERO), 3, "~0");
+        shiftLeft_helper(leftFuzzyRepresentation(Rational.ZERO), 4, "~0");
+        shiftLeft_helper(leftFuzzyRepresentation(Rational.ZERO), -1, "~0");
+        shiftLeft_helper(leftFuzzyRepresentation(Rational.ZERO), -2, "~0");
+        shiftLeft_helper(leftFuzzyRepresentation(Rational.ZERO), -3, "~0");
+        shiftLeft_helper(leftFuzzyRepresentation(Rational.ZERO), -4, "~0");
+
+        shiftLeft_helper(rightFuzzyRepresentation(Rational.ZERO), 0, "~0");
+        shiftLeft_helper(rightFuzzyRepresentation(Rational.ZERO), 1, "~0");
+        shiftLeft_helper(rightFuzzyRepresentation(Rational.ZERO), 2, "~0");
+        shiftLeft_helper(rightFuzzyRepresentation(Rational.ZERO), 3, "~0");
+        shiftLeft_helper(rightFuzzyRepresentation(Rational.ZERO), 4, "~0");
+        shiftLeft_helper(rightFuzzyRepresentation(Rational.ZERO), -1, "~0");
+        shiftLeft_helper(rightFuzzyRepresentation(Rational.ZERO), -2, "~0");
+        shiftLeft_helper(rightFuzzyRepresentation(Rational.ZERO), -3, "~0");
+        shiftLeft_helper(rightFuzzyRepresentation(Rational.ZERO), -4, "~0");
+
+        shiftLeft_helper(fuzzyRepresentation(Rational.ZERO), 0, "~0");
+        shiftLeft_helper(fuzzyRepresentation(Rational.ZERO), 1, "~0");
+        shiftLeft_helper(fuzzyRepresentation(Rational.ZERO), 2, "~0");
+        shiftLeft_helper(fuzzyRepresentation(Rational.ZERO), 3, "~0");
+        shiftLeft_helper(fuzzyRepresentation(Rational.ZERO), 4, "~0");
+        shiftLeft_helper(fuzzyRepresentation(Rational.ZERO), -1, "~0");
+        shiftLeft_helper(fuzzyRepresentation(Rational.ZERO), -2, "~0");
+        shiftLeft_helper(fuzzyRepresentation(Rational.ZERO), -3, "~0");
+        shiftLeft_helper(fuzzyRepresentation(Rational.ZERO), -4, "~0");
+    }
+
+    private static void shiftRight_helper(@NotNull Real x, int bits, @NotNull String output) {
+        Real y = x.shiftRight(bits);
+        y.validate();
+        aeq(y, output);
+    }
+
+    @Test
+    public void testShiftRight() {
+        shiftRight_helper(ZERO, 0, "0");
+        shiftRight_helper(ZERO, 1, "0");
+        shiftRight_helper(ZERO, 2, "0");
+        shiftRight_helper(ZERO, 3, "0");
+        shiftRight_helper(ZERO, 4, "0");
+        shiftRight_helper(ZERO, -1, "0");
+        shiftRight_helper(ZERO, -2, "0");
+        shiftRight_helper(ZERO, -3, "0");
+        shiftRight_helper(ZERO, -4, "0");
+
+        shiftRight_helper(ONE, 0, "1");
+        shiftRight_helper(ONE, 1, "0.5");
+        shiftRight_helper(ONE, 2, "0.25");
+        shiftRight_helper(ONE, 3, "0.125");
+        shiftRight_helper(ONE, 4, "0.0625");
+        shiftRight_helper(ONE, -1, "2");
+        shiftRight_helper(ONE, -2, "4");
+        shiftRight_helper(ONE, -3, "8");
+        shiftRight_helper(ONE, -4, "16");
+
+        shiftRight_helper(NEGATIVE_ONE, 0, "-1");
+        shiftRight_helper(NEGATIVE_ONE, 1, "-0.5");
+        shiftRight_helper(NEGATIVE_ONE, 2, "-0.25");
+        shiftRight_helper(NEGATIVE_ONE, 3, "-0.125");
+        shiftRight_helper(NEGATIVE_ONE, 4, "-0.0625");
+        shiftRight_helper(NEGATIVE_ONE, -1, "-2");
+        shiftRight_helper(NEGATIVE_ONE, -2, "-4");
+        shiftRight_helper(NEGATIVE_ONE, -3, "-8");
+        shiftRight_helper(NEGATIVE_ONE, -4, "-16");
+
+        shiftRight_helper(ONE_HALF, 0, "0.5");
+        shiftRight_helper(ONE_HALF, 1, "0.25");
+        shiftRight_helper(ONE_HALF, 2, "0.125");
+        shiftRight_helper(ONE_HALF, 3, "0.0625");
+        shiftRight_helper(ONE_HALF, 4, "0.03125");
+        shiftRight_helper(ONE_HALF, -1, "1");
+        shiftRight_helper(ONE_HALF, -2, "2");
+        shiftRight_helper(ONE_HALF, -3, "4");
+        shiftRight_helper(ONE_HALF, -4, "8");
+
+        shiftRight_helper(NEGATIVE_FOUR_THIRDS, 0, "-1.33333333333333333333...");
+        shiftRight_helper(NEGATIVE_FOUR_THIRDS, 1, "-0.66666666666666666666...");
+        shiftRight_helper(NEGATIVE_FOUR_THIRDS, 2, "-0.33333333333333333333...");
+        shiftRight_helper(NEGATIVE_FOUR_THIRDS, 3, "-0.16666666666666666666...");
+        shiftRight_helper(NEGATIVE_FOUR_THIRDS, 4, "-0.08333333333333333333...");
+        shiftRight_helper(NEGATIVE_FOUR_THIRDS, -1, "-2.66666666666666666666...");
+        shiftRight_helper(NEGATIVE_FOUR_THIRDS, -2, "-5.33333333333333333333...");
+        shiftRight_helper(NEGATIVE_FOUR_THIRDS, -3, "-10.66666666666666666666...");
+        shiftRight_helper(NEGATIVE_FOUR_THIRDS, -4, "-21.33333333333333333333...");
+
+        shiftRight_helper(SQRT_TWO, 0, "1.41421356237309504880...");
+        shiftRight_helper(SQRT_TWO, 1, "0.70710678118654752440...");
+        shiftRight_helper(SQRT_TWO, 2, "0.35355339059327376220...");
+        shiftRight_helper(SQRT_TWO, 3, "0.17677669529663688110...");
+        shiftRight_helper(SQRT_TWO, 4, "0.08838834764831844055...");
+        shiftRight_helper(SQRT_TWO, -1, "2.82842712474619009760...");
+        shiftRight_helper(SQRT_TWO, -2, "5.65685424949238019520...");
+        shiftRight_helper(SQRT_TWO, -3, "11.31370849898476039041...");
+        shiftRight_helper(SQRT_TWO, -4, "22.62741699796952078082...");
+
+        shiftRight_helper(E, 0, "2.71828182845904523536...");
+        shiftRight_helper(E, 1, "1.35914091422952261768...");
+        shiftRight_helper(E, 2, "0.67957045711476130884...");
+        shiftRight_helper(E, 3, "0.33978522855738065442...");
+        shiftRight_helper(E, 4, "0.16989261427869032721...");
+        shiftRight_helper(E, -1, "5.43656365691809047072...");
+        shiftRight_helper(E, -2, "10.87312731383618094144...");
+        shiftRight_helper(E, -3, "21.74625462767236188288...");
+        shiftRight_helper(E, -4, "43.49250925534472376576...");
+
+        shiftRight_helper(PI, 0, "3.14159265358979323846...");
+        shiftRight_helper(PI, 1, "1.57079632679489661923...");
+        shiftRight_helper(PI, 2, "0.78539816339744830961...");
+        shiftRight_helper(PI, 3, "0.39269908169872415480...");
+        shiftRight_helper(PI, 4, "0.19634954084936207740...");
+        shiftRight_helper(PI, -1, "6.28318530717958647692...");
+        shiftRight_helper(PI, -2, "12.56637061435917295385...");
+        shiftRight_helper(PI, -3, "25.13274122871834590770...");
+        shiftRight_helper(PI, -4, "50.26548245743669181540...");
+
+        shiftRight_helper(leftFuzzyRepresentation(Rational.ZERO), 0, "~0");
+        shiftRight_helper(leftFuzzyRepresentation(Rational.ZERO), 1, "~0");
+        shiftRight_helper(leftFuzzyRepresentation(Rational.ZERO), 2, "~0");
+        shiftRight_helper(leftFuzzyRepresentation(Rational.ZERO), 3, "~0");
+        shiftRight_helper(leftFuzzyRepresentation(Rational.ZERO), 4, "~0");
+        shiftRight_helper(leftFuzzyRepresentation(Rational.ZERO), -1, "~0");
+        shiftRight_helper(leftFuzzyRepresentation(Rational.ZERO), -2, "~0");
+        shiftRight_helper(leftFuzzyRepresentation(Rational.ZERO), -3, "~0");
+        shiftRight_helper(leftFuzzyRepresentation(Rational.ZERO), -4, "~0");
+
+        shiftRight_helper(rightFuzzyRepresentation(Rational.ZERO), 0, "~0");
+        shiftRight_helper(rightFuzzyRepresentation(Rational.ZERO), 1, "~0");
+        shiftRight_helper(rightFuzzyRepresentation(Rational.ZERO), 2, "~0");
+        shiftRight_helper(rightFuzzyRepresentation(Rational.ZERO), 3, "~0");
+        shiftRight_helper(rightFuzzyRepresentation(Rational.ZERO), 4, "~0");
+        shiftRight_helper(rightFuzzyRepresentation(Rational.ZERO), -1, "~0");
+        shiftRight_helper(rightFuzzyRepresentation(Rational.ZERO), -2, "~0");
+        shiftRight_helper(rightFuzzyRepresentation(Rational.ZERO), -3, "~0");
+        shiftRight_helper(rightFuzzyRepresentation(Rational.ZERO), -4, "~0");
+
+        shiftRight_helper(fuzzyRepresentation(Rational.ZERO), 0, "~0");
+        shiftRight_helper(fuzzyRepresentation(Rational.ZERO), 1, "~0");
+        shiftRight_helper(fuzzyRepresentation(Rational.ZERO), 2, "~0");
+        shiftRight_helper(fuzzyRepresentation(Rational.ZERO), 3, "~0");
+        shiftRight_helper(fuzzyRepresentation(Rational.ZERO), 4, "~0");
+        shiftRight_helper(fuzzyRepresentation(Rational.ZERO), -1, "~0");
+        shiftRight_helper(fuzzyRepresentation(Rational.ZERO), -2, "~0");
+        shiftRight_helper(fuzzyRepresentation(Rational.ZERO), -3, "~0");
+        shiftRight_helper(fuzzyRepresentation(Rational.ZERO), -4, "~0");
+    }
 }
