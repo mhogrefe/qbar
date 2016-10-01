@@ -3730,6 +3730,70 @@ public class AlgebraicTest {
         pow_int_fail_helper("0", -3);
     }
 
+    private static void rootOfRational_helper(@NotNull String x, int r, @NotNull String output) {
+        Algebraic y = rootOfRational(Rational.readStrict(x).get(), r);
+        y.validate();
+        aeq(y, output);
+    }
+
+    private static void rootOfRational_fail_helper(@NotNull String x, int r) {
+        try {
+            rootOfRational(Rational.readStrict(x).get(), r);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testRootOfRational() {
+        rootOfRational_helper("0", 1, "0");
+        rootOfRational_helper("0", 2, "0");
+        rootOfRational_helper("0", 3, "0");
+        rootOfRational_helper("0", 10, "0");
+
+        rootOfRational_helper("1", 1, "1");
+        rootOfRational_helper("1", 2, "1");
+        rootOfRational_helper("1", 3, "1");
+        rootOfRational_helper("1", 10, "1");
+        rootOfRational_helper("1", -1, "1");
+        rootOfRational_helper("1", -2, "1");
+        rootOfRational_helper("1", -3, "1");
+        rootOfRational_helper("1", -10, "1");
+
+        rootOfRational_helper("-1", 1, "-1");
+        rootOfRational_helper("-1", 3, "-1");
+        rootOfRational_helper("-1", 9, "-1");
+        rootOfRational_helper("-1", -1, "-1");
+        rootOfRational_helper("-1", -3, "-1");
+        rootOfRational_helper("-1", -9, "-1");
+
+        rootOfRational_helper("1/2", 1, "1/2");
+        rootOfRational_helper("1/2", 2, "sqrt(2)/2");
+        rootOfRational_helper("1/2", 3, "root 0 of 2*x^3-1");
+        rootOfRational_helper("1/2", 10, "root 1 of 2*x^10-1");
+        rootOfRational_helper("1/2", -1, "2");
+        rootOfRational_helper("1/2", -2, "sqrt(2)");
+        rootOfRational_helper("1/2", -3, "root 0 of x^3-2");
+        rootOfRational_helper("1/2", -10, "root 1 of x^10-2");
+
+        rootOfRational_helper("-4/3", 1, "-4/3");
+        rootOfRational_helper("-4/3", 3, "root 0 of 3*x^3+4");
+        rootOfRational_helper("-4/3", 9, "root 0 of 3*x^9+4");
+        rootOfRational_helper("-4/3", -1, "-3/4");
+        rootOfRational_helper("-4/3", -3, "root 0 of 4*x^3+3");
+        rootOfRational_helper("-4/3", -9, "root 0 of 4*x^9+3");
+
+        rootOfRational_helper("4", 4, "sqrt(2)");
+        rootOfRational_helper("1728/117649", 12, "root 1 of 49*x^4-12");
+
+        rootOfRational_fail_helper("0", -1);
+        rootOfRational_fail_helper("0", -2);
+        rootOfRational_fail_helper("0", -3);
+        rootOfRational_fail_helper("1", 0);
+        rootOfRational_fail_helper("2", 0);
+        rootOfRational_fail_helper("-1", 2);
+        rootOfRational_fail_helper("-1", -2);
+    }
+
     private static void root_helper(@NotNull String x, int r, @NotNull String output) {
         Algebraic y = readStrict(x).get().root(r);
         y.validate();

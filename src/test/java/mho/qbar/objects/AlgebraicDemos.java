@@ -571,6 +571,16 @@ public class AlgebraicDemos extends QBarDemos {
         }
     }
 
+    private void demoRootOfRational() {
+        Iterable<Pair<Rational, Integer>> ps = filterInfinite(
+                p -> (p.a != Rational.ZERO || p.b >= 0) && ((p.b & 1) != 0 || p.a.signum() != -1),
+                P.pairsSquareRootOrder(P.withScale(4).rationals(), P.nonzeroIntegersGeometric())
+        );
+        for (Pair<Rational, Integer> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("(" + p.a + ") ^ (1/" + p.b + ") = " + rootOfRational(p.a, p.b));
+        }
+    }
+
     private void demoRoot() {
         Iterable<Pair<Algebraic, Integer>> ps = filterInfinite(
                 p -> (p.a != ZERO || p.b >= 0) && ((p.b & 1) != 0 || p.a.signum() != -1),

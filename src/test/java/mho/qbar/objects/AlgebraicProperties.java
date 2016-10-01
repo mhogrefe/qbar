@@ -122,6 +122,7 @@ public class AlgebraicProperties extends QBarTestProperties {
         propertiesDelta();
         propertiesPow_int();
         compareImplementationsPow_int();
+        propertiesRootOfRational();
         propertiesRoot();
         propertiesSqrt();
         propertiesCbrt();
@@ -3082,6 +3083,84 @@ public class AlgebraicProperties extends QBarTestProperties {
         Polynomial.USE_FACTOR_CACHE = true;
         Algebraic.USE_SUM_CACHE = true;
         Algebraic.USE_PRODUCT_CACHE = true;
+    }
+
+    private void propertiesRootOfRational() {
+        initialize("rootOfRational(Rational, int)");
+        Iterable<Pair<Rational, Integer>> ps = filterInfinite(
+                p -> (p.a != Rational.ZERO || p.b >= 0) && ((p.b & 1) != 0 || p.a.signum() != -1),
+                P.pairsSquareRootOrder(P.rationals(), P.withScale(2).nonzeroIntegersGeometric())
+        );
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            Algebraic x = rootOfRational(p.a, p.b);
+            x.validate();
+            //noinspection SuspiciousNameCombination
+            inverse(y -> rootOfRational(y, p.b), (Algebraic y) -> y.pow(p.b).rationalValueExact(), p.a);
+            if ((p.b & 1) == 0) {
+                assertNotEquals(p, x.signum(), -1);
+            }
+        }
+
+        ps = filterInfinite(
+                p -> (p.b & 1) != 0 || p.a.signum() != -1,
+                P.pairsSquareRootOrder(P.nonzeroRationals(), P.nonzeroIntegersGeometric())
+        );
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            homomorphic(
+                    Function.identity(),
+                    i -> -i,
+                    Algebraic::invert,
+                    Algebraic::rootOfRational,
+                    Algebraic::rootOfRational,
+                    p
+            );
+            homomorphic(
+                    Rational::invert,
+                    i -> -i,
+                    Function.identity(),
+                    Algebraic::rootOfRational,
+                    Algebraic::rootOfRational,
+                    p
+            );
+        }
+
+        for (int i : take(LIMIT, P.positiveIntegersGeometric())) {
+            fixedPoint(j -> rootOfRational(j, i).rationalValueExact(), Rational.ZERO);
+        }
+
+        for (Rational x : take(LIMIT, P.rationals())) {
+            //noinspection SuspiciousNameCombination
+            fixedPoint(y -> rootOfRational(y, 1).rationalValueExact(), x);
+        }
+
+        for (Rational x : take(LIMIT, P.nonzeroRationals())) {
+            assertEquals(x, rootOfRational(x, -1).rationalValueExact(), x.invert());
+        }
+
+        for (Rational x : take(LIMIT, P.rationals())) {
+            try {
+                rootOfRational(x, 0);
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        for (int i : take(LIMIT, P.negativeIntegers())) {
+            try {
+                rootOfRational(Rational.ZERO, i);
+                fail(i);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<Pair<Rational, Integer>> psFail = P.pairs(
+                P.negativeRationals(),
+                map(i -> i * 2, P.integersGeometric())
+        );
+        for (Pair<Rational, Integer> p : take(LIMIT, psFail)) {
+            try {
+                rootOfRational(p.a, p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
     }
 
     private void propertiesRoot() {

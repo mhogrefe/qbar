@@ -2298,6 +2298,77 @@ public final class Algebraic implements Comparable<Algebraic> {
     }
 
     /**
+     * Returns the {@code r}th root of {@code x}, or {@code x}<sup>1/{@code r}</sup>. If {@code r} is even, the
+     * principal (non-negative) root is chosen.
+     *
+     * <ul>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>{@code r} cannot be 0.</li>
+     *  <li>If {@code r} is negative, {@code x} cannot be zero.</li>
+     *  <li>If {@code r} is even, {@code x} cannot be negative.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param x a {@code Rational}
+     * @param r the index of the root
+     * @return {@code x}<sup>1/{@code r}</sup>
+     */
+    public static @NotNull Algebraic rootOfRational(@NotNull Rational x, int r) {
+        if (r == 0) {
+            throw new ArithmeticException("r cannot be zero.");
+        }
+        if (x == Rational.ONE || r == 1) {
+            return of(x);
+        }
+        if (r < 0) {
+            return rootOfRational(x.invert(), -r);
+        }
+        if (x == Rational.ZERO) {
+            return ZERO;
+        }
+        if ((r & 1) == 0 && x.signum() == -1) {
+            throw new ArithmeticException("If r is even, x cannot be negative. r: " + r + ", x: " + x);
+        }
+        BigInteger numerator = x.getNumerator();
+        int numeratorSign = numerator.signum();
+        Pair<BigInteger, Integer> numeratorPowers;
+        if (numerator.abs().equals(BigInteger.ONE)) {
+            numeratorPowers = new Pair<>(BigInteger.ONE, 0);
+        } else {
+            numeratorPowers = MathUtils.expressAsPower(numerator.abs());
+        }
+        BigInteger denominator = x.getDenominator();
+        Pair<BigInteger, Integer> denominatorPowers;
+        if (denominator.equals(BigInteger.ONE)) {
+            denominatorPowers = new Pair<>(BigInteger.ONE, 0);
+        } else {
+            denominatorPowers = MathUtils.expressAsPower(denominator);
+        }
+        int gcd = MathUtils.gcd(MathUtils.gcd(numeratorPowers.b, denominatorPowers.b), r);
+        if (gcd != 1) {
+            numerator = numeratorPowers.a.pow(numeratorPowers.b / gcd);
+            if (numeratorSign == -1) {
+                numerator = numerator.negate();
+            }
+            denominator = denominatorPowers.a.pow(denominatorPowers.b / gcd);
+            r /= gcd;
+            if (r == 1) {
+                return new Algebraic(Rational.of(numerator, denominator));
+            }
+        }
+        int rootRootIndex = (r & 1) == 0 ? 1 : 0;
+        List<BigInteger> coefficients = new ArrayList<>();
+        coefficients.add(numerator.negate());
+        for (int i = 0; i < r - 1; i++) {
+            coefficients.add(BigInteger.ZERO);
+        }
+        coefficients.add(denominator);
+        Polynomial rootMp = Polynomial.of(coefficients);
+        Interval rootIsolatingInterval = rootMp.powerOfTwoIsolatingInterval(rootRootIndex);
+        return new Algebraic(rootMp, rootRootIndex, rootIsolatingInterval, rootRootIndex + 1);
+    }
+
+    /**
      * Returns the {@code r}th root of {@code this}, or {@code this}<sup>1/{@code r}</sup>. If {@code r} is even, the
      * principal (non-negative) root is chosen.
      *
@@ -2329,43 +2400,7 @@ public final class Algebraic implements Comparable<Algebraic> {
             throw new ArithmeticException("If r is even, this cannot be negative. r: " + r + ", this: " + this);
         }
         if (rational.isPresent()) {
-            BigInteger numerator = rational.get().getNumerator();
-            int numeratorSign = numerator.signum();
-            Pair<BigInteger, Integer> numeratorPowers;
-            if (numerator.abs().equals(BigInteger.ONE)) {
-                numeratorPowers = new Pair<>(BigInteger.ONE, 0);
-            } else {
-                numeratorPowers = MathUtils.expressAsPower(numerator.abs());
-            }
-            BigInteger denominator = rational.get().getDenominator();
-            Pair<BigInteger, Integer> denominatorPowers;
-            if (denominator.equals(BigInteger.ONE)) {
-                denominatorPowers = new Pair<>(BigInteger.ONE, 0);
-            } else {
-                denominatorPowers = MathUtils.expressAsPower(denominator);
-            }
-            int gcd = MathUtils.gcd(MathUtils.gcd(numeratorPowers.b, denominatorPowers.b), r);
-            if (gcd != 1) {
-                numerator = numeratorPowers.a.pow(numeratorPowers.b / gcd);
-                if (numeratorSign == -1) {
-                    numerator = numerator.negate();
-                }
-                denominator = denominatorPowers.a.pow(denominatorPowers.b / gcd);
-                r /= gcd;
-                if (r == 1) {
-                    return new Algebraic(Rational.of(numerator, denominator));
-                }
-            }
-            int rootRootIndex = (r & 1) == 0 ? 1 : 0;
-            List<BigInteger> coefficients = new ArrayList<>();
-            coefficients.add(numerator.negate());
-            for (int i = 0; i < r - 1; i++) {
-                coefficients.add(BigInteger.ZERO);
-            }
-            coefficients.add(denominator);
-            Polynomial rootMp = Polynomial.of(coefficients);
-            Interval rootIsolatingInterval = rootMp.powerOfTwoIsolatingInterval(rootRootIndex);
-            return new Algebraic(rootMp, rootRootIndex, rootIsolatingInterval, rootRootIndex + 1);
+            return rootOfRational(rational.get(), r);
         }
         Polynomial rootMp = minimalPolynomial.rootRoots(r);
         int rootRootIndex = rootIndex;
