@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.qbar.testing.QBarDemos;
+import mho.qbar.testing.QBarTesting;
 import mho.wheels.iterables.CachedIterator;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.numberUtils.FloatingPointUtils;
@@ -1506,6 +1507,30 @@ public class RealDemos extends QBarDemos {
     private void demoShiftRight() {
         for (Pair<Real, Integer> p : take(LIMIT, P.pairs(P.withScale(4).reals(), P.integersGeometric()))) {
             System.out.println(p.a + " >> " + p.b + " = " + p.a.shiftRight(p.b));
+        }
+    }
+
+    private void demoSum() {
+        for (List<Real> xs : take(LIMIT, P.withScale(1).lists(P.withScale(4).reals()))) {
+            System.out.println("Σ(" + middle(xs.toString()) + ") = " + sum(xs));
+        }
+    }
+
+    private void demoProduct() {
+        for (List<Real> xs : take(LIMIT, P.withScale(1).lists(P.withScale(4).reals()))) {
+            System.out.println("Π(" + middle(xs.toString()) + ") = " + product(xs));
+        }
+    }
+
+    private void demoDelta_finite() {
+        for (List<Real> xs : take(LIMIT, P.withScale(2).listsAtLeast(1, P.withScale(4).reals()))) {
+            System.out.println("Δ(" + middle(xs.toString()) + ") = " + its(delta(xs)));
+        }
+    }
+
+    private void demoDelta_infinite() {
+        for (Iterable<Real> xs : take(MEDIUM_LIMIT, P.prefixPermutations(QBarTesting.QEP.reals()))) {
+            System.out.println("Δ(" + middle(its(xs)) + ") = " + its(delta(xs)));
         }
     }
 }

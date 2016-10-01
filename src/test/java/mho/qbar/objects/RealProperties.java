@@ -1,7 +1,9 @@
 package mho.qbar.objects;
 
 import mho.qbar.testing.QBarTestProperties;
+import mho.qbar.testing.QBarTesting;
 import mho.wheels.iterables.CachedIterator;
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.numberUtils.BigDecimalUtils;
 import mho.wheels.numberUtils.FloatingPointUtils;
@@ -115,6 +117,11 @@ public class RealProperties extends QBarTestProperties {
         compareImplementationsShiftLeft();
         propertiesShiftRight();
         compareImplementationsShiftRight();
+        propertiesSum();
+        compareImplementationsSum();
+        propertiesProduct();
+        compareImplementationsProduct();
+        propertiesDelta();
     }
 
     private void propertiesOf_Rational() {
@@ -4133,5 +4140,140 @@ public class RealProperties extends QBarTestProperties {
                 functions,
                 v -> P.reset()
         );
+    }
+
+    private static @NotNull Real sum_simplest(@NotNull List<Real> xs) {
+        return foldl(Real::add, ZERO, xs);
+    }
+
+    private void propertiesSum() {
+        initialize("sum(List<Real>)");
+        for (List<Real> xs : take(LIMIT, P.withScale(4).lists(P.reals()))) {
+            Real sum = sum(xs);
+            sum.validate();
+            Optional<Boolean> equal = eq(sum, sum_simplest(xs), DEFAULT_RESOLUTION);
+            assertTrue(xs, !equal.isPresent() || equal.get());
+        }
+
+        for (Real x : take(LIMIT, P.reals())) {
+            //noinspection SuspiciousNameCombination
+            Optional<Boolean> equal = eq(sum(Collections.singletonList(x)), x, DEFAULT_RESOLUTION);
+            assertTrue(x, !equal.isPresent() || equal.get());
+        }
+
+        for (Pair<Real, Real> p : take(LIMIT, P.pairs(P.reals()))) {
+            Optional<Boolean> equal = eq(sum(Arrays.asList(p.a, p.b)), p.a.add(p.b), DEFAULT_RESOLUTION);
+            assertTrue(p, !equal.isPresent() || equal.get());
+        }
+
+        Iterable<List<Real>> xssFail = map(
+                p -> toList(insert(p.a, p.b, null)),
+                P.dependentPairs(P.withScale(4).lists(P.reals()), xs -> P.range(0, xs.size()))
+        );
+        for (List<Real> xs : take(LIMIT, xssFail)) {
+            try {
+                sum(xs);
+                fail(xs);
+            } catch (NullPointerException | IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void compareImplementationsSum() {
+        Map<String, Function<List<Real>, Real>> functions = new LinkedHashMap<>();
+        functions.put("simplest", RealProperties::sum_simplest);
+        functions.put("standard", Real::sum);
+        Iterable<List<Real>> xss = P.lists(P.reals());
+        compareImplementations("sum(Iterable<Real>)", take(SMALL_LIMIT, xss), functions, v -> P.reset());
+    }
+
+    private static @NotNull Real product_simplest(@NotNull List<Real> xs) {
+        return foldl(Real::multiply, ONE, xs);
+    }
+
+    private void propertiesProduct() {
+        initialize("product(List<Real>)");
+        for (List<Real> xs : take(LIMIT, P.withScale(4).lists(P.reals()))) {
+            Real product = product(xs);
+            product.validate();
+            Optional<Boolean> equal = eq(product, product_simplest(xs), DEFAULT_RESOLUTION);
+            assertTrue(xs, !equal.isPresent() || equal.get());
+        }
+
+        for (Real x : take(LIMIT, P.reals())) {
+            //noinspection SuspiciousNameCombination
+            Optional<Boolean> equal = eq(product(Collections.singletonList(x)), x, DEFAULT_RESOLUTION);
+            assertTrue(x, !equal.isPresent() || equal.get());
+        }
+
+        for (Pair<Real, Real> p : take(LIMIT, P.pairs(P.reals()))) {
+            Optional<Boolean> equal = eq(product(Arrays.asList(p.a, p.b)), p.a.multiply(p.b), DEFAULT_RESOLUTION);
+            assertTrue(p, !equal.isPresent() || equal.get());
+        }
+
+        Iterable<List<Real>> xssFail = map(
+                p -> toList(insert(p.a, p.b, null)),
+                P.dependentPairs(P.withScale(4).lists(P.reals()), xs -> P.range(0, xs.size()))
+        );
+        for (List<Real> xs : take(LIMIT, xssFail)) {
+            try {
+                product(xs);
+                fail(xs);
+            } catch (NullPointerException | IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void compareImplementationsProduct() {
+        Map<String, Function<List<Real>, Real>> functions = new LinkedHashMap<>();
+        functions.put("simplest", RealProperties::product_simplest);
+        functions.put("standard", Real::product);
+        Iterable<List<Real>> xss = P.lists(P.reals());
+        compareImplementations("product(Iterable<Real>)", take(SMALL_LIMIT, xss), functions, v -> P.reset());
+    }
+
+    private void propertiesDelta() {
+        initialize("delta(Iterable<Real>)");
+        for (List<Real> xs : take(LIMIT, P.listsAtLeast(1, P.reals()))) {
+            Iterable<Real> deltas = delta(xs);
+            List<Real> deltaList = toList(deltas);
+            deltaList.forEach(Real::validate);
+            aeq(xs, deltaList.size(), length(xs) - 1);
+            List<Real> reversed = reverse(map(Real::negate, delta(reverse(xs))));
+            for (int i = 0; i < deltaList.size(); i++) {
+                Optional<Boolean> equal = eq(deltaList.get(i), reversed.get(i), DEFAULT_RESOLUTION);
+                assertTrue(xs, !equal.isPresent() || equal.get());
+            }
+            testNoRemove(TINY_LIMIT, deltas);
+            testHasNext(deltas);
+        }
+
+        for (Real x : take(LIMIT, P.reals())) {
+            assertTrue(x, isEmpty(delta(Collections.singletonList(x))));
+        }
+
+        for (Pair<Real, Real> p : take(LIMIT, P.pairs(P.reals()))) {
+            List<Real> deltas = toList(delta(Pair.toList(p)));
+            assertEquals(p, deltas.size(), 1);
+            Optional<Boolean> equal = eq(deltas.get(0), p.b.subtract(p.a), DEFAULT_RESOLUTION);
+            assertTrue(p, !equal.isPresent() || equal.get());
+        }
+
+        for (Iterable<Real> xs : take(SMALL_LIMIT, P.prefixPermutations(QBarTesting.QEP.reals()))) {
+            Iterable<Real> deltas = delta(xs);
+            List<Real> deltaPrefix = toList(take(TINY_LIMIT, deltas));
+            deltaPrefix.forEach(Real::validate);
+            aeq(IterableUtils.toString(TINY_LIMIT, xs), length(deltaPrefix), TINY_LIMIT);
+            testNoRemove(TINY_LIMIT, deltas);
+        }
+
+        Iterable<List<Real>> xssFail = map(
+                p -> toList(insert(p.a, p.b, null)),
+                P.dependentPairs(P.withScale(4).lists(P.reals()), xs -> P.range(0, xs.size()))
+        );
+        for (List<Real> xs : take(LIMIT, xssFail)) {
+            try {
+                toList(delta(xs));
+                fail(xs);
+            } catch (NullPointerException | IllegalArgumentException ignored) {}
+        }
     }
 }

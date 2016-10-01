@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.numberUtils.FloatingPointUtils;
 import org.jetbrains.annotations.NotNull;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static mho.qbar.objects.Real.*;
+import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.TINY_LIMIT;
 import static mho.wheels.testing.Testing.aeq;
 import static mho.wheels.testing.Testing.aeqitLimit;
@@ -7635,5 +7637,80 @@ public class RealTest {
         shiftRight_helper(fuzzyRepresentation(Rational.ZERO), -2, "~0");
         shiftRight_helper(fuzzyRepresentation(Rational.ZERO), -3, "~0");
         shiftRight_helper(fuzzyRepresentation(Rational.ZERO), -4, "~0");
+    }
+
+    private static void sum_helper(@NotNull List<Real> input, @NotNull String output) {
+        Real x = sum(input);
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void sum_fail_helper(@NotNull List<Real> input) {
+        try {
+            sum(input);
+            fail();
+        } catch (NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testSum() {
+        sum_helper(Collections.emptyList(), "0");
+        sum_helper(Collections.singletonList(ONE), "1");
+        sum_helper(Collections.singletonList(SQRT_TWO), "1.41421356237309504880...");
+        sum_helper(Arrays.asList(ZERO, ONE, SQRT_TWO, E, PI), "8.27408804442193352262...");
+        sum_helper(Arrays.asList(SQRT_TWO, SQRT_TWO.negate()), "~0");
+
+        sum_fail_helper(Arrays.asList(ZERO, null, SQRT_TWO));
+    }
+
+    private static void product_helper(@NotNull List<Real> input, @NotNull String output) {
+        Real x = product(input);
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void product_fail_helper(@NotNull List<Real> input) {
+        try {
+            product(input);
+            fail();
+        } catch (NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testProduct() {
+        product_helper(Collections.emptyList(), "1");
+        product_helper(Collections.singletonList(NEGATIVE_ONE), "-1");
+        product_helper(Collections.singletonList(SQRT_TWO), "1.41421356237309504880...");
+        product_helper(Arrays.asList(ONE, NEGATIVE_FOUR_THIRDS, SQRT_TWO, E, PI), "-16.10267727568882533260...");
+        product_helper(Arrays.asList(ZERO, ONE, SQRT_TWO, E, PI), "0");
+        product_helper(Arrays.asList(fuzzyRepresentation(Rational.ZERO), ONE, SQRT_TWO, E, PI), "~0");
+        product_helper(Arrays.asList(SQRT_TWO, SQRT_TWO.invertUnsafe()), "+...");
+
+        product_fail_helper(Arrays.asList(ZERO, null, SQRT_TWO));
+    }
+
+    private static void delta_helper(@NotNull Iterable<Real> input, @NotNull String output) {
+        Iterable<Real> xs = delta(input);
+        take(TINY_LIMIT, xs).forEach(Real::validate);
+        aeqitLimit(TINY_LIMIT, xs, output);
+    }
+
+    private static void delta_fail_helper(@NotNull Iterable<Real> input) {
+        try {
+            toList(delta(input));
+            fail();
+        } catch (IllegalArgumentException | NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testDelta() {
+        delta_helper(Collections.singletonList(SQRT_TWO), "[]");
+        delta_helper(Arrays.asList(ONE, NEGATIVE_FOUR_THIRDS, SQRT_TWO, E, PI),
+                "[-2.33333333333333333333..., 2.74754689570642838213..., 1.30406826608595018655...," +
+                " 0.42331082513074800310...]");
+        //todo fancy sequence
+
+        delta_fail_helper(Collections.emptyList());
+        delta_fail_helper(Arrays.asList(ZERO, null, SQRT_TWO));
     }
 }

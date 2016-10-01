@@ -97,13 +97,13 @@ public final class Real implements Iterable<Interval> {
     /**
      * arctan(1), or π/4
      */
-    private static final @NotNull Real ARCTAN_1 =
+    private static final @NotNull Real ARCTAN_ONE =
             arctan01(Rational.of(1, 5)).shiftLeft(2).subtract(arctan01(Rational.of(1, 239)));
 
     /**
      * π, the ratio of a circle's circumference to its diameter
      */
-    public static final @NotNull Real PI = ARCTAN_1.shiftLeft(2);
+    public static final @NotNull Real PI = ARCTAN_ONE.shiftLeft(2);
 
     /**
      * 2^(-100), the default resolution of those methods which give up a computation after the bounding interval
@@ -2598,6 +2598,90 @@ public final class Real implements Iterable<Interval> {
         }
     }
 
+    /**
+     * Returns the sum of all the {@code Real}s in {@code xs}. If {@code xs} is empty, 0 is returned. The result may be
+     * fuzzy even if all elements of the argument are clean.
+     *
+     * <ul>
+     *  <li>{@code xs} may not contain any nulls.</li>
+     *  <li>The result may be any {@code Real}.</li>
+     * </ul>
+     *
+     * @param xs a {@code List} of {@code Real}s
+     * @return Σxs
+     */
+    public static @NotNull Real sum(@NotNull List<Real> xs) {
+        if (xs.isEmpty()) {
+            return ZERO;
+        }
+        if (any(x -> x == null, xs)) {
+            throw new NullPointerException();
+        }
+        if (xs.size() == 1) {
+            return xs.get(0);
+        }
+        if (all(Real::isExact, xs)) {
+            return new Real(Rational.sum(toList(map(x -> x.rationalValueExact().get(), xs))));
+        }
+        return new Real(map(Interval::sum, transpose(map(r -> r.intervals, xs))));
+    }
+
+    /**
+     * Returns the product of all the {@code Real}s in {@code xs}. If {@code xs} is empty, 1 is returned. The result
+     * may be fuzzy even if all elements of the argument are clean.
+     *
+     * <ul>
+     *  <li>{@code xs} may not contain any nulls.</li>
+     *  <li>The result may be any {@code Real}.</li>
+     * </ul>
+     *
+     * @param xs a {@code List} of {@code Real}s
+     * @return Πxs
+     */
+    public static @NotNull Real product(@NotNull List<Real> xs) {
+        if (xs.isEmpty()) {
+            return ONE;
+        }
+        if (any(x -> x == null, xs)) {
+            throw new NullPointerException();
+        }
+        if (xs.size() == 1) {
+            return xs.get(0);
+        }
+        if (any(x -> x == ZERO, xs)) {
+            return ZERO;
+        }
+        if (all(Real::isExact, xs)) {
+            return new Real(Rational.product(toList(map(x -> x.rationalValueExact().get(), xs))));
+        }
+        return new Real(map(Interval::product, transpose(map(r -> r.intervals, xs))));
+    }
+
+    /**
+     * Returns the differences between successive {@code Real}s in {@code xs}. If {@code xs} contains a single
+     * {@code Real}, an empty {@code Iterable} is returned. {@code xs} cannot be empty. Does not support removal. The
+     * results may be fuzzy even if all elements of the argument are clean.
+     *
+     * <ul>
+     *  <li>{@code xs} must not be empty and may not contain any nulls.</li>
+     *  <li>The result is does not contain any nulls.</li>
+     * </ul>
+     *
+     * Length is |{@code xs}|–1
+     *
+     * @param xs an {@code Iterable} of {@code Real}s.
+     * @return Δxs
+     */
+    public static @NotNull Iterable<Real> delta(@NotNull Iterable<Real> xs) {
+        if (isEmpty(xs)) {
+            throw new IllegalArgumentException("xs must not be empty.");
+        }
+        if (head(xs) == null) {
+            throw new NullPointerException();
+        }
+        return adjacentPairsWith((x, y) -> y.subtract(x), xs);
+    }
+
     public @NotNull Pair<List<BigInteger>, Iterable<BigInteger>> digitsUnsafe(@NotNull BigInteger base) {
         if (signumUnsafe() == -1) {
             throw new IllegalArgumentException("this cannot be negative. Invalid this: " + this);
@@ -2805,14 +2889,6 @@ public final class Real implements Iterable<Interval> {
         }
     }
 
-    public static @NotNull Real sum(@NotNull List<Real> xs) {
-        return new Real(map(Interval::sum, transpose(map(r -> r.intervals, xs))));
-    }
-
-    public static @NotNull Real product(@NotNull List<Real> xs) {
-        return new Real(map(Interval::product, transpose(map(r -> r.intervals, xs))));
-    }
-
     public static @NotNull Real champernowne(@NotNull BigInteger base) {
         return fromDigits(
                 base,
@@ -2912,7 +2988,7 @@ public final class Real implements Iterable<Interval> {
 
     private static @NotNull Real arctan01(@NotNull Rational x) {
         if (x == Rational.ZERO) return ZERO;
-        if (x == Rational.ONE) return ARCTAN_1;
+        if (x == Rational.ONE) return ARCTAN_ONE;
         Rational xSquared = x.pow(2);
         return new Real(() -> new Iterator<Interval>() {
             private @NotNull Rational partialSum = x;
