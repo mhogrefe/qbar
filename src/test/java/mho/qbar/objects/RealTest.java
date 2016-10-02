@@ -1,7 +1,6 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
-import mho.wheels.iterables.IterableUtils;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.numberUtils.FloatingPointUtils;
 import org.jetbrains.annotations.NotNull;
@@ -7712,5 +7711,277 @@ public class RealTest {
 
         delta_fail_helper(Collections.emptyList());
         delta_fail_helper(Arrays.asList(ZERO, null, SQRT_TWO));
+    }
+
+    private static void powUnsafe_int_helper(@NotNull Real x, int p, @NotNull String output) {
+        Real y = x.powUnsafe(p);
+        y.validate();
+        aeq(y, output);
+    }
+
+    private static void powUnsafe_int_fail_helper(@NotNull Real x, int p) {
+        try {
+            x.powUnsafe(p);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testPowUnsafe_int() {
+        powUnsafe_int_helper(ZERO, 0, "1");
+        powUnsafe_int_helper(ZERO, 1, "0");
+        powUnsafe_int_helper(ZERO, 2, "0");
+        powUnsafe_int_helper(ZERO, 3, "0");
+        powUnsafe_int_helper(ZERO, 100, "0");
+
+        powUnsafe_int_helper(ONE, 0, "1");
+        powUnsafe_int_helper(ONE, 1, "1");
+        powUnsafe_int_helper(ONE, 2, "1");
+        powUnsafe_int_helper(ONE, 3, "1");
+        powUnsafe_int_helper(ONE, 100, "1");
+        powUnsafe_int_helper(ONE, -1, "1");
+        powUnsafe_int_helper(ONE, -2, "1");
+        powUnsafe_int_helper(ONE, -3, "1");
+        powUnsafe_int_helper(ONE, -100, "1");
+
+        powUnsafe_int_helper(NEGATIVE_ONE, 0, "1");
+        powUnsafe_int_helper(NEGATIVE_ONE, 1, "-1");
+        powUnsafe_int_helper(NEGATIVE_ONE, 2, "1");
+        powUnsafe_int_helper(NEGATIVE_ONE, 3, "-1");
+        powUnsafe_int_helper(NEGATIVE_ONE, 100, "1");
+        powUnsafe_int_helper(NEGATIVE_ONE, -1, "-1");
+        powUnsafe_int_helper(NEGATIVE_ONE, -2, "1");
+        powUnsafe_int_helper(NEGATIVE_ONE, -3, "-1");
+        powUnsafe_int_helper(NEGATIVE_ONE, -100, "1");
+
+        powUnsafe_int_helper(ONE_HALF, 0, "1");
+        powUnsafe_int_helper(ONE_HALF, 1, "0.5");
+        powUnsafe_int_helper(ONE_HALF, 2, "0.25");
+        powUnsafe_int_helper(ONE_HALF, 3, "0.125");
+        powUnsafe_int_helper(ONE_HALF, 100, "0.00000000000000000000...");
+        powUnsafe_int_helper(ONE_HALF, -1, "2");
+        powUnsafe_int_helper(ONE_HALF, -2, "4");
+        powUnsafe_int_helper(ONE_HALF, -3, "8");
+        powUnsafe_int_helper(ONE_HALF, -100, "1267650600228229401496703205376");
+
+        powUnsafe_int_helper(NEGATIVE_FOUR_THIRDS, 0, "1");
+        powUnsafe_int_helper(NEGATIVE_FOUR_THIRDS, 1, "-1.33333333333333333333...");
+        powUnsafe_int_helper(NEGATIVE_FOUR_THIRDS, 2, "1.77777777777777777777...");
+        powUnsafe_int_helper(NEGATIVE_FOUR_THIRDS, 3, "-2.37037037037037037037...");
+        powUnsafe_int_helper(NEGATIVE_FOUR_THIRDS, 100, "3117982410207.94197872148815582983...");
+        powUnsafe_int_helper(NEGATIVE_FOUR_THIRDS, -1, "-0.75");
+        powUnsafe_int_helper(NEGATIVE_FOUR_THIRDS, -2, "0.5625");
+        powUnsafe_int_helper(NEGATIVE_FOUR_THIRDS, -3, "-0.421875");
+        powUnsafe_int_helper(NEGATIVE_FOUR_THIRDS, -100, "0.00000000000032072021...");
+
+        powUnsafe_int_helper(SQRT_TWO, 0, "1");
+        powUnsafe_int_helper(SQRT_TWO, 1, "1.41421356237309504880...");
+        powUnsafe_int_helper(SQRT_TWO, 2, "+...");
+        powUnsafe_int_helper(SQRT_TWO, 3, "2.82842712474619009760...");
+        powUnsafe_int_helper(SQRT_TWO, 100, "112589990684262?....");
+        powUnsafe_int_helper(SQRT_TWO, -1, "0.70710678118654752440...");
+        powUnsafe_int_helper(SQRT_TWO, -2, "0....");
+        powUnsafe_int_helper(SQRT_TWO, -3, "0.35355339059327376220...");
+        powUnsafe_int_helper(SQRT_TWO, -100, "0.00000000000000088817...");
+
+        powUnsafe_int_helper(E, 0, "1");
+        powUnsafe_int_helper(E, 1, "2.71828182845904523536...");
+        powUnsafe_int_helper(E, 2, "7.38905609893065022723...");
+        powUnsafe_int_helper(E, 3, "20.08553692318766774092...");
+        powUnsafe_int_helper(E, 100, "26881171418161354484126255515800135873611118.77374192241519160861...");
+        powUnsafe_int_helper(E, -1, "0.36787944117144232159...");
+        powUnsafe_int_helper(E, -2, "0.13533528323661269189...");
+        powUnsafe_int_helper(E, -3, "0.04978706836786394297...");
+        powUnsafe_int_helper(E, -100, "0.00000000000000000000...");
+
+        powUnsafe_int_helper(PI, 0, "1");
+        powUnsafe_int_helper(PI, 1, "3.14159265358979323846...");
+        powUnsafe_int_helper(PI, 2, "9.86960440108935861883...");
+        powUnsafe_int_helper(PI, 3, "31.00627668029982017547...");
+        powUnsafe_int_helper(PI, 100, "51878483143196131920862615246303013562686760680405.78499007184235808218...");
+        powUnsafe_int_helper(PI, -1, "0.31830988618379067153...");
+        powUnsafe_int_helper(PI, -2, "0.10132118364233777144...");
+        powUnsafe_int_helper(PI, -3, "0.03225153443319948918...");
+        powUnsafe_int_helper(PI, -100, "0.00000000000000000000...");
+
+        powUnsafe_int_helper(leftFuzzyRepresentation(Rational.ZERO), 0, "1");
+        powUnsafe_int_helper(leftFuzzyRepresentation(Rational.ZERO), 1, "~0");
+        powUnsafe_int_helper(leftFuzzyRepresentation(Rational.ZERO), 2, "~0");
+        powUnsafe_int_helper(leftFuzzyRepresentation(Rational.ZERO), 3, "~0");
+        powUnsafe_int_helper(leftFuzzyRepresentation(Rational.ZERO), 100, "~0");
+
+        powUnsafe_int_helper(rightFuzzyRepresentation(Rational.ZERO), 0, "1");
+        powUnsafe_int_helper(rightFuzzyRepresentation(Rational.ZERO), 1, "~0");
+        powUnsafe_int_helper(rightFuzzyRepresentation(Rational.ZERO), 2, "~0");
+        powUnsafe_int_helper(rightFuzzyRepresentation(Rational.ZERO), 3, "~0");
+        powUnsafe_int_helper(rightFuzzyRepresentation(Rational.ZERO), 100, "~0");
+
+        powUnsafe_int_helper(fuzzyRepresentation(Rational.ZERO), 0, "1");
+        powUnsafe_int_helper(fuzzyRepresentation(Rational.ZERO), 1, "~0");
+        powUnsafe_int_helper(fuzzyRepresentation(Rational.ZERO), 2, "~0");
+        powUnsafe_int_helper(fuzzyRepresentation(Rational.ZERO), 3, "~0");
+        powUnsafe_int_helper(fuzzyRepresentation(Rational.ZERO), 100, "~0");
+
+        powUnsafe_int_fail_helper(ZERO, -1);
+        powUnsafe_int_fail_helper(ZERO, -2);
+        powUnsafe_int_fail_helper(ZERO, -3);
+    }
+
+    private static void pow_int_Rational_helper(
+            @NotNull Real x,
+            int p,
+            @NotNull Rational resolution,
+            @NotNull String output
+    ) {
+        Optional<Real> oy = x.pow(p, resolution);
+        if (oy.isPresent()) {
+            oy.get().validate();
+        }
+        aeq(oy, output);
+    }
+
+    private static void pow_int_Rational_fail_helper(@NotNull Real x, int p, @NotNull Rational resolution) {
+        try {
+            x.pow(p, resolution);
+            fail();
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testPow_int_Rational() {
+        pow_int_Rational_helper(ZERO, 0, DEFAULT_RESOLUTION, "Optional[1]");
+        pow_int_Rational_helper(ZERO, 1, DEFAULT_RESOLUTION, "Optional[0]");
+        pow_int_Rational_helper(ZERO, 2, DEFAULT_RESOLUTION, "Optional[0]");
+        pow_int_Rational_helper(ZERO, 3, DEFAULT_RESOLUTION, "Optional[0]");
+        pow_int_Rational_helper(ZERO, 100, DEFAULT_RESOLUTION, "Optional[0]");
+
+        pow_int_Rational_helper(ONE, 0, DEFAULT_RESOLUTION, "Optional[1]");
+        pow_int_Rational_helper(ONE, 1, DEFAULT_RESOLUTION, "Optional[1]");
+        pow_int_Rational_helper(ONE, 2, DEFAULT_RESOLUTION, "Optional[1]");
+        pow_int_Rational_helper(ONE, 3, DEFAULT_RESOLUTION, "Optional[1]");
+        pow_int_Rational_helper(ONE, 100, DEFAULT_RESOLUTION, "Optional[1]");
+        pow_int_Rational_helper(ONE, -1, DEFAULT_RESOLUTION, "Optional[1]");
+        pow_int_Rational_helper(ONE, -2, DEFAULT_RESOLUTION, "Optional[1]");
+        pow_int_Rational_helper(ONE, -3, DEFAULT_RESOLUTION, "Optional[1]");
+        pow_int_Rational_helper(ONE, -100, DEFAULT_RESOLUTION, "Optional[1]");
+
+        pow_int_Rational_helper(NEGATIVE_ONE, 0, DEFAULT_RESOLUTION, "Optional[1]");
+        pow_int_Rational_helper(NEGATIVE_ONE, 1, DEFAULT_RESOLUTION, "Optional[-1]");
+        pow_int_Rational_helper(NEGATIVE_ONE, 2, DEFAULT_RESOLUTION, "Optional[1]");
+        pow_int_Rational_helper(NEGATIVE_ONE, 3, DEFAULT_RESOLUTION, "Optional[-1]");
+        pow_int_Rational_helper(NEGATIVE_ONE, 100, DEFAULT_RESOLUTION, "Optional[1]");
+        pow_int_Rational_helper(NEGATIVE_ONE, -1, DEFAULT_RESOLUTION, "Optional[-1]");
+        pow_int_Rational_helper(NEGATIVE_ONE, -2, DEFAULT_RESOLUTION, "Optional[1]");
+        pow_int_Rational_helper(NEGATIVE_ONE, -3, DEFAULT_RESOLUTION, "Optional[-1]");
+        pow_int_Rational_helper(NEGATIVE_ONE, -100, DEFAULT_RESOLUTION, "Optional[1]");
+
+        pow_int_Rational_helper(ONE_HALF, 0, DEFAULT_RESOLUTION, "Optional[1]");
+        pow_int_Rational_helper(ONE_HALF, 1, DEFAULT_RESOLUTION, "Optional[0.5]");
+        pow_int_Rational_helper(ONE_HALF, 2, DEFAULT_RESOLUTION, "Optional[0.25]");
+        pow_int_Rational_helper(ONE_HALF, 3, DEFAULT_RESOLUTION, "Optional[0.125]");
+        pow_int_Rational_helper(ONE_HALF, 100, DEFAULT_RESOLUTION, "Optional[0.00000000000000000000...]");
+        pow_int_Rational_helper(ONE_HALF, -1, DEFAULT_RESOLUTION, "Optional[2]");
+        pow_int_Rational_helper(ONE_HALF, -2, DEFAULT_RESOLUTION, "Optional[4]");
+        pow_int_Rational_helper(ONE_HALF, -3, DEFAULT_RESOLUTION, "Optional[8]");
+        pow_int_Rational_helper(ONE_HALF, -100, DEFAULT_RESOLUTION, "Optional[1267650600228229401496703205376]");
+
+        pow_int_Rational_helper(NEGATIVE_FOUR_THIRDS, 0, DEFAULT_RESOLUTION, "Optional[1]");
+        pow_int_Rational_helper(NEGATIVE_FOUR_THIRDS, 1, DEFAULT_RESOLUTION, "Optional[-1.33333333333333333333...]");
+        pow_int_Rational_helper(NEGATIVE_FOUR_THIRDS, 2, DEFAULT_RESOLUTION, "Optional[1.77777777777777777777...]");
+        pow_int_Rational_helper(NEGATIVE_FOUR_THIRDS, 3, DEFAULT_RESOLUTION, "Optional[-2.37037037037037037037...]");
+        pow_int_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                100,
+                DEFAULT_RESOLUTION,
+                "Optional[3117982410207.94197872148815582983...]"
+        );
+        pow_int_Rational_helper(NEGATIVE_FOUR_THIRDS, -1, DEFAULT_RESOLUTION, "Optional[-0.75]");
+        pow_int_Rational_helper(NEGATIVE_FOUR_THIRDS, -2, DEFAULT_RESOLUTION, "Optional[0.5625]");
+        pow_int_Rational_helper(NEGATIVE_FOUR_THIRDS, -3, DEFAULT_RESOLUTION, "Optional[-0.421875]");
+        pow_int_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                -100,
+                DEFAULT_RESOLUTION,
+                "Optional[0.00000000000032072021...]"
+        );
+
+        pow_int_Rational_helper(SQRT_TWO, 0, DEFAULT_RESOLUTION, "Optional[1]");
+        pow_int_Rational_helper(SQRT_TWO, 1, DEFAULT_RESOLUTION, "Optional[1.41421356237309504880...]");
+        pow_int_Rational_helper(SQRT_TWO, 2, DEFAULT_RESOLUTION, "Optional[+...]");
+        pow_int_Rational_helper(SQRT_TWO, 3, DEFAULT_RESOLUTION, "Optional[2.82842712474619009760...]");
+        pow_int_Rational_helper(SQRT_TWO, 100, DEFAULT_RESOLUTION, "Optional[112589990684262?....]");
+        pow_int_Rational_helper(SQRT_TWO, -1, DEFAULT_RESOLUTION, "Optional[0.70710678118654752440...]");
+        pow_int_Rational_helper(SQRT_TWO, -2, DEFAULT_RESOLUTION, "Optional[0....]");
+        pow_int_Rational_helper(SQRT_TWO, -3, DEFAULT_RESOLUTION, "Optional[0.35355339059327376220...]");
+        pow_int_Rational_helper(SQRT_TWO, -100, DEFAULT_RESOLUTION, "Optional[0.00000000000000088817...]");
+
+        pow_int_Rational_helper(E, 0, DEFAULT_RESOLUTION, "Optional[1]");
+        pow_int_Rational_helper(E, 1, DEFAULT_RESOLUTION, "Optional[2.71828182845904523536...]");
+        pow_int_Rational_helper(E, 2, DEFAULT_RESOLUTION, "Optional[7.38905609893065022723...]");
+        pow_int_Rational_helper(E, 3, DEFAULT_RESOLUTION, "Optional[20.08553692318766774092...]");
+        pow_int_Rational_helper(
+                E,
+                100,
+                DEFAULT_RESOLUTION,
+                "Optional[26881171418161354484126255515800135873611118.77374192241519160861...]"
+        );
+        pow_int_Rational_helper(E, -1, DEFAULT_RESOLUTION, "Optional[0.36787944117144232159...]");
+        pow_int_Rational_helper(E, -2, DEFAULT_RESOLUTION, "Optional[0.13533528323661269189...]");
+        pow_int_Rational_helper(E, -3, DEFAULT_RESOLUTION, "Optional[0.04978706836786394297...]");
+        pow_int_Rational_helper(E, -100, DEFAULT_RESOLUTION, "Optional[0.00000000000000000000...]");
+
+        pow_int_Rational_helper(PI, 0, DEFAULT_RESOLUTION, "Optional[1]");
+        pow_int_Rational_helper(PI, 1, DEFAULT_RESOLUTION, "Optional[3.14159265358979323846...]");
+        pow_int_Rational_helper(PI, 2, DEFAULT_RESOLUTION, "Optional[9.86960440108935861883...]");
+        pow_int_Rational_helper(PI, 3, DEFAULT_RESOLUTION, "Optional[31.00627668029982017547...]");
+        pow_int_Rational_helper(
+                PI,
+                100,
+                DEFAULT_RESOLUTION,
+                "Optional[51878483143196131920862615246303013562686760680405.78499007184235808218...]"
+        );
+        pow_int_Rational_helper(PI, -1, DEFAULT_RESOLUTION, "Optional[0.31830988618379067153...]");
+        pow_int_Rational_helper(PI, -2, DEFAULT_RESOLUTION, "Optional[0.10132118364233777144...]");
+        pow_int_Rational_helper(PI, -3, DEFAULT_RESOLUTION, "Optional[0.03225153443319948918...]");
+        pow_int_Rational_helper(PI, -100, DEFAULT_RESOLUTION, "Optional[0.00000000000000000000...]");
+
+        pow_int_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), 0, DEFAULT_RESOLUTION, "Optional[1]");
+        pow_int_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), 1, DEFAULT_RESOLUTION, "Optional[~0]");
+        pow_int_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), 2, DEFAULT_RESOLUTION, "Optional[~0]");
+        pow_int_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), 3, DEFAULT_RESOLUTION, "Optional[~0]");
+        pow_int_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), 100, DEFAULT_RESOLUTION, "Optional[~0]");
+        pow_int_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), -1, DEFAULT_RESOLUTION, "Optional.empty");
+        pow_int_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), -2, DEFAULT_RESOLUTION, "Optional.empty");
+        pow_int_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), -3, DEFAULT_RESOLUTION, "Optional.empty");
+        pow_int_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), -100, DEFAULT_RESOLUTION, "Optional.empty");
+
+        pow_int_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), 0, DEFAULT_RESOLUTION, "Optional[1]");
+        pow_int_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), 1, DEFAULT_RESOLUTION, "Optional[~0]");
+        pow_int_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), 2, DEFAULT_RESOLUTION, "Optional[~0]");
+        pow_int_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), 3, DEFAULT_RESOLUTION, "Optional[~0]");
+        pow_int_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), 100, DEFAULT_RESOLUTION, "Optional[~0]");
+        pow_int_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), -1, DEFAULT_RESOLUTION, "Optional.empty");
+        pow_int_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), -2, DEFAULT_RESOLUTION, "Optional.empty");
+        pow_int_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), -3, DEFAULT_RESOLUTION, "Optional.empty");
+        pow_int_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), -100, DEFAULT_RESOLUTION, "Optional.empty");
+
+        pow_int_Rational_helper(fuzzyRepresentation(Rational.ZERO), 0, DEFAULT_RESOLUTION, "Optional[1]");
+        pow_int_Rational_helper(fuzzyRepresentation(Rational.ZERO), 1, DEFAULT_RESOLUTION, "Optional[~0]");
+        pow_int_Rational_helper(fuzzyRepresentation(Rational.ZERO), 2, DEFAULT_RESOLUTION, "Optional[~0]");
+        pow_int_Rational_helper(fuzzyRepresentation(Rational.ZERO), 3, DEFAULT_RESOLUTION, "Optional[~0]");
+        pow_int_Rational_helper(fuzzyRepresentation(Rational.ZERO), 100, DEFAULT_RESOLUTION, "Optional[~0]");
+        pow_int_Rational_helper(fuzzyRepresentation(Rational.ZERO), -1, DEFAULT_RESOLUTION, "Optional.empty");
+        pow_int_Rational_helper(fuzzyRepresentation(Rational.ZERO), -2, DEFAULT_RESOLUTION, "Optional.empty");
+        pow_int_Rational_helper(fuzzyRepresentation(Rational.ZERO), -3, DEFAULT_RESOLUTION, "Optional.empty");
+        pow_int_Rational_helper(fuzzyRepresentation(Rational.ZERO), -100, DEFAULT_RESOLUTION, "Optional.empty");
+
+        pow_int_Rational_fail_helper(ZERO, -1, DEFAULT_RESOLUTION);
+        pow_int_Rational_fail_helper(ZERO, -2, DEFAULT_RESOLUTION);
+        pow_int_Rational_fail_helper(ZERO, -3, DEFAULT_RESOLUTION);
+
+        pow_int_Rational_fail_helper(ZERO, 2, Rational.ZERO);
+        pow_int_Rational_fail_helper(ZERO, 2, Rational.NEGATIVE_ONE);
+        pow_int_Rational_fail_helper(PI, 2, Rational.ZERO);
+        pow_int_Rational_fail_helper(PI, 2, Rational.NEGATIVE_ONE);
     }
 }

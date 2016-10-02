@@ -769,7 +769,7 @@ public final class Real implements Iterable<Interval> {
      * A helper function that lifts functions from {@code Rational} to {@code T} to functions from {@code Real} to
      * {@code T}, assuming that the latter can be computed by repeatedly applying the former to increasingly-accurate
      * interval bounds on the {@code Real} argument until f(lower) is equal to f(upper), and with the restriction that
-     * the argument must be positive The function must not have any null values. If {@code this} is not exact and the
+     * the argument must be positive. The function must not have any null values. If {@code this} is not exact and the
      * function is discontinuous at {@code this}—that is, if f(lower) will never equal f(upper) no matter how accurate
      * the approximation–then this method will give up and return empty once the approximating interval's diameter is
      * less than the specified resolution.
@@ -2206,9 +2206,9 @@ public final class Real implements Iterable<Interval> {
      * @return {@code this}+{@code that}
      */
     public @NotNull Real add(@NotNull Rational that) {
-        if (this == ZERO) return of(that);
+        if (rational.isPresent() && rational.get() == Rational.ZERO) return of(that);
         if (that == Rational.ZERO) return this;
-        if (isExact()) {
+        if (rational.isPresent()) {
             return of(rational.get().add(that));
         }
         Interval ri = Interval.of(that);
@@ -2228,11 +2228,11 @@ public final class Real implements Iterable<Interval> {
      * @return {@code this}+{@code that}
      */
     public @NotNull Real add(@NotNull Real that) {
-        if (this == ZERO) return that;
-        if (that == ZERO) return this;
+        if (rational.isPresent() && rational.get() == Rational.ZERO) return that;
+        if (that.rational.isPresent() && that.rational.get() == Rational.ZERO) return this;
         if (this == that) return shiftLeft(1);
-        if (isExact()) return that.add(rational.get());
-        if (that.isExact()) return add(that.rational.get());
+        if (rational.isPresent()) return that.add(rational.get());
+        if (that.rational.isPresent()) return add(that.rational.get());
         return new Real(zipWith(Interval::add, intervals, that.intervals));
     }
 
@@ -2250,8 +2250,8 @@ public final class Real implements Iterable<Interval> {
      */
     public @NotNull Real subtract(@NotNull Rational that) {
         if (that == Rational.ZERO) return this;
-        if (this == ZERO) return new Real(that.negate());
-        if (isExact()) {
+        if (rational.isPresent() && rational.get() == Rational.ZERO) return new Real(that.negate());
+        if (rational.isPresent()) {
             return of(rational.get().subtract(that));
         }
         Interval ri = Interval.of(that);
@@ -2273,10 +2273,10 @@ public final class Real implements Iterable<Interval> {
      */
     public @NotNull Real subtract(@NotNull Real that) {
         if (this == that) return ZERO;
-        if (this == ZERO) return that.negate();
-        if (that == ZERO) return this;
-        if (isExact()) return that.subtract(rational.get()).negate();
-        if (that.isExact()) return subtract(that.rational.get());
+        if (rational.isPresent() && rational.get() == Rational.ZERO) return that.negate();
+        if (that.rational.isPresent() && that.rational.get() == Rational.ZERO) return this;
+        if (rational.isPresent()) return that.subtract(rational.get()).negate();
+        if (that.rational.isPresent()) return subtract(that.rational.get());
         return new Real(zipWith(Interval::subtract, intervals, that.intervals));
     }
 
@@ -2293,10 +2293,10 @@ public final class Real implements Iterable<Interval> {
      * @return {@code this}×{@code that}
      */
     public @NotNull Real multiply(int that) {
-        if (this == ZERO || that == 0) return ZERO;
+        if (rational.isPresent() && rational.get() == Rational.ZERO || that == 0) return ZERO;
         if (that == 1) return this;
-        if (this == ONE) return of(that);
-        if (isExact()) {
+        if (rational.isPresent() && rational.get() == Rational.ONE) return of(that);
+        if (rational.isPresent()) {
             return new Real(rational.get().multiply(that));
         }
         return new Real(map(i -> i.multiply(that), intervals));
@@ -2315,10 +2315,10 @@ public final class Real implements Iterable<Interval> {
      * @return {@code this}×{@code that}
      */
     public @NotNull Real multiply(@NotNull BigInteger that) {
-        if (this == ZERO || that.equals(BigInteger.ZERO)) return ZERO;
+        if (rational.isPresent() && rational.get() == Rational.ZERO || that.equals(BigInteger.ZERO)) return ZERO;
         if (that.equals(BigInteger.ONE)) return this;
-        if (this == ONE) return of(that);
-        if (isExact()) {
+        if (rational.isPresent() && rational.get() == Rational.ONE) return of(that);
+        if (rational.isPresent()) {
             return new Real(rational.get().multiply(that));
         }
         return new Real(map(i -> i.multiply(that), intervals));
@@ -2337,10 +2337,10 @@ public final class Real implements Iterable<Interval> {
      * @return {@code this}×{@code that}
      */
     public @NotNull Real multiply(@NotNull Rational that) {
-        if (this == ZERO || that == Rational.ZERO) return ZERO;
+        if (rational.isPresent() && rational.get() == Rational.ZERO || that == Rational.ZERO) return ZERO;
         if (that == Rational.ONE) return this;
-        if (this == ONE) return of(that);
-        if (isExact()) {
+        if (rational.isPresent() && rational.get() == Rational.ONE) return of(that);
+        if (rational.isPresent()) {
             return new Real(rational.get().multiply(that));
         }
         return new Real(map(i -> i.multiply(that), intervals));
@@ -2359,12 +2359,15 @@ public final class Real implements Iterable<Interval> {
      * @return {@code this}×{@code that}
      */
     public @NotNull Real multiply(@NotNull Real that) {
-        if (this == ZERO || that == ZERO) return ZERO;
-        if (this == ONE) return that;
-        if (that == ONE) return this;
-        //todo pow(2)
-        if (isExact()) return that.multiply(rational.get());
-        if (that.isExact()) return multiply(that.rational.get());
+        if (rational.isPresent() && rational.get() == Rational.ZERO ||
+                that.rational.isPresent() && that.rational.get() == Rational.ZERO) return ZERO;
+        if (rational.isPresent() && rational.get() == Rational.ONE) return that;
+        if (that.rational.isPresent() && that.rational.get() == Rational.ONE) return this;
+        if (this == that) {
+            return powUnsafe(2);
+        }
+        if (rational.isPresent()) return that.multiply(rational.get());
+        if (that.rational.isPresent()) return multiply(that.rational.get());
         return new Real(zipWith(Interval::multiply, intervals, that.intervals));
     }
 
@@ -2394,7 +2397,8 @@ public final class Real implements Iterable<Interval> {
      * and return empty once the approximating interval's diameter is less than the specified resolution.
      *
      * <ul>
-     *  <li>{@code this} cannot be an exact zero.</li>
+     *  <li>{@code this} cannot be an exact zero. (If it is a fuzzy zero, an empty {@code Optional} will be
+     *  returned.)</li>
      *  <li>{@code resolution} must be positive.</li>
      *  <li>The result is a nonzero {@code Real}, or empty.</li>
      * </ul>
@@ -2431,9 +2435,9 @@ public final class Real implements Iterable<Interval> {
         if (that == 0) {
             throw new ArithmeticException("that cannot be zero.");
         }
-        if (this == ZERO) return ZERO;
+        if (rational.isPresent() && rational.get() == Rational.ZERO) return ZERO;
         if (that == 1) return this;
-        if (isExact()) {
+        if (rational.isPresent()) {
             return new Real(rational.get().divide(that));
         }
         return new Real(map(i -> i.divide(that), intervals));
@@ -2455,9 +2459,9 @@ public final class Real implements Iterable<Interval> {
         if (that.equals(BigInteger.ZERO)) {
             throw new ArithmeticException("that cannot be zero.");
         }
-        if (this == ZERO) return ZERO;
+        if (rational.isPresent() && rational.get() == Rational.ZERO) return ZERO;
         if (that.equals(BigInteger.ONE)) return this;
-        if (isExact()) {
+        if (rational.isPresent()) {
             return new Real(rational.get().divide(that));
         }
         return new Real(map(i -> i.divide(that), intervals));
@@ -2479,9 +2483,9 @@ public final class Real implements Iterable<Interval> {
         if (that == Rational.ZERO) {
             throw new ArithmeticException("that cannot be zero.");
         }
-        if (this == ZERO) return ZERO;
+        if (rational.isPresent() && rational.get() == Rational.ZERO) return ZERO;
         if (that == Rational.ONE) return this;
-        if (isExact()) {
+        if (rational.isPresent()) {
             return new Real(rational.get().divide(that));
         }
         return new Real(map(i -> i.divide(that), intervals));
@@ -2502,18 +2506,18 @@ public final class Real implements Iterable<Interval> {
      * @return {@code this}/{@code that}
      */
     public @NotNull Real divideUnsafe(@NotNull Real that) {
-        if (that == ZERO) {
+        if (that.rational.isPresent() && that.rational.get() == Rational.ZERO) {
             throw new ArithmeticException("that cannot be zero.");
         }
         that.signumUnsafe(); // if this is 0, loop forever here instead of returning an invalid Real
-        if (this == ZERO) return ZERO;
+        if (rational.isPresent() && rational.get() == Rational.ZERO) return ZERO;
         if (this == that) return ONE;
-        if (that == ONE) return this;
-        if (isExact()) {
+        if (that.rational.isPresent() && that.rational.get() == Rational.ONE) return this;
+        if (rational.isPresent()) {
             Rational r = rational.get();
             return r == Rational.ZERO ? ZERO : that.divide(r).invertUnsafe();
         }
-        if (that.isExact()) {
+        if (that.rational.isPresent()) {
             return divide(that.rational.get());
         }
         return new Real(zipWith(Interval::divideHull, intervals, that.intervals));
@@ -2527,7 +2531,8 @@ public final class Real implements Iterable<Interval> {
      * <ul>
      *  <li>{@code this} may be any {@code Real}.</li>
      *  <li>{@code resolution} must be positive.</li>
-     *  <li>{@code that} cannot be an exact zero.</li>
+     *  <li>{@code that} cannot be an exact zero. (If it is a fuzzy zero, an empty {@code Optional} will be
+     *  returned.)</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
@@ -2536,7 +2541,7 @@ public final class Real implements Iterable<Interval> {
      * @return {@code this}/{@code that}
      */
     public @NotNull Optional<Real> divide(@NotNull Real that, @NotNull Rational resolution) {
-        if (that == ZERO) {
+        if (that.rational.isPresent() && that.rational.get() == Rational.ZERO) {
             throw new ArithmeticException("that cannot be zero.");
         }
         Optional<Integer> thatSignum = that.signum(resolution);
@@ -2544,11 +2549,11 @@ public final class Real implements Iterable<Interval> {
             return Optional.empty();
         }
         if (this == that) return Optional.of(ONE);
-        if (isExact()) {
+        if (rational.isPresent()) {
             Rational r = rational.get();
             return r == Rational.ZERO ? Optional.of(ZERO) : that.divide(rational.get()).invert(resolution);
         }
-        if (that.isExact()) {
+        if (that.rational.isPresent()) {
             return Optional.of(divide(that.rational.get()));
         }
         return Optional.of(new Real(zipWith(Interval::divideHull, intervals, that.intervals)));
@@ -2568,8 +2573,8 @@ public final class Real implements Iterable<Interval> {
      * @return {@code this}≪{@code bits}
      */
     public @NotNull Real shiftLeft(int bits) {
-        if (this == ZERO || bits == 0) return this;
-        if (isExact()) {
+        if (rational.isPresent() && rational.get() == Rational.ZERO || bits == 0) return this;
+        if (rational.isPresent()) {
             return new Real(rational.get().shiftLeft(bits));
         } else {
             return new Real(map(a -> a.shiftLeft(bits), intervals));
@@ -2590,8 +2595,8 @@ public final class Real implements Iterable<Interval> {
      * @return {@code this}≫{@code bits}
      */
     public @NotNull Real shiftRight(int bits) {
-        if (this == ZERO || bits == 0) return this;
-        if (isExact()) {
+        if (rational.isPresent() && rational.get() == Rational.ZERO || bits == 0) return this;
+        if (rational.isPresent()) {
             return new Real(rational.get().shiftRight(bits));
         } else {
             return new Real(map(a -> a.shiftRight(bits), intervals));
@@ -2648,7 +2653,7 @@ public final class Real implements Iterable<Interval> {
         if (xs.size() == 1) {
             return xs.get(0);
         }
-        if (any(x -> x == ZERO, xs)) {
+        if (any(x -> x.rational.isPresent() && x.rational.get() == Rational.ZERO, xs)) {
             return ZERO;
         }
         if (all(Real::isExact, xs)) {
@@ -2680,6 +2685,68 @@ public final class Real implements Iterable<Interval> {
             throw new NullPointerException();
         }
         return adjacentPairsWith((x, y) -> y.subtract(x), xs);
+    }
+
+    /**
+     * Returns {@code this} raised to the power of {@code p}. 0<sup>0</sup> yields 1. If {@code this} is a fuzzy zero
+     * and {@code p} is negative, this method will loop forever. To prevent this behavior, use
+     * {@link Real#pow(int, Rational)} instead.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code p} may be any {@code int}.</li>
+     *  <li>If {@code p} is negative, {@code this} cannot be 0.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param p the power that {@code this} is raised to
+     * @return {@code this}<sup>{@code p}</sup>
+     */
+    public @NotNull Real powUnsafe(int p) {
+        if (p == 0 || rational.isPresent() && rational.get() == Rational.ONE) return ONE;
+        if (p == 1) return this;
+        if (p < 0) return invertUnsafe().powUnsafe(-p);
+        if (rational.isPresent() && rational.get() == Rational.ZERO) return this;
+        if (p % 2 == 0 && rational.isPresent() && rational.get().equals(Rational.NEGATIVE_ONE)) return ONE;
+        if (rational.isPresent()) {
+            return new Real(rational.get().pow(p));
+        }
+        return new Real(map(a -> a.powHull(p), intervals));
+    }
+
+    /**
+     * Returns {@code this} raised to the power of {@code p}. 0<sup>0</sup> yields 1. If {@code that} is a fuzzy zero
+     * and {@code p} is negative, this method will give up and return empty once the approximating interval's diameter
+     * is less than the specified resolution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code p} may be any {@code int}.</li>
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>If {@code p} is negative, {@code this} cannot be an exact 0. (If it is a fuzzy zero, an empty
+     *  {@code Optional} will be returned.)</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param p the power that {@code this} is raised to
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return {@code this}<sup>{@code p}</sup>
+     */
+    public @NotNull Optional<Real> pow(int p, @NotNull Rational resolution) {
+        if (resolution.signum() != 1) {
+            throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
+        }
+        if (p == 0 || rational.isPresent() && rational.get() == Rational.ONE) return Optional.of(ONE);
+        if (p == 1) return Optional.of(this);
+        if (p < 0) return invert(resolution).map(x -> x.powUnsafe(-p));
+        if (rational.isPresent() && rational.get() == Rational.ZERO) return Optional.of(this);
+        if (p % 2 == 0 && rational.isPresent() && rational.get().equals(Rational.NEGATIVE_ONE)) {
+            return Optional.of(ONE);
+        }
+        if (rational.isPresent()) {
+            return Optional.of(new Real(rational.get().pow(p)));
+        }
+        return Optional.of(new Real(map(a -> a.powHull(p), intervals)));
     }
 
     public @NotNull Pair<List<BigInteger>, Iterable<BigInteger>> digitsUnsafe(@NotNull BigInteger base) {
@@ -3085,7 +3152,7 @@ public final class Real implements Iterable<Interval> {
     }
 
     public @NotNull Iterable<BigInteger> continuedFraction() {
-        if (this == ZERO) {
+        if (rational.isPresent() && rational.get() == Rational.ZERO) {
             return Collections.singletonList(BigInteger.ZERO);
         }
         return () -> new NoRemoveIterator<BigInteger>() {

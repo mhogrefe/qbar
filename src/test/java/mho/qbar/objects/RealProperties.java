@@ -122,6 +122,8 @@ public class RealProperties extends QBarTestProperties {
         propertiesProduct();
         compareImplementationsProduct();
         propertiesDelta();
+        propertiesPowUnsafe_int();
+        propertiesPow_int_Rational();
     }
 
     private void propertiesOf_Rational() {
@@ -4274,6 +4276,172 @@ public class RealProperties extends QBarTestProperties {
                 toList(delta(xs));
                 fail(xs);
             } catch (NullPointerException | IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesPowUnsafe_int() {
+        initialize("powUnsafe(int)");
+        Iterable<Pair<Rational, Integer>> rs = filterInfinite(
+                p -> p.a != Rational.ZERO || p.b >= 0,
+                P.pairsSquareRootOrder(P.rationals(), P.withScale(4).integersGeometric())
+        );
+        Iterable<Pair<Real, Integer>> ps = P.withScale(1).choose(
+                map(
+                        q -> new Pair<>(q.a.realValue(), q.b),
+                        filterInfinite(
+                                p -> p.a != Algebraic.ZERO || p.b >= 0,
+                                P.pairsSquareRootOrder(P.algebraics(), P.withScale(4).integersGeometric())
+                        )
+                ),
+                P.choose(
+                        Arrays.asList(
+                                map(p -> new Pair<>(leftFuzzyRepresentation(p.a), p.b), rs),
+                                map(p -> new Pair<>(rightFuzzyRepresentation(p.a), p.b), rs),
+                                map(p -> new Pair<>(fuzzyRepresentation(p.a), p.b), rs)
+                        )
+                )
+        );
+        for (Pair<Real, Integer> p : take(LIMIT, ps)) {
+            Real x = p.a.powUnsafe(p.b);
+            x.validate();
+            //todo root
+        }
+
+        ps = P.pairs(P.nonzeroReals(), P.withScale(4).integersGeometric());
+        for (Pair<Real, Integer> p : take(LIMIT, ps)) {
+            Real x = p.a.powUnsafe(p.b);
+            Optional<Boolean> equal1 = eq(p.a.powUnsafe(-p.b), x.invertUnsafe(), DEFAULT_RESOLUTION);
+            assertTrue(p, !equal1.isPresent() || equal1.get());
+            //noinspection SuspiciousNameCombination
+            Optional<Boolean> equal2 = eq(p.a.invertUnsafe().powUnsafe(-p.b), x, DEFAULT_RESOLUTION);
+            assertTrue(p, !equal2.isPresent() || equal2.get());
+        }
+
+        for (int i : take(LIMIT, P.positiveIntegersGeometric())) {
+            assertTrue(i, ZERO.powUnsafe(i) == ZERO);
+        }
+
+        for (Real x : take(LIMIT, P.reals())) {
+            assertTrue(x, x.powUnsafe(0) == ONE);
+            assertTrue(x, x.powUnsafe(1) == x);
+            Optional<Boolean> pow2 = eq(x.powUnsafe(2), x.multiply(x), DEFAULT_RESOLUTION);
+            assertTrue(x, !pow2.isPresent() || pow2.get());
+        }
+
+        for (Real x : take(LIMIT, P.nonzeroReals())) {
+            Optional<Boolean> invert = eq(x.powUnsafe(-1), x.invertUnsafe(), DEFAULT_RESOLUTION);
+            assertTrue(x, !invert.isPresent() || invert.get());
+        }
+
+        Iterable<Triple<Real, Integer, Integer>> ts = filterInfinite(
+                t -> !t.a.isExact() || t.a.rationalValueExact().get() != Rational.ZERO || (t.b >= 0 && t.c >= 0),
+                P.triples(
+                        P.withScale(4).cleanReals(),
+                        P.withScale(4).integersGeometric(),
+                        P.withScale(4).integersGeometric()
+                )
+        );
+        for (Triple<Real, Integer, Integer> t : take(SMALL_LIMIT, ts)) {
+            Real expression1 = t.a.powUnsafe(t.b).multiply(t.a.powUnsafe(t.c));
+            Real expression2 = t.a.powUnsafe(t.b + t.c);
+            Optional<Boolean> equal1 = eq(expression1, expression2, DEFAULT_RESOLUTION);
+            assertTrue(t, !equal1.isPresent() || equal1.get());
+            Real expression3 = t.a.powUnsafe(t.b).powUnsafe(t.c);
+            Real expression4 = t.a.powUnsafe(t.b * t.c);
+            Optional<Boolean> equal2 = eq(expression3, expression4, DEFAULT_RESOLUTION);
+            assertTrue(t, !equal2.isPresent() || equal2.get());
+        }
+
+        ts = filterInfinite(
+                t -> !t.a.isExact() || t.a.rationalValueExact().get() != Rational.ZERO || (t.c == 0 && t.b >= 0),
+                P.triples(
+                        P.withScale(4).cleanReals(),
+                        P.withScale(4).integersGeometric(),
+                        P.withScale(4).integersGeometric()
+                )
+        );
+        for (Triple<Real, Integer, Integer> t : take(SMALL_LIMIT, ts)) {
+            Real expression1 = t.a.powUnsafe(t.b).divideUnsafe(t.a.powUnsafe(t.c));
+            Real expression2 = t.a.powUnsafe(t.b - t.c);
+            Optional<Boolean> equal1 = eq(expression1, expression2, DEFAULT_RESOLUTION);
+            assertTrue(t, !equal1.isPresent() || equal1.get());
+        }
+
+        Iterable<Triple<Real, Real, Integer>> ts2 = filter(
+                t -> ((!t.a.isExact() || t.a.rationalValueExact().get() != Rational.ZERO) &&
+                        (!t.b.isExact() || t.b.rationalValueExact().get() != Rational.ZERO))
+                        || t.c >= 0,
+                P.triples(
+                        P.withScale(4).cleanReals(),
+                        P.withScale(4).cleanReals(),
+                        P.withScale(4).positiveIntegersGeometric()
+                )
+        );
+        for (Triple<Real, Real, Integer> t : take(TINY_LIMIT, ts2)) {
+            Real expression1 = t.a.multiply(t.b).powUnsafe(t.c);
+            Real expression2 = t.a.powUnsafe(t.c).multiply(t.b.powUnsafe(t.c));
+            Optional<Boolean> equal1 = eq(expression1, expression2, DEFAULT_RESOLUTION);
+            assertTrue(t, !equal1.isPresent() || equal1.get());
+        }
+
+        ts2 = filterInfinite(
+                t -> !t.a.isExact() || t.a.rationalValueExact().get() != Rational.ZERO || t.c >= 0,
+                P.triples(
+                        P.withScale(4).cleanReals(),
+                        P.withScale(4).nonzeroCleanReals(),
+                        P.withScale(4).positiveIntegersGeometric()
+                )
+        );
+        for (Triple<Real, Real, Integer> t : take(TINY_LIMIT, ts2)) {
+            Real expression1 = t.a.divideUnsafe(t.b).powUnsafe(t.c);
+            Real expression2 = t.a.powUnsafe(t.c).divideUnsafe(t.b.powUnsafe(t.c));
+            Optional<Boolean> equal1 = eq(expression1, expression2, DEFAULT_RESOLUTION);
+            assertTrue(t, !equal1.isPresent() || equal1.get());
+        }
+
+        for (int i : take(LIMIT, P.negativeIntegers())) {
+            try {
+                ZERO.powUnsafe(i);
+                fail(i);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesPow_int_Rational() {
+        initialize("pow(Real, Rational)");
+        Iterable<Triple<Real, Integer, Rational>> ts = filterInfinite(
+                t -> (!t.a.isExact() || t.a.rationalValueExact().get() != Rational.ZERO) || t.b >= 0,
+                P.triples(P.withScale(4).reals(), P.withScale(4).integersGeometric(), P.positiveRationals())
+        );
+        for (Triple<Real, Integer, Rational> t : take(LIMIT, ts)) {
+            Optional<Real> ox = t.a.pow(t.b, t.c);
+            if (ox.isPresent()) {
+                ox.get().validate();
+                Optional<Boolean> equal = eq(t.a.powUnsafe(t.b), ox.get(), DEFAULT_RESOLUTION);
+                assertTrue(t, !equal.isPresent() || equal.get());
+            }
+        }
+
+        for (Pair<Integer, Rational> p : take(LIMIT, P.pairs(P.negativeIntegers(), P.positiveRationals()))) {
+            try {
+                ZERO.pow(p.a, p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<Triple<Real, Integer, Rational>> tsFail = filterInfinite(
+                t -> (!t.a.isExact() || t.a.rationalValueExact().get() != Rational.ZERO) || t.b >= 0,
+                P.triples(
+                        P.withScale(4).reals(),
+                        P.withScale(4).integersGeometric(),
+                        P.withElement(Rational.ZERO, P.negativeRationals())
+                )
+        );
+        for (Triple<Real, Integer, Rational> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.pow(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 }

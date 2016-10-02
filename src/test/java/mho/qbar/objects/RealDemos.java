@@ -1437,15 +1437,9 @@ public class RealDemos extends QBarDemos {
 
     private void demoInvert() {
         Iterable<Pair<Real, Rational>> ps = P.pairs(
-                P.withScale(1).choose(
-                        map(Algebraic::realValue, P.withScale(4).nonzeroAlgebraics()),
-                        P.choose(
-                                Arrays.asList(
-                                        map(Real::leftFuzzyRepresentation, P.withScale(4).rationals()),
-                                        map(Real::rightFuzzyRepresentation, P.withScale(4).rationals()),
-                                        map(Real::fuzzyRepresentation, P.withScale(4).rationals())
-                                )
-                        )
+                filterInfinite(
+                        x -> !x.isExact() || x.rationalValueExact().get() != Rational.ZERO,
+                        P.withScale(4).reals()
                 ),
                 P.positiveRationals()
         );
@@ -1481,15 +1475,9 @@ public class RealDemos extends QBarDemos {
     private void demoDivide_Real_Rational() {
         Iterable<Triple<Real, Real, Rational>> ts = P.triples(
                 P.withScale(4).reals(),
-                P.withScale(1).choose(
-                        map(Algebraic::realValue, P.withScale(4).nonzeroAlgebraics()),
-                        P.choose(
-                                Arrays.asList(
-                                        map(Real::leftFuzzyRepresentation, P.withScale(4).rationals()),
-                                        map(Real::rightFuzzyRepresentation, P.withScale(4).rationals()),
-                                        map(Real::fuzzyRepresentation, P.withScale(4).rationals())
-                                )
-                        )
+                filterInfinite(
+                        x -> !x.isExact() || x.rationalValueExact().get() != Rational.ZERO,
+                        P.withScale(4).reals()
                 ),
                 P.positiveRationals()
         );
@@ -1531,6 +1519,42 @@ public class RealDemos extends QBarDemos {
     private void demoDelta_infinite() {
         for (Iterable<Real> xs : take(MEDIUM_LIMIT, P.prefixPermutations(QBarTesting.QEP.reals()))) {
             System.out.println("Δ(" + middle(its(xs)) + ") = " + its(delta(xs)));
+        }
+    }
+
+    private void demoPowUnsafe_int() {
+        Iterable<Pair<Rational, Integer>> rs = filterInfinite(
+                p -> p.a != Rational.ZERO || p.b >= 0,
+                P.pairsSquareRootOrder(P.withScale(4).rationals(), P.withScale(4).integersGeometric())
+        );
+        Iterable<Pair<Real, Integer>> ps = P.withScale(1).choose(
+                map(
+                        q -> new Pair<>(q.a.realValue(), q.b),
+                        filterInfinite(
+                                p -> p.a != Algebraic.ZERO || p.b >= 0,
+                                P.pairsSquareRootOrder(P.withScale(4).algebraics(), P.withScale(4).integersGeometric())
+                        )
+                ),
+                P.choose(
+                        Arrays.asList(
+                                map(p -> new Pair<>(leftFuzzyRepresentation(p.a), p.b), rs),
+                                map(p -> new Pair<>(rightFuzzyRepresentation(p.a), p.b), rs),
+                                map(p -> new Pair<>(fuzzyRepresentation(p.a), p.b), rs)
+                        )
+                )
+        );
+        for (Pair<Real, Integer> p : take(LIMIT, ps)) {
+            System.out.println("powUnsafe(" + p.a + ", " + p.b + ") = " + p.a.powUnsafe(p.b));
+        }
+    }
+
+    private void demoPow_int_Rational() {
+        Iterable<Triple<Real, Integer, Rational>> ts = filterInfinite(
+                t -> (!t.a.isExact() || t.a.rationalValueExact().get() != Rational.ZERO) || t.b >= 0,
+                P.triples(P.withScale(4).reals(), P.withScale(4).integersGeometric(), P.positiveRationals())
+        );
+        for (Triple<Real, Integer, Rational> t : take(LIMIT, ts)) {
+            System.out.println("pow(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.pow(t.b, t.c));
         }
     }
 }
