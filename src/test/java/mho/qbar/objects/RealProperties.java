@@ -124,6 +124,8 @@ public class RealProperties extends QBarTestProperties {
         propertiesDelta();
         propertiesPowUnsafe_int();
         propertiesPow_int_Rational();
+        propertiesEquals();
+        propertiesHashCode();
         propertiesCompareToUnsafe_Rational();
         propertiesCompareTo_Rational_Rational();
         propertiesEqUnsafe_Rational();
@@ -4428,6 +4430,36 @@ public class RealProperties extends QBarTestProperties {
                 t.a.pow(t.b, t.c);
                 fail(t);
             } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesEquals() {
+        initialize("equals(Object)");
+        for (Pair<Real, Real> p : take(LIMIT, P.pairs(P.reals()))) {
+            try {
+                //noinspection ResultOfMethodCallIgnored
+                p.a.equals(p.b);
+                fail(p);
+            } catch (UnsupportedOperationException ignored) {}
+        }
+
+        for (Real x : take(LIMIT, P.reals())) {
+            try {
+                //noinspection ObjectEqualsNull,ResultOfMethodCallIgnored
+                x.equals(null);
+                fail(x);
+            } catch (UnsupportedOperationException ignored) {}
+        }
+    }
+
+    private void propertiesHashCode() {
+        initialize("hashCode()");
+        for (Real x : take(LIMIT, P.reals())) {
+            try {
+                //noinspection ResultOfMethodCallIgnored
+                x.hashCode();
+                fail(x);
+            } catch (UnsupportedOperationException ignored) {}
         }
     }
 
