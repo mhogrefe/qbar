@@ -1557,4 +1557,263 @@ public class RealDemos extends QBarDemos {
             System.out.println("pow(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.pow(t.b, t.c));
         }
     }
+
+    private void demoCompareToUnsafe_Rational() {
+        //noinspection RedundantCast
+        Iterable<Pair<Real, Rational>> ps = map(
+                p -> new Pair<>(p.b, p.a),
+                (Iterable<Pair<Rational, Real>>) P.dependentPairsInfinite(
+                        P.withScale(4).rationals(),
+                        r -> {
+                            Iterable<Rational> rs = filterInfinite(s -> !r.equals(s), P.withScale(4).rationals());
+                            return P.withScale(1).choose(
+                                    map(Algebraic::realValue, P.withScale(4).algebraics()),
+                                    P.choose(
+                                            Arrays.asList(
+                                                    map(Real::leftFuzzyRepresentation, rs),
+                                                    map(Real::rightFuzzyRepresentation, rs),
+                                                    map(Real::fuzzyRepresentation, rs)
+                                            )
+                                    )
+                            );
+                        }
+                )
+        );
+        for (Pair<Real, Rational> p : take(LIMIT, ps)) {
+            System.out.println("compareToUnsafe(" + p.a + ", " + p.b + ") = " + p.a.compareToUnsafe(p.b));
+        }
+    }
+
+    private void demoCompareTo_Rational() {
+        Iterable<Triple<Real, Rational, Rational>> ts = P.triples(
+                P.withScale(4).reals(),
+                P.withScale(4).rationals(),
+                P.positiveRationals()
+        );
+        for (Triple<Real, Rational, Rational> t : take(LIMIT, ts)) {
+            System.out.println("compareTo(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.compareTo(t.b, t.c));
+        }
+    }
+
+    private void demoEqUnsafe_Rational() {
+        //noinspection RedundantCast
+        Iterable<Pair<Real, Rational>> ps = map(
+                p -> new Pair<>(p.b, p.a),
+                (Iterable<Pair<Rational, Real>>) P.dependentPairsInfinite(
+                        P.withScale(4).rationals(),
+                        r -> {
+                            Iterable<Rational> rs = filterInfinite(s -> !r.equals(s), P.withScale(4).rationals());
+                            return P.withScale(1).choose(
+                                    map(Algebraic::realValue, P.withScale(4).algebraics()),
+                                    P.choose(
+                                            Arrays.asList(
+                                                    map(Real::leftFuzzyRepresentation, rs),
+                                                    map(Real::rightFuzzyRepresentation, rs),
+                                                    map(Real::fuzzyRepresentation, rs)
+                                            )
+                                    )
+                            );
+                        }
+                )
+        );
+        for (Pair<Real, Rational> p : take(LIMIT, ps)) {
+            System.out.println("eqUnsafe(" + p.a + ", " + p.b + ") = " + p.a.eqUnsafe(p.b));
+        }
+    }
+
+    private void demoNeUnsafe_Rational() {
+        //noinspection RedundantCast
+        Iterable<Pair<Real, Rational>> ps = map(
+                p -> new Pair<>(p.b, p.a),
+                (Iterable<Pair<Rational, Real>>) P.dependentPairsInfinite(
+                        P.withScale(4).rationals(),
+                        r -> {
+                            Iterable<Rational> rs = filterInfinite(s -> !r.equals(s), P.withScale(4).rationals());
+                            return P.withScale(1).choose(
+                                    map(Algebraic::realValue, P.withScale(4).algebraics()),
+                                    P.choose(
+                                            Arrays.asList(
+                                                    map(Real::leftFuzzyRepresentation, rs),
+                                                    map(Real::rightFuzzyRepresentation, rs),
+                                                    map(Real::fuzzyRepresentation, rs)
+                                            )
+                                    )
+                            );
+                        }
+                )
+        );
+        for (Pair<Real, Rational> p : take(LIMIT, ps)) {
+            System.out.println("neUnsafe(" + p.a + ", " + p.b + ") = " + p.a.neUnsafe(p.b));
+        }
+    }
+
+    private void demoLtUnsafe_Rational() {
+        //noinspection RedundantCast
+        Iterable<Pair<Real, Rational>> ps = map(
+                p -> new Pair<>(p.b, p.a),
+                (Iterable<Pair<Rational, Real>>) P.dependentPairsInfinite(
+                        P.withScale(4).rationals(),
+                        r -> {
+                            Iterable<Rational> rs = filterInfinite(s -> !r.equals(s), P.withScale(4).rationals());
+                            return P.withScale(1).choose(
+                                    map(Algebraic::realValue, P.withScale(4).algebraics()),
+                                    P.choose(
+                                            Arrays.asList(
+                                                    map(Real::leftFuzzyRepresentation, rs),
+                                                    map(Real::rightFuzzyRepresentation, rs),
+                                                    map(Real::fuzzyRepresentation, rs)
+                                            )
+                                    )
+                            );
+                        }
+                )
+        );
+        for (Pair<Real, Rational> p : take(LIMIT, ps)) {
+            System.out.println("ltUnsafe(" + p.a + ", " + p.b + ") = " + p.a.ltUnsafe(p.b));
+        }
+    }
+
+    private void demoGtUnsafe_Rational() {
+        //noinspection RedundantCast
+        Iterable<Pair<Real, Rational>> ps = map(
+                p -> new Pair<>(p.b, p.a),
+                (Iterable<Pair<Rational, Real>>) P.dependentPairsInfinite(
+                        P.withScale(4).rationals(),
+                        r -> {
+                            Iterable<Rational> rs = filterInfinite(s -> !r.equals(s), P.withScale(4).rationals());
+                            return P.withScale(1).choose(
+                                    map(Algebraic::realValue, P.withScale(4).algebraics()),
+                                    P.choose(
+                                            Arrays.asList(
+                                                    map(Real::leftFuzzyRepresentation, rs),
+                                                    map(Real::rightFuzzyRepresentation, rs),
+                                                    map(Real::fuzzyRepresentation, rs)
+                                            )
+                                    )
+                            );
+                        }
+                )
+        );
+        for (Pair<Real, Rational> p : take(LIMIT, ps)) {
+            System.out.println("gtUnsafe(" + p.a + ", " + p.b + ") = " + p.a.gtUnsafe(p.b));
+        }
+    }
+
+    private void demoLeUnsafe_Rational() {
+        //noinspection RedundantCast
+        Iterable<Pair<Real, Rational>> ps = map(
+                p -> new Pair<>(p.b, p.a),
+                (Iterable<Pair<Rational, Real>>) P.dependentPairsInfinite(
+                        P.withScale(4).rationals(),
+                        r -> {
+                            Iterable<Rational> rs = filterInfinite(s -> !r.equals(s), P.withScale(4).rationals());
+                            return P.withScale(1).choose(
+                                    map(Algebraic::realValue, P.withScale(4).algebraics()),
+                                    P.choose(
+                                            Arrays.asList(
+                                                    map(Real::leftFuzzyRepresentation, P.withScale(4).rationals()),
+                                                    map(Real::rightFuzzyRepresentation, rs),
+                                                    map(Real::fuzzyRepresentation, rs)
+                                            )
+                                    )
+                            );
+                        }
+                )
+        );
+        for (Pair<Real, Rational> p : take(LIMIT, ps)) {
+            System.out.println("leUnsafe(" + p.a + ", " + p.b + ") = " + p.a.leUnsafe(p.b));
+        }
+    }
+
+    private void demoGeUnsafe_Rational() {
+        //noinspection RedundantCast
+        Iterable<Pair<Real, Rational>> ps = map(
+                p -> new Pair<>(p.b, p.a),
+                (Iterable<Pair<Rational, Real>>) P.dependentPairsInfinite(
+                        P.withScale(4).rationals(),
+                        r -> {
+                            Iterable<Rational> rs = filterInfinite(s -> !r.equals(s), P.withScale(4).rationals());
+                            return P.withScale(1).choose(
+                                    map(Algebraic::realValue, P.withScale(4).algebraics()),
+                                    P.choose(
+                                            Arrays.asList(
+                                                    map(Real::leftFuzzyRepresentation, rs),
+                                                    map(Real::rightFuzzyRepresentation, P.withScale(4).rationals()),
+                                                    map(Real::fuzzyRepresentation, rs)
+                                            )
+                                    )
+                            );
+                        }
+                )
+        );
+        for (Pair<Real, Rational> p : take(LIMIT, ps)) {
+            System.out.println("geUnsafe(" + p.a + ", " + p.b + ") = " + p.a.geUnsafe(p.b));
+        }
+    }
+
+    private void demoEq_Rational() {
+        Iterable<Triple<Real, Rational, Rational>> ts = P.triples(
+                P.withScale(4).reals(),
+                P.withScale(4).rationals(),
+                P.positiveRationals()
+        );
+        for (Triple<Real, Rational, Rational> t : take(LIMIT, ts)) {
+            System.out.println("eq(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.eq(t.b, t.c));
+        }
+    }
+
+    private void demoNe_Rational() {
+        Iterable<Triple<Real, Rational, Rational>> ts = P.triples(
+                P.withScale(4).reals(),
+                P.withScale(4).rationals(),
+                P.positiveRationals()
+        );
+        for (Triple<Real, Rational, Rational> t : take(LIMIT, ts)) {
+            System.out.println("ne(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.ne(t.b, t.c));
+        }
+    }
+
+    private void demoLt_Rational() {
+        Iterable<Triple<Real, Rational, Rational>> ts = P.triples(
+                P.withScale(4).reals(),
+                P.withScale(4).rationals(),
+                P.positiveRationals()
+        );
+        for (Triple<Real, Rational, Rational> t : take(LIMIT, ts)) {
+            System.out.println("lt(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.lt(t.b, t.c));
+        }
+    }
+
+    private void demoGt_Rational() {
+        Iterable<Triple<Real, Rational, Rational>> ts = P.triples(
+                P.withScale(4).reals(),
+                P.withScale(4).rationals(),
+                P.positiveRationals()
+        );
+        for (Triple<Real, Rational, Rational> t : take(LIMIT, ts)) {
+            System.out.println("gt(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.gt(t.b, t.c));
+        }
+    }
+
+    private void demoLe_Rational() {
+        Iterable<Triple<Real, Rational, Rational>> ts = P.triples(
+                P.withScale(4).reals(),
+                P.withScale(4).rationals(),
+                P.positiveRationals()
+        );
+        for (Triple<Real, Rational, Rational> t : take(LIMIT, ts)) {
+            System.out.println("le(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.le(t.b, t.c));
+        }
+    }
+
+    private void demoGe_Rational() {
+        Iterable<Triple<Real, Rational, Rational>> ts = P.triples(
+                P.withScale(4).reals(),
+                P.withScale(4).rationals(),
+                P.positiveRationals()
+        );
+        for (Triple<Real, Rational, Rational> t : take(LIMIT, ts)) {
+            System.out.println("ge(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.ge(t.b, t.c));
+        }
+    }
 }

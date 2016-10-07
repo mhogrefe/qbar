@@ -1080,7 +1080,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         for (Rational r : take(SMALL_LIMIT, P.rationals())) {
             Iterable<Real> xs = QEP.cleanRealRangeUp(Algebraic.of(r));
             //noinspection SuspiciousNameCombination
-            simpleTestNoUnique(r, xs, y -> Real.geUnsafe(y, r));
+            simpleTestNoUnique(r, xs, y -> y.geUnsafe(r));
         }
     }
 
@@ -1110,7 +1110,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         for (Rational r : take(SMALL_LIMIT, P.rationals())) {
             Iterable<Real> xs = QEP.cleanRealRangeDown(Algebraic.of(r));
             //noinspection SuspiciousNameCombination
-            simpleTestNoUnique(r, xs, y -> Real.leUnsafe(y, r));
+            simpleTestNoUnique(r, xs, y -> y.leUnsafe(r));
         }
     }
 
@@ -1145,7 +1145,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         for (Pair<Rational, Rational> p : take(SMALL_LIMIT, P.bagPairs(P.rationals()))) {
             Iterable<Real> xs = QEP.cleanRealRange(Algebraic.of(p.a), Algebraic.of(p.b));
             //noinspection SuspiciousNameCombination
-            simpleTestNoUnique(p, xs, y -> Real.geUnsafe(y, p.a) && Real.leUnsafe(y, p.b));
+            simpleTestNoUnique(p, xs, y -> y.geUnsafe(p.a) && y.leUnsafe(p.b));
         }
 
         for (Algebraic x : take(LIMIT, P.algebraics())) {
@@ -1238,7 +1238,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
             simpleTest(i, xs, x -> x.degree() == i && x.signum() == 1);
         }
 
-        for (int i : take(LIMIT, P.withElement(0, P.negativeIntegers()))) {
+        for (int i : take(LIMIT, P.rangeDown(0))) {
             try {
                 QEP.positiveAlgebraics(i);
                 fail(i);
@@ -1258,7 +1258,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
             simpleTest(i, xs, x -> x.degree() == i && x.signum() == -1);
         }
 
-        for (int i : take(LIMIT, P.withElement(0, P.negativeIntegers()))) {
+        for (int i : take(LIMIT, P.rangeDown(0))) {
             try {
                 QEP.negativeAlgebraics(i);
                 fail(i);
@@ -1278,7 +1278,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
             simpleTest(i, xs, x -> x.degree() == i && x != Algebraic.ZERO);
         }
 
-        for (int i : take(LIMIT, P.withElement(0, P.negativeIntegers()))) {
+        for (int i : take(LIMIT, P.rangeDown(0))) {
             try {
                 QEP.nonzeroAlgebraics(i);
                 fail(i);
@@ -1298,7 +1298,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
             simpleTest(i, xs, x -> x.degree() == i);
         }
 
-        for (int i : take(LIMIT, P.withElement(0, P.negativeIntegers()))) {
+        for (int i : take(LIMIT, P.rangeDown(0))) {
             try {
                 QEP.algebraics(i);
                 fail(i);
@@ -1318,7 +1318,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
             simpleTest(i, xs, x -> x.degree() == i && x.signum() != -1 && lt(x, Algebraic.ONE));
         }
 
-        for (int i : take(LIMIT, P.withElement(0, P.negativeIntegers()))) {
+        for (int i : take(LIMIT, P.rangeDown(0))) {
             try {
                 QEP.nonNegativeAlgebraicsLessThanOne(i);
                 fail(i);

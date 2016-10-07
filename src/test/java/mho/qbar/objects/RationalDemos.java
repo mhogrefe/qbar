@@ -521,10 +521,7 @@ public class RationalDemos extends QBarDemos {
     }
 
     private void demoPositionalNotation() {
-        Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
-                P.withElement(ZERO, P.withScale(4).positiveRationals()),
-                P.rangeUp(IntegerUtils.TWO)
-        );
+        Iterable<Pair<Rational, BigInteger>> ps = P.pairs(P.withScale(4).rangeUp(ZERO), P.rangeUp(IntegerUtils.TWO));
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             System.out.println("positionalNotation(" + p.a + ", " + p.b + ") = " + p.a.positionalNotation(p.b));
         }
@@ -552,7 +549,7 @@ public class RationalDemos extends QBarDemos {
     private void demoDigits() {
         //noinspection Convert2MethodRef
         Iterable<Pair<Rational, BigInteger>> ps = P.pairsSquareRootOrder(
-                P.withElement(ZERO, P.positiveRationals()),
+                P.rangeUp(ZERO),
                 map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
         );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
@@ -566,7 +563,7 @@ public class RationalDemos extends QBarDemos {
         Iterable<Triple<BigInteger, Rational, Rational>> ts = map(
                 p -> new Triple<>(p.b, p.a.a, p.a.b),
                 P.pairsSquareRootOrder(
-                        filterInfinite(p -> p.a != p.b, P.pairs(P.withElement(ZERO, P.positiveRationals()))),
+                        filterInfinite(p -> p.a != p.b, P.pairs(P.rangeUp(ZERO))),
                         map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
                 )
         );

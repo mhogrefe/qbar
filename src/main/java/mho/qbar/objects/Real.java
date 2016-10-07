@@ -3228,30 +3228,364 @@ public final class Real implements Iterable<Interval> {
         return toStringBase(BigInteger.TEN, TINY_LIMIT, DEFAULT_RESOLUTION);
     }
 
-    public int compareToUnsafe(@NotNull Real that) {
-        if (this == that) return 0;
-        Iterator<Interval> thisIntervals = intervals.iterator();
-        Iterator<Interval> thatIntervals = that.intervals.iterator();
-        while (true) {
-            Optional<Ordering> o = thisIntervals.next().elementCompare(thatIntervals.next());
-            if (o.isPresent()) return o.get().toInt();
+    /**
+     * {@code Real}s cannot be compared using {@code equals}. Use one of the other comparison functions.
+     *
+     * @param that The {@code Object} to be compared with {@code this}
+     * @return always throws
+     */
+    @Override
+    public boolean equals(Object that) {
+        throw new UnsupportedOperationException("Reals cannot be compared using equals.");
+    }
+
+    /**
+     * {@code Real}s do not have a hash code. If you need a set or map with {@code Real}s as keys, and you're sure that
+     * every pair of {@code Real}s is either unequal or both exact, you can use a {@link TreeSet} or {@link TreeMap}
+     * with {@link Real#compareToUnsafe(Real)} as the comparator.
+     *
+     * @return always throws
+     */
+    @Override
+    public int hashCode() {
+        throw new UnsupportedOperationException("Reals do not have a hash code.");
+    }
+
+    /**
+     * Compares {@code this} to {@code that}, returning 1, –1, or 0 if the answer is "greater than", "less than", or
+     * "equal to", respectively. If {@code this} is fuzzy and equal to that, this method will loop forever. To avoid
+     * this behavior, use {@link Real#compareTo(Rational, Rational)} instead.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} cannot be fuzzy and equal to {@code that}.</li>
+     *  <li>The result may be –1, 0, or 1.</li>
+     * </ul>
+     *
+     * @param that the {@code Rational} to be compared with {@code this}
+     * @return {@code this} compared to {@code that}
+     */
+    public int compareToUnsafe(@NotNull Rational that) {
+        if (rational.isPresent()) {
+            return rational.get().compareTo(that);
         }
+        for (Interval interval : intervals) {
+            if (!interval.contains(that)) {
+                Rational sample = interval.getLower().isPresent() ?
+                        interval.getLower().get() :
+                        interval.getUpper().get();
+                return sample.compareTo(that);
+            }
+        }
+        throw new IllegalStateException("unreachable");
     }
 
-    public static boolean ltUnsafe(@NotNull Real x, @NotNull Real y) {
-        return x.compareToUnsafe(y) < 0;
+    /**
+     * Compares {@code this} to {@code that}, returning 1, –1, or 0 if the answer is "greater than", "less than", or
+     * "equal to", respectively. If {@code this} is fuzzy and equal to that, this method will give up and return empty
+     * once the approximating interval's diameter is less than the specified resolution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>The result may be –1, 0, 1, or empty.</li>
+     * </ul>
+     *
+     * @param that the {@code Rational} to be compared with {@code this}
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return {@code this} compared to {@code that}
+     */
+    public @NotNull Optional<Integer> compareTo(@NotNull Rational that, @NotNull Rational resolution) {
+        if (resolution.signum() != 1) {
+            throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
+        }
+        if (rational.isPresent()) {
+            return Optional.of(rational.get().compareTo(that));
+        }
+        for (Interval interval : intervals) {
+            if (!interval.contains(that)) {
+                Rational sample = interval.getLower().isPresent() ?
+                        interval.getLower().get() :
+                        interval.getUpper().get();
+                return Optional.of(sample.compareTo(that));
+            }
+            if (interval.isFinitelyBounded() && Ordering.lt(interval.diameter().get(), resolution)) {
+                return Optional.empty();
+            }
+        }
+        throw new IllegalStateException("unreachable");
     }
 
-    public static boolean gtUnsafe(@NotNull Real x, @NotNull Real y) {
-        return x.compareToUnsafe(y) > 0;
+    /**
+     * Determines whether {@code this} is equal to {@code that}. If {@code this} is fuzzy and equal to that, this
+     * method will loop forever. To avoid this behavior, use {@link Real#eq(Rational, Rational)} instead.
+     *
+     * <li>{@code this} may be any {@code Real}.</li>
+     * <li>{@code that} cannot be null.</li>
+     * <li>{@code this} cannot be fuzzy and equal to {@code that}.</li>
+     * <li>The result may be either {@code boolean}.</li>
+     *
+     * @param that the {@code Rational} to be compared with {@code this}
+     * @return x=y
+     */
+    public boolean eqUnsafe(@NotNull Rational that) {
+        return compareToUnsafe(that) == 0;
     }
 
-    public static boolean leUnsafe(@NotNull Real x, @NotNull Real y) {
-        return x.compareToUnsafe(y) <= 0;
+    /**
+     * Determines whether {@code this} is unequal to {@code that}. If {@code this} is fuzzy and equal to that, this
+     * method will loop forever. To avoid this behavior, use {@link Real#ne(Rational, Rational)} instead.
+     *
+     * <li>{@code this} may be any {@code Real}.</li>
+     * <li>{@code that} cannot be null.</li>
+     * <li>{@code this} cannot be fuzzy and equal to {@code that}.</li>
+     * <li>The result may be either {@code boolean}.</li>
+     *
+     * @param that the {@code Rational} to be compared with {@code this}
+     * @return x≠y
+     */
+    public boolean neUnsafe(@NotNull Rational that) {
+        return compareToUnsafe(that) != 0;
     }
 
-    public static boolean geUnsafe(@NotNull Real x, @NotNull Real y) {
-        return x.compareToUnsafe(y) >= 0;
+    /**
+     * Determines whether {@code this} is less than {@code that}. If {@code this} is fuzzy and equal to that, this
+     * method will loop forever. To avoid this behavior, use {@link Real#lt(Rational, Rational)} instead.
+     *
+     * <li>{@code this} may be any {@code Real}.</li>
+     * <li>{@code that} cannot be null.</li>
+     * <li>{@code this} cannot be fuzzy and equal to {@code that}.</li>
+     * <li>The result may be either {@code boolean}.</li>
+     *
+     * @param that the {@code Rational} to be compared with {@code this}
+     * @return x{@literal <}y
+     */
+    public boolean ltUnsafe(@NotNull Rational that) {
+        return compareToUnsafe(that) < 0;
+    }
+
+    /**
+     * Determines whether {@code this} is greater than {@code that}. If {@code this} is fuzzy and equal to that, this
+     * method will loop forever. To avoid this behavior, use {@link Real#gt(Rational, Rational)} instead.
+     *
+     * <li>{@code this} may be any {@code Real}.</li>
+     * <li>{@code that} cannot be null.</li>
+     * <li>{@code this} cannot be fuzzy and equal to {@code that}.</li>
+     * <li>The result may be either {@code boolean}.</li>
+     *
+     * @param that the {@code Rational} to be compared with {@code this}
+     * @return x{@literal >}y
+     */
+    public boolean gtUnsafe(@NotNull Rational that) {
+        return compareToUnsafe(that) > 0;
+    }
+
+    /**
+     * Determines whether {@code this} is less than or equal to {@code that}. If {@code this} is fuzzy on the right and
+     * equal to that, this method will loop forever. To avoid this behavior, use {@link Real#le(Rational, Rational)}
+     * instead.
+     *
+     * <li>{@code this} may be any {@code Real}.</li>
+     * <li>{@code that} cannot be null.</li>
+     * <li>{@code this} cannot be fuzzy on the right and equal to {@code that}.</li>
+     * <li>The result may be either {@code boolean}.</li>
+     *
+     * @param that the {@code Rational} to be compared with {@code this}
+     * @return x≤y
+     */
+    public boolean leUnsafe(@NotNull Rational that) {
+        if (rational.isPresent()) {
+            return Ordering.le(rational.get(), that);
+        }
+        for (Interval interval : intervals) {
+            if (interval.getUpper().isPresent() && interval.getUpper().get().equals(that)) {
+                return true;
+            } else if (!interval.contains(that)) {
+                Rational sample = interval.getLower().isPresent() ?
+                        interval.getLower().get() :
+                        interval.getUpper().get();
+                return Ordering.lt(sample, that);
+            }
+        }
+        throw new IllegalStateException("unreachable");
+    }
+
+    /**
+     * Determines whether {@code this} is greater than or equal to {@code that}. If {@code this} is fuzzy on the left
+     * and equal to that, this method will loop forever. To avoid this behavior, use
+     * {@link Real#ge(Rational, Rational)} instead.
+     *
+     * <li>{@code this} may be any {@code Real}.</li>
+     * <li>{@code that} cannot be null.</li>
+     * <li>{@code this} cannot be fuzzy on the left and equal to {@code that}.</li>
+     * <li>The result may be either {@code boolean}.</li>
+     *
+     * @param that the {@code Rational} to be compared with {@code this}
+     * @return x≥y
+     */
+    public boolean geUnsafe(@NotNull Rational that) {
+        if (rational.isPresent()) {
+            return Ordering.ge(rational.get(), that);
+        }
+        for (Interval interval : intervals) {
+            if (interval.getLower().isPresent() && interval.getLower().get().equals(that)) {
+                return true;
+            } else if (!interval.contains(that)) {
+                Rational sample = interval.getLower().isPresent() ?
+                        interval.getLower().get() :
+                        interval.getUpper().get();
+                return Ordering.gt(sample, that);
+            }
+        }
+        throw new IllegalStateException("unreachable");
+    }
+
+    /**
+     * Determines whether {@code this} is equal to {@code that}. If {@code this} is fuzzy and equal to that, this
+     * method will give up and return empty once the approximating interval's diameter is less than the specified
+     * resolution.
+     *
+     * <li>{@code this} may be any {@code Real}.</li>
+     * <li>{@code that} cannot be null.</li>
+     * <li>{@code resolution} must be positive.</li>
+     * <li>The result may be either {@code boolean}.</li>
+     *
+     * @param that the {@code Rational} to be compared with {@code this}
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return x=y
+     */
+    public @NotNull Optional<Boolean> eq(@NotNull Rational that, @NotNull Rational resolution) {
+        return compareTo(that, resolution).map(c -> c == 0);
+    }
+
+    /**
+     * Determines whether {@code this} is unequal to {@code that}. If {@code this} is fuzzy and equal to that, this
+     * method will give up and return empty once the approximating interval's diameter is less than the specified
+     * resolution.
+     *
+     * <li>{@code this} may be any {@code Real}.</li>
+     * <li>{@code that} cannot be null.</li>
+     * <li>{@code resolution} must be positive.</li>
+     * <li>The result may be either {@code boolean}.</li>
+     *
+     * @param that the {@code Rational} to be compared with {@code this}
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return x≠y
+     */
+    public @NotNull Optional<Boolean> ne(@NotNull Rational that, @NotNull Rational resolution) {
+        return compareTo(that, resolution).map(c -> c != 0);
+    }
+
+    /**
+     * Determines whether {@code this} is less than {@code that}. If {@code this} is fuzzy and equal to that, this
+     * method will give up and return empty once the approximating interval's diameter is less than the specified
+     * resolution.
+     *
+     * <li>{@code this} may be any {@code Real}.</li>
+     * <li>{@code that} cannot be null.</li>
+     * <li>{@code resolution} must be positive.</li>
+     * <li>The result may be either {@code boolean}.</li>
+     *
+     * @param that the {@code Rational} to be compared with {@code this}
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return x{@literal <}y
+     */
+    public @NotNull Optional<Boolean> lt(@NotNull Rational that, @NotNull Rational resolution) {
+        return compareTo(that, resolution).map(c -> c < 0);
+    }
+
+    /**
+     * Determines whether {@code this} is greater than {@code that}. If {@code this} is fuzzy and equal to that, this
+     * method will give up and return empty once the approximating interval's diameter is less than the specified
+     * resolution.
+     *
+     * <li>{@code this} may be any {@code Real}.</li>
+     * <li>{@code that} cannot be null.</li>
+     * <li>{@code resolution} must be positive.</li>
+     * <li>The result may be either {@code boolean}.</li>
+     *
+     * @param that the {@code Rational} to be compared with {@code this}
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return x{@literal >}y
+     */
+    public @NotNull Optional<Boolean> gt(@NotNull Rational that, @NotNull Rational resolution) {
+        return compareTo(that, resolution).map(c -> c > 0);
+    }
+
+    /**
+     * Determines whether {@code this} is less than or equal to {@code that}. If {@code this} is fuzzy on the right and
+     * equal to that, this method will give up and return empty once the approximating interval's diameter is less than
+     * the specified resolution.
+     *
+     * <li>{@code this} may be any {@code Real}.</li>
+     * <li>{@code that} cannot be null.</li>
+     * <li>{@code resolution} must be positive.</li>
+     * <li>The result may be either {@code boolean}.</li>
+     *
+     * @param that the {@code Rational} to be compared with {@code this}
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return x≤y
+     */
+    public @NotNull Optional<Boolean> le(@NotNull Rational that, @NotNull Rational resolution) {
+        if (resolution.signum() != 1) {
+            throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
+        }
+        if (rational.isPresent()) {
+            return Optional.of(Ordering.le(rational.get(), that));
+        }
+        for (Interval interval : intervals) {
+            if (interval.getUpper().isPresent() && interval.getUpper().get().equals(that)) {
+                return Optional.of(true);
+            } else if (!interval.contains(that)) {
+                Rational sample = interval.getLower().isPresent() ?
+                        interval.getLower().get() :
+                        interval.getUpper().get();
+                return Optional.of(Ordering.lt(sample, that));
+            }
+            if (interval.isFinitelyBounded() && Ordering.lt(interval.diameter().get(), resolution)) {
+                return Optional.empty();
+            }
+        }
+        throw new IllegalStateException("unreachable");
+    }
+
+    /**
+     * Determines whether {@code this} is greater than or equal to {@code that}. If {@code this} is fuzzy on the left
+     * and equal to that, this method will give up and return empty once the approximating interval's diameter is less
+     * than the specified resolution.
+     *
+     * <li>{@code this} may be any {@code Real}.</li>
+     * <li>{@code that} cannot be null.</li>
+     * <li>{@code resolution} must be positive.</li>
+     * <li>The result may be either {@code boolean}.</li>
+     *
+     * @param that the {@code Rational} to be compared with {@code this}
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return x≥y
+     */
+    public @NotNull Optional<Boolean> ge(@NotNull Rational that, @NotNull Rational resolution) {
+        if (resolution.signum() != 1) {
+            throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
+        }
+        if (rational.isPresent()) {
+            return Optional.of(Ordering.ge(rational.get(), that));
+        }
+        for (Interval interval : intervals) {
+            if (interval.getLower().isPresent() && interval.getLower().get().equals(that)) {
+                return Optional.of(true);
+            } else if (!interval.contains(that)) {
+                Rational sample = interval.getLower().isPresent() ?
+                        interval.getLower().get() :
+                        interval.getUpper().get();
+                return Optional.of(Ordering.gt(sample, that));
+            }
+            if (interval.isFinitelyBounded() && Ordering.lt(interval.diameter().get(), resolution)) {
+                return Optional.empty();
+            }
+        }
+        throw new IllegalStateException("unreachable");
     }
 
     public @NotNull Optional<Integer> compareTo(@NotNull Real that, @NotNull Rational resolution) {
@@ -3270,6 +3604,42 @@ public final class Real implements Iterable<Interval> {
                 return Optional.empty();
             }
         }
+    }
+
+    public int compareToUnsafe(@NotNull Real that) {
+        if (this == that) return 0;
+        if (rational.isPresent()) return -that.compareToUnsafe(rational.get());
+        if (that.rational.isPresent()) return compareToUnsafe(that.rational.get());
+        Iterator<Interval> thisIntervals = intervals.iterator();
+        Iterator<Interval> thatIntervals = that.intervals.iterator();
+        while (true) {
+            Optional<Ordering> o = thisIntervals.next().elementCompare(thatIntervals.next());
+            if (o.isPresent()) return o.get().toInt();
+        }
+    }
+
+    public static boolean eqUnsafe(@NotNull Real x, @NotNull Real y) {
+        return x.compareToUnsafe(y) == 0;
+    }
+
+    public static boolean neUnsafe(@NotNull Real x, @NotNull Real y) {
+        return x.compareToUnsafe(y) != 0;
+    }
+
+    public static boolean ltUnsafe(@NotNull Real x, @NotNull Real y) {
+        return x.compareToUnsafe(y) < 0;
+    }
+
+    public static boolean gtUnsafe(@NotNull Real x, @NotNull Real y) {
+        return x.compareToUnsafe(y) > 0;
+    }
+
+    public static boolean leUnsafe(@NotNull Real x, @NotNull Real y) {
+        return x.compareToUnsafe(y) <= 0;
+    }
+
+    public static boolean geUnsafe(@NotNull Real x, @NotNull Real y) {
+        return x.compareToUnsafe(y) >= 0;
     }
 
     public static @NotNull Optional<Boolean> eq(@NotNull Real x, @NotNull Real y, @NotNull Rational resolution) {
@@ -3294,94 +3664,6 @@ public final class Real implements Iterable<Interval> {
 
     public static @NotNull Optional<Boolean> ge(@NotNull Real x, @NotNull Real y, @NotNull Rational resolution) {
         return x.compareTo(y, resolution).map(c -> c >= 0);
-    }
-
-    public int compareToUnsafe(@NotNull Rational that) {
-        Optional<Rational> thisRational = rationalValueExact();
-        if (thisRational.isPresent()) {
-            return thisRational.get().compareTo(that);
-        }
-        for (Interval interval : intervals) {
-            if (!interval.contains(that)) {
-                Rational sample = interval.getLower().isPresent() ?
-                        interval.getLower().get() :
-                        interval.getUpper().get();
-                return sample.compareTo(that);
-            }
-        }
-        throw new IllegalStateException("unreachable");
-    }
-
-    public static boolean eqUnsafe(@NotNull Real x, @NotNull Rational y) {
-        return x.compareToUnsafe(y) == 0;
-    }
-
-    public static boolean neUnsafe(@NotNull Real x, @NotNull Rational y) {
-        return x.compareToUnsafe(y) != 0;
-    }
-
-    public static boolean ltUnsafe(@NotNull Real x, @NotNull Rational y) {
-        return x.compareToUnsafe(y) < 0;
-    }
-
-    public static boolean gtUnsafe(@NotNull Real x, @NotNull Rational y) {
-        return x.compareToUnsafe(y) > 0;
-    }
-
-    public static boolean leUnsafe(@NotNull Real x, @NotNull Rational y) {
-        return x.compareToUnsafe(y) <= 0;
-    }
-
-    public static boolean geUnsafe(@NotNull Real x, @NotNull Rational y) {
-        return x.compareToUnsafe(y) >= 0;
-    }
-
-    public @NotNull Optional<Integer> compareTo(@NotNull Rational that, @NotNull Rational resolution) {
-        Optional<Rational> thisRational = rationalValueExact();
-        if (thisRational.isPresent()) {
-            return Optional.of(thisRational.get().compareTo(that));
-        }
-        for (Interval interval : intervals) {
-            if (!interval.contains(that)) {
-                Rational sample = interval.getLower().isPresent() ?
-                        interval.getLower().get() :
-                        interval.getUpper().get();
-                return Optional.of(sample.compareTo(that));
-            }
-            if (interval.isFinitelyBounded() && Ordering.lt(interval.diameter().get(), resolution)) {
-                return Optional.empty();
-            }
-        }
-        throw new IllegalStateException("unreachable");
-    }
-
-    public static @NotNull Optional<Boolean> eq(@NotNull Real x, @NotNull Rational y, @NotNull Rational resolution) {
-        return x.compareTo(y, resolution).map(c -> c == 0);
-    }
-
-    public static @NotNull Optional<Boolean> ne(@NotNull Real x, @NotNull Rational y, @NotNull Rational resolution) {
-        return x.compareTo(y, resolution).map(c -> c != 0);
-    }
-
-    public static @NotNull Optional<Boolean> lt(@NotNull Real x, @NotNull Rational y, @NotNull Rational resolution) {
-        return x.compareTo(y, resolution).map(c -> c < 0);
-    }
-
-    public static @NotNull Optional<Boolean> gt(@NotNull Real x, @NotNull Rational y, @NotNull Rational resolution) {
-        return x.compareTo(y, resolution).map(c -> c > 0);
-    }
-
-    public static @NotNull Optional<Boolean> le(@NotNull Real x, @NotNull Rational y, @NotNull Rational resolution) {
-        return x.compareTo(y, resolution).map(c -> c <= 0);
-    }
-
-    public static @NotNull Optional<Boolean> ge(@NotNull Real x, @NotNull Rational y, @NotNull Rational resolution) {
-        return x.compareTo(y, resolution).map(c -> c >= 0);
-    }
-
-    @Override
-    public boolean equals(Object that) {
-        throw new UnsupportedOperationException("");
     }
 
     /**

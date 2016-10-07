@@ -121,8 +121,7 @@ public class PolynomialVectorProperties extends QBarTestProperties {
             try {
                 of(ps);
                 fail(ps);
-            } catch (NullPointerException ignored) {
-            }
+            } catch (NullPointerException ignored) {}
         }
     }
 

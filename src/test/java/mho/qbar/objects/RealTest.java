@@ -3,6 +3,7 @@ package mho.qbar.objects;
 import mho.wheels.io.Readers;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.numberUtils.FloatingPointUtils;
+import mho.wheels.ordering.Ordering;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -7983,5 +7984,1557 @@ public class RealTest {
         pow_int_Rational_fail_helper(ZERO, 2, Rational.NEGATIVE_ONE);
         pow_int_Rational_fail_helper(PI, 2, Rational.ZERO);
         pow_int_Rational_fail_helper(PI, 2, Rational.NEGATIVE_ONE);
+    }
+
+    private static void equals_fail_helper(@NotNull Real x, @NotNull Real y) {
+        try {
+            //noinspection ResultOfMethodCallIgnored
+            x.equals(y);
+            fail();
+        } catch (UnsupportedOperationException ignored) {}
+    }
+
+    @Test
+    public void testEquals() {
+        equals_fail_helper(ZERO, ZERO);
+        equals_fail_helper(ZERO, ONE_HALF);
+        equals_fail_helper(ZERO, PI);
+        equals_fail_helper(ZERO, fuzzyRepresentation(Rational.ZERO));
+
+        equals_fail_helper(ONE_HALF, ZERO);
+        equals_fail_helper(ONE_HALF, ONE_HALF);
+        equals_fail_helper(ONE_HALF, PI);
+        equals_fail_helper(ONE_HALF, fuzzyRepresentation(Rational.ZERO));
+
+        equals_fail_helper(PI, ZERO);
+        equals_fail_helper(PI, ONE_HALF);
+        equals_fail_helper(PI, PI);
+        equals_fail_helper(PI, fuzzyRepresentation(Rational.ZERO));
+
+        equals_fail_helper(fuzzyRepresentation(Rational.ZERO), ZERO);
+        equals_fail_helper(fuzzyRepresentation(Rational.ZERO), ONE_HALF);
+        equals_fail_helper(fuzzyRepresentation(Rational.ZERO), PI);
+        equals_fail_helper(fuzzyRepresentation(Rational.ZERO), fuzzyRepresentation(Rational.ZERO));
+    }
+
+    private static void hashCode_fail_helper(@NotNull Real x) {
+        try {
+            //noinspection ResultOfMethodCallIgnored
+            x.hashCode();
+            fail();
+        } catch (UnsupportedOperationException ignored) {}
+    }
+
+    @Test
+    public void testHashCode() {
+        hashCode_fail_helper(ZERO);
+        hashCode_fail_helper(ONE_HALF);
+        hashCode_fail_helper(PI);
+        hashCode_fail_helper(fuzzyRepresentation(Rational.ZERO));
+    }
+
+    private static void compareToUnsafe_Rational_helper(@NotNull Real a, @NotNull String b, @NotNull String output) {
+        aeq(Ordering.fromInt(a.compareToUnsafe(Rational.readStrict(b).get())), output);
+    }
+
+    @Test
+    public void testCompareToUnsafe_Rational() {
+        compareToUnsafe_Rational_helper(ZERO, "0", "=");
+        compareToUnsafe_Rational_helper(ZERO, "1", "<");
+        compareToUnsafe_Rational_helper(ZERO, "-1", ">");
+        compareToUnsafe_Rational_helper(ZERO, "100/3", "<");
+        compareToUnsafe_Rational_helper(ZERO, "1/100", "<");
+
+        compareToUnsafe_Rational_helper(ONE, "0", ">");
+        compareToUnsafe_Rational_helper(ONE, "1", "=");
+        compareToUnsafe_Rational_helper(ONE, "-1", ">");
+        compareToUnsafe_Rational_helper(ONE, "100/3", "<");
+        compareToUnsafe_Rational_helper(ONE, "1/100", ">");
+
+        compareToUnsafe_Rational_helper(NEGATIVE_ONE, "0", "<");
+        compareToUnsafe_Rational_helper(NEGATIVE_ONE, "1", "<");
+        compareToUnsafe_Rational_helper(NEGATIVE_ONE, "-1", "=");
+        compareToUnsafe_Rational_helper(NEGATIVE_ONE, "100/3", "<");
+        compareToUnsafe_Rational_helper(NEGATIVE_ONE, "1/100", "<");
+
+        compareToUnsafe_Rational_helper(ONE_HALF, "0", ">");
+        compareToUnsafe_Rational_helper(ONE_HALF, "1", "<");
+        compareToUnsafe_Rational_helper(ONE_HALF, "-1", ">");
+        compareToUnsafe_Rational_helper(ONE_HALF, "100/3", "<");
+        compareToUnsafe_Rational_helper(ONE_HALF, "1/100", ">");
+
+        compareToUnsafe_Rational_helper(NEGATIVE_FOUR_THIRDS, "0", "<");
+        compareToUnsafe_Rational_helper(NEGATIVE_FOUR_THIRDS, "1", "<");
+        compareToUnsafe_Rational_helper(NEGATIVE_FOUR_THIRDS, "-1", "<");
+        compareToUnsafe_Rational_helper(NEGATIVE_FOUR_THIRDS, "100/3", "<");
+        compareToUnsafe_Rational_helper(NEGATIVE_FOUR_THIRDS, "1/100", "<");
+
+        compareToUnsafe_Rational_helper(SQRT_TWO, "0", ">");
+        compareToUnsafe_Rational_helper(SQRT_TWO, "1", ">");
+        compareToUnsafe_Rational_helper(SQRT_TWO, "-1", ">");
+        compareToUnsafe_Rational_helper(SQRT_TWO, "100/3", "<");
+        compareToUnsafe_Rational_helper(SQRT_TWO, "1/100", ">");
+
+        compareToUnsafe_Rational_helper(E, "0", ">");
+        compareToUnsafe_Rational_helper(E, "1", ">");
+        compareToUnsafe_Rational_helper(E, "-1", ">");
+        compareToUnsafe_Rational_helper(E, "100/3", "<");
+        compareToUnsafe_Rational_helper(E, "1/100", ">");
+
+        compareToUnsafe_Rational_helper(PI, "0", ">");
+        compareToUnsafe_Rational_helper(PI, "1", ">");
+        compareToUnsafe_Rational_helper(PI, "-1", ">");
+        compareToUnsafe_Rational_helper(PI, "100/3", "<");
+        compareToUnsafe_Rational_helper(PI, "1/100", ">");
+
+        compareToUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "1", "<");
+        compareToUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "-1", ">");
+        compareToUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "100/3", "<");
+        compareToUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "1/100", "<");
+
+        compareToUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "1", "<");
+        compareToUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "-1", ">");
+        compareToUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "100/3", "<");
+        compareToUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "1/100", "<");
+
+        compareToUnsafe_Rational_helper(fuzzyRepresentation(Rational.ZERO), "1", "<");
+        compareToUnsafe_Rational_helper(fuzzyRepresentation(Rational.ZERO), "-1", ">");
+        compareToUnsafe_Rational_helper(fuzzyRepresentation(Rational.ZERO), "100/3", "<");
+        compareToUnsafe_Rational_helper(fuzzyRepresentation(Rational.ZERO), "1/100", "<");
+    }
+
+    private static void compareTo_Rational_Rational_helper(
+            @NotNull Real a,
+            @NotNull String b,
+            @NotNull Rational resolution,
+            @NotNull String output
+    ) {
+        aeq(a.compareTo(Rational.readStrict(b).get(), resolution).map(Ordering::fromInt), output);
+    }
+
+    private static void compareTo_Rational_Rational_fail_helper(
+            @NotNull Real x,
+            @NotNull String b,
+            @NotNull Rational resolution
+    ) {
+        try {
+            x.compareTo(Rational.readStrict(b).get(), resolution);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testCompareTo_Rational_Rational() {
+        compareTo_Rational_Rational_helper(ZERO, "0", DEFAULT_RESOLUTION, "Optional[=]");
+        compareTo_Rational_Rational_helper(ZERO, "1", DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Rational_Rational_helper(ZERO, "-1", DEFAULT_RESOLUTION, "Optional[>]");
+        compareTo_Rational_Rational_helper(ZERO, "100/3", DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Rational_Rational_helper(ZERO, "1/100", DEFAULT_RESOLUTION, "Optional[<]");
+
+        compareTo_Rational_Rational_helper(ONE, "0", DEFAULT_RESOLUTION, "Optional[>]");
+        compareTo_Rational_Rational_helper(ONE, "1", DEFAULT_RESOLUTION, "Optional[=]");
+        compareTo_Rational_Rational_helper(ONE, "-1", DEFAULT_RESOLUTION, "Optional[>]");
+        compareTo_Rational_Rational_helper(ONE, "100/3", DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Rational_Rational_helper(ONE, "1/100", DEFAULT_RESOLUTION, "Optional[>]");
+
+        compareTo_Rational_Rational_helper(NEGATIVE_ONE, "0", DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Rational_Rational_helper(NEGATIVE_ONE, "1", DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Rational_Rational_helper(NEGATIVE_ONE, "-1", DEFAULT_RESOLUTION, "Optional[=]");
+        compareTo_Rational_Rational_helper(NEGATIVE_ONE, "100/3", DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Rational_Rational_helper(NEGATIVE_ONE, "1/100", DEFAULT_RESOLUTION, "Optional[<]");
+
+        compareTo_Rational_Rational_helper(ONE_HALF, "0", DEFAULT_RESOLUTION, "Optional[>]");
+        compareTo_Rational_Rational_helper(ONE_HALF, "1", DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Rational_Rational_helper(ONE_HALF, "-1", DEFAULT_RESOLUTION, "Optional[>]");
+        compareTo_Rational_Rational_helper(ONE_HALF, "100/3", DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Rational_Rational_helper(ONE_HALF, "1/100", DEFAULT_RESOLUTION, "Optional[>]");
+
+        compareTo_Rational_Rational_helper(NEGATIVE_FOUR_THIRDS, "0", DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Rational_Rational_helper(NEGATIVE_FOUR_THIRDS, "1", DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Rational_Rational_helper(NEGATIVE_FOUR_THIRDS, "-1", DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Rational_Rational_helper(NEGATIVE_FOUR_THIRDS, "100/3", DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Rational_Rational_helper(NEGATIVE_FOUR_THIRDS, "1/100", DEFAULT_RESOLUTION, "Optional[<]");
+
+        compareTo_Rational_Rational_helper(SQRT_TWO, "0", DEFAULT_RESOLUTION, "Optional[>]");
+        compareTo_Rational_Rational_helper(SQRT_TWO, "1", DEFAULT_RESOLUTION, "Optional[>]");
+        compareTo_Rational_Rational_helper(SQRT_TWO, "-1", DEFAULT_RESOLUTION, "Optional[>]");
+        compareTo_Rational_Rational_helper(SQRT_TWO, "100/3", DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Rational_Rational_helper(SQRT_TWO, "1/100", DEFAULT_RESOLUTION, "Optional[>]");
+
+        compareTo_Rational_Rational_helper(E, "0", DEFAULT_RESOLUTION, "Optional[>]");
+        compareTo_Rational_Rational_helper(E, "1", DEFAULT_RESOLUTION, "Optional[>]");
+        compareTo_Rational_Rational_helper(E, "-1", DEFAULT_RESOLUTION, "Optional[>]");
+        compareTo_Rational_Rational_helper(E, "100/3", DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Rational_Rational_helper(E, "1/100", DEFAULT_RESOLUTION, "Optional[>]");
+
+        compareTo_Rational_Rational_helper(PI, "0", DEFAULT_RESOLUTION, "Optional[>]");
+        compareTo_Rational_Rational_helper(PI, "1", DEFAULT_RESOLUTION, "Optional[>]");
+        compareTo_Rational_Rational_helper(PI, "-1", DEFAULT_RESOLUTION, "Optional[>]");
+        compareTo_Rational_Rational_helper(PI, "100/3", DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Rational_Rational_helper(PI, "1/100", DEFAULT_RESOLUTION, "Optional[>]");
+
+        compareTo_Rational_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                "0",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        compareTo_Rational_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                "1",
+                DEFAULT_RESOLUTION,
+                "Optional[<]"
+        );
+        compareTo_Rational_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                "-1",
+                DEFAULT_RESOLUTION,
+                "Optional[>]"
+        );
+        compareTo_Rational_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                "100/3",
+                DEFAULT_RESOLUTION,
+                "Optional[<]"
+        );
+        compareTo_Rational_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                "1/100",
+                DEFAULT_RESOLUTION,
+                "Optional[<]"
+        );
+
+        compareTo_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "0",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        compareTo_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "1",
+                DEFAULT_RESOLUTION,
+                "Optional[<]"
+        );
+        compareTo_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "-1",
+                DEFAULT_RESOLUTION,
+                "Optional[>]"
+        );
+        compareTo_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "100/3",
+                DEFAULT_RESOLUTION,
+                "Optional[<]"
+        );
+        compareTo_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "1/100",
+                DEFAULT_RESOLUTION,
+                "Optional[<]"
+        );
+
+        compareTo_Rational_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                "0",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        compareTo_Rational_Rational_helper(fuzzyRepresentation(Rational.ZERO), "1", DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Rational_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                "-1",
+                DEFAULT_RESOLUTION,
+                "Optional[>]"
+        );
+        compareTo_Rational_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                "100/3",
+                DEFAULT_RESOLUTION,
+                "Optional[<]"
+        );
+        compareTo_Rational_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                "1/100",
+                DEFAULT_RESOLUTION,
+                "Optional[<]"
+        );
+
+        compareTo_Rational_Rational_fail_helper(ZERO, "0", Rational.ZERO);
+        compareTo_Rational_Rational_fail_helper(ZERO, "0", Rational.NEGATIVE_ONE);
+        compareTo_Rational_Rational_fail_helper(E, "1/2", Rational.ZERO);
+        compareTo_Rational_Rational_fail_helper(E, "1/2", Rational.NEGATIVE_ONE);
+    }
+
+    private static void eqUnsafe_Rational_helper(@NotNull Real a, @NotNull String b, boolean output) {
+        aeq(a.eqUnsafe(Rational.readStrict(b).get()), output);
+    }
+
+    @Test
+    public void testEqUnsafe_Rational() {
+        eqUnsafe_Rational_helper(ZERO, "0", true);
+        eqUnsafe_Rational_helper(ZERO, "1", false);
+        eqUnsafe_Rational_helper(ZERO, "-1", false);
+        eqUnsafe_Rational_helper(ZERO, "100/3", false);
+        eqUnsafe_Rational_helper(ZERO, "1/100", false);
+
+        eqUnsafe_Rational_helper(ONE, "0", false);
+        eqUnsafe_Rational_helper(ONE, "1", true);
+        eqUnsafe_Rational_helper(ONE, "-1", false);
+        eqUnsafe_Rational_helper(ONE, "100/3", false);
+        eqUnsafe_Rational_helper(ONE, "1/100", false);
+
+        eqUnsafe_Rational_helper(NEGATIVE_ONE, "0", false);
+        eqUnsafe_Rational_helper(NEGATIVE_ONE, "1", false);
+        eqUnsafe_Rational_helper(NEGATIVE_ONE, "-1", true);
+        eqUnsafe_Rational_helper(NEGATIVE_ONE, "100/3", false);
+        eqUnsafe_Rational_helper(NEGATIVE_ONE, "1/100", false);
+
+        eqUnsafe_Rational_helper(ONE_HALF, "0", false);
+        eqUnsafe_Rational_helper(ONE_HALF, "1", false);
+        eqUnsafe_Rational_helper(ONE_HALF, "-1", false);
+        eqUnsafe_Rational_helper(ONE_HALF, "100/3", false);
+        eqUnsafe_Rational_helper(ONE_HALF, "1/100", false);
+
+        eqUnsafe_Rational_helper(NEGATIVE_FOUR_THIRDS, "0", false);
+        eqUnsafe_Rational_helper(NEGATIVE_FOUR_THIRDS, "1", false);
+        eqUnsafe_Rational_helper(NEGATIVE_FOUR_THIRDS, "-1", false);
+        eqUnsafe_Rational_helper(NEGATIVE_FOUR_THIRDS, "100/3", false);
+        eqUnsafe_Rational_helper(NEGATIVE_FOUR_THIRDS, "1/100", false);
+
+        eqUnsafe_Rational_helper(SQRT_TWO, "0", false);
+        eqUnsafe_Rational_helper(SQRT_TWO, "1", false);
+        eqUnsafe_Rational_helper(SQRT_TWO, "-1", false);
+        eqUnsafe_Rational_helper(SQRT_TWO, "100/3", false);
+        eqUnsafe_Rational_helper(SQRT_TWO, "1/100", false);
+
+        eqUnsafe_Rational_helper(E, "0", false);
+        eqUnsafe_Rational_helper(E, "1", false);
+        eqUnsafe_Rational_helper(E, "-1", false);
+        eqUnsafe_Rational_helper(E, "100/3", false);
+        eqUnsafe_Rational_helper(E, "1/100", false);
+
+        eqUnsafe_Rational_helper(PI, "0", false);
+        eqUnsafe_Rational_helper(PI, "1", false);
+        eqUnsafe_Rational_helper(PI, "-1", false);
+        eqUnsafe_Rational_helper(PI, "100/3", false);
+        eqUnsafe_Rational_helper(PI, "1/100", false);
+
+        eqUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "1", false);
+        eqUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "-1", false);
+        eqUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "100/3", false);
+        eqUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "1/100", false);
+
+        eqUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "1", false);
+        eqUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "-1", false);
+        eqUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "100/3", false);
+        eqUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "1/100", false);
+
+        eqUnsafe_Rational_helper(fuzzyRepresentation(Rational.ZERO), "1", false);
+        eqUnsafe_Rational_helper(fuzzyRepresentation(Rational.ZERO), "-1", false);
+        eqUnsafe_Rational_helper(fuzzyRepresentation(Rational.ZERO), "100/3", false);
+        eqUnsafe_Rational_helper(fuzzyRepresentation(Rational.ZERO), "1/100", false);
+    }
+
+    private static void neUnsafe_Rational_helper(@NotNull Real a, @NotNull String b, boolean output) {
+        aeq(a.neUnsafe(Rational.readStrict(b).get()), output);
+    }
+
+    @Test
+    public void testNeUnsafe_Rational() {
+        neUnsafe_Rational_helper(ZERO, "0", false);
+        neUnsafe_Rational_helper(ZERO, "1", true);
+        neUnsafe_Rational_helper(ZERO, "-1", true);
+        neUnsafe_Rational_helper(ZERO, "100/3", true);
+        neUnsafe_Rational_helper(ZERO, "1/100", true);
+
+        neUnsafe_Rational_helper(ONE, "0", true);
+        neUnsafe_Rational_helper(ONE, "1", false);
+        neUnsafe_Rational_helper(ONE, "-1", true);
+        neUnsafe_Rational_helper(ONE, "100/3", true);
+        neUnsafe_Rational_helper(ONE, "1/100", true);
+
+        neUnsafe_Rational_helper(NEGATIVE_ONE, "0", true);
+        neUnsafe_Rational_helper(NEGATIVE_ONE, "1", true);
+        neUnsafe_Rational_helper(NEGATIVE_ONE, "-1", false);
+        neUnsafe_Rational_helper(NEGATIVE_ONE, "100/3", true);
+        neUnsafe_Rational_helper(NEGATIVE_ONE, "1/100", true);
+
+        neUnsafe_Rational_helper(ONE_HALF, "0", true);
+        neUnsafe_Rational_helper(ONE_HALF, "1", true);
+        neUnsafe_Rational_helper(ONE_HALF, "-1", true);
+        neUnsafe_Rational_helper(ONE_HALF, "100/3", true);
+        neUnsafe_Rational_helper(ONE_HALF, "1/100", true);
+
+        neUnsafe_Rational_helper(NEGATIVE_FOUR_THIRDS, "0", true);
+        neUnsafe_Rational_helper(NEGATIVE_FOUR_THIRDS, "1", true);
+        neUnsafe_Rational_helper(NEGATIVE_FOUR_THIRDS, "-1", true);
+        neUnsafe_Rational_helper(NEGATIVE_FOUR_THIRDS, "100/3", true);
+        neUnsafe_Rational_helper(NEGATIVE_FOUR_THIRDS, "1/100", true);
+
+        neUnsafe_Rational_helper(SQRT_TWO, "0", true);
+        neUnsafe_Rational_helper(SQRT_TWO, "1", true);
+        neUnsafe_Rational_helper(SQRT_TWO, "-1", true);
+        neUnsafe_Rational_helper(SQRT_TWO, "100/3", true);
+        neUnsafe_Rational_helper(SQRT_TWO, "1/100", true);
+
+        neUnsafe_Rational_helper(E, "0", true);
+        neUnsafe_Rational_helper(E, "1", true);
+        neUnsafe_Rational_helper(E, "-1", true);
+        neUnsafe_Rational_helper(E, "100/3", true);
+        neUnsafe_Rational_helper(E, "1/100", true);
+
+        neUnsafe_Rational_helper(PI, "0", true);
+        neUnsafe_Rational_helper(PI, "1", true);
+        neUnsafe_Rational_helper(PI, "-1", true);
+        neUnsafe_Rational_helper(PI, "100/3", true);
+        neUnsafe_Rational_helper(PI, "1/100", true);
+
+        neUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "1", true);
+        neUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "-1", true);
+        neUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "100/3", true);
+        neUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "1/100", true);
+
+        neUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "1", true);
+        neUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "-1", true);
+        neUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "100/3", true);
+        neUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "1/100", true);
+
+        neUnsafe_Rational_helper(fuzzyRepresentation(Rational.ZERO), "1", true);
+        neUnsafe_Rational_helper(fuzzyRepresentation(Rational.ZERO), "-1", true);
+        neUnsafe_Rational_helper(fuzzyRepresentation(Rational.ZERO), "100/3", true);
+        neUnsafe_Rational_helper(fuzzyRepresentation(Rational.ZERO), "1/100", true);
+    }
+
+    private static void ltUnsafe_Rational_helper(@NotNull Real a, @NotNull String b, boolean output) {
+        aeq(a.ltUnsafe(Rational.readStrict(b).get()), output);
+    }
+
+    @Test
+    public void testLtUnsafe_Rational() {
+        ltUnsafe_Rational_helper(ZERO, "0", false);
+        ltUnsafe_Rational_helper(ZERO, "1", true);
+        ltUnsafe_Rational_helper(ZERO, "-1", false);
+        ltUnsafe_Rational_helper(ZERO, "100/3", true);
+        ltUnsafe_Rational_helper(ZERO, "1/100", true);
+
+        ltUnsafe_Rational_helper(ONE, "0", false);
+        ltUnsafe_Rational_helper(ONE, "1", false);
+        ltUnsafe_Rational_helper(ONE, "-1", false);
+        ltUnsafe_Rational_helper(ONE, "100/3", true);
+        ltUnsafe_Rational_helper(ONE, "1/100", false);
+
+        ltUnsafe_Rational_helper(NEGATIVE_ONE, "0", true);
+        ltUnsafe_Rational_helper(NEGATIVE_ONE, "1", true);
+        ltUnsafe_Rational_helper(NEGATIVE_ONE, "-1", false);
+        ltUnsafe_Rational_helper(NEGATIVE_ONE, "100/3", true);
+        ltUnsafe_Rational_helper(NEGATIVE_ONE, "1/100", true);
+
+        ltUnsafe_Rational_helper(ONE_HALF, "0", false);
+        ltUnsafe_Rational_helper(ONE_HALF, "1", true);
+        ltUnsafe_Rational_helper(ONE_HALF, "-1", false);
+        ltUnsafe_Rational_helper(ONE_HALF, "100/3", true);
+        ltUnsafe_Rational_helper(ONE_HALF, "1/100", false);
+
+        ltUnsafe_Rational_helper(NEGATIVE_FOUR_THIRDS, "0", true);
+        ltUnsafe_Rational_helper(NEGATIVE_FOUR_THIRDS, "1", true);
+        ltUnsafe_Rational_helper(NEGATIVE_FOUR_THIRDS, "-1", true);
+        ltUnsafe_Rational_helper(NEGATIVE_FOUR_THIRDS, "100/3", true);
+        ltUnsafe_Rational_helper(NEGATIVE_FOUR_THIRDS, "1/100", true);
+
+        ltUnsafe_Rational_helper(SQRT_TWO, "0", false);
+        ltUnsafe_Rational_helper(SQRT_TWO, "1", false);
+        ltUnsafe_Rational_helper(SQRT_TWO, "-1", false);
+        ltUnsafe_Rational_helper(SQRT_TWO, "100/3", true);
+        ltUnsafe_Rational_helper(SQRT_TWO, "1/100", false);
+
+        ltUnsafe_Rational_helper(E, "0", false);
+        ltUnsafe_Rational_helper(E, "1", false);
+        ltUnsafe_Rational_helper(E, "-1", false);
+        ltUnsafe_Rational_helper(E, "100/3", true);
+        ltUnsafe_Rational_helper(E, "1/100", false);
+
+        ltUnsafe_Rational_helper(PI, "0", false);
+        ltUnsafe_Rational_helper(PI, "1", false);
+        ltUnsafe_Rational_helper(PI, "-1", false);
+        ltUnsafe_Rational_helper(PI, "100/3", true);
+        ltUnsafe_Rational_helper(PI, "1/100", false);
+
+        ltUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "1", true);
+        ltUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "-1", false);
+        ltUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "100/3", true);
+        ltUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "1/100", true);
+
+        ltUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "1", true);
+        ltUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "-1", false);
+        ltUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "100/3", true);
+        ltUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "1/100", true);
+
+        ltUnsafe_Rational_helper(fuzzyRepresentation(Rational.ZERO), "1", true);
+        ltUnsafe_Rational_helper(fuzzyRepresentation(Rational.ZERO), "-1", false);
+        ltUnsafe_Rational_helper(fuzzyRepresentation(Rational.ZERO), "100/3", true);
+        ltUnsafe_Rational_helper(fuzzyRepresentation(Rational.ZERO), "1/100", true);
+    }
+
+    private static void gtUnsafe_Rational_helper(@NotNull Real a, @NotNull String b, boolean output) {
+        aeq(a.gtUnsafe(Rational.readStrict(b).get()), output);
+    }
+
+    @Test
+    public void testGtUnsafe_Rational() {
+        gtUnsafe_Rational_helper(ZERO, "0", false);
+        gtUnsafe_Rational_helper(ZERO, "1", false);
+        gtUnsafe_Rational_helper(ZERO, "-1", true);
+        gtUnsafe_Rational_helper(ZERO, "100/3", false);
+        gtUnsafe_Rational_helper(ZERO, "1/100", false);
+
+        gtUnsafe_Rational_helper(ONE, "0", true);
+        gtUnsafe_Rational_helper(ONE, "1", false);
+        gtUnsafe_Rational_helper(ONE, "-1", true);
+        gtUnsafe_Rational_helper(ONE, "100/3", false);
+        gtUnsafe_Rational_helper(ONE, "1/100", true);
+
+        gtUnsafe_Rational_helper(NEGATIVE_ONE, "0", false);
+        gtUnsafe_Rational_helper(NEGATIVE_ONE, "1", false);
+        gtUnsafe_Rational_helper(NEGATIVE_ONE, "-1", false);
+        gtUnsafe_Rational_helper(NEGATIVE_ONE, "100/3", false);
+        gtUnsafe_Rational_helper(NEGATIVE_ONE, "1/100", false);
+
+        gtUnsafe_Rational_helper(ONE_HALF, "0", true);
+        gtUnsafe_Rational_helper(ONE_HALF, "1", false);
+        gtUnsafe_Rational_helper(ONE_HALF, "-1", true);
+        gtUnsafe_Rational_helper(ONE_HALF, "100/3", false);
+        gtUnsafe_Rational_helper(ONE_HALF, "1/100", true);
+
+        gtUnsafe_Rational_helper(NEGATIVE_FOUR_THIRDS, "0", false);
+        gtUnsafe_Rational_helper(NEGATIVE_FOUR_THIRDS, "1", false);
+        gtUnsafe_Rational_helper(NEGATIVE_FOUR_THIRDS, "-1", false);
+        gtUnsafe_Rational_helper(NEGATIVE_FOUR_THIRDS, "100/3", false);
+        gtUnsafe_Rational_helper(NEGATIVE_FOUR_THIRDS, "1/100", false);
+
+        gtUnsafe_Rational_helper(SQRT_TWO, "0", true);
+        gtUnsafe_Rational_helper(SQRT_TWO, "1", true);
+        gtUnsafe_Rational_helper(SQRT_TWO, "-1", true);
+        gtUnsafe_Rational_helper(SQRT_TWO, "100/3", false);
+        gtUnsafe_Rational_helper(SQRT_TWO, "1/100", true);
+
+        gtUnsafe_Rational_helper(E, "0", true);
+        gtUnsafe_Rational_helper(E, "1", true);
+        gtUnsafe_Rational_helper(E, "-1", true);
+        gtUnsafe_Rational_helper(E, "100/3", false);
+        gtUnsafe_Rational_helper(E, "1/100", true);
+
+        gtUnsafe_Rational_helper(PI, "0", true);
+        gtUnsafe_Rational_helper(PI, "1", true);
+        gtUnsafe_Rational_helper(PI, "-1", true);
+        gtUnsafe_Rational_helper(PI, "100/3", false);
+        gtUnsafe_Rational_helper(PI, "1/100", true);
+
+        gtUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "1", false);
+        gtUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "-1", true);
+        gtUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "100/3", false);
+        gtUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "1/100", false);
+
+        gtUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "1", false);
+        gtUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "-1", true);
+        gtUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "100/3", false);
+        gtUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "1/100", false);
+
+        gtUnsafe_Rational_helper(fuzzyRepresentation(Rational.ZERO), "1", false);
+        gtUnsafe_Rational_helper(fuzzyRepresentation(Rational.ZERO), "-1", true);
+        gtUnsafe_Rational_helper(fuzzyRepresentation(Rational.ZERO), "100/3", false);
+        gtUnsafe_Rational_helper(fuzzyRepresentation(Rational.ZERO), "1/100", false);
+    }
+
+    private static void leUnsafe_Rational_helper(@NotNull Real a, @NotNull String b, boolean output) {
+        aeq(a.leUnsafe(Rational.readStrict(b).get()), output);
+    }
+
+    @Test
+    public void testLeUnsafe_Rational() {
+        leUnsafe_Rational_helper(ZERO, "0", true);
+        leUnsafe_Rational_helper(ZERO, "1", true);
+        leUnsafe_Rational_helper(ZERO, "-1", false);
+        leUnsafe_Rational_helper(ZERO, "100/3", true);
+        leUnsafe_Rational_helper(ZERO, "1/100", true);
+
+        leUnsafe_Rational_helper(ONE, "0", false);
+        leUnsafe_Rational_helper(ONE, "1", true);
+        leUnsafe_Rational_helper(ONE, "-1", false);
+        leUnsafe_Rational_helper(ONE, "100/3", true);
+        leUnsafe_Rational_helper(ONE, "1/100", false);
+
+        leUnsafe_Rational_helper(NEGATIVE_ONE, "0", true);
+        leUnsafe_Rational_helper(NEGATIVE_ONE, "1", true);
+        leUnsafe_Rational_helper(NEGATIVE_ONE, "-1", true);
+        leUnsafe_Rational_helper(NEGATIVE_ONE, "100/3", true);
+        leUnsafe_Rational_helper(NEGATIVE_ONE, "1/100", true);
+
+        leUnsafe_Rational_helper(ONE_HALF, "0", false);
+        leUnsafe_Rational_helper(ONE_HALF, "1", true);
+        leUnsafe_Rational_helper(ONE_HALF, "-1", false);
+        leUnsafe_Rational_helper(ONE_HALF, "100/3", true);
+        leUnsafe_Rational_helper(ONE_HALF, "1/100", false);
+
+        leUnsafe_Rational_helper(NEGATIVE_FOUR_THIRDS, "0", true);
+        leUnsafe_Rational_helper(NEGATIVE_FOUR_THIRDS, "1", true);
+        leUnsafe_Rational_helper(NEGATIVE_FOUR_THIRDS, "-1", true);
+        leUnsafe_Rational_helper(NEGATIVE_FOUR_THIRDS, "100/3", true);
+        leUnsafe_Rational_helper(NEGATIVE_FOUR_THIRDS, "1/100", true);
+
+        leUnsafe_Rational_helper(SQRT_TWO, "0", false);
+        leUnsafe_Rational_helper(SQRT_TWO, "1", false);
+        leUnsafe_Rational_helper(SQRT_TWO, "-1", false);
+        leUnsafe_Rational_helper(SQRT_TWO, "100/3", true);
+        leUnsafe_Rational_helper(SQRT_TWO, "1/100", false);
+
+        leUnsafe_Rational_helper(E, "0", false);
+        leUnsafe_Rational_helper(E, "1", false);
+        leUnsafe_Rational_helper(E, "-1", false);
+        leUnsafe_Rational_helper(E, "100/3", true);
+        leUnsafe_Rational_helper(E, "1/100", false);
+
+        leUnsafe_Rational_helper(PI, "0", false);
+        leUnsafe_Rational_helper(PI, "1", false);
+        leUnsafe_Rational_helper(PI, "-1", false);
+        leUnsafe_Rational_helper(PI, "100/3", true);
+        leUnsafe_Rational_helper(PI, "1/100", false);
+
+        leUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "0", true);
+        leUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "1", true);
+        leUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "-1", false);
+        leUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "100/3", true);
+        leUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "1/100", true);
+
+        leUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "1", true);
+        leUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "-1", false);
+        leUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "100/3", true);
+        leUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "1/100", true);
+
+        leUnsafe_Rational_helper(fuzzyRepresentation(Rational.ZERO), "1", true);
+        leUnsafe_Rational_helper(fuzzyRepresentation(Rational.ZERO), "-1", false);
+        leUnsafe_Rational_helper(fuzzyRepresentation(Rational.ZERO), "100/3", true);
+        leUnsafe_Rational_helper(fuzzyRepresentation(Rational.ZERO), "1/100", true);
+    }
+
+    private static void geUnsafe_Rational_helper(@NotNull Real a, @NotNull String b, boolean output) {
+        aeq(a.geUnsafe(Rational.readStrict(b).get()), output);
+    }
+
+    @Test
+    public void testGeUnsafe_Rational() {
+        geUnsafe_Rational_helper(ZERO, "0", true);
+        geUnsafe_Rational_helper(ZERO, "1", false);
+        geUnsafe_Rational_helper(ZERO, "-1", true);
+        geUnsafe_Rational_helper(ZERO, "100/3", false);
+        geUnsafe_Rational_helper(ZERO, "1/100", false);
+
+        geUnsafe_Rational_helper(ONE, "0", true);
+        geUnsafe_Rational_helper(ONE, "1", true);
+        geUnsafe_Rational_helper(ONE, "-1", true);
+        geUnsafe_Rational_helper(ONE, "100/3", false);
+        geUnsafe_Rational_helper(ONE, "1/100", true);
+
+        geUnsafe_Rational_helper(NEGATIVE_ONE, "0", false);
+        geUnsafe_Rational_helper(NEGATIVE_ONE, "1", false);
+        geUnsafe_Rational_helper(NEGATIVE_ONE, "-1", true);
+        geUnsafe_Rational_helper(NEGATIVE_ONE, "100/3", false);
+        geUnsafe_Rational_helper(NEGATIVE_ONE, "1/100", false);
+
+        geUnsafe_Rational_helper(ONE_HALF, "0", true);
+        geUnsafe_Rational_helper(ONE_HALF, "1", false);
+        geUnsafe_Rational_helper(ONE_HALF, "-1", true);
+        geUnsafe_Rational_helper(ONE_HALF, "100/3", false);
+        geUnsafe_Rational_helper(ONE_HALF, "1/100", true);
+
+        geUnsafe_Rational_helper(NEGATIVE_FOUR_THIRDS, "0", false);
+        geUnsafe_Rational_helper(NEGATIVE_FOUR_THIRDS, "1", false);
+        geUnsafe_Rational_helper(NEGATIVE_FOUR_THIRDS, "-1", false);
+        geUnsafe_Rational_helper(NEGATIVE_FOUR_THIRDS, "100/3", false);
+        geUnsafe_Rational_helper(NEGATIVE_FOUR_THIRDS, "1/100", false);
+
+        geUnsafe_Rational_helper(SQRT_TWO, "0", true);
+        geUnsafe_Rational_helper(SQRT_TWO, "1", true);
+        geUnsafe_Rational_helper(SQRT_TWO, "-1", true);
+        geUnsafe_Rational_helper(SQRT_TWO, "100/3", false);
+        geUnsafe_Rational_helper(SQRT_TWO, "1/100", true);
+
+        geUnsafe_Rational_helper(E, "0", true);
+        geUnsafe_Rational_helper(E, "1", true);
+        geUnsafe_Rational_helper(E, "-1", true);
+        geUnsafe_Rational_helper(E, "100/3", false);
+        geUnsafe_Rational_helper(E, "1/100", true);
+
+        geUnsafe_Rational_helper(PI, "0", true);
+        geUnsafe_Rational_helper(PI, "1", true);
+        geUnsafe_Rational_helper(PI, "-1", true);
+        geUnsafe_Rational_helper(PI, "100/3", false);
+        geUnsafe_Rational_helper(PI, "1/100", true);
+
+        geUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "1", false);
+        geUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "-1", true);
+        geUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "100/3", false);
+        geUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "1/100", false);
+
+        geUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "0", true);
+        geUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "1", false);
+        geUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "-1", true);
+        geUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "100/3", false);
+        geUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "1/100", false);
+
+        geUnsafe_Rational_helper(fuzzyRepresentation(Rational.ZERO), "1", false);
+        geUnsafe_Rational_helper(fuzzyRepresentation(Rational.ZERO), "-1", true);
+        geUnsafe_Rational_helper(fuzzyRepresentation(Rational.ZERO), "100/3", false);
+        geUnsafe_Rational_helper(fuzzyRepresentation(Rational.ZERO), "1/100", false);
+    }
+
+    private static void eq_Rational_Rational_helper(
+            @NotNull Real a,
+            @NotNull String b,
+            @NotNull Rational resolution,
+            @NotNull String output
+    ) {
+        aeq(a.eq(Rational.readStrict(b).get(), resolution), output);
+    }
+
+    private static void eq_Rational_Rational_fail_helper(
+            @NotNull Real x,
+            @NotNull String b,
+            @NotNull Rational resolution
+    ) {
+        try {
+            x.eq(Rational.readStrict(b).get(), resolution);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testEq_Rational_Rational() {
+        eq_Rational_Rational_helper(ZERO, "0", DEFAULT_RESOLUTION, "Optional[true]");
+        eq_Rational_Rational_helper(ZERO, "1", DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Rational_Rational_helper(ZERO, "-1", DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Rational_Rational_helper(ZERO, "100/3", DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Rational_Rational_helper(ZERO, "1/100", DEFAULT_RESOLUTION, "Optional[false]");
+
+        eq_Rational_Rational_helper(ONE, "0", DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Rational_Rational_helper(ONE, "1", DEFAULT_RESOLUTION, "Optional[true]");
+        eq_Rational_Rational_helper(ONE, "-1", DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Rational_Rational_helper(ONE, "100/3", DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Rational_Rational_helper(ONE, "1/100", DEFAULT_RESOLUTION, "Optional[false]");
+
+        eq_Rational_Rational_helper(NEGATIVE_ONE, "0", DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Rational_Rational_helper(NEGATIVE_ONE, "1", DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Rational_Rational_helper(NEGATIVE_ONE, "-1", DEFAULT_RESOLUTION, "Optional[true]");
+        eq_Rational_Rational_helper(NEGATIVE_ONE, "100/3", DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Rational_Rational_helper(NEGATIVE_ONE, "1/100", DEFAULT_RESOLUTION, "Optional[false]");
+
+        eq_Rational_Rational_helper(ONE_HALF, "0", DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Rational_Rational_helper(ONE_HALF, "1", DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Rational_Rational_helper(ONE_HALF, "-1", DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Rational_Rational_helper(ONE_HALF, "100/3", DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Rational_Rational_helper(ONE_HALF, "1/100", DEFAULT_RESOLUTION, "Optional[false]");
+
+        eq_Rational_Rational_helper(NEGATIVE_FOUR_THIRDS, "0", DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Rational_Rational_helper(NEGATIVE_FOUR_THIRDS, "1", DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Rational_Rational_helper(NEGATIVE_FOUR_THIRDS, "-1", DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Rational_Rational_helper(NEGATIVE_FOUR_THIRDS, "100/3", DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Rational_Rational_helper(NEGATIVE_FOUR_THIRDS, "1/100", DEFAULT_RESOLUTION, "Optional[false]");
+
+        eq_Rational_Rational_helper(SQRT_TWO, "0", DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Rational_Rational_helper(SQRT_TWO, "1", DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Rational_Rational_helper(SQRT_TWO, "-1", DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Rational_Rational_helper(SQRT_TWO, "100/3", DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Rational_Rational_helper(SQRT_TWO, "1/100", DEFAULT_RESOLUTION, "Optional[false]");
+
+        eq_Rational_Rational_helper(E, "0", DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Rational_Rational_helper(E, "1", DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Rational_Rational_helper(E, "-1", DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Rational_Rational_helper(E, "100/3", DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Rational_Rational_helper(E, "1/100", DEFAULT_RESOLUTION, "Optional[false]");
+
+        eq_Rational_Rational_helper(PI, "0", DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Rational_Rational_helper(PI, "1", DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Rational_Rational_helper(PI, "-1", DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Rational_Rational_helper(PI, "100/3", DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Rational_Rational_helper(PI, "1/100", DEFAULT_RESOLUTION, "Optional[false]");
+
+        eq_Rational_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "0", DEFAULT_RESOLUTION, "Optional.empty");
+        eq_Rational_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                "1",
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        eq_Rational_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                "-1",
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        eq_Rational_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                "100/3",
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        eq_Rational_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                "1/100",
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+
+        eq_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "0",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        eq_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "1",
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        eq_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "-1",
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        eq_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "100/3",
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        eq_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "1/100",
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+
+        eq_Rational_Rational_helper(fuzzyRepresentation(Rational.ZERO), "0", DEFAULT_RESOLUTION, "Optional.empty");
+        eq_Rational_Rational_helper(fuzzyRepresentation(Rational.ZERO), "1", DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Rational_Rational_helper(fuzzyRepresentation(Rational.ZERO), "-1", DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Rational_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                "100/3",
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        eq_Rational_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                "1/100",
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+
+        eq_Rational_Rational_fail_helper(ZERO, "0", Rational.ZERO);
+        eq_Rational_Rational_fail_helper(ZERO, "0", Rational.NEGATIVE_ONE);
+        eq_Rational_Rational_fail_helper(E, "1/2", Rational.ZERO);
+        eq_Rational_Rational_fail_helper(E, "1/2", Rational.NEGATIVE_ONE);
+    }
+
+    private static void ne_Rational_Rational_helper(
+            @NotNull Real a,
+            @NotNull String b,
+            @NotNull Rational resolution,
+            @NotNull String output
+    ) {
+        aeq(a.ne(Rational.readStrict(b).get(), resolution), output);
+    }
+
+    private static void ne_Rational_Rational_fail_helper(
+            @NotNull Real x,
+            @NotNull String b,
+            @NotNull Rational resolution
+    ) {
+        try {
+            x.ne(Rational.readStrict(b).get(), resolution);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testNe_Rational_Rational() {
+        ne_Rational_Rational_helper(ZERO, "0", DEFAULT_RESOLUTION, "Optional[false]");
+        ne_Rational_Rational_helper(ZERO, "1", DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Rational_Rational_helper(ZERO, "-1", DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Rational_Rational_helper(ZERO, "100/3", DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Rational_Rational_helper(ZERO, "1/100", DEFAULT_RESOLUTION, "Optional[true]");
+
+        ne_Rational_Rational_helper(ONE, "0", DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Rational_Rational_helper(ONE, "1", DEFAULT_RESOLUTION, "Optional[false]");
+        ne_Rational_Rational_helper(ONE, "-1", DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Rational_Rational_helper(ONE, "100/3", DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Rational_Rational_helper(ONE, "1/100", DEFAULT_RESOLUTION, "Optional[true]");
+
+        ne_Rational_Rational_helper(NEGATIVE_ONE, "0", DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Rational_Rational_helper(NEGATIVE_ONE, "1", DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Rational_Rational_helper(NEGATIVE_ONE, "-1", DEFAULT_RESOLUTION, "Optional[false]");
+        ne_Rational_Rational_helper(NEGATIVE_ONE, "100/3", DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Rational_Rational_helper(NEGATIVE_ONE, "1/100", DEFAULT_RESOLUTION, "Optional[true]");
+
+        ne_Rational_Rational_helper(ONE_HALF, "0", DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Rational_Rational_helper(ONE_HALF, "1", DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Rational_Rational_helper(ONE_HALF, "-1", DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Rational_Rational_helper(ONE_HALF, "100/3", DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Rational_Rational_helper(ONE_HALF, "1/100", DEFAULT_RESOLUTION, "Optional[true]");
+
+        ne_Rational_Rational_helper(NEGATIVE_FOUR_THIRDS, "0", DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Rational_Rational_helper(NEGATIVE_FOUR_THIRDS, "1", DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Rational_Rational_helper(NEGATIVE_FOUR_THIRDS, "-1", DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Rational_Rational_helper(NEGATIVE_FOUR_THIRDS, "100/3", DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Rational_Rational_helper(NEGATIVE_FOUR_THIRDS, "1/100", DEFAULT_RESOLUTION, "Optional[true]");
+
+        ne_Rational_Rational_helper(SQRT_TWO, "0", DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Rational_Rational_helper(SQRT_TWO, "1", DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Rational_Rational_helper(SQRT_TWO, "-1", DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Rational_Rational_helper(SQRT_TWO, "100/3", DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Rational_Rational_helper(SQRT_TWO, "1/100", DEFAULT_RESOLUTION, "Optional[true]");
+
+        ne_Rational_Rational_helper(E, "0", DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Rational_Rational_helper(E, "1", DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Rational_Rational_helper(E, "-1", DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Rational_Rational_helper(E, "100/3", DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Rational_Rational_helper(E, "1/100", DEFAULT_RESOLUTION, "Optional[true]");
+
+        ne_Rational_Rational_helper(PI, "0", DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Rational_Rational_helper(PI, "1", DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Rational_Rational_helper(PI, "-1", DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Rational_Rational_helper(PI, "100/3", DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Rational_Rational_helper(PI, "1/100", DEFAULT_RESOLUTION, "Optional[true]");
+
+        ne_Rational_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "0", DEFAULT_RESOLUTION, "Optional.empty");
+        ne_Rational_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "1", DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Rational_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                "-1",
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        ne_Rational_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                "100/3",
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        ne_Rational_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                "1/100",
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+
+        ne_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "0",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        ne_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "1",
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        ne_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "-1",
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        ne_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "100/3",
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        ne_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "1/100",
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+
+        ne_Rational_Rational_helper(fuzzyRepresentation(Rational.ZERO), "0", DEFAULT_RESOLUTION, "Optional.empty");
+        ne_Rational_Rational_helper(fuzzyRepresentation(Rational.ZERO), "1", DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Rational_Rational_helper(fuzzyRepresentation(Rational.ZERO), "-1", DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Rational_Rational_helper(fuzzyRepresentation(Rational.ZERO), "100/3", DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Rational_Rational_helper(fuzzyRepresentation(Rational.ZERO), "1/100", DEFAULT_RESOLUTION, "Optional[true]");
+
+        ne_Rational_Rational_fail_helper(ZERO, "0", Rational.ZERO);
+        ne_Rational_Rational_fail_helper(ZERO, "0", Rational.NEGATIVE_ONE);
+        ne_Rational_Rational_fail_helper(E, "1/2", Rational.ZERO);
+        ne_Rational_Rational_fail_helper(E, "1/2", Rational.NEGATIVE_ONE);
+    }
+
+    private static void lt_Rational_Rational_helper(
+            @NotNull Real a,
+            @NotNull String b,
+            @NotNull Rational resolution,
+            @NotNull String output
+    ) {
+        aeq(a.lt(Rational.readStrict(b).get(), resolution), output);
+    }
+
+    private static void lt_Rational_Rational_fail_helper(
+            @NotNull Real x,
+            @NotNull String b,
+            @NotNull Rational resolution
+    ) {
+        try {
+            x.lt(Rational.readStrict(b).get(), resolution);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testLt_Rational_Rational() {
+        lt_Rational_Rational_helper(ZERO, "0", DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Rational_Rational_helper(ZERO, "1", DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Rational_Rational_helper(ZERO, "-1", DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Rational_Rational_helper(ZERO, "100/3", DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Rational_Rational_helper(ZERO, "1/100", DEFAULT_RESOLUTION, "Optional[true]");
+
+        lt_Rational_Rational_helper(ONE, "0", DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Rational_Rational_helper(ONE, "1", DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Rational_Rational_helper(ONE, "-1", DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Rational_Rational_helper(ONE, "100/3", DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Rational_Rational_helper(ONE, "1/100", DEFAULT_RESOLUTION, "Optional[false]");
+
+        lt_Rational_Rational_helper(NEGATIVE_ONE, "0", DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Rational_Rational_helper(NEGATIVE_ONE, "1", DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Rational_Rational_helper(NEGATIVE_ONE, "-1", DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Rational_Rational_helper(NEGATIVE_ONE, "100/3", DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Rational_Rational_helper(NEGATIVE_ONE, "1/100", DEFAULT_RESOLUTION, "Optional[true]");
+
+        lt_Rational_Rational_helper(ONE_HALF, "0", DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Rational_Rational_helper(ONE_HALF, "1", DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Rational_Rational_helper(ONE_HALF, "-1", DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Rational_Rational_helper(ONE_HALF, "100/3", DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Rational_Rational_helper(ONE_HALF, "1/100", DEFAULT_RESOLUTION, "Optional[false]");
+
+        lt_Rational_Rational_helper(NEGATIVE_FOUR_THIRDS, "0", DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Rational_Rational_helper(NEGATIVE_FOUR_THIRDS, "1", DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Rational_Rational_helper(NEGATIVE_FOUR_THIRDS, "-1", DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Rational_Rational_helper(NEGATIVE_FOUR_THIRDS, "100/3", DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Rational_Rational_helper(NEGATIVE_FOUR_THIRDS, "1/100", DEFAULT_RESOLUTION, "Optional[true]");
+
+        lt_Rational_Rational_helper(SQRT_TWO, "0", DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Rational_Rational_helper(SQRT_TWO, "1", DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Rational_Rational_helper(SQRT_TWO, "-1", DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Rational_Rational_helper(SQRT_TWO, "100/3", DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Rational_Rational_helper(SQRT_TWO, "1/100", DEFAULT_RESOLUTION, "Optional[false]");
+
+        lt_Rational_Rational_helper(E, "0", DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Rational_Rational_helper(E, "1", DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Rational_Rational_helper(E, "-1", DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Rational_Rational_helper(E, "100/3", DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Rational_Rational_helper(E, "1/100", DEFAULT_RESOLUTION, "Optional[false]");
+
+        lt_Rational_Rational_helper(PI, "0", DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Rational_Rational_helper(PI, "1", DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Rational_Rational_helper(PI, "-1", DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Rational_Rational_helper(PI, "100/3", DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Rational_Rational_helper(PI, "1/100", DEFAULT_RESOLUTION, "Optional[false]");
+
+        lt_Rational_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "0", DEFAULT_RESOLUTION, "Optional.empty");
+        lt_Rational_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "1", DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Rational_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                "-1",
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        lt_Rational_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                "100/3",
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        lt_Rational_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                "1/100",
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+
+        lt_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "0",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        lt_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "1",
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        lt_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "-1",
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        lt_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "100/3",
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        lt_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "1/100",
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+
+        lt_Rational_Rational_helper(fuzzyRepresentation(Rational.ZERO), "0", DEFAULT_RESOLUTION, "Optional.empty");
+        lt_Rational_Rational_helper(fuzzyRepresentation(Rational.ZERO), "1", DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Rational_Rational_helper(fuzzyRepresentation(Rational.ZERO), "-1", DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Rational_Rational_helper(fuzzyRepresentation(Rational.ZERO), "100/3", DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Rational_Rational_helper(fuzzyRepresentation(Rational.ZERO), "1/100", DEFAULT_RESOLUTION, "Optional[true]");
+
+        lt_Rational_Rational_fail_helper(ZERO, "0", Rational.ZERO);
+        lt_Rational_Rational_fail_helper(ZERO, "0", Rational.NEGATIVE_ONE);
+        lt_Rational_Rational_fail_helper(E, "1/2", Rational.ZERO);
+        lt_Rational_Rational_fail_helper(E, "1/2", Rational.NEGATIVE_ONE);
+    }
+
+    private static void gt_Rational_Rational_helper(
+            @NotNull Real a,
+            @NotNull String b,
+            @NotNull Rational resolution,
+            @NotNull String output
+    ) {
+        aeq(a.gt(Rational.readStrict(b).get(), resolution), output);
+    }
+
+    private static void gt_Rational_Rational_fail_helper(
+            @NotNull Real x,
+            @NotNull String b,
+            @NotNull Rational resolution
+    ) {
+        try {
+            x.gt(Rational.readStrict(b).get(), resolution);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testGt_Rational_Rational() {
+        gt_Rational_Rational_helper(ZERO, "0", DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Rational_Rational_helper(ZERO, "1", DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Rational_Rational_helper(ZERO, "-1", DEFAULT_RESOLUTION, "Optional[true]");
+        gt_Rational_Rational_helper(ZERO, "100/3", DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Rational_Rational_helper(ZERO, "1/100", DEFAULT_RESOLUTION, "Optional[false]");
+
+        gt_Rational_Rational_helper(ONE, "0", DEFAULT_RESOLUTION, "Optional[true]");
+        gt_Rational_Rational_helper(ONE, "1", DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Rational_Rational_helper(ONE, "-1", DEFAULT_RESOLUTION, "Optional[true]");
+        gt_Rational_Rational_helper(ONE, "100/3", DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Rational_Rational_helper(ONE, "1/100", DEFAULT_RESOLUTION, "Optional[true]");
+
+        gt_Rational_Rational_helper(NEGATIVE_ONE, "0", DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Rational_Rational_helper(NEGATIVE_ONE, "1", DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Rational_Rational_helper(NEGATIVE_ONE, "-1", DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Rational_Rational_helper(NEGATIVE_ONE, "100/3", DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Rational_Rational_helper(NEGATIVE_ONE, "1/100", DEFAULT_RESOLUTION, "Optional[false]");
+
+        gt_Rational_Rational_helper(ONE_HALF, "0", DEFAULT_RESOLUTION, "Optional[true]");
+        gt_Rational_Rational_helper(ONE_HALF, "1", DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Rational_Rational_helper(ONE_HALF, "-1", DEFAULT_RESOLUTION, "Optional[true]");
+        gt_Rational_Rational_helper(ONE_HALF, "100/3", DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Rational_Rational_helper(ONE_HALF, "1/100", DEFAULT_RESOLUTION, "Optional[true]");
+
+        gt_Rational_Rational_helper(NEGATIVE_FOUR_THIRDS, "0", DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Rational_Rational_helper(NEGATIVE_FOUR_THIRDS, "1", DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Rational_Rational_helper(NEGATIVE_FOUR_THIRDS, "-1", DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Rational_Rational_helper(NEGATIVE_FOUR_THIRDS, "100/3", DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Rational_Rational_helper(NEGATIVE_FOUR_THIRDS, "1/100", DEFAULT_RESOLUTION, "Optional[false]");
+
+        gt_Rational_Rational_helper(SQRT_TWO, "0", DEFAULT_RESOLUTION, "Optional[true]");
+        gt_Rational_Rational_helper(SQRT_TWO, "1", DEFAULT_RESOLUTION, "Optional[true]");
+        gt_Rational_Rational_helper(SQRT_TWO, "-1", DEFAULT_RESOLUTION, "Optional[true]");
+        gt_Rational_Rational_helper(SQRT_TWO, "100/3", DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Rational_Rational_helper(SQRT_TWO, "1/100", DEFAULT_RESOLUTION, "Optional[true]");
+
+        gt_Rational_Rational_helper(E, "0", DEFAULT_RESOLUTION, "Optional[true]");
+        gt_Rational_Rational_helper(E, "1", DEFAULT_RESOLUTION, "Optional[true]");
+        gt_Rational_Rational_helper(E, "-1", DEFAULT_RESOLUTION, "Optional[true]");
+        gt_Rational_Rational_helper(E, "100/3", DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Rational_Rational_helper(E, "1/100", DEFAULT_RESOLUTION, "Optional[true]");
+
+        gt_Rational_Rational_helper(PI, "0", DEFAULT_RESOLUTION, "Optional[true]");
+        gt_Rational_Rational_helper(PI, "1", DEFAULT_RESOLUTION, "Optional[true]");
+        gt_Rational_Rational_helper(PI, "-1", DEFAULT_RESOLUTION, "Optional[true]");
+        gt_Rational_Rational_helper(PI, "100/3", DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Rational_Rational_helper(PI, "1/100", DEFAULT_RESOLUTION, "Optional[true]");
+
+        gt_Rational_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "0", DEFAULT_RESOLUTION, "Optional.empty");
+        gt_Rational_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                "1",
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        gt_Rational_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                "-1",
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        gt_Rational_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                "100/3",
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        gt_Rational_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                "1/100",
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+
+        gt_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "0",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        gt_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "1",
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        gt_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "-1",
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        gt_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "100/3",
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        gt_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "1/100",
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+
+        gt_Rational_Rational_helper(fuzzyRepresentation(Rational.ZERO), "0", DEFAULT_RESOLUTION, "Optional.empty");
+        gt_Rational_Rational_helper(fuzzyRepresentation(Rational.ZERO), "1", DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Rational_Rational_helper(fuzzyRepresentation(Rational.ZERO), "-1", DEFAULT_RESOLUTION, "Optional[true]");
+        gt_Rational_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                "100/3",
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        gt_Rational_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                "1/100",
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+
+        gt_Rational_Rational_fail_helper(ZERO, "0", Rational.ZERO);
+        gt_Rational_Rational_fail_helper(ZERO, "0", Rational.NEGATIVE_ONE);
+        gt_Rational_Rational_fail_helper(E, "1/2", Rational.ZERO);
+        gt_Rational_Rational_fail_helper(E, "1/2", Rational.NEGATIVE_ONE);
+    }
+
+    private static void le_Rational_Rational_helper(
+            @NotNull Real a,
+            @NotNull String b,
+            @NotNull Rational resolution,
+            @NotNull String output
+    ) {
+        aeq(a.le(Rational.readStrict(b).get(), resolution), output);
+    }
+
+    private static void le_Rational_Rational_fail_helper(
+            @NotNull Real x,
+            @NotNull String b,
+            @NotNull Rational resolution
+    ) {
+        try {
+            x.le(Rational.readStrict(b).get(), resolution);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testLe_Rational_Rational() {
+        le_Rational_Rational_helper(ZERO, "0", DEFAULT_RESOLUTION, "Optional[true]");
+        le_Rational_Rational_helper(ZERO, "1", DEFAULT_RESOLUTION, "Optional[true]");
+        le_Rational_Rational_helper(ZERO, "-1", DEFAULT_RESOLUTION, "Optional[false]");
+        le_Rational_Rational_helper(ZERO, "100/3", DEFAULT_RESOLUTION, "Optional[true]");
+        le_Rational_Rational_helper(ZERO, "1/100", DEFAULT_RESOLUTION, "Optional[true]");
+
+        le_Rational_Rational_helper(ONE, "0", DEFAULT_RESOLUTION, "Optional[false]");
+        le_Rational_Rational_helper(ONE, "1", DEFAULT_RESOLUTION, "Optional[true]");
+        le_Rational_Rational_helper(ONE, "-1", DEFAULT_RESOLUTION, "Optional[false]");
+        le_Rational_Rational_helper(ONE, "100/3", DEFAULT_RESOLUTION, "Optional[true]");
+        le_Rational_Rational_helper(ONE, "1/100", DEFAULT_RESOLUTION, "Optional[false]");
+
+        le_Rational_Rational_helper(NEGATIVE_ONE, "0", DEFAULT_RESOLUTION, "Optional[true]");
+        le_Rational_Rational_helper(NEGATIVE_ONE, "1", DEFAULT_RESOLUTION, "Optional[true]");
+        le_Rational_Rational_helper(NEGATIVE_ONE, "-1", DEFAULT_RESOLUTION, "Optional[true]");
+        le_Rational_Rational_helper(NEGATIVE_ONE, "100/3", DEFAULT_RESOLUTION, "Optional[true]");
+        le_Rational_Rational_helper(NEGATIVE_ONE, "1/100", DEFAULT_RESOLUTION, "Optional[true]");
+
+        le_Rational_Rational_helper(ONE_HALF, "0", DEFAULT_RESOLUTION, "Optional[false]");
+        le_Rational_Rational_helper(ONE_HALF, "1", DEFAULT_RESOLUTION, "Optional[true]");
+        le_Rational_Rational_helper(ONE_HALF, "-1", DEFAULT_RESOLUTION, "Optional[false]");
+        le_Rational_Rational_helper(ONE_HALF, "100/3", DEFAULT_RESOLUTION, "Optional[true]");
+        le_Rational_Rational_helper(ONE_HALF, "1/100", DEFAULT_RESOLUTION, "Optional[false]");
+
+        le_Rational_Rational_helper(NEGATIVE_FOUR_THIRDS, "0", DEFAULT_RESOLUTION, "Optional[true]");
+        le_Rational_Rational_helper(NEGATIVE_FOUR_THIRDS, "1", DEFAULT_RESOLUTION, "Optional[true]");
+        le_Rational_Rational_helper(NEGATIVE_FOUR_THIRDS, "-1", DEFAULT_RESOLUTION, "Optional[true]");
+        le_Rational_Rational_helper(NEGATIVE_FOUR_THIRDS, "100/3", DEFAULT_RESOLUTION, "Optional[true]");
+        le_Rational_Rational_helper(NEGATIVE_FOUR_THIRDS, "1/100", DEFAULT_RESOLUTION, "Optional[true]");
+
+        le_Rational_Rational_helper(SQRT_TWO, "0", DEFAULT_RESOLUTION, "Optional[false]");
+        le_Rational_Rational_helper(SQRT_TWO, "1", DEFAULT_RESOLUTION, "Optional[false]");
+        le_Rational_Rational_helper(SQRT_TWO, "-1", DEFAULT_RESOLUTION, "Optional[false]");
+        le_Rational_Rational_helper(SQRT_TWO, "100/3", DEFAULT_RESOLUTION, "Optional[true]");
+        le_Rational_Rational_helper(SQRT_TWO, "1/100", DEFAULT_RESOLUTION, "Optional[false]");
+
+        le_Rational_Rational_helper(E, "0", DEFAULT_RESOLUTION, "Optional[false]");
+        le_Rational_Rational_helper(E, "1", DEFAULT_RESOLUTION, "Optional[false]");
+        le_Rational_Rational_helper(E, "-1", DEFAULT_RESOLUTION, "Optional[false]");
+        le_Rational_Rational_helper(E, "100/3", DEFAULT_RESOLUTION, "Optional[true]");
+        le_Rational_Rational_helper(E, "1/100", DEFAULT_RESOLUTION, "Optional[false]");
+
+        le_Rational_Rational_helper(PI, "0", DEFAULT_RESOLUTION, "Optional[false]");
+        le_Rational_Rational_helper(PI, "1", DEFAULT_RESOLUTION, "Optional[false]");
+        le_Rational_Rational_helper(PI, "-1", DEFAULT_RESOLUTION, "Optional[false]");
+        le_Rational_Rational_helper(PI, "100/3", DEFAULT_RESOLUTION, "Optional[true]");
+        le_Rational_Rational_helper(PI, "1/100", DEFAULT_RESOLUTION, "Optional[false]");
+
+        le_Rational_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "0", DEFAULT_RESOLUTION, "Optional[true]");
+        le_Rational_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "1", DEFAULT_RESOLUTION, "Optional[true]");
+        le_Rational_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                "-1",
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        le_Rational_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                "100/3",
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        le_Rational_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                "1/100",
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+
+        le_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "0",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        le_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "1",
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        le_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "-1",
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        le_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "100/3",
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        le_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "1/100",
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+
+        le_Rational_Rational_helper(fuzzyRepresentation(Rational.ZERO), "0", DEFAULT_RESOLUTION, "Optional.empty");
+        le_Rational_Rational_helper(fuzzyRepresentation(Rational.ZERO), "1", DEFAULT_RESOLUTION, "Optional[true]");
+        le_Rational_Rational_helper(fuzzyRepresentation(Rational.ZERO), "-1", DEFAULT_RESOLUTION, "Optional[false]");
+        le_Rational_Rational_helper(fuzzyRepresentation(Rational.ZERO), "100/3", DEFAULT_RESOLUTION, "Optional[true]");
+        le_Rational_Rational_helper(fuzzyRepresentation(Rational.ZERO), "1/100", DEFAULT_RESOLUTION, "Optional[true]");
+
+        le_Rational_Rational_fail_helper(ZERO, "0", Rational.ZERO);
+        le_Rational_Rational_fail_helper(ZERO, "0", Rational.NEGATIVE_ONE);
+        le_Rational_Rational_fail_helper(E, "1/2", Rational.ZERO);
+        le_Rational_Rational_fail_helper(E, "1/2", Rational.NEGATIVE_ONE);
+    }
+
+    private static void ge_Rational_Rational_helper(
+            @NotNull Real a,
+            @NotNull String b,
+            @NotNull Rational resolution,
+            @NotNull String output
+    ) {
+        aeq(a.ge(Rational.readStrict(b).get(), resolution), output);
+    }
+
+    private static void ge_Rational_Rational_fail_helper(
+            @NotNull Real x,
+            @NotNull String b,
+            @NotNull Rational resolution
+    ) {
+        try {
+            x.ge(Rational.readStrict(b).get(), resolution);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testGe_Rational_Rational() {
+        ge_Rational_Rational_helper(ZERO, "0", DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Rational_Rational_helper(ZERO, "1", DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Rational_Rational_helper(ZERO, "-1", DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Rational_Rational_helper(ZERO, "100/3", DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Rational_Rational_helper(ZERO, "1/100", DEFAULT_RESOLUTION, "Optional[false]");
+
+        ge_Rational_Rational_helper(ONE, "0", DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Rational_Rational_helper(ONE, "1", DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Rational_Rational_helper(ONE, "-1", DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Rational_Rational_helper(ONE, "100/3", DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Rational_Rational_helper(ONE, "1/100", DEFAULT_RESOLUTION, "Optional[true]");
+
+        ge_Rational_Rational_helper(NEGATIVE_ONE, "0", DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Rational_Rational_helper(NEGATIVE_ONE, "1", DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Rational_Rational_helper(NEGATIVE_ONE, "-1", DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Rational_Rational_helper(NEGATIVE_ONE, "100/3", DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Rational_Rational_helper(NEGATIVE_ONE, "1/100", DEFAULT_RESOLUTION, "Optional[false]");
+
+        ge_Rational_Rational_helper(ONE_HALF, "0", DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Rational_Rational_helper(ONE_HALF, "1", DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Rational_Rational_helper(ONE_HALF, "-1", DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Rational_Rational_helper(ONE_HALF, "100/3", DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Rational_Rational_helper(ONE_HALF, "1/100", DEFAULT_RESOLUTION, "Optional[true]");
+
+        ge_Rational_Rational_helper(NEGATIVE_FOUR_THIRDS, "0", DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Rational_Rational_helper(NEGATIVE_FOUR_THIRDS, "1", DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Rational_Rational_helper(NEGATIVE_FOUR_THIRDS, "-1", DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Rational_Rational_helper(NEGATIVE_FOUR_THIRDS, "100/3", DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Rational_Rational_helper(NEGATIVE_FOUR_THIRDS, "1/100", DEFAULT_RESOLUTION, "Optional[false]");
+
+        ge_Rational_Rational_helper(SQRT_TWO, "0", DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Rational_Rational_helper(SQRT_TWO, "1", DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Rational_Rational_helper(SQRT_TWO, "-1", DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Rational_Rational_helper(SQRT_TWO, "100/3", DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Rational_Rational_helper(SQRT_TWO, "1/100", DEFAULT_RESOLUTION, "Optional[true]");
+
+        ge_Rational_Rational_helper(E, "0", DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Rational_Rational_helper(E, "1", DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Rational_Rational_helper(E, "-1", DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Rational_Rational_helper(E, "100/3", DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Rational_Rational_helper(E, "1/100", DEFAULT_RESOLUTION, "Optional[true]");
+
+        ge_Rational_Rational_helper(PI, "0", DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Rational_Rational_helper(PI, "1", DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Rational_Rational_helper(PI, "-1", DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Rational_Rational_helper(PI, "100/3", DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Rational_Rational_helper(PI, "1/100", DEFAULT_RESOLUTION, "Optional[true]");
+
+        ge_Rational_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "0", DEFAULT_RESOLUTION, "Optional.empty");
+        ge_Rational_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                "1",
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        ge_Rational_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                "-1",
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        ge_Rational_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                "100/3",
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        ge_Rational_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                "1/100",
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+
+        ge_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "0",
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        ge_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "1",
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        ge_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "-1",
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        ge_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "100/3",
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        ge_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "1/100",
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+
+        ge_Rational_Rational_helper(fuzzyRepresentation(Rational.ZERO), "0", DEFAULT_RESOLUTION, "Optional.empty");
+        ge_Rational_Rational_helper(fuzzyRepresentation(Rational.ZERO), "1", DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Rational_Rational_helper(fuzzyRepresentation(Rational.ZERO), "-1", DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Rational_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                "100/3",
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        ge_Rational_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                "1/100",
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+
+        ge_Rational_Rational_fail_helper(ZERO, "0", Rational.ZERO);
+        ge_Rational_Rational_fail_helper(ZERO, "0", Rational.NEGATIVE_ONE);
+        ge_Rational_Rational_fail_helper(E, "1/2", Rational.ZERO);
+        ge_Rational_Rational_fail_helper(E, "1/2", Rational.NEGATIVE_ONE);
     }
 }

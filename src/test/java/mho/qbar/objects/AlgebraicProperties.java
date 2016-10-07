@@ -651,7 +651,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             assertEquals(x, x.isIntegerPowerOfTwo(), ONE.shiftLeft(x.binaryExponent()).equals(x));
         }
 
-        for (Algebraic x : take(LIMIT, P.withElement(ZERO, P.negativeAlgebraics()))) {
+        for (Algebraic x : take(LIMIT, P.rangeDown(ZERO))) {
             try {
                 x.isIntegerPowerOfTwo();
                 fail(x);
@@ -668,7 +668,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             assertTrue(x, lt(of(powerOfTwo.shiftRight(1)), x));
         }
 
-        for (Algebraic x : take(LIMIT, P.withElement(ZERO, P.negativeAlgebraics()))) {
+        for (Algebraic x : take(LIMIT, P.rangeDown(ZERO))) {
             try {
                 x.roundUpToIntegerPowerOfTwo();
                 fail(x);
@@ -776,7 +776,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             assertTrue(x, le(x, power.shiftLeft(1)));
         }
 
-        for (Algebraic x : take(LIMIT, P.withElement(ZERO, P.negativeAlgebraics()))) {
+        for (Algebraic x : take(LIMIT, P.rangeDown(ZERO))) {
             try {
                 x.binaryExponent();
                 fail(x);
@@ -3227,15 +3227,14 @@ public class AlgebraicProperties extends QBarTestProperties {
 
     private void propertiesSqrt() {
         initialize("sqrt()");
-        for (Algebraic x : take(LIMIT, P.withElement(ZERO, P.withScale(4).positiveAlgebraics()))) {
+        for (Algebraic x : take(LIMIT, P.rangeUp(ZERO))) {
             Algebraic y = x.sqrt();
             y.validate();
             inverse(Algebraic::sqrt, (Algebraic z) -> z.pow(2), x);
             assertNotEquals(x, x.signum(), -1);
         }
 
-        Iterable<Pair<Algebraic, Algebraic>> ps = P.pairs(P.withElement(ZERO, P.withScale(4).positiveAlgebraics()));
-        for (Pair<Algebraic, Algebraic> p : take(LIMIT, ps)) {
+        for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.pairs(P.withScale(4).rangeUp(ZERO)))) {
             assertEquals(p, p.a.compareTo(p.b), p.a.sqrt().compareTo(p.b.sqrt()));
         }
 
@@ -3537,7 +3536,7 @@ public class AlgebraicProperties extends QBarTestProperties {
 
         Iterable<Triple<Algebraic, BigInteger, RoundingMode>> tsFail = P.triples(
                 P.algebraics(),
-                P.withElement(BigInteger.ZERO, P.negativeBigIntegers()),
+                P.rangeDown(BigInteger.ZERO),
                 P.roundingModes()
         );
         for (Triple<Algebraic, BigInteger, RoundingMode> t : take(LIMIT, tsFail)) {
@@ -3726,7 +3725,7 @@ public class AlgebraicProperties extends QBarTestProperties {
         initialize("digits(BigInteger)");
         //noinspection Convert2MethodRef
         Iterable<Pair<Algebraic, BigInteger>> ps = P.pairsSquareRootOrder(
-                P.withElement(ZERO, P.positiveAlgebraics()),
+                P.rangeUp(ZERO),
                 P.rangeUp(IntegerUtils.TWO)
         );
         for (Pair<Algebraic, BigInteger> p : take(LIMIT, ps)) {
@@ -3738,10 +3737,7 @@ public class AlgebraicProperties extends QBarTestProperties {
 
         ps = filterInfinite(
                 q -> q.a.hasTerminatingBaseExpansion(q.b),
-                P.pairsSquareRootOrder(
-                        P.withElement(ZERO, P.positiveAlgebraics(1)),
-                        P.withScale(4).rangeUp(IntegerUtils.TWO)
-                )
+                P.pairsSquareRootOrder(P.withScale(1).rangeUp(ZERO), P.withScale(4).rangeUp(IntegerUtils.TWO))
         );
         for (Pair<Algebraic, BigInteger> p : take(LIMIT, ps)) {
             toList(p.a.digits(p.b).b);
@@ -3769,7 +3765,7 @@ public class AlgebraicProperties extends QBarTestProperties {
         Iterable<Triple<BigInteger, Algebraic, Algebraic>> ts = map(
                 p -> new Triple<>(p.b, p.a.a, p.a.b),
                 P.pairsSquareRootOrder(
-                        filterInfinite(p -> p.a != p.b, P.pairs(P.withElement(ZERO, P.positiveAlgebraics()))),
+                        filterInfinite(p -> p.a != p.b, P.pairs(P.rangeUp(ZERO))),
                         map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
                 )
         );
@@ -3789,7 +3785,7 @@ public class AlgebraicProperties extends QBarTestProperties {
         Iterable<Triple<BigInteger, Algebraic, Algebraic>> tsFail = map(
                 p -> new Triple<>(p.b, p.a.a, p.a.b),
                 P.pairsSquareRootOrder(
-                        filterInfinite(p -> p.a != p.b, P.pairs(P.withElement(ZERO, P.positiveAlgebraics()))),
+                        filterInfinite(p -> p.a != p.b, P.pairs(P.rangeUp(ZERO))),
                         P.rangeDown(BigInteger.valueOf(-2))
                 )
         );
@@ -3804,7 +3800,7 @@ public class AlgebraicProperties extends QBarTestProperties {
         tsFail = map(
                 p -> new Triple<>(p.b, p.a.a, p.a.b),
                 P.pairsSquareRootOrder(
-                        P.pairs(P.withElement(ZERO, P.positiveAlgebraics()), P.negativeAlgebraics()),
+                        P.pairs(P.rangeUp(ZERO), P.negativeAlgebraics()),
                         map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
                 )
         );
@@ -3819,7 +3815,7 @@ public class AlgebraicProperties extends QBarTestProperties {
         tsFail = map(
                 p -> new Triple<>(p.b, p.a.a, p.a.b),
                 P.pairsSquareRootOrder(
-                        P.pairs(P.negativeAlgebraics(), P.withElement(ZERO, P.positiveAlgebraics())),
+                        P.pairs(P.negativeAlgebraics(), P.rangeUp(ZERO)),
                         map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
                 )
         );
@@ -3832,7 +3828,7 @@ public class AlgebraicProperties extends QBarTestProperties {
 
         //noinspection Convert2MethodRef
         Iterable<Pair<Algebraic, BigInteger>> psFail = P.pairsSquareRootOrder(
-                P.withElement(ZERO, P.positiveAlgebraics()),
+                P.rangeUp(ZERO),
                 map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
         );
         for (Pair<Algebraic, BigInteger> p : take(LIMIT, psFail)) {

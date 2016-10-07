@@ -124,6 +124,20 @@ public class RealProperties extends QBarTestProperties {
         propertiesDelta();
         propertiesPowUnsafe_int();
         propertiesPow_int_Rational();
+        propertiesCompareToUnsafe_Rational();
+        propertiesCompareTo_Rational_Rational();
+        propertiesEqUnsafe_Rational();
+        propertiesNeUnsafe_Rational();
+        propertiesLtUnsafe_Rational();
+        propertiesGtUnsafe_Rational();
+        propertiesLeUnsafe_Rational();
+        propertiesGeUnsafe_Rational();
+        propertiesEq_Rational_Rational();
+        propertiesNe_Rational_Rational();
+        propertiesLt_Rational_Rational();
+        propertiesGt_Rational_Rational();
+        propertiesLe_Rational_Rational();
+        propertiesGe_Rational_Rational();
     }
 
     private void propertiesOf_Rational() {
@@ -153,8 +167,8 @@ public class RealProperties extends QBarTestProperties {
             Real x = of(l);
             x.validate();
             assertTrue(l, x.isExactInteger());
-            assertTrue(l, geUnsafe(x, lowerLimit));
-            assertTrue(l, leUnsafe(x, upperLimit));
+            assertTrue(l, x.geUnsafe(lowerLimit));
+            assertTrue(l, x.leUnsafe(upperLimit));
         }
     }
 
@@ -166,8 +180,8 @@ public class RealProperties extends QBarTestProperties {
             Real x = of(i);
             x.validate();
             assertTrue(i, x.isExactInteger());
-            assertTrue(i, geUnsafe(x, lowerLimit));
-            assertTrue(i, leUnsafe(x, upperLimit));
+            assertTrue(i, x.geUnsafe(lowerLimit));
+            assertTrue(i, x.leUnsafe(upperLimit));
         }
     }
 
@@ -554,11 +568,7 @@ public class RealProperties extends QBarTestProperties {
 
         Iterable<Triple<Real, RoundingMode, Rational>> tsFail = filterInfinite(
                 s -> s.b != RoundingMode.UNNECESSARY || s.a.isExactInteger(),
-                P.triples(
-                        P.withScale(4).reals(),
-                        P.roundingModes(),
-                        P.withElement(Rational.ZERO, P.withScale(4).negativeRationals())
-                )
+                P.triples(P.withScale(4).reals(), P.roundingModes(), P.withScale(4).rangeDown(Rational.ZERO))
         );
         for (Triple<Real, RoundingMode, Rational> t : take(LIMIT, tsFail)) {
             try {
@@ -653,7 +663,7 @@ public class RealProperties extends QBarTestProperties {
 
         Iterable<Pair<Real, Rational>> psFail = P.pairs(
                 P.withScale(4).reals(),
-                P.withElement(Rational.ZERO, P.withScale(4).negativeRationals())
+                P.withScale(4).rangeDown(Rational.ZERO)
         );
         for (Pair<Real, Rational> p : take(LIMIT, psFail)) {
             try {
@@ -727,7 +737,7 @@ public class RealProperties extends QBarTestProperties {
 
         Iterable<Pair<Real, Rational>> psFail = P.pairs(
                 P.withScale(4).reals(),
-                P.withElement(Rational.ZERO, P.withScale(4).negativeRationals())
+                P.withScale(4).rangeDown(Rational.ZERO)
         );
         for (Pair<Real, Rational> p : take(LIMIT, psFail)) {
             try {
@@ -801,7 +811,7 @@ public class RealProperties extends QBarTestProperties {
 
         Iterable<Pair<Real, Rational>> psFail = P.pairs(
                 P.withScale(4).reals(),
-                P.withElement(Rational.ZERO, P.withScale(4).negativeRationals())
+                P.withScale(4).rangeDown(Rational.ZERO)
         );
         for (Pair<Real, Rational> p : take(LIMIT, psFail)) {
             try {
@@ -1040,7 +1050,7 @@ public class RealProperties extends QBarTestProperties {
             assertTrue(x, ltUnsafe(of(powerOfTwo.shiftRight(1)), x));
         }
 
-        for (Real x : take(LIMIT, P.withElement(ZERO, P.negativeCleanReals()))) {
+        for (Real x : take(LIMIT, P.cleanRealRangeDown(Algebraic.ZERO))) {
             try {
                 x.roundUpToIntegerPowerOfTwoUnsafe();
                 fail(x);
@@ -1063,7 +1073,7 @@ public class RealProperties extends QBarTestProperties {
 
         Iterable<Pair<Real, Rational>> psFail = P.pairs(
                 P.withScale(4).positiveReals(),
-                P.withElement(Rational.ZERO, P.withScale(4).negativeRationals())
+                P.withScale(4).rangeDown(Rational.ZERO)
         );
         for (Pair<Real, Rational> p : take(LIMIT, psFail)) {
             try {
@@ -1189,7 +1199,7 @@ public class RealProperties extends QBarTestProperties {
             assertTrue(x, leUnsafe(x, power.shiftLeft(1)));
         }
 
-        for (Real x : take(LIMIT, P.withElement(ZERO, P.negativeCleanReals()))) {
+        for (Real x : take(LIMIT, P.cleanRealRangeDown(Algebraic.ZERO))) {
             try {
                 x.binaryExponentUnsafe();
                 fail(x);
@@ -1212,7 +1222,7 @@ public class RealProperties extends QBarTestProperties {
 
         Iterable<Pair<Real, Rational>> psFail = P.pairs(
                 P.withScale(4).positiveReals(),
-                P.withElement(Rational.ZERO, P.withScale(4).negativeRationals())
+                P.withScale(4).rangeDown(Rational.ZERO)
         );
         for (Pair<Real, Rational> p : take(LIMIT, psFail)) {
             try {
@@ -1679,11 +1689,7 @@ public class RealProperties extends QBarTestProperties {
 
         Iterable<Triple<Real, RoundingMode, Rational>> tsFail = filterInfinite(
                 s -> s.b != RoundingMode.UNNECESSARY || s.a.isExactAndEqualToFloat(),
-                P.triples(
-                        P.withScale(4).reals(),
-                        P.roundingModes(),
-                        P.withElement(Rational.ZERO, P.negativeRationals())
-                )
+                P.triples(P.withScale(4).reals(), P.roundingModes(), P.rangeDown(Rational.ZERO))
         );
         for (Triple<Real, RoundingMode, Rational> t : take(LIMIT, tsFail)) {
             try {
@@ -1829,11 +1835,7 @@ public class RealProperties extends QBarTestProperties {
             }
         }
 
-        Iterable<Pair<Real, Rational>> psFail = P.pairs(
-                P.withScale(4).reals(),
-                P.withElement(Rational.ZERO, P.negativeRationals())
-        );
-        for (Pair<Real, Rational> p : take(LIMIT, psFail)) {
+        for (Pair<Real, Rational> p : take(LIMIT, P.pairs(P.withScale(4).reals(), P.rangeDown(Rational.ZERO)))) {
             try {
                 p.a.floatValue(p.b);
                 fail(p);
@@ -2292,11 +2294,7 @@ public class RealProperties extends QBarTestProperties {
 
         Iterable<Triple<Real, RoundingMode, Rational>> tsFail = filterInfinite(
                 s -> s.b != RoundingMode.UNNECESSARY || s.a.isExactAndEqualToDouble(),
-                P.triples(
-                        P.withScale(4).reals(),
-                        P.roundingModes(),
-                        P.withElement(Rational.ZERO, P.negativeRationals())
-                )
+                P.triples(P.withScale(4).reals(), P.roundingModes(), P.rangeDown(Rational.ZERO))
         );
         for (Triple<Real, RoundingMode, Rational> t : take(LIMIT, tsFail)) {
             try {
@@ -2444,11 +2442,7 @@ public class RealProperties extends QBarTestProperties {
             }
         }
 
-        Iterable<Pair<Real, Rational>> psFail = P.pairs(
-                P.withScale(4).reals(),
-                P.withElement(Rational.ZERO, P.negativeRationals())
-        );
-        for (Pair<Real, Rational> p : take(LIMIT, psFail)) {
+        for (Pair<Real, Rational> p : take(LIMIT, P.pairs(P.withScale(4).reals(), P.rangeDown(Rational.ZERO)))) {
             try {
                 p.a.doubleValue(p.b);
                 fail(p);
@@ -2818,7 +2812,7 @@ public class RealProperties extends QBarTestProperties {
                 P.withScale(4).reals(),
                 P.naturalIntegersGeometric(),
                 P.roundingModes(),
-                P.withElement(Rational.ZERO, P.negativeRationals())
+                P.rangeDown(Rational.ZERO)
         );
         for (Quadruple<Real, Integer, RoundingMode, Rational> q : take(LIMIT, qsFail)) {
             try {
@@ -3091,7 +3085,7 @@ public class RealProperties extends QBarTestProperties {
                 P.withScale(4).reals(),
                 P.integersGeometric(),
                 P.roundingModes(),
-                P.withElement(Rational.ZERO, P.negativeRationals())
+                P.rangeDown(Rational.ZERO)
         );
         for (Quadruple<Real, Integer, RoundingMode, Rational> q : take(LIMIT, qsFail)) {
             try {
@@ -3264,7 +3258,7 @@ public class RealProperties extends QBarTestProperties {
         Iterable<Triple<Real, Integer, Rational>> tsFail = P.triples(
                 P.withScale(4).reals(),
                 P.naturalIntegersGeometric(),
-                P.withElement(Rational.ZERO, P.negativeRationals())
+                P.rangeDown(Rational.ZERO)
         );
         for (Triple<Real, Integer, Rational> q : take(LIMIT, tsFail)) {
             try {
@@ -3386,7 +3380,7 @@ public class RealProperties extends QBarTestProperties {
         Iterable<Triple<Real, Integer, Rational>> tsFail = P.triples(
                 P.withScale(4).reals(),
                 P.integersGeometric(),
-                P.withElement(Rational.ZERO, P.negativeRationals())
+                P.rangeDown(Rational.ZERO)
         );
         for (Triple<Real, Integer, Rational> q : take(LIMIT, tsFail)) {
             try {
@@ -3430,7 +3424,7 @@ public class RealProperties extends QBarTestProperties {
             //noinspection SuspiciousNameCombination
             Optional<Boolean> involution = eq(negative.negate(), x, DEFAULT_RESOLUTION);
             assertTrue(x, !involution.isPresent() || involution.get());
-            Optional<Boolean> inverse = eq(x.add(negative), Rational.ZERO, DEFAULT_RESOLUTION);
+            Optional<Boolean> inverse = x.add(negative).eq(Rational.ZERO, DEFAULT_RESOLUTION);
             assertTrue(x, !inverse.isPresent() || inverse.get());
         }
 
@@ -3449,7 +3443,7 @@ public class RealProperties extends QBarTestProperties {
             assertTrue(x, !idempotent.isPresent() || idempotent.get());
             Optional<Integer> signum = abs.signum(DEFAULT_RESOLUTION);
             assertTrue(x, !signum.isPresent() || signum.get() != -1);
-            Optional<Boolean> nonNegative = ge(abs, Rational.ZERO, DEFAULT_RESOLUTION);
+            Optional<Boolean> nonNegative = abs.ge(Rational.ZERO, DEFAULT_RESOLUTION);
             assertTrue(x, !nonNegative.isPresent() || nonNegative.get());
         }
 
@@ -3488,11 +3482,7 @@ public class RealProperties extends QBarTestProperties {
             }
         }
 
-        Iterable<Pair<Real, Rational>> psFail = P.pairs(
-                P.reals(),
-                P.withElement(Rational.ZERO, P.negativeRationals())
-        );
-        for (Pair<Real, Rational> p : take(LIMIT, psFail)) {
+        for (Pair<Real, Rational> p : take(LIMIT, P.pairs(P.reals(), P.rangeDown(Rational.ZERO)))) {
             try {
                 p.a.signum(p.b);
                 fail(p);
@@ -3596,7 +3586,7 @@ public class RealProperties extends QBarTestProperties {
         }
 
         for (int i : take(LIMIT, P.integers())) {
-            Optional<Boolean> identity = eq(ONE.multiply(i), Rational.of(i), DEFAULT_RESOLUTION);
+            Optional<Boolean> identity = ONE.multiply(i).eq(Rational.of(i), DEFAULT_RESOLUTION);
             assertTrue(i, !identity.isPresent() || identity.get());
             assertTrue(i, ZERO.multiply(i) == ZERO);
         }
@@ -3607,7 +3597,7 @@ public class RealProperties extends QBarTestProperties {
         }
 
         for (int i : take(LIMIT, P.nonzeroIntegers())) {
-            Optional<Boolean> inverse = eq(of(i).invertUnsafe().multiply(i), Rational.ONE, DEFAULT_RESOLUTION);
+            Optional<Boolean> inverse = of(i).invertUnsafe().multiply(i).eq(Rational.ONE, DEFAULT_RESOLUTION);
             assertTrue(i, !inverse.isPresent() || inverse.get());
         }
 
@@ -3638,7 +3628,7 @@ public class RealProperties extends QBarTestProperties {
         }
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
-            Optional<Boolean> identity = eq(ONE.multiply(i), Rational.of(i), DEFAULT_RESOLUTION);
+            Optional<Boolean> identity = ONE.multiply(i).eq(Rational.of(i), DEFAULT_RESOLUTION);
             assertTrue(i, !identity.isPresent() || identity.get());
             assertTrue(i, ZERO.multiply(i) == ZERO);
         }
@@ -3649,7 +3639,7 @@ public class RealProperties extends QBarTestProperties {
         }
 
         for (BigInteger i : take(LIMIT, P.nonzeroBigIntegers())) {
-            Optional<Boolean> inverse = eq(of(i).invertUnsafe().multiply(i), Rational.ONE, DEFAULT_RESOLUTION);
+            Optional<Boolean> inverse = of(i).invertUnsafe().multiply(i).eq(Rational.ONE, DEFAULT_RESOLUTION);
             assertTrue(i, !inverse.isPresent() || inverse.get());
         }
 
@@ -3683,7 +3673,7 @@ public class RealProperties extends QBarTestProperties {
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            Optional<Boolean> identity = eq(ONE.multiply(r), r, DEFAULT_RESOLUTION);
+            Optional<Boolean> identity = ONE.multiply(r).eq(r, DEFAULT_RESOLUTION);
             assertTrue(r, !identity.isPresent() || identity.get());
             assertTrue(r, ZERO.multiply(r) == ZERO);
         }
@@ -3694,7 +3684,7 @@ public class RealProperties extends QBarTestProperties {
         }
 
         for (Rational r : take(LIMIT, P.nonzeroRationals())) {
-            Optional<Boolean> inverse = eq(of(r).invertUnsafe().multiply(r), Rational.ONE, DEFAULT_RESOLUTION);
+            Optional<Boolean> inverse = of(r).invertUnsafe().multiply(r).eq(Rational.ONE, DEFAULT_RESOLUTION);
             assertTrue(r, !inverse.isPresent() || inverse.get());
         }
 
@@ -3731,7 +3721,7 @@ public class RealProperties extends QBarTestProperties {
         }
 
         for (Real x : take(LIMIT, P.nonzeroReals())) {
-            Optional<Boolean> inverse = eq(x.invertUnsafe().multiply(x), Rational.ONE, DEFAULT_RESOLUTION);
+            Optional<Boolean> inverse = x.invertUnsafe().multiply(x).eq(Rational.ONE, DEFAULT_RESOLUTION);
             assertTrue(x, !inverse.isPresent() || inverse.get());
         }
 
@@ -3765,7 +3755,7 @@ public class RealProperties extends QBarTestProperties {
             //noinspection SuspiciousNameCombination
             Optional<Boolean> involution = eq(y.invertUnsafe(), x, DEFAULT_RESOLUTION);
             assertTrue(x, !involution.isPresent() || involution.get());
-            Optional<Boolean> inverse = eq(x.invertUnsafe().multiply(x), Rational.ONE, DEFAULT_RESOLUTION);
+            Optional<Boolean> inverse = x.invertUnsafe().multiply(x).eq(Rational.ONE, DEFAULT_RESOLUTION);
             assertTrue(x, !inverse.isPresent() || inverse.get());
             Optional<Integer> signum = y.signum(DEFAULT_RESOLUTION);
             assertTrue(x, !signum.isPresent() || signum.get() != 0);
@@ -3833,7 +3823,7 @@ public class RealProperties extends QBarTestProperties {
                                 )
                         )
                 ),
-                P.withElement(Rational.ZERO, P.negativeRationals())
+                P.rangeDown(Rational.ZERO)
         );
         for (Pair<Real, Rational> p : take(LIMIT, psFail)) {
             try {
@@ -3864,7 +3854,7 @@ public class RealProperties extends QBarTestProperties {
         for (int i : take(LIMIT, P.nonzeroIntegers())) {
             Optional<Boolean> inverse1 = eq(ONE.divide(i), of(i).invertUnsafe(), DEFAULT_RESOLUTION);
             assertTrue(i, !inverse1.isPresent() || inverse1.get());
-            Optional<Boolean> inverse2 = eq(of(i).divide(i), Rational.ONE, DEFAULT_RESOLUTION);
+            Optional<Boolean> inverse2 = of(i).divide(i).eq(Rational.ONE, DEFAULT_RESOLUTION);
             assertTrue(i, !inverse2.isPresent() || inverse2.get());
         }
 
@@ -3901,7 +3891,7 @@ public class RealProperties extends QBarTestProperties {
         for (BigInteger i : take(LIMIT, P.nonzeroBigIntegers())) {
             Optional<Boolean> inverse1 = eq(ONE.divide(i), of(i).invertUnsafe(), DEFAULT_RESOLUTION);
             assertTrue(i, !inverse1.isPresent() || inverse1.get());
-            Optional<Boolean> inverse2 = eq(of(i).divide(i), Rational.ONE, DEFAULT_RESOLUTION);
+            Optional<Boolean> inverse2 = of(i).divide(i).eq(Rational.ONE, DEFAULT_RESOLUTION);
             assertTrue(i, !inverse2.isPresent() || inverse2.get());
         }
 
@@ -3941,7 +3931,7 @@ public class RealProperties extends QBarTestProperties {
         for (Rational i : take(LIMIT, P.nonzeroRationals())) {
             Optional<Boolean> inverse1 = eq(ONE.divide(i), of(i).invertUnsafe(), DEFAULT_RESOLUTION);
             assertTrue(i, !inverse1.isPresent() || inverse1.get());
-            Optional<Boolean> inverse2 = eq(of(i).divide(i), Rational.ONE, DEFAULT_RESOLUTION);
+            Optional<Boolean> inverse2 = of(i).divide(i).eq(Rational.ONE, DEFAULT_RESOLUTION);
             assertTrue(i, !inverse2.isPresent() || inverse2.get());
         }
 
@@ -4040,7 +4030,7 @@ public class RealProperties extends QBarTestProperties {
                                 )
                         )
                 ),
-                P.withElement(Rational.ZERO, P.negativeRationals())
+                P.rangeDown(Rational.ZERO)
         );
         for (Triple<Real, Real, Rational> t : take(LIMIT, tsFail)) {
             try {
@@ -4431,15 +4421,376 @@ public class RealProperties extends QBarTestProperties {
 
         Iterable<Triple<Real, Integer, Rational>> tsFail = filterInfinite(
                 t -> (!t.a.isExact() || t.a.rationalValueExact().get() != Rational.ZERO) || t.b >= 0,
-                P.triples(
-                        P.withScale(4).reals(),
-                        P.withScale(4).integersGeometric(),
-                        P.withElement(Rational.ZERO, P.negativeRationals())
-                )
+                P.triples(P.withScale(4).reals(), P.withScale(4).integersGeometric(), P.rangeDown(Rational.ZERO))
         );
         for (Triple<Real, Integer, Rational> t : take(LIMIT, tsFail)) {
             try {
                 t.a.pow(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesCompareToUnsafe_Rational() {
+        initialize("compareToUnsafe(Rational)");
+        //noinspection RedundantCast
+        Iterable<Pair<Real, Rational>> ps = map(
+                p -> new Pair<>(p.b, p.a),
+                (Iterable<Pair<Rational, Real>>) P.dependentPairsInfinite(
+                        P.rationals(),
+                        r -> {
+                            Iterable<Rational> rs = filterInfinite(s -> !r.equals(s), P.rationals());
+                            return P.withScale(1).choose(
+                                    map(Algebraic::realValue, P.algebraics()),
+                                    P.choose(
+                                            Arrays.asList(
+                                                    map(Real::leftFuzzyRepresentation, rs),
+                                                    map(Real::rightFuzzyRepresentation, rs),
+                                                    map(Real::fuzzyRepresentation, rs)
+                                            )
+                                    )
+                            );
+                        }
+                )
+        );
+        for (Pair<Real, Rational> p : take(LIMIT, ps)) {
+            int c = p.a.compareToUnsafe(p.b);
+            assertTrue(p, c == -1 || c == 0 || c == 1);
+            assertEquals(c, p.a.compareToUnsafe(of(p.b)), c);
+        }
+    }
+
+    private void propertiesCompareTo_Rational_Rational() {
+        initialize("compareTo(Rational, Rational)");
+        Iterable<Triple<Real, Rational, Rational>> ts = P.triples(P.reals(), P.rationals(), P.positiveRationals());
+        for (Triple<Real, Rational, Rational> t : take(LIMIT, ts)) {
+            Optional<Integer> oc = t.a.compareTo(t.b, t.c);
+            assertEquals(t, t.a.compareTo(of(t.b), t.c), oc);
+            if (oc.isPresent()) {
+                assertEquals(t, t.a.compareToUnsafe(t.b), oc.get());
+            }
+        }
+
+        Iterable<Triple<Real, Rational, Rational>> tsFail = P.triples(
+                P.reals(),
+                P.rationals(),
+                P.rangeDown(Rational.ZERO)
+        );
+        for (Triple<Real, Rational, Rational> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.compareTo(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesEqUnsafe_Rational() {
+        initialize("eqUnsafe(Rational)");
+        //noinspection RedundantCast
+        Iterable<Pair<Real, Rational>> ps = map(
+                p -> new Pair<>(p.b, p.a),
+                (Iterable<Pair<Rational, Real>>) P.dependentPairsInfinite(
+                        P.rationals(),
+                        r -> {
+                            Iterable<Rational> rs = filterInfinite(s -> !r.equals(s), P.rationals());
+                            return P.withScale(1).choose(
+                                    map(Algebraic::realValue, P.algebraics()),
+                                    P.choose(
+                                            Arrays.asList(
+                                                    map(Real::leftFuzzyRepresentation, rs),
+                                                    map(Real::rightFuzzyRepresentation, rs),
+                                                    map(Real::fuzzyRepresentation, rs)
+                                            )
+                                    )
+                            );
+                        }
+                )
+        );
+        for (Pair<Real, Rational> p : take(LIMIT, ps)) {
+            boolean b = p.a.eqUnsafe(p.b);
+            assertEquals(p, eqUnsafe(p.a, of(p.b)), b);
+        }
+    }
+
+    private void propertiesNeUnsafe_Rational() {
+        initialize("neUnsafe(Rational)");
+        //noinspection RedundantCast
+        Iterable<Pair<Real, Rational>> ps = map(
+                p -> new Pair<>(p.b, p.a),
+                (Iterable<Pair<Rational, Real>>) P.dependentPairsInfinite(
+                        P.rationals(),
+                        r -> {
+                            Iterable<Rational> rs = filterInfinite(s -> !r.equals(s), P.rationals());
+                            return P.withScale(1).choose(
+                                    map(Algebraic::realValue, P.algebraics()),
+                                    P.choose(
+                                            Arrays.asList(
+                                                    map(Real::leftFuzzyRepresentation, rs),
+                                                    map(Real::rightFuzzyRepresentation, rs),
+                                                    map(Real::fuzzyRepresentation, rs)
+                                            )
+                                    )
+                            );
+                        }
+                )
+        );
+        for (Pair<Real, Rational> p : take(LIMIT, ps)) {
+            boolean b = p.a.neUnsafe(p.b);
+            assertEquals(p, neUnsafe(p.a, of(p.b)), b);
+        }
+    }
+
+    private void propertiesLtUnsafe_Rational() {
+        initialize("ltUnsafe(Rational)");
+        //noinspection RedundantCast
+        Iterable<Pair<Real, Rational>> ps = map(
+                p -> new Pair<>(p.b, p.a),
+                (Iterable<Pair<Rational, Real>>) P.dependentPairsInfinite(
+                        P.rationals(),
+                        r -> {
+                            Iterable<Rational> rs = filterInfinite(s -> !r.equals(s), P.rationals());
+                            return P.withScale(1).choose(
+                                    map(Algebraic::realValue, P.algebraics()),
+                                    P.choose(
+                                            Arrays.asList(
+                                                    map(Real::leftFuzzyRepresentation, rs),
+                                                    map(Real::rightFuzzyRepresentation, rs),
+                                                    map(Real::fuzzyRepresentation, rs)
+                                            )
+                                    )
+                            );
+                        }
+                )
+        );
+        for (Pair<Real, Rational> p : take(LIMIT, ps)) {
+            boolean b = p.a.ltUnsafe(p.b);
+            assertEquals(p, ltUnsafe(p.a, of(p.b)), b);
+        }
+    }
+
+    private void propertiesGtUnsafe_Rational() {
+        initialize("gtUnsafe(Rational)");
+        //noinspection RedundantCast
+        Iterable<Pair<Real, Rational>> ps = map(
+                p -> new Pair<>(p.b, p.a),
+                (Iterable<Pair<Rational, Real>>) P.dependentPairsInfinite(
+                        P.rationals(),
+                        r -> {
+                            Iterable<Rational> rs = filterInfinite(s -> !r.equals(s), P.rationals());
+                            return P.withScale(1).choose(
+                                    map(Algebraic::realValue, P.algebraics()),
+                                    P.choose(
+                                            Arrays.asList(
+                                                    map(Real::leftFuzzyRepresentation, rs),
+                                                    map(Real::rightFuzzyRepresentation, rs),
+                                                    map(Real::fuzzyRepresentation, rs)
+                                            )
+                                    )
+                            );
+                        }
+                )
+        );
+        for (Pair<Real, Rational> p : take(LIMIT, ps)) {
+            boolean b = p.a.gtUnsafe(p.b);
+            assertEquals(p, gtUnsafe(p.a, of(p.b)), b);
+        }
+    }
+
+    private void propertiesLeUnsafe_Rational() {
+        initialize("leUnsafe(Rational)");
+        //noinspection RedundantCast
+        Iterable<Pair<Real, Rational>> ps = map(
+                p -> new Pair<>(p.b, p.a),
+                (Iterable<Pair<Rational, Real>>) P.dependentPairsInfinite(
+                        P.withScale(4).rationals(),
+                        r -> {
+                            Iterable<Rational> rs = filterInfinite(s -> !r.equals(s), P.withScale(4).rationals());
+                            return P.withScale(1).choose(
+                                    map(Algebraic::realValue, P.withScale(4).algebraics()),
+                                    P.choose(
+                                            Arrays.asList(
+                                                    map(Real::leftFuzzyRepresentation, P.withScale(4).rationals()),
+                                                    map(Real::rightFuzzyRepresentation, rs),
+                                                    map(Real::fuzzyRepresentation, rs)
+                                            )
+                                    )
+                            );
+                        }
+                )
+        );
+        for (Pair<Real, Rational> p : take(LIMIT, ps)) {
+            boolean b = p.a.leUnsafe(p.b);
+            //todo assertEquals(p, leUnsafe(p.a, of(p.b)), b);
+        }
+    }
+
+    private void propertiesGeUnsafe_Rational() {
+        initialize("geUnsafe(Rational)");
+        //noinspection RedundantCast
+        Iterable<Pair<Real, Rational>> ps = map(
+                p -> new Pair<>(p.b, p.a),
+                (Iterable<Pair<Rational, Real>>) P.dependentPairsInfinite(
+                        P.withScale(4).rationals(),
+                        r -> {
+                            Iterable<Rational> rs = filterInfinite(s -> !r.equals(s), P.withScale(4).rationals());
+                            return P.withScale(1).choose(
+                                    map(Algebraic::realValue, P.withScale(4).algebraics()),
+                                    P.choose(
+                                            Arrays.asList(
+                                                    map(Real::leftFuzzyRepresentation, rs),
+                                                    map(Real::rightFuzzyRepresentation, P.withScale(4).rationals()),
+                                                    map(Real::fuzzyRepresentation, rs)
+                                            )
+                                    )
+                            );
+                        }
+                )
+        );
+        for (Pair<Real, Rational> p : take(LIMIT, ps)) {
+            boolean b = p.a.geUnsafe(p.b);
+            //todo assertEquals(p, geUnsafe(p.a, of(p.b)), b);
+        }
+    }
+
+    private void propertiesEq_Rational_Rational() {
+        initialize("eq(Rational, Rational)");
+        Iterable<Triple<Real, Rational, Rational>> ts = P.triples(P.reals(), P.rationals(), P.positiveRationals());
+        for (Triple<Real, Rational, Rational> t : take(LIMIT, ts)) {
+            Optional<Boolean> ob = t.a.eq(t.b, t.c);
+            assertEquals(t, eq(t.a, of(t.b), t.c), ob);
+            if (ob.isPresent()) {
+                assertEquals(t, t.a.eqUnsafe(t.b), ob.get());
+            }
+        }
+
+        Iterable<Triple<Real, Rational, Rational>> tsFail = P.triples(
+                P.reals(),
+                P.rationals(),
+                P.rangeDown(Rational.ZERO)
+        );
+        for (Triple<Real, Rational, Rational> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.eq(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesNe_Rational_Rational() {
+        initialize("ne(Rational, Rational)");
+        Iterable<Triple<Real, Rational, Rational>> ts = P.triples(P.reals(), P.rationals(), P.positiveRationals());
+        for (Triple<Real, Rational, Rational> t : take(LIMIT, ts)) {
+            Optional<Boolean> ob = t.a.ne(t.b, t.c);
+            assertEquals(t, ne(t.a, of(t.b), t.c), ob);
+            if (ob.isPresent()) {
+                assertEquals(t, t.a.neUnsafe(t.b), ob.get());
+            }
+        }
+
+        Iterable<Triple<Real, Rational, Rational>> tsFail = P.triples(
+                P.reals(),
+                P.rationals(),
+                P.rangeDown(Rational.ZERO)
+        );
+        for (Triple<Real, Rational, Rational> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.ne(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesLt_Rational_Rational() {
+        initialize("lt(Rational, Rational)");
+        Iterable<Triple<Real, Rational, Rational>> ts = P.triples(P.reals(), P.rationals(), P.positiveRationals());
+        for (Triple<Real, Rational, Rational> t : take(LIMIT, ts)) {
+            Optional<Boolean> ob = t.a.lt(t.b, t.c);
+            assertEquals(t, lt(t.a, of(t.b), t.c), ob);
+            if (ob.isPresent()) {
+                assertEquals(t, t.a.ltUnsafe(t.b), ob.get());
+            }
+        }
+
+        Iterable<Triple<Real, Rational, Rational>> tsFail = P.triples(
+                P.reals(),
+                P.rationals(),
+                P.rangeDown(Rational.ZERO)
+        );
+        for (Triple<Real, Rational, Rational> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.lt(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesGt_Rational_Rational() {
+        initialize("gt(Rational, Rational)");
+        Iterable<Triple<Real, Rational, Rational>> ts = P.triples(P.reals(), P.rationals(), P.positiveRationals());
+        for (Triple<Real, Rational, Rational> t : take(LIMIT, ts)) {
+            Optional<Boolean> ob = t.a.gt(t.b, t.c);
+            assertEquals(t, gt(t.a, of(t.b), t.c), ob);
+            if (ob.isPresent()) {
+                assertEquals(t, t.a.gtUnsafe(t.b), ob.get());
+            }
+        }
+
+        Iterable<Triple<Real, Rational, Rational>> tsFail = P.triples(
+                P.reals(),
+                P.rationals(),
+                P.rangeDown(Rational.ZERO)
+        );
+        for (Triple<Real, Rational, Rational> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.gt(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesLe_Rational_Rational() {
+        initialize("le(Rational, Rational)");
+        Iterable<Triple<Real, Rational, Rational>> ts = P.triples(P.reals(), P.rationals(), P.positiveRationals());
+        for (Triple<Real, Rational, Rational> t : take(LIMIT, ts)) {
+            Optional<Boolean> ob = t.a.le(t.b, t.c);
+            //todo assertEquals(t, le(t.a, of(t.b), t.c), ob);
+            if (ob.isPresent()) {
+                assertEquals(t, t.a.leUnsafe(t.b), ob.get());
+            }
+        }
+
+        Iterable<Triple<Real, Rational, Rational>> tsFail = P.triples(
+                P.reals(),
+                P.rationals(),
+                P.rangeDown(Rational.ZERO)
+        );
+        for (Triple<Real, Rational, Rational> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.le(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesGe_Rational_Rational() {
+        initialize("ge(Rational, Rational)");
+        Iterable<Triple<Real, Rational, Rational>> ts = P.triples(P.reals(), P.rationals(), P.positiveRationals());
+        for (Triple<Real, Rational, Rational> t : take(LIMIT, ts)) {
+            Optional<Boolean> ob = t.a.ge(t.b, t.c);
+            //todo assertEquals(t, ge(t.a, of(t.b), t.c), ob);
+            if (ob.isPresent()) {
+                assertEquals(t, t.a.geUnsafe(t.b), ob.get());
+            }
+        }
+
+        Iterable<Triple<Real, Rational, Rational>> tsFail = P.triples(
+                P.reals(),
+                P.rationals(),
+                P.rangeDown(Rational.ZERO)
+        );
+        for (Triple<Real, Rational, Rational> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.ge(t.b, t.c);
                 fail(t);
             } catch (IllegalArgumentException ignored) {}
         }

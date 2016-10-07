@@ -2069,7 +2069,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
 
         Iterable<Pair<RationalPolynomial, Rational>> psFail = P.pairs(
                 P.rationalPolynomials(),
-                P.withElement(Rational.ZERO, P.negativeRationals())
+                P.rangeDown(Rational.ZERO)
         );
         for (Pair<RationalPolynomial, Rational> p : take(LIMIT, psFail)) {
             try {

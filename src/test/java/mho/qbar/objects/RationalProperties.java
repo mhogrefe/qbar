@@ -675,7 +675,7 @@ public class RationalProperties extends QBarTestProperties {
             assertEquals(r, r.isPowerOfTwo(), ONE.shiftLeft(r.binaryExponent()).equals(r));
         }
 
-        for (Rational r : take(LIMIT, P.withElement(ZERO, P.negativeRationals()))) {
+        for (Rational r : take(LIMIT, P.rangeDown(ZERO))) {
             try {
                 r.isPowerOfTwo();
                 fail(r);
@@ -692,7 +692,7 @@ public class RationalProperties extends QBarTestProperties {
             assertTrue(r, lt(of(powerOfTwo.shiftRight(1)), r));
         }
 
-        for (Rational r : take(LIMIT, P.withElement(ZERO, P.negativeRationals()))) {
+        for (Rational r : take(LIMIT, P.rangeDown(ZERO))) {
             try {
                 r.roundUpToPowerOfTwo();
                 fail(r);
@@ -768,7 +768,7 @@ public class RationalProperties extends QBarTestProperties {
             assertEquals(bf, r.binaryExponent(), r.getNumerator().bitLength() - r.getDenominator().bitLength());
         }
 
-        for (Rational r : take(LIMIT, P.withElement(ZERO, P.negativeRationals()))) {
+        for (Rational r : take(LIMIT, P.rangeDown(ZERO))) {
             try {
                 r.binaryExponent();
                 fail(r);
@@ -2937,7 +2937,7 @@ public class RationalProperties extends QBarTestProperties {
 
         Iterable<Triple<Rational, BigInteger, RoundingMode>> tsFail = P.triples(
                 P.rationals(),
-                P.withElement(BigInteger.ZERO, P.negativeBigIntegers()),
+                P.rangeDown(BigInteger.ZERO),
                 P.roundingModes()
         );
         for (Triple<Rational, BigInteger, RoundingMode> t : take(LIMIT, tsFail)) {
@@ -3022,7 +3022,7 @@ public class RationalProperties extends QBarTestProperties {
     private void propertiesPositionalNotation() {
         initialize("positionalNotation(BigInteger)");
         Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
-                P.withElement(ZERO, P.withScale(4).positiveRationals()),
+                P.withScale(4).rangeUp(ZERO),
                 P.withScale(8).rangeUp(IntegerUtils.TWO)
         );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
@@ -3226,10 +3226,7 @@ public class RationalProperties extends QBarTestProperties {
     private void propertiesDigits() {
         initialize("digits(BigInteger)");
         //noinspection Convert2MethodRef
-        Iterable<Pair<Rational, BigInteger>> ps = P.pairsSquareRootOrder(
-                P.withElement(ZERO, P.positiveRationals()),
-                P.rangeUp(IntegerUtils.TWO)
-        );
+        Iterable<Pair<Rational, BigInteger>> ps = P.pairsSquareRootOrder(P.rangeUp(ZERO), P.rangeUp(IntegerUtils.TWO));
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             Pair<List<BigInteger>, Iterable<BigInteger>> digits = p.a.digits(p.b);
             assertTrue(p, digits.a.isEmpty() || !head(digits.a).equals(BigInteger.ZERO));
@@ -3237,10 +3234,7 @@ public class RationalProperties extends QBarTestProperties {
             assertEquals(p, IntegerUtils.fromBigEndianDigits(p.b, digits.a), p.a.floor());
         }
 
-        ps = P.pairsSquareRootOrder(
-                P.withElement(ZERO, P.withScale(8).positiveRationals()),
-                P.rangeUp(IntegerUtils.TWO)
-        );
+        ps = P.pairsSquareRootOrder(P.withScale(8).rangeUp(ZERO), P.rangeUp(IntegerUtils.TWO));
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             Pair<List<BigInteger>, Iterable<BigInteger>> digits = p.a.digits(p.b);
             Pair<List<BigInteger>, Iterable<BigInteger>> alt = digits_alt(p.a, p.b);
@@ -3250,10 +3244,7 @@ public class RationalProperties extends QBarTestProperties {
 
         ps = filterInfinite(
                 q -> q.a.hasTerminatingBaseExpansion(q.b),
-                P.pairsSquareRootOrder(
-                        P.withElement(ZERO, P.positiveRationals()),
-                        P.withScale(4).rangeUp(IntegerUtils.TWO)
-                )
+                P.pairsSquareRootOrder(P.rangeUp(ZERO), P.withScale(4).rangeUp(IntegerUtils.TWO))
         );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             toList(p.a.digits(p.b).b);
@@ -3281,7 +3272,7 @@ public class RationalProperties extends QBarTestProperties {
         functions.put("standard", p -> toList(take(TINY_LIMIT, p.a.digits(p.b).b)));
         //noinspection Convert2MethodRef
         Iterable<Pair<Rational, BigInteger>> ps = P.pairsSquareRootOrder(
-                P.withElement(ZERO, P.withScale(4).positiveRationals()),
+                P.withScale(4).rangeUp(ZERO),
                 P.withScale(4).rangeUp(IntegerUtils.TWO)
         );
         compareImplementations("digits(BigInteger)", take(LIMIT, ps), functions, v -> P.reset());
@@ -3293,7 +3284,7 @@ public class RationalProperties extends QBarTestProperties {
         Iterable<Triple<BigInteger, Rational, Rational>> ts = map(
                 p -> new Triple<>(p.b, p.a.a, p.a.b),
                 P.pairsSquareRootOrder(
-                        filterInfinite(p -> p.a != p.b, P.pairs(P.withElement(ZERO, P.positiveRationals()))),
+                        filterInfinite(p -> p.a != p.b, P.pairs(P.rangeUp(ZERO))),
                         map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
                 )
         );
@@ -3313,7 +3304,7 @@ public class RationalProperties extends QBarTestProperties {
         Iterable<Triple<BigInteger, Rational, Rational>> tsFail = map(
                 p -> new Triple<>(p.b, p.a.a, p.a.b),
                 P.pairsSquareRootOrder(
-                        filterInfinite(p -> p.a != p.b, P.pairs(P.withElement(ZERO, P.positiveRationals()))),
+                        filterInfinite(p -> p.a != p.b, P.pairs(P.rangeUp(ZERO))),
                         P.rangeDown(BigInteger.valueOf(-2))
                 )
         );
@@ -3328,7 +3319,7 @@ public class RationalProperties extends QBarTestProperties {
         tsFail = map(
                 p -> new Triple<>(p.b, p.a.a, p.a.b),
                 P.pairsSquareRootOrder(
-                        P.pairs(P.withElement(ZERO, P.positiveRationals()), P.negativeRationals()),
+                        P.pairs(P.rangeUp(ZERO), P.negativeRationals()),
                         map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
                 )
         );
@@ -3343,7 +3334,7 @@ public class RationalProperties extends QBarTestProperties {
         tsFail = map(
                 p -> new Triple<>(p.b, p.a.a, p.a.b),
                 P.pairsSquareRootOrder(
-                        P.pairs(P.negativeRationals(), P.withElement(ZERO, P.positiveRationals())),
+                        P.pairs(P.negativeRationals(), P.rangeUp(ZERO)),
                         map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
                 )
         );
@@ -3356,7 +3347,7 @@ public class RationalProperties extends QBarTestProperties {
 
         //noinspection Convert2MethodRef
         Iterable<Pair<Rational, BigInteger>> psFail = P.pairsSquareRootOrder(
-                P.withElement(ZERO, P.positiveRationals()),
+                P.rangeUp(ZERO),
                 map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
         );
         for (Pair<Rational, BigInteger> p : take(LIMIT, psFail)) {

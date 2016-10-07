@@ -223,13 +223,13 @@ public final class Interval implements Comparable<Interval> {
 
     //todo
     public boolean containsUnsafe(@NotNull Real x) {
-        return (lower == null || Real.geUnsafe(x, lower)) && (upper == null || Real.leUnsafe(x, upper));
+        return (lower == null || x.geUnsafe(lower)) && (upper == null || x.leUnsafe(upper));
     }
 
     //todo
     public @NotNull Optional<Boolean> contains(@NotNull Real x, @NotNull Rational resolution) {
-        Optional<Boolean> lowerTest = lower == null ? Optional.of(true) : Real.ge(x, lower, resolution);
-        Optional<Boolean> upperTest = upper == null ? Optional.of(true) : Real.le(x, upper, resolution);
+        Optional<Boolean> lowerTest = lower == null ? Optional.of(true) : x.ge(lower, resolution);
+        Optional<Boolean> upperTest = upper == null ? Optional.of(true) : x.le(upper, resolution);
         if (lowerTest.isPresent() && !lowerTest.get() || upperTest.isPresent() && !upperTest.get()) {
             return Optional.of(false);
         } else if (!lowerTest.isPresent() || !upperTest.isPresent()) {

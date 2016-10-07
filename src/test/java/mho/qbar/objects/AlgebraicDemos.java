@@ -592,7 +592,7 @@ public class AlgebraicDemos extends QBarDemos {
     }
 
     private void demoSqrt() {
-        for (Algebraic x : take(LIMIT, P.withElement(ZERO, P.withScale(4).positiveAlgebraics()))) {
+        for (Algebraic x : take(LIMIT, P.withScale(4).rangeUp(ZERO))) {
             System.out.println("sqrt(" + x + ") = " + x.sqrt());
         }
     }
@@ -694,7 +694,7 @@ public class AlgebraicDemos extends QBarDemos {
     private void demoDigits() {
         //noinspection Convert2MethodRef
         Iterable<Pair<Algebraic, BigInteger>> ps = P.pairsSquareRootOrder(
-                P.withElement(ZERO, P.withScale(4).positiveAlgebraics()),
+                P.withScale(4).rangeUp(ZERO),
                 map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
         );
         for (Pair<Algebraic, BigInteger> p : take(LIMIT, ps)) {
@@ -708,10 +708,7 @@ public class AlgebraicDemos extends QBarDemos {
         Iterable<Triple<BigInteger, Algebraic, Algebraic>> ts = map(
                 p -> new Triple<>(p.b, p.a.a, p.a.b),
                 P.pairsSquareRootOrder(
-                        filterInfinite(
-                                p -> p.a != p.b,
-                                P.pairs(P.withElement(ZERO, P.withScale(4).positiveAlgebraics()))
-                        ),
+                        filterInfinite(p -> p.a != p.b, P.pairs(P.withScale(4).rangeUp(ZERO))),
                         map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
                 )
         );

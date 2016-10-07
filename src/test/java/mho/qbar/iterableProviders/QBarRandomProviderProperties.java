@@ -3947,7 +3947,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         for (Pair<QBarRandomProvider, Rational> p : take(SMALL_LIMIT, ps2)) {
             Iterable<Real> xs = p.a.cleanRealRangeUp(Algebraic.of(p.b));
             //noinspection SuspiciousNameCombination
-            simpleTest(p.a, xs, y -> Real.geUnsafe(y, p.b));
+            simpleTest(p.a, xs, y -> y.geUnsafe(p.b));
         }
 
         Iterable<Pair<QBarRandomProvider, Algebraic>> psFail = P.pairs(
@@ -4054,7 +4054,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         for (Pair<QBarRandomProvider, Rational> p : take(SMALL_LIMIT, ps2)) {
             Iterable<Real> xs = p.a.cleanRealRangeDown(Algebraic.of(p.b));
             //noinspection SuspiciousNameCombination
-            simpleTest(p.a, xs, y -> Real.leUnsafe(y, p.b));
+            simpleTest(p.a, xs, y -> y.leUnsafe(p.b));
         }
 
         Iterable<Pair<QBarRandomProvider, Algebraic>> psFail = P.pairs(
@@ -4174,7 +4174,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         for (Triple<QBarRandomProvider, Rational, Rational> t : take(MEDIUM_LIMIT, ts2)) {
             Iterable<Real> xs = t.a.cleanRealRange(Algebraic.of(t.b), Algebraic.of(t.c));
             //noinspection SuspiciousNameCombination
-            simpleTest(t.a, xs, y -> Real.geUnsafe(y, t.b) && Real.leUnsafe(y, t.c));
+            simpleTest(t.a, xs, y -> y.geUnsafe(t.b) && y.leUnsafe(t.c));
         }
 
         Iterable<Triple<QBarRandomProvider, Algebraic, Algebraic>> tsFail = filterInfinite(
@@ -4548,7 +4548,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
                         s -> s.getScale() > 0,
                         P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
                 ),
-                P.withElement(0, P.negativeIntegersGeometric())
+                P.rangeDownGeometric(0)
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
             try {
@@ -4627,7 +4627,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
                         s -> s.getScale() > 0,
                         P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
                 ),
-                P.withElement(0, P.negativeIntegersGeometric())
+                P.rangeDownGeometric(0)
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
             try {
@@ -4706,7 +4706,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
                         s -> s.getScale() > 0,
                         P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
                 ),
-                P.withElement(0, P.negativeIntegersGeometric())
+                P.rangeDownGeometric(0)
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
             try {
@@ -4785,7 +4785,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
                         s -> s.getScale() > 0,
                         P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
                 ),
-                P.withElement(0, P.negativeIntegersGeometric())
+                P.rangeDownGeometric(0)
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
             try {
@@ -4864,7 +4864,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
                         s -> s.getScale() > 0,
                         P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
                 ),
-                P.withElement(0, P.negativeIntegersGeometric())
+                P.rangeDownGeometric(0)
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
             try {
