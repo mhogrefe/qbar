@@ -3932,7 +3932,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
             Iterable<Real> xs = p.a.cleanRealRangeUp(p.b);
             simpleTest(p.a, xs, y -> {
                 //noinspection SuspiciousNameCombination
-                Optional<Boolean> oc = Real.ge(y, p.b.realValue(), Real.DEFAULT_RESOLUTION);
+                Optional<Boolean> oc = y.ge(p.b.realValue(), Real.DEFAULT_RESOLUTION);
                 return !oc.isPresent() || oc.get();
             });
         }
@@ -3992,7 +3992,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
             Iterable<Real> xs = p.a.realRangeUp(p.b);
             simpleTest(p.a, xs, y -> {
                 //noinspection SuspiciousNameCombination
-                Optional<Boolean> oc = Real.ge(y, p.b.realValue(), Real.DEFAULT_RESOLUTION);
+                Optional<Boolean> oc = y.ge(p.b.realValue(), Real.DEFAULT_RESOLUTION);
                 return !oc.isPresent() || oc.get();
             });
         }
@@ -4039,7 +4039,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
             Iterable<Real> xs = p.a.cleanRealRangeDown(p.b);
             simpleTest(p.a, xs, y -> {
                 //noinspection SuspiciousNameCombination
-                Optional<Boolean> oc = Real.le(y, p.b.realValue(), Real.DEFAULT_RESOLUTION);
+                Optional<Boolean> oc = y.le(p.b.realValue(), Real.DEFAULT_RESOLUTION);
                 return !oc.isPresent() || oc.get();
             });
         }
@@ -4099,7 +4099,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
             Iterable<Real> xs = p.a.realRangeDown(p.b);
             simpleTest(p.a, xs, y -> {
                 //noinspection SuspiciousNameCombination
-                Optional<Boolean> oc = Real.le(y, p.b.realValue(), Real.DEFAULT_RESOLUTION);
+                Optional<Boolean> oc = y.le(p.b.realValue(), Real.DEFAULT_RESOLUTION);
                 return !oc.isPresent() || oc.get();
             });
         }
@@ -4150,12 +4150,12 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
             Iterable<Real> xs = t.a.cleanRealRange(t.b, t.c);
             simpleTest(t.a, xs, y -> {
                 //noinspection SuspiciousNameCombination
-                Optional<Boolean> lower = Real.ge(y, t.b.realValue(), Real.DEFAULT_RESOLUTION);
+                Optional<Boolean> lower = y.ge(t.b.realValue(), Real.DEFAULT_RESOLUTION);
                 if (lower.isPresent() && !lower.get()) {
                     return false;
                 }
                 //noinspection SuspiciousNameCombination
-                Optional<Boolean> upper = Real.le(y, t.c.realValue(), Real.DEFAULT_RESOLUTION);
+                Optional<Boolean> upper = y.le(t.c.realValue(), Real.DEFAULT_RESOLUTION);
                 return !upper.isPresent() || upper.get();
             });
         }
@@ -4249,12 +4249,12 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
             Iterable<Real> xs = t.a.realRange(t.b, t.c);
             simpleTest(t.a, xs, y -> {
                 //noinspection SuspiciousNameCombination
-                Optional<Boolean> lower = Real.ge(y, t.b.realValue(), Real.DEFAULT_RESOLUTION);
+                Optional<Boolean> lower = y.ge(t.b.realValue(), Real.DEFAULT_RESOLUTION);
                 if (lower.isPresent() && !lower.get()) {
                     return false;
                 }
                 //noinspection SuspiciousNameCombination
-                Optional<Boolean> upper = Real.le(y, t.c.realValue(), Real.DEFAULT_RESOLUTION);
+                Optional<Boolean> upper = y.le(t.c.realValue(), Real.DEFAULT_RESOLUTION);
                 return !upper.isPresent() || upper.get();
             });
         }

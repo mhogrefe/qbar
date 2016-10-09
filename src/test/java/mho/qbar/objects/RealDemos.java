@@ -1584,7 +1584,7 @@ public class RealDemos extends QBarDemos {
         }
     }
 
-    private void demoCompareTo_Rational() {
+    private void demoCompareTo_Rational_Rational() {
         Iterable<Triple<Real, Rational, Rational>> ts = P.triples(
                 P.withScale(4).reals(),
                 P.withScale(4).rationals(),
@@ -1751,7 +1751,7 @@ public class RealDemos extends QBarDemos {
         }
     }
 
-    private void demoEq_Rational() {
+    private void demoEq_Rational_Rational() {
         Iterable<Triple<Real, Rational, Rational>> ts = P.triples(
                 P.withScale(4).reals(),
                 P.withScale(4).rationals(),
@@ -1762,7 +1762,7 @@ public class RealDemos extends QBarDemos {
         }
     }
 
-    private void demoNe_Rational() {
+    private void demoNe_Rational_Rational() {
         Iterable<Triple<Real, Rational, Rational>> ts = P.triples(
                 P.withScale(4).reals(),
                 P.withScale(4).rationals(),
@@ -1773,7 +1773,7 @@ public class RealDemos extends QBarDemos {
         }
     }
 
-    private void demoLt_Rational() {
+    private void demoLt_Rational_Rational() {
         Iterable<Triple<Real, Rational, Rational>> ts = P.triples(
                 P.withScale(4).reals(),
                 P.withScale(4).rationals(),
@@ -1784,7 +1784,7 @@ public class RealDemos extends QBarDemos {
         }
     }
 
-    private void demoGt_Rational() {
+    private void demoGt_Rational_Rational() {
         Iterable<Triple<Real, Rational, Rational>> ts = P.triples(
                 P.withScale(4).reals(),
                 P.withScale(4).rationals(),
@@ -1795,7 +1795,7 @@ public class RealDemos extends QBarDemos {
         }
     }
 
-    private void demoLe_Rational() {
+    private void demoLe_Rational_Rational() {
         Iterable<Triple<Real, Rational, Rational>> ts = P.triples(
                 P.withScale(4).reals(),
                 P.withScale(4).rationals(),
@@ -1806,13 +1806,160 @@ public class RealDemos extends QBarDemos {
         }
     }
 
-    private void demoGe_Rational() {
+    private void demoGe_Rational_Rational() {
         Iterable<Triple<Real, Rational, Rational>> ts = P.triples(
                 P.withScale(4).reals(),
                 P.withScale(4).rationals(),
                 P.positiveRationals()
         );
         for (Triple<Real, Rational, Rational> t : take(LIMIT, ts)) {
+            System.out.println("ge(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.ge(t.b, t.c));
+        }
+    }
+
+    private void demoCompareToUnsafe_Real() {
+        Iterable<Pair<Real, Real>> ps = filterInfinite(
+                p -> p.a.eq(p.b, DEFAULT_RESOLUTION).isPresent(),
+                P.pairs(P.withScale(4).reals())
+        );
+        for (Pair<Real, Real> p : take(LIMIT, ps)) {
+            System.out.println("compareToUnsafe(" + p.a + ", " + p.b + ") = " + p.a.compareToUnsafe(p.b));
+        }
+    }
+
+    private void demoCompareTo_Real_Rational() {
+        Iterable<Triple<Real, Real, Rational>> ts = P.triples(
+                P.withScale(4).reals(),
+                P.withScale(4).reals(),
+                P.positiveRationals()
+        );
+        for (Triple<Real, Real, Rational> t : take(LIMIT, ts)) {
+            System.out.println("compareTo(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.compareTo(t.b, t.c));
+        }
+    }
+
+    private void demoEqUnsafe_Real() {
+        Iterable<Pair<Real, Real>> ps = filterInfinite(
+                p -> p.a.eq(p.b, DEFAULT_RESOLUTION).isPresent(),
+                P.pairs(P.withScale(4).reals())
+        );
+        for (Pair<Real, Real> p : take(LIMIT, ps)) {
+            System.out.println("eqUnsafe(" + p.a + ", " + p.b + ") = " + p.a.eqUnsafe(p.b));
+        }
+    }
+
+    private void demoNeUnsafe_Real() {
+        Iterable<Pair<Real, Real>> ps = filterInfinite(
+                p -> p.a.eq(p.b, DEFAULT_RESOLUTION).isPresent(),
+                P.pairs(P.withScale(4).reals())
+        );
+        for (Pair<Real, Real> p : take(LIMIT, ps)) {
+            System.out.println("neUnsafe(" + p.a + ", " + p.b + ") = " + p.a.neUnsafe(p.b));
+        }
+    }
+
+    private void demoLtUnsafe_Real() {
+        Iterable<Pair<Real, Real>> ps = filterInfinite(
+                p -> p.a.eq(p.b, DEFAULT_RESOLUTION).isPresent(),
+                P.pairs(P.withScale(4).reals())
+        );
+        for (Pair<Real, Real> p : take(LIMIT, ps)) {
+            System.out.println("ltUnsafe(" + p.a + ", " + p.b + ") = " + p.a.ltUnsafe(p.b));
+        }
+    }
+
+    private void demoGtUnsafe_Real() {
+        Iterable<Pair<Real, Real>> ps = filterInfinite(
+                p -> p.a.eq(p.b, DEFAULT_RESOLUTION).isPresent(),
+                P.pairs(P.withScale(4).reals())
+        );
+        for (Pair<Real, Real> p : take(LIMIT, ps)) {
+            System.out.println("gtUnsafe(" + p.a + ", " + p.b + ") = " + p.a.gtUnsafe(p.b));
+        }
+    }
+
+    private void demoLeUnsafe_Real() {
+        Iterable<Pair<Real, Real>> ps = filterInfinite(
+                p -> p.a.le(p.b, DEFAULT_RESOLUTION).isPresent(),
+                P.pairs(P.withScale(4).reals())
+        );
+        for (Pair<Real, Real> p : take(LIMIT, ps)) {
+            System.out.println("leUnsafe(" + p.a + ", " + p.b + ") = " + p.a.leUnsafe(p.b));
+        }
+    }
+
+    private void demoGeUnsafe_Real() {
+        Iterable<Pair<Real, Real>> ps = filterInfinite(
+                p -> p.a.ge(p.b, DEFAULT_RESOLUTION).isPresent(),
+                P.pairs(P.withScale(4).reals())
+        );
+        for (Pair<Real, Real> p : take(LIMIT, ps)) {
+            System.out.println("geUnsafe(" + p.a + ", " + p.b + ") = " + p.a.geUnsafe(p.b));
+        }
+    }
+
+    private void demoEq_Real_Rational() {
+        Iterable<Triple<Real, Real, Rational>> ts = P.triples(
+                P.withScale(4).reals(),
+                P.withScale(4).reals(),
+                P.positiveRationals()
+        );
+        for (Triple<Real, Real, Rational> t : take(LIMIT, ts)) {
+            System.out.println("eq(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.eq(t.b, t.c));
+        }
+    }
+
+    private void demoNe_Real_Rational() {
+        Iterable<Triple<Real, Real, Rational>> ts = P.triples(
+                P.withScale(4).reals(),
+                P.withScale(4).reals(),
+                P.positiveRationals()
+        );
+        for (Triple<Real, Real, Rational> t : take(LIMIT, ts)) {
+            System.out.println("ne(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.ne(t.b, t.c));
+        }
+    }
+
+    private void demoLt_Real_Rational() {
+        Iterable<Triple<Real, Real, Rational>> ts = P.triples(
+                P.withScale(4).reals(),
+                P.withScale(4).reals(),
+                P.positiveRationals()
+        );
+        for (Triple<Real, Real, Rational> t : take(LIMIT, ts)) {
+            System.out.println("lt(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.lt(t.b, t.c));
+        }
+    }
+
+    private void demoGt_Real_Rational() {
+        Iterable<Triple<Real, Real, Rational>> ts = P.triples(
+                P.withScale(4).reals(),
+                P.withScale(4).reals(),
+                P.positiveRationals()
+        );
+        for (Triple<Real, Real, Rational> t : take(LIMIT, ts)) {
+            System.out.println("gt(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.gt(t.b, t.c));
+        }
+    }
+
+    private void demoLe_Real_Rational() {
+        Iterable<Triple<Real, Real, Rational>> ts = P.triples(
+                P.withScale(4).reals(),
+                P.withScale(4).reals(),
+                P.positiveRationals()
+        );
+        for (Triple<Real, Real, Rational> t : take(LIMIT, ts)) {
+            System.out.println("le(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.le(t.b, t.c));
+        }
+    }
+
+    private void demoGe_Real_Rational() {
+        Iterable<Triple<Real, Real, Rational>> ts = P.triples(
+                P.withScale(4).reals(),
+                P.withScale(4).reals(),
+                P.positiveRationals()
+        );
+        for (Triple<Real, Real, Rational> t : take(LIMIT, ts)) {
             System.out.println("ge(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.ge(t.b, t.c));
         }
     }

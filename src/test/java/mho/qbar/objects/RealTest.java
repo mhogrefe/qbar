@@ -9537,4 +9537,2101 @@ public class RealTest {
         ge_Rational_Rational_fail_helper(E, "1/2", Rational.ZERO);
         ge_Rational_Rational_fail_helper(E, "1/2", Rational.NEGATIVE_ONE);
     }
+
+    private static void compareToUnsafe_Real_helper(@NotNull Real a, @NotNull Real b, @NotNull String output) {
+        aeq(Ordering.fromInt(a.compareToUnsafe(b)), output);
+    }
+
+    @Test
+    public void testCompareToUnsafe_Real() {
+        compareToUnsafe_Real_helper(ZERO, ZERO, "=");
+        compareToUnsafe_Real_helper(ZERO, ONE, "<");
+        compareToUnsafe_Real_helper(ZERO, NEGATIVE_FOUR_THIRDS, ">");
+        compareToUnsafe_Real_helper(ZERO, SQRT_TWO, "<");
+        compareToUnsafe_Real_helper(ZERO, E, "<");
+        compareToUnsafe_Real_helper(ZERO, PI, "<");
+
+        compareToUnsafe_Real_helper(ONE, ZERO, ">");
+        compareToUnsafe_Real_helper(ONE, ONE, "=");
+        compareToUnsafe_Real_helper(ONE, NEGATIVE_FOUR_THIRDS, ">");
+        compareToUnsafe_Real_helper(ONE, SQRT_TWO, "<");
+        compareToUnsafe_Real_helper(ONE, E, "<");
+        compareToUnsafe_Real_helper(ONE, PI, "<");
+        compareToUnsafe_Real_helper(ONE, leftFuzzyRepresentation(Rational.ZERO), ">");
+        compareToUnsafe_Real_helper(ONE, rightFuzzyRepresentation(Rational.ZERO), ">");
+        compareToUnsafe_Real_helper(ONE, fuzzyRepresentation(Rational.ZERO), ">");
+
+        compareToUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, ZERO, "<");
+        compareToUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, ONE, "<");
+        compareToUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, NEGATIVE_FOUR_THIRDS, "=");
+        compareToUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, SQRT_TWO, "<");
+        compareToUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, E, "<");
+        compareToUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, PI, "<");
+        compareToUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, leftFuzzyRepresentation(Rational.ZERO), "<");
+        compareToUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, rightFuzzyRepresentation(Rational.ZERO), "<");
+        compareToUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, fuzzyRepresentation(Rational.ZERO), "<");
+
+        compareToUnsafe_Real_helper(SQRT_TWO, ZERO, ">");
+        compareToUnsafe_Real_helper(SQRT_TWO, ONE, ">");
+        compareToUnsafe_Real_helper(SQRT_TWO, NEGATIVE_FOUR_THIRDS, ">");
+        compareToUnsafe_Real_helper(SQRT_TWO, SQRT_TWO, "=");
+        compareToUnsafe_Real_helper(SQRT_TWO, E, "<");
+        compareToUnsafe_Real_helper(SQRT_TWO, PI, "<");
+        compareToUnsafe_Real_helper(SQRT_TWO, leftFuzzyRepresentation(Rational.ZERO), ">");
+        compareToUnsafe_Real_helper(SQRT_TWO, rightFuzzyRepresentation(Rational.ZERO), ">");
+        compareToUnsafe_Real_helper(SQRT_TWO, fuzzyRepresentation(Rational.ZERO), ">");
+
+        compareToUnsafe_Real_helper(E, ZERO, ">");
+        compareToUnsafe_Real_helper(E, ONE, ">");
+        compareToUnsafe_Real_helper(E, NEGATIVE_FOUR_THIRDS, ">");
+        compareToUnsafe_Real_helper(E, SQRT_TWO, ">");
+        compareToUnsafe_Real_helper(E, E, "=");
+        compareToUnsafe_Real_helper(E, PI, "<");
+        compareToUnsafe_Real_helper(E, leftFuzzyRepresentation(Rational.ZERO), ">");
+        compareToUnsafe_Real_helper(E, rightFuzzyRepresentation(Rational.ZERO), ">");
+        compareToUnsafe_Real_helper(E, fuzzyRepresentation(Rational.ZERO), ">");
+
+        compareToUnsafe_Real_helper(PI, ZERO, ">");
+        compareToUnsafe_Real_helper(PI, ONE, ">");
+        compareToUnsafe_Real_helper(PI, NEGATIVE_FOUR_THIRDS, ">");
+        compareToUnsafe_Real_helper(PI, SQRT_TWO, ">");
+        compareToUnsafe_Real_helper(PI, E, ">");
+        compareToUnsafe_Real_helper(PI, PI, "=");
+        compareToUnsafe_Real_helper(PI, leftFuzzyRepresentation(Rational.ZERO), ">");
+        compareToUnsafe_Real_helper(PI, rightFuzzyRepresentation(Rational.ZERO), ">");
+        compareToUnsafe_Real_helper(PI, fuzzyRepresentation(Rational.ZERO), ">");
+
+        compareToUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), ONE, "<");
+        compareToUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), NEGATIVE_FOUR_THIRDS, ">");
+        compareToUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), SQRT_TWO, "<");
+        compareToUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), E, "<");
+        compareToUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), PI, "<");
+
+        compareToUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), ONE, "<");
+        compareToUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), NEGATIVE_FOUR_THIRDS, ">");
+        compareToUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), SQRT_TWO, "<");
+        compareToUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), E, "<");
+        compareToUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), PI, "<");
+
+        compareToUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), ONE, "<");
+        compareToUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), NEGATIVE_FOUR_THIRDS, ">");
+        compareToUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), SQRT_TWO, "<");
+        compareToUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), E, "<");
+        compareToUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), PI, "<");
+    }
+
+    private static void compareTo_Real_Rational_helper(
+            @NotNull Real a,
+            @NotNull Real b,
+            @NotNull Rational resolution,
+            @NotNull String output
+    ) {
+        aeq(a.compareTo(b, resolution).map(Ordering::fromInt), output);
+    }
+
+    private static void compareTo_Real_Rational_fail_helper(
+            @NotNull Real a,
+            @NotNull Real b,
+            @NotNull Rational resolution
+    ) {
+        try {
+            a.compareTo(b, resolution);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testCompareTo_Real_Rational() {
+        compareTo_Real_Rational_helper(ZERO, ZERO, DEFAULT_RESOLUTION, "Optional[=]");
+        compareTo_Real_Rational_helper(ZERO, ONE, DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Real_Rational_helper(ZERO, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[>]");
+        compareTo_Real_Rational_helper(ZERO, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Real_Rational_helper(ZERO, E, DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Real_Rational_helper(ZERO, PI, DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Real_Rational_helper(
+                ZERO,
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        compareTo_Real_Rational_helper(
+                ZERO,
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        compareTo_Real_Rational_helper(ZERO, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+
+        compareTo_Real_Rational_helper(ONE, ZERO, DEFAULT_RESOLUTION, "Optional[>]");
+        compareTo_Real_Rational_helper(ONE, ONE, DEFAULT_RESOLUTION, "Optional[=]");
+        compareTo_Real_Rational_helper(ONE, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[>]");
+        compareTo_Real_Rational_helper(ONE, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Real_Rational_helper(ONE, E, DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Real_Rational_helper(ONE, PI, DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Real_Rational_helper(ONE, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[>]");
+        compareTo_Real_Rational_helper(
+                ONE,
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[>]"
+        );
+        compareTo_Real_Rational_helper(ONE, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[>]");
+
+        compareTo_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, ZERO, DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, ONE, DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[=]");
+        compareTo_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, E, DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, PI, DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Real_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[<]"
+        );
+        compareTo_Real_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[<]"
+        );
+        compareTo_Real_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[<]"
+        );
+
+        compareTo_Real_Rational_helper(SQRT_TWO, ZERO, DEFAULT_RESOLUTION, "Optional[>]");
+        compareTo_Real_Rational_helper(SQRT_TWO, ONE, DEFAULT_RESOLUTION, "Optional[>]");
+        compareTo_Real_Rational_helper(SQRT_TWO, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[>]");
+        compareTo_Real_Rational_helper(SQRT_TWO, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[=]");
+        compareTo_Real_Rational_helper(SQRT_TWO, E, DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Real_Rational_helper(SQRT_TWO, PI, DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Real_Rational_helper(
+                SQRT_TWO,
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[>]"
+        );
+        compareTo_Real_Rational_helper(
+                SQRT_TWO,
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[>]"
+        );
+        compareTo_Real_Rational_helper(
+                SQRT_TWO,
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[>]"
+        );
+
+        compareTo_Real_Rational_helper(E, ZERO, DEFAULT_RESOLUTION, "Optional[>]");
+        compareTo_Real_Rational_helper(E, ONE, DEFAULT_RESOLUTION, "Optional[>]");
+        compareTo_Real_Rational_helper(E, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[>]");
+        compareTo_Real_Rational_helper(E, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[>]");
+        compareTo_Real_Rational_helper(E, E, DEFAULT_RESOLUTION, "Optional[=]");
+        compareTo_Real_Rational_helper(E, PI, DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Real_Rational_helper(E, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[>]");
+        compareTo_Real_Rational_helper(E, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[>]");
+        compareTo_Real_Rational_helper(E, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[>]");
+
+        compareTo_Real_Rational_helper(PI, ZERO, DEFAULT_RESOLUTION, "Optional[>]");
+        compareTo_Real_Rational_helper(PI, ONE, DEFAULT_RESOLUTION, "Optional[>]");
+        compareTo_Real_Rational_helper(PI, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[>]");
+        compareTo_Real_Rational_helper(PI, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[>]");
+        compareTo_Real_Rational_helper(PI, E, DEFAULT_RESOLUTION, "Optional[>]");
+        compareTo_Real_Rational_helper(PI, PI, DEFAULT_RESOLUTION, "Optional[=]");
+        compareTo_Real_Rational_helper(PI, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[>]");
+        compareTo_Real_Rational_helper(PI, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[>]");
+        compareTo_Real_Rational_helper(PI, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[>]");
+
+        compareTo_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                ZERO,
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        compareTo_Real_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), ONE, DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                NEGATIVE_FOUR_THIRDS,
+                DEFAULT_RESOLUTION,
+                "Optional[>]"
+        );
+        compareTo_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                SQRT_TWO,
+                DEFAULT_RESOLUTION,
+                "Optional[<]"
+        );
+        compareTo_Real_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), E, DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Real_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), PI, DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        compareTo_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        compareTo_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        compareTo_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                ZERO,
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        compareTo_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                ONE,
+                DEFAULT_RESOLUTION,
+                "Optional[<]"
+        );
+        compareTo_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                NEGATIVE_FOUR_THIRDS,
+                DEFAULT_RESOLUTION,
+                "Optional[>]"
+        );
+        compareTo_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                SQRT_TWO,
+                DEFAULT_RESOLUTION,
+                "Optional[<]"
+        );
+        compareTo_Real_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), E, DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Real_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), PI, DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        compareTo_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        compareTo_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        compareTo_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), ZERO, DEFAULT_RESOLUTION, "Optional.empty");
+        compareTo_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), ONE, DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                NEGATIVE_FOUR_THIRDS,
+                DEFAULT_RESOLUTION,
+                "Optional[>]"
+        );
+        compareTo_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                SQRT_TWO,
+                DEFAULT_RESOLUTION,
+                "Optional[<]"
+        );
+        compareTo_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), E, DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), PI, DEFAULT_RESOLUTION, "Optional[<]");
+        compareTo_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        compareTo_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        compareTo_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        compareTo_Real_Rational_helper(PI, PI.negate().negate(), DEFAULT_RESOLUTION, "Optional.empty");
+
+        compareTo_Real_Rational_fail_helper(ZERO, ZERO, Rational.ZERO);
+        compareTo_Real_Rational_fail_helper(ZERO, ZERO, Rational.NEGATIVE_ONE);
+        compareTo_Real_Rational_fail_helper(E, PI, Rational.ZERO);
+        compareTo_Real_Rational_fail_helper(E, PI, Rational.NEGATIVE_ONE);
+    }
+
+    private static void eqUnsafe_Real_helper(@NotNull Real a, @NotNull Real b, boolean output) {
+        aeq(a.eqUnsafe(b), output);
+    }
+
+    @Test
+    public void testEqUnsafe_Real() {
+        eqUnsafe_Real_helper(ZERO, ZERO, true);
+        eqUnsafe_Real_helper(ZERO, ONE, false);
+        eqUnsafe_Real_helper(ZERO, NEGATIVE_FOUR_THIRDS, false);
+        eqUnsafe_Real_helper(ZERO, SQRT_TWO, false);
+        eqUnsafe_Real_helper(ZERO, E, false);
+        eqUnsafe_Real_helper(ZERO, PI, false);
+
+        eqUnsafe_Real_helper(ONE, ZERO, false);
+        eqUnsafe_Real_helper(ONE, ONE, true);
+        eqUnsafe_Real_helper(ONE, NEGATIVE_FOUR_THIRDS, false);
+        eqUnsafe_Real_helper(ONE, SQRT_TWO, false);
+        eqUnsafe_Real_helper(ONE, E, false);
+        eqUnsafe_Real_helper(ONE, PI, false);
+        eqUnsafe_Real_helper(ONE, leftFuzzyRepresentation(Rational.ZERO), false);
+        eqUnsafe_Real_helper(ONE, rightFuzzyRepresentation(Rational.ZERO), false);
+        eqUnsafe_Real_helper(ONE, fuzzyRepresentation(Rational.ZERO), false);
+
+        eqUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, ZERO, false);
+        eqUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, ONE, false);
+        eqUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, NEGATIVE_FOUR_THIRDS, true);
+        eqUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, SQRT_TWO, false);
+        eqUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, E, false);
+        eqUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, PI, false);
+        eqUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, leftFuzzyRepresentation(Rational.ZERO), false);
+        eqUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, rightFuzzyRepresentation(Rational.ZERO), false);
+        eqUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, fuzzyRepresentation(Rational.ZERO), false);
+
+        eqUnsafe_Real_helper(SQRT_TWO, ZERO, false);
+        eqUnsafe_Real_helper(SQRT_TWO, ONE, false);
+        eqUnsafe_Real_helper(SQRT_TWO, NEGATIVE_FOUR_THIRDS, false);
+        eqUnsafe_Real_helper(SQRT_TWO, SQRT_TWO, true);
+        eqUnsafe_Real_helper(SQRT_TWO, E, false);
+        eqUnsafe_Real_helper(SQRT_TWO, PI, false);
+        eqUnsafe_Real_helper(SQRT_TWO, leftFuzzyRepresentation(Rational.ZERO), false);
+        eqUnsafe_Real_helper(SQRT_TWO, rightFuzzyRepresentation(Rational.ZERO), false);
+        eqUnsafe_Real_helper(SQRT_TWO, fuzzyRepresentation(Rational.ZERO), false);
+
+        eqUnsafe_Real_helper(E, ZERO, false);
+        eqUnsafe_Real_helper(E, ONE, false);
+        eqUnsafe_Real_helper(E, NEGATIVE_FOUR_THIRDS, false);
+        eqUnsafe_Real_helper(E, SQRT_TWO, false);
+        eqUnsafe_Real_helper(E, E, true);
+        eqUnsafe_Real_helper(E, PI, false);
+        eqUnsafe_Real_helper(E, leftFuzzyRepresentation(Rational.ZERO), false);
+        eqUnsafe_Real_helper(E, rightFuzzyRepresentation(Rational.ZERO), false);
+        eqUnsafe_Real_helper(E, fuzzyRepresentation(Rational.ZERO), false);
+
+        eqUnsafe_Real_helper(PI, ZERO, false);
+        eqUnsafe_Real_helper(PI, ONE, false);
+        eqUnsafe_Real_helper(PI, NEGATIVE_FOUR_THIRDS, false);
+        eqUnsafe_Real_helper(PI, SQRT_TWO, false);
+        eqUnsafe_Real_helper(PI, E, false);
+        eqUnsafe_Real_helper(PI, PI, true);
+        eqUnsafe_Real_helper(PI, leftFuzzyRepresentation(Rational.ZERO), false);
+        eqUnsafe_Real_helper(PI, rightFuzzyRepresentation(Rational.ZERO), false);
+        eqUnsafe_Real_helper(PI, fuzzyRepresentation(Rational.ZERO), false);
+
+        eqUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), ONE, false);
+        eqUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), NEGATIVE_FOUR_THIRDS, false);
+        eqUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), SQRT_TWO, false);
+        eqUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), E, false);
+        eqUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), PI, false);
+
+        eqUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), ONE, false);
+        eqUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), NEGATIVE_FOUR_THIRDS, false);
+        eqUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), SQRT_TWO, false);
+        eqUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), E, false);
+        eqUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), PI, false);
+
+        eqUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), ONE, false);
+        eqUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), NEGATIVE_FOUR_THIRDS, false);
+        eqUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), SQRT_TWO, false);
+        eqUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), E, false);
+        eqUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), PI, false);
+    }
+
+    private static void neUnsafe_Real_helper(@NotNull Real a, @NotNull Real b, boolean output) {
+        aeq(a.neUnsafe(b), output);
+    }
+
+    @Test
+    public void testNeUnsafe_Real() {
+        neUnsafe_Real_helper(ZERO, ZERO, false);
+        neUnsafe_Real_helper(ZERO, ONE, true);
+        neUnsafe_Real_helper(ZERO, NEGATIVE_FOUR_THIRDS, true);
+        neUnsafe_Real_helper(ZERO, SQRT_TWO, true);
+        neUnsafe_Real_helper(ZERO, E, true);
+        neUnsafe_Real_helper(ZERO, PI, true);
+
+        neUnsafe_Real_helper(ONE, ZERO, true);
+        neUnsafe_Real_helper(ONE, ONE, false);
+        neUnsafe_Real_helper(ONE, NEGATIVE_FOUR_THIRDS, true);
+        neUnsafe_Real_helper(ONE, SQRT_TWO, true);
+        neUnsafe_Real_helper(ONE, E, true);
+        neUnsafe_Real_helper(ONE, PI, true);
+        neUnsafe_Real_helper(ONE, leftFuzzyRepresentation(Rational.ZERO), true);
+        neUnsafe_Real_helper(ONE, rightFuzzyRepresentation(Rational.ZERO), true);
+        neUnsafe_Real_helper(ONE, fuzzyRepresentation(Rational.ZERO), true);
+
+        neUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, ZERO, true);
+        neUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, ONE, true);
+        neUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, NEGATIVE_FOUR_THIRDS, false);
+        neUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, SQRT_TWO, true);
+        neUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, E, true);
+        neUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, PI, true);
+        neUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, leftFuzzyRepresentation(Rational.ZERO), true);
+        neUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, rightFuzzyRepresentation(Rational.ZERO), true);
+        neUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, fuzzyRepresentation(Rational.ZERO), true);
+
+        neUnsafe_Real_helper(SQRT_TWO, ZERO, true);
+        neUnsafe_Real_helper(SQRT_TWO, ONE, true);
+        neUnsafe_Real_helper(SQRT_TWO, NEGATIVE_FOUR_THIRDS, true);
+        neUnsafe_Real_helper(SQRT_TWO, SQRT_TWO, false);
+        neUnsafe_Real_helper(SQRT_TWO, E, true);
+        neUnsafe_Real_helper(SQRT_TWO, PI, true);
+        neUnsafe_Real_helper(SQRT_TWO, leftFuzzyRepresentation(Rational.ZERO), true);
+        neUnsafe_Real_helper(SQRT_TWO, rightFuzzyRepresentation(Rational.ZERO), true);
+        neUnsafe_Real_helper(SQRT_TWO, fuzzyRepresentation(Rational.ZERO), true);
+
+        neUnsafe_Real_helper(E, ZERO, true);
+        neUnsafe_Real_helper(E, ONE, true);
+        neUnsafe_Real_helper(E, NEGATIVE_FOUR_THIRDS, true);
+        neUnsafe_Real_helper(E, SQRT_TWO, true);
+        neUnsafe_Real_helper(E, E, false);
+        neUnsafe_Real_helper(E, PI, true);
+        neUnsafe_Real_helper(E, leftFuzzyRepresentation(Rational.ZERO), true);
+        neUnsafe_Real_helper(E, rightFuzzyRepresentation(Rational.ZERO), true);
+        neUnsafe_Real_helper(E, fuzzyRepresentation(Rational.ZERO), true);
+
+        neUnsafe_Real_helper(PI, ZERO, true);
+        neUnsafe_Real_helper(PI, ONE, true);
+        neUnsafe_Real_helper(PI, NEGATIVE_FOUR_THIRDS, true);
+        neUnsafe_Real_helper(PI, SQRT_TWO, true);
+        neUnsafe_Real_helper(PI, E, true);
+        neUnsafe_Real_helper(PI, PI, false);
+        neUnsafe_Real_helper(PI, leftFuzzyRepresentation(Rational.ZERO), true);
+        neUnsafe_Real_helper(PI, rightFuzzyRepresentation(Rational.ZERO), true);
+        neUnsafe_Real_helper(PI, fuzzyRepresentation(Rational.ZERO), true);
+
+        neUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), ONE, true);
+        neUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), NEGATIVE_FOUR_THIRDS, true);
+        neUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), SQRT_TWO, true);
+        neUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), E, true);
+        neUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), PI, true);
+
+        neUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), ONE, true);
+        neUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), NEGATIVE_FOUR_THIRDS, true);
+        neUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), SQRT_TWO, true);
+        neUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), E, true);
+        neUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), PI, true);
+
+        neUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), ONE, true);
+        neUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), NEGATIVE_FOUR_THIRDS, true);
+        neUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), SQRT_TWO, true);
+        neUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), E, true);
+        neUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), PI, true);
+    }
+
+    private static void ltUnsafe_Real_helper(@NotNull Real a, @NotNull Real b, boolean output) {
+        aeq(a.ltUnsafe(b), output);
+    }
+
+    @Test
+    public void testLtUnsafe_Real() {
+        ltUnsafe_Real_helper(ZERO, ZERO, false);
+        ltUnsafe_Real_helper(ZERO, ONE, true);
+        ltUnsafe_Real_helper(ZERO, NEGATIVE_FOUR_THIRDS, false);
+        ltUnsafe_Real_helper(ZERO, SQRT_TWO, true);
+        ltUnsafe_Real_helper(ZERO, E, true);
+        ltUnsafe_Real_helper(ZERO, PI, true);
+
+        ltUnsafe_Real_helper(ONE, ZERO, false);
+        ltUnsafe_Real_helper(ONE, ONE, false);
+        ltUnsafe_Real_helper(ONE, NEGATIVE_FOUR_THIRDS, false);
+        ltUnsafe_Real_helper(ONE, SQRT_TWO, true);
+        ltUnsafe_Real_helper(ONE, E, true);
+        ltUnsafe_Real_helper(ONE, PI, true);
+        ltUnsafe_Real_helper(ONE, leftFuzzyRepresentation(Rational.ZERO), false);
+        ltUnsafe_Real_helper(ONE, rightFuzzyRepresentation(Rational.ZERO), false);
+        ltUnsafe_Real_helper(ONE, fuzzyRepresentation(Rational.ZERO), false);
+
+        ltUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, ZERO, true);
+        ltUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, ONE, true);
+        ltUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, NEGATIVE_FOUR_THIRDS, false);
+        ltUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, SQRT_TWO, true);
+        ltUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, E, true);
+        ltUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, PI, true);
+        ltUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, leftFuzzyRepresentation(Rational.ZERO), true);
+        ltUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, rightFuzzyRepresentation(Rational.ZERO), true);
+        ltUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, fuzzyRepresentation(Rational.ZERO), true);
+
+        ltUnsafe_Real_helper(SQRT_TWO, ZERO, false);
+        ltUnsafe_Real_helper(SQRT_TWO, ONE, false);
+        ltUnsafe_Real_helper(SQRT_TWO, NEGATIVE_FOUR_THIRDS, false);
+        ltUnsafe_Real_helper(SQRT_TWO, SQRT_TWO, false);
+        ltUnsafe_Real_helper(SQRT_TWO, E, true);
+        ltUnsafe_Real_helper(SQRT_TWO, PI, true);
+        ltUnsafe_Real_helper(SQRT_TWO, leftFuzzyRepresentation(Rational.ZERO), false);
+        ltUnsafe_Real_helper(SQRT_TWO, rightFuzzyRepresentation(Rational.ZERO), false);
+        ltUnsafe_Real_helper(SQRT_TWO, fuzzyRepresentation(Rational.ZERO), false);
+
+        ltUnsafe_Real_helper(E, ZERO, false);
+        ltUnsafe_Real_helper(E, ONE, false);
+        ltUnsafe_Real_helper(E, NEGATIVE_FOUR_THIRDS, false);
+        ltUnsafe_Real_helper(E, SQRT_TWO, false);
+        ltUnsafe_Real_helper(E, E, false);
+        ltUnsafe_Real_helper(E, PI, true);
+        ltUnsafe_Real_helper(E, leftFuzzyRepresentation(Rational.ZERO), false);
+        ltUnsafe_Real_helper(E, rightFuzzyRepresentation(Rational.ZERO), false);
+        ltUnsafe_Real_helper(E, fuzzyRepresentation(Rational.ZERO), false);
+
+        ltUnsafe_Real_helper(PI, ZERO, false);
+        ltUnsafe_Real_helper(PI, ONE, false);
+        ltUnsafe_Real_helper(PI, NEGATIVE_FOUR_THIRDS, false);
+        ltUnsafe_Real_helper(PI, SQRT_TWO, false);
+        ltUnsafe_Real_helper(PI, E, false);
+        ltUnsafe_Real_helper(PI, PI, false);
+        ltUnsafe_Real_helper(PI, leftFuzzyRepresentation(Rational.ZERO), false);
+        ltUnsafe_Real_helper(PI, rightFuzzyRepresentation(Rational.ZERO), false);
+        ltUnsafe_Real_helper(PI, fuzzyRepresentation(Rational.ZERO), false);
+
+        ltUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), ONE, true);
+        ltUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), NEGATIVE_FOUR_THIRDS, false);
+        ltUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), SQRT_TWO, true);
+        ltUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), E, true);
+        ltUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), PI, true);
+
+        ltUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), ONE, true);
+        ltUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), NEGATIVE_FOUR_THIRDS, false);
+        ltUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), SQRT_TWO, true);
+        ltUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), E, true);
+        ltUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), PI, true);
+
+        ltUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), ONE, true);
+        ltUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), NEGATIVE_FOUR_THIRDS, false);
+        ltUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), SQRT_TWO, true);
+        ltUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), E, true);
+        ltUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), PI, true);
+    }
+
+    private static void gtUnsafe_Real_helper(@NotNull Real a, @NotNull Real b, boolean output) {
+        aeq(a.gtUnsafe(b), output);
+    }
+
+    @Test
+    public void testGtUnsafe_Real() {
+        gtUnsafe_Real_helper(ZERO, ZERO, false);
+        gtUnsafe_Real_helper(ZERO, ONE, false);
+        gtUnsafe_Real_helper(ZERO, NEGATIVE_FOUR_THIRDS, true);
+        gtUnsafe_Real_helper(ZERO, SQRT_TWO, false);
+        gtUnsafe_Real_helper(ZERO, E, false);
+        gtUnsafe_Real_helper(ZERO, PI, false);
+
+        gtUnsafe_Real_helper(ONE, ZERO, true);
+        gtUnsafe_Real_helper(ONE, ONE, false);
+        gtUnsafe_Real_helper(ONE, NEGATIVE_FOUR_THIRDS, true);
+        gtUnsafe_Real_helper(ONE, SQRT_TWO, false);
+        gtUnsafe_Real_helper(ONE, E, false);
+        gtUnsafe_Real_helper(ONE, PI, false);
+        gtUnsafe_Real_helper(ONE, leftFuzzyRepresentation(Rational.ZERO), true);
+        gtUnsafe_Real_helper(ONE, rightFuzzyRepresentation(Rational.ZERO), true);
+        gtUnsafe_Real_helper(ONE, fuzzyRepresentation(Rational.ZERO), true);
+
+        gtUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, ZERO, false);
+        gtUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, ONE, false);
+        gtUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, NEGATIVE_FOUR_THIRDS, false);
+        gtUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, SQRT_TWO, false);
+        gtUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, E, false);
+        gtUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, PI, false);
+        gtUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, leftFuzzyRepresentation(Rational.ZERO), false);
+        gtUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, rightFuzzyRepresentation(Rational.ZERO), false);
+        gtUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, fuzzyRepresentation(Rational.ZERO), false);
+
+        gtUnsafe_Real_helper(SQRT_TWO, ZERO, true);
+        gtUnsafe_Real_helper(SQRT_TWO, ONE, true);
+        gtUnsafe_Real_helper(SQRT_TWO, NEGATIVE_FOUR_THIRDS, true);
+        gtUnsafe_Real_helper(SQRT_TWO, SQRT_TWO, false);
+        gtUnsafe_Real_helper(SQRT_TWO, E, false);
+        gtUnsafe_Real_helper(SQRT_TWO, PI, false);
+        gtUnsafe_Real_helper(SQRT_TWO, leftFuzzyRepresentation(Rational.ZERO), true);
+        gtUnsafe_Real_helper(SQRT_TWO, rightFuzzyRepresentation(Rational.ZERO), true);
+        gtUnsafe_Real_helper(SQRT_TWO, fuzzyRepresentation(Rational.ZERO), true);
+
+        gtUnsafe_Real_helper(E, ZERO, true);
+        gtUnsafe_Real_helper(E, ONE, true);
+        gtUnsafe_Real_helper(E, NEGATIVE_FOUR_THIRDS, true);
+        gtUnsafe_Real_helper(E, SQRT_TWO, true);
+        gtUnsafe_Real_helper(E, E, false);
+        gtUnsafe_Real_helper(E, PI, false);
+        gtUnsafe_Real_helper(E, leftFuzzyRepresentation(Rational.ZERO), true);
+        gtUnsafe_Real_helper(E, rightFuzzyRepresentation(Rational.ZERO), true);
+        gtUnsafe_Real_helper(E, fuzzyRepresentation(Rational.ZERO), true);
+
+        gtUnsafe_Real_helper(PI, ZERO, true);
+        gtUnsafe_Real_helper(PI, ONE, true);
+        gtUnsafe_Real_helper(PI, NEGATIVE_FOUR_THIRDS, true);
+        gtUnsafe_Real_helper(PI, SQRT_TWO, true);
+        gtUnsafe_Real_helper(PI, E, true);
+        gtUnsafe_Real_helper(PI, PI, false);
+        gtUnsafe_Real_helper(PI, leftFuzzyRepresentation(Rational.ZERO), true);
+        gtUnsafe_Real_helper(PI, rightFuzzyRepresentation(Rational.ZERO), true);
+        gtUnsafe_Real_helper(PI, fuzzyRepresentation(Rational.ZERO), true);
+
+        gtUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), ONE, false);
+        gtUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), NEGATIVE_FOUR_THIRDS, true);
+        gtUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), SQRT_TWO, false);
+        gtUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), E, false);
+        gtUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), PI, false);
+
+        gtUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), ONE, false);
+        gtUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), NEGATIVE_FOUR_THIRDS, true);
+        gtUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), SQRT_TWO, false);
+        gtUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), E, false);
+        gtUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), PI, false);
+
+        gtUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), ONE, false);
+        gtUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), NEGATIVE_FOUR_THIRDS, true);
+        gtUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), SQRT_TWO, false);
+        gtUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), E, false);
+        gtUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), PI, false);
+        gtUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), PI, false);
+    }
+
+    private static void leUnsafe_Real_helper(@NotNull Real a, @NotNull Real b, boolean output) {
+        aeq(a.leUnsafe(b), output);
+    }
+
+    @Test
+    public void testLeUnsafe_Real() {
+        leUnsafe_Real_helper(ZERO, ZERO, true);
+        leUnsafe_Real_helper(ZERO, ONE, true);
+        leUnsafe_Real_helper(ZERO, NEGATIVE_FOUR_THIRDS, false);
+        leUnsafe_Real_helper(ZERO, SQRT_TWO, true);
+        leUnsafe_Real_helper(ZERO, E, true);
+        leUnsafe_Real_helper(ZERO, PI, true);
+
+        leUnsafe_Real_helper(ONE, ZERO, false);
+        leUnsafe_Real_helper(ONE, ONE, true);
+        leUnsafe_Real_helper(ONE, NEGATIVE_FOUR_THIRDS, false);
+        leUnsafe_Real_helper(ONE, SQRT_TWO, true);
+        leUnsafe_Real_helper(ONE, E, true);
+        leUnsafe_Real_helper(ONE, PI, true);
+        leUnsafe_Real_helper(ONE, leftFuzzyRepresentation(Rational.ZERO), false);
+        leUnsafe_Real_helper(ONE, rightFuzzyRepresentation(Rational.ZERO), false);
+        leUnsafe_Real_helper(ONE, fuzzyRepresentation(Rational.ZERO), false);
+
+        leUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, ZERO, true);
+        leUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, ONE, true);
+        leUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, NEGATIVE_FOUR_THIRDS, true);
+        leUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, SQRT_TWO, true);
+        leUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, E, true);
+        leUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, PI, true);
+        leUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, leftFuzzyRepresentation(Rational.ZERO), true);
+        leUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, rightFuzzyRepresentation(Rational.ZERO), true);
+        leUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, fuzzyRepresentation(Rational.ZERO), true);
+
+        leUnsafe_Real_helper(SQRT_TWO, ZERO, false);
+        leUnsafe_Real_helper(SQRT_TWO, ONE, false);
+        leUnsafe_Real_helper(SQRT_TWO, NEGATIVE_FOUR_THIRDS, false);
+        leUnsafe_Real_helper(SQRT_TWO, SQRT_TWO, true);
+        leUnsafe_Real_helper(SQRT_TWO, E, true);
+        leUnsafe_Real_helper(SQRT_TWO, PI, true);
+        leUnsafe_Real_helper(SQRT_TWO, leftFuzzyRepresentation(Rational.ZERO), false);
+        leUnsafe_Real_helper(SQRT_TWO, rightFuzzyRepresentation(Rational.ZERO), false);
+        leUnsafe_Real_helper(SQRT_TWO, fuzzyRepresentation(Rational.ZERO), false);
+
+        leUnsafe_Real_helper(E, ZERO, false);
+        leUnsafe_Real_helper(E, ONE, false);
+        leUnsafe_Real_helper(E, NEGATIVE_FOUR_THIRDS, false);
+        leUnsafe_Real_helper(E, SQRT_TWO, false);
+        leUnsafe_Real_helper(E, E, true);
+        leUnsafe_Real_helper(E, PI, true);
+        leUnsafe_Real_helper(E, leftFuzzyRepresentation(Rational.ZERO), false);
+        leUnsafe_Real_helper(E, rightFuzzyRepresentation(Rational.ZERO), false);
+        leUnsafe_Real_helper(E, fuzzyRepresentation(Rational.ZERO), false);
+
+        leUnsafe_Real_helper(PI, ZERO, false);
+        leUnsafe_Real_helper(PI, ONE, false);
+        leUnsafe_Real_helper(PI, NEGATIVE_FOUR_THIRDS, false);
+        leUnsafe_Real_helper(PI, SQRT_TWO, false);
+        leUnsafe_Real_helper(PI, E, false);
+        leUnsafe_Real_helper(PI, PI, true);
+        leUnsafe_Real_helper(PI, leftFuzzyRepresentation(Rational.ZERO), false);
+        leUnsafe_Real_helper(PI, rightFuzzyRepresentation(Rational.ZERO), false);
+        leUnsafe_Real_helper(PI, fuzzyRepresentation(Rational.ZERO), false);
+
+        leUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), rightFuzzyRepresentation(Rational.ZERO), true);
+        leUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), ONE, true);
+        leUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), NEGATIVE_FOUR_THIRDS, false);
+        leUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), SQRT_TWO, true);
+        leUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), E, true);
+        leUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), PI, true);
+
+        leUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), ONE, true);
+        leUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), NEGATIVE_FOUR_THIRDS, false);
+        leUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), SQRT_TWO, true);
+        leUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), E, true);
+        leUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), PI, true);
+
+        leUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), ONE, true);
+        leUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), NEGATIVE_FOUR_THIRDS, false);
+        leUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), SQRT_TWO, true);
+        leUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), E, true);
+        leUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), PI, true);
+    }
+
+    private static void geUnsafe_Real_helper(@NotNull Real a, @NotNull Real b, boolean output) {
+        aeq(a.geUnsafe(b), output);
+    }
+
+    @Test
+    public void testGeUnsafe_Real() {
+        geUnsafe_Real_helper(ZERO, ZERO, true);
+        geUnsafe_Real_helper(ZERO, ONE, false);
+        geUnsafe_Real_helper(ZERO, NEGATIVE_FOUR_THIRDS, true);
+        geUnsafe_Real_helper(ZERO, SQRT_TWO, false);
+        geUnsafe_Real_helper(ZERO, E, false);
+        geUnsafe_Real_helper(ZERO, PI, false);
+
+        geUnsafe_Real_helper(ONE, ZERO, true);
+        geUnsafe_Real_helper(ONE, ONE, true);
+        geUnsafe_Real_helper(ONE, NEGATIVE_FOUR_THIRDS, true);
+        geUnsafe_Real_helper(ONE, SQRT_TWO, false);
+        geUnsafe_Real_helper(ONE, E, false);
+        geUnsafe_Real_helper(ONE, PI, false);
+        geUnsafe_Real_helper(ONE, leftFuzzyRepresentation(Rational.ZERO), true);
+        geUnsafe_Real_helper(ONE, rightFuzzyRepresentation(Rational.ZERO), true);
+        geUnsafe_Real_helper(ONE, fuzzyRepresentation(Rational.ZERO), true);
+
+        geUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, ZERO, false);
+        geUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, ONE, false);
+        geUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, NEGATIVE_FOUR_THIRDS, true);
+        geUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, SQRT_TWO, false);
+        geUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, E, false);
+        geUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, PI, false);
+        geUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, leftFuzzyRepresentation(Rational.ZERO), false);
+        geUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, rightFuzzyRepresentation(Rational.ZERO), false);
+        geUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, fuzzyRepresentation(Rational.ZERO), false);
+
+        geUnsafe_Real_helper(SQRT_TWO, ZERO, true);
+        geUnsafe_Real_helper(SQRT_TWO, ONE, true);
+        geUnsafe_Real_helper(SQRT_TWO, NEGATIVE_FOUR_THIRDS, true);
+        geUnsafe_Real_helper(SQRT_TWO, SQRT_TWO, true);
+        geUnsafe_Real_helper(SQRT_TWO, E, false);
+        geUnsafe_Real_helper(SQRT_TWO, PI, false);
+        geUnsafe_Real_helper(SQRT_TWO, leftFuzzyRepresentation(Rational.ZERO), true);
+        geUnsafe_Real_helper(SQRT_TWO, rightFuzzyRepresentation(Rational.ZERO), true);
+        geUnsafe_Real_helper(SQRT_TWO, fuzzyRepresentation(Rational.ZERO), true);
+
+        geUnsafe_Real_helper(E, ZERO, true);
+        geUnsafe_Real_helper(E, ONE, true);
+        geUnsafe_Real_helper(E, NEGATIVE_FOUR_THIRDS, true);
+        geUnsafe_Real_helper(E, SQRT_TWO, true);
+        geUnsafe_Real_helper(E, E, true);
+        geUnsafe_Real_helper(E, PI, false);
+        geUnsafe_Real_helper(E, leftFuzzyRepresentation(Rational.ZERO), true);
+        geUnsafe_Real_helper(E, rightFuzzyRepresentation(Rational.ZERO), true);
+        geUnsafe_Real_helper(E, fuzzyRepresentation(Rational.ZERO), true);
+
+        geUnsafe_Real_helper(PI, ZERO, true);
+        geUnsafe_Real_helper(PI, ONE, true);
+        geUnsafe_Real_helper(PI, NEGATIVE_FOUR_THIRDS, true);
+        geUnsafe_Real_helper(PI, SQRT_TWO, true);
+        geUnsafe_Real_helper(PI, E, true);
+        geUnsafe_Real_helper(PI, PI, true);
+        geUnsafe_Real_helper(PI, leftFuzzyRepresentation(Rational.ZERO), true);
+        geUnsafe_Real_helper(PI, rightFuzzyRepresentation(Rational.ZERO), true);
+        geUnsafe_Real_helper(PI, fuzzyRepresentation(Rational.ZERO), true);
+
+        geUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), ONE, false);
+        geUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), NEGATIVE_FOUR_THIRDS, true);
+        geUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), SQRT_TWO, false);
+        geUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), E, false);
+        geUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), PI, false);
+
+        geUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), leftFuzzyRepresentation(Rational.ZERO), true);
+        geUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), ONE, false);
+        geUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), NEGATIVE_FOUR_THIRDS, true);
+        geUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), SQRT_TWO, false);
+        geUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), E, false);
+        geUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), PI, false);
+
+        geUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), ONE, false);
+        geUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), NEGATIVE_FOUR_THIRDS, true);
+        geUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), SQRT_TWO, false);
+        geUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), E, false);
+        geUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), PI, false);
+        geUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), PI, false);
+    }
+
+    private static void eq_Real_Rational_helper(
+            @NotNull Real a,
+            @NotNull Real b,
+            @NotNull Rational resolution,
+            @NotNull String output
+    ) {
+        aeq(a.eq(b, resolution), output);
+    }
+
+    private static void eq_Real_Rational_fail_helper(@NotNull Real a, @NotNull Real b, @NotNull Rational resolution) {
+        try {
+            a.eq(b, resolution);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testEq_Real_Rational() {
+        eq_Real_Rational_helper(ZERO, ZERO, DEFAULT_RESOLUTION, "Optional[true]");
+        eq_Real_Rational_helper(ZERO, ONE, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(ZERO, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(ZERO, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(ZERO, E, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(ZERO, PI, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(ZERO, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        eq_Real_Rational_helper(ZERO, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        eq_Real_Rational_helper(ZERO, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+
+        eq_Real_Rational_helper(ONE, ZERO, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(ONE, ONE, DEFAULT_RESOLUTION, "Optional[true]");
+        eq_Real_Rational_helper(ONE, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(ONE, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(ONE, E, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(ONE, PI, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(ONE, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(ONE, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(ONE, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[false]");
+
+        eq_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, ZERO, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, ONE, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[true]");
+        eq_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, E, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, PI, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        eq_Real_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        eq_Real_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+
+        eq_Real_Rational_helper(SQRT_TWO, ZERO, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(SQRT_TWO, ONE, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(SQRT_TWO, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(SQRT_TWO, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[true]");
+        eq_Real_Rational_helper(SQRT_TWO, E, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(SQRT_TWO, PI, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(
+                SQRT_TWO,
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        eq_Real_Rational_helper(
+                SQRT_TWO,
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        eq_Real_Rational_helper(SQRT_TWO, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[false]");
+
+        eq_Real_Rational_helper(E, ZERO, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(E, ONE, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(E, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(E, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(E, E, DEFAULT_RESOLUTION, "Optional[true]");
+        eq_Real_Rational_helper(E, PI, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(E, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(E, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(E, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[false]");
+
+        eq_Real_Rational_helper(PI, ZERO, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(PI, ONE, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(PI, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(PI, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(PI, E, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(PI, PI, DEFAULT_RESOLUTION, "Optional[true]");
+        eq_Real_Rational_helper(PI, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(PI, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(PI, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[false]");
+
+        eq_Real_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), ZERO, DEFAULT_RESOLUTION, "Optional.empty");
+        eq_Real_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), ONE, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                NEGATIVE_FOUR_THIRDS,
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        eq_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                SQRT_TWO,
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        eq_Real_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), E, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), PI, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        eq_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        eq_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        eq_Real_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), ZERO, DEFAULT_RESOLUTION, "Optional.empty");
+        eq_Real_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), ONE, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                NEGATIVE_FOUR_THIRDS,
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        eq_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                SQRT_TWO,
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        eq_Real_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), E, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), PI, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        eq_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        eq_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        eq_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), ZERO, DEFAULT_RESOLUTION, "Optional.empty");
+        eq_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), ONE, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                NEGATIVE_FOUR_THIRDS,
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        eq_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), SQRT_TWO, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), E, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), PI, DEFAULT_RESOLUTION, "Optional[false]");
+        eq_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        eq_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        eq_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        eq_Real_Rational_helper(PI, PI.negate().negate(), DEFAULT_RESOLUTION, "Optional.empty");
+
+        eq_Real_Rational_fail_helper(ZERO, ZERO, Rational.ZERO);
+        eq_Real_Rational_fail_helper(ZERO, ZERO, Rational.NEGATIVE_ONE);
+        eq_Real_Rational_fail_helper(E, PI, Rational.ZERO);
+        eq_Real_Rational_fail_helper(E, PI, Rational.NEGATIVE_ONE);
+    }
+
+    private static void ne_Real_Rational_helper(
+            @NotNull Real a,
+            @NotNull Real b,
+            @NotNull Rational resolution,
+            @NotNull String output
+    ) {
+        aeq(a.ne(b, resolution), output);
+    }
+
+    private static void ne_Real_Rational_fail_helper(@NotNull Real a, @NotNull Real b, @NotNull Rational resolution) {
+        try {
+            a.ne(b, resolution);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testNe_Real_Rational() {
+        ne_Real_Rational_helper(ZERO, ZERO, DEFAULT_RESOLUTION, "Optional[false]");
+        ne_Real_Rational_helper(ZERO, ONE, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(ZERO, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(ZERO, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(ZERO, E, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(ZERO, PI, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(ZERO, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        ne_Real_Rational_helper(ZERO, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        ne_Real_Rational_helper(ZERO, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+
+        ne_Real_Rational_helper(ONE, ZERO, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(ONE, ONE, DEFAULT_RESOLUTION, "Optional[false]");
+        ne_Real_Rational_helper(ONE, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(ONE, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(ONE, E, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(ONE, PI, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(ONE, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(ONE, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(ONE, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[true]");
+
+        ne_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, ZERO, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, ONE, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[false]");
+        ne_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, E, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, PI, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        ne_Real_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        ne_Real_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+
+        ne_Real_Rational_helper(SQRT_TWO, ZERO, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(SQRT_TWO, ONE, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(SQRT_TWO, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(SQRT_TWO, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[false]");
+        ne_Real_Rational_helper(SQRT_TWO, E, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(SQRT_TWO, PI, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(
+                SQRT_TWO,
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        ne_Real_Rational_helper(
+                SQRT_TWO,
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        ne_Real_Rational_helper(SQRT_TWO, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[true]");
+
+        ne_Real_Rational_helper(E, ZERO, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(E, ONE, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(E, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(E, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(E, E, DEFAULT_RESOLUTION, "Optional[false]");
+        ne_Real_Rational_helper(E, PI, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(E, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(E, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(E, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[true]");
+
+        ne_Real_Rational_helper(PI, ZERO, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(PI, ONE, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(PI, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(PI, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(PI, E, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(PI, PI, DEFAULT_RESOLUTION, "Optional[false]");
+        ne_Real_Rational_helper(PI, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(PI, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(PI, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[true]");
+
+        ne_Real_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), ZERO, DEFAULT_RESOLUTION, "Optional.empty");
+        ne_Real_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), ONE, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                NEGATIVE_FOUR_THIRDS,
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        ne_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                SQRT_TWO,
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        ne_Real_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), E, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), PI, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        ne_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        ne_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        ne_Real_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), ZERO, DEFAULT_RESOLUTION, "Optional.empty");
+        ne_Real_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), ONE, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                NEGATIVE_FOUR_THIRDS,
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        ne_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                SQRT_TWO,
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        ne_Real_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), E, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), PI, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        ne_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        ne_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        ne_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), ZERO, DEFAULT_RESOLUTION, "Optional.empty");
+        ne_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), ONE, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                NEGATIVE_FOUR_THIRDS,
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        ne_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), SQRT_TWO, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), E, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), PI, DEFAULT_RESOLUTION, "Optional[true]");
+        ne_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        ne_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        ne_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        ne_Real_Rational_helper(PI, PI.negate().negate(), DEFAULT_RESOLUTION, "Optional.empty");
+
+        ne_Real_Rational_fail_helper(ZERO, ZERO, Rational.ZERO);
+        ne_Real_Rational_fail_helper(ZERO, ZERO, Rational.NEGATIVE_ONE);
+        ne_Real_Rational_fail_helper(E, PI, Rational.ZERO);
+        ne_Real_Rational_fail_helper(E, PI, Rational.NEGATIVE_ONE);
+    }
+
+    private static void lt_Real_Rational_helper(
+            @NotNull Real a,
+            @NotNull Real b,
+            @NotNull Rational resolution,
+            @NotNull String output
+    ) {
+        aeq(a.lt(b, resolution), output);
+    }
+
+    private static void lt_Real_Rational_fail_helper(@NotNull Real a, @NotNull Real b, @NotNull Rational resolution) {
+        try {
+            a.lt(b, resolution);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testLt_Real_Rational() {
+        lt_Real_Rational_helper(ZERO, ZERO, DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Real_Rational_helper(ZERO, ONE, DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Real_Rational_helper(ZERO, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Real_Rational_helper(ZERO, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Real_Rational_helper(ZERO, E, DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Real_Rational_helper(ZERO, PI, DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Real_Rational_helper(ZERO, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        lt_Real_Rational_helper(ZERO, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        lt_Real_Rational_helper(ZERO, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+
+        lt_Real_Rational_helper(ONE, ZERO, DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Real_Rational_helper(ONE, ONE, DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Real_Rational_helper(ONE, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Real_Rational_helper(ONE, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Real_Rational_helper(ONE, E, DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Real_Rational_helper(ONE, PI, DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Real_Rational_helper(ONE, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Real_Rational_helper(ONE, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Real_Rational_helper(ONE, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[false]");
+
+        lt_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, ZERO, DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, ONE, DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, E, DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, PI, DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Real_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        lt_Real_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        lt_Real_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+
+        lt_Real_Rational_helper(SQRT_TWO, ZERO, DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Real_Rational_helper(SQRT_TWO, ONE, DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Real_Rational_helper(SQRT_TWO, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Real_Rational_helper(SQRT_TWO, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Real_Rational_helper(SQRT_TWO, E, DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Real_Rational_helper(SQRT_TWO, PI, DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Real_Rational_helper(
+                SQRT_TWO,
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        lt_Real_Rational_helper(
+                SQRT_TWO,
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        lt_Real_Rational_helper(SQRT_TWO, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[false]");
+
+        lt_Real_Rational_helper(E, ZERO, DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Real_Rational_helper(E, ONE, DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Real_Rational_helper(E, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Real_Rational_helper(E, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Real_Rational_helper(E, E, DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Real_Rational_helper(E, PI, DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Real_Rational_helper(E, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Real_Rational_helper(E, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Real_Rational_helper(E, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[false]");
+
+        lt_Real_Rational_helper(PI, ZERO, DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Real_Rational_helper(PI, ONE, DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Real_Rational_helper(PI, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Real_Rational_helper(PI, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Real_Rational_helper(PI, E, DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Real_Rational_helper(PI, PI, DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Real_Rational_helper(PI, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Real_Rational_helper(PI, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[false]");
+        lt_Real_Rational_helper(PI, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[false]");
+
+        lt_Real_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), ZERO, DEFAULT_RESOLUTION, "Optional.empty");
+        lt_Real_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), ONE, DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                NEGATIVE_FOUR_THIRDS,
+                DEFAULT_RESOLUTION,
+                "Optional[false]");
+        lt_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                SQRT_TWO,
+                DEFAULT_RESOLUTION,
+                "Optional[true]");
+        lt_Real_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), E, DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Real_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), PI, DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        lt_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        lt_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        lt_Real_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), ZERO, DEFAULT_RESOLUTION, "Optional.empty");
+        lt_Real_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), ONE, DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                NEGATIVE_FOUR_THIRDS,
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        lt_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                SQRT_TWO,
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        lt_Real_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), E, DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Real_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), PI, DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        lt_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        lt_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        lt_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), ZERO, DEFAULT_RESOLUTION, "Optional.empty");
+        lt_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), ONE, DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                NEGATIVE_FOUR_THIRDS,
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        lt_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), SQRT_TWO, DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), E, DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), PI, DEFAULT_RESOLUTION, "Optional[true]");
+        lt_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        lt_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        lt_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        lt_Real_Rational_helper(PI, PI.negate().negate(), DEFAULT_RESOLUTION, "Optional.empty");
+
+        lt_Real_Rational_fail_helper(ZERO, ZERO, Rational.ZERO);
+        lt_Real_Rational_fail_helper(ZERO, ZERO, Rational.NEGATIVE_ONE);
+        lt_Real_Rational_fail_helper(E, PI, Rational.ZERO);
+        lt_Real_Rational_fail_helper(E, PI, Rational.NEGATIVE_ONE);
+    }
+
+    private static void gt_Real_Rational_helper(
+            @NotNull Real a,
+            @NotNull Real b,
+            @NotNull Rational resolution,
+            @NotNull String output
+    ) {
+        aeq(a.gt(b, resolution), output);
+    }
+
+    private static void gt_Real_Rational_fail_helper(@NotNull Real a, @NotNull Real b, @NotNull Rational resolution) {
+        try {
+            a.gt(b, resolution);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testGt_Real_Rational() {
+        gt_Real_Rational_helper(ZERO, ZERO, DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Real_Rational_helper(ZERO, ONE, DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Real_Rational_helper(ZERO, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[true]");
+        gt_Real_Rational_helper(ZERO, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Real_Rational_helper(ZERO, E, DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Real_Rational_helper(ZERO, PI, DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Real_Rational_helper(ZERO, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        gt_Real_Rational_helper(ZERO, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        gt_Real_Rational_helper(ZERO, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+
+        gt_Real_Rational_helper(ONE, ZERO, DEFAULT_RESOLUTION, "Optional[true]");
+        gt_Real_Rational_helper(ONE, ONE, DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Real_Rational_helper(ONE, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[true]");
+        gt_Real_Rational_helper(ONE, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Real_Rational_helper(ONE, E, DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Real_Rational_helper(ONE, PI, DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Real_Rational_helper(ONE, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[true]");
+        gt_Real_Rational_helper(ONE, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[true]");
+        gt_Real_Rational_helper(ONE, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[true]");
+
+        gt_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, ZERO, DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, ONE, DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, E, DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, PI, DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Real_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        gt_Real_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        gt_Real_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+
+        gt_Real_Rational_helper(SQRT_TWO, ZERO, DEFAULT_RESOLUTION, "Optional[true]");
+        gt_Real_Rational_helper(SQRT_TWO, ONE, DEFAULT_RESOLUTION, "Optional[true]");
+        gt_Real_Rational_helper(SQRT_TWO, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[true]");
+        gt_Real_Rational_helper(SQRT_TWO, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Real_Rational_helper(SQRT_TWO, E, DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Real_Rational_helper(SQRT_TWO, PI, DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Real_Rational_helper(
+                SQRT_TWO,
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        gt_Real_Rational_helper(
+                SQRT_TWO,
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        gt_Real_Rational_helper(SQRT_TWO, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[true]");
+
+        gt_Real_Rational_helper(E, ZERO, DEFAULT_RESOLUTION, "Optional[true]");
+        gt_Real_Rational_helper(E, ONE, DEFAULT_RESOLUTION, "Optional[true]");
+        gt_Real_Rational_helper(E, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[true]");
+        gt_Real_Rational_helper(E, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[true]");
+        gt_Real_Rational_helper(E, E, DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Real_Rational_helper(E, PI, DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Real_Rational_helper(E, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[true]");
+        gt_Real_Rational_helper(E, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[true]");
+        gt_Real_Rational_helper(E, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[true]");
+
+        gt_Real_Rational_helper(PI, ZERO, DEFAULT_RESOLUTION, "Optional[true]");
+        gt_Real_Rational_helper(PI, ONE, DEFAULT_RESOLUTION, "Optional[true]");
+        gt_Real_Rational_helper(PI, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[true]");
+        gt_Real_Rational_helper(PI, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[true]");
+        gt_Real_Rational_helper(PI, E, DEFAULT_RESOLUTION, "Optional[true]");
+        gt_Real_Rational_helper(PI, PI, DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Real_Rational_helper(PI, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[true]");
+        gt_Real_Rational_helper(PI, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[true]");
+        gt_Real_Rational_helper(PI, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[true]");
+
+        gt_Real_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), ZERO, DEFAULT_RESOLUTION, "Optional.empty");
+        gt_Real_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), ONE, DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                NEGATIVE_FOUR_THIRDS,
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        gt_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                SQRT_TWO,
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        gt_Real_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), E, DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Real_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), PI, DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        gt_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        gt_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        gt_Real_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), ZERO, DEFAULT_RESOLUTION, "Optional.empty");
+        gt_Real_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), ONE, DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                NEGATIVE_FOUR_THIRDS,
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        gt_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                SQRT_TWO,
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        gt_Real_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), E, DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Real_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), PI, DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        gt_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        gt_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        gt_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), ZERO, DEFAULT_RESOLUTION, "Optional.empty");
+        gt_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), ONE, DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                NEGATIVE_FOUR_THIRDS,
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        gt_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), SQRT_TWO, DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), E, DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), PI, DEFAULT_RESOLUTION, "Optional[false]");
+        gt_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        gt_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        gt_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        gt_Real_Rational_helper(PI, PI.negate().negate(), DEFAULT_RESOLUTION, "Optional.empty");
+
+        gt_Real_Rational_fail_helper(ZERO, ZERO, Rational.ZERO);
+        gt_Real_Rational_fail_helper(ZERO, ZERO, Rational.NEGATIVE_ONE);
+        gt_Real_Rational_fail_helper(E, PI, Rational.ZERO);
+        gt_Real_Rational_fail_helper(E, PI, Rational.NEGATIVE_ONE);
+    }
+
+    private static void le_Real_Rational_helper(
+            @NotNull Real a,
+            @NotNull Real b,
+            @NotNull Rational resolution,
+            @NotNull String output
+    ) {
+        aeq(a.le(b, resolution), output);
+    }
+
+    private static void le_Real_Rational_fail_helper(@NotNull Real a, @NotNull Real b, @NotNull Rational resolution) {
+        try {
+            a.le(b, resolution);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testLe_Real_Rational() {
+        le_Real_Rational_helper(ZERO, ZERO, DEFAULT_RESOLUTION, "Optional[true]");
+        le_Real_Rational_helper(ZERO, ONE, DEFAULT_RESOLUTION, "Optional[true]");
+        le_Real_Rational_helper(ZERO, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[false]");
+        le_Real_Rational_helper(ZERO, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[true]");
+        le_Real_Rational_helper(ZERO, E, DEFAULT_RESOLUTION, "Optional[true]");
+        le_Real_Rational_helper(ZERO, PI, DEFAULT_RESOLUTION, "Optional[true]");
+        le_Real_Rational_helper(ZERO, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        le_Real_Rational_helper(ZERO, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[true]");
+        le_Real_Rational_helper(ZERO, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+
+        le_Real_Rational_helper(ONE, ZERO, DEFAULT_RESOLUTION, "Optional[false]");
+        le_Real_Rational_helper(ONE, ONE, DEFAULT_RESOLUTION, "Optional[true]");
+        le_Real_Rational_helper(ONE, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[false]");
+        le_Real_Rational_helper(ONE, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[true]");
+        le_Real_Rational_helper(ONE, E, DEFAULT_RESOLUTION, "Optional[true]");
+        le_Real_Rational_helper(ONE, PI, DEFAULT_RESOLUTION, "Optional[true]");
+        le_Real_Rational_helper(ONE, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[false]");
+        le_Real_Rational_helper(ONE, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[false]");
+        le_Real_Rational_helper(ONE, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[false]");
+
+        le_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, ZERO, DEFAULT_RESOLUTION, "Optional[true]");
+        le_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, ONE, DEFAULT_RESOLUTION, "Optional[true]");
+        le_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[true]");
+        le_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[true]");
+        le_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, E, DEFAULT_RESOLUTION, "Optional[true]");
+        le_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, PI, DEFAULT_RESOLUTION, "Optional[true]");
+        le_Real_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        le_Real_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        le_Real_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+
+        le_Real_Rational_helper(SQRT_TWO, ZERO, DEFAULT_RESOLUTION, "Optional[false]");
+        le_Real_Rational_helper(SQRT_TWO, ONE, DEFAULT_RESOLUTION, "Optional[false]");
+        le_Real_Rational_helper(SQRT_TWO, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[false]");
+        le_Real_Rational_helper(SQRT_TWO, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[true]");
+        le_Real_Rational_helper(SQRT_TWO, E, DEFAULT_RESOLUTION, "Optional[true]");
+        le_Real_Rational_helper(SQRT_TWO, PI, DEFAULT_RESOLUTION, "Optional[true]");
+        le_Real_Rational_helper(
+                SQRT_TWO,
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        le_Real_Rational_helper(
+                SQRT_TWO,
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        le_Real_Rational_helper(SQRT_TWO, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[false]");
+
+        le_Real_Rational_helper(E, ZERO, DEFAULT_RESOLUTION, "Optional[false]");
+        le_Real_Rational_helper(E, ONE, DEFAULT_RESOLUTION, "Optional[false]");
+        le_Real_Rational_helper(E, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[false]");
+        le_Real_Rational_helper(E, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[false]");
+        le_Real_Rational_helper(E, E, DEFAULT_RESOLUTION, "Optional[true]");
+        le_Real_Rational_helper(E, PI, DEFAULT_RESOLUTION, "Optional[true]");
+        le_Real_Rational_helper(E, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[false]");
+        le_Real_Rational_helper(E, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[false]");
+        le_Real_Rational_helper(E, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[false]");
+
+        le_Real_Rational_helper(PI, ZERO, DEFAULT_RESOLUTION, "Optional[false]");
+        le_Real_Rational_helper(PI, ONE, DEFAULT_RESOLUTION, "Optional[false]");
+        le_Real_Rational_helper(PI, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[false]");
+        le_Real_Rational_helper(PI, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[false]");
+        le_Real_Rational_helper(PI, E, DEFAULT_RESOLUTION, "Optional[false]");
+        le_Real_Rational_helper(PI, PI, DEFAULT_RESOLUTION, "Optional[true]");
+        le_Real_Rational_helper(PI, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[false]");
+        le_Real_Rational_helper(PI, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[false]");
+        le_Real_Rational_helper(PI, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[false]");
+
+        le_Real_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), ZERO, DEFAULT_RESOLUTION, "Optional[true]");
+        le_Real_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), ONE, DEFAULT_RESOLUTION, "Optional[true]");
+        le_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                NEGATIVE_FOUR_THIRDS,
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        le_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                SQRT_TWO,
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        le_Real_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), E, DEFAULT_RESOLUTION, "Optional[true]");
+        le_Real_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), PI, DEFAULT_RESOLUTION, "Optional[true]");
+        le_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        le_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        le_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        le_Real_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), ZERO, DEFAULT_RESOLUTION, "Optional.empty");
+        le_Real_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), ONE, DEFAULT_RESOLUTION, "Optional[true]");
+        le_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                NEGATIVE_FOUR_THIRDS,
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        le_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                SQRT_TWO,
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        le_Real_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), E, DEFAULT_RESOLUTION, "Optional[true]");
+        le_Real_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), PI, DEFAULT_RESOLUTION, "Optional[true]");
+        le_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        le_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        le_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        le_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), ZERO, DEFAULT_RESOLUTION, "Optional.empty");
+        le_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), ONE, DEFAULT_RESOLUTION, "Optional[true]");
+        le_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                NEGATIVE_FOUR_THIRDS,
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        le_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), SQRT_TWO, DEFAULT_RESOLUTION, "Optional[true]");
+        le_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), E, DEFAULT_RESOLUTION, "Optional[true]");
+        le_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), PI, DEFAULT_RESOLUTION, "Optional[true]");
+        le_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        le_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        le_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        le_Real_Rational_helper(PI, PI.negate().negate(), DEFAULT_RESOLUTION, "Optional.empty");
+
+        le_Real_Rational_fail_helper(ZERO, ZERO, Rational.ZERO);
+        le_Real_Rational_fail_helper(ZERO, ZERO, Rational.NEGATIVE_ONE);
+        le_Real_Rational_fail_helper(E, PI, Rational.ZERO);
+        le_Real_Rational_fail_helper(E, PI, Rational.NEGATIVE_ONE);
+    }
+
+    private static void ge_Real_Rational_helper(
+            @NotNull Real a,
+            @NotNull Real b,
+            @NotNull Rational resolution,
+            @NotNull String output
+    ) {
+        aeq(a.ge(b, resolution), output);
+    }
+
+    private static void ge_Real_Rational_fail_helper(@NotNull Real a, @NotNull Real b, @NotNull Rational resolution) {
+        try {
+            a.ge(b, resolution);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testGe_Real_Rational() {
+        ge_Real_Rational_helper(ZERO, ZERO, DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Real_Rational_helper(ZERO, ONE, DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Real_Rational_helper(ZERO, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Real_Rational_helper(ZERO, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Real_Rational_helper(ZERO, E, DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Real_Rational_helper(ZERO, PI, DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Real_Rational_helper(ZERO, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Real_Rational_helper(ZERO, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        ge_Real_Rational_helper(ZERO, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+
+        ge_Real_Rational_helper(ONE, ZERO, DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Real_Rational_helper(ONE, ONE, DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Real_Rational_helper(ONE, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Real_Rational_helper(ONE, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Real_Rational_helper(ONE, E, DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Real_Rational_helper(ONE, PI, DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Real_Rational_helper(ONE, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Real_Rational_helper(ONE, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Real_Rational_helper(ONE, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[true]");
+
+        ge_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, ZERO, DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, ONE, DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, E, DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, PI, DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Real_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        ge_Real_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        ge_Real_Rational_helper(
+                NEGATIVE_FOUR_THIRDS,
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+
+        ge_Real_Rational_helper(SQRT_TWO, ZERO, DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Real_Rational_helper(SQRT_TWO, ONE, DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Real_Rational_helper(SQRT_TWO, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Real_Rational_helper(SQRT_TWO, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Real_Rational_helper(SQRT_TWO, E, DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Real_Rational_helper(SQRT_TWO, PI, DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Real_Rational_helper(
+                SQRT_TWO,
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        ge_Real_Rational_helper(
+                SQRT_TWO,
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        ge_Real_Rational_helper(SQRT_TWO, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[true]");
+
+        ge_Real_Rational_helper(E, ZERO, DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Real_Rational_helper(E, ONE, DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Real_Rational_helper(E, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Real_Rational_helper(E, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Real_Rational_helper(E, E, DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Real_Rational_helper(E, PI, DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Real_Rational_helper(E, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Real_Rational_helper(E, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Real_Rational_helper(E, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[true]");
+
+        ge_Real_Rational_helper(PI, ZERO, DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Real_Rational_helper(PI, ONE, DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Real_Rational_helper(PI, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Real_Rational_helper(PI, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Real_Rational_helper(PI, E, DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Real_Rational_helper(PI, PI, DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Real_Rational_helper(PI, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Real_Rational_helper(PI, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Real_Rational_helper(PI, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[true]");
+
+        ge_Real_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), ZERO, DEFAULT_RESOLUTION, "Optional.empty");
+        ge_Real_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), ONE, DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                NEGATIVE_FOUR_THIRDS,
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        ge_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                SQRT_TWO,
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        ge_Real_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), E, DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Real_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), PI, DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        ge_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        ge_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        ge_Real_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), ZERO, DEFAULT_RESOLUTION, "Optional[true]");
+        ge_Real_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), ONE, DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                NEGATIVE_FOUR_THIRDS,
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        ge_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                SQRT_TWO,
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        ge_Real_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), E, DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Real_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), PI, DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        ge_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        ge_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        ge_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), ZERO, DEFAULT_RESOLUTION, "Optional.empty");
+        ge_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), ONE, DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                NEGATIVE_FOUR_THIRDS,
+                DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        ge_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), SQRT_TWO, DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), E, DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), PI, DEFAULT_RESOLUTION, "Optional[false]");
+        ge_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        ge_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        ge_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        ge_Real_Rational_helper(PI, PI.negate().negate(), DEFAULT_RESOLUTION, "Optional.empty");
+
+        ge_Real_Rational_fail_helper(ZERO, ZERO, Rational.ZERO);
+        ge_Real_Rational_fail_helper(ZERO, ZERO, Rational.NEGATIVE_ONE);
+        ge_Real_Rational_fail_helper(E, PI, Rational.ZERO);
+        ge_Real_Rational_fail_helper(E, PI, Rational.NEGATIVE_ONE);
+    }
 }

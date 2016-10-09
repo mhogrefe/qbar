@@ -3588,8 +3588,59 @@ public final class Real implements Iterable<Interval> {
         throw new IllegalStateException("unreachable");
     }
 
+    /**
+     * Compares {@code this} to {@code that}, returning 1, –1, or 0 if the answer is "greater than", "less than", or
+     * "equal to", respectively. If {@code this} is equal to {@code that}, but {@code this} and {@code that} are
+     * different objects that are not both exact, this method will loop forever. To avoid this behavior, use
+     * {@link Real#compareTo(Real, Rational)} instead.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>If {@code this} is equal to {@code that}, they must be either be the same object or both must be
+     *  exact.</li>
+     *  <li>The result may be –1, 0, or 1.</li>
+     * </ul>
+     *
+     * @param that the {@code Real} to be compared with {@code this}
+     * @return {@code this} compared to {@code that}
+     */
+    public int compareToUnsafe(@NotNull Real that) {
+        if (this == that) return 0;
+        if (rational.isPresent()) return -that.compareToUnsafe(rational.get());
+        if (that.rational.isPresent()) return compareToUnsafe(that.rational.get());
+        Iterator<Interval> thisIntervals = intervals.iterator();
+        Iterator<Interval> thatIntervals = that.intervals.iterator();
+        while (true) {
+            Optional<Ordering> o = thisIntervals.next().elementCompare(thatIntervals.next());
+            if (o.isPresent()) return o.get().toInt();
+        }
+    }
+
+    /**
+     * Compares {@code this} to {@code that}, returning 1, –1, or 0 if the answer is "greater than", "less than", or
+     * "equal to", respectively. If {@code this} is equal to {@code that}, but {@code this} and {@code that} are
+     * different objects that are not both exact, this method will give up and return empty once the approximating
+     * interval's diameter is less than the specified resolution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>The result may be –1, 0, 1, or empty.</li>
+     * </ul>
+     *
+     * @param that the {@code Real} to be compared with {@code this}
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return {@code this} compared to {@code that}
+     */
     public @NotNull Optional<Integer> compareTo(@NotNull Real that, @NotNull Rational resolution) {
+        if (resolution.signum() != 1) {
+            throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
+        }
         if (this == that) return Optional.of(0);
+        if (rational.isPresent()) return that.compareTo(rational.get(), resolution).map(i -> -i);
+        if (that.rational.isPresent()) return compareTo(that.rational.get(), resolution);
         Iterator<Interval> thisIntervals = intervals.iterator();
         Iterator<Interval> thatIntervals = that.intervals.iterator();
         while (true) {
@@ -3606,64 +3657,310 @@ public final class Real implements Iterable<Interval> {
         }
     }
 
-    public int compareToUnsafe(@NotNull Real that) {
-        if (this == that) return 0;
-        if (rational.isPresent()) return -that.compareToUnsafe(rational.get());
-        if (that.rational.isPresent()) return compareToUnsafe(that.rational.get());
+    /**
+     * Determines whether {@code this} is equal to {@code that}. If {@code this} is equal to {@code that}, but
+     * {@code this} and {@code that} are different objects that are not both exact, this method will loop forever. To
+     * avoid this behavior, use {@link Real#eq(Real, Rational)} instead.
+     *
+     * <li>{@code this} may be any {@code Real}.</li>
+     * <li>{@code that} cannot be null.</li>
+     * <li>If {@code this} is equal to {@code that}, they must be either be the same object or both must be
+     *  exact.</li>
+     * <li>The result may be either {@code boolean}.</li>
+     *
+     * @param that the {@code Real} to be compared with {@code this}
+     * @return x=y
+     */
+    public boolean eqUnsafe(@NotNull Real that) {
+        return compareToUnsafe(that) == 0;
+    }
+
+    /**
+     * Determines whether {@code this} is unequal to {@code that}. If {@code this} is equal to {@code that}, but
+     * {@code this} and {@code that} are different objects that are not both exact, this method will loop forever. To
+     * avoid this behavior, use {@link Real#ne(Real, Rational)} instead.
+     *
+     * <li>{@code this} may be any {@code Real}.</li>
+     * <li>{@code that} cannot be null.</li>
+     * <li>If {@code this} is equal to {@code that}, they must be either be the same object or both must be
+     *  exact.</li>
+     * <li>The result may be either {@code boolean}.</li>
+     *
+     * @param that the {@code Real} to be compared with {@code this}
+     * @return x≠y
+     */
+    public boolean neUnsafe(@NotNull Real that) {
+        return compareToUnsafe(that) != 0;
+    }
+
+    /**
+     * Determines whether {@code this} is less than {@code that}. If {@code this} is equal to {@code that}, but
+     * {@code this} and {@code that} are different objects that are not both exact, this method will loop forever. To
+     * avoid this behavior, use {@link Real#lt(Real, Rational)} instead.
+     *
+     * <li>{@code this} may be any {@code Real}.</li>
+     * <li>{@code that} cannot be null.</li>
+     * <li>If {@code this} is equal to {@code that}, they must be either be the same object or both must be
+     *  exact.</li>
+     * <li>The result may be either {@code boolean}.</li>
+     *
+     * @param that the {@code Real} to be compared with {@code this}
+     * @return x{@literal <}y
+     */
+    public boolean ltUnsafe(@NotNull Real that) {
+        return compareToUnsafe(that) < 0;
+    }
+
+    /**
+     * Determines whether {@code this} is greater than {@code that}. If {@code this} is equal to {@code that}, but
+     * {@code this} and {@code that} are different objects that are not both exact, this method will loop forever. To
+     * avoid this behavior, use {@link Real#gt(Real, Rational)} instead.
+     *
+     * <li>{@code this} may be any {@code Real}.</li>
+     * <li>{@code that} cannot be null.</li>
+     * <li>If {@code this} is equal to {@code that}, they must be either be the same object or both must be
+     *  exact.</li>
+     * <li>The result may be either {@code boolean}.</li>
+     *
+     * @param that the {@code Real} to be compared with {@code this}
+     * @return x{@literal >}y
+     */
+    public boolean gtUnsafe(@NotNull Real that) {
+        return compareToUnsafe(that) > 0;
+    }
+
+    /**
+     * Determines whether {@code this} is less than or equal to {@code that}. If {@code this} is equal to {@code that},
+     * but {@code this} and {@code that} are different objects and {@code this} is fuzzy on the right while
+     * {@code that} is fuzzy on the left, this method will loop forever. To avoid this behavior, use
+     * {@link Real#le(Real, Rational)} instead.
+     *
+     * <li>{@code this} may be any {@code Real}.</li>
+     * <li>{@code that} cannot be null.</li>
+     * <li>If {@code this} is equal to {@code that}, they must be either be the same object or {@code this} must be
+     * non-fuzzy on the right and {@code that} must be non-fuzzy on the left.</li>
+     * <li>The result may be either {@code boolean}.</li>
+     *
+     * @param that the {@code Real} to be compared with {@code this}
+     * @return x≤y
+     */
+    public boolean leUnsafe(@NotNull Real that) {
+        if (this == that) return true;
+        if (rational.isPresent()) return that.geUnsafe(rational.get());
+        if (that.rational.isPresent()) return leUnsafe(that.rational.get());
         Iterator<Interval> thisIntervals = intervals.iterator();
         Iterator<Interval> thatIntervals = that.intervals.iterator();
         while (true) {
-            Optional<Ordering> o = thisIntervals.next().elementCompare(thatIntervals.next());
-            if (o.isPresent()) return o.get().toInt();
+            Interval thisInterval = thisIntervals.next();
+            Interval thatInterval = thatIntervals.next();
+            Optional<Rational> thisLower = thisInterval.getLower();
+            Optional<Rational> thisUpper = thisInterval.getUpper();
+            Optional<Rational> thatLower = thatInterval.getLower();
+            Optional<Rational> thatUpper = thatInterval.getUpper();
+            if (thisUpper.isPresent() && thatLower.isPresent() && Ordering.le(thisUpper.get(), thatLower.get())) {
+                return true;
+            } else if (thisLower.isPresent() && thatUpper.isPresent() &&
+                    Ordering.gt(thisLower.get(), thatUpper.get())) {
+                return false;
+            }
         }
     }
 
-    public static boolean eqUnsafe(@NotNull Real x, @NotNull Real y) {
-        return x.compareToUnsafe(y) == 0;
+    /**
+     * Determines whether {@code this} is greater than or equal to {@code that}. If {@code this} is equal to
+     * {@code that}, but {@code this} and {@code that} are different objects and {@code this} is fuzzy on the left
+     * while {@code that} is fuzzy on the right, this method will loop forever. To avoid this behavior, use
+     * {@link Real#ge(Real, Rational)} instead.
+     *
+     * <li>{@code this} may be any {@code Real}.</li>
+     * <li>{@code that} cannot be null.</li>
+     * <li>If {@code this} is equal to {@code that}, they must be either be the same object or {@code this} must be
+     * non-fuzzy on the left and {@code that} must be non-fuzzy on the right.</li>
+     * <li>The result may be either {@code boolean}.</li>
+     *
+     * @param that the {@code Real} to be compared with {@code this}
+     * @return x≥y
+     */
+    public boolean geUnsafe(@NotNull Real that) {
+        if (this == that) return true;
+        if (rational.isPresent()) return that.leUnsafe(rational.get());
+        if (that.rational.isPresent()) return geUnsafe(that.rational.get());
+        Iterator<Interval> thisIntervals = intervals.iterator();
+        Iterator<Interval> thatIntervals = that.intervals.iterator();
+        while (true) {
+            Interval thisInterval = thisIntervals.next();
+            Interval thatInterval = thatIntervals.next();
+            Optional<Rational> thisLower = thisInterval.getLower();
+            Optional<Rational> thisUpper = thisInterval.getUpper();
+            Optional<Rational> thatLower = thatInterval.getLower();
+            Optional<Rational> thatUpper = thatInterval.getUpper();
+            if (thisLower.isPresent() && thatUpper.isPresent() && Ordering.ge(thisLower.get(), thatUpper.get())) {
+                return true;
+            } else if (thisUpper.isPresent() && thatLower.isPresent() &&
+                    Ordering.lt(thisUpper.get(), thatLower.get())) {
+                return false;
+            }
+        }
     }
 
-    public static boolean neUnsafe(@NotNull Real x, @NotNull Real y) {
-        return x.compareToUnsafe(y) != 0;
+    /**
+     * Determines whether {@code this} is equal to {@code that}. If {@code this} is equal to {@code that}, but
+     * {@code this} and {@code that} are different objects that are not both exact, this method will give up and return
+     * empty once the approximating interval's diameter is less than the specified resolution.
+     *
+     * <li>{@code this} may be any {@code Real}.</li>
+     * <li>{@code that} cannot be null.</li>
+     * <li>{@code resolution} must be positive.</li>
+     * <li>The result may be either {@code boolean}.</li>
+     *
+     * @param that the {@code Real} to be compared with {@code this}
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return x=y
+     */
+    public @NotNull Optional<Boolean> eq(@NotNull Real that, @NotNull Rational resolution) {
+        return compareTo(that, resolution).map(c -> c == 0);
     }
 
-    public static boolean ltUnsafe(@NotNull Real x, @NotNull Real y) {
-        return x.compareToUnsafe(y) < 0;
+    /**
+     * Determines whether {@code this} is unequal to {@code that}. If {@code this} is equal to {@code that}, but
+     * {@code this} and {@code that} are different objects that are not both exact, this method will give up and return
+     * empty once the approximating interval's diameter is less than the specified resolution.
+     *
+     * <li>{@code this} may be any {@code Real}.</li>
+     * <li>{@code that} cannot be null.</li>
+     * <li>{@code resolution} must be positive.</li>
+     * <li>The result may be either {@code boolean}.</li>
+     *
+     * @param that the {@code Real} to be compared with {@code this}
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return x≠y
+     */
+    public @NotNull Optional<Boolean> ne(@NotNull Real that, @NotNull Rational resolution) {
+        return compareTo(that, resolution).map(c -> c != 0);
     }
 
-    public static boolean gtUnsafe(@NotNull Real x, @NotNull Real y) {
-        return x.compareToUnsafe(y) > 0;
+    /**
+     * Determines whether {@code this} is less than {@code that}. If {@code this} is equal to {@code that}, but
+     * {@code this} and {@code that} are different objects that are not both exact, this method will give up and return
+     * empty once the approximating interval's diameter is less than the specified resolution.
+     *
+     * <li>{@code this} may be any {@code Real}.</li>
+     * <li>{@code that} cannot be null.</li>
+     * <li>{@code resolution} must be positive.</li>
+     * <li>The result may be either {@code boolean}.</li>
+     *
+     * @param that the {@code Real} to be compared with {@code this}
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return x{@literal <}y
+     */
+    public @NotNull Optional<Boolean> lt(@NotNull Real that, @NotNull Rational resolution) {
+        return compareTo(that, resolution).map(c -> c < 0);
     }
 
-    public static boolean leUnsafe(@NotNull Real x, @NotNull Real y) {
-        return x.compareToUnsafe(y) <= 0;
+    /**
+     * Determines whether {@code this} is greater than {@code that}. If {@code this} is equal to {@code that}, but
+     * {@code this} and {@code that} are different objects that are not both exact, this method will give up and return
+     * empty once the approximating interval's diameter is less than the specified resolution.
+     *
+     * <li>{@code this} may be any {@code Real}.</li>
+     * <li>{@code that} cannot be null.</li>
+     * <li>{@code resolution} must be positive.</li>
+     * <li>The result may be either {@code boolean}.</li>
+     *
+     * @param that the {@code Real} to be compared with {@code this}
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return x{@literal >}y
+     */
+    public @NotNull Optional<Boolean> gt(@NotNull Real that, @NotNull Rational resolution) {
+        return compareTo(that, resolution).map(c -> c > 0);
     }
 
-    public static boolean geUnsafe(@NotNull Real x, @NotNull Real y) {
-        return x.compareToUnsafe(y) >= 0;
+    /**
+     * Determines whether {@code this} is less than or equal to {@code that}. If {@code this} is equal to {@code that},
+     * but {@code this} and {@code that} are different objects and {@code this} is fuzzy on the right while
+     * {@code that} is fuzzy on the left, this method will give up and return empty once the approximating interval's
+     * diameter is less than the specified resolution.
+     *
+     * <li>{@code this} may be any {@code Real}.</li>
+     * <li>{@code that} cannot be null.</li>
+     * <li>{@code resolution} must be positive.</li>
+     * <li>The result may be either {@code boolean}.</li>
+     *
+     * @param that the {@code Real} to be compared with {@code this}
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return x≤y
+     */
+    public @NotNull Optional<Boolean> le(@NotNull Real that, @NotNull Rational resolution) {
+        if (resolution.signum() != 1) {
+            throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
+        }
+        if (this == that) return Optional.of(true);
+        if (rational.isPresent()) return that.ge(rational.get(), resolution);
+        if (that.rational.isPresent()) return le(that.rational.get(), resolution);
+        Iterator<Interval> thisIntervals = intervals.iterator();
+        Iterator<Interval> thatIntervals = that.intervals.iterator();
+        while (true) {
+            Interval thisInterval = thisIntervals.next();
+            Interval thatInterval = thatIntervals.next();
+            Optional<Rational> thisLower = thisInterval.getLower();
+            Optional<Rational> thisUpper = thisInterval.getUpper();
+            Optional<Rational> thatLower = thatInterval.getLower();
+            Optional<Rational> thatUpper = thatInterval.getUpper();
+            if (thisUpper.isPresent() && thatLower.isPresent() && Ordering.le(thisUpper.get(), thatLower.get())) {
+                return Optional.of(true);
+            } else if (thisLower.isPresent() && thatUpper.isPresent() &&
+                    Ordering.gt(thisLower.get(), thatUpper.get())) {
+                return Optional.of(false);
+            } else if (thisLower.isPresent() && thisUpper.isPresent() && thatLower.isPresent() &&
+                    thatUpper.isPresent() && Ordering.lt(thisInterval.diameter().get(), resolution) &&
+                    Ordering.lt(thatInterval.diameter().get(), resolution)) {
+                return Optional.empty();
+            }
+        }
     }
 
-    public static @NotNull Optional<Boolean> eq(@NotNull Real x, @NotNull Real y, @NotNull Rational resolution) {
-        return x.compareTo(y, resolution).map(c -> c == 0);
-    }
-
-    public static @NotNull Optional<Boolean> ne(@NotNull Real x, @NotNull Real y, @NotNull Rational resolution) {
-        return x.compareTo(y, resolution).map(c -> c != 0);
-    }
-
-    public static @NotNull Optional<Boolean> lt(@NotNull Real x, @NotNull Real y, @NotNull Rational resolution) {
-        return x.compareTo(y, resolution).map(c -> c < 0);
-    }
-
-    public static @NotNull Optional<Boolean> gt(@NotNull Real x, @NotNull Real y, @NotNull Rational resolution) {
-        return x.compareTo(y, resolution).map(c -> c > 0);
-    }
-
-    public static @NotNull Optional<Boolean> le(@NotNull Real x, @NotNull Real y, @NotNull Rational resolution) {
-        return x.compareTo(y, resolution).map(c -> c <= 0);
-    }
-
-    public static @NotNull Optional<Boolean> ge(@NotNull Real x, @NotNull Real y, @NotNull Rational resolution) {
-        return x.compareTo(y, resolution).map(c -> c >= 0);
+    /**
+     * Determines whether {@code this} is greater than or equal to {@code that}. If {@code this} is equal to
+     * {@code that}, but {@code this} and {@code that} are different objects and {@code this} is fuzzy on the left
+     * while {@code that} is fuzzy on the right, this method will give up and return empty once the approximating
+     * interval's diameter is less than the specified resolution.
+     *
+     * <li>{@code this} may be any {@code Real}.</li>
+     * <li>{@code that} cannot be null.</li>
+     * <li>{@code resolution} must be positive.</li>
+     * <li>The result may be either {@code boolean}.</li>
+     *
+     * @param that the {@code Real} to be compared with {@code this}
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return x≥y
+     */
+    public @NotNull Optional<Boolean> ge(@NotNull Real that, @NotNull Rational resolution) {
+        if (resolution.signum() != 1) {
+            throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
+        }
+        if (this == that) return Optional.of(true);
+        if (rational.isPresent()) return that.le(rational.get(), resolution);
+        if (that.rational.isPresent()) return ge(that.rational.get(), resolution);
+        Iterator<Interval> thisIntervals = intervals.iterator();
+        Iterator<Interval> thatIntervals = that.intervals.iterator();
+        while (true) {
+            Interval thisInterval = thisIntervals.next();
+            Interval thatInterval = thatIntervals.next();
+            Optional<Rational> thisLower = thisInterval.getLower();
+            Optional<Rational> thisUpper = thisInterval.getUpper();
+            Optional<Rational> thatLower = thatInterval.getLower();
+            Optional<Rational> thatUpper = thatInterval.getUpper();
+            if (thisLower.isPresent() && thatUpper.isPresent() && Ordering.ge(thisLower.get(), thatUpper.get())) {
+                return Optional.of(true);
+            } else if (thisUpper.isPresent() && thatLower.isPresent() &&
+                    Ordering.lt(thisUpper.get(), thatLower.get())) {
+                return Optional.of(false);
+            } else if (thisLower.isPresent() && thisUpper.isPresent() && thatLower.isPresent() &&
+                    thatUpper.isPresent() && Ordering.lt(thisInterval.diameter().get(), resolution) &&
+                    Ordering.lt(thatInterval.diameter().get(), resolution)) {
+                return Optional.empty();
+            }
+        }
     }
 
     /**

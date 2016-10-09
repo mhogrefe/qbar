@@ -1072,7 +1072,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
             Iterable<Real> xs = QEP.cleanRealRangeUp(x);
             simpleTestNoUnique(x, xs, y -> {
                 //noinspection SuspiciousNameCombination
-                Optional<Boolean> oc = Real.ge(y, x.realValue(), Real.DEFAULT_RESOLUTION);
+                Optional<Boolean> oc = y.ge(x.realValue(), Real.DEFAULT_RESOLUTION);
                 return !oc.isPresent() || oc.get();
             });
         }
@@ -1090,7 +1090,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
             Iterable<Real> xs = QEP.realRangeUp(x);
             simpleTestNoUnique(x, xs, y -> {
                 //noinspection SuspiciousNameCombination
-                Optional<Boolean> oc = Real.ge(y, x.realValue(), Real.DEFAULT_RESOLUTION);
+                Optional<Boolean> oc = y.ge(x.realValue(), Real.DEFAULT_RESOLUTION);
                 return !oc.isPresent() || oc.get();
             });
         }
@@ -1102,7 +1102,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
             Iterable<Real> xs = QEP.cleanRealRangeDown(x);
             simpleTestNoUnique(x, xs, y -> {
                 //noinspection SuspiciousNameCombination
-                Optional<Boolean> oc = Real.le(y, x.realValue(), Real.DEFAULT_RESOLUTION);
+                Optional<Boolean> oc = y.le(x.realValue(), Real.DEFAULT_RESOLUTION);
                 return !oc.isPresent() || oc.get();
             });
         }
@@ -1120,7 +1120,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
             Iterable<Real> xs = QEP.realRangeDown(x);
             simpleTestNoUnique(x, xs, y -> {
                 //noinspection SuspiciousNameCombination
-                Optional<Boolean> oc = Real.le(y, x.realValue(), Real.DEFAULT_RESOLUTION);
+                Optional<Boolean> oc = y.le(x.realValue(), Real.DEFAULT_RESOLUTION);
                 return !oc.isPresent() || oc.get();
             });
         }
@@ -1132,12 +1132,12 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
             Iterable<Real> xs = QEP.cleanRealRange(p.a, p.b);
             simpleTestNoUnique(p, xs, y -> {
                 //noinspection SuspiciousNameCombination
-                Optional<Boolean> lower = Real.ge(y, p.a.realValue(), Real.DEFAULT_RESOLUTION);
+                Optional<Boolean> lower = y.ge(p.a.realValue(), Real.DEFAULT_RESOLUTION);
                 if (lower.isPresent() && !lower.get()) {
                     return false;
                 }
                 //noinspection SuspiciousNameCombination
-                Optional<Boolean> upper = Real.le(y, p.b.realValue(), Real.DEFAULT_RESOLUTION);
+                Optional<Boolean> upper = y.le(p.b.realValue(), Real.DEFAULT_RESOLUTION);
                 return !upper.isPresent() || upper.get();
             });
         }
@@ -1166,12 +1166,12 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
             Iterable<Real> xs = QEP.realRange(p.a, p.b);
             simpleTestNoUnique(p, xs, y -> {
                 //noinspection SuspiciousNameCombination
-                Optional<Boolean> lower = Real.ge(y, p.a.realValue(), Real.DEFAULT_RESOLUTION);
+                Optional<Boolean> lower = y.ge(p.a.realValue(), Real.DEFAULT_RESOLUTION);
                 if (lower.isPresent() && !lower.get()) {
                     return false;
                 }
                 //noinspection SuspiciousNameCombination
-                Optional<Boolean> upper = Real.le(y, p.b.realValue(), Real.DEFAULT_RESOLUTION);
+                Optional<Boolean> upper = y.le(p.b.realValue(), Real.DEFAULT_RESOLUTION);
                 return !upper.isPresent() || upper.get();
             });
         }
