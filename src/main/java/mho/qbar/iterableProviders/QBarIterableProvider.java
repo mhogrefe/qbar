@@ -1301,6 +1301,14 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.dependentPairs(xs, f);
     }
 
+    //todo docs and matchstick
+    public @NotNull <A, B> Iterable<Pair<A, B>> dependentPairsIdentityHash(
+            @NotNull Iterable<A> xs,
+            @NotNull Function<A, Iterable<B>> f
+    ) {
+        return wheelsProvider.dependentPairsIdentityHash(xs, f);
+    }
+
     /**
      * Generates pairs of values where the second value depends on the first. There must be an infinite number of
      * possible first values, and every first value must be associated with an infinite number of possible second
@@ -1316,6 +1324,14 @@ public strictfp abstract class QBarIterableProvider {
             @NotNull Function<A, Iterable<B>> f
     ) {
         return wheelsProvider.dependentPairsInfinite(xs, f);
+    }
+
+    //todo docs and matchstick
+    public @NotNull <A, B> Iterable<Pair<A, B>> dependentPairsInfiniteIdentityHash(
+            @NotNull Iterable<A> xs,
+            @NotNull Function<A, Iterable<B>> f
+    ) {
+        return wheelsProvider.dependentPairsInfiniteIdentityHash(xs, f);
     }
 
     /**

@@ -4162,7 +4162,7 @@ public class RealProperties extends QBarTestProperties {
 
         Iterable<List<Real>> xssFail = map(
                 p -> toList(insert(p.a, p.b, null)),
-                P.dependentPairs(P.withScale(4).lists(P.reals()), xs -> P.range(0, xs.size()))
+                P.dependentPairsIdentityHash(P.withScale(4).lists(P.reals()), xs -> P.range(0, xs.size()))
         );
         for (List<Real> xs : take(LIMIT, xssFail)) {
             try {
@@ -4206,7 +4206,7 @@ public class RealProperties extends QBarTestProperties {
 
         Iterable<List<Real>> xssFail = map(
                 p -> toList(insert(p.a, p.b, null)),
-                P.dependentPairs(P.withScale(4).lists(P.reals()), xs -> P.range(0, xs.size()))
+                P.dependentPairsIdentityHash(P.withScale(4).lists(P.reals()), xs -> P.range(0, xs.size()))
         );
         for (List<Real> xs : take(LIMIT, xssFail)) {
             try {
@@ -4261,7 +4261,7 @@ public class RealProperties extends QBarTestProperties {
 
         Iterable<List<Real>> xssFail = map(
                 p -> toList(insert(p.a, p.b, null)),
-                P.dependentPairs(P.withScale(4).lists(P.reals()), xs -> P.range(0, xs.size()))
+                P.dependentPairsIdentityHash(P.withScale(4).lists(P.reals()), xs -> P.range(0, xs.size()))
         );
         for (List<Real> xs : take(LIMIT, xssFail)) {
             try {

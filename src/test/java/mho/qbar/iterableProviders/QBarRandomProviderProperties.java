@@ -4548,7 +4548,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
                         s -> s.getScale() > 0,
                         P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
                 ),
-                P.rangeDownGeometric(0)
+                P.withScale(-32).rangeDownGeometric(0)
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
             try {
@@ -4627,7 +4627,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
                         s -> s.getScale() > 0,
                         P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
                 ),
-                P.rangeDownGeometric(0)
+                P.withScale(-32).rangeDownGeometric(0)
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
             try {
@@ -4706,7 +4706,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
                         s -> s.getScale() > 0,
                         P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
                 ),
-                P.rangeDownGeometric(0)
+                P.withScale(-32).rangeDownGeometric(0)
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
             try {
@@ -4785,7 +4785,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
                         s -> s.getScale() > 0,
                         P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
                 ),
-                P.rangeDownGeometric(0)
+                P.withScale(-32).rangeDownGeometric(0)
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
             try {
@@ -4864,7 +4864,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
                         s -> s.getScale() > 0,
                         P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
                 ),
-                P.rangeDownGeometric(0)
+                P.withScale(-32).rangeDownGeometric(0)
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
             try {

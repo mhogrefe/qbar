@@ -3734,7 +3734,7 @@ public class AlgebraicProperties extends QBarTestProperties {
 
         ps = filterInfinite(
                 q -> q.a.hasTerminatingBaseExpansion(q.b),
-                P.pairsSquareRootOrder(P.withScale(1).rangeUp(ZERO), P.withScale(4).rangeUp(IntegerUtils.TWO))
+                P.pairsSquareRootOrder(P.withScale(2).rangeUp(ZERO), P.withScale(4).rangeUp(IntegerUtils.TWO))
         );
         for (Pair<Algebraic, BigInteger> p : take(LIMIT, ps)) {
             toList(p.a.digits(p.b).b);
