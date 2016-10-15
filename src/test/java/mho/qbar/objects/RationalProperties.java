@@ -3247,7 +3247,8 @@ public class RationalProperties extends QBarTestProperties {
                 P.pairsSquareRootOrder(P.rangeUp(ZERO), P.withScale(4).rangeUp(IntegerUtils.TWO))
         );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
-            toList(p.a.digits(p.b).b);
+            List<BigInteger> afterDecimal = toList(p.a.digits(p.b).b);
+            assertTrue(p, afterDecimal.isEmpty() || !last(afterDecimal).equals(BigInteger.ZERO));
         }
 
         Iterable<Pair<Rational, BigInteger>> psFail = P.pairs(P.negativeRationals(), P.rangeUp(IntegerUtils.TWO));

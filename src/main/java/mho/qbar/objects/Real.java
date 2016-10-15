@@ -106,6 +106,16 @@ public final class Real implements Iterable<Interval> {
     public static final @NotNull Real PI = ARCTAN_ONE.shiftLeft(2);
 
     /**
+     * The prime constant: the number whose nth binary digit after the decimal point is 1 if n is prime and 0
+     * otherwise. It is irrational and probably transcendental.
+     */
+    public static final @NotNull Real PRIME_CONSTANT = fromDigits(
+            IntegerUtils.TWO,
+            Collections.emptyList(),
+            map(i -> MathUtils.isPrime(i) ? BigInteger.ONE : BigInteger.ZERO, EP.rangeUpIncreasing(BigInteger.ONE))
+    );
+
+    /**
      * 2^(-100), the default resolution of those methods which give up a computation after the bounding interval
      * becomes too small.
      */
@@ -2749,11 +2759,38 @@ public final class Real implements Iterable<Interval> {
         return Optional.of(new Real(map(a -> a.powHull(p), intervals)));
     }
 
+    /**
+     * Returns the digits of (non-negative) {@code this} in a given base. The return value is a pair consisting of the
+     * digits before the decimal point (in a list) and the digits after the decimal point (in a possibly-infinite
+     * {@code Iterable}). If {@code this} is exact on the left, fuzzy on the right, and has a terminating
+     * base-{@code base} representation, the second element of the result will have infinitely many trailing zeros. If
+     * {@code this} is fuzzy on the left and has a terminating base-{@code base} representation, this method will loop
+     * forever. To prevent this behavior, use {@link Real#digits(BigInteger, Rational)} instead.
+     *
+     * <ul>
+     *  <li>{@code this} must be non-negative.</li>
+     *  <li>{@code base} must be at least 2.</li>
+     *  <li>If {@code this} has a terminating base-{@code base} expansion, {@code this} cannot be fuzzy on the
+     *  left.</li>
+     *  <li>Neither element of the result is null or contains nulls. Neither element of the result contains negative
+     *  numbers. The first element has no leading zeros. The second element does not end in infinitely many copies of
+     *  {@code base}–1. If the second element is finite, it contains no trailing zeros.</li>
+     * </ul>
+     *
+     * @param base the base of the digits
+     * @return a pair consisting of the digits before the decimal point and the digits after
+     */
     public @NotNull Pair<List<BigInteger>, Iterable<BigInteger>> digitsUnsafe(@NotNull BigInteger base) {
-        if (signumUnsafe() == -1) {
-            throw new IllegalArgumentException("this cannot be negative. Invalid this: " + this);
+        if (rational.isPresent()) {
+            return rational.get().digits(base);
+        }
+        if (Ordering.lt(base, IntegerUtils.TWO)) {
+            throw new IllegalArgumentException("base must be at least 2. Invalid base: " + base);
         }
         BigInteger floor = floorUnsafe();
+        if (floor.signum() == -1) {
+            throw new IllegalArgumentException("this cannot be negative. Invalid this: " + this);
+        }
         List<BigInteger> beforeDecimal = IntegerUtils.bigEndianDigits(base, floor);
         Iterable<BigInteger> afterDecimal = () -> new Iterator<BigInteger>() {
             Iterator<Interval> fractionIntervals = subtract(of(floor)).iterator();
@@ -2789,27 +2826,51 @@ public final class Real implements Iterable<Interval> {
         return new Pair<>(beforeDecimal, afterDecimal);
     }
 
+    /**
+     * Returns the digits of (non-negative) {@code this} in a given base. The return value is a pair consisting of the
+     * digits before the decimal point (in a list) and the digits after the decimal point. If {@code this} is an exact
+     * rational with a terminating base-{@code base} expansion, there will be finitely many digits after the decimal
+     * point, with no trailing zeros. If {@code this} is an exact rational with a non-terminating base-{@code base},
+     * there will be infinitely many digits after the decimal point. If this is irrational or fuzzy, the digits after
+     * the decimal point will end once the bounding interval decreases below the specified resolution. A trailing zero
+     * is appended to distinguish this from the rational case.
+     *
+     * <ul>
+     *  <li>{@code this} must be non-negative.</li>
+     *  <li>{@code base} must be at least 2.</li>
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>Neither element of the result is null or contains nulls. Neither element of the result contains negative
+     *  numbers, except that the last element of the second element may be –1. The first element has no leading zeros.
+     *  The second element does not end in infinitely many copies of {@code base}–1. If the second element is finite,
+     *  it contains no trailing zeros.</li>
+     * </ul>
+     *
+     * @param base the base of the digits
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return a pair consisting of the digits before the decimal point and the digits after
+     */
     public @NotNull Optional<Pair<List<BigInteger>, Iterable<BigInteger>>> digits(
             @NotNull BigInteger base,
             @NotNull Rational resolution
     ) {
-        Optional<Integer> oSignum = signum(resolution);
-        if (!oSignum.isPresent()) {
-            return Optional.empty();
+        if (resolution.signum() != 1) {
+            throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
         }
-        int signum = oSignum.get();
-        if (signum == -1) {
-            throw new IllegalArgumentException("this cannot be negative. Invalid this: " + this);
+        if (rational.isPresent()) {
+            return Optional.of(rational.get().digits(base));
         }
         Optional<BigInteger> oFloor = floor(resolution);
         if (!oFloor.isPresent()) {
             return Optional.empty();
         }
         BigInteger floor = oFloor.get();
+        if (floor.signum() == -1) {
+            throw new IllegalArgumentException("this cannot be negative. Invalid this: " + this);
+        }
         List<BigInteger> beforeDecimal = IntegerUtils.bigEndianDigits(base, floor);
         Iterable<BigInteger> afterDecimal = () -> new Iterator<BigInteger>() {
-            private final @NotNull  Iterator<Interval> fractionIntervals = subtract(of(floor)).iterator();
-            private BigInteger power = base;
+            private final @NotNull Iterator<Interval> fractionIntervals = subtract(of(floor)).iterator();
+            private @NotNull BigInteger power = base;
             private Interval interval;
             boolean aborted = false;
             {
@@ -2836,7 +2897,7 @@ public final class Real implements Iterable<Interval> {
                     } else {
                         if (Ordering.lt(interval.diameter().get(), resolution)) {
                             aborted = true;
-                            return IntegerUtils.NEGATIVE_ONE;
+                            return BigInteger.ZERO;
                         }
                         interval = fractionIntervals.next().multiply(power);
                     }
@@ -2844,6 +2905,138 @@ public final class Real implements Iterable<Interval> {
             }
         };
         return Optional.of(new Pair<>(beforeDecimal, afterDecimal));
+    }
+
+    /**
+     * Constructs a {@code Real} from a list of digits before the decimal point and a possibly-infinite
+     * {@code Iterable} of digits after the decimal point.
+     *
+     * <ul>
+     *  <li>{@code base} must be at least 2.</li>
+     *  <li>Every element of {@code beforeDecimal} must be non-negative and less than {@code base}.</li>
+     *  <li>Every element of {@code afterDecimal} must be non-negative and less than {@code base}.</li>
+     *  <li>The result is non-negative.</li>
+     * </ul>
+     *
+     * @param base the base of the digits
+     * @param beforeDecimal the digits before the decimal point
+     * @param afterDecimal the digits after the decimal point
+     * @return the {@code Real} with the specified digits
+     */
+    public static @NotNull Real fromDigits(
+            @NotNull BigInteger base,
+            @NotNull List<BigInteger> beforeDecimal,
+            @NotNull Iterable<BigInteger> afterDecimal
+    ) {
+        return new Real(() -> new Iterator<Interval>() {
+            private final @NotNull Iterator<BigInteger> digits = afterDecimal.iterator();
+            private @NotNull BigInteger accumulator = BigInteger.ZERO;
+            private @NotNull BigInteger power = BigInteger.ONE;
+            private @NotNull Optional<Interval> finalInterval = Optional.empty();
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public @NotNull Interval next() {
+                if (digits.hasNext()) {
+                    BigInteger digit = digits.next();
+                    if (digit.signum() == -1 || Ordering.ge(digit, base)) {
+                        throw new IllegalArgumentException("every digit must be at least zero and less than the base");
+                    }
+                    accumulator = accumulator.multiply(base).add(digit);
+                    power = power.multiply(base);
+                    Rational r = Rational.of(accumulator);
+                    return Interval.of(r.divide(power), r.add(Rational.ONE).divide(power));
+                } else if (finalInterval.isPresent()) {
+                    return finalInterval.get();
+                } else {
+                    finalInterval = Optional.of(Interval.of(Rational.of(accumulator).divide(power)));
+                    return finalInterval.get();
+                }
+            }
+        }).add(Rational.of(IntegerUtils.fromBigEndianDigits(base, beforeDecimal)));
+    }
+
+    /**
+     * The base-{@code base} Liouville's constant, or the sum of {@code base}<sup>–i!</sup> as i goes from 1 to
+     * infinity. Not to be confused with Liouville's numbers, of which the constants are a particular example. They are
+     * all transcendental.
+     *
+     * <ul>
+     *  <li>{@code base} must be at least 2.</li>
+     *  <li>The result is a Liouville constant.</li>
+     * </ul>
+     *
+     * @param base the base to which the negative factorials are raised.
+     * @return the base-{@code base} Liouville constant
+     */
+    public static @NotNull Real liouville(@NotNull BigInteger base) {
+        return fromDigits(base, Collections.emptyList(), () -> new Iterator<BigInteger>() {
+            private @NotNull BigInteger i = BigInteger.ONE;
+            private @NotNull BigInteger fi = BigInteger.ONE;
+            private @NotNull BigInteger nextFactorial = BigInteger.ONE;
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public @NotNull BigInteger next() {
+                if (i.equals(nextFactorial)) {
+                    i = i.add(BigInteger.ONE);
+                    fi = fi.add(BigInteger.ONE);
+                    nextFactorial = nextFactorial.multiply(fi);
+                    return BigInteger.ONE;
+                } else {
+                    i = i.add(BigInteger.ONE);
+                    return BigInteger.ZERO;
+                }
+            }
+        });
+    }
+
+    /**
+     * The base-{@code base} Champernowne constant, or the number produced by concatenating all positive integers, in
+     * order, in a particular base and placing them after the decimal point. They are all transcendental.
+     *
+     * <ul>
+     *  <li>{@code base} must be at least 2.</li>
+     *  <li>The result is a Champernowne constant.</li>
+     * </ul>
+     *
+     * @param base the base in which the positive integers are written.
+     * @return C<sub>{@code base}</sub>
+     */
+    public static @NotNull Real champernowne(@NotNull BigInteger base) {
+        return fromDigits(
+                base,
+                Collections.emptyList(),
+                concatMap(i -> IntegerUtils.bigEndianDigits(base, i), EP.rangeUpIncreasing(BigInteger.ONE))
+        );
+    }
+
+    /**
+     * The base-{@code base} Copeland–Erdős constant, or the number produced by concatenating all primes, in order, in
+     * a particular base and placing them after the decimal point. They are all irrational and probably transcendental.
+     *
+     * <ul>
+     *  <li>{@code base} must be at least 2.</li>
+     *  <li>The result is a Copeland–Erdős constant.</li>
+     * </ul>
+     *
+     * @param base the base in which the primes are written.
+     * @return the base-{@code base} Copeland–Erdős constant
+     */
+    public static @NotNull Real copelandErdos(@NotNull BigInteger base) {
+        return fromDigits(
+                base,
+                Collections.emptyList(),
+                concatMap(i -> IntegerUtils.bigEndianDigits(base, i), MathUtils.primes())
+        );
     }
 
     public @NotNull String toStringBaseUnsafe(@NotNull BigInteger base, int scale) {
@@ -2876,14 +3069,14 @@ public final class Real implements Iterable<Interval> {
         if (or.isPresent()) {
             return or.get().toStringBase(base, scale);
         }
+        Optional<Integer> oSignum = signum(resolution);
+        if (!oSignum.isPresent()) {
+            return "~0";
+        }
+        int signum = oSignum.get();
         boolean baseIsSmall = Ordering.le(base, BigInteger.valueOf(36));
         Optional<Pair<List<BigInteger>, Iterable<BigInteger>>> oDigits = abs().digits(base, resolution);
         if (!oDigits.isPresent()) {
-            Optional<Integer> oSignum = signum(resolution);
-            if (!oSignum.isPresent()) {
-                return "~0";
-            }
-            int signum = oSignum.get();
             Iterator<Interval> is = iterator();
             Interval firstInterval;
             do {
@@ -2932,9 +3125,22 @@ public final class Real implements Iterable<Interval> {
                 (baseIsSmall ? "0" : "(0)") :
                 concatStrings(map(digitFunction, digits.a));
         String result;
-        String afterDecimal = concatStrings(map(digitFunction, filter(d -> d.signum() != -1, take(scale, digits.b))));
+        StringBuilder sb = new StringBuilder();
+        Iterator<BigInteger> afterDecimalIterator = digits.b.iterator();
+        if (afterDecimalIterator.hasNext()) {
+            boolean done = false;
+            for (int i = 0; !done && i < scale; i++) {
+                BigInteger digit = afterDecimalIterator.next();
+                if (!afterDecimalIterator.hasNext()) {
+                    if (digit.equals(BigInteger.ZERO)) break;
+                    done = true;
+                }
+                sb.append(digitFunction.apply(digit));
+            }
+        }
+        String afterDecimal = sb.toString();
         result = beforeDecimal + "." + afterDecimal;
-        return (signumUnsafe() == -1 ? "-" + result : result) + "...";
+        return (signum == -1 ? "-" + result : result) + "...";
     }
 
     public static @NotNull Interval intervalExtension(@NotNull Real lower, @NotNull Real upper) {
@@ -2955,35 +3161,6 @@ public final class Real implements Iterable<Interval> {
             }
         }
     }
-
-    public static @NotNull Real champernowne(@NotNull BigInteger base) {
-        return fromDigits(
-                base,
-                Collections.emptyList(),
-                concatMap(
-                        i -> IntegerUtils.bigEndianDigits(base, i),
-                        ExhaustiveProvider.INSTANCE.rangeUpIncreasing(BigInteger.ONE)
-                )
-        );
-    }
-
-    public static @NotNull Real copelandErdős(@NotNull BigInteger base) {
-        return fromDigits(
-                base,
-                Collections.emptyList(),
-                concatMap(i -> IntegerUtils.bigEndianDigits(base, i), MathUtils.primes())
-        );
-    }
-
-    public static final @NotNull Real BINARY_INDICATOR =
-        fromDigits(
-                IntegerUtils.TWO,
-                Collections.emptyList(),
-                map(
-                        i -> MathUtils.isPrime(i) ? BigInteger.ONE : BigInteger.ZERO,
-                        ExhaustiveProvider.INSTANCE.rangeUpIncreasing(BigInteger.ONE)
-                )
-        );
 
     public static @NotNull Real fromMaclaurinSeries(
             @NotNull Iterable<Rational> maclaurinCoefficients,
@@ -3107,33 +3284,6 @@ public final class Real implements Iterable<Interval> {
                     return Interval.of(bound.negate(), bound);
                 },
                 x
-        );
-    }
-
-    public static @NotNull Real fromDigits(
-            @NotNull BigInteger base,
-            @NotNull List<BigInteger> beforeDecimal,
-            @NotNull Iterable<BigInteger> afterDecimal
-    ) {
-        return of(Rational.of(IntegerUtils.fromBigEndianDigits(base, beforeDecimal))).add(
-                new Real(() -> new Iterator<Interval>() {
-                    private final @NotNull Iterator<BigInteger> digits = afterDecimal.iterator();
-                    private @NotNull BigInteger acc = BigInteger.ZERO;
-                    private @NotNull BigInteger power = BigInteger.ONE;
-
-                    @Override
-                    public boolean hasNext() {
-                        return true;
-                    }
-
-                    @Override
-                    public @NotNull Interval next() {
-                        acc = acc.multiply(base).add(digits.next());
-                        power = power.multiply(base);
-                        Rational r = Rational.of(acc);
-                        return Interval.of(r.divide(power), r.add(Rational.ONE).divide(power));
-                    }
-                })
         );
     }
 

@@ -3,7 +3,9 @@ package mho.qbar.objects;
 import mho.wheels.io.Readers;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.numberUtils.FloatingPointUtils;
+import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.Ordering;
+import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -15,9 +17,7 @@ import java.util.Optional;
 
 import static mho.qbar.objects.Real.*;
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.testing.Testing.TINY_LIMIT;
-import static mho.wheels.testing.Testing.aeq;
-import static mho.wheels.testing.Testing.aeqitLimit;
+import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.fail;
 
 public class RealTest {
@@ -47,6 +47,9 @@ public class RealTest {
         constant_helper(PHI, "1.61803398874989484820...");
         constant_helper(E, "2.71828182845904523536...");
         constant_helper(PI, "3.14159265358979323846...");
+
+        aeq(PRIME_CONSTANT.toStringBaseUnsafe(IntegerUtils.TWO, TINY_LIMIT), "0.01101010001010001010...");
+        constant_helper(PRIME_CONSTANT, "0.41468250985111166024...");
 
         constant_helper(DEFAULT_RESOLUTION, "1/1267650600228229401496703205376");
     }
@@ -7708,7 +7711,14 @@ public class RealTest {
         delta_helper(Arrays.asList(ONE, NEGATIVE_FOUR_THIRDS, SQRT_TWO, E, PI),
                 "[-2.33333333333333333333..., 2.74754689570642838213..., 1.30406826608595018655...," +
                 " 0.42331082513074800310...]");
-        //todo fancy sequence
+        delta_helper(map(Real::champernowne, EP.rangeUpIncreasing(IntegerUtils.TWO)),
+                "[-0.26328195832962057905..., -0.17284705642732292673..., -0.11537499999999995465...," +
+                " -0.07087342529604434366..., -0.04542715072882624597..., -0.03117072298102372410...," +
+                " -0.02263983598552001488..., -0.01716818701858465106..., -0.01345678914037061233...," +
+                " -0.01082644624309960337..., -0.00889577593990761194..., -0.00743754109134504499...," +
+                " -0.00630962444149133416..., -0.00541950113378681436..., -0.00470486111111111025...," +
+                " -0.00412251297577854669..., -0.00364176171557947797..., -0.00324031325878047946...," +
+                " -0.00290166204986149584..., -0.00261337868480725623..., ...]");
 
         delta_fail_helper(Collections.emptyList());
         delta_fail_helper(Arrays.asList(ZERO, null, SQRT_TWO));
@@ -7984,6 +7994,558 @@ public class RealTest {
         pow_int_Rational_fail_helper(ZERO, 2, Rational.NEGATIVE_ONE);
         pow_int_Rational_fail_helper(PI, 2, Rational.ZERO);
         pow_int_Rational_fail_helper(PI, 2, Rational.NEGATIVE_ONE);
+    }
+
+    private static void digitsUnsafe_helper(@NotNull Real x, @NotNull String base, @NotNull String output) {
+        Pair<List<BigInteger>, Iterable<BigInteger>> digits = x.digitsUnsafe(Readers.readBigIntegerStrict(base).get());
+        aeq(new Pair<>(digits.a.toString(), itsList(TINY_LIMIT, digits.b)), output);
+    }
+
+    private static void digitsUnsafe_fail_helper(@NotNull Real x, @NotNull String base) {
+        try {
+            x.digitsUnsafe(Readers.readBigIntegerStrict(base).get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testDigitsUnsafe() {
+        digitsUnsafe_helper(ZERO, "2", "([], [])");
+        digitsUnsafe_helper(ZERO, "3", "([], [])");
+        digitsUnsafe_helper(ZERO, "4", "([], [])");
+        digitsUnsafe_helper(ZERO, "10", "([], [])");
+        digitsUnsafe_helper(ZERO, "16", "([], [])");
+        digitsUnsafe_helper(ZERO, "83", "([], [])");
+        digitsUnsafe_helper(ZERO, "100", "([], [])");
+
+        digitsUnsafe_helper(ONE, "2", "([1], [])");
+        digitsUnsafe_helper(ONE, "3", "([1], [])");
+        digitsUnsafe_helper(ONE, "4", "([1], [])");
+        digitsUnsafe_helper(ONE, "10", "([1], [])");
+        digitsUnsafe_helper(ONE, "16", "([1], [])");
+        digitsUnsafe_helper(ONE, "83", "([1], [])");
+        digitsUnsafe_helper(ONE, "100", "([1], [])");
+
+        digitsUnsafe_helper(ONE_HALF, "2", "([], [1])");
+        digitsUnsafe_helper(ONE_HALF, "3", "([], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...])");
+        digitsUnsafe_helper(ONE_HALF, "4", "([], [2])");
+        digitsUnsafe_helper(ONE_HALF, "10", "([], [5])");
+        digitsUnsafe_helper(ONE_HALF, "16", "([], [8])");
+        digitsUnsafe_helper(
+                ONE_HALF,
+                "83",
+                "([], [41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, ...])"
+        );
+        digitsUnsafe_helper(ONE_HALF, "100", "([], [50])");
+
+        digitsUnsafe_helper(PI, "2", "([1, 1], [0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, ...])");
+        digitsUnsafe_helper(PI, "3", "([1, 0], [0, 1, 0, 2, 1, 1, 0, 1, 2, 2, 2, 2, 0, 1, 0, 2, 1, 1, 0, 0, ...])");
+        digitsUnsafe_helper(PI, "4", "([3], [0, 2, 1, 0, 0, 3, 3, 3, 1, 2, 2, 2, 2, 0, 2, 0, 2, 0, 1, 1, ...])");
+        digitsUnsafe_helper(PI, "10", "([3], [1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9, 7, 9, 3, 2, 3, 8, 4, 6, ...])");
+        digitsUnsafe_helper(PI, "16", "([3], [2, 4, 3, 15, 6, 10, 8, 8, 8, 5, 10, 3, 0, 8, 13, 3, 1, 3, 1, 9, ...])");
+        digitsUnsafe_helper(
+                PI,
+                "83",
+                "([3], [11, 62, 35, 69, 50, 19, 79, 18, 33, 82, 74, 23, 59, 17, 3, 18, 29, 47, 35, 11, ...])"
+        );
+        digitsUnsafe_helper(
+                PI,
+                "100",
+                "([3], [14, 15, 92, 65, 35, 89, 79, 32, 38, 46, 26, 43, 38, 32, 79, 50, 28, 84, 19, 71, ...])"
+        );
+
+        digitsUnsafe_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "2",
+                "([], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...])"
+        );
+        digitsUnsafe_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "3",
+                "([], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...])"
+        );
+        digitsUnsafe_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "10",
+                "([], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...])"
+        );
+        digitsUnsafe_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "16",
+                "([], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...])"
+        );
+        digitsUnsafe_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "83",
+                "([], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...])"
+        );
+        digitsUnsafe_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "100",
+                "([], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...])"
+        );
+
+        digitsUnsafe_helper(
+                rightFuzzyRepresentation(Rational.ONE_HALF),
+                "2",
+                "([], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...])"
+        );
+        digitsUnsafe_helper(
+                rightFuzzyRepresentation(Rational.ONE_HALF),
+                "3",
+                "([], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...])"
+        );
+        digitsUnsafe_helper(
+                rightFuzzyRepresentation(Rational.ONE_HALF),
+                "4",
+                "([], [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...])"
+        );
+        digitsUnsafe_helper(
+                rightFuzzyRepresentation(Rational.ONE_HALF),
+                "10",
+                "([], [5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...])"
+        );
+        digitsUnsafe_helper(
+                rightFuzzyRepresentation(Rational.ONE_HALF),
+                "16",
+                "([], [8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...])"
+        );
+        digitsUnsafe_helper(
+                rightFuzzyRepresentation(Rational.ONE_HALF),
+                "83",
+                "([], [41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, ...])"
+        );
+        digitsUnsafe_helper(
+                rightFuzzyRepresentation(Rational.ONE_HALF),
+                "100",
+                "([], [50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...])"
+        );
+
+        digitsUnsafe_helper(
+                leftFuzzyRepresentation(Rational.ONE_HALF),
+                "3",
+                "([], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...])"
+        );
+        digitsUnsafe_helper(
+                leftFuzzyRepresentation(Rational.ONE_HALF),
+                "83",
+                "([], [41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, ...])"
+        );
+
+        digitsUnsafe_helper(
+                fuzzyRepresentation(Rational.ONE_HALF),
+                "3",
+                "([], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...])"
+        );
+        digitsUnsafe_helper(
+                fuzzyRepresentation(Rational.ONE_HALF),
+                "83",
+                "([], [41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, ...])"
+        );
+
+        digitsUnsafe_fail_helper(NEGATIVE_ONE, "2");
+        digitsUnsafe_fail_helper(NEGATIVE_ONE, "10");
+        digitsUnsafe_fail_helper(PI.negate(), "2");
+        digitsUnsafe_fail_helper(PI.negate(), "10");
+        digitsUnsafe_fail_helper(ZERO, "1");
+        digitsUnsafe_fail_helper(ZERO, "0");
+        digitsUnsafe_fail_helper(ZERO, "-1");
+        digitsUnsafe_fail_helper(PI, "1");
+        digitsUnsafe_fail_helper(PI, "0");
+        digitsUnsafe_fail_helper(PI, "-1");
+    }
+
+    private static void digits_helper(
+            @NotNull Real x,
+            @NotNull String base,
+            @NotNull Rational resolution,
+            @NotNull String output
+    ) {
+        aeq(
+                x.digits(
+                        Readers.readBigIntegerStrict(base).get(), resolution)
+                                .map(p -> new Pair<>(p.a, itsList(TINY_LIMIT, p.b))
+                ),
+                output
+        );
+    }
+
+    private static void digits_fail_helper(@NotNull Real x, @NotNull String base, @NotNull Rational resolution) {
+        try {
+            x.digits(Readers.readBigIntegerStrict(base).get(), resolution);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testDigits() {
+        digits_helper(ZERO, "2", DEFAULT_RESOLUTION, "Optional[([], [])]");
+        digits_helper(ZERO, "3", DEFAULT_RESOLUTION, "Optional[([], [])]");
+        digits_helper(ZERO, "4", DEFAULT_RESOLUTION, "Optional[([], [])]");
+        digits_helper(ZERO, "10", DEFAULT_RESOLUTION, "Optional[([], [])]");
+        digits_helper(ZERO, "16", DEFAULT_RESOLUTION, "Optional[([], [])]");
+        digits_helper(ZERO, "83", DEFAULT_RESOLUTION, "Optional[([], [])]");
+        digits_helper(ZERO, "100", DEFAULT_RESOLUTION, "Optional[([], [])]");
+
+        digits_helper(ONE, "2", DEFAULT_RESOLUTION, "Optional[([1], [])]");
+        digits_helper(ONE, "3", DEFAULT_RESOLUTION, "Optional[([1], [])]");
+        digits_helper(ONE, "4", DEFAULT_RESOLUTION, "Optional[([1], [])]");
+        digits_helper(ONE, "10", DEFAULT_RESOLUTION, "Optional[([1], [])]");
+        digits_helper(ONE, "16", DEFAULT_RESOLUTION, "Optional[([1], [])]");
+        digits_helper(ONE, "83", DEFAULT_RESOLUTION, "Optional[([1], [])]");
+        digits_helper(ONE, "100", DEFAULT_RESOLUTION, "Optional[([1], [])]");
+
+        digits_helper(ONE_HALF, "2", DEFAULT_RESOLUTION ,"Optional[([], [1])]");
+        digits_helper(
+                ONE_HALF,
+                "3",
+                DEFAULT_RESOLUTION,
+                "Optional[([], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...])]"
+        );
+        digits_helper(ONE_HALF, "4", DEFAULT_RESOLUTION ,"Optional[([], [2])]");
+        digits_helper(ONE_HALF, "10", DEFAULT_RESOLUTION, "Optional[([], [5])]");
+        digits_helper(ONE_HALF, "16", DEFAULT_RESOLUTION, "Optional[([], [8])]");
+        digits_helper(
+                ONE_HALF,
+                "83",
+                DEFAULT_RESOLUTION,
+                "Optional[([], [41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, ...])]"
+        );
+        digits_helper(ONE_HALF, "100", DEFAULT_RESOLUTION, "Optional[([], [50])]");
+
+        digits_helper(
+                PI,
+                "2",
+                DEFAULT_RESOLUTION,
+                "Optional[([1, 1], [0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, ...])]"
+        );
+        digits_helper(
+                PI,
+                "3",
+                DEFAULT_RESOLUTION,
+                "Optional[([1, 0], [0, 1, 0, 2, 1, 1, 0, 1, 2, 2, 2, 2, 0, 1, 0, 2, 1, 1, 0, 0, ...])]"
+        );
+        digits_helper(
+                PI,
+                "4",
+                DEFAULT_RESOLUTION,
+                "Optional[([3], [0, 2, 1, 0, 0, 3, 3, 3, 1, 2, 2, 2, 2, 0, 2, 0, 2, 0, 1, 1, ...])]"
+        );
+        digits_helper(
+                PI,
+                "10",
+                DEFAULT_RESOLUTION,
+                "Optional[([3], [1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9, 7, 9, 3, 2, 3, 8, 4, 6, ...])]"
+        );
+        digits_helper(
+                PI,
+                "16",
+                DEFAULT_RESOLUTION,
+                "Optional[([3], [2, 4, 3, 15, 6, 10, 8, 8, 8, 5, 10, 3, 0, 8, 13, 3, 1, 3, 1, 9, ...])]"
+        );
+        digits_helper(
+                PI,
+                "83",
+                DEFAULT_RESOLUTION,
+                "Optional[([3], [11, 62, 35, 69, 50, 19, 79, 18, 33, 82, 74, 23, 59, 17, 3, 18, 29, 47, 35, 11, ...])]"
+        );
+        digits_helper(
+                PI,
+                "100",
+                DEFAULT_RESOLUTION,
+                "Optional[([3]," +
+                " [14, 15, 92, 65, 35, 89, 79, 32, 38, 46, 26, 43, 38, 32, 79, 50, 28, 84, 19, 71, ...])]"
+        );
+
+        digits_helper(leftFuzzyRepresentation(Rational.ZERO), "2", DEFAULT_RESOLUTION, "Optional.empty");
+        digits_helper(leftFuzzyRepresentation(Rational.ZERO), "3", DEFAULT_RESOLUTION, "Optional.empty");
+        digits_helper(leftFuzzyRepresentation(Rational.ZERO), "10", DEFAULT_RESOLUTION, "Optional.empty");
+        digits_helper(leftFuzzyRepresentation(Rational.ZERO), "16", DEFAULT_RESOLUTION, "Optional.empty");
+        digits_helper(leftFuzzyRepresentation(Rational.ZERO), "83", DEFAULT_RESOLUTION, "Optional.empty");
+        digits_helper(leftFuzzyRepresentation(Rational.ZERO), "100", DEFAULT_RESOLUTION, "Optional.empty");
+
+        digits_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "2",
+                DEFAULT_RESOLUTION,
+                "Optional[([], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...])]"
+        );
+        digits_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "3",
+                DEFAULT_RESOLUTION,
+                "Optional[([], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...])]"
+        );
+        digits_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "10",
+                DEFAULT_RESOLUTION,
+                "Optional[([], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...])]"
+        );
+        digits_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "16",
+                DEFAULT_RESOLUTION,
+                "Optional[([], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...])]"
+        );
+        digits_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "83",
+                DEFAULT_RESOLUTION,
+                "Optional[([], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...])]"
+        );
+        digits_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "100",
+                DEFAULT_RESOLUTION,
+                "Optional[([], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...])]"
+        );
+
+        digits_helper(fuzzyRepresentation(Rational.ZERO), "2", DEFAULT_RESOLUTION, "Optional.empty");
+        digits_helper(fuzzyRepresentation(Rational.ZERO), "3", DEFAULT_RESOLUTION, "Optional.empty");
+        digits_helper(fuzzyRepresentation(Rational.ZERO), "10", DEFAULT_RESOLUTION, "Optional.empty");
+        digits_helper(fuzzyRepresentation(Rational.ZERO), "16", DEFAULT_RESOLUTION, "Optional.empty");
+        digits_helper(fuzzyRepresentation(Rational.ZERO), "83", DEFAULT_RESOLUTION, "Optional.empty");
+        digits_helper(fuzzyRepresentation(Rational.ZERO), "100", DEFAULT_RESOLUTION, "Optional.empty");
+
+        digits_helper(leftFuzzyRepresentation(Rational.ONE_HALF), "2", DEFAULT_RESOLUTION, "Optional[([], [0])]");
+        digits_helper(
+                leftFuzzyRepresentation(Rational.ONE_HALF),
+                "3",
+                DEFAULT_RESOLUTION,
+                "Optional[([], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...])]"
+        );
+        digits_helper(leftFuzzyRepresentation(Rational.ONE_HALF), "4", DEFAULT_RESOLUTION, "Optional[([], [0])]");
+        digits_helper(leftFuzzyRepresentation(Rational.ONE_HALF), "10", DEFAULT_RESOLUTION, "Optional[([], [0])]");
+        digits_helper(leftFuzzyRepresentation(Rational.ONE_HALF), "16", DEFAULT_RESOLUTION, "Optional[([], [0])]");
+        digits_helper(
+                leftFuzzyRepresentation(Rational.ONE_HALF),
+                "83",
+                DEFAULT_RESOLUTION,
+                "Optional[([], [41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, ...])]"
+        );
+        digits_helper(leftFuzzyRepresentation(Rational.ONE_HALF), "100", DEFAULT_RESOLUTION, "Optional[([], [0])]");
+
+        digits_helper(
+                rightFuzzyRepresentation(Rational.ONE_HALF),
+                "2",
+                DEFAULT_RESOLUTION,
+                "Optional[([], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...])]"
+        );
+        digits_helper(
+                rightFuzzyRepresentation(Rational.ONE_HALF),
+                "3",
+                DEFAULT_RESOLUTION,
+                "Optional[([], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...])]"
+        );
+        digits_helper(
+                rightFuzzyRepresentation(Rational.ONE_HALF),
+                "4",
+                DEFAULT_RESOLUTION,
+                "Optional[([], [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...])]"
+        );
+        digits_helper(
+                rightFuzzyRepresentation(Rational.ONE_HALF),
+                "10",
+                DEFAULT_RESOLUTION,
+                "Optional[([], [5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...])]"
+        );
+        digits_helper(
+                rightFuzzyRepresentation(Rational.ONE_HALF),
+                "16",
+                DEFAULT_RESOLUTION,
+                "Optional[([], [8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...])]"
+        );
+        digits_helper(
+                rightFuzzyRepresentation(Rational.ONE_HALF),
+                "83",
+                DEFAULT_RESOLUTION,
+                "Optional[([], [41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, ...])]"
+        );
+        digits_helper(
+                rightFuzzyRepresentation(Rational.ONE_HALF),
+                "100",
+                DEFAULT_RESOLUTION,
+                "Optional[([], [50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...])]"
+        );
+
+        digits_helper(fuzzyRepresentation(Rational.ONE_HALF), "2", DEFAULT_RESOLUTION, "Optional[([], [0])]");
+        digits_helper(
+                fuzzyRepresentation(Rational.ONE_HALF),
+                "3",
+                DEFAULT_RESOLUTION,
+                "Optional[([], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...])]"
+        );
+        digits_helper(fuzzyRepresentation(Rational.ONE_HALF), "4", DEFAULT_RESOLUTION, "Optional[([], [0])]");
+        digits_helper(fuzzyRepresentation(Rational.ONE_HALF), "10", DEFAULT_RESOLUTION, "Optional[([], [0])]");
+        digits_helper(fuzzyRepresentation(Rational.ONE_HALF), "16", DEFAULT_RESOLUTION, "Optional[([], [0])]");
+        digits_helper(
+                fuzzyRepresentation(Rational.ONE_HALF),
+                "83",
+                DEFAULT_RESOLUTION,
+                "Optional[([], [41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, ...])]"
+        );
+        digits_helper(fuzzyRepresentation(Rational.ONE_HALF), "100", DEFAULT_RESOLUTION, "Optional[([], [0])]");
+
+        digits_fail_helper(NEGATIVE_ONE, "2", DEFAULT_RESOLUTION);
+        digits_fail_helper(NEGATIVE_ONE, "10", DEFAULT_RESOLUTION);
+        digits_fail_helper(PI.negate(), "2", DEFAULT_RESOLUTION);
+        digits_fail_helper(PI.negate(), "10", DEFAULT_RESOLUTION);
+        digits_fail_helper(ZERO, "1", DEFAULT_RESOLUTION);
+        digits_fail_helper(ZERO, "0", DEFAULT_RESOLUTION);
+        digits_fail_helper(ZERO, "-1", DEFAULT_RESOLUTION);
+        digits_fail_helper(PI, "1", DEFAULT_RESOLUTION);
+        digits_fail_helper(PI, "0", DEFAULT_RESOLUTION);
+        digits_fail_helper(PI, "-1", DEFAULT_RESOLUTION);
+
+        digits_fail_helper(ZERO, "2", Rational.ZERO);
+        digits_fail_helper(ZERO, "2", Rational.NEGATIVE_ONE);
+        digits_fail_helper(PI, "2", Rational.ZERO);
+        digits_fail_helper(PI, "2", Rational.NEGATIVE_ONE);
+    }
+
+    private static void fromDigits_helper(
+            @NotNull String base,
+            @NotNull String beforeDecimal,
+            @NotNull Iterable<BigInteger> afterDecimal,
+            @NotNull String output
+    ) {
+        Real x = fromDigits(Readers.readBigIntegerStrict(base).get(), readBigIntegerList(beforeDecimal), afterDecimal);
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void fromDigits_fail_helper(
+            @NotNull String base,
+            @NotNull String beforeDecimal,
+            @NotNull Iterable<BigInteger> afterDecimal
+    ) {
+        try {
+            //noinspection ResultOfMethodCallIgnored
+            fromDigits(
+                    Readers.readBigIntegerStrict(base).get(),
+                    readBigIntegerListWithNulls(beforeDecimal),
+                    afterDecimal
+            ).toString();
+            fail();
+        } catch (IllegalArgumentException | NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testFromDigits() {
+        fromDigits_helper("2", "[]", Collections.emptyList(), "0.00000000000000000000...");
+        fromDigits_helper("2", "[0]", Arrays.asList(BigInteger.ZERO, BigInteger.ONE), "0.25000000000000000000...");
+        fromDigits_helper("2", "[1, 0]", repeat(BigInteger.ZERO), "2.00000000000000000000...");
+        fromDigits_helper("2", "[0, 1, 0, 1]", repeat(BigInteger.ONE), "+...");
+        fromDigits_helper("2", "[0, 1, 0, 1]", cycle(Arrays.asList(BigInteger.ZERO, BigInteger.ONE)),
+                "5.33333333333333333333...");
+        fromDigits_helper("2", "[1, 1]", PI.digitsUnsafe(IntegerUtils.TWO).b, "3.14159265358979323846...");
+
+        fromDigits_helper("10", "[]", Collections.emptyList(), "0.00000000000000000000...");
+        fromDigits_helper("10", "[0]", Arrays.asList(BigInteger.valueOf(3), BigInteger.valueOf(7)),
+                "0.37000000000000000000...");
+        fromDigits_helper("10", "[4, 5]", repeat(BigInteger.ZERO), "45.00000000000000000000...");
+        fromDigits_helper("10", "[0, 2, 9, 8]", repeat(BigInteger.ONE), "298.11111111111111111111...");
+        fromDigits_helper(
+                "10",
+                "[0, 2, 9, 8]",
+                cycle(Arrays.asList(BigInteger.ONE, IntegerUtils.TWO, BigInteger.valueOf(3))),
+                "298.12312312312312312312..."
+        );
+        fromDigits_helper("10", "[3]", PI.digitsUnsafe(BigInteger.TEN).b, "3.14159265358979323846...");
+
+        fromDigits_fail_helper("2", "[3]", Collections.singletonList(BigInteger.ONE));
+        fromDigits_fail_helper("2", "[1]", PI.digitsUnsafe(BigInteger.TEN).b);
+        fromDigits_fail_helper("2", "[-1]", Collections.singletonList(BigInteger.ONE));
+        fromDigits_fail_helper("2", "[1]", Collections.singletonList(IntegerUtils.NEGATIVE_ONE));
+        fromDigits_fail_helper("2", "[null]", Collections.singletonList(BigInteger.ONE));
+        fromDigits_fail_helper("2", "[1]", Collections.singletonList(null));
+        fromDigits_fail_helper("1", "[0]", Collections.singletonList(BigInteger.ZERO));
+        fromDigits_fail_helper("-1", "[0]", Collections.singletonList(BigInteger.ZERO));
+    }
+
+    private static void liouville_helper(@NotNull String input, @NotNull String output) {
+        Real x = liouville(Readers.readBigIntegerStrict(input).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void liouville_fail_helper(@NotNull String input) {
+        try {
+            liouville(Readers.readBigIntegerStrict(input).get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testLiouville() {
+        liouville_helper("2", "0.76562505960464477539...");
+        liouville_helper("3", "0.44581618656046800382...");
+        liouville_helper("4", "0.31274414062500355271...");
+        liouville_helper("10", "0.11000100000000000000...");
+        liouville_helper("16", "0.06640630960464477539...");
+        liouville_helper("83", "0.01219335172319220793...");
+        liouville_helper("100", "0.01010000000100000000...");
+
+        liouville_fail_helper("1");
+        liouville_fail_helper("0");
+        liouville_fail_helper("-1");
+    }
+
+    private static void champernowne_helper(@NotNull String input, @NotNull String output) {
+        Real x = champernowne(Readers.readBigIntegerStrict(input).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void champernowne_fail_helper(@NotNull String input) {
+        try {
+            champernowne(Readers.readBigIntegerStrict(input).get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testChampernowne() {
+        champernowne_helper("2", "0.86224012586805457155...");
+        champernowne_helper("3", "0.59895816753843399250...");
+        champernowne_helper("4", "0.42611111111111106576...");
+        champernowne_helper("10", "0.12345678910111213141...");
+        champernowne_helper("16", "0.07111111111111111023...");
+        champernowne_helper("83", "0.01234384295062462819...");
+        champernowne_helper("100", "0.01020304050607080910...");
+
+        champernowne_fail_helper("1");
+        champernowne_fail_helper("0");
+        champernowne_fail_helper("-1");
+    }
+
+    private static void copelandErdos_helper(@NotNull String input, @NotNull String output) {
+        Real x = copelandErdos(Readers.readBigIntegerStrict(input).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void copelandErdos_fail_helper(@NotNull String input) {
+        try {
+            copelandErdos(Readers.readBigIntegerStrict(input).get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testCopelandErdos() {
+        copelandErdos_helper("2", "0.73412151540828612060...");
+        copelandErdos_helper("3", "0.80174949296954506695...");
+        copelandErdos_helper("4", "0.70892073664967333384...");
+        copelandErdos_helper("10", "0.23571113171923293137...");
+        copelandErdos_helper("16", "0.13805753390178350683...");
+        copelandErdos_helper("83", "0.02454075723511846217...");
+        copelandErdos_helper("100", "0.02030507111317192329...");
+
+        copelandErdos_fail_helper("1");
+        copelandErdos_fail_helper("0");
+        copelandErdos_fail_helper("-1");
     }
 
     private static void equals_fail_helper(@NotNull Real x, @NotNull Real y) {
@@ -11633,5 +12195,13 @@ public class RealTest {
         ge_Real_Rational_fail_helper(ZERO, ZERO, Rational.NEGATIVE_ONE);
         ge_Real_Rational_fail_helper(E, PI, Rational.ZERO);
         ge_Real_Rational_fail_helper(E, PI, Rational.NEGATIVE_ONE);
+    }
+
+    private static @NotNull List<BigInteger> readBigIntegerList(@NotNull String s) {
+        return Readers.readListStrict(Readers::readBigIntegerStrict).apply(s).get();
+    }
+
+    private static @NotNull List<BigInteger> readBigIntegerListWithNulls(@NotNull String s) {
+        return Readers.readListWithNullsStrict(Readers::readBigIntegerStrict).apply(s).get();
     }
 }

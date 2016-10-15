@@ -3737,7 +3737,8 @@ public class AlgebraicProperties extends QBarTestProperties {
                 P.pairsSquareRootOrder(P.withScale(2).rangeUp(ZERO), P.withScale(4).rangeUp(IntegerUtils.TWO))
         );
         for (Pair<Algebraic, BigInteger> p : take(LIMIT, ps)) {
-            toList(p.a.digits(p.b).b);
+            List<BigInteger> afterDecimal = toList(p.a.digits(p.b).b);
+            assertTrue(p, afterDecimal.isEmpty() || !last(afterDecimal).equals(BigInteger.ZERO));
         }
 
         Iterable<Pair<Algebraic, BigInteger>> psFail = P.pairs(P.negativeAlgebraics(), P.rangeUp(IntegerUtils.TWO));

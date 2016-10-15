@@ -124,6 +124,12 @@ public class RealProperties extends QBarTestProperties {
         propertiesDelta();
         propertiesPowUnsafe_int();
         propertiesPow_int_Rational();
+        propertiesDigitsUnsafe();
+        propertiesDigits();
+        propertiesFromDigits();
+        propertiesLiouville();
+        propertiesChampernowne();
+        propertiesCopelandErdos();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareToUnsafe_Rational();
@@ -4430,6 +4436,247 @@ public class RealProperties extends QBarTestProperties {
                 t.a.pow(t.b, t.c);
                 fail(t);
             } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesDigitsUnsafe() {
+        initialize("digitsUnsafe(BigInteger)");
+        Iterable<Rational> nonNegativeRationals = P.withElement(Rational.ZERO, P.withScale(4).positiveRationals());
+        //noinspection Convert2MethodRef
+        Iterable<Pair<Real, BigInteger>> ps = filterInfinite(
+                (Pair<Real, BigInteger> p) -> {
+                    Optional<Pair<List<BigInteger>, Iterable<BigInteger>>> digits =
+                            p.a.digits(p.b, DEFAULT_RESOLUTION);
+                    if (!digits.isPresent() || !lengthAtLeast(TINY_LIMIT, digits.get().b)) {
+                        return false;
+                    } else {
+                        for (BigInteger d : take(TINY_LIMIT, digits.get().b)) {
+                            if (d.equals(IntegerUtils.NEGATIVE_ONE)) {
+                                return false;
+                            }
+                        }
+                    }
+                    return true;
+                },
+                P.pairs(
+                        P.withScale(1).choose(
+                                map(
+                                        Algebraic::realValue,
+                                        P.withElement(Algebraic.ZERO, P.withScale(4).positiveAlgebraics())
+                                ),
+                                P.choose(
+                                        Arrays.asList(
+                                                map(Real::leftFuzzyRepresentation, nonNegativeRationals),
+                                                map(Real::rightFuzzyRepresentation, nonNegativeRationals),
+                                                map(Real::fuzzyRepresentation, nonNegativeRationals)
+                                        )
+                                )
+                        ),
+                        map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
+                )
+        );
+        for (Pair<Real, BigInteger> p : take(LIMIT, ps)) {
+            Pair<List<BigInteger>, Iterable<BigInteger>> digits = p.a.digitsUnsafe(p.b);
+            assertTrue(p, digits.a.isEmpty() || !head(digits.a).equals(BigInteger.ZERO));
+            assertTrue(p, all(x -> x.signum() != -1 && lt(x, p.b), digits.a));
+            assertEquals(p, IntegerUtils.fromBigEndianDigits(p.b, digits.a), p.a.floorUnsafe());
+        }
+
+        ps = map(
+                p -> new Pair<>(Real.of(p.a), p.b),
+                filterInfinite(
+                        q -> q.a.hasTerminatingBaseExpansion(q.b),
+                        P.pairsSquareRootOrder(
+                                P.withScale(41).rangeUp(Rational.ZERO),
+                                P.withScale(4).rangeUp(IntegerUtils.TWO)
+                        )
+                )
+        );
+        for (Pair<Real, BigInteger> p : take(LIMIT, ps)) {
+            List<BigInteger> afterDecimal = toList(p.a.digitsUnsafe(p.b).b);
+            assertTrue(p, afterDecimal.isEmpty() || !last(afterDecimal).equals(BigInteger.ZERO));
+        }
+
+        Iterable<Pair<Real, BigInteger>> psFail = P.pairs(P.negativeCleanReals(), P.rangeUp(IntegerUtils.TWO));
+        for (Pair<Real, BigInteger> p : take(LIMIT, psFail)) {
+            try {
+                p.a.digitsUnsafe(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        for (Pair<Real, BigInteger> p : take(LIMIT, P.pairs(P.reals(), P.rangeDown(BigInteger.ONE)))) {
+            try {
+                p.a.digitsUnsafe(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesDigits() {
+        initialize("digits(BigInteger, Rational)");
+        //noinspection Convert2MethodRef
+        Iterable<Triple<Real, BigInteger, Rational>> ts = P.triples(
+                P.realRangeUp(Algebraic.ZERO),
+                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2)),
+                P.positiveRationals()
+        );
+        for (Triple<Real, BigInteger, Rational> t : take(LIMIT, ts)) {
+            Optional<Pair<List<BigInteger>, Iterable<BigInteger>>> op = t.a.digits(t.b, t.c);
+            if (op.isPresent()) {
+                Pair<List<BigInteger>, Iterable<BigInteger>> digitsUnsafe = t.a.digitsUnsafe(t.b);
+                List<BigInteger> abbreviatedDigits = toList(take(TINY_LIMIT, op.get().b));
+                if (!abbreviatedDigits.isEmpty() && last(abbreviatedDigits).equals(BigInteger.ZERO)) {
+                    abbreviatedDigits.remove(abbreviatedDigits.size() - 1);
+                }
+                List<BigInteger> abbreviatedDigitsUnsafe = toList(take(abbreviatedDigits.size(), digitsUnsafe.b));
+                assertEquals(t, op.get().a, digitsUnsafe.a);
+                assertEquals(t, abbreviatedDigits, abbreviatedDigitsUnsafe);
+            }
+        }
+
+        //noinspection Convert2MethodRef
+        Iterable<Triple<Real, BigInteger, Rational>> tsFail = P.triples(
+                P.realRangeUp(Algebraic.ZERO),
+                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2)),
+                P.rangeDown(Rational.ZERO)
+        );
+        for (Triple<Real, BigInteger, Rational> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.digits(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        //noinspection Convert2MethodRef
+        tsFail = P.triples(
+                P.realRangeUp(Algebraic.ZERO),
+                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2)),
+                P.rangeDown(Rational.ZERO)
+        );
+        for (Triple<Real, BigInteger, Rational> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.digits(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesFromDigits() {
+        initialize("fromDigits(BigInteger, List<BigInteger>, Iterable<BigInteger>");
+        //noinspection Convert2MethodRef
+        Iterable<Triple<BigInteger, List<BigInteger>, List<BigInteger>>> ts = map(
+                p -> new Triple<>(p.a, p.b.a, p.b.b),
+                P.dependentPairsInfinite(
+                        map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2)),
+                        b -> P.pairs(P.lists(P.range(BigInteger.ZERO, b.subtract(BigInteger.ONE))))
+                )
+        );
+        for (Triple<BigInteger, List<BigInteger>, List<BigInteger>> t : take(LIMIT, ts)) {
+            Real x = fromDigits(t.a, t.b, t.c);
+            x.validate();
+            Pair<List<BigInteger>, Iterable<BigInteger>> digits = x.digitsUnsafe(t.a);
+            assertEquals(t, digits.a, toList(dropWhile(i -> i.equals(BigInteger.ZERO), t.b)));
+            assertEquals(t, toList(take(t.c.size(), digits.b)), t.c);
+        }
+
+        //noinspection Convert2MethodRef
+        Iterable<Triple<BigInteger, List<BigInteger>, Iterable<BigInteger>>> ts2 = map(
+                p -> new Triple<>(p.a, p.b.a, p.b.b),
+                P.dependentPairsInfinite(
+                        map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2)),
+                        b -> P.pairs(
+                                P.lists(P.range(BigInteger.ZERO, b.subtract(BigInteger.ONE))),
+                                map(
+                                        IterableUtils::cycle,
+                                        P.listsAtLeast(1, P.range(BigInteger.ZERO, b.subtract(BigInteger.ONE)))
+                                )
+                        )
+                )
+        );
+        for (Triple<BigInteger, List<BigInteger>, Iterable<BigInteger>> t : take(LIMIT, ts2)) {
+            Real x = fromDigits(t.a, t.b, t.c);
+            x.validate();
+            Optional<Pair<List<BigInteger>, Iterable<BigInteger>>> oDigits = x.digits(t.a, DEFAULT_RESOLUTION);
+            if (oDigits.isPresent()) {
+                Pair<List<BigInteger>, Iterable<BigInteger>> digits = oDigits.get();
+                assertEquals(t, digits.a, toList(dropWhile(i -> i.equals(BigInteger.ZERO), t.b)));
+                assertEquals(t, toList(take(TINY_LIMIT, digits.b)), toList(take(TINY_LIMIT, t.c)));
+            }
+        }
+
+        //noinspection Convert2MethodRef
+        Iterable<Triple<BigInteger, List<BigInteger>, List<BigInteger>>> tsFail = map(
+                p -> new Triple<>(p.a, p.b.a, p.b.b),
+                filterInfinite(
+                        q -> any(i -> i == null || i.signum() == -1 || ge(i, q.a), q.b.a) ||
+                                any(i -> i == null || i.signum() == -1 || ge(i, q.a), q.b.b),
+                        P.dependentPairsInfinite(
+                                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2)),
+                                i -> P.pairs(P.lists(P.withNull(P.bigIntegers())))
+                        )
+                )
+        );
+        for (Triple<BigInteger, List<BigInteger>, List<BigInteger>> t : take(LIMIT, tsFail)) {
+            try {
+                toList(fromDigits(t.a, t.b, t.c));
+                fail(t);
+            } catch (IllegalArgumentException | NullPointerException ignored) {}
+        }
+
+        //noinspection Convert2MethodRef
+        Iterable<Triple<BigInteger, List<BigInteger>, Iterable<BigInteger>>> tsFail2 = map(
+                p -> new Triple<>(p.a, p.b.a, cycle(p.b.b)),
+                filterInfinite(
+                        q -> any(i -> i == null || i.signum() == -1 || ge(i, q.a), q.b.a) ||
+                                any(i -> i == null || i.signum() == -1 || ge(i, q.a), q.b.b),
+                        P.dependentPairsInfinite(
+                                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2)),
+                                b -> P.pairs(
+                                        P.lists(P.withNull(P.bigIntegers())),
+                                        P.listsAtLeast(1, P.withNull(P.bigIntegers()))
+                                )
+                        )
+                )
+        );
+        for (Triple<BigInteger, List<BigInteger>, Iterable<BigInteger>> t : take(LIMIT, tsFail2)) {
+            try {
+                toList(fromDigits(t.a, t.b, t.c));
+                fail(t);
+            } catch (IllegalArgumentException | NullPointerException ignored) {}
+        }
+    }
+
+    private void propertiesLiouville() {
+        initialize("liouville(BigInteger)");
+        for (BigInteger i : take(LIMIT, P.withScale(8).rangeUp(IntegerUtils.TWO))) {
+            Real x = liouville(i);
+            x.validate();
+            assertFalse(i, x.isExact());
+            assertEquals(i, x.signumUnsafe(), 1);
+            assertTrue(i, x.ltUnsafe(Rational.ONE));
+        }
+    }
+
+    private void propertiesChampernowne() {
+        initialize("champernowne(BigInteger)");
+        for (BigInteger i : take(LIMIT, P.withScale(8).rangeUp(IntegerUtils.TWO))) {
+            Real x = champernowne(i);
+            x.validate();
+            assertFalse(i, x.isExact());
+            assertEquals(i, x.signumUnsafe(), 1);
+            assertTrue(i, x.ltUnsafe(Rational.ONE));
+        }
+    }
+
+    private void propertiesCopelandErdos() {
+        initialize("copelandErdos(BigInteger)");
+        for (BigInteger i : take(LIMIT, P.withScale(8).rangeUp(IntegerUtils.TWO))) {
+            Real x = copelandErdos(i);
+            x.validate();
+            assertFalse(i, x.isExact());
+            assertEquals(i, x.signumUnsafe(), 1);
+            assertTrue(i, x.ltUnsafe(Rational.ONE));
         }
     }
 

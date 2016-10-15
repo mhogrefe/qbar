@@ -3,6 +3,7 @@ package mho.qbar.objects;
 import mho.qbar.testing.QBarDemos;
 import mho.qbar.testing.QBarTesting;
 import mho.wheels.iterables.CachedIterator;
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.numberUtils.FloatingPointUtils;
 import mho.wheels.numberUtils.IntegerUtils;
@@ -16,6 +17,7 @@ import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static mho.qbar.objects.Real.*;
 import static mho.wheels.iterables.IterableUtils.*;
@@ -1555,6 +1557,118 @@ public class RealDemos extends QBarDemos {
         );
         for (Triple<Real, Integer, Rational> t : take(LIMIT, ts)) {
             System.out.println("pow(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.pow(t.b, t.c));
+        }
+    }
+
+    private void demoDigitsUnsafe() {
+        Iterable<Rational> nonNegativeRationals = P.withElement(Rational.ZERO, P.withScale(4).positiveRationals());
+        //noinspection Convert2MethodRef
+        Iterable<Pair<Real, BigInteger>> ps = filterInfinite(
+                (Pair<Real, BigInteger> p) -> {
+                    Optional<Pair<List<BigInteger>, Iterable<BigInteger>>> digits =
+                            p.a.digits(p.b, DEFAULT_RESOLUTION);
+                    if (!digits.isPresent() || !lengthAtLeast(TINY_LIMIT, digits.get().b)) {
+                        return false;
+                    } else {
+                        for (BigInteger d : take(TINY_LIMIT, digits.get().b)) {
+                            if (d.equals(IntegerUtils.NEGATIVE_ONE)) {
+                                return false;
+                            }
+                        }
+                    }
+                    return true;
+                },
+                P.pairs(
+                        P.withScale(1).choose(
+                                map(
+                                        Algebraic::realValue,
+                                        P.withElement(Algebraic.ZERO, P.withScale(4).positiveAlgebraics())
+                                ),
+                                P.choose(
+                                        Arrays.asList(
+                                                map(Real::leftFuzzyRepresentation, nonNegativeRationals),
+                                                map(Real::rightFuzzyRepresentation, nonNegativeRationals),
+                                                map(Real::fuzzyRepresentation, nonNegativeRationals)
+                                        )
+                                )
+                        ),
+                        map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
+                )
+        );
+        for (Pair<Real, BigInteger> p : take(MEDIUM_LIMIT, ps)) {
+            Pair<List<BigInteger>, Iterable<BigInteger>> digits = p.a.digitsUnsafe(p.b);
+            System.out.println("digitsUnsafe(" + p.a + ", " + p.b + ") = " +
+                    new Pair<>(digits.a, itsList(TINY_LIMIT, digits.b)));
+        }
+    }
+
+    private void demoDigits() {
+        //noinspection Convert2MethodRef
+        Iterable<Triple<Real, BigInteger, Rational>> ts = P.triples(
+                P.realRangeUp(Algebraic.ZERO),
+                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2)),
+                P.positiveRationals()
+        );
+        for (Triple<Real, BigInteger, Rational> t : take(LIMIT, ts)) {
+            Optional<Pair<List<BigInteger>, List<String>>> digits =
+                    t.a.digits(t.b, t.c).map(p -> new Pair<>(p.a, itsList(TINY_LIMIT, p.b)));
+            System.out.println("digits(" + t.a + ", " + t.b + ", " + t.c + ") = " + digits);
+        }
+    }
+
+    private void demoFromDigits_finite() {
+        //noinspection Convert2MethodRef
+        Iterable<Triple<BigInteger, List<BigInteger>, List<BigInteger>>> ts = map(
+                p -> new Triple<>(p.a, p.b.a, p.b.b),
+                P.dependentPairsInfinite(
+                        map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2)),
+                        b -> P.pairs(P.withScale(4).lists(P.range(BigInteger.ZERO, b.subtract(BigInteger.ONE))))
+                )
+        );
+        for (Triple<BigInteger, List<BigInteger>, List<BigInteger>> t : take(LIMIT, ts)) {
+            System.out.println("fromDigits(" + t.a + ", " + t.b + ", " + t.c + ") = " + fromDigits(t.a, t.b, t.c));
+        }
+    }
+
+    private void demoFromDigits_infinite() {
+        //noinspection Convert2MethodRef
+        Iterable<Triple<BigInteger, List<BigInteger>, Iterable<BigInteger>>> ts = map(
+                p -> new Triple<>(p.a, p.b.a, p.b.b),
+                P.dependentPairsInfinite(
+                        map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2)),
+                        b -> P.pairs(
+                                P.withScale(4).lists(P.range(BigInteger.ZERO, b.subtract(BigInteger.ONE))),
+                                map(
+                                        IterableUtils::cycle,
+                                        P.withScale(4).listsAtLeast(
+                                                1,
+                                                P.range(BigInteger.ZERO, b.subtract(BigInteger.ONE))
+                                        )
+                                )
+                        )
+                )
+        );
+        for (Triple<BigInteger, List<BigInteger>, Iterable<BigInteger>> t : take(MEDIUM_LIMIT, ts)) {
+            System.out.println("fromDigits(" + t.a + ", " + t.b + ", " + itsList(TINY_LIMIT, t.c) + ") = " +
+                    fromDigits(t.a, t.b, t.c));
+        }
+    }
+
+    private void demoLiouville() {
+        for (BigInteger i : take(LIMIT, P.withScale(8).rangeUp(IntegerUtils.TWO))) {
+            System.out.println("liouville(" + i + ") = " + liouville(i));
+        }
+    }
+
+    private void demoChampernowne() {
+        for (BigInteger i : take(LIMIT, P.withScale(8).rangeUp(IntegerUtils.TWO))) {
+            System.out.println("champernowne(" + i + ") = " + champernowne(i));
+        }
+    }
+
+    private void demoCopelandErdos() {
+        for (BigInteger i : take(LIMIT, P.withScale(8).rangeUp(IntegerUtils.TWO))) {
+            System.out.println("copelandErdos(" + i + ") = " + copelandErdos(i));
         }
     }
 
