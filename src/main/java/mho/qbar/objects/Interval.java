@@ -221,13 +221,50 @@ public final class Interval implements Comparable<Interval> {
         return (lower == null || ge(x, Algebraic.of(lower))) && (upper == null || le(x, Algebraic.of(upper)));
     }
 
-    //todo
+    /**
+     * Determines whether {@code this} contains a {@code Real}. If {@code this} has a finite lower bound and {@code x}
+     * is equal to it and fuzzy on the left, or if {@code this} has a finite upper bound and {@code x} is equal to it
+     * and fuzzy on the right, this method will loop forever. To prevent this behavior, use
+     * {@link Interval#contains(Real, Rational)} instead.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>If {@code this} has a finite lower bound, {@code x} cannot be equal to it and fuzzy on the left. If
+     *  {@code this} has a finite upper bound, {@code x} cannot be equal to it and fuzzy on the right.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @param x the test {@code Real}
+     * @return {@code x}∈{@code this}
+     */
     public boolean containsUnsafe(@NotNull Real x) {
         return (lower == null || x.geUnsafe(lower)) && (upper == null || x.leUnsafe(upper));
     }
 
-    //todo
+    /**
+     * Determines whether {@code this} contains a {@code Real}. If {@code this} has a finite lower bound and {@code x}
+     * is equal to it and fuzzy on the left, or if {@code this} has a finite upper bound and {@code x} is equal to it
+     * and fuzzy on the right, this method will give up and return empty once the approximating interval's diameter is
+     * less than the specified resolution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>If {@code this} has a finite lower bound, {@code x} cannot be equal to it and fuzzy on the left. If
+     *  {@code this} has a finite upper bound, {@code x} cannot be equal to it and fuzzy on the right.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @param x the test {@code Real}
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return {@code x}∈{@code this}
+     */
     public @NotNull Optional<Boolean> contains(@NotNull Real x, @NotNull Rational resolution) {
+        if (resolution.signum() != 1) {
+            throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
+        }
         Optional<Boolean> lowerTest = lower == null ? Optional.of(true) : x.ge(lower, resolution);
         Optional<Boolean> upperTest = upper == null ? Optional.of(true) : x.le(upper, resolution);
         if (lowerTest.isPresent() && !lowerTest.get() || upperTest.isPresent() && !upperTest.get()) {

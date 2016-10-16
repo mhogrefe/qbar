@@ -5,6 +5,7 @@ import mho.qbar.testing.QBarTestProperties;
 import mho.wheels.numberUtils.BigDecimalUtils;
 import mho.wheels.numberUtils.FloatingPointUtils;
 import mho.wheels.ordering.Ordering;
+import mho.wheels.structures.Either;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
@@ -44,6 +45,8 @@ public class IntervalProperties extends QBarTestProperties {
         propertiesIsFinitelyBounded();
         propertiesContains_Rational();
         propertiesContains_Algebraic();
+        propertiesContainsUnsafe();
+        propertiesContains_Real_Rational();
         propertiesContains_Interval();
         propertiesDiameter();
         propertiesConvexHull_Interval();
@@ -214,6 +217,100 @@ public class IntervalProperties extends QBarTestProperties {
         for (Algebraic x : take(LIMIT, P.algebraics())) {
             assertTrue(x, ALL.contains(x));
             assertTrue(x, x.isolatingInterval().contains(x));
+        }
+    }
+
+    private void propertiesContainsUnsafe() {
+        initialize("containsUnsafe(Real)");
+        //noinspection RedundantCast,Convert2MethodRef
+        Iterable<Pair<Interval, Real>> ps = map(
+                q -> {
+                    Either<Algebraic, Pair<Rational, Integer>> e = q.b;
+                    switch (e.whichSlot()) {
+                        case A:
+                            return new Pair<>(q.a, e.a().realValue());
+                        case B:
+                            Pair<Rational, Integer> r = e.b();
+                            switch (r.b) {
+                                case -1:
+                                    return new Pair<>(q.a, Real.leftFuzzyRepresentation(r.a));
+                                case 1:
+                                    return new Pair<>(q.a, Real.rightFuzzyRepresentation(r.a));
+                                case 0:
+                                    return new Pair<>(q.a, Real.fuzzyRepresentation(r.a));
+                                default:
+                                    throw new IllegalStateException();
+                            }
+                        default:
+                            throw new IllegalStateException();
+                    }
+                },
+                filterInfinite(
+                        p -> {
+                            if (p.b.whichSlot() == Either.Slot.A) {
+                                return true;
+                            }
+                            Pair<Rational, Integer> q = p.b.b();
+                            Optional<Rational> lower = p.a.getLower();
+                            if (lower.isPresent() && lower.get().equals(q.a) && q.b < 1) {
+                                return false;
+                            }
+                            Optional<Rational> upper = p.a.getUpper();
+                            //noinspection RedundantIfStatement
+                            if (upper.isPresent() && upper.get().equals(q.a) && q.b > -1) {
+                                return false;
+                            }
+                            return true;
+                        },
+                        P.pairs(
+                                P.intervals(),
+                                (Iterable<Either<Algebraic, Pair<Rational, Integer>>>) P.withScale(1).choose(
+                                        (Iterable<Either<Algebraic, Pair<Rational, Integer>>>)
+                                                map(
+                                                        x -> Either.<Algebraic, Pair<Rational, Integer>>ofA(x),
+                                                        P.algebraics()
+                                                ),
+                                        P.choose(
+                                                Arrays.asList(
+                                                        map(r -> Either.ofB(new Pair<>(r, -1)), P.rationals()),
+                                                        map(r -> Either.ofB(new Pair<>(r, 1)), P.rationals()),
+                                                        map(r -> Either.ofB(new Pair<>(r, 0)), P.rationals())
+                                                )
+                                        )
+                                )
+                        )
+                )
+        );
+        for (Pair<Interval, Real> p : take(LIMIT, ps)) {
+            p.a.containsUnsafe(p.b);
+        }
+
+        for (Real x : take(LIMIT, P.reals())) {
+            assertTrue(x, ALL.containsUnsafe(x));
+            assertTrue(x, head(x).containsUnsafe(x));
+        }
+    }
+
+    private void propertiesContains_Real_Rational() {
+        initialize("contains(Real, Rational)");
+        Iterable<Triple<Interval, Real, Rational>> ts = P.triples(P.intervals(), P.reals(), P.positiveRationals());
+        for (Triple<Interval, Real, Rational> t : take(LIMIT, ts)) {
+            Optional<Boolean> ob = t.a.contains(t.b, t.c);
+            if (ob.isPresent()) {
+                assertEquals(t, t.a.containsUnsafe(t.b), ob.get());
+            }
+        }
+
+        Iterable<Triple<Interval, Real, Rational>> tsFail = P.triples(
+                P.intervals(),
+                P.reals(),
+                P.rangeDown(Rational.ZERO)
+        );
+        for (Triple<Interval, Real, Rational> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.contains(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 
