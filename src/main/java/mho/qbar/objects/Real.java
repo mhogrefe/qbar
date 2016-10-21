@@ -3035,7 +3035,7 @@ public final class Real implements Iterable<Interval> {
         return fromDigits(
                 base,
                 Collections.emptyList(),
-                concatMap(i -> IntegerUtils.bigEndianDigits(base, i), MathUtils.primes())
+                concatMap(i -> IntegerUtils.bigEndianDigits(base, i), MathUtils.PRIMES)
         );
     }
 

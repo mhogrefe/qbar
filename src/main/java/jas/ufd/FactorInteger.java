@@ -63,7 +63,7 @@ public class FactorInteger {
         final int TT = 5; // 7
         List<GenPolynomial<ModLong>>[] modfac = new List[TT];
         List<GenPolynomial<ModLong>> mlist = null;
-        Iterator<BigInteger> pit = MathUtils.primes().iterator();
+        Iterator<BigInteger> pit = MathUtils.PRIMES.iterator();
         pit.next(); // skip p = 2
         pit.next(); // skip p = 3
         ModLong nf = null;
@@ -72,7 +72,7 @@ public class FactorInteger {
                 primes = new PrimeList();
                 pit = primes.iterator();
             }
-            while (pit.hasNext()) {
+            while (true) {
                 BigInteger p = pit.next();
                 if (ModLongRing.MAX_LONG.compareTo(p) > 0) {
                     cofac = (ModularRingFactory) new ModLongRing(p);
