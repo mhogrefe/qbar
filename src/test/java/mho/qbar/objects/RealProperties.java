@@ -130,6 +130,7 @@ public class RealProperties extends QBarTestProperties {
         propertiesLiouville();
         propertiesChampernowne();
         propertiesCopelandErdos();
+        propertiesGreedyNormal();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareToUnsafe_Rational();
@@ -4673,6 +4674,17 @@ public class RealProperties extends QBarTestProperties {
         initialize("copelandErdos(BigInteger)");
         for (BigInteger i : take(LIMIT, P.withScale(8).rangeUp(IntegerUtils.TWO))) {
             Real x = copelandErdos(i);
+            x.validate();
+            assertFalse(i, x.isExact());
+            assertEquals(i, x.signumUnsafe(), 1);
+            assertTrue(i, x.ltUnsafe(Rational.ONE));
+        }
+    }
+
+    private void propertiesGreedyNormal() {
+        initialize("greedyNormal(int)");
+        for (int i : take(MEDIUM_LIMIT, P.rangeUpGeometric(2))) {
+            Real x = greedyNormal(i);
             x.validate();
             assertFalse(i, x.isExact());
             assertEquals(i, x.signumUnsafe(), 1);

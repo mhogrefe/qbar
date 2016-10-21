@@ -116,6 +116,27 @@ public final class Real implements Iterable<Interval> {
     );
 
     /**
+     * The Thue-Morse constant, or the number produced by interpreting the Thue-Morse sequence (see
+     * {@link MathUtils#THUE_MORSE}) as binary digits after the decimal point, with false mapping to 0 and true mapping
+     * to 1.
+     */
+    public static final @NotNull Real THUE_MORSE = fromDigits(
+            IntegerUtils.TWO,
+            Collections.emptyList(),
+            map(b -> b ? BigInteger.ONE : BigInteger.ZERO, MathUtils.THUE_MORSE)
+    );
+
+    /**
+     * The Kolakoski constant, or the number produced by interpreting the Kolakoski sequence (see
+     * {@link MathUtils#KOLAKOSKI}) as binary digits after the decimal point, with 1 mapping to 0 and 2 mapping to 1.
+     */
+    public static final @NotNull Real KOLAKOSKI = fromDigits(
+            IntegerUtils.TWO,
+            Collections.emptyList(),
+            map(i -> i == 1 ? BigInteger.ZERO : BigInteger.ONE, MathUtils.KOLAKOSKI)
+    );
+
+    /**
      * 2^(-100), the default resolution of those methods which give up a computation after the bounding interval
      * becomes too small.
      */
@@ -2793,7 +2814,7 @@ public final class Real implements Iterable<Interval> {
         }
         List<BigInteger> beforeDecimal = IntegerUtils.bigEndianDigits(base, floor);
         Iterable<BigInteger> afterDecimal = () -> new Iterator<BigInteger>() {
-            Iterator<Interval> fractionIntervals = subtract(of(floor)).iterator();
+            Iterator<Interval> fractionIntervals = subtract(Rational.of(floor)).iterator();
             BigInteger power = base;
             Interval interval;
             {
@@ -3036,6 +3057,26 @@ public final class Real implements Iterable<Interval> {
                 base,
                 Collections.emptyList(),
                 concatMap(i -> IntegerUtils.bigEndianDigits(base, i), MathUtils.PRIMES)
+        );
+    }
+
+    /**
+     * A number that is "as normal as possible" in a given base. See {@link MathUtils#greedyNormalSequence(int)}.
+     *
+     * <ul>
+     *  <li>{@code base} must be at least 2.</li>
+     *  <li>The result is normal (and therefore irrational), and probably transcendental.</li>
+     * </ul>
+     *
+     * @param base the base that the number is normal in.
+     * @return a greedy normal number.
+     */
+    public static @NotNull Real greedyNormal(int base) {
+        //noinspection Convert2MethodRef
+        return fromDigits(
+                BigInteger.valueOf(base),
+                Collections.emptyList(),
+                map(i -> BigInteger.valueOf(i), MathUtils.greedyNormalSequence(base))
         );
     }
 

@@ -29,6 +29,51 @@ public class RealDemos extends QBarDemos {
         super(useRandom);
     }
 
+    // runs forever
+    private void constant_helper(@NotNull Real c) {
+        Pair<List<BigInteger>, Iterable<BigInteger>> digits = c.digitsUnsafe(BigInteger.TEN);
+        String beforeDecimal =
+                IntegerUtils.toStringBase(BigInteger.TEN, IntegerUtils.fromBigEndianDigits(BigInteger.TEN, digits.a));
+        System.out.print(beforeDecimal);
+        System.out.print('.');
+        int i = beforeDecimal.length() + 1;
+        for (BigInteger d : digits.b) {
+            System.out.print(d);
+            i++;
+            if (i % SMALL_LIMIT == 0) {
+                System.out.println();
+            }
+        }
+    }
+
+    private void demoSqrt2() {
+        constant_helper(SQRT_TWO);
+    }
+
+    private void demoPhi() {
+        constant_helper(PHI);
+    }
+
+    private void demoE() {
+        constant_helper(E);
+    }
+
+    private void demoPi() {
+        constant_helper(PI);
+    }
+
+    private void demoPrimeConstant() {
+        constant_helper(PRIME_CONSTANT);
+    }
+
+    private void demoThueMorse() {
+        constant_helper(THUE_MORSE);
+    }
+
+    private void demoKolakoski() {
+        constant_helper(KOLAKOSKI);
+    }
+
     private void demoOf_Rational() {
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("of(" + r + ") = " + of(r));
@@ -1669,6 +1714,12 @@ public class RealDemos extends QBarDemos {
     private void demoCopelandErdos() {
         for (BigInteger i : take(LIMIT, P.withScale(8).rangeUp(IntegerUtils.TWO))) {
             System.out.println("copelandErdos(" + i + ") = " + copelandErdos(i));
+        }
+    }
+
+    private void demoGreedyNormal() {
+        for (int i : take(MEDIUM_LIMIT, P.rangeUpGeometric(2))) {
+            System.out.println("greedyNormal(" + i + ") = " + greedyNormal(i));
         }
     }
 

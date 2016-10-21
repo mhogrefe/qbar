@@ -50,6 +50,10 @@ public class RealTest {
 
         aeq(PRIME_CONSTANT.toStringBaseUnsafe(IntegerUtils.TWO, TINY_LIMIT), "0.01101010001010001010...");
         constant_helper(PRIME_CONSTANT, "0.41468250985111166024...");
+        aeq(THUE_MORSE.toStringBaseUnsafe(IntegerUtils.TWO, TINY_LIMIT), "0.01101001100101101001...");
+        constant_helper(THUE_MORSE, "0.41245403364010759778...");
+        aeq(KOLAKOSKI.toStringBaseUnsafe(IntegerUtils.TWO, TINY_LIMIT), "0.01100101101100100110...");
+        constant_helper(KOLAKOSKI, "0.39725359638973963812...");
 
         constant_helper(DEFAULT_RESOLUTION, "1/1267650600228229401496703205376");
     }
@@ -8546,6 +8550,34 @@ public class RealTest {
         copelandErdos_fail_helper("1");
         copelandErdos_fail_helper("0");
         copelandErdos_fail_helper("-1");
+    }
+
+    private static void greedyNormal_helper(int input, @NotNull String output) {
+        Real x = greedyNormal(input);
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void greedyNormal_fail_helper(int input) {
+        try {
+            greedyNormal(input);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testGreedyNormal() {
+        greedyNormal_helper(2, "0.30378814626375303291...");
+        greedyNormal_helper(3, "0.19487034655056841016...");
+        greedyNormal_helper(4, "0.10606849325923363398...");
+        greedyNormal_helper(10, "0.01234567890213546879...");
+        greedyNormal_helper(16, "0.00444444444444444438...");
+        greedyNormal_helper(83, "0.00014872099940511600...");
+        greedyNormal_helper(100, "0.00010203040506070809...");
+
+        greedyNormal_fail_helper(1);
+        greedyNormal_fail_helper(0);
+        greedyNormal_fail_helper(-1);
     }
 
     private static void equals_fail_helper(@NotNull Real x, @NotNull Real y) {

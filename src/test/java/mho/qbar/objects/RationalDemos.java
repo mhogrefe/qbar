@@ -31,6 +31,12 @@ public class RationalDemos extends QBarDemos {
         super(useRandom);
     }
 
+    private void demoHarmonicNumbers() {
+        for (Rational r : take(MEDIUM_LIMIT, HARMONIC_NUMBERS)) {
+            System.out.println(r);
+        }
+    }
+
     private void demoGetNumerator() {
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("getNumerator(" + r + ") = " + r.getNumerator());
