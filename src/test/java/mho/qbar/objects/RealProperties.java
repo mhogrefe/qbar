@@ -124,6 +124,9 @@ public class RealProperties extends QBarTestProperties {
         propertiesDelta();
         propertiesPowUnsafe_int();
         propertiesPow_int_Rational();
+        propertiesContinuedFractionUnsafe();
+        propertiesFromContinuedFraction();
+        propertiesConvergentsUnsafe();
         propertiesDigitsUnsafe();
         propertiesDigits();
         propertiesFromDigits();
@@ -4437,6 +4440,82 @@ public class RealProperties extends QBarTestProperties {
                 t.a.pow(t.b, t.c);
                 fail(t);
             } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesContinuedFractionUnsafe() {
+        initialize("continuedFractionUnsafe()");
+        for (Real x : take(LIMIT, P.cleanReals())) {
+            List<BigInteger> continuedFraction = toList(take(TINY_LIMIT, x.continuedFractionUnsafe()));
+            assertFalse(x, continuedFraction.isEmpty());
+            assertTrue(x, all(i -> i != null, continuedFraction));
+            assertTrue(x, all(i -> i.signum() == 1, tail(continuedFraction)));
+        }
+    }
+
+    private void propertiesFromContinuedFraction() {
+        initialize("fromContinuedFraction()");
+        Iterable<List<BigInteger>> iss = map(
+                p -> toList(cons(p.a, p.b)),
+                P.pairs(P.bigIntegers(), P.lists(P.positiveBigIntegers()))
+        );
+        for (List<BigInteger> is : take(LIMIT, iss)) {
+            Real x = fromContinuedFraction(is);
+            x.validate();
+            assertTrue(is, x.isExact());
+            if (!is.isEmpty() && !last(is).equals(BigInteger.ONE)) {
+                assertEquals(is, toList(x.continuedFractionUnsafe()), is);
+            }
+            assertEquals(is, x.rationalValueExact().get(), Rational.fromContinuedFraction(is));
+        }
+
+        Iterable<Iterable<BigInteger>> iss2 = map(
+                p -> cons(p.a, p.b),
+                P.pairs(P.bigIntegers(), P.prefixPermutations(EP.positiveBigIntegers()))
+        );
+        for (Iterable<BigInteger> is : take(LIMIT, iss2)) {
+            Real x = fromContinuedFraction(is);
+            x.validate();
+            assertEquals(is, toList(take(TINY_LIMIT, x.continuedFractionUnsafe())), toList(take(TINY_LIMIT, is)));
+        }
+
+        Iterable<List<BigInteger>> issFail = filterInfinite(
+                is -> any(i -> i == null, is),
+                map(
+                        p -> toList(cons(p.a, p.b)),
+                        P.pairs(P.bigIntegers(), P.lists(P.withNull(P.positiveBigIntegers())))
+                )
+        );
+        for (List<BigInteger> is : take(LIMIT, issFail)) {
+            try {
+                toList(fromContinuedFraction(is));
+                fail(is);
+            } catch (NullPointerException ignored) {}
+        }
+
+        issFail = filterInfinite(is -> any(i -> i.signum() != 1, tail(is)), P.listsAtLeast(1, P.bigIntegers()));
+        for (List<BigInteger> is : take(LIMIT, issFail)) {
+            try {
+                toList(fromContinuedFraction(is));
+                fail(is);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesConvergentsUnsafe() {
+        initialize("convergentsUnsafe()");
+        for (Real x : take(LIMIT, P.cleanReals())) {
+            List<Rational> convergents = toList(take(TINY_LIMIT, x.convergentsUnsafe()));
+            assertFalse(x, convergents.isEmpty());
+            assertTrue(x, all(s -> s != null, convergents));
+            assertEquals(x, head(convergents), Rational.of(x.floorUnsafe()));
+            if (x.isExact()) {
+                assertEquals(x, last(x.convergentsUnsafe()), x.rationalValueExact().get());
+            }
+            assertTrue(x, zigzagging(convergents));
+            if (convergents.size() > 1) {
+                assertTrue(x, lt(convergents.get(0), convergents.get(1)));
+            }
         }
     }
 

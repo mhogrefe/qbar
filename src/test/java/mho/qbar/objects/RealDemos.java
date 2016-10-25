@@ -31,9 +31,10 @@ public class RealDemos extends QBarDemos {
 
     // runs forever
     private void constant_helper(@NotNull Real c) {
-        Pair<List<BigInteger>, Iterable<BigInteger>> digits = c.digitsUnsafe(BigInteger.TEN);
+        BigInteger base = BigInteger.TEN;
+        Pair<List<BigInteger>, Iterable<BigInteger>> digits = c.digitsUnsafe(base);
         String beforeDecimal =
-                IntegerUtils.toStringBase(BigInteger.TEN, IntegerUtils.fromBigEndianDigits(BigInteger.TEN, digits.a));
+                IntegerUtils.toStringBase(base, IntegerUtils.fromBigEndianDigits(base, digits.a));
         System.out.print(beforeDecimal);
         System.out.print('.');
         int i = beforeDecimal.length() + 1;
@@ -72,6 +73,14 @@ public class RealDemos extends QBarDemos {
 
     private void demoKolakoski() {
         constant_helper(KOLAKOSKI);
+    }
+
+    private void demoContinuedFractionConstant() {
+        constant_helper(CONTINUED_FRACTION_CONSTANT);
+    }
+
+    private void demoCahen() {
+        constant_helper(CAHEN);
     }
 
     private void demoOf_Rational() {
@@ -1602,6 +1611,38 @@ public class RealDemos extends QBarDemos {
         );
         for (Triple<Real, Integer, Rational> t : take(LIMIT, ts)) {
             System.out.println("pow(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.pow(t.b, t.c));
+        }
+    }
+
+    private void demoContinuedFractionUnsafe() {
+        for (Real x : take(LIMIT, P.withScale(4).cleanReals())) {
+            System.out.println("continuedFractionUnsafe(" + x + ") = " + its(x.continuedFractionUnsafe()));
+        }
+    }
+
+    private void demoFromContinuedFraction_finite() {
+        Iterable<List<BigInteger>> iss = map(
+                p -> toList(cons(p.a, p.b)),
+                P.pairs(P.withScale(4).bigIntegers(), P.withScale(4).lists(P.withScale(4).positiveBigIntegers()))
+        );
+        for (List<BigInteger> is : take(LIMIT, iss)) {
+            System.out.println("fromContinuedFraction(" + middle(is.toString()) + ") = " + fromContinuedFraction(is));
+        }
+    }
+
+    private void demoFromContinuedFraction_infinite() {
+        Iterable<Iterable<BigInteger>> iss = map(
+                p -> cons(p.a, p.b),
+                P.pairs(P.bigIntegers(), P.prefixPermutations(EP.positiveBigIntegers()))
+        );
+        for (Iterable<BigInteger> is : take(MEDIUM_LIMIT, iss)) {
+            System.out.println("fromContinuedFraction(" + middle(its(is)) + ") = " + fromContinuedFraction(is));
+        }
+    }
+
+    private void demoConvergentsUnsafe() {
+        for (Real x : take(MEDIUM_LIMIT, P.withScale(4).cleanReals())) {
+            System.out.println("convergentsUnsafe(" + x + ") = " + its(x.convergentsUnsafe()));
         }
     }
 

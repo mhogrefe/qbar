@@ -137,6 +137,50 @@ public final class Real implements Iterable<Interval> {
     );
 
     /**
+     * The continued fraction constant C<sub>1</sub> whose continued fraction is [0, 1, 2, 3, …]. It can be expressed
+     * exactly in terms of modified Bessel functions.
+     */
+    public static final @NotNull Real CONTINUED_FRACTION_CONSTANT =
+            fromContinuedFraction(EP.rangeUpIncreasing(BigInteger.ZERO));
+
+    /**
+     * The sequence used to generate the continued fraction of Cahen's constant.
+     */
+    private static final @NotNull Iterable<BigInteger> CAHEN_SEQUENCE = () -> new Iterator<BigInteger>() {
+        private BigInteger twoBefore = null;
+        private BigInteger oneBefore = null;
+
+        @Override
+        public boolean hasNext() {
+            return true;
+        }
+
+        @Override
+        public @NotNull BigInteger next() {
+            if (twoBefore == null) {
+                twoBefore = BigInteger.ONE;
+                return BigInteger.ONE;
+            } else if (oneBefore == null) {
+                oneBefore = BigInteger.ONE;
+                return BigInteger.ONE;
+            } else {
+                BigInteger next = twoBefore.pow(2).multiply(oneBefore).add(twoBefore);
+                twoBefore = oneBefore;
+                oneBefore = next;
+                return next;
+            }
+        }
+    };
+
+    /**
+     * Cahen's constant, the sum of the reciprocals of the even terms (starting from 2, the 0th term) of Sylvester's
+     * sequence (see {@link MathUtils#SYLVESTER}. It is transcendental.
+     */
+    public static final @NotNull Real CAHEN = fromContinuedFraction(
+            concat(Arrays.asList(BigInteger.ZERO, BigInteger.ONE), map(i -> i.pow(2), CAHEN_SEQUENCE))
+    );
+
+    /**
      * 2^(-100), the default resolution of those methods which give up a computation after the bounding interval
      * becomes too small.
      */
@@ -2781,6 +2825,200 @@ public final class Real implements Iterable<Interval> {
     }
 
     /**
+     * A helper method for {@link Real#continuedFractionUnsafe()}. Given a rational approximation of a real number and
+     * a prefix of a continued fraction, attempts to find the next continued fraction term. If the approximation is so
+     * imprecise that it doesn't match the continued fraction prefix, an empty {@code Optional} is returned.
+     *
+     * <ul>
+     *  <li>{@code approx} cannot be null.</li>
+     *  <li>Every element in {@code termsSoFar}, except possibly the first, must be positive.</li>
+     * </ul>
+     *
+     * @param approx an approximation to a real number
+     * @param termsSoFar a prefix of the real number's continued fraction
+     * @return the next term in the real number's continued fraction, or empty if the approximation is too imprecise.
+     */
+    private @NotNull Optional<BigInteger> continuedFractionHelper(
+            @NotNull Rational approx,
+            @NotNull List<BigInteger> termsSoFar
+    ) {
+        for (BigInteger term : termsSoFar) {
+            approx = approx.subtract(Rational.of(term));
+            if (approx.signum() != 1 || Ordering.ge(approx, Rational.ONE)) {
+                return Optional.empty();
+            }
+            approx = approx.invert();
+        }
+        return Optional.of(approx.floor());
+    }
+
+    /**
+     * Finds the continued fraction of {@code this}. If we pretend that the result is an array called a, then
+     * {@code this}=a[0]+1/(a[1]+1/(a[2]+...+1/a[n-1])...). If {@code this} is not clean, the resulting
+     * {@code Iterable} will hang at some point.
+     *
+     * <ul>
+     *  <li>{@code this} must be clean.</li>
+     *  <li>The result is non-null and non-empty. None of its elements are null. The first element may be any
+     *  {@code BigInteger}; the remaining elements, if any, are all positive. If the result is finite and has more than
+     *  one element, the last element is greater than 1.</li>
+     * </ul>
+     *
+     * Length is O(log({@code denominator})) if {@code this} is rational, infinite otherwise
+     *
+     * @return the continued fraction representation of {@code this}
+     */
+    public @NotNull Iterable<BigInteger> continuedFractionUnsafe() {
+        if (rational.isPresent()) {
+            return rational.get().continuedFraction();
+        }
+        return () -> new NoRemoveIterator<BigInteger>() {
+            private final @NotNull List<BigInteger> termsSoFar = new ArrayList<>();
+            private final @NotNull Iterator<Interval> is = intervals.iterator();
+            private @NotNull Interval lastInterval;
+            {
+                do {
+                    lastInterval = is.next();
+                } while (!lastInterval.isFinitelyBounded());
+            }
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public @NotNull BigInteger next() {
+                Rational lower = null;
+                Rational upper = null;
+                BigInteger lowerTerm = null;
+                BigInteger upperTerm = null;
+                while (true) {
+                    Rational newLower = lastInterval.getLower().get();
+                    Rational newUpper = lastInterval.getUpper().get();
+                    if (newLower != lower) {
+                        Optional<BigInteger> newLowerTerm = continuedFractionHelper(newLower, termsSoFar);
+                        if (newLowerTerm.isPresent()) {
+                            lowerTerm = newLowerTerm.get();
+                        } else {
+                            lastInterval = is.next();
+                            continue;
+                        }
+                    }
+                    if (newUpper != upper) {
+                        Optional<BigInteger> newUpperTerm = continuedFractionHelper(newUpper, termsSoFar);
+                        if (newUpperTerm.isPresent()) {
+                            upperTerm = newUpperTerm.get();
+                        } else {
+                            lastInterval = is.next();
+                            continue;
+                        }
+                    }
+                    lower = newLower;
+                    upper = newUpper;
+                    //noinspection ConstantConditions
+                    if (lowerTerm.equals(upperTerm)) {
+                        termsSoFar.add(lowerTerm);
+                        return lowerTerm;
+                    } else {
+                        lastInterval = is.next();
+                    }
+                }
+            }
+        };
+    }
+
+    /**
+     * Returns a {@code Real} with a specified continued fraction. If the continued fraction is passed in as a
+     * {@link Collection}, then it is known to be finite and the result will be exact. Otherwise, the result may be
+     * fuzzy.
+     *
+     * <ul>
+     *  <li>{@code continuedFraction} cannot be empty, and each of its elements, except possibly the first, must be
+     *  positive.</li>
+     *  <li>The result may be any {@code Real}.</li>
+     * </ul>
+     *
+     * @param continuedFraction a continued fraction
+     * @return the {@code Real} with the specified continued fraction
+     */
+    public static @NotNull Real fromContinuedFraction(@NotNull Iterable<BigInteger> continuedFraction) {
+        if (continuedFraction instanceof Collection) { // then we know that continuedFraction is finite
+            Rational r = Rational.fromContinuedFraction(toList(continuedFraction));
+            if (r == Rational.ZERO) return ZERO;
+            if (r == Rational.ONE) return ONE;
+            return new Real(r);
+        }
+        return new Real(() -> new Iterator<Interval>() {
+            private @NotNull Optional<Interval> exactValue = Optional.empty();
+            private @NotNull Iterator<BigInteger> is = continuedFraction.iterator();
+            private final @NotNull List<BigInteger> prefix = new ArrayList<>();
+            private Rational low = null;
+            private Rational high = null;
+            private boolean nextIsLow = true;
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public @NotNull Interval next() {
+                if (exactValue.isPresent()) {
+                    return exactValue.get();
+                } else {
+                    if (!is.hasNext()) {
+                        Rational r = nextIsLow ? high : low;
+                        if (r == null) {
+                            throw new IllegalArgumentException("continuedFraction cannot be empty.");
+                        }
+                        exactValue = Optional.of(Interval.of(r));
+                        return exactValue.get();
+                    } else {
+                        while (true) {
+                            prefix.add(is.next());
+                            Rational r = Rational.fromContinuedFraction(prefix);
+                            if (nextIsLow) {
+                                low = r;
+                            } else {
+                                high = r;
+                            }
+                            nextIsLow = !nextIsLow;
+                            if (high != null) { // this is only false the first time next() is called
+                                return Interval.of(low, high);
+                            }
+                            if (!is.hasNext()) {
+                                exactValue = Optional.of(Interval.of(low));
+                                return exactValue.get();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * Returns the convergents, or rational approximations of {@code this} formed by truncating its continued fraction
+     * at various points. The first element of the result is the floor of {@code this}. If {@code this} is rational,
+     * the last element of the result is {@code this}. If {@code this} is not clean, the resulting {@code Iterable}
+     * will hang at some point.
+     *
+     * <ul>
+     *  <li>{@code this} must be clean.</li>
+     *  <li>The result is a non-null, non-empty {@code Iterable} that consists of the convergents of some real
+     *  number.</li>
+     * </ul>
+     *
+     * Length is O(log({@code denominator})) if {@code this} is rational, infinite otherwise.
+     *
+     * @return the convergents of {@code this}.
+     */
+    public @NotNull Iterable<Rational> convergentsUnsafe() {
+        return map(Rational::fromContinuedFraction, tail(inits(continuedFractionUnsafe())));
+    }
+
+    /**
      * Returns the digits of (non-negative) {@code this} in a given base. The return value is a pair consisting of the
      * digits before the decimal point (in a list) and the digits after the decimal point (in a possibly-infinite
      * {@code Iterable}). If {@code this} is exact on the left, fuzzy on the right, and has a terminating
@@ -3275,7 +3513,7 @@ public final class Real implements Iterable<Interval> {
         if (x == Rational.ZERO) return ZERO;
         if (x == Rational.ONE) return ARCTAN_ONE;
         Rational xSquared = x.pow(2);
-        return new Real(() -> new Iterator<Interval>() {
+        return new Real(() -> new NoRemoveIterator<Interval>() {
             private @NotNull Rational partialSum = x;
             private @NotNull Rational xPower = x;
             private @NotNull BigInteger denominator = BigInteger.ONE;
@@ -3287,7 +3525,7 @@ public final class Real implements Iterable<Interval> {
             }
 
             @Override
-            public Interval next() {
+            public @NotNull Interval next() {
                 Rational upper;
                 if (first) {
                     first = false;
@@ -3326,80 +3564,6 @@ public final class Real implements Iterable<Interval> {
                 },
                 x
         );
-    }
-
-    private @NotNull Optional<BigInteger> continuedFractionHelper(
-            @NotNull Rational approx,
-            @NotNull List<BigInteger> termsSoFar
-    ) {
-        for (BigInteger term : termsSoFar) {
-            approx = approx.subtract(Rational.of(term));
-            if (approx.signum() != 1 || Ordering.ge(approx, Rational.ONE)) {
-                return Optional.empty();
-            }
-            approx = approx.invert();
-        }
-        return Optional.of(approx.floor());
-    }
-
-    public @NotNull Iterable<BigInteger> continuedFraction() {
-        if (rational.isPresent() && rational.get() == Rational.ZERO) {
-            return Collections.singletonList(BigInteger.ZERO);
-        }
-        return () -> new NoRemoveIterator<BigInteger>() {
-            private final @NotNull List<BigInteger> termsSoFar = new ArrayList<>();
-            private final @NotNull Iterator<Interval> is = intervals.iterator();
-            private @NotNull Interval lastInterval;
-            {
-                do {
-                    lastInterval = is.next();
-                } while (!lastInterval.isFinitelyBounded());
-            }
-
-            @Override
-            public boolean hasNext() {
-                return true;
-            }
-
-            @Override
-            public BigInteger next() {
-                Rational lower = null;
-                Rational upper = null;
-                BigInteger lowerTerm = null;
-                BigInteger upperTerm = null;
-                while (true) {
-                    Rational newLower = lastInterval.getLower().get();
-                    Rational newUpper = lastInterval.getUpper().get();
-                    if (newLower != lower) {
-                        Optional<BigInteger> newLowerTerm = continuedFractionHelper(newLower, termsSoFar);
-                        if (newLowerTerm.isPresent()) {
-                            lowerTerm = newLowerTerm.get();
-                        } else {
-                            lastInterval = is.next();
-                            continue;
-                        }
-                    }
-                    if (newUpper != upper) {
-                        Optional<BigInteger> newUpperTerm = continuedFractionHelper(newUpper, termsSoFar);
-                        if (newUpperTerm.isPresent()) {
-                            upperTerm = newUpperTerm.get();
-                        } else {
-                            lastInterval = is.next();
-                            continue;
-                        }
-                    }
-                    lower = newLower;
-                    upper = newUpper;
-                    //noinspection ConstantConditions
-                    if (lowerTerm.equals(upperTerm)) {
-                        termsSoFar.add(lowerTerm);
-                        return lowerTerm;
-                    } else {
-                        lastInterval = is.next();
-                    }
-                }
-            }
-        };
     }
 
     public @NotNull Real fractionalPartUnsafe() {

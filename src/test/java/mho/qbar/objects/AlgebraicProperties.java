@@ -3586,7 +3586,7 @@ public class AlgebraicProperties extends QBarTestProperties {
         if (x.isRational()) {
             return x.rationalValueExact().continuedFraction();
         } else {
-            return x.realValue().continuedFraction();
+            return x.realValue().continuedFractionUnsafe();
         }
     }
 

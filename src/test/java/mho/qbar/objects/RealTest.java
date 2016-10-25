@@ -55,6 +55,9 @@ public class RealTest {
         aeq(KOLAKOSKI.toStringBaseUnsafe(IntegerUtils.TWO, TINY_LIMIT), "0.01100101101100100110...");
         constant_helper(KOLAKOSKI, "0.39725359638973963812...");
 
+        constant_helper(CONTINUED_FRACTION_CONSTANT, "0.69777465796400798200...");
+        constant_helper(CAHEN, "0.64341054628833802618...");
+
         constant_helper(DEFAULT_RESOLUTION, "1/1267650600228229401496703205376");
     }
 
@@ -7998,6 +8001,138 @@ public class RealTest {
         pow_int_Rational_fail_helper(ZERO, 2, Rational.NEGATIVE_ONE);
         pow_int_Rational_fail_helper(PI, 2, Rational.ZERO);
         pow_int_Rational_fail_helper(PI, 2, Rational.NEGATIVE_ONE);
+    }
+
+    private static void continuedFractionUnsafe_helper(@NotNull Real input, @NotNull String output) {
+        aeqitLimit(TINY_LIMIT, input.continuedFractionUnsafe(), output);
+    }
+
+    @Test
+    public void testContinuedFractionUnsafe() {
+        continuedFractionUnsafe_helper(ZERO, "[0]");
+        continuedFractionUnsafe_helper(ONE, "[1]");
+        continuedFractionUnsafe_helper(ONE_HALF, "[0, 2]");
+        continuedFractionUnsafe_helper(NEGATIVE_FOUR_THIRDS, "[-2, 1, 2]");
+        continuedFractionUnsafe_helper(SQRT_TWO,
+                "[1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, ...]");
+        continuedFractionUnsafe_helper(SQRT_TWO.negate(),
+                "[-2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, ...]");
+        continuedFractionUnsafe_helper(E, "[2, 1, 2, 1, 1, 4, 1, 1, 6, 1, 1, 8, 1, 1, 10, 1, 1, 12, 1, 1, ...]");
+        continuedFractionUnsafe_helper(PI, "[3, 7, 15, 1, 292, 1, 1, 1, 2, 1, 3, 1, 14, 2, 1, 1, 2, 2, 2, 2, ...]");
+        continuedFractionUnsafe_helper(PRIME_CONSTANT,
+                "[0, 2, 2, 2, 3, 12, 131, 1, 7, 1, 2, 1, 3, 3, 1, 2, 5, 39, 2, 1, ...]");
+        continuedFractionUnsafe_helper(THUE_MORSE,
+                "[0, 2, 2, 2, 1, 4, 3, 5, 2, 1, 4, 2, 1, 5, 44, 1, 4, 1, 2, 4, ...]");
+        continuedFractionUnsafe_helper(CONTINUED_FRACTION_CONSTANT,
+                "[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, ...]");
+        aeqitLimit(10, CAHEN.continuedFractionUnsafe(),
+                "[0, 1, 1, 1, 4, 9, 196, 16641, 639988804, 177227652025317609, ...]");
+
+        continuedFractionUnsafe_helper(champernowne(BigInteger.TEN),
+                "[0, 8, 9, 1, 149083, 1, 1, 1, 4, 1, 1, 1, 3, 4, 1, 1, 1, 15," +
+                " 45754011139103107648364662824295611859960393971045755500066200439309026265925631493795320774712865" +
+                "63138641209375503552094607183089984575801469863148833592141783010987, 6, ...]");
+        continuedFractionUnsafe_helper(copelandErdos(BigInteger.TEN),
+                "[0, 4, 4, 8, 16, 18, 5, 1, 1, 1, 1, 7, 1, 1, 6, 2, 9, 58, 1, 3, ...]");
+    }
+
+    private static void fromContinuedFraction_helper(@NotNull Iterable<BigInteger> input, @NotNull String output) {
+        Real x = fromContinuedFraction(input);
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void fromContinuedFraction_helper(@NotNull String input, @NotNull String output) {
+        fromContinuedFraction_helper(readBigIntegerList(input), output);
+    }
+
+    private static void fromContinuedFraction_fail_helper(@NotNull String input) {
+        try {
+            toList(fromContinuedFraction(readBigIntegerListWithNulls(input)));
+            fail();
+        } catch (IllegalArgumentException | NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testFromContinuedFraction() {
+        fromContinuedFraction_helper("[0]", "0");
+        fromContinuedFraction_helper("[1]", "1");
+        fromContinuedFraction_helper("[0, 2]", "0.5");
+        fromContinuedFraction_helper("[-2, 1, 2]", "-1.33333333333333333333...");
+        fromContinuedFraction_helper(SQRT_TWO.continuedFractionUnsafe(), "1.41421356237309504880...");
+        fromContinuedFraction_helper(SQRT_TWO.negate().continuedFractionUnsafe(), "-1.41421356237309504880...");
+        fromContinuedFraction_helper(PI.continuedFractionUnsafe(), "3.14159265358979323846...");
+
+        fromContinuedFraction_fail_helper("[]");
+        fromContinuedFraction_fail_helper("[1, -2]");
+        fromContinuedFraction_fail_helper("[null]");
+        fromContinuedFraction_fail_helper("[1, null]");
+    }
+
+    private static void convergentsUnsafe_helper(@NotNull Real input, @NotNull String output) {
+        aeqitLimit(TINY_LIMIT, input.convergentsUnsafe(), output);
+    }
+
+    @Test
+    public void testConvergentsUnsafe() {
+        convergentsUnsafe_helper(ZERO, "[0]");
+        convergentsUnsafe_helper(ONE, "[1]");
+        convergentsUnsafe_helper(ONE_HALF, "[0, 1/2]");
+        convergentsUnsafe_helper(NEGATIVE_FOUR_THIRDS, "[-2, -1, -4/3]");
+        convergentsUnsafe_helper(SQRT_TWO,
+                "[1, 3/2, 7/5, 17/12, 41/29, 99/70, 239/169, 577/408, 1393/985, 3363/2378, 8119/5741, 19601/13860," +
+                " 47321/33461, 114243/80782, 275807/195025, 665857/470832, 1607521/1136689, 3880899/2744210," +
+                " 9369319/6625109, 22619537/15994428, ...]");
+        convergentsUnsafe_helper(SQRT_TWO.negate(),
+                "[-2, -1, -3/2, -7/5, -17/12, -41/29, -99/70, -239/169, -577/408, -1393/985, -3363/2378, -8119/5741," +
+                " -19601/13860, -47321/33461, -114243/80782, -275807/195025, -665857/470832, -1607521/1136689," +
+                " -3880899/2744210, -9369319/6625109, ...]");
+        convergentsUnsafe_helper(E,
+                "[2, 3, 8/3, 11/4, 19/7, 87/32, 106/39, 193/71, 1264/465, 1457/536, 2721/1001, 23225/8544," +
+                " 25946/9545, 49171/18089, 517656/190435, 566827/208524, 1084483/398959, 13580623/4996032," +
+                " 14665106/5394991, 28245729/10391023, ...]");
+        convergentsUnsafe_helper(PI,
+                "[3, 22/7, 333/106, 355/113, 103993/33102, 104348/33215, 208341/66317, 312689/99532, 833719/265381," +
+                " 1146408/364913, 4272943/1360120, 5419351/1725033, 80143857/25510582, 165707065/52746197," +
+                " 245850922/78256779, 411557987/131002976, 1068966896/340262731, 2549491779/811528438," +
+                " 6167950454/1963319607, 14885392687/4738167652, ...]");
+        convergentsUnsafe_helper(PRIME_CONSTANT,
+                "[0, 1/2, 2/5, 5/12, 17/41, 209/504, 27396/66065, 27605/66569, 220631/532048, 248236/598617," +
+                " 717103/1729282, 965339/2327899, 3613120/8712979, 11804699/28466836, 15417819/37179815," +
+                " 42640337/102826466, 228619504/551312145, 8958800993/21604000121, 18146221490/43759312387," +
+                " 27105022483/65363312508, ...]");
+        convergentsUnsafe_helper(THUE_MORSE,
+                "[0, 1/2, 2/5, 5/12, 7/17, 33/80, 106/257, 563/1365, 1232/2987, 1795/4352, 8412/20395, 18619/45142," +
+                " 27031/65537, 153774/372827, 6793087/16469925, 6946861/16842752, 34580531/83840933," +
+                " 41527392/100683685, 117635315/285208303, 512068652/1241516897, ...]");
+        convergentsUnsafe_helper(CONTINUED_FRACTION_CONSTANT,
+                "[0, 1, 2/3, 7/10, 30/43, 157/225, 972/1393, 6961/9976, 56660/81201, 516901/740785, 5225670/7489051," +
+                " 57999271/83120346, 701216922/1004933203, 9173819257/13147251985, 129134686520/185066460993," +
+                " 1946194117057/2789144166880, 31268240559432/44811373131073, 533506283627401/764582487395121," +
+                " 9634381345852650/13807296146243251, 183586751854827751/263103209266016890, ...]");
+        aeqitLimit(10, CAHEN.convergentsUnsafe(),
+                "[0, 1, 1/2, 2/3, 9/14, 83/129, 16277/25298, 270865640/420984147," +
+                " 173350976988310837/269425140741515486," +
+                " 30722586627933193342822775612494373/47749585090209528873482531562977121, ...]");
+
+        convergentsUnsafe_helper(champernowne(BigInteger.TEN),
+                "[0, 1/8, 9/73, 10/81, 1490839/12075796, 1490849/12075877, 2981688/24151673, 4472537/36227550," +
+                " 20871836/169061873, 25344373/205289423, 46216209/374351296, 71560582/579640719," +
+                " 260897955/2113273453, 1115152402/9032734531, 1376050357/11146007984, 2491202759/20178742515," +
+                " 3867253116/31324750499, 60499999499/490050000000," +
+                " 27681176509929784320354051690391884425555022934081108282600816210450296689946785461458755284786726" +
+                "6256773225034758719004596454977545868107906654243968030887012242501684078748629/2242175315871747790" +
+                "308110301704606459197359106551097248280744152528338832161685571353439694564803980266091124654465515" +
+                "703962250073246941371510306436085901829080764534210674750499," +
+                " 16608705905957870592212431014235130655333013760448664969560489726270178013968071276875253170872035" +
+                "97540639350208552314027578729865275208647439925463808185322073455010164972491273/134530518952304867" +
+                "418486618102276387551841546393065834896844649151700329929701134281206381673888238815965467479267930" +
+                "94223773500439481648229061838616515410974484587205754098502994, ...]");
+        convergentsUnsafe_helper(copelandErdos(BigInteger.TEN),
+                "[0, 1/4, 4/17, 33/140, 532/2257, 9609/40766, 48577/206087, 58186/246853, 106763/452940," +
+                " 164949/699793, 271712/1152733, 2066933/8768924, 2338645/9921657, 4405578/18690581," +
+                " 28772113/122065143, 61949804/262820867, 586320349/2487452946, 34068530046/144535091735," +
+                " 34654850395/147022544681, 138033081231/585602725778, ...]");
     }
 
     private static void digitsUnsafe_helper(@NotNull Real x, @NotNull String base, @NotNull String output) {

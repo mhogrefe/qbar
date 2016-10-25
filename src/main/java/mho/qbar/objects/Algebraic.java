@@ -2570,7 +2570,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      *
      * Length is O(log({@code denominator})) if {@code this} is rational, infinite otherwise
      *
-     * @return the continued-fraction-representation of {@code this}
+     * @return the continued fraction representation of {@code this}
      */
     public @NotNull Iterable<BigInteger> continuedFraction() {
         if (rational.isPresent()) {
@@ -2619,7 +2619,7 @@ public final class Algebraic implements Comparable<Algebraic> {
                 }
             };
         } else {
-            return realValue().continuedFraction();
+            return realValue().continuedFractionUnsafe();
         }
     }
 
@@ -2638,7 +2638,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      *  {@link mho.wheels.iterables.IterableUtils#minimize(List, List)}</li>
      * </ul>
      *
-     * @return the repeated continued-fraction-representation of {@code this}
+     * @return the repeated continued fraction representation of {@code this}
      */
     public @NotNull Pair<List<BigInteger>, List<BigInteger>> repeatedContinuedFraction() {
         if (rational.isPresent()) {
