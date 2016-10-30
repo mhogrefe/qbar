@@ -606,7 +606,7 @@ public final class Real implements Iterable<Interval> {
      * @return bounding intervals of this {@code Real}
      */
     @Override
-    public Iterator<Interval> iterator() {
+    public @NotNull Iterator<Interval> iterator() {
         return intervals.iterator();
     }
 

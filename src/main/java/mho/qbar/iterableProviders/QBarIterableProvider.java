@@ -1301,7 +1301,15 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.dependentPairs(xs, f);
     }
 
-    //todo docs and matchstick
+    /**
+     * Generates pairs of values where the second value depends on the first, and where the type of the first value has
+     * no hash code.
+     *
+     * @param xs an {@code Iterable} of values
+     * @param f a function from a value of type {@code a} to an {@code Iterable} of type-{@code B} values
+     * @param <A> the type of values in the first slot, with no available hash code
+     * @param <B> the type of values in the second slot
+     */
     public @NotNull <A, B> Iterable<Pair<A, B>> dependentPairsIdentityHash(
             @NotNull Iterable<A> xs,
             @NotNull Function<A, Iterable<B>> f
@@ -1326,7 +1334,16 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.dependentPairsInfinite(xs, f);
     }
 
-    //todo docs and matchstick
+    /**
+     * Generates pairs of values where the second value depends on the first, and where the type of the first value has
+     * no hash code. There must be an infinite number of possible first values, and every first value must be
+     * associated with an infinite number of possible second values.
+     *
+     * @param xs an {@code Iterable} of values
+     * @param f a function from a value of type {@code a} to an infinite {@code Iterable} of type-{@code B} values
+     * @param <A> the type of values in the first slot, with no available hash code
+     * @param <B> the type of values in the second slot
+     */
     public @NotNull <A, B> Iterable<Pair<A, B>> dependentPairsInfiniteIdentityHash(
             @NotNull Iterable<A> xs,
             @NotNull Function<A, Iterable<B>> f
@@ -3193,6 +3210,18 @@ public strictfp abstract class QBarIterableProvider {
      */
     public @NotNull <K, V> Iterable<Map<K, V>> maps(@NotNull List<K> ks, Iterable<V> vs) {
         return wheelsProvider.maps(ks, vs);
+    }
+
+    /**
+     * Generates all {@code IdentityHashMap}s whose keys are {@code ks} and whose values are subsets of {@code vs}.
+     *
+     * @param ks the keys of the resulting maps
+     * @param vs a set where the values of the resulting maps are drawn from
+     * @param <K> the type of the maps' keys
+     * @param <V> the type of the maps' values
+     */
+    public @NotNull <K, V> Iterable<IdentityHashMap<K, V>> identityMaps(@NotNull List<K> ks, Iterable<V> vs) {
+        return wheelsProvider.identityMaps(ks, vs);
     }
 
     /**
