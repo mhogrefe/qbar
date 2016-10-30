@@ -3,6 +3,7 @@ package mho.qbar.objects;
 import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
 import mho.wheels.iterables.CachedIterator;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.numberUtils.BigDecimalUtils;
@@ -29,6 +30,9 @@ import static mho.wheels.testing.Testing.*;
 import static mho.wheels.testing.Testing.assertTrue;
 
 public class RealProperties extends QBarTestProperties {
+    private static final @NotNull String REAL_CHARS = "-.0123456789~";
+    private static final BigInteger ASCII_ALPHANUMERIC_COUNT = BigInteger.valueOf(36);
+
     public RealProperties() {
         super("Real");
     }
@@ -134,6 +138,8 @@ public class RealProperties extends QBarTestProperties {
         propertiesChampernowne();
         propertiesCopelandErdos();
         propertiesGreedyNormal();
+        propertiesToStringBaseUnsafe();
+        propertiesToStringBase();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareToUnsafe_Rational();
@@ -164,6 +170,7 @@ public class RealProperties extends QBarTestProperties {
         propertiesGt_Real_Rational();
         propertiesLe_Real_Rational();
         propertiesGe_Real_Rational();
+        propertiesToString();
     }
 
     private void propertiesOf_Rational() {
@@ -4771,6 +4778,186 @@ public class RealProperties extends QBarTestProperties {
         }
     }
 
+    private void propertiesToStringBaseUnsafe() {
+        initialize("toStringBaseUnsafe(BigInteger, int)");
+        //noinspection Convert2MethodRef
+        Iterable<Triple<Real, BigInteger, Integer>> ts = map(
+                (Pair<Pair<BigInteger, Integer>, Real> p) -> new Triple<>(p.b, p.a.a, p.a.b),
+                P.dependentPairsInfinite(
+                        P.pairs(
+                                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2)),
+                                P.withScale(16).integersGeometric()
+                        ),
+                        q -> {
+                            Rational multiplier = Rational.of(q.a).pow(q.b);
+                            Iterable<Rational> rs = filterInfinite(
+                                    r -> !r.multiply(multiplier).isInteger(),
+                                    P.rationals()
+                            );
+                            return P.withScale(1).choose(
+                                    map(Algebraic::realValue, P.withElement(Algebraic.ZERO, P.positiveAlgebraics())),
+                                    P.choose(
+                                            Arrays.asList(
+                                                    map(Real::leftFuzzyRepresentation, rs),
+                                                    map(Real::rightFuzzyRepresentation, rs),
+                                                    map(Real::fuzzyRepresentation, rs)
+                                            )
+                                    )
+                            );
+                        }
+                )
+        );
+        for (Triple<Real, BigInteger, Integer> t : take(LIMIT, ts)) {
+            String s = t.a.toStringBaseUnsafe(t.b, t.c);
+            String safeS = t.a.toStringBase(t.b, t.c, DEFAULT_RESOLUTION);
+            if (head(safeS) == '~') {
+                safeS = tail(safeS);
+            }
+            assertEquals(t, safeS, s);
+            boolean ellipsis = s.endsWith("...");
+            if (ellipsis) s = take(s.length() - 3, s);
+            Real error = t.a.subtract(Rational.fromStringBase(s, t.b)).abs();
+            assertTrue(t, error.ltUnsafe(of(t.b).powUnsafe(-t.c)));
+        }
+
+        String smallBaseChars = charsToString(
+                concat(
+                        Arrays.asList(
+                                fromString("-."),
+                                ExhaustiveProvider.INSTANCE.rangeIncreasing('0', '9'),
+                                ExhaustiveProvider.INSTANCE.rangeIncreasing('A', 'Z')
+                        )
+                )
+        );
+        ts = map(
+                (Pair<Pair<BigInteger, Integer>, Real> p) -> new Triple<>(p.b, p.a.a, p.a.b),
+                P.dependentPairsInfinite(
+                        P.pairs(
+                                P.range(IntegerUtils.TWO, ASCII_ALPHANUMERIC_COUNT),
+                                P.withScale(16).integersGeometric()
+                        ),
+                        q -> {
+                            Rational multiplier = Rational.of(q.a).pow(q.b);
+                            Iterable<Rational> rs = filterInfinite(
+                                    r -> !r.multiply(multiplier).isInteger(),
+                                    P.rationals()
+                            );
+                            return P.withScale(1).choose(
+                                    map(Algebraic::realValue, P.withElement(Algebraic.ZERO, P.positiveAlgebraics())),
+                                    P.choose(
+                                            Arrays.asList(
+                                                    map(Real::leftFuzzyRepresentation, rs),
+                                                    map(Real::rightFuzzyRepresentation, rs),
+                                                    map(Real::fuzzyRepresentation, rs)
+                                            )
+                                    )
+                            );
+                        }
+                )
+        );
+        for (Triple<Real, BigInteger, Integer> t : take(LIMIT, ts)) {
+            String s = t.a.toStringBaseUnsafe(t.b, t.c);
+            assertTrue(t, all(c -> elem(c, smallBaseChars), s));
+        }
+
+        String largeBaseChars = charsToString(
+                concat(fromString("-.()"), ExhaustiveProvider.INSTANCE.rangeIncreasing('0', '9'))
+        );
+        //noinspection Convert2MethodRef
+        ts = map(
+                (Pair<Pair<BigInteger, Integer>, Real> p) -> new Triple<>(p.b, p.a.a, p.a.b),
+                P.dependentPairsInfinite(
+                        P.pairs(
+                                map(
+                                        i -> BigInteger.valueOf(i),
+                                        P.withScale(64).rangeUpGeometric(ASCII_ALPHANUMERIC_COUNT.intValueExact() + 1)
+                                ),
+                                P.withScale(16).integersGeometric()
+                        ),
+                        q -> {
+                            Rational multiplier = Rational.of(q.a).pow(q.b);
+                            Iterable<Rational> rs = filterInfinite(
+                                    r -> !r.multiply(multiplier).isInteger(),
+                                    P.rationals()
+                            );
+                            return P.withScale(1).choose(
+                                    map(Algebraic::realValue, P.withElement(Algebraic.ZERO, P.positiveAlgebraics())),
+                                    P.choose(
+                                            Arrays.asList(
+                                                    map(Real::leftFuzzyRepresentation, rs),
+                                                    map(Real::rightFuzzyRepresentation, rs),
+                                                    map(Real::fuzzyRepresentation, rs)
+                                            )
+                                    )
+                            );
+                        }
+                )
+        );
+        for (Triple<Real, BigInteger, Integer> t : take(LIMIT, ts)) {
+            String s = t.a.toStringBaseUnsafe(t.b, t.c);
+            assertTrue(t, all(c -> elem(c, largeBaseChars), s));
+        }
+
+        Iterable<Triple<Real, BigInteger, Integer>> tsFail = map(
+                (Pair<Pair<BigInteger, Integer>, Real> p) -> new Triple<>(p.b, p.a.a, p.a.b),
+                P.dependentPairsInfinite(
+                        P.pairs(P.rangeDown(BigInteger.ONE), P.withScale(16).integersGeometric()),
+                        q -> P.cleanReals()
+                )
+        );
+        for (Triple<Real, BigInteger, Integer> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.toStringBaseUnsafe(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesToStringBase() {
+        initialize("toStringBase(BigInteger, int, Rational)");
+        //noinspection Convert2MethodRef
+        Iterable<Quadruple<Real, BigInteger, Integer, Rational>> qs = P.quadruples(
+                P.reals(),
+                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2)),
+                P.withScale(16).integersGeometric(),
+                filterInfinite(r -> r != Rational.ZERO, P.range(Rational.ZERO, Rational.ONE_HALF))
+        );
+        for (Quadruple<Real, BigInteger, Integer, Rational> q : take(LIMIT, qs)) {
+            q.a.toStringBase(q.b, q.c, q.d);
+        }
+
+        //noinspection Convert2MethodRef
+        Iterable<Quadruple<Real, BigInteger, Integer, Rational>> qsFail = P.quadruples(
+                P.reals(),
+                P.rangeDown(BigInteger.ONE),
+                P.withScale(16).integersGeometric(),
+                filterInfinite(r -> r != Rational.ZERO, P.range(Rational.ZERO, Rational.ONE_HALF))
+        );
+        for (Quadruple<Real, BigInteger, Integer, Rational> q : take(LIMIT, qsFail)) {
+            try {
+                q.a.toStringBase(q.b, q.c, q.d);
+                fail(q);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        //noinspection Convert2MethodRef
+        qsFail = P.quadruples(
+                P.reals(),
+                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2)),
+                P.withScale(16).integersGeometric(),
+                P.withScale(1).choose(
+                        P.rangeDown(Rational.ZERO),
+                        filterInfinite(r -> !r.equals(Rational.ONE_HALF), P.rangeUp(Rational.ONE_HALF))
+                )
+        );
+        for (Quadruple<Real, BigInteger, Integer, Rational> q : take(LIMIT, qsFail)) {
+            try {
+                q.a.toStringBase(q.b, q.c, q.d);
+                fail(q);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
     private void propertiesEquals() {
         initialize("equals(Object)");
         for (Pair<Real, Real> p : take(LIMIT, P.pairs(P.reals()))) {
@@ -5421,6 +5608,14 @@ public class RealProperties extends QBarTestProperties {
                 t.a.ge(t.b, t.c);
                 fail(t);
             } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesToString() {
+        initialize("toString()");
+        for (Real x : take(LIMIT, P.reals())) {
+            String s = x.toString();
+            assertTrue(x, isSubsetOf(s, REAL_CHARS));
         }
     }
 }

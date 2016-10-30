@@ -1266,15 +1266,15 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testRealRange() {
-        realRange_helper("0", "0", "QBarExhaustiveProvider_cleanRange_i");
-        realRange_helper("1", "1", "QBarExhaustiveProvider_cleanRange_ii");
-        realRange_helper("sqrt(2)", "sqrt(2)", "QBarExhaustiveProvider_cleanRange_iii");
-        realRange_helper("1", "2", "QBarExhaustiveProvider_cleanRange_iv");
-        realRange_helper("-4/3", "1/2", "QBarExhaustiveProvider_cleanRange_v");
-        realRange_helper("1", "sqrt(2)", "QBarExhaustiveProvider_cleanRange_vi");
-        realRange_helper("sqrt(2)", "sqrt(3)", "QBarExhaustiveProvider_cleanRange_vii");
-        realRange_helper("0", "256", "QBarExhaustiveProvider_cleanRange_viii");
-        realRange_helper("sqrt(2)", "6369051672525773/4503599627370496", "QBarExhaustiveProvider_cleanRange_ix");
+        realRange_helper("0", "0", "QBarExhaustiveProvider_realRange_i");
+        realRange_helper("1", "1", "QBarExhaustiveProvider_realRange_ii");
+        realRange_helper("sqrt(2)", "sqrt(2)", "QBarExhaustiveProvider_realRange_iii");
+        realRange_helper("1", "2", "QBarExhaustiveProvider_realRange_iv");
+        realRange_helper("-4/3", "1/2", "QBarExhaustiveProvider_realRange_v");
+        realRange_helper("1", "sqrt(2)", "QBarExhaustiveProvider_realRange_vi");
+        realRange_helper("sqrt(2)", "sqrt(3)", "QBarExhaustiveProvider_realRange_vii");
+        realRange_helper("0", "256", "QBarExhaustiveProvider_realRange_viii");
+        realRange_helper("sqrt(2)", "6369051672525773/4503599627370496", "QBarExhaustiveProvider_realRange_ix");
 
         realRange_fail_helper("1", "0");
         realRange_fail_helper("6369051672525773/4503599627370496", "sqrt(2)");

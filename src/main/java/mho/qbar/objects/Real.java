@@ -187,6 +187,11 @@ public final class Real implements Iterable<Interval> {
     public static final @NotNull Rational DEFAULT_RESOLUTION = Rational.ONE.shiftRight(SMALL_LIMIT);
 
     /**
+     * 36, the number of ASCII alphanumeric characters
+     */
+    private static final @NotNull BigInteger ASCII_ALPHANUMERIC_COUNT = BigInteger.valueOf(36);
+
+    /**
      * The bounding intervals that define this {@code Real}. See the comment at the top of the class.
      */
     private final @NotNull Iterable<Interval> intervals;
@@ -3318,110 +3323,6 @@ public final class Real implements Iterable<Interval> {
         );
     }
 
-    public @NotNull String toStringBaseUnsafe(@NotNull BigInteger base, int scale) {
-        if (Ordering.lt(base, IntegerUtils.TWO)) {
-            throw new IllegalArgumentException("base must be at least 2. Invalid base: " + base);
-        }
-        Optional<Rational> or = rationalValueExact();
-        if (or.isPresent()) {
-            return or.get().toStringBase(base, scale);
-        }
-        boolean baseIsSmall = Ordering.le(base, BigInteger.valueOf(36));
-        Pair<List<BigInteger>, Iterable<BigInteger>> digits = abs().digitsUnsafe(base);
-        Function<BigInteger, String> digitFunction = baseIsSmall ?
-                i -> Character.toString(IntegerUtils.toDigit(i.intValueExact())) :
-                i -> "(" + i + ")";
-        String beforeDecimal = digits.a.isEmpty() ?
-                (baseIsSmall ? "0" : "(0)") :
-                concatStrings(map(digitFunction, digits.a));
-        String result;
-        String afterDecimal = concatStrings(map(digitFunction, take(scale, digits.b)));
-        result = beforeDecimal + "." + afterDecimal;
-        return (signumUnsafe() == -1 ? "-" + result : result) + "...";
-    }
-
-    public @NotNull String toStringBase(@NotNull BigInteger base, int scale, @NotNull Rational resolution) {
-        if (Ordering.lt(base, IntegerUtils.TWO)) {
-            throw new IllegalArgumentException("base must be at least 2. Invalid base: " + base);
-        }
-        Optional<Rational> or = rationalValueExact();
-        if (or.isPresent()) {
-            return or.get().toStringBase(base, scale);
-        }
-        Optional<Integer> oSignum = signum(resolution);
-        if (!oSignum.isPresent()) {
-            return "~0";
-        }
-        int signum = oSignum.get();
-        boolean baseIsSmall = Ordering.le(base, BigInteger.valueOf(36));
-        Optional<Pair<List<BigInteger>, Iterable<BigInteger>>> oDigits = abs().digits(base, resolution);
-        if (!oDigits.isPresent()) {
-            Iterator<Interval> is = iterator();
-            Interval firstInterval;
-            do {
-                firstInterval = is.next();
-            } while (!firstInterval.isFinitelyBounded());
-            Rational bound = Ordering.max(firstInterval.getLower().get().abs(), firstInterval.getUpper().get().abs());
-            int maxDigitsToTheLeft = 0;
-            Rational power = Rational.ONE;
-            while (Ordering.le(power, bound)) {
-                power = power.multiply(base);
-                maxDigitsToTheLeft++;
-            }
-            power = Rational.ONE;
-            Optional<BigInteger> oFloor;
-            for (int i = 1; i <= maxDigitsToTheLeft; i++) {
-                power = power.multiply(base);
-                oFloor = abs().divide(power).floor(resolution);
-                if (oFloor.isPresent()) {
-                    BigInteger floor = oFloor.get();
-                    if (floor.equals(BigInteger.ZERO)) {
-                        break;
-                    }
-                    StringBuilder sb = new StringBuilder();
-                    if (signum == -1) {
-                        sb.append('-');
-                    }
-                    sb.append(IntegerUtils.toStringBase(base, floor));
-                    for (int j = 0; j < i; j++) {
-                        sb.append('?');
-                    }
-                    sb.append("....");
-                    return sb.toString();
-                }
-            }
-            if (signum == 1) {
-                return "+...";
-            } else {
-                return "-...";
-            }
-        }
-        Pair<List<BigInteger>, Iterable<BigInteger>> digits = oDigits.get();
-        Function<BigInteger, String> digitFunction = baseIsSmall ?
-                i -> Character.toString(IntegerUtils.toDigit(i.intValueExact())) :
-                i -> "(" + i + ")";
-        String beforeDecimal = digits.a.isEmpty() ?
-                (baseIsSmall ? "0" : "(0)") :
-                concatStrings(map(digitFunction, digits.a));
-        String result;
-        StringBuilder sb = new StringBuilder();
-        Iterator<BigInteger> afterDecimalIterator = digits.b.iterator();
-        if (afterDecimalIterator.hasNext()) {
-            boolean done = false;
-            for (int i = 0; !done && i < scale; i++) {
-                BigInteger digit = afterDecimalIterator.next();
-                if (!afterDecimalIterator.hasNext()) {
-                    if (digit.equals(BigInteger.ZERO)) break;
-                    done = true;
-                }
-                sb.append(digitFunction.apply(digit));
-            }
-        }
-        String afterDecimal = sb.toString();
-        result = beforeDecimal + "." + afterDecimal;
-        return (signum == -1 ? "-" + result : result) + "...";
-    }
-
     public static @NotNull Interval intervalExtension(@NotNull Real lower, @NotNull Real upper) {
         Iterator<Interval> lowerIntervals = lower.iterator();
         Iterator<Interval> upperIntervals = upper.iterator();
@@ -3575,12 +3476,186 @@ public final class Real implements Iterable<Interval> {
         }
     }
 
-    public @NotNull String toStringUnsafe() {
-        return toStringBaseUnsafe(BigInteger.TEN, TINY_LIMIT);
+    /**
+     * Converts {@code this} to a {@code String} in any base greater than 1, rounding to {@code scale} digits after the
+     * decimal point. A scale of 0 indicates rounding to an integer, and a negative scale indicates rounding to a
+     * positive power of {@code base}. If the result is an approximation (that is, not all digits are displayed) and
+     * the scale is positive, an ellipsis ("...") is appended. If the base is 36 or less, the digits are '0' through
+     * '9' followed by 'A' through 'Z'. If the base is greater than 36, the digits are written in decimal and each
+     * digit is surrounded by parentheses. If {@code this} has a fractional part, a decimal point is used. There are no
+     * leading zeros before the decimal point (unless |{@code this}| is less than 1, in which case there is exactly one
+     * zero) and no trailing zeros after (unless an ellipsis is present, in which case there may be any number of
+     * trailing zeros). Scientific notation is not used. If {@code this} has no more than {@code scale} digits after
+     * the decimal point in base {@code base}, and {@code this} is fuzzy, this method will loop forever. To prevent
+     * this behavior, use {@link Real#toStringBase(BigInteger, int, Rational)} instead.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code base} must be at least 2.</li>
+     *  <li>{@code scale} may be any {@code int}.</li>
+     *  <li>If {@code this} has no more than {@code scale} digits after the decimal point in base {@code base},
+     *  {@code this} cannot be fuzzy.</li>
+     *  <li>The result is a {@code String} representing an {@code Real} in the manner previously described. See the
+     *  unit test and demo for further reference.</li>
+     * </ul>
+     *
+     * @param base the base of the output digits
+     * @param scale the maximum number of digits after the decimal point in the result. If {@code this} has a
+     *              terminating base-{@code base} expansion, the actual number of digits after the decimal point may be
+     *              fewer.
+     * @return a {@code String} representation of {@code this} in base {@code base}
+     */
+    public @NotNull String toStringBaseUnsafe(@NotNull BigInteger base, int scale) {
+        if (Ordering.lt(base, IntegerUtils.TWO)) {
+            throw new IllegalArgumentException("base must be at least 2. Invalid base: " + base);
+        }
+        Optional<Rational> or = rationalValueExact();
+        if (or.isPresent()) {
+            return or.get().toStringBase(base, scale);
+        }
+        BigInteger power = base.pow(scale >= 0 ? scale : -scale);
+        Real scaled = scale >= 0 ? multiply(power) : divide(power);
+        Rational rounded = Rational.of(scaled.bigIntegerValueUnsafe(RoundingMode.DOWN));
+        rounded = scale >= 0 ? rounded.divide(power) : rounded.multiply(power);
+        String result = rounded.toStringBase(base);
+        if (scale > 0) { //append ellipsis
+            //pad with trailing zeros if necessary
+            int dotIndex = result.indexOf('.');
+            if (dotIndex == -1) {
+                dotIndex = result.length();
+                result = result + ".";
+            }
+            if (Ordering.le(base, ASCII_ALPHANUMERIC_COUNT)) {
+                int missingZeros = scale - result.length() + dotIndex + 1;
+                result += replicate(missingZeros, '0');
+            } else {
+                int missingZeros = scale;
+                for (int i = dotIndex + 1; i < result.length(); i++) {
+                    if (result.charAt(i) == '(') missingZeros--;
+                }
+                result += concatStrings(replicate(missingZeros, "(0)"));
+            }
+            result += "...";
+        }
+        return result;
     }
 
-    public @NotNull String toString() {
-        return toStringBase(BigInteger.TEN, TINY_LIMIT, DEFAULT_RESOLUTION);
+    /**
+     * <p>Converts {@code this} to a {@code String} in any base greater than 1, rounding to {@code scale} digits after
+     * the decimal point. A scale of 0 indicates rounding to an integer, and a negative scale indicates rounding to a
+     * positive power of {@code base}. If the result is an approximation (that is, not all digits are displayed) and
+     * the scale is positive, an ellipsis ("...") is appended. If the base is 36 or less, the digits are '0' through
+     * '9' followed by 'A' through 'Z'. If the base is greater than 36, the digits are written in decimal and each
+     * digit is surrounded by parentheses. If {@code this} has a fractional part, a decimal point is used. There are no
+     * leading zeros before the decimal point (unless |{@code this}| is less than 1, in which case there is exactly one
+     * zero) and no trailing zeros after (unless an ellipsis is present, in which case there may be any number of
+     * trailing zeros). Scientific notation is not used.</p>
+     *
+     * If {@code this} has no more than {@code scale} digits after the decimal point in base {@code base}, and
+     * {@code this} is fuzzy, the output is as follows:
+     * <ul>
+     *  <li>If {@code this} is zero and only fuzzy on the right, the result looks like "0.000...".</li>
+     *  <li>If {@code this} is zero and only fuzzy on the left, the result looks like "-0.000...".</li>
+     *  <li>If {@code this} is zero and fuzzy on both sides, the result looks like "~0".</li>
+     *  <li>If {@code this} is positive and only fuzzy on the right, the result looks like "0.5000...".</li>
+     *  <li>If {@code this} is positive and only fuzzy on the left, the result looks like "0.4999...".</li>
+     *  <li>If {@code this} is positive and fuzzy on both sides, the result looks like "~0.5".</li>
+     *  <li>If {@code this} is negative and only fuzzy on the left, the result looks like "-0.5000...".</li>
+     *  <li>If {@code this} is negative and only fuzzy on the right, the result looks like "-0.4999...".</li>
+     *  <li>If {@code this} is negative and fuzzy on both sides, the result looks like "~-0.5".</li>
+     * </ul>
+     * Note that true fuzziness is impossible to detect, so in the preceding discussion, "fuzziness" is relative to
+     * {@code resolution}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code base} must be at least 2.</li>
+     *  <li>{@code scale} may be any {@code int}.</li>
+     *  <li>{@code resolution} must be positive and less than or equal to 1/2.</li>
+     *  <li>The result is a {@code String} representing an {@code Real} in the manner previously described. See the
+     *  unit test and demo for further reference.</li>
+     * </ul>
+     *
+     * @param base the base of the output digits
+     * @param scale the maximum number of digits after the decimal point in the result. If {@code this} has a
+     *              terminating base-{@code base} expansion, the actual number of digits after the decimal point may be
+     *              fewer.
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return a {@code String} representation of {@code this} in base {@code base}
+     */
+    public @NotNull String toStringBase(@NotNull BigInteger base, int scale, @NotNull Rational resolution) {
+        if (Ordering.lt(base, IntegerUtils.TWO)) {
+            throw new IllegalArgumentException("base must be at least 2. Invalid base: " + base);
+        }
+        if (resolution.signum() != 1) {
+            throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
+        }
+        if (Ordering.gt(resolution, Rational.ONE_HALF)) {
+            throw new IllegalArgumentException();
+        }
+        Optional<Rational> or = rationalValueExact();
+        if (or.isPresent()) {
+            return or.get().toStringBase(base, scale);
+        }
+        BigInteger power = base.pow(scale >= 0 ? scale : -scale);
+        Real scaled = scale >= 0 ? multiply(power) : divide(power);
+        Optional<BigInteger> roundedDown = scaled.bigIntegerValue(RoundingMode.DOWN, resolution);
+        Rational rounded;
+        boolean fuzzyOnBothSides = false;
+        boolean negativeZero = false;
+        if (roundedDown.isPresent()) {
+            rounded = Rational.of(roundedDown.get());
+            if (rounded == Rational.ZERO) {
+                boolean fuzzyOnTheLeft = !scaled.bigIntegerValue(RoundingMode.FLOOR, resolution).isPresent();
+                boolean fuzzyOnTheRight = !scaled.bigIntegerValue(RoundingMode.CEILING, resolution).isPresent();
+                fuzzyOnBothSides = fuzzyOnTheLeft && fuzzyOnTheRight;
+                negativeZero = fuzzyOnTheLeft && !fuzzyOnTheRight;
+            }
+        } else {
+            Optional<BigInteger> roundedUp = scaled.bigIntegerValue(RoundingMode.UP, resolution);
+            if (roundedUp.isPresent()) {
+                BigInteger scaledValue = roundedUp.get();
+                if (scaledValue.signum() == 1) {
+                    scaledValue = scaledValue.subtract(BigInteger.ONE);
+                } else {
+                    scaledValue = scaledValue.add(BigInteger.ONE);
+                }
+                rounded = Rational.of(scaledValue);
+            } else {
+                fuzzyOnBothSides = true;
+                // because resolution is ≤ 1/2 and the finest bounding interval (whose diameter is less than
+                // resolution) so far contains an integer, it cannot contain a half-integer, so bigIntegerValueUnsafe,
+                // which rounds to the nearest integer, is guaranteed to terminate.
+                rounded = Rational.of(scaled.bigIntegerValueUnsafe());
+            }
+        }
+        rounded = scale >= 0 ? rounded.divide(power) : rounded.multiply(power);
+        String result = rounded.toStringBase(base);
+        if (fuzzyOnBothSides) {
+            result = "~" + result;
+        } else if (negativeZero) {
+            result = "-" + result;
+        }
+        if (!fuzzyOnBothSides && scale > 0) {
+            //pad with trailing zeros if necessary
+            int dotIndex = result.indexOf('.');
+            if (dotIndex == -1) {
+                dotIndex = result.length();
+                result = result + ".";
+            }
+            if (Ordering.le(base, ASCII_ALPHANUMERIC_COUNT)) {
+                int missingZeros = scale - result.length() + dotIndex + 1;
+                result += replicate(missingZeros, '0');
+            } else {
+                int missingZeros = scale;
+                for (int i = dotIndex + 1; i < result.length(); i++) {
+                    if (result.charAt(i) == '(') missingZeros--;
+                }
+                result += concatStrings(replicate(missingZeros, "(0)"));
+            }
+            result += "...";
+        }
+        return result;
     }
 
     /**
@@ -4316,6 +4391,21 @@ public final class Real implements Iterable<Interval> {
                 return Optional.empty();
             }
         }
+    }
+
+    /**
+     * Creates a {@code String} representation of {@code this} (see
+     * {@link Real#toStringBase(BigInteger, int, Rational)} for details).
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>See tests and demos for example results.</li>
+     * </ul>
+     *
+     * @return a {@code String} representation of {@code this}
+     */
+    public @NotNull String toString() {
+        return toStringBase(BigInteger.TEN, TINY_LIMIT, DEFAULT_RESOLUTION);
     }
 
     /**

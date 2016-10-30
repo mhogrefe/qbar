@@ -1764,6 +1764,57 @@ public class RealDemos extends QBarDemos {
         }
     }
 
+    private void demoToStringBaseUnsafe() {
+        //noinspection Convert2MethodRef
+        Iterable<Triple<Real, BigInteger, Integer>> ts = map(
+                (Pair<Pair<BigInteger, Integer>, Real> p) -> new Triple<>(p.b, p.a.a, p.a.b),
+                P.dependentPairsInfinite(
+                        P.pairs(
+                                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2)),
+                                P.withScale(16).integersGeometric()
+                        ),
+                        q -> {
+                            Rational multiplier = Rational.of(q.a).pow(q.b);
+                            Iterable<Rational> rs = filterInfinite(
+                                    r -> !r.multiply(multiplier).isInteger(),
+                                    P.withScale(4).rationals()
+                            );
+                            return P.withScale(1).choose(
+                                    map(
+                                            Algebraic::realValue,
+                                            P.withElement(Algebraic.ZERO, P.withScale(4).positiveAlgebraics())
+                                    ),
+                                    P.choose(
+                                            Arrays.asList(
+                                                    map(Real::leftFuzzyRepresentation, rs),
+                                                    map(Real::rightFuzzyRepresentation, rs),
+                                                    map(Real::fuzzyRepresentation, rs)
+                                            )
+                                    )
+                            );
+                        }
+                )
+        );
+        for (Triple<Real, BigInteger, Integer> t : take(LIMIT, ts)) {
+            System.out.println("toStringBaseUnsafe(" + t.a + ", " + t.b + ", " + t.c + ") = " +
+                    t.a.toStringBaseUnsafe(t.b, t.c));
+        }
+    }
+
+    private void demoToStringBase() {
+        //noinspection Convert2MethodRef
+        Iterable<Quadruple<Real, BigInteger, Integer, Rational>> qs = P.quadruples(
+                P.withScale(4).reals(),
+                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2)),
+                P.withScale(16).integersGeometric(),
+                filterInfinite(r -> r != Rational.ZERO, P.range(Rational.ZERO, Rational.ONE_HALF))
+        );
+        for (Quadruple<Real, BigInteger, Integer, Rational> q : take(LIMIT, qs)) {
+            System.out.println("toStringBase(" + q.a + ", " + q.b + ", " + q.c + ", " + q.d + ") = " +
+                    q.a.toStringBase(q.b, q.c, q.d));
+        }
+    }
+
     private void demoCompareToUnsafe_Rational() {
         //noinspection RedundantCast
         Iterable<Pair<Real, Rational>> ps = map(
@@ -2167,6 +2218,12 @@ public class RealDemos extends QBarDemos {
         );
         for (Triple<Real, Real, Rational> t : take(LIMIT, ts)) {
             System.out.println("ge(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.ge(t.b, t.c));
+        }
+    }
+
+    private void demoToString() {
+        for (Real x : take(LIMIT, P.reals())) {
+            System.out.println(x);
         }
     }
 }

@@ -778,7 +778,7 @@ public final class Rational implements Comparable<Rational> {
      * the left- and right-neighboring {@code float}s will both be equal to that {@code float} and to each other. This
      * method returns the pair made up of the left- and right-neighboring {@code float}s. If the left-neighboring
      * {@code float} is a zero, it is a positive zero; if the right-neighboring {@code float} is a zero, it is a
-     * negative zero. The exception is when {@code this} is equal to zero; then both neighbors are positive zeroes.
+     * negative zero. The exception is when {@code this} is equal to zero; then both neighbors are positive zeros.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Rational}.</li>
@@ -851,7 +851,7 @@ public final class Rational implements Comparable<Rational> {
      * and to each other. This method returns the pair made up of the left- and right-neighboring {@code double}s. If
      * the left-neighboring {@code double} is a zero, it is a positive zero; if the right-neighboring {@code double} is
      * a zero, it is a negative zero. The exception is when {@code this} is equal to zero; then both neighbors are
-     * positive zeroes.
+     * positive zeros.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Rational}.</li>
@@ -2088,7 +2088,7 @@ public final class Rational implements Comparable<Rational> {
     /**
      * Returns the digits of (non-negative) {@code this} in a given base. The return value is a pair consisting of the
      * digits before the decimal point (in a list) and the digits after the decimal point (in a possibly-infinite
-     * {@code Iterable}). Trailing zeroes are not included.
+     * {@code Iterable}). Trailing zeros are not included.
      *
      * <ul>
      *  <li>{@code this} cannot be negative.</li>
@@ -2230,8 +2230,8 @@ public final class Rational implements Comparable<Rational> {
      * expansion in the base. If the base is 36 or less, the digits are '0' through '9' followed by 'A' through 'Z'. If
      * the base is greater than 36, the digits are written in decimal and each digit is surrounded by parentheses. If
      * {@code this} has a fractional part, a decimal point is used. Zero is represented by "0" if the base is 36 or
-     * less, or "(0)" otherwise. There are no leading zeroes before the decimal point (unless {@code this} is less than
-     * 1, in which case there is exactly one zero) and no trailing zeroes after. Scientific notation is not used. If
+     * less, or "(0)" otherwise. There are no leading zeros before the decimal point (unless {@code this} is less than
+     * 1, in which case there is exactly one zero) and no trailing zeros after. Scientific notation is not used. If
      * {@code this} is negative, the result will contain a leading '-'.
      *
      * <ul>
@@ -2276,10 +2276,10 @@ public final class Rational implements Comparable<Rational> {
      * an ellipsis ("...") is appended. If the base is 36 or less, the digits are '0' through '9' followed by 'A'
      * through 'Z'. If the base is greater than 36, the digits are written in decimal and each digit is surrounded by
      * parentheses. If {@code this} has a fractional part, a decimal point is used. Zero is represented by "0" if the
-     * base is 36 or less, or "(0)" otherwise. There are no leading zeroes before the decimal point (unless
-     * {@code this} is less than 1, in which case there is exactly one zero) and no trailing zeroes after (unless an
-     * ellipsis is present, in which case there may be any number of trailing zeroes). Scientific notation is not used.
-     * If {@code this} is negative, the result will contain a leading '-'.
+     * base is 36 or less, or "(0)" otherwise. There are no leading zeros before the decimal point (unless {@code this}
+     * is less than 1, in which case there is exactly one zero) and no trailing zeros after (unless an ellipsis is
+     * present, in which case there may be any number of trailing zeros). Scientific notation is not used. If
+     * {@code this} is negative, the result will contain a leading '-'.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Rational}.</li>
@@ -2310,21 +2310,21 @@ public final class Rational implements Comparable<Rational> {
             result = rounded.toStringBase(base);
         }
         if (scale > 0 && !scaled.isInteger()) { //append ellipsis
-            //pad with trailing zeroes if necessary
+            //pad with trailing zeros if necessary
             int dotIndex = result.indexOf('.');
             if (dotIndex == -1) {
                 dotIndex = result.length();
                 result = result + ".";
             }
             if (le(base, ASCII_ALPHANUMERIC_COUNT)) {
-                int missingZeroes = scale - result.length() + dotIndex + 1;
-                result += replicate(missingZeroes, '0');
+                int missingZeros = scale - result.length() + dotIndex + 1;
+                result += replicate(missingZeros, '0');
             } else {
-                int missingZeroes = scale;
+                int missingZeros = scale;
                 for (int i = dotIndex + 1; i < result.length(); i++) {
-                    if (result.charAt(i) == '(') missingZeroes--;
+                    if (result.charAt(i) == '(') missingZeros--;
                 }
-                result += concatStrings(replicate(missingZeroes, "(0)"));
+                result += concatStrings(replicate(missingZeros, "(0)"));
             }
             result += "...";
         }
@@ -2335,8 +2335,8 @@ public final class Rational implements Comparable<Rational> {
      * Converts a {@code String} written in some base to a {@code Rational}. If the base is 36 or less, the digits are
      * '0' through '9' followed by 'A' through 'Z'. If the base is greater than 36, the digits are written in decimal
      * and each digit is surrounded by parentheses (in this case, the {@code String} representing the digit cannot be
-     * empty and no leading zeroes are allowed unless the digit is 0). The empty {@code String} represents 0. Leading
-     * zeroes are permitted. If the {@code String} is invalid, an exception is thrown.
+     * empty and no leading zeros are allowed unless the digit is 0). The empty {@code String} represents 0. Leading
+     * zeros are permitted. If the {@code String} is invalid, an exception is thrown.
      *
      * <ul>
      *  <li>{@code base} must be at least 2.</li>

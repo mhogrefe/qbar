@@ -132,11 +132,6 @@ public final class Algebraic implements Comparable<Algebraic> {
     };
 
     /**
-     * 36, the number of ASCII alphanumeric characters
-     */
-    private static final @NotNull BigInteger ASCII_ALPHANUMERIC_COUNT = BigInteger.valueOf(36);
-
-    /**
      * The minimal polynomial of {@code this}; the unique primitive, irreducible polynomial of minimal degree with
      * positive leading coefficient that has {@code this} as a root
      */
@@ -2768,7 +2763,7 @@ public final class Algebraic implements Comparable<Algebraic> {
     /**
      * Returns the digits of (non-negative) {@code this} in a given base. The return value is a pair consisting of the
      * digits before the decimal point (in a list) and the digits after the decimal point (in a possibly-infinite
-     * {@code Iterable}). Trailing zeroes are not included.
+     * {@code Iterable}). Trailing zeros are not included.
      *
      * <ul>
      *  <li>{@code this} cannot be negative.</li>
@@ -2872,9 +2867,9 @@ public final class Algebraic implements Comparable<Algebraic> {
      * an ellipsis ("...") is appended. If the base is 36 or less, the digits are '0' through '9' followed by 'A'
      * through 'Z'. If the base is greater than 36, the digits are written in decimal and each digit is surrounded by
      * parentheses. If {@code this} has a fractional part, a decimal point is used. Zero is represented by "0" if the
-     * base is 36 or less, or "(0)" otherwise. There are no leading zeroes before the decimal point (unless
-     * {@code this} is less than 1, in which case there is exactly one zero) and no trailing zeroes after (unless an
-     * ellipsis is present, in which case there may be any number of trailing zeroes). Scientific notation is not used.
+     * base is 36 or less, or "(0)" otherwise. There are no leading zeros before the decimal point (unless
+     * |{@code this}| is less than 1, in which case there is exactly one zero) and no trailing zeres after (unless an
+     * ellipsis is present, in which case there may be any number of trailing zeros). Scientific notation is not used.
      * If {@code this} is negative, the result will contain a leading '-'.
      *
      * <ul>
@@ -2894,35 +2889,9 @@ public final class Algebraic implements Comparable<Algebraic> {
     public @NotNull String toStringBase(@NotNull BigInteger base, int scale) {
         if (rational.isPresent()) {
             return rational.get().toStringBase(base, scale);
+        } else {
+            return realValue().toStringBaseUnsafe(base, scale);
         }
-        if (lt(base, IntegerUtils.TWO)) {
-            throw new IllegalArgumentException("base must be at least 2. Invalid base: " + base);
-        }
-        BigInteger power = base.pow(scale >= 0 ? scale : -scale);
-        Algebraic scaled = scale >= 0 ? multiply(power) : divide(power);
-        Rational rounded = Rational.of(scaled.bigIntegerValue(RoundingMode.DOWN));
-        rounded = scale >= 0 ? rounded.divide(power) : rounded.multiply(power);
-        String result = rounded.toStringBase(base);
-        if (scale > 0 && !scaled.isInteger()) { //append ellipsis
-            //pad with trailing zeroes if necessary
-            int dotIndex = result.indexOf('.');
-            if (dotIndex == -1) {
-                dotIndex = result.length();
-                result = result + ".";
-            }
-            if (le(base, ASCII_ALPHANUMERIC_COUNT)) {
-                int missingZeroes = scale - result.length() + dotIndex + 1;
-                result += replicate(missingZeroes, '0');
-            } else {
-                int missingZeroes = scale;
-                for (int i = dotIndex + 1; i < result.length(); i++) {
-                    if (result.charAt(i) == '(') missingZeroes--;
-                }
-                result += concatStrings(replicate(missingZeroes, "(0)"));
-            }
-            result += "...";
-        }
-        return result;
     }
 
     /**
