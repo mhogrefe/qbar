@@ -8054,6 +8054,233 @@ public class RealTest {
         pow_int_Rational_fail_helper(PI, 2, Rational.NEGATIVE_ONE);
     }
 
+    private static void intervalExtensionUnsafe_helper(@NotNull Real a, @NotNull Real b, @NotNull String output) {
+        aeq(intervalExtensionUnsafe(a, b), output);
+    }
+
+    private static void intervalExtensionUnsafe_fail_helper(@NotNull Real a, @NotNull Real b) {
+        try {
+            intervalExtensionUnsafe(a, b);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testIntervalExtensionUnsafe() {
+        intervalExtensionUnsafe_helper(PI.negate(), NEGATIVE_FOUR_THIRDS, "[-651864872/204778785, -4/3]");
+        intervalExtensionUnsafe_helper(PI.negate(), ZERO, "[-651864872/204778785, 0]");
+        intervalExtensionUnsafe_helper(PI.negate(), ONE_HALF, "[-651864872/204778785, 1/2]");
+        intervalExtensionUnsafe_helper(PI.negate(), ONE, "[-651864872/204778785, 1]");
+        intervalExtensionUnsafe_helper(PI.negate(), E, "[-651864872/204778785, 4]");
+        intervalExtensionUnsafe_helper(PI.negate(), PI, "[-651864872/204778785, 651864872/204778785]");
+
+        intervalExtensionUnsafe_helper(NEGATIVE_FOUR_THIRDS, ZERO, "[-4/3, 0]");
+        intervalExtensionUnsafe_helper(NEGATIVE_FOUR_THIRDS, ONE_HALF, "[-4/3, 1/2]");
+        intervalExtensionUnsafe_helper(NEGATIVE_FOUR_THIRDS, ONE, "[-4/3, 1]");
+        intervalExtensionUnsafe_helper(NEGATIVE_FOUR_THIRDS, E, "[-4/3, 4]");
+        intervalExtensionUnsafe_helper(NEGATIVE_FOUR_THIRDS, PI, "[-4/3, 651864872/204778785]");
+
+        intervalExtensionUnsafe_helper(ZERO, ONE_HALF, "[0, 1/2]");
+        intervalExtensionUnsafe_helper(ZERO, ONE, "[0, 1]");
+        intervalExtensionUnsafe_helper(ZERO, E, "[0, 4]");
+        intervalExtensionUnsafe_helper(ZERO, PI, "[0, 651864872/204778785]");
+
+        intervalExtensionUnsafe_helper(ONE_HALF, ONE, "[1/2, 1]");
+        intervalExtensionUnsafe_helper(ONE_HALF, E, "[1/2, 7/2]");
+        intervalExtensionUnsafe_helper(ONE_HALF, PI, "[1/2, 651864872/204778785]");
+
+        intervalExtensionUnsafe_helper(ONE, E, "[1, 7/2]");
+        intervalExtensionUnsafe_helper(ONE, PI, "[1, 651864872/204778785]");
+
+        intervalExtensionUnsafe_helper(E, PI,
+                "[65/24," +
+                " 1820381950672004239437026206052012466686191144368/" +
+                "579445571523205428758215494416167327391357421875]");
+
+        intervalExtensionUnsafe_helper(leftFuzzyRepresentation(Rational.ZERO), ONE_HALF, "[-1/2, 1/2]");
+        intervalExtensionUnsafe_helper(leftFuzzyRepresentation(Rational.ZERO), ONE, "[-1, 1]");
+        intervalExtensionUnsafe_helper(leftFuzzyRepresentation(Rational.ZERO), E, "[-1/2, 7/2]");
+        intervalExtensionUnsafe_helper(leftFuzzyRepresentation(Rational.ZERO), PI, "[-1, 651864872/204778785]");
+
+        intervalExtensionUnsafe_helper(rightFuzzyRepresentation(Rational.ZERO), ONE_HALF, "[0, 1/2]");
+        intervalExtensionUnsafe_helper(rightFuzzyRepresentation(Rational.ZERO), ONE, "[0, 1]");
+        intervalExtensionUnsafe_helper(rightFuzzyRepresentation(Rational.ZERO), E, "[0, 7/2]");
+        intervalExtensionUnsafe_helper(rightFuzzyRepresentation(Rational.ZERO), PI, "[0, 651864872/204778785]");
+
+        intervalExtensionUnsafe_helper(fuzzyRepresentation(Rational.ZERO), ONE_HALF, "[-1/8, 1/2]");
+        intervalExtensionUnsafe_helper(fuzzyRepresentation(Rational.ZERO), ONE, "[-1/4, 1]");
+        intervalExtensionUnsafe_helper(fuzzyRepresentation(Rational.ZERO), E, "[-1/2, 7/2]");
+        intervalExtensionUnsafe_helper(fuzzyRepresentation(Rational.ZERO), PI, "[-1, 651864872/204778785]");
+
+        intervalExtensionUnsafe_fail_helper(ZERO, ZERO);
+        intervalExtensionUnsafe_fail_helper(PI, PI);
+    }
+
+    private static void fractionalPartUnsafe_helper(@NotNull Real input, @NotNull String output) {
+        Real x = input.fractionalPartUnsafe();
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testFractionalPartUnsafe() {
+        fractionalPartUnsafe_helper(ZERO, "0");
+        fractionalPartUnsafe_helper(ONE, "0");
+        fractionalPartUnsafe_helper(NEGATIVE_ONE, "0");
+        fractionalPartUnsafe_helper(ONE_HALF, "0.5");
+        fractionalPartUnsafe_helper(NEGATIVE_FOUR_THIRDS, "0.66666666666666666666...");
+        fractionalPartUnsafe_helper(SQRT_TWO, "0.41421356237309504880...");
+        fractionalPartUnsafe_helper(E, "0.71828182845904523536...");
+        fractionalPartUnsafe_helper(PI, "0.14159265358979323846...");
+        fractionalPartUnsafe_helper(rightFuzzyRepresentation(Rational.ZERO), "0.00000000000000000000...");
+    }
+
+    private static void fractionalPart_helper(
+            @NotNull Real input,
+            @NotNull Rational resolution,
+            @NotNull String output
+    ) {
+        Optional<Real> ox = input.fractionalPart(resolution);
+        if (ox.isPresent()) {
+            ox.get().validate();
+        }
+        aeq(ox, output);
+    }
+
+    private static void fractionalPart_fail_helper(@NotNull Real input, @NotNull Rational resolution) {
+        try {
+            input.fractionalPart(resolution);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testFractionalPart() {
+        fractionalPart_helper(ZERO, DEFAULT_RESOLUTION, "Optional[0]");
+        fractionalPart_helper(ONE, DEFAULT_RESOLUTION, "Optional[0]");
+        fractionalPart_helper(NEGATIVE_ONE, DEFAULT_RESOLUTION, "Optional[0]");
+        fractionalPart_helper(ONE_HALF, DEFAULT_RESOLUTION, "Optional[0.5]");
+        fractionalPart_helper(NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[0.66666666666666666666...]");
+        fractionalPart_helper(SQRT_TWO, DEFAULT_RESOLUTION, "Optional[0.41421356237309504880...]");
+        fractionalPart_helper(E, DEFAULT_RESOLUTION, "Optional[0.71828182845904523536...]");
+        fractionalPart_helper(PI, DEFAULT_RESOLUTION, "Optional[0.14159265358979323846...]");
+        fractionalPart_helper(leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        fractionalPart_helper(rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION,
+                "Optional[0.00000000000000000000...]");
+        fractionalPart_helper(fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+
+        fractionalPart_fail_helper(ZERO, Rational.ZERO);
+        fractionalPart_fail_helper(ZERO, Rational.NEGATIVE_ONE);
+        fractionalPart_fail_helper(PI, Rational.ZERO);
+        fractionalPart_fail_helper(PI, Rational.NEGATIVE_ONE);
+    }
+
+    private static void roundToDenominatorUnsafe_helper(
+            @NotNull Real x,
+            @NotNull String denominator,
+            @NotNull String roundingMode,
+            @NotNull String output
+    ) {
+        aeq(
+                x.roundToDenominatorUnsafe(
+                        Readers.readBigIntegerStrict(denominator).get(),
+                        Readers.readRoundingModeStrict(roundingMode).get()
+                ),
+                output
+        );
+    }
+
+    private static void roundToDenominatorUnsafe_fail_helper(
+            @NotNull Real x,
+            @NotNull String denominator,
+            @NotNull String roundingMode
+    ) {
+        try {
+            x.roundToDenominatorUnsafe(
+                    Readers.readBigIntegerStrict(denominator).get(),
+                    Readers.readRoundingModeStrict(roundingMode).get()
+            );
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testRoundToDenominatorUnsafe() {
+        roundToDenominatorUnsafe_helper(PI, "1", "HALF_EVEN", "3");
+        roundToDenominatorUnsafe_helper(PI, "2", "HALF_EVEN", "3");
+        roundToDenominatorUnsafe_helper(PI, "3", "HALF_EVEN", "3");
+        roundToDenominatorUnsafe_helper(PI, "4", "HALF_EVEN", "13/4");
+        roundToDenominatorUnsafe_helper(PI, "5", "HALF_EVEN", "16/5");
+        roundToDenominatorUnsafe_helper(PI, "6", "HALF_EVEN", "19/6");
+        roundToDenominatorUnsafe_helper(PI, "7", "HALF_EVEN", "22/7");
+        roundToDenominatorUnsafe_helper(PI, "8", "HALF_EVEN", "25/8");
+        roundToDenominatorUnsafe_helper(PI, "9", "HALF_EVEN", "28/9");
+        roundToDenominatorUnsafe_helper(PI, "10", "HALF_EVEN", "31/10");
+        roundToDenominatorUnsafe_helper(PI, "100", "HALF_EVEN", "157/50");
+        roundToDenominatorUnsafe_helper(PI, "1000", "HALF_EVEN", "1571/500");
+        roundToDenominatorUnsafe_helper(NEGATIVE_FOUR_THIRDS, "30", "UNNECESSARY", "-4/3");
+
+        roundToDenominatorUnsafe_fail_helper(PI, "0", "HALF_EVEN");
+        roundToDenominatorUnsafe_fail_helper(PI, "-1", "HALF_EVEN");
+        roundToDenominatorUnsafe_fail_helper(PI, "7", "UNNECESSARY");
+    }
+
+    private static void roundToDenominator_helper(
+            @NotNull Real x,
+            @NotNull String denominator,
+            @NotNull String roundingMode,
+            @NotNull Rational resolution,
+            @NotNull String output
+    ) {
+        aeq(
+                x.roundToDenominator(
+                        Readers.readBigIntegerStrict(denominator).get(),
+                        Readers.readRoundingModeStrict(roundingMode).get(),
+                        resolution
+                ),
+                output
+        );
+    }
+
+    private static void roundToDenominator_fail_helper(
+            @NotNull Real x,
+            @NotNull String denominator,
+            @NotNull String roundingMode,
+            @NotNull Rational resolution
+    ) {
+        try {
+            x.roundToDenominator(
+                    Readers.readBigIntegerStrict(denominator).get(),
+                    Readers.readRoundingModeStrict(roundingMode).get(),
+                    resolution
+            );
+            fail();
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testRoundToDenominator() {
+        roundToDenominator_helper(PI, "1", "HALF_EVEN", DEFAULT_RESOLUTION, "Optional[3]");
+        roundToDenominator_helper(PI, "2", "HALF_EVEN", DEFAULT_RESOLUTION, "Optional[3]");
+        roundToDenominator_helper(PI, "3", "HALF_EVEN", DEFAULT_RESOLUTION, "Optional[3]");
+        roundToDenominator_helper(PI, "4", "HALF_EVEN", DEFAULT_RESOLUTION, "Optional[13/4]");
+        roundToDenominator_helper(PI, "5", "HALF_EVEN", DEFAULT_RESOLUTION, "Optional[16/5]");
+        roundToDenominator_helper(PI, "6", "HALF_EVEN", DEFAULT_RESOLUTION, "Optional[19/6]");
+        roundToDenominator_helper(PI, "7", "HALF_EVEN", DEFAULT_RESOLUTION, "Optional[22/7]");
+        roundToDenominator_helper(PI, "8", "HALF_EVEN", DEFAULT_RESOLUTION, "Optional[25/8]");
+        roundToDenominator_helper(PI, "9", "HALF_EVEN", DEFAULT_RESOLUTION, "Optional[28/9]");
+        roundToDenominator_helper(PI, "10", "HALF_EVEN", DEFAULT_RESOLUTION, "Optional[31/10]");
+        roundToDenominator_helper(PI, "100", "HALF_EVEN", DEFAULT_RESOLUTION, "Optional[157/50]");
+        roundToDenominator_helper(PI, "1000", "HALF_EVEN", DEFAULT_RESOLUTION, "Optional[1571/500]");
+        roundToDenominator_helper(NEGATIVE_FOUR_THIRDS, "30", "UNNECESSARY", DEFAULT_RESOLUTION, "Optional[-4/3]");
+
+        roundToDenominator_fail_helper(PI, "0", "HALF_EVEN", DEFAULT_RESOLUTION);
+        roundToDenominator_fail_helper(PI, "-1", "HALF_EVEN", DEFAULT_RESOLUTION);
+        roundToDenominator_fail_helper(PI, "7", "UNNECESSARY", DEFAULT_RESOLUTION);
+        roundToDenominator_fail_helper(PI, "1", "HALF_EVEN", Rational.ZERO);
+        roundToDenominator_fail_helper(PI, "1", "HALF_EVEN", Rational.NEGATIVE_ONE);
+    }
+
     private static void continuedFractionUnsafe_helper(@NotNull Real input, @NotNull String output) {
         aeqitLimit(TINY_LIMIT, input.continuedFractionUnsafe(), output);
     }

@@ -1394,7 +1394,7 @@ public final class Algebraic implements Comparable<Algebraic> {
             }
             return Interval.of(lower.rationalValueExact(), upper.rationalValueExact());
         }
-        return Real.intervalExtension(lower.realValue(), upper.realValue());
+        return Real.intervalExtensionUnsafe(lower.realValue(), upper.realValue());
     }
 
     /**

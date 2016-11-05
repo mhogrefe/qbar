@@ -1614,6 +1614,187 @@ public class RealDemos extends QBarDemos {
         }
     }
 
+    private void demoIntervalExtensionUnsafe() {
+        Iterable<Pair<Real, Real>> ps = filterInfinite(
+                p -> p.a.lt(p.b, DEFAULT_RESOLUTION).orElse(false),
+                P.pairs(P.withScale(4).reals())
+        );
+        for (Pair<Real, Real> p : take(LIMIT, ps)) {
+            System.out.println("intervalExtensionUnsafe(" + p.a + ", " + p.b + ") = " +
+                    intervalExtensionUnsafe(p.a, p.b));
+        }
+    }
+
+    private void demoFractionalPartUnsafe() {
+        //noinspection RedundantCast
+        Iterable<Real> xs = map(
+                q -> {
+                    switch (q.b) {
+                        case NONE:
+                            return q.a.realValue();
+                        case LEFT:
+                            return leftFuzzyRepresentation(q.a.rationalValueExact());
+                        case RIGHT:
+                            return rightFuzzyRepresentation(q.a.rationalValueExact());
+                        case BOTH:
+                            return fuzzyRepresentation(q.a.rationalValueExact());
+                        default:
+                            throw new IllegalStateException("unreachable");
+                    }
+                },
+                filterInfinite(
+                        p -> rmIntCheck(p.a, RoundingMode.FLOOR, p.b),
+                        P.withScale(1).choose(
+                                map(x -> new Pair<>(x, FuzzinessType.NONE), P.withScale(4).algebraics()),
+                                P.choose(
+                                        (List<Iterable<Pair<Algebraic, FuzzinessType>>>) Arrays.asList(
+                                                map(
+                                                        r -> new Pair<>(Algebraic.of(r), FuzzinessType.LEFT),
+                                                        P.withScale(4).rationals()
+                                                ),
+                                                map(
+                                                        r -> new Pair<>(Algebraic.of(r), FuzzinessType.RIGHT),
+                                                        P.withScale(4).rationals()
+                                                ),
+                                                map(
+                                                        r -> new Pair<>(Algebraic.of(r), FuzzinessType.BOTH),
+                                                        P.withScale(4).rationals()
+                                                )
+                                        )
+                                )
+                        )
+                )
+        );
+        for (Real x : take(LIMIT, xs)) {
+            System.out.println("fractionalPartUnsafe(" + x + ") = " + x.fractionalPartUnsafe());
+        }
+    }
+
+    private void demoFractionalPart() {
+        Iterable<Pair<Real, Rational>> ps = P.pairs(P.withScale(4).reals(), P.withScale(4).positiveRationals());
+        for (Pair<Real, Rational> p : take(LIMIT, ps)) {
+            System.out.println("fractionalPart(" + p.a + ", " + p.b + ") = " + p.a.fractionalPart(p.b));
+        }
+    }
+
+    private static boolean rmdCheck(
+            @NotNull Algebraic x,
+            @NotNull BigInteger denominator,
+            @NotNull RoundingMode rm,
+            @NotNull FuzzinessType ft
+    ) {
+        boolean left = ft == FuzzinessType.LEFT || ft == FuzzinessType.BOTH;
+        boolean right = ft == FuzzinessType.RIGHT || ft == FuzzinessType.BOTH;
+        if (x.isRational() && x.rationalValueExact().multiply(denominator).isInteger()) {
+            int sign = x.signum();
+            switch (rm) {
+                case UP:
+                    return sign != 0 && !(sign == 1 && right) && !(sign == -1 && left);
+                case DOWN:
+                    return !(sign == 1 && left) && !(sign == -1 && right);
+                case CEILING:
+                    return !right;
+                case FLOOR:
+                    return !left;
+                case UNNECESSARY:
+                    return ft == FuzzinessType.NONE;
+                default:
+                    return true;
+            }
+        } else if (x.isRational() &&
+                x.rationalValueExact().multiply(denominator).getDenominator().equals(IntegerUtils.TWO)) {
+            int sign = x.signum();
+            switch (rm) {
+                case HALF_UP:
+                    return !(sign == 1 && left) && !(sign == -1 && right);
+                case HALF_DOWN:
+                    return !(sign == 1 && right) && !(sign == -1 && left);
+                case HALF_EVEN:
+                    BigInteger mod4 =
+                            x.rationalValueExact().multiply(denominator).getNumerator().and(BigInteger.valueOf(3));
+                    return !(mod4.equals(BigInteger.ONE) && right) && !(mod4.equals(BigInteger.valueOf(3)) && left);
+                case UNNECESSARY:
+                    return false;
+                default:
+                    return true;
+            }
+        } else {
+            return rm != RoundingMode.UNNECESSARY;
+        }
+    }
+
+    private void demoRoundToDenominatorUnsafe() {
+        //noinspection RedundantCast
+        Iterable<Triple<Real, BigInteger, RoundingMode>> ts = map(
+                s -> {
+                    Real r;
+                    switch (s.a.b) {
+                        case NONE:
+                            r = s.a.a.realValue();
+                            break;
+                        case LEFT:
+                            r = leftFuzzyRepresentation(s.a.a.rationalValueExact());
+                            break;
+                        case RIGHT:
+                            r = rightFuzzyRepresentation(s.a.a.rationalValueExact());
+                            break;
+                        case BOTH:
+                            r = fuzzyRepresentation(s.a.a.rationalValueExact());
+                            break;
+                        default:
+                            throw new IllegalStateException("unreachable");
+                    }
+                    return new Triple<>(r, s.b, s.c);
+                },
+                filterInfinite(
+                        t -> rmdCheck(t.a.a, t.b, t.c, t.a.b),
+                        P.triples(
+                                P.withScale(1).choose(
+                                        map(x -> new Pair<>(x, FuzzinessType.NONE), P.withScale(4).algebraics()),
+                                        P.choose(
+                                                (List<Iterable<Pair<Algebraic, FuzzinessType>>>) Arrays.asList(
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.LEFT),
+                                                                P.withScale(4).rationals()
+                                                        ),
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.RIGHT),
+                                                                P.withScale(4).rationals()
+                                                        ),
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.BOTH),
+                                                                P.withScale(4).rationals()
+                                                        )
+                                                )
+                                        )
+                                ),
+                                P.positiveBigIntegers(),
+                                P.roundingModes()
+                        )
+                )
+        );
+        for (Triple<Real, BigInteger, RoundingMode> t : take(LIMIT, ts)) {
+            System.out.println("roundToDenominatorUnsafe(" + t.a + ", " + t.b + ", " + t.c + ") = " +
+                    t.a.roundToDenominatorUnsafe(t.b, t.c));
+        }
+    }
+
+    private void demoRoundToDenominator() {
+        Iterable<Quadruple<Real, BigInteger, RoundingMode, Rational>> qs = filterInfinite(
+                r -> r.c != RoundingMode.UNNECESSARY || r.a.multiply(r.b).isExactInteger(),
+                P.quadruples(
+                        P.withScale(4).reals(),
+                        P.positiveBigIntegers(),
+                        P.roundingModes(),
+                        P.withScale(4).positiveRationals()
+                )
+        );
+        for (Quadruple<Real, BigInteger, RoundingMode, Rational> q : take(LIMIT, qs)) {
+            System.out.println("roundToDenominator(" + q.a + ", " + q.b + ", " + q.c + ", " + q.d + ") = " +
+                    q.a.roundToDenominator(q.b, q.c, q.d));
+        }
+    }
+
     private void demoContinuedFractionUnsafe() {
         for (Real x : take(LIMIT, P.withScale(4).cleanReals())) {
             System.out.println("continuedFractionUnsafe(" + x + ") = " + its(x.continuedFractionUnsafe()));

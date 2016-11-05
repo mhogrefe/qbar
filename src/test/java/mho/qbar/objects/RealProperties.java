@@ -128,6 +128,11 @@ public class RealProperties extends QBarTestProperties {
         propertiesDelta();
         propertiesPowUnsafe_int();
         propertiesPow_int_Rational();
+        propertiesIntervalExtensionUnsafe();
+        propertiesFractionalPartUnsafe();
+        propertiesFractionalPart();
+        propertiesRoundToDenominatorUnsafe();
+        propertiesRoundToDenominator();
         propertiesContinuedFractionUnsafe();
         propertiesFromContinuedFraction();
         propertiesConvergentsUnsafe();
@@ -4446,6 +4451,457 @@ public class RealProperties extends QBarTestProperties {
             try {
                 t.a.pow(t.b, t.c);
                 fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesIntervalExtensionUnsafe() {
+        initialize("intervalExtensionUnsafe(Real, Real)");
+        Iterable<Pair<Real, Real>> ps = filterInfinite(
+                p -> p.a.lt(p.b, DEFAULT_RESOLUTION).orElse(false),
+                P.pairs(P.withScale(4).reals())
+        );
+        for (Pair<Real, Real> p : take(LIMIT, ps)) {
+            Interval extension = intervalExtensionUnsafe(p.a, p.b);
+            assertTrue(p, extension.isFinitelyBounded());
+            assertTrue(p, p.b.subtract(p.a).geUnsafe(extension.diameter().get().shiftRight(1)));
+        }
+
+        for (Real x : take(LIMIT, P.reals())) {
+            try {
+                intervalExtensionUnsafe(x, x);
+                fail(x);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesFractionalPartUnsafe() {
+        initialize("fractionalPartUnsafe()");
+        //noinspection RedundantCast
+        Iterable<Real> xs = map(
+                q -> {
+                    switch (q.b) {
+                        case NONE:
+                            return q.a.realValue();
+                        case LEFT:
+                            return leftFuzzyRepresentation(q.a.rationalValueExact());
+                        case RIGHT:
+                            return rightFuzzyRepresentation(q.a.rationalValueExact());
+                        case BOTH:
+                            return fuzzyRepresentation(q.a.rationalValueExact());
+                        default:
+                            throw new IllegalStateException("unreachable");
+                    }
+                },
+                filterInfinite(
+                        p -> rmIntCheck(p.a, RoundingMode.FLOOR, p.b),
+                        P.withScale(1).choose(
+                                map(x -> new Pair<>(x, FuzzinessType.NONE), P.withScale(4).algebraics()),
+                                P.choose(
+                                        (List<Iterable<Pair<Algebraic, FuzzinessType>>>) Arrays.asList(
+                                                map(
+                                                        r -> new Pair<>(Algebraic.of(r), FuzzinessType.LEFT),
+                                                        P.withScale(4).rationals()
+                                                ),
+                                                map(
+                                                        r -> new Pair<>(Algebraic.of(r), FuzzinessType.RIGHT),
+                                                        P.withScale(4).rationals()
+                                                ),
+                                                map(
+                                                        r -> new Pair<>(Algebraic.of(r), FuzzinessType.BOTH),
+                                                        P.withScale(4).rationals()
+                                                )
+                                        )
+                                )
+                        )
+                )
+        );
+        for (Real x : take(LIMIT, xs)) {
+            Real fractionalPart = x.fractionalPartUnsafe();
+            fractionalPart.validate();
+            assertTrue(x, fractionalPart.geUnsafe(ZERO));
+            assertTrue(x, fractionalPart.ltUnsafe(ONE));
+            Optional<Boolean> equal = of(x.floorUnsafe()).add(fractionalPart).eq(x, DEFAULT_RESOLUTION);
+            assertTrue(x, !equal.isPresent() || equal.get());
+        }
+
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            assertEquals(i, of(i).fractionalPartUnsafe().rationalValueExact().get(), Rational.ZERO);
+        }
+    }
+
+    private void propertiesFractionalPart() {
+        initialize("fractionalPart(Rational)");
+        for (Pair<Real, Rational> p : take(LIMIT, P.pairs(P.reals(), P.positiveRationals()))) {
+            Optional<Real> ox = p.a.fractionalPart(p.b);
+            if (ox.isPresent()) {
+                ox.get().validate();
+                Optional<Boolean> equal = p.a.fractionalPartUnsafe().eq(ox.get(), DEFAULT_RESOLUTION);
+                assertTrue(p, !equal.isPresent() || equal.get());
+            }
+        }
+
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            assertFalse(i, leftFuzzyRepresentation(Rational.of(i)).fractionalPart(DEFAULT_RESOLUTION).isPresent());
+        }
+
+        for (Pair<Real, Rational> p : take(LIMIT, P.pairs(P.reals(), P.rangeDown(Rational.ZERO)))) {
+            try {
+                p.a.fractionalPart(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private static boolean rmdCheck(
+            @NotNull Algebraic x,
+            @NotNull BigInteger denominator,
+            @NotNull RoundingMode rm,
+            @NotNull FuzzinessType ft
+    ) {
+        boolean left = ft == FuzzinessType.LEFT || ft == FuzzinessType.BOTH;
+        boolean right = ft == FuzzinessType.RIGHT || ft == FuzzinessType.BOTH;
+        if (x.isRational() && x.rationalValueExact().multiply(denominator).isInteger()) {
+            int sign = x.signum();
+            switch (rm) {
+                case UP:
+                    return sign != 0 && !(sign == 1 && right) && !(sign == -1 && left);
+                case DOWN:
+                    return !(sign == 1 && left) && !(sign == -1 && right);
+                case CEILING:
+                    return !right;
+                case FLOOR:
+                    return !left;
+                case UNNECESSARY:
+                    return ft == FuzzinessType.NONE;
+                default:
+                    return true;
+            }
+        } else if (x.isRational() &&
+                x.rationalValueExact().multiply(denominator).getDenominator().equals(IntegerUtils.TWO)) {
+            int sign = x.signum();
+            switch (rm) {
+                case HALF_UP:
+                    return !(sign == 1 && left) && !(sign == -1 && right);
+                case HALF_DOWN:
+                    return !(sign == 1 && right) && !(sign == -1 && left);
+                case HALF_EVEN:
+                    BigInteger mod4 =
+                            x.rationalValueExact().multiply(denominator).getNumerator().and(BigInteger.valueOf(3));
+                    return !(mod4.equals(BigInteger.ONE) && right) && !(mod4.equals(BigInteger.valueOf(3)) && left);
+                case UNNECESSARY:
+                    return false;
+                default:
+                    return true;
+            }
+        } else {
+            return rm != RoundingMode.UNNECESSARY;
+        }
+    }
+
+    private void propertiesRoundToDenominatorUnsafe() {
+        initialize("roundToDenominatorUnsafe(BigInteger, RoundingMode)");
+        //noinspection RedundantCast
+        Iterable<Triple<Real, BigInteger, RoundingMode>> ts = map(
+                s -> {
+                    Real r;
+                    switch (s.a.b) {
+                        case NONE:
+                            r = s.a.a.realValue();
+                            break;
+                        case LEFT:
+                            r = leftFuzzyRepresentation(s.a.a.rationalValueExact());
+                            break;
+                        case RIGHT:
+                            r = rightFuzzyRepresentation(s.a.a.rationalValueExact());
+                            break;
+                        case BOTH:
+                            r = fuzzyRepresentation(s.a.a.rationalValueExact());
+                            break;
+                        default:
+                            throw new IllegalStateException("unreachable");
+                    }
+                    return new Triple<>(r, s.b, s.c);
+                },
+                filterInfinite(
+                        t -> rmdCheck(t.a.a, t.b, t.c, t.a.b),
+                        P.triples(
+                                P.withScale(1).choose(
+                                        map(x -> new Pair<>(x, FuzzinessType.NONE), P.withScale(4).algebraics()),
+                                        P.choose(
+                                                (List<Iterable<Pair<Algebraic, FuzzinessType>>>) Arrays.asList(
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.LEFT),
+                                                                P.withScale(4).rationals()
+                                                        ),
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.RIGHT),
+                                                                P.withScale(4).rationals()
+                                                        ),
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.BOTH),
+                                                                P.withScale(4).rationals()
+                                                        )
+                                                )
+                                        )
+                                ),
+                                P.positiveBigIntegers(),
+                                P.roundingModes()
+                        )
+                )
+        );
+        for (Triple<Real, BigInteger, RoundingMode> t : take(LIMIT, ts)) {
+            Rational rounded = t.a.roundToDenominatorUnsafe(t.b, t.c);
+            rounded.validate();
+            assertEquals(t, t.b.mod(rounded.getDenominator()), BigInteger.ZERO);
+            assertTrue(t, rounded == Rational.ZERO || rounded.signum() == t.a.signumUnsafe());
+            Optional<Boolean> less = t.a.subtract(rounded).abs()
+                    .lt(of(Rational.of(BigInteger.ONE, t.b)), DEFAULT_RESOLUTION);
+            assertTrue(t, !less.isPresent() || less.get());
+        }
+
+        //noinspection RedundantCast
+        Iterable<Pair<Real, RoundingMode>> ps = map(
+                q -> {
+                    Real r;
+                    switch (q.a.b) {
+                        case NONE:
+                            r = q.a.a.realValue();
+                            break;
+                        case LEFT:
+                            r = leftFuzzyRepresentation(q.a.a.rationalValueExact());
+                            break;
+                        case RIGHT:
+                            r = rightFuzzyRepresentation(q.a.a.rationalValueExact());
+                            break;
+                        case BOTH:
+                            r = fuzzyRepresentation(q.a.a.rationalValueExact());
+                            break;
+                        default:
+                            throw new IllegalStateException("unreachable");
+                    }
+                    return new Pair<>(r, q.b);
+                },
+                filterInfinite(
+                        p -> rmdCheck(p.a.a, BigInteger.ONE, p.b, p.a.b),
+                        P.pairsLogarithmicOrder(
+                                P.withScale(1).choose(
+                                        map(x -> new Pair<>(x, FuzzinessType.NONE), P.withScale(4).algebraics()),
+                                        P.choose(
+                                                (List<Iterable<Pair<Algebraic, FuzzinessType>>>) Arrays.asList(
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.LEFT),
+                                                                P.withScale(4).rationals()
+                                                        ),
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.RIGHT),
+                                                                P.withScale(4).rationals()
+                                                        ),
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.BOTH),
+                                                                P.withScale(4).rationals()
+                                                        )
+                                                )
+                                        )
+                                ),
+                                P.roundingModes()
+                        )
+                )
+        );
+        for (Pair<Real, RoundingMode> p : take(LIMIT, ps)) {
+            Rational rounded = p.a.roundToDenominatorUnsafe(BigInteger.ONE, p.b);
+            assertEquals(p, rounded.getNumerator(), p.a.bigIntegerValueUnsafe(p.b));
+            assertEquals(p, rounded.getDenominator(), BigInteger.ONE);
+        }
+
+        Iterable<Pair<Real, BigInteger>> ps2 = map(
+                q -> new Pair<>(of(q.a), q.b),
+                filterInfinite(
+                        p -> p.b.mod(p.a.getDenominator()).equals(BigInteger.ZERO),
+                        P.pairs(P.rationals(), P.positiveBigIntegers())
+                )
+        );
+        for (Pair<Real, BigInteger> p : take(LIMIT, ps2)) {
+            assertEquals(
+                    p,
+                    p.a.roundToDenominatorUnsafe(p.b, RoundingMode.UNNECESSARY),
+                    p.a.rationalValueExact().get()
+            );
+        }
+
+        for (Pair<Real, BigInteger> p : take(LIMIT, P.pairs(P.cleanReals(), P.positiveBigIntegers()))) {
+            assertTrue(p, p.a.geUnsafe(p.a.roundToDenominatorUnsafe(p.b, RoundingMode.FLOOR)));
+            assertTrue(p, p.a.leUnsafe(p.a.roundToDenominatorUnsafe(p.b, RoundingMode.CEILING)));
+            assertTrue(p, p.a.abs().geUnsafe(p.a.roundToDenominatorUnsafe(p.b, RoundingMode.DOWN).abs()));
+            assertTrue(p, p.a.abs().leUnsafe(p.a.roundToDenominatorUnsafe(p.b, RoundingMode.UP).abs()));
+            Rational resolution = Rational.of(p.b).shiftLeft(1).invert();
+            assertTrue(
+                    p,
+                    p.a.subtract(p.a.roundToDenominatorUnsafe(p.b, RoundingMode.HALF_DOWN)).abs()
+                            .leUnsafe(resolution));
+            assertTrue(
+                    p,
+                    p.a.subtract(p.a.roundToDenominatorUnsafe(p.b, RoundingMode.HALF_UP)).abs().leUnsafe(resolution));
+            assertTrue(
+                    p,
+                    p.a.subtract(p.a.roundToDenominatorUnsafe(p.b, RoundingMode.HALF_EVEN)).abs()
+                            .leUnsafe(resolution));
+        }
+
+        ps2 = filterInfinite(
+                p -> p.a.abs().multiply(p.b).fractionalPartUnsafe().ltUnsafe(Rational.ONE_HALF),
+                P.pairs(P.cleanReals(), P.positiveBigIntegers())
+        );
+        for (Pair<Real, BigInteger> p : take(LIMIT, ps2)) {
+            Rational down = p.a.roundToDenominatorUnsafe(p.b, RoundingMode.DOWN);
+            assertEquals(p, p.a.roundToDenominatorUnsafe(p.b, RoundingMode.HALF_DOWN), down);
+            assertEquals(p, p.a.roundToDenominatorUnsafe(p.b, RoundingMode.HALF_UP), down);
+            assertEquals(p, p.a.roundToDenominatorUnsafe(p.b, RoundingMode.HALF_EVEN), down);
+        }
+
+        ps2 = filterInfinite(
+                p -> p.a.abs().multiply(p.b).fractionalPartUnsafe().gtUnsafe(ONE_HALF),
+                P.pairs(P.cleanReals(), P.positiveBigIntegers())
+        );
+        for (Pair<Real, BigInteger> p : take(LIMIT, ps2)) {
+            Rational up = p.a.roundToDenominatorUnsafe(p.b, RoundingMode.UP);
+            assertEquals(p, p.a.roundToDenominatorUnsafe(p.b, RoundingMode.HALF_DOWN), up);
+            assertEquals(p, p.a.roundToDenominatorUnsafe(p.b, RoundingMode.HALF_UP), up);
+            assertEquals(p, p.a.roundToDenominatorUnsafe(p.b, RoundingMode.HALF_EVEN), up);
+        }
+
+        for (Rational r : take(LIMIT, filterInfinite(s -> !s.getDenominator().testBit(0), P.rationals()))) {
+            Real x = of(r);
+            BigInteger denominator = r.getDenominator().shiftRight(1);
+            assertEquals(
+                    x,
+                    x.abs().multiply(denominator).fractionalPartUnsafe().rationalValueExact().get(),
+                    Rational.ONE_HALF
+            );
+            Rational hd = x.roundToDenominatorUnsafe(denominator, RoundingMode.HALF_DOWN);
+            assertEquals(x, hd, x.roundToDenominatorUnsafe(denominator, RoundingMode.DOWN));
+            Rational hu = x.roundToDenominatorUnsafe(denominator, RoundingMode.HALF_UP);
+            assertEquals(x, hu, x.roundToDenominatorUnsafe(denominator, RoundingMode.UP));
+            Rational he = x.roundToDenominatorUnsafe(denominator, RoundingMode.HALF_EVEN);
+            assertFalse(r, he.multiply(denominator).getNumerator().testBit(0));
+        }
+
+        //noinspection RedundantCast
+        Iterable<Triple<Real, BigInteger, RoundingMode>> tsFail = map(
+                s -> {
+                    Real r;
+                    switch (s.a.b) {
+                        case NONE:
+                            r = s.a.a.realValue();
+                            break;
+                        case LEFT:
+                            r = leftFuzzyRepresentation(s.a.a.rationalValueExact());
+                            break;
+                        case RIGHT:
+                            r = rightFuzzyRepresentation(s.a.a.rationalValueExact());
+                            break;
+                        case BOTH:
+                            r = fuzzyRepresentation(s.a.a.rationalValueExact());
+                            break;
+                        default:
+                            throw new IllegalStateException("unreachable");
+                    }
+                    return new Triple<>(r, s.b, s.c);
+                },
+                filterInfinite(
+                        t -> rmdCheck(t.a.a, t.b, t.c, t.a.b),
+                        P.triples(
+                                P.withScale(1).choose(
+                                        map(x -> new Pair<>(x, FuzzinessType.NONE), P.withScale(4).algebraics()),
+                                        P.choose(
+                                                (List<Iterable<Pair<Algebraic, FuzzinessType>>>) Arrays.asList(
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.LEFT),
+                                                                P.withScale(4).rationals()
+                                                        ),
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.RIGHT),
+                                                                P.withScale(4).rationals()
+                                                        ),
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.BOTH),
+                                                                P.withScale(4).rationals()
+                                                        )
+                                                )
+                                        )
+                                ),
+                                P.rangeDown(BigInteger.ZERO),
+                                P.roundingModes()
+                        )
+                )
+        );
+        for (Triple<Real, BigInteger, RoundingMode> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.roundToDenominatorUnsafe(t.b, t.c);
+                fail(t);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<Pair<Real, BigInteger>> psFail = filterInfinite(
+                p -> !p.a.isExact() ||
+                        !p.b.mod(p.a.rationalValueExact().get().getDenominator()).equals(BigInteger.ZERO),
+                P.pairs(P.cleanReals(), P.positiveBigIntegers())
+        );
+        for (Pair<Real, BigInteger> p : take(LIMIT, psFail)) {
+            try {
+                p.a.roundToDenominatorUnsafe(p.b, RoundingMode.UNNECESSARY);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesRoundToDenominator() {
+        initialize("roundToDenominator(BigInteger, RoundingMode, Rational)");
+        Iterable<Quadruple<Real, BigInteger, RoundingMode, Rational>> qs = filterInfinite(
+                r -> r.c != RoundingMode.UNNECESSARY || r.a.multiply(r.b).isExactInteger(),
+                P.quadruples(
+                        P.reals(),
+                        P.positiveBigIntegers(),
+                        P.roundingModes(),
+                        P.positiveRationals()
+                )
+        );
+        for (Quadruple<Real, BigInteger, RoundingMode, Rational> q : take(LIMIT, qs)) {
+            Optional<Rational> or = q.a.roundToDenominator(q.b, q.c, q.d);
+            if (or.isPresent()) {
+                assertEquals(q, q.a.roundToDenominatorUnsafe(q.b, q.c), or.get());
+            }
+        }
+
+        Iterable<Quadruple<Real, BigInteger, RoundingMode, Rational>> qsFail = filterInfinite(
+                r -> r.c != RoundingMode.UNNECESSARY || r.a.multiply(r.b).isExactInteger(),
+                P.quadruples(
+                        P.reals(),
+                        P.rangeDown(BigInteger.ZERO),
+                        P.roundingModes(),
+                        P.positiveRationals()
+                )
+        );
+        for (Quadruple<Real, BigInteger, RoundingMode, Rational> q : take(LIMIT, qsFail)) {
+            try {
+                q.a.roundToDenominator(q.b, q.c, q.d);
+                fail(q);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        qsFail = filterInfinite(
+                r -> r.c != RoundingMode.UNNECESSARY || r.a.multiply(r.b).isExactInteger(),
+                P.quadruples(
+                        P.reals(),
+                        P.positiveBigIntegers(),
+                        P.roundingModes(),
+                        P.rangeDown(Rational.ZERO)
+                )
+        );
+        for (Quadruple<Real, BigInteger, RoundingMode, Rational> q : take(LIMIT, qsFail)) {
+            try {
+                q.a.roundToDenominator(q.b, q.c, q.d);
+                fail(q);
             } catch (IllegalArgumentException ignored) {}
         }
     }

@@ -2830,6 +2830,183 @@ public final class Real implements Iterable<Interval> {
     }
 
     /**
+     * Given an interval [{@code lower}, {@code upper}], returns an {@code Interval} (with rational bounds) containing
+     * the given interval and with a diameter no more than twice the given interval's.
+     *
+     * <ul>
+     *  <li>{@code lower} cannot be null.</li>
+     *  <li>{@code upper} cannot be null.</li>
+     *  <li>{@code lower} must be less than {@code upper}.</li>
+     *  <li>The result is finitely bounded.</li>
+     * </ul>
+     *
+     * @param lower the lower bound of an interval
+     * @param upper the upper bound of an interval
+     * @return a rationally-bounded interval containing the given interval and no more than twice as large
+     */
+    public static @NotNull Interval intervalExtensionUnsafe(@NotNull Real lower, @NotNull Real upper) {
+        if (lower == upper) {
+            throw new IllegalArgumentException("lower must be less than upper. lower: " + lower + ", upper: " + upper);
+        }
+        if (lower.rational.isPresent() && upper.rational.isPresent()) {
+            Rational rLower = lower.rational.get();
+            Rational rUpper = upper.rational.get();
+            if (Ordering.gt(rLower, rUpper)) {
+                throw new IllegalArgumentException();
+            }
+            return Interval.of(rLower, rUpper);
+        }
+        Iterator<Interval> lowerIntervals = lower.iterator();
+        Iterator<Interval> upperIntervals = upper.iterator();
+        while (true) {
+            Interval lowerInterval = lowerIntervals.next();
+            Interval upperInterval = upperIntervals.next();
+            if (!lowerInterval.isFinitelyBounded() || !upperInterval.isFinitelyBounded() ||
+                    !lowerInterval.disjoint(upperInterval)) continue;
+            Rational gapSize = upperInterval.getLower().get().subtract(lowerInterval.getUpper().get());
+            if (gapSize.signum() == -1) {
+                throw new IllegalArgumentException();
+            }
+            Rational diameterSum = lowerInterval.diameter().get().add(upperInterval.diameter().get());
+            if (Ordering.ge(gapSize, diameterSum)) {
+                return lowerInterval.convexHull(upperInterval);
+            }
+        }
+    }
+
+    /**
+     * Returns the fractional part of {@code this}; {@code this}–⌊{@code this}⌋. If {@code this} is fuzzy on the left,
+     * this method will loop forever. To avoid this behavior, use {@link Real#fractionalPart(Rational)} instead.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be fuzzy on the left.</li>
+     *  <li>The result is a {@code Real} x such that 0≤x{@literal <}1.</li>
+     * </ul>
+     *
+     * @return the fractional part of {@code this}
+     */
+    public @NotNull Real fractionalPartUnsafe() {
+        if (rational.isPresent()) {
+            Rational fp = rational.get().fractionalPart();
+            return fp == Rational.ZERO ? ZERO : new Real(fp);
+        } else {
+            return subtract(of(floorUnsafe()));
+        }
+    }
+
+    /**
+     * Returns the fractional part of {@code this}; {@code this}–⌊{@code this}⌋. If {@code this} is fuzzy on the left,
+     * this method will give up and return empty once the approximating interval's diameter is less than the specified
+     * resolution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>The result is empty or a {@code Real} x such that 0≤x{@literal <}1.</li>
+     * </ul>
+     *
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return the fractional part of {@code this}
+     */
+    public @NotNull Optional<Real> fractionalPart(@NotNull Rational resolution) {
+        if (resolution.signum() != 1) {
+            throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
+        }
+        if (rational.isPresent()) {
+            Rational fp = rational.get().fractionalPart();
+            return Optional.of(fp == Rational.ZERO ? ZERO : new Real(fp));
+        } else {
+            return floor(resolution).map(i -> subtract(of(i)));
+        }
+    }
+
+    /**
+     * Rounds {@code this} to a rational number that is an integer multiple of 1/{@code denominator} according to
+     * {@code roundingMode}; see documentation for {@link java.math.RoundingMode} for details.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code denominator} must be positive.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#UP}, {@code this} cannot be a positive integer
+     *  multiple of 1/{@code denominator} that is fuzzy on the right, a negative integer multiple of
+     *  1/{@code denominator} that is fuzzy on the left, or a fuzzy zero.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#DOWN}, {@code this} cannot be a positive integer
+     *  multiple of 1/{@code denominator} that is fuzzy on the left or a negative integer multiple of
+     *  1/{@code denominator} that is fuzzy on the right. However, it may be a fuzzy zero.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#CEILING}, {@code this} cannot be an integer
+     *  multiple of 1/{@code denominator} that is fuzzy on the right.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#FLOOR}, {@code this} cannot be an integer multiple
+     *  of 1/{@code denominator} that is fuzzy on the left.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#HALF_UP}, {@code this} cannot be an odd integer
+     *  multiple of 1/(2{@code denominator}) that is fuzzy on the left or a negative half-integer that is fuzzy on the
+     *  right. However, it may be a fuzzy integer multiple of 1/{@code denominator}.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#HALF_DOWN}, {@code this} cannot be a positive
+     *  odd integer multiple of 1/(2{@code denominator}) that is fuzzy on the right or a negative odd integer multiple
+     *  of 1/(2{@code denominator}) that is fuzzy on the left. However, it may be a fuzzy integer multiple of
+     *  1/{@code denominator}.</li>
+     *  <li>Let k be an integer. If {@code roundingMode} is {@link java.math.RoundingMode#HALF_EVEN}, {@code this}
+     *  cannot be equal to (4k+1)/2 and fuzzy on the right, or equal to (4k+3)/2 and fuzzy on the left. However, it may
+     *  be a fuzzy integer multiple of 1/{@code denominator}.</li>
+     *  <li>If {@code roundingMode} is {@code RoundingMode.UNNECESSARY}, {@code this} must be exact and its denominator
+     *  must divide {@code denominator}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param denominator the denominator which represents the precision that {@code this} is rounded to.
+     * @param roundingMode determines the way in which {@code this} is rounded. Options are {@code RoundingMode.UP},
+     *                     {@code RoundingMode.DOWN}, {@code RoundingMode.CEILING}, {@code RoundingMode.FLOOR},
+     *                     {@code RoundingMode.HALF_UP}, {@code RoundingMode.HALF_DOWN},
+     *                     {@code RoundingMode.HALF_EVEN}, and {@code RoundingMode.UNNECESSARY}.
+     * @return {@code this}, rounded to an integer multiple of 1/{@code denominator}
+     */
+    public @NotNull Rational roundToDenominatorUnsafe(
+            @NotNull BigInteger denominator,
+            @NotNull RoundingMode roundingMode
+    ) {
+        if (denominator.signum() != 1) {
+            throw new ArithmeticException("denominator must be positive. Invalid denominator: " + denominator);
+        }
+        return Rational.of(multiply(denominator).bigIntegerValueUnsafe(roundingMode)).divide(denominator);
+    }
+
+    /**
+     * Rounds {@code this} to a rational number that is an integer multiple of 1/{@code denominator} according to
+     * {@code roundingMode}; see documentation for {@link java.math.RoundingMode} for details. If {@code this} is a
+     * fuzzy integer multiple of 1/{@code denominator} or a fuzzy odd integer multiple of 1/(2{@code denominator}),
+     * depending on the rounding mode and the nature of the fuzziness (see
+     * {@link Real#roundToDenominatorUnsafe(BigInteger, RoundingMode)}, this method will give up and return empty once
+     * the approximating interval's diameter is less than the specified resolution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code denominator} must be positive.</li>
+     *  <li>If {@code roundingMode} is {@code RoundingMode.UNNECESSARY}, {@code this} must be exact and its denominator
+     *  must divide {@code denominator}.</li>
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param denominator the denominator which represents the precision that {@code this} is rounded to.
+     * @param roundingMode determines the way in which {@code this} is rounded. Options are {@code RoundingMode.UP},
+     *                     {@code RoundingMode.DOWN}, {@code RoundingMode.CEILING}, {@code RoundingMode.FLOOR},
+     *                     {@code RoundingMode.HALF_UP}, {@code RoundingMode.HALF_DOWN},
+     *                     {@code RoundingMode.HALF_EVEN}, and {@code RoundingMode.UNNECESSARY}.
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return {@code this}, rounded to an integer multiple of 1/{@code denominator}
+     */
+    public @NotNull Optional<Rational> roundToDenominator(
+            @NotNull BigInteger denominator,
+            @NotNull RoundingMode roundingMode,
+            @NotNull Rational resolution
+    ) {
+        if (denominator.signum() != 1) {
+            throw new ArithmeticException("denominator must be positive. Invalid denominator: " + denominator);
+        }
+        return multiply(denominator).bigIntegerValue(roundingMode, resolution)
+                .map(i -> Rational.of(i).divide(denominator));
+    }
+
+    /**
      * A helper method for {@link Real#continuedFractionUnsafe()}. Given a rational approximation of a real number and
      * a prefix of a continued fraction, attempts to find the next continued fraction term. If the approximation is so
      * imprecise that it doesn't match the continued fraction prefix, an empty {@code Optional} is returned.
@@ -3323,25 +3500,6 @@ public final class Real implements Iterable<Interval> {
         );
     }
 
-    public static @NotNull Interval intervalExtension(@NotNull Real lower, @NotNull Real upper) {
-        Iterator<Interval> lowerIntervals = lower.iterator();
-        Iterator<Interval> upperIntervals = upper.iterator();
-        while (true) {
-            Interval lowerInterval = lowerIntervals.next();
-            Interval upperInterval = upperIntervals.next();
-            if (!lowerInterval.isFinitelyBounded() || !upperInterval.isFinitelyBounded() ||
-                    !lowerInterval.disjoint(upperInterval)) continue;
-            Rational gapSize = upperInterval.getLower().get().subtract(lowerInterval.getUpper().get());
-            if (gapSize.signum() == -1) {
-                throw new IllegalArgumentException();
-            }
-            Rational diameterSum = lowerInterval.diameter().get().add(upperInterval.diameter().get());
-            if (Ordering.ge(gapSize, diameterSum)) {
-                return lowerInterval.convexHull(upperInterval);
-            }
-        }
-    }
-
     public static @NotNull Real fromMaclaurinSeries(
             @NotNull Iterable<Rational> maclaurinCoefficients,
             @NotNull Function<Integer, Interval> derivativeBound,
@@ -3465,15 +3623,6 @@ public final class Real implements Iterable<Interval> {
                 },
                 x
         );
-    }
-
-    public @NotNull Real fractionalPartUnsafe() {
-        if (rational.isPresent()) {
-            Rational fp = rational.get().fractionalPart();
-            return fp == Rational.ZERO ? ZERO : new Real(fp);
-        } else {
-            return subtract(of(floorUnsafe()));
-        }
     }
 
     /**
