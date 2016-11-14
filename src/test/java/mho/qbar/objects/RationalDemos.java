@@ -487,6 +487,16 @@ public class RationalDemos extends QBarDemos {
         }
     }
 
+    private void demoRoot() {
+        Iterable<Pair<Rational, Integer>> ps = filterInfinite(
+                p -> (p.a != Rational.ZERO || p.b >= 0) && ((p.b & 1) != 0 || p.a.signum() != -1),
+                P.pairsSquareRootOrder(P.rationals(), P.nonzeroIntegersGeometric())
+        );
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            System.out.println("(" + p.a + ") ^ (1/" + p.b + ") = " + p.a.root(p.b));
+        }
+    }
+
     private void demoFractionalPart() {
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("fractionalPart(" + r + ") = " + r.fractionalPart());

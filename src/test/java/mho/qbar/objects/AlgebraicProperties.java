@@ -3212,7 +3212,7 @@ public class AlgebraicProperties extends QBarTestProperties {
 
         Iterable<Pair<Algebraic, Integer>> psFail = P.pairs(
                 P.negativeAlgebraics(),
-                map(i -> i * 2, P.integersGeometric())
+                map(i -> i << 1, P.integersGeometric())
         );
         for (Pair<Algebraic, Integer> p : take(LIMIT, psFail)) {
             try {

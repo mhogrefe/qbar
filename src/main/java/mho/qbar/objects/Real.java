@@ -1,11 +1,13 @@
 package mho.qbar.objects;
 
+import mho.wheels.iterables.CachedIterator;
 import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.NoRemoveIterator;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.Ordering;
+import mho.wheels.structures.NullableOptional;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
@@ -82,7 +84,7 @@ public final class Real implements Iterable<Interval> {
     /**
      * the square root of 2
      */
-    public static final @NotNull Real SQRT_TWO = Algebraic.SQRT_TWO.realValue();
+    public static final @NotNull Real SQRT_TWO = rootOfRational(Rational.TWO, 2);
 
     /**
      * φ, the golden ratio
@@ -2827,6 +2829,207 @@ public final class Real implements Iterable<Interval> {
             return Optional.of(new Real(rational.get().pow(p)));
         }
         return Optional.of(new Real(map(a -> a.powHull(p), intervals)));
+    }
+
+    /**
+     * Given an {@code Iterable} of {@code Interval}s that converge to a {@code Real}, returns that {@code Real}. This
+     * method differs from {@link Real#Real(Iterable)} in that the intervals don't have to be ordered such that each
+     * interval contains its successor.
+     *
+     * <ul>
+     *  <li>{@code interval}s must be infinite. The diameters of the elements must approach zero. Every element must
+     *  take a finite amount of computation time to produce.</li>
+     *  <li>Any {@code Real} may be constructed with this constructor.</li>
+     * </ul>
+     *
+     * @param intervals the bounding intervals that define a {@code Real}
+     * @return the {@code Real} that {@code intervals} converge to
+     */
+    public static @NotNull Real forceContainment(@NotNull Iterable<Interval> intervals) {
+        return new Real(() -> new NoRemoveIterator<Interval>() {
+            private final @NotNull Iterator<Interval> is = intervals.iterator();
+            private Interval next = null;
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public @NotNull Interval next() {
+                next = next == null ? is.next() : is.next().intersection(next).get();
+                return next;
+            }
+        });
+    }
+
+    /**
+     * Returns the {@code r}th root of {@code x}, or {@code x}<sup>1/{@code r}</sup>. If {@code r} is even, the
+     * principal (non-negative) root is chosen.
+     *
+     * <ul>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>{@code r} cannot be 0.</li>
+     *  <li>If {@code r} is negative, {@code x} cannot be zero.</li>
+     *  <li>If {@code r} is even, {@code x} cannot be negative.</li>
+     *  <li>The result is exact.</li>
+     * </ul>
+     *
+     * @param x a {@code Rational}
+     * @param r the index of the root
+     * @return {@code x}<sup>1/{@code r}</sup>
+     */
+    public static @NotNull Real rootOfRational(@NotNull Rational x, int r) {
+        return Algebraic.rootOfRational(x, r).realValue();
+    }
+
+    /**
+     * Returns the {@code r}th root of {@code this}, or {@code this}<sup>1/{@code r}</sup>. If {@code r} is even, the
+     * principal (non-negative) root is chosen. If {@code this} is equal to zero, fuzzy on the left, and {@code r} is
+     * even, or if {@code this} is equal to zero, fuzzy, and {@code r} is negative, this method will loop forever. To
+     * prevent this behavior, use {@link Real#root(int, Rational)} instead.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code r} cannot be 0.</li>
+     *  <li>If {@code r} is negative, {@code this} cannot be zero.</li>
+     *  <li>If {@code r} is even, {@code this} cannot be negative or a zero fuzzy on the left.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param r the index of the root
+     * @return {@code this}<sup>1/{@code r}</sup>
+     */
+    public @NotNull Real rootUnsafe(int r) {
+        if (r == 0) {
+            throw new ArithmeticException("r cannot be zero.");
+        }
+        if (this == ONE || r == 1) {
+            return this;
+        }
+        if (rational.isPresent()) {
+            return rootOfRational(rational.get(), r);
+        }
+        if (r < 0) {
+            return invertUnsafe().rootUnsafe(-r);
+        }
+        if (this == ZERO) {
+            return ZERO;
+        }
+        boolean rEven = (r & 1) == 0;
+        return forceContainment(() -> new NoRemoveIterator<Interval>() {
+            private final @NotNull Iterator<Interval> is = intervals.iterator();
+            private Interval a;
+            private Iterator<Interval> lowerReal = null;
+            private Iterator<Interval> upperReal = null;
+            private Rational previousDiameter = null;
+            private int i = 0;
+            {
+                do {
+                    a = is.next();
+                    if (rEven) {
+                        Optional<Integer> as = a.signum();
+                        if (as.isPresent() && as.get() == -1) {
+                            throw new ArithmeticException("If r is even, this cannot be negative. r: " +
+                                    r + ", this: " + this);
+                        }
+                        a = a.abs();
+                    }
+                } while (!a.isFinitelyBounded());
+            }
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public @NotNull Interval next() {
+                if (lowerReal == null) {
+                    lowerReal = rootOfRational(a.getLower().get(), r).iterator();
+                    upperReal = rootOfRational(a.getUpper().get(), r).iterator();
+                    for (int j = 0; j < i; j++) {
+                        lowerReal.next();
+                        upperReal.next();
+                    }
+                }
+                Interval lowerInterval = lowerReal.next();
+                Interval upperInterval = upperReal.next();
+                Interval nextInterval = lowerInterval.convexHull(upperInterval);
+                Rational diameter = nextInterval.diameter().get();
+                if (previousDiameter != null && Ordering.gt(diameter, previousDiameter.shiftRight(1))) {
+                    a = is.next();
+                    if (rEven) {
+                        Optional<Integer> as = a.signum();
+                        if (as.isPresent() && as.get() == -1) {
+                            throw new ArithmeticException("If r is even, this cannot be negative. r: " +
+                                    r + ", this: " + this);
+                        }
+                        a = a.abs();
+                    }
+                    lowerReal = rootOfRational(a.getLower().get(), r).iterator();
+                    upperReal = rootOfRational(a.getUpper().get(), r).iterator();
+                    for (int j = 0; j < i; j++) {
+                        lowerReal.next();
+                        upperReal.next();
+                    }
+                    lowerInterval = lowerReal.next();
+                    upperInterval = upperReal.next();
+                    nextInterval = lowerInterval.convexHull(upperInterval);
+                    diameter = nextInterval.diameter().get();
+                }
+                previousDiameter = diameter;
+                i++;
+                return nextInterval;
+            }
+        });
+    }
+
+    /**
+     * Returns the {@code r}th root of {@code this}, or {@code this}<sup>1/{@code r}</sup>. If {@code r} is even, the
+     * principal (non-negative) root is chosen. If {@code this} is equal to zero, fuzzy on the left, and {@code r} is
+     * even, or if {@code this} is equal to zero, fuzzy, and {@code r} is negative, this method will give up and return
+     * empty once the approximating interval's diameter is less than the specified resolution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code r} cannot be 0.</li>
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>If {@code r} is negative, {@code this} cannot be an exact zero.</li>
+     *  <li>If {@code r} is even, {@code this} cannot be negative.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param r the index of the root
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return {@code this}<sup>1/{@code r}</sup>
+     */
+    public @NotNull Optional<Real> root(int r, @NotNull Rational resolution) {
+        if (resolution.signum() != 1) {
+            throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
+        }
+        if (r > 0 && (r & 1) == 1) {
+            return Optional.of(rootUnsafe(r));
+        }
+        Optional<Integer> oSign = signum(resolution);
+        if (oSign.isPresent()) {
+            int sign = oSign.get();
+            if (r < 0 && sign == 0) {
+                throw new ArithmeticException("If r is negative, this cannot be an exact zero. r: " + r);
+            } else if ((r & 1) == 0 && sign == -1) {
+                throw new ArithmeticException("If r is even, this cannot be negative. r: " + r + ", this: " + this);
+            } else {
+                return Optional.of(rootUnsafe(r));
+            }
+        } else {
+            if (r > 0) {
+                Optional<Boolean> nonNegative = ge(Rational.ZERO, resolution);
+                if (nonNegative.isPresent() && nonNegative.get()) {
+                    return Optional.of(rootUnsafe(r));
+                }
+            }
+            return Optional.empty();
+        }
     }
 
     /**

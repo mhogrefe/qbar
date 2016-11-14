@@ -130,6 +130,7 @@ public class RationalProperties extends QBarTestProperties {
         propertiesHarmonicNumber();
         propertiesPow();
         compareImplementationsPow();
+        propertiesRoot();
         propertiesFractionalPart();
         propertiesRoundToDenominator();
         propertiesContinuedFraction();
@@ -2763,6 +2764,14 @@ public class RationalProperties extends QBarTestProperties {
             assertEquals(p, r, pow_simplest(p.a, p.b));
         }
 
+        ps = filterInfinite(
+                p -> (p.b > 0 || p.a != ZERO) && (p.a.signum() != -1 && (p.b & 1) != 0),
+                P.pairs(P.rationals(), P.withScale(4).nonzeroIntegersGeometric())
+        );
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            inverse(x -> x.pow(p.b), (Rational x) -> x.root(p.b).get(), p.a);
+        }
+
         for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.nonzeroRationals(), P.integersGeometric()))) {
             homomorphic(Function.identity(), i -> -i, Rational::invert, Rational::pow, Rational::pow, p);
             homomorphic(Rational::invert, i -> -i, Function.identity(), Rational::pow, Rational::pow, p);
@@ -2842,6 +2851,58 @@ public class RationalProperties extends QBarTestProperties {
                 P.pairs(P.rationals(), P.integersGeometric())
         );
         compareImplementations("pow(int", take(LIMIT, ps), functions, v -> P.reset());
+    }
+
+    private void propertiesRoot() {
+        initialize("root(int)");
+        Iterable<Pair<Rational, Integer>> ps = filterInfinite(
+                p -> (p.a != Rational.ZERO || p.b >= 0) && ((p.b & 1) != 0 || p.a.signum() != -1),
+                P.pairsSquareRootOrder(P.rationals(), P.nonzeroIntegersGeometric())
+        );
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            Optional<Rational> or = p.a.root(p.b);
+            if (or.isPresent()) {
+                or.get().validate();
+                assertEquals(p, or.get().pow(p.b), p.a);
+            }
+        }
+
+        for (int i : take(LIMIT, P.positiveIntegersGeometric())) {
+            assertEquals(i, ZERO.root(i).get(), ZERO);
+        }
+
+        for (int i : take(LIMIT, P.nonzeroIntegersGeometric())) {
+            assertEquals(i, ONE.root(i).get(), ONE);
+        }
+
+        for (int i : take(LIMIT, P.integersGeometric())) {
+            assertEquals(i, NEGATIVE_ONE.root((i << 1) + 1).get(), NEGATIVE_ONE);
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            try {
+                r.root(0);
+                fail(r);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        for (int i : take(LIMIT, P.negativeIntegersGeometric())) {
+            try {
+                ZERO.root(i);
+                fail(i);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<Pair<Rational, Integer>> psFail = P.pairs(
+                P.negativeRationals(),
+                map(i -> i * 2, P.integersGeometric())
+        );
+        for (Pair<Rational, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.root(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
     }
 
     private void propertiesFractionalPart() {

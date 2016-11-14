@@ -8054,6 +8054,528 @@ public class RealTest {
         pow_int_Rational_fail_helper(PI, 2, Rational.NEGATIVE_ONE);
     }
 
+    private static void rootOfRational_helper(@NotNull String x, int r, @NotNull String output) {
+        Real y = rootOfRational(Rational.readStrict(x).get(), r);
+        y.validate();
+        aeq(y, output);
+    }
+
+    private static void rootOfRational_fail_helper(@NotNull String x, int r) {
+        try {
+            rootOfRational(Rational.readStrict(x).get(), r);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testRootOfRational() {
+        rootOfRational_helper("0", 1, "0");
+        rootOfRational_helper("0", 2, "0");
+        rootOfRational_helper("0", 3, "0");
+        rootOfRational_helper("0", 10, "0");
+
+        rootOfRational_helper("1", 1, "1");
+        rootOfRational_helper("1", 2, "1");
+        rootOfRational_helper("1", 3, "1");
+        rootOfRational_helper("1", 10, "1");
+        rootOfRational_helper("1", -1, "1");
+        rootOfRational_helper("1", -2, "1");
+        rootOfRational_helper("1", -3, "1");
+        rootOfRational_helper("1", -10, "1");
+
+        rootOfRational_helper("-1", 1, "-1");
+        rootOfRational_helper("-1", 3, "-1");
+        rootOfRational_helper("-1", 9, "-1");
+        rootOfRational_helper("-1", -1, "-1");
+        rootOfRational_helper("-1", -3, "-1");
+        rootOfRational_helper("-1", -9, "-1");
+
+        rootOfRational_helper("1/2", 1, "0.5");
+        rootOfRational_helper("1/2", 2, "0.70710678118654752440...");
+        rootOfRational_helper("1/2", 3, "0.79370052598409973737...");
+        rootOfRational_helper("1/2", 10, "0.93303299153680741598...");
+        rootOfRational_helper("1/2", -1, "2");
+        rootOfRational_helper("1/2", -2, "1.41421356237309504880...");
+        rootOfRational_helper("1/2", -3, "1.25992104989487316476...");
+        rootOfRational_helper("1/2", -10, "1.07177346253629316421...");
+
+        rootOfRational_helper("-4/3", 1, "-1.33333333333333333333...");
+        rootOfRational_helper("-4/3", 3, "-1.10064241629820889462...");
+        rootOfRational_helper("-4/3", 9, "-1.03248103197612033486...");
+        rootOfRational_helper("-4/3", -1, "-0.75");
+        rootOfRational_helper("-4/3", -3, "-0.90856029641606982944...");
+        rootOfRational_helper("-4/3", -9, "-0.96854079545272307711...");
+
+        rootOfRational_helper("4", 4, "1.41421356237309504880...");
+        rootOfRational_helper("1728/117649", 12, "0.70347115030070246117...");
+
+        rootOfRational_fail_helper("0", -1);
+        rootOfRational_fail_helper("0", -2);
+        rootOfRational_fail_helper("0", -3);
+        rootOfRational_fail_helper("1", 0);
+        rootOfRational_fail_helper("2", 0);
+        rootOfRational_fail_helper("-1", 2);
+        rootOfRational_fail_helper("-1", -2);
+    }
+
+    private static void rootUnsafe_helper(@NotNull Real x, int r, @NotNull String output) {
+        Real y = x.rootUnsafe(r);
+        y.validate();
+        aeq(y, output);
+    }
+
+    private static void rootUnsafe_fail_helper(@NotNull Real x, int r) {
+        try {
+            //noinspection ResultOfMethodCallIgnored
+            x.rootUnsafe(r).toString();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testRootUnsafe() {
+        rootUnsafe_helper(ZERO, 1, "0");
+        rootUnsafe_helper(ZERO, 2, "0");
+        rootUnsafe_helper(ZERO, 3, "0");
+        rootUnsafe_helper(ZERO, 10, "0");
+
+        rootUnsafe_helper(ONE, 1, "1");
+        rootUnsafe_helper(ONE, 2, "1");
+        rootUnsafe_helper(ONE, 3, "1");
+        rootUnsafe_helper(ONE, 10, "1");
+        rootUnsafe_helper(ONE, -1, "1");
+        rootUnsafe_helper(ONE, -2, "1");
+        rootUnsafe_helper(ONE, -3, "1");
+        rootUnsafe_helper(ONE, -10, "1");
+
+        rootUnsafe_helper(NEGATIVE_ONE, 1, "-1");
+        rootUnsafe_helper(NEGATIVE_ONE, 3, "-1");
+        rootUnsafe_helper(NEGATIVE_ONE, 9, "-1");
+        rootUnsafe_helper(NEGATIVE_ONE, -1, "-1");
+        rootUnsafe_helper(NEGATIVE_ONE, -3, "-1");
+        rootUnsafe_helper(NEGATIVE_ONE, -9, "-1");
+
+        rootUnsafe_helper(ONE_HALF, 1, "0.5");
+        rootUnsafe_helper(ONE_HALF, 2, "0.70710678118654752440...");
+        rootUnsafe_helper(ONE_HALF, 3, "0.79370052598409973737...");
+        rootUnsafe_helper(ONE_HALF, 10, "0.93303299153680741598...");
+        rootUnsafe_helper(ONE_HALF, -1, "2");
+        rootUnsafe_helper(ONE_HALF, -2, "1.41421356237309504880...");
+        rootUnsafe_helper(ONE_HALF, -3, "1.25992104989487316476...");
+        rootUnsafe_helper(ONE_HALF, -10, "1.07177346253629316421...");
+
+        rootUnsafe_helper(NEGATIVE_FOUR_THIRDS, 1, "-1.33333333333333333333...");
+        rootUnsafe_helper(NEGATIVE_FOUR_THIRDS, 3, "-1.10064241629820889462...");
+        rootUnsafe_helper(NEGATIVE_FOUR_THIRDS, 9, "-1.03248103197612033486...");
+        rootUnsafe_helper(NEGATIVE_FOUR_THIRDS, -1, "-0.75");
+        rootUnsafe_helper(NEGATIVE_FOUR_THIRDS, -3, "-0.90856029641606982944...");
+        rootUnsafe_helper(NEGATIVE_FOUR_THIRDS, -9, "-0.96854079545272307711...");
+
+        rootUnsafe_helper(of(4), 4, "1.41421356237309504880...");
+        rootUnsafe_helper(of(Rational.of(1728, 117649)), 12, "0.70347115030070246117...");
+
+        rootUnsafe_helper(SQRT_TWO, 1, "1.41421356237309504880...");
+        rootUnsafe_helper(SQRT_TWO, 2, "1.18920711500272106671...");
+        rootUnsafe_helper(SQRT_TWO, 3, "1.12246204830937298143...");
+        rootUnsafe_helper(SQRT_TWO, 100, "1.00347174850950278700...");
+        rootUnsafe_helper(SQRT_TWO, -1, "0.70710678118654752440...");
+        rootUnsafe_helper(SQRT_TWO, -2, "0.84089641525371454303...");
+        rootUnsafe_helper(SQRT_TWO, -3, "0.89089871814033930474...");
+        rootUnsafe_helper(SQRT_TWO, -100, "0.99654026282786783422...");
+
+        rootUnsafe_helper(E, 1, "2.71828182845904523536...");
+        rootUnsafe_helper(E, 2, "1.64872127070012814684...");
+        rootUnsafe_helper(E, 3, "1.39561242508608952862...");
+        rootUnsafe_helper(E, 100, "1.01005016708416805754...");
+        rootUnsafe_helper(E, -1, "0.36787944117144232159...");
+        rootUnsafe_helper(E, -2, "0.60653065971263342360...");
+        rootUnsafe_helper(E, -3, "0.71653131057378925042...");
+        rootUnsafe_helper(E, -100, "0.99004983374916805357...");
+
+        rootUnsafe_helper(PI, 1, "3.14159265358979323846...");
+        rootUnsafe_helper(PI, 2, "1.77245385090551602729...");
+        rootUnsafe_helper(PI, 3, "1.46459188756152326302...");
+        rootUnsafe_helper(PI, 100, "1.01151306991144795553...");
+        rootUnsafe_helper(PI, -1, "0.31830988618379067153...");
+        rootUnsafe_helper(PI, -2, "0.56418958354775628694...");
+        rootUnsafe_helper(PI, -3, "0.68278406325529568146...");
+        rootUnsafe_helper(PI, -100, "0.98861797217068499434...");
+
+        rootUnsafe_helper(leftFuzzyRepresentation(Rational.ONE), 1, "0.99999999999999999999...");
+        rootUnsafe_helper(leftFuzzyRepresentation(Rational.ONE), 2, "0.99999999999999999999...");
+        rootUnsafe_helper(leftFuzzyRepresentation(Rational.ONE), 3, "0.99999999999999999999...");
+        rootUnsafe_helper(leftFuzzyRepresentation(Rational.ONE), 100, "0.99999999999999999999...");
+        rootUnsafe_helper(leftFuzzyRepresentation(Rational.ONE), -1, "1.00000000000000000000...");
+        rootUnsafe_helper(leftFuzzyRepresentation(Rational.ONE), -2, "1.00000000000000000000...");
+        rootUnsafe_helper(leftFuzzyRepresentation(Rational.ONE), -3, "1.00000000000000000000...");
+        rootUnsafe_helper(leftFuzzyRepresentation(Rational.ONE), -100, "1.00000000000000000000...");
+
+        rootUnsafe_helper(rightFuzzyRepresentation(Rational.ONE), 1, "1.00000000000000000000...");
+        rootUnsafe_helper(rightFuzzyRepresentation(Rational.ONE), 2, "1.00000000000000000000...");
+        rootUnsafe_helper(rightFuzzyRepresentation(Rational.ONE), 3, "1.00000000000000000000...");
+        rootUnsafe_helper(rightFuzzyRepresentation(Rational.ONE), 100, "1.00000000000000000000...");
+        rootUnsafe_helper(rightFuzzyRepresentation(Rational.ONE), -1, "0.99999999999999999999...");
+        rootUnsafe_helper(rightFuzzyRepresentation(Rational.ONE), -2, "0.99999999999999999999...");
+        rootUnsafe_helper(rightFuzzyRepresentation(Rational.ONE), -3, "0.99999999999999999999...");
+        rootUnsafe_helper(rightFuzzyRepresentation(Rational.ONE), -100, "0.99999999999999999999...");
+
+        rootUnsafe_helper(fuzzyRepresentation(Rational.ONE), 1, "~1");
+        rootUnsafe_helper(fuzzyRepresentation(Rational.ONE), 2, "~1");
+        rootUnsafe_helper(fuzzyRepresentation(Rational.ONE), 3, "~1");
+        rootUnsafe_helper(fuzzyRepresentation(Rational.ONE), 100, "~1");
+        rootUnsafe_helper(fuzzyRepresentation(Rational.ONE), -1, "~1");
+        rootUnsafe_helper(fuzzyRepresentation(Rational.ONE), -2, "~1");
+        rootUnsafe_helper(fuzzyRepresentation(Rational.ONE), -3, "~1");
+        rootUnsafe_helper(fuzzyRepresentation(Rational.ONE), -100, "~1");
+
+        rootUnsafe_helper(leftFuzzyRepresentation(Rational.NEGATIVE_ONE), 1, "-1.00000000000000000000...");
+        rootUnsafe_helper(leftFuzzyRepresentation(Rational.NEGATIVE_ONE), 3, "-1.00000000000000000000...");
+        rootUnsafe_helper(leftFuzzyRepresentation(Rational.NEGATIVE_ONE), -1, "-0.99999999999999999999...");
+        rootUnsafe_helper(leftFuzzyRepresentation(Rational.NEGATIVE_ONE), -3, "-0.99999999999999999999...");
+
+        rootUnsafe_helper(rightFuzzyRepresentation(Rational.NEGATIVE_ONE), 1, "-0.99999999999999999999...");
+        rootUnsafe_helper(rightFuzzyRepresentation(Rational.NEGATIVE_ONE), 3, "-0.99999999999999999999...");
+        rootUnsafe_helper(rightFuzzyRepresentation(Rational.NEGATIVE_ONE), -1, "-1.00000000000000000000...");
+        rootUnsafe_helper(rightFuzzyRepresentation(Rational.NEGATIVE_ONE), -3, "-1.00000000000000000000...");
+
+        rootUnsafe_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), 1, "~-1");
+        rootUnsafe_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), 3, "~-1");
+        rootUnsafe_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), -1, "~-1");
+        rootUnsafe_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), -3, "~-1");
+
+        rootUnsafe_fail_helper(ZERO, -1);
+        rootUnsafe_fail_helper(ZERO, -2);
+        rootUnsafe_fail_helper(ZERO, -3);
+        rootUnsafe_fail_helper(ONE, 0);
+        rootUnsafe_fail_helper(TWO, 0);
+        rootUnsafe_fail_helper(NEGATIVE_ONE, 2);
+        rootUnsafe_fail_helper(NEGATIVE_ONE, -2);
+        rootUnsafe_fail_helper(SQRT_TWO, 0);
+        rootUnsafe_fail_helper(fuzzyRepresentation(Rational.ONE), 0);
+        rootUnsafe_fail_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), 2);
+    }
+
+    private static void root_helper(@NotNull Real x, int r, @NotNull Rational resolution, @NotNull String output) {
+        Optional<Real> oy = x.root(r, resolution);
+        if (oy.isPresent()) {
+            oy.get().validate();
+        }
+        aeq(oy, output);
+    }
+
+    private static void root_fail_helper(@NotNull Real x, int r, @NotNull Rational resolution) {
+        try {
+            //noinspection ResultOfMethodCallIgnored
+            x.root(r, resolution).toString();
+            fail();
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testRoot() {
+        root_helper(ZERO, 1, DEFAULT_RESOLUTION, "Optional[0]");
+        root_helper(ZERO, 2, DEFAULT_RESOLUTION, "Optional[0]");
+        root_helper(ZERO, 3, DEFAULT_RESOLUTION, "Optional[0]");
+        root_helper(ZERO, 10, DEFAULT_RESOLUTION, "Optional[0]");
+
+        root_helper(ONE, 1, DEFAULT_RESOLUTION, "Optional[1]");
+        root_helper(ONE, 2, DEFAULT_RESOLUTION, "Optional[1]");
+        root_helper(ONE, 3, DEFAULT_RESOLUTION, "Optional[1]");
+        root_helper(ONE, 10, DEFAULT_RESOLUTION, "Optional[1]");
+        root_helper(ONE, -1, DEFAULT_RESOLUTION, "Optional[1]");
+        root_helper(ONE, -2, DEFAULT_RESOLUTION, "Optional[1]");
+        root_helper(ONE, -3, DEFAULT_RESOLUTION, "Optional[1]");
+        root_helper(ONE, -10, DEFAULT_RESOLUTION, "Optional[1]");
+
+        root_helper(NEGATIVE_ONE, 1, DEFAULT_RESOLUTION, "Optional[-1]");
+        root_helper(NEGATIVE_ONE, 3, DEFAULT_RESOLUTION, "Optional[-1]");
+        root_helper(NEGATIVE_ONE, 9, DEFAULT_RESOLUTION, "Optional[-1]");
+        root_helper(NEGATIVE_ONE, -1, DEFAULT_RESOLUTION, "Optional[-1]");
+        root_helper(NEGATIVE_ONE, -3, DEFAULT_RESOLUTION, "Optional[-1]");
+        root_helper(NEGATIVE_ONE, -9, DEFAULT_RESOLUTION, "Optional[-1]");
+
+        root_helper(ONE_HALF, 1, DEFAULT_RESOLUTION, "Optional[0.5]");
+        root_helper(ONE_HALF, 2, DEFAULT_RESOLUTION, "Optional[0.70710678118654752440...]");
+        root_helper(ONE_HALF, 3, DEFAULT_RESOLUTION, "Optional[0.79370052598409973737...]");
+        root_helper(ONE_HALF, 10, DEFAULT_RESOLUTION, "Optional[0.93303299153680741598...]");
+        root_helper(ONE_HALF, -1, DEFAULT_RESOLUTION, "Optional[2]");
+        root_helper(ONE_HALF, -2, DEFAULT_RESOLUTION, "Optional[1.41421356237309504880...]");
+        root_helper(ONE_HALF, -3, DEFAULT_RESOLUTION, "Optional[1.25992104989487316476...]");
+        root_helper(ONE_HALF, -10, DEFAULT_RESOLUTION, "Optional[1.07177346253629316421...]");
+
+        root_helper(NEGATIVE_FOUR_THIRDS, 1, DEFAULT_RESOLUTION, "Optional[-1.33333333333333333333...]");
+        root_helper(NEGATIVE_FOUR_THIRDS, 3, DEFAULT_RESOLUTION, "Optional[-1.10064241629820889462...]");
+        root_helper(NEGATIVE_FOUR_THIRDS, 9, DEFAULT_RESOLUTION, "Optional[-1.03248103197612033486...]");
+        root_helper(NEGATIVE_FOUR_THIRDS, -1, DEFAULT_RESOLUTION, "Optional[-0.75]");
+        root_helper(NEGATIVE_FOUR_THIRDS, -3, DEFAULT_RESOLUTION, "Optional[-0.90856029641606982944...]");
+        root_helper(NEGATIVE_FOUR_THIRDS, -9, DEFAULT_RESOLUTION, "Optional[-0.96854079545272307711...]");
+
+        root_helper(of(4), 4, DEFAULT_RESOLUTION, "Optional[1.41421356237309504880...]");
+        root_helper(of(Rational.of(1728, 117649)), 12, DEFAULT_RESOLUTION, "Optional[0.70347115030070246117...]");
+
+        root_helper(SQRT_TWO, 1, DEFAULT_RESOLUTION, "Optional[1.41421356237309504880...]");
+        root_helper(SQRT_TWO, 2, DEFAULT_RESOLUTION, "Optional[1.18920711500272106671...]");
+        root_helper(SQRT_TWO, 3, DEFAULT_RESOLUTION, "Optional[1.12246204830937298143...]");
+        root_helper(SQRT_TWO, 100, DEFAULT_RESOLUTION, "Optional[1.00347174850950278700...]");
+        root_helper(SQRT_TWO, -1, DEFAULT_RESOLUTION, "Optional[0.70710678118654752440...]");
+        root_helper(SQRT_TWO, -2, DEFAULT_RESOLUTION, "Optional[0.84089641525371454303...]");
+        root_helper(SQRT_TWO, -3, DEFAULT_RESOLUTION, "Optional[0.89089871814033930474...]");
+        root_helper(SQRT_TWO, -100, DEFAULT_RESOLUTION, "Optional[0.99654026282786783422...]");
+
+        root_helper(E, 1, DEFAULT_RESOLUTION, "Optional[2.71828182845904523536...]");
+        root_helper(E, 2, DEFAULT_RESOLUTION, "Optional[1.64872127070012814684...]");
+        root_helper(E, 3, DEFAULT_RESOLUTION, "Optional[1.39561242508608952862...]");
+        root_helper(E, 100, DEFAULT_RESOLUTION, "Optional[1.01005016708416805754...]");
+        root_helper(E, -1, DEFAULT_RESOLUTION, "Optional[0.36787944117144232159...]");
+        root_helper(E, -2, DEFAULT_RESOLUTION, "Optional[0.60653065971263342360...]");
+        root_helper(E, -3, DEFAULT_RESOLUTION, "Optional[0.71653131057378925042...]");
+        root_helper(E, -100, DEFAULT_RESOLUTION, "Optional[0.99004983374916805357...]");
+
+        root_helper(PI, 1, DEFAULT_RESOLUTION, "Optional[3.14159265358979323846...]");
+        root_helper(PI, 2, DEFAULT_RESOLUTION, "Optional[1.77245385090551602729...]");
+        root_helper(PI, 3, DEFAULT_RESOLUTION, "Optional[1.46459188756152326302...]");
+        root_helper(PI, 100, DEFAULT_RESOLUTION, "Optional[1.01151306991144795553...]");
+        root_helper(PI, -1, DEFAULT_RESOLUTION, "Optional[0.31830988618379067153...]");
+        root_helper(PI, -2, DEFAULT_RESOLUTION, "Optional[0.56418958354775628694...]");
+        root_helper(PI, -3, DEFAULT_RESOLUTION, "Optional[0.68278406325529568146...]");
+        root_helper(PI, -100, DEFAULT_RESOLUTION, "Optional[0.98861797217068499434...]");
+
+        root_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                1,
+                DEFAULT_RESOLUTION,
+                "Optional[-0.00000000000000000000...]"
+        );
+        root_helper(leftFuzzyRepresentation(Rational.ZERO), 2, DEFAULT_RESOLUTION, "Optional.empty");
+        root_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                3,
+                DEFAULT_RESOLUTION,
+                "Optional[-0.00000000000000000000...]"
+        );
+        root_helper(leftFuzzyRepresentation(Rational.ZERO), 100, DEFAULT_RESOLUTION, "Optional.empty");
+        root_helper(leftFuzzyRepresentation(Rational.ZERO), -1, DEFAULT_RESOLUTION, "Optional.empty");
+        root_helper(leftFuzzyRepresentation(Rational.ZERO), -2, DEFAULT_RESOLUTION, "Optional.empty");
+        root_helper(leftFuzzyRepresentation(Rational.ZERO), -3, DEFAULT_RESOLUTION, "Optional.empty");
+        root_helper(leftFuzzyRepresentation(Rational.ZERO), -100, DEFAULT_RESOLUTION, "Optional.empty");
+
+        root_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                1,
+                DEFAULT_RESOLUTION,
+                "Optional[0.00000000000000000000...]"
+        );
+        root_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                2,
+                DEFAULT_RESOLUTION,
+                "Optional[0.00000000000000000000...]"
+        );
+        root_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                3,
+                DEFAULT_RESOLUTION,
+                "Optional[0.00000000000000000000...]"
+        );
+        root_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                10,
+                DEFAULT_RESOLUTION,
+                "Optional[0.00000000000000000000...]"
+        );
+        root_helper(rightFuzzyRepresentation(Rational.ZERO), -1, DEFAULT_RESOLUTION, "Optional.empty");
+        root_helper(rightFuzzyRepresentation(Rational.ZERO), -2, DEFAULT_RESOLUTION, "Optional.empty");
+        root_helper(rightFuzzyRepresentation(Rational.ZERO), -3, DEFAULT_RESOLUTION, "Optional.empty");
+        root_helper(rightFuzzyRepresentation(Rational.ZERO), -100, DEFAULT_RESOLUTION, "Optional.empty");
+
+        root_helper(fuzzyRepresentation(Rational.ZERO), 1, DEFAULT_RESOLUTION, "Optional[~0]");
+        root_helper(fuzzyRepresentation(Rational.ZERO), 2, DEFAULT_RESOLUTION, "Optional.empty");
+        root_helper(fuzzyRepresentation(Rational.ZERO), 3, DEFAULT_RESOLUTION, "Optional[~0]");
+        root_helper(fuzzyRepresentation(Rational.ZERO), 100, DEFAULT_RESOLUTION, "Optional.empty");
+        root_helper(fuzzyRepresentation(Rational.ZERO), -1, DEFAULT_RESOLUTION, "Optional.empty");
+        root_helper(fuzzyRepresentation(Rational.ZERO), -2, DEFAULT_RESOLUTION, "Optional.empty");
+        root_helper(fuzzyRepresentation(Rational.ZERO), -3, DEFAULT_RESOLUTION, "Optional.empty");
+        root_helper(fuzzyRepresentation(Rational.ZERO), -100, DEFAULT_RESOLUTION, "Optional.empty");
+
+        root_helper(
+                leftFuzzyRepresentation(Rational.ONE),
+                1,
+                DEFAULT_RESOLUTION,
+                "Optional[0.99999999999999999999...]"
+        );
+        root_helper(
+                leftFuzzyRepresentation(Rational.ONE),
+                2,
+                DEFAULT_RESOLUTION,
+                "Optional[0.99999999999999999999...]"
+        );
+        root_helper(
+                leftFuzzyRepresentation(Rational.ONE),
+                3,
+                DEFAULT_RESOLUTION,
+                "Optional[0.99999999999999999999...]"
+        );
+        root_helper(
+                leftFuzzyRepresentation(Rational.ONE),
+                100,
+                DEFAULT_RESOLUTION,
+                "Optional[0.99999999999999999999...]"
+        );
+        root_helper(
+                leftFuzzyRepresentation(Rational.ONE),
+                -1,
+                DEFAULT_RESOLUTION,
+                "Optional[1.00000000000000000000...]"
+        );
+        root_helper(
+                leftFuzzyRepresentation(Rational.ONE),
+                -2,
+                DEFAULT_RESOLUTION,
+                "Optional[1.00000000000000000000...]"
+        );
+        root_helper(
+                leftFuzzyRepresentation(Rational.ONE),
+                -3,
+                DEFAULT_RESOLUTION,
+                "Optional[1.00000000000000000000...]"
+        );
+        root_helper(
+                leftFuzzyRepresentation(Rational.ONE),
+                -100,
+                DEFAULT_RESOLUTION,
+                "Optional[1.00000000000000000000...]"
+        );
+
+        root_helper(
+                rightFuzzyRepresentation(Rational.ONE),
+                1,
+                DEFAULT_RESOLUTION,
+                "Optional[1.00000000000000000000...]"
+        );
+        root_helper(
+                rightFuzzyRepresentation(Rational.ONE),
+                2,
+                DEFAULT_RESOLUTION,
+                "Optional[1.00000000000000000000...]"
+        );
+        root_helper(
+                rightFuzzyRepresentation(Rational.ONE),
+                3,
+                DEFAULT_RESOLUTION,
+                "Optional[1.00000000000000000000...]"
+        );
+        root_helper(
+                rightFuzzyRepresentation(Rational.ONE),
+                100,
+                DEFAULT_RESOLUTION,
+                "Optional[1.00000000000000000000...]"
+        );
+        root_helper(
+                rightFuzzyRepresentation(Rational.ONE),
+                -1,
+                DEFAULT_RESOLUTION,
+                "Optional[0.99999999999999999999...]"
+        );
+        root_helper(
+                rightFuzzyRepresentation(Rational.ONE),
+                -2,
+                DEFAULT_RESOLUTION,
+                "Optional[0.99999999999999999999...]"
+        );
+        root_helper(
+                rightFuzzyRepresentation(Rational.ONE),
+                -3,
+                DEFAULT_RESOLUTION,
+                "Optional[0.99999999999999999999...]"
+        );
+        root_helper(
+                rightFuzzyRepresentation(Rational.ONE),
+                -100,
+                DEFAULT_RESOLUTION,
+                "Optional[0.99999999999999999999...]"
+        );
+
+        root_helper(fuzzyRepresentation(Rational.ONE), 1, DEFAULT_RESOLUTION, "Optional[~1]");
+        root_helper(fuzzyRepresentation(Rational.ONE), 2, DEFAULT_RESOLUTION, "Optional[~1]");
+        root_helper(fuzzyRepresentation(Rational.ONE), 3, DEFAULT_RESOLUTION, "Optional[~1]");
+        root_helper(fuzzyRepresentation(Rational.ONE), 100, DEFAULT_RESOLUTION, "Optional[~1]");
+        root_helper(fuzzyRepresentation(Rational.ONE), -1, DEFAULT_RESOLUTION, "Optional[~1]");
+        root_helper(fuzzyRepresentation(Rational.ONE), -2, DEFAULT_RESOLUTION, "Optional[~1]");
+        root_helper(fuzzyRepresentation(Rational.ONE), -3, DEFAULT_RESOLUTION, "Optional[~1]");
+        root_helper(fuzzyRepresentation(Rational.ONE), -100, DEFAULT_RESOLUTION, "Optional[~1]");
+
+        root_helper(
+                leftFuzzyRepresentation(Rational.NEGATIVE_ONE),
+                1,
+                DEFAULT_RESOLUTION,
+                "Optional[-1.00000000000000000000...]"
+        );
+        root_helper(
+                leftFuzzyRepresentation(Rational.NEGATIVE_ONE),
+                3,
+                DEFAULT_RESOLUTION,
+                "Optional[-1.00000000000000000000...]"
+        );
+        root_helper(
+                leftFuzzyRepresentation(Rational.NEGATIVE_ONE),
+                -1,
+                DEFAULT_RESOLUTION,
+                "Optional[-0.99999999999999999999...]"
+        );
+        root_helper(
+                leftFuzzyRepresentation(Rational.NEGATIVE_ONE),
+                -3,
+                DEFAULT_RESOLUTION,
+                "Optional[-0.99999999999999999999...]"
+        );
+
+        root_helper(
+                rightFuzzyRepresentation(Rational.NEGATIVE_ONE),
+                1,
+                DEFAULT_RESOLUTION,
+                "Optional[-0.99999999999999999999...]"
+        );
+        root_helper(
+                rightFuzzyRepresentation(Rational.NEGATIVE_ONE),
+                3,
+                DEFAULT_RESOLUTION,
+                "Optional[-0.99999999999999999999...]"
+        );
+        root_helper(
+                rightFuzzyRepresentation(Rational.NEGATIVE_ONE),
+                -1,
+                DEFAULT_RESOLUTION,
+                "Optional[-1.00000000000000000000...]"
+        );
+        root_helper(
+                rightFuzzyRepresentation(Rational.NEGATIVE_ONE),
+                -3,
+                DEFAULT_RESOLUTION,
+                "Optional[-1.00000000000000000000...]"
+        );
+
+        root_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), 1, DEFAULT_RESOLUTION, "Optional[~-1]");
+        root_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), 3, DEFAULT_RESOLUTION, "Optional[~-1]");
+        root_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), -1, DEFAULT_RESOLUTION, "Optional[~-1]");
+        root_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), -3, DEFAULT_RESOLUTION, "Optional[~-1]");
+
+        root_fail_helper(ZERO, -1, DEFAULT_RESOLUTION);
+        root_fail_helper(ZERO, -2, DEFAULT_RESOLUTION);
+        root_fail_helper(ZERO, -3, DEFAULT_RESOLUTION);
+        root_fail_helper(ONE, 0, DEFAULT_RESOLUTION);
+        root_fail_helper(TWO, 0, DEFAULT_RESOLUTION);
+        root_fail_helper(NEGATIVE_ONE, 2, DEFAULT_RESOLUTION);
+        root_fail_helper(NEGATIVE_ONE, -2, DEFAULT_RESOLUTION);
+        root_fail_helper(SQRT_TWO, 0, DEFAULT_RESOLUTION);
+        root_fail_helper(fuzzyRepresentation(Rational.ONE), 0, DEFAULT_RESOLUTION);
+        root_fail_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), 2, DEFAULT_RESOLUTION);
+
+        root_fail_helper(ZERO, 1, Rational.ZERO);
+        root_fail_helper(ZERO, 1, Rational.NEGATIVE_ONE);
+        root_fail_helper(SQRT_TWO, 1, Rational.ZERO);
+        root_fail_helper(SQRT_TWO, 1, Rational.NEGATIVE_ONE);
+    }
+
     private static void intervalExtensionUnsafe_helper(@NotNull Real a, @NotNull Real b, @NotNull String output) {
         aeq(intervalExtensionUnsafe(a, b), output);
     }

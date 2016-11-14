@@ -3370,6 +3370,75 @@ public class RationalTest {
         pow_fail_helper("0", -3);
     }
 
+    private static void root_helper(@NotNull String x, int r, @NotNull String output) {
+        Optional<Rational> or = readStrict(x).get().root(r);
+        if (or.isPresent()) {
+            or.get().validate();
+        }
+        aeq(or, output);
+    }
+
+    private static void root_fail_helper(@NotNull String x, int r) {
+        try {
+            readStrict(x).get().root(r);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testRoot() {
+        root_helper("0", 1, "Optional[0]");
+        root_helper("0", 2, "Optional[0]");
+        root_helper("0", 3, "Optional[0]");
+
+        root_helper("1", 1, "Optional[1]");
+        root_helper("1", 2, "Optional[1]");
+        root_helper("1", 3, "Optional[1]");
+        root_helper("1", -1, "Optional[1]");
+        root_helper("1", -2, "Optional[1]");
+        root_helper("1", -3, "Optional[1]");
+
+        root_helper("-1", 1, "Optional[-1]");
+        root_helper("-1", 3, "Optional[-1]");
+        root_helper("-1", -1, "Optional[-1]");
+        root_helper("-1", -3, "Optional[-1]");
+
+        root_helper("2", 1, "Optional[2]");
+        root_helper("2", 2, "Optional.empty");
+        root_helper("2", 3, "Optional.empty");
+        root_helper("2", -1, "Optional[1/2]");
+        root_helper("2", -2, "Optional.empty");
+        root_helper("2", -3, "Optional.empty");
+
+        root_helper("-2", 1, "Optional[-2]");
+        root_helper("-2", 3, "Optional.empty");
+        root_helper("-2", -1, "Optional[-1/2]");
+        root_helper("-2", -3, "Optional.empty");
+
+        root_helper("4", 1, "Optional[4]");
+        root_helper("4", 2, "Optional[2]");
+        root_helper("4", 3, "Optional.empty");
+        root_helper("4", -1, "Optional[1/4]");
+        root_helper("4", -2, "Optional[1/2]");
+        root_helper("4", -3, "Optional.empty");
+
+        root_helper("64/729", 1, "Optional[64/729]");
+        root_helper("64/729", 2, "Optional[8/27]");
+        root_helper("64/729", 3, "Optional[4/9]");
+        root_helper("64/729", -1, "Optional[729/64]");
+        root_helper("64/729", -2, "Optional[27/8]");
+        root_helper("64/729", -3, "Optional[9/4]");
+
+        root_helper("-64/729", 1, "Optional[-64/729]");
+        root_helper("-64/729", 3, "Optional[-4/9]");
+        root_helper("-64/729", -1, "Optional[-729/64]");
+        root_helper("-64/729", -3, "Optional[-9/4]");
+
+        root_fail_helper("0", -1);
+        root_fail_helper("1", 0);
+        root_fail_helper("-1", 2);
+    }
+
     private static void fractionalPart_helper(@NotNull String input, @NotNull String output) {
         Rational r = readStrict(input).get().fractionalPart();
         r.validate();

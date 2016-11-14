@@ -1855,6 +1855,67 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
+     * If {@code this} is a perfect {@code r}th power, returns the {@code r}th root of {@code this}. Otherwise, returns
+     * empty.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>{@code r} cannot be zero.</li>
+     *  <li>If {@code r} is negative, {@code this} cannot be zero.</li>
+     *  <li>If {@code r} is even, {@code this} cannot be negative.</li>
+     *  <li>The result may be any {@code Rational}, or empty.</li>
+     * </ul>
+     *
+     * @param r the degree of the root extracted from this
+     * @return {@code this}<sup>1/{@code r}</sup>
+     */
+    public @NotNull Optional<Rational> root(int r) {
+        if (r == 0) {
+            throw new ArithmeticException("r cannot be zero.");
+        }
+        if (this == Rational.ONE || r == 1) {
+            return Optional.of(this);
+        }
+        if (r < 0) {
+            return invert().root(-r);
+        }
+        if (this == Rational.ZERO) {
+            return Optional.of(ZERO);
+        }
+        if ((r & 1) == 0 && signum() == -1) {
+            throw new ArithmeticException("If r is even, this cannot be negative. r: " + r + ", this: " + this);
+        }
+        BigInteger rootNumerator = numerator;
+        int numeratorSign = rootNumerator.signum();
+        Pair<BigInteger, Integer> numeratorPowers;
+        if (rootNumerator.abs().equals(BigInteger.ONE)) {
+            numeratorPowers = new Pair<>(BigInteger.ONE, 0);
+        } else {
+            numeratorPowers = MathUtils.expressAsPower(rootNumerator.abs());
+        }
+        BigInteger rootDenominator = denominator;
+        Pair<BigInteger, Integer> denominatorPowers;
+        if (rootDenominator.equals(BigInteger.ONE)) {
+            denominatorPowers = new Pair<>(BigInteger.ONE, 0);
+        } else {
+            denominatorPowers = MathUtils.expressAsPower(rootDenominator);
+        }
+        int gcd = MathUtils.gcd(MathUtils.gcd(numeratorPowers.b, denominatorPowers.b), r);
+        if (gcd != 1) {
+            rootNumerator = numeratorPowers.a.pow(numeratorPowers.b / gcd);
+            if (numeratorSign == -1) {
+                rootNumerator = rootNumerator.negate();
+            }
+            rootDenominator = denominatorPowers.a.pow(denominatorPowers.b / gcd);
+            r /= gcd;
+            if (r == 1) {
+                return Optional.of(Rational.of(rootNumerator, rootDenominator));
+            }
+        }
+        return Optional.empty();
+    }
+
+    /**
      * Returns the fractional part of {@code this}; {@code this}–⌊{@code this}⌋.
      *
      * <ul>
