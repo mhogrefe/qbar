@@ -5,7 +5,6 @@ import mho.qbar.testing.QBarTesting;
 import mho.wheels.iterables.CachedIterator;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.math.BinaryFraction;
-import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.FloatingPointUtils;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.structures.Pair;
@@ -1625,6 +1624,18 @@ public class RealDemos extends QBarDemos {
         }
     }
 
+    private void demoSqrtOfRational() {
+        for (Rational x : take(LIMIT, P.withScale(4).rangeUp(Rational.ZERO))) {
+            System.out.println("sqrt(" + x + ") = " + sqrtOfRational(x));
+        }
+    }
+
+    private void demoCbrtOfRational() {
+        for (Rational x : take(LIMIT, P.withScale(4).rationals())) {
+            System.out.println("cbrt(" + x + ") = " + cbrtOfRational(x));
+        }
+    }
+
     private void demoRootUnsafe() {
         Iterable<Pair<Real, Integer>> ps = filterInfinite(
                 p -> {
@@ -1724,6 +1735,76 @@ public class RealDemos extends QBarDemos {
         );
         for (Triple<Real, Integer, Rational> t : take(MEDIUM_LIMIT, ts)) {
             System.out.println("root(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.root(t.b, t.c));
+        }
+    }
+
+    private void demoSqrtUnsafe() {
+        Iterable<Real> xs = filterInfinite(
+                x -> x.ge(Rational.ZERO, DEFAULT_RESOLUTION).orElse(false),
+                P.withScale(4).reals()
+        );
+        for (Real x : take(MEDIUM_LIMIT, xs)) {
+            System.out.println("sqrtUnsafe(" + x + ") = " + x.sqrtUnsafe());
+        }
+    }
+
+    private void demoSqrt() {
+        //noinspection RedundantCast
+        Iterable<Pair<Real, Rational>> ps = map(
+                q -> {
+                    Real r;
+                    switch (q.a.b) {
+                        case NONE:
+                            r = q.a.a.realValue();
+                            break;
+                        case LEFT:
+                            r = leftFuzzyRepresentation(q.a.a.rationalValueExact());
+                            break;
+                        case RIGHT:
+                            r = rightFuzzyRepresentation(q.a.a.rationalValueExact());
+                            break;
+                        case BOTH:
+                            r = fuzzyRepresentation(q.a.a.rationalValueExact());
+                            break;
+                        default:
+                            throw new IllegalStateException("unreachable");
+                    }
+                    return new Pair<>(r, q.b);
+                },
+                filterInfinite(
+                        p -> rootCheck(p.a.a, 2, p.a.b),
+                        P.pairs(
+                                P.withScale(1).choose(
+                                        map(x -> new Pair<>(x, FuzzinessType.NONE), P.withScale(4).algebraics()),
+                                        P.choose(
+                                                (List<Iterable<Pair<Algebraic, FuzzinessType>>>) Arrays.asList(
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.LEFT),
+                                                                P.withScale(4).rationals()
+                                                        ),
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.RIGHT),
+                                                                P.withScale(4).rationals()
+                                                        ),
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.BOTH),
+                                                                P.withScale(4).rationals()
+                                                        )
+                                                )
+                                        )
+                                ),
+                                P.positiveRationals()
+                        )
+                )
+        );
+        for (Pair<Real, Rational> t : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("sqrt(" + t.a + ", " + t.b + ") = " + t.a.sqrt(t.b));
+        }
+    }
+
+    private void demoCbrt() {
+        for (Real x : take(MEDIUM_LIMIT, P.withScale(4).reals())) {
+            System.out.println("cbrt(" + x + ") = " + x.cbrt());
         }
     }
 

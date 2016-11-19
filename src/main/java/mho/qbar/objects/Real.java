@@ -13,9 +13,13 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.ordering.Ordering.EQ;
+import static mho.wheels.ordering.Ordering.GT;
+import static mho.wheels.ordering.Ordering.LT;
 import static mho.wheels.testing.Testing.*;
 
 /**
@@ -611,6 +615,70 @@ public final class Real implements Iterable<Interval> {
     }
 
     /**
+     * Compares the diameters of two {@code Interval}s (see {@link Interval#diameter()}). Empty diameters correspond to
+     * unbounded intervals, so they are largest.
+     *
+     * <ul>
+     *  <li>{@code aDiameter} cannot be negative.</li>
+     *  <li>{@code bDiameter} cannot be negative.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param aDiameter the diameter of the first {@code Interval}
+     * @param bDiameter the diameter of the second {@code Interval}
+     * @return {@code LT} if the first diameter is smaller than the second diameter, {@code GT} if the first diameter
+     * is greater than the second diameter, and {@code EQ} if the diameters are equal
+     */
+    private static @NotNull Ordering compareDiameters(
+            @NotNull Optional<Rational> aDiameter,
+            @NotNull Optional<Rational> bDiameter
+    ) {
+        boolean aFinite = aDiameter.isPresent();
+        boolean bFinite = bDiameter.isPresent();
+        if (aFinite && bFinite) {
+            return Ordering.compare(aDiameter.get(), bDiameter.get());
+        } else if (aFinite) {
+            return LT;
+        } else if (bFinite) {
+            return GT;
+        } else {
+            return EQ;
+        }
+    }
+
+    /**
+     * Given a {@code List} of {@code Interval}s, returns the zero-based index of the one with the largest diameter. If
+     * multiple {@code Interval}s share the largest diameter, the index of the first one is returned. A set of indices
+     * to skip is provided; the diameters of the {@code Interval}s at those indices are not considered.
+     *
+     * <ul>
+     *  <li>{@code xs} cannot be empty and cannot contain nulls.</li>
+     *  <li>{@code skipIndices} cannot contain nulls or negative numbers.</li>
+     *  <li>The largest integer in {@code skipIndices} must be less than the size of {@code xs}. {@code skipIndices}
+     *  cannot contain every integer from 0 to |{@code xs}|–1, inclusive.</li>
+     *  <li>The result is non-negative.</li>
+     * </ul>
+     *
+     * @param xs a list of {@code Interval}s
+     * @param skipIndices the indices of the {@code Interval}s to ignore
+     * @return the first index of an {@code Interval} with maximal diameter in {@code xs}, excluding those
+     * {@code Interval}s at an index in {@code skipIndices}
+     */
+    private static int largestDiameterIndex(@NotNull List<Interval> xs, Set<Integer> skipIndices) {
+        int largestDiameterIndex = -1;
+        Optional<Rational> largestDiameter = null;
+        for (int i = 0; i < xs.size(); i++) {
+            if (skipIndices.contains(i)) continue;
+            Optional<Rational> diameter = xs.get(i).diameter();
+            if (largestDiameterIndex == -1 || compareDiameters(diameter, largestDiameter) == GT) {
+                largestDiameterIndex = i;
+                largestDiameter = diameter;
+            }
+        }
+        return largestDiameterIndex;
+    }
+
+    /**
      * Given a list of target {@code Real}s, returns the 0-based index of the one that is equal to {@code this}. If
      * none are equal to {@code this}, this method will return an incorrect result or throw an exception. If more than
      * one is equal to {@code this}, this method will loop forever.
@@ -629,34 +697,39 @@ public final class Real implements Iterable<Interval> {
             return 0;
         }
         Set<Integer> skipIndices = new HashSet<>(); //stop refining intervals that are disjoint from this's intervals
-        Iterator<Interval> iterator = intervals.iterator();
         List<Iterator<Interval>> targetIterators = toList(map(Iterable::iterator, targets));
-        List<Interval> targetIntervals = toList(replicate(targetIterators.size(), null));
-        outer:
+        targetIterators.add(intervals.iterator());
+        List<Interval> targetIntervals = new ArrayList<>();
+        //noinspection Convert2streamapi
+        for (Iterator<Interval> it : targetIterators) {
+            targetIntervals.add(it.next());
+        }
         while (true) {
-            Interval interval = iterator.next();
-            for (int i = 0; i < targetIntervals.size(); i++) {
-                if (skipIndices.contains(i)) continue;
-                targetIntervals.set(i, targetIterators.get(i).next());
-            }
+            Interval interval = last(targetIntervals);
             int matchIndex = -1;
-            for (int i = 0; i < targetIntervals.size(); i++) {
+            boolean done = true;
+            for (int i = 0; i < targetIntervals.size() - 1; i++) {
                 if (skipIndices.contains(i)) continue;
                 Interval targetInterval = targetIntervals.get(i);
                 if (interval.disjoint(targetInterval)) {
                     skipIndices.add(i);
                 } else {
                     if (matchIndex != -1) {
-                        continue outer;
+                        done = false;
+                        break;
                     }
                     matchIndex = i;
                 }
             }
-            if (matchIndex == -1) {
-                throw new IllegalArgumentException("No element of targets is equal to this. this: " +
-                        this + ", targets: " + targets);
+            if (done) {
+                if (matchIndex == -1) {
+                    throw new IllegalArgumentException("No element of targets is equal to this. this: " +
+                            this + ", targets: " + targets);
+                }
+                return matchIndex;
             }
-            return matchIndex;
+            int largestDiameterIndex = largestDiameterIndex(targetIntervals, skipIndices);
+            targetIntervals.set(largestDiameterIndex, targetIterators.get(largestDiameterIndex).next());
         }
     }
 
@@ -2295,6 +2368,45 @@ public final class Real implements Iterable<Interval> {
         return new Real(map(i -> i.add(ri), intervals));
     }
 
+    private static @NotNull Real zipTwoIntervals(
+            @NotNull BiFunction<Interval, Interval, Interval> f,
+            @NotNull Real x,
+            @NotNull Real y
+    ) {
+        return new Real(() -> new NoRemoveIterator<Interval>() {
+            private final @NotNull Iterator<Interval> as = x.intervals.iterator();
+            private final @NotNull Iterator<Interval> bs = y.intervals.iterator();
+            private Interval a = null;
+            private Interval b = null;
+            private Optional<Rational> aDiameter = null;
+            private Optional<Rational> bDiameter = null;
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public @NotNull Interval next() {
+                if (a == null) {
+                    a = as.next();
+                    b = bs.next();
+                    aDiameter = a.diameter();
+                    bDiameter = b.diameter();
+                } else {
+                    if (compareDiameters(aDiameter, bDiameter) == LT) {
+                        b = bs.next();
+                        bDiameter = b.diameter();
+                    } else {
+                        a = as.next();
+                        aDiameter = a.diameter();
+                    }
+                }
+                return f.apply(a, b);
+            }
+        });
+    }
+
     /**
      * Returns the sum of {@code this} and {@code that}. The result may be fuzzy even if both arguments are clean.
      *
@@ -2313,7 +2425,7 @@ public final class Real implements Iterable<Interval> {
         if (this == that) return shiftLeft(1);
         if (rational.isPresent()) return that.add(rational.get());
         if (that.rational.isPresent()) return add(that.rational.get());
-        return new Real(zipWith(Interval::add, intervals, that.intervals));
+        return zipTwoIntervals(Interval::add, this, that);
     }
 
     /**
@@ -2357,7 +2469,7 @@ public final class Real implements Iterable<Interval> {
         if (that.rational.isPresent() && that.rational.get() == Rational.ZERO) return this;
         if (rational.isPresent()) return that.subtract(rational.get()).negate();
         if (that.rational.isPresent()) return subtract(that.rational.get());
-        return new Real(zipWith(Interval::subtract, intervals, that.intervals));
+        return zipTwoIntervals(Interval::subtract, this, that);
     }
 
     /**
@@ -2448,7 +2560,7 @@ public final class Real implements Iterable<Interval> {
         }
         if (rational.isPresent()) return that.multiply(rational.get());
         if (that.rational.isPresent()) return multiply(that.rational.get());
-        return new Real(zipWith(Interval::multiply, intervals, that.intervals));
+        return zipTwoIntervals(Interval::multiply, this, that);
     }
 
     /**
@@ -2600,7 +2712,7 @@ public final class Real implements Iterable<Interval> {
         if (that.rational.isPresent()) {
             return divide(that.rational.get());
         }
-        return new Real(zipWith(Interval::divideHull, intervals, that.intervals));
+        return zipTwoIntervals(Interval::divideHull, this, that);
     }
 
     /**
@@ -2636,7 +2748,7 @@ public final class Real implements Iterable<Interval> {
         if (that.rational.isPresent()) {
             return Optional.of(divide(that.rational.get()));
         }
-        return Optional.of(new Real(zipWith(Interval::divideHull, intervals, that.intervals)));
+        return Optional.of(zipTwoIntervals(Interval::divideHull, this, that));
     }
 
     /**
@@ -2882,6 +2994,38 @@ public final class Real implements Iterable<Interval> {
     }
 
     /**
+     * Returns the square root of {@code x}. The principal (non-negative) square root is chosen.
+     *
+     * <ul>
+     *  <li>{@code x} cannot be negative.</li>
+     *  <li>The result is the square root of a rational number.</li>
+     * </ul>
+     *
+     * @param x a {@code Rational}
+     * @return sqrt({@code x})
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull Real sqrtOfRational(@NotNull Rational x) {
+        return rootOfRational(x, 2);
+    }
+
+    /**
+     * Returns the cube root of {@code x}.
+     *
+     * <ul>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>The result is the cube root of a rational number.</li>
+     * </ul>
+     *
+     * @param x a {@code Rational}
+     * @return cbrt({@code x})
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull Real cbrtOfRational(@NotNull Rational x) {
+        return rootOfRational(x, 3);
+    }
+
+    /**
      * Returns the {@code r}th root of {@code this}, or {@code this}<sup>1/{@code r}</sup>. If {@code r} is even, the
      * principal (non-negative) root is chosen. If {@code this} is equal to zero, fuzzy on the left, and {@code r} is
      * even, or if {@code this} is equal to zero, fuzzy, and {@code r} is negative, this method will loop forever. To
@@ -3031,6 +3175,57 @@ public final class Real implements Iterable<Interval> {
     }
 
     /**
+     * Returns the square root of {@code this}. If {@code r} is even, the principal (non-negative) root is chosen. If
+     * {@code this} is equal to zero and fuzzy on the left, this method will loop forever. To prevent this behavior,
+     * use {@link Real#sqrt(Rational)} instead.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be negative or a zero fuzzy on the left.</li>
+     *  <li>The result is not negative.</li>
+     * </ul>
+     *
+     * @return sqrt({@code r})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Real sqrtUnsafe() {
+        return rootUnsafe(2);
+    }
+
+    /**
+     * Returns the square root of {@code this}. The principal (non-negative) root is chosen. If {@code this} is equal
+     * to zero and fuzzy on the left, this method will give up and return empty once the approximating interval's
+     * diameter is less than the specified resolution.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be negative.</li>
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>The result is not negative.</li>
+     * </ul>
+     *
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return sqrt({@code r})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Optional<Real> sqrt(@NotNull Rational resolution) {
+        return root(2, resolution);
+    }
+
+    /**
+     * Returns the cube root of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return cbrt({@code r})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Real cbrt() {
+        return rootUnsafe(3);
+    }
+
+    /**
      * Given an interval [{@code lower}, {@code upper}], returns an {@code Interval} (with rational bounds) containing
      * the given interval and with a diameter no more than twice the given interval's.
      *
@@ -3059,18 +3254,30 @@ public final class Real implements Iterable<Interval> {
         }
         Iterator<Interval> lowerIntervals = lower.iterator();
         Iterator<Interval> upperIntervals = upper.iterator();
+        Interval lowerInterval;
+        Interval upperInterval;
+        do {
+            lowerInterval = lowerIntervals.next();
+            upperInterval = upperIntervals.next();
+        } while (!lowerInterval.isFinitelyBounded() || !upperInterval.isFinitelyBounded() ||
+                !lowerInterval.disjoint(upperInterval));
+        Rational lowerDiameter = lowerInterval.diameter().get();
+        Rational upperDiameter = upperInterval.diameter().get();
         while (true) {
-            Interval lowerInterval = lowerIntervals.next();
-            Interval upperInterval = upperIntervals.next();
-            if (!lowerInterval.isFinitelyBounded() || !upperInterval.isFinitelyBounded() ||
-                    !lowerInterval.disjoint(upperInterval)) continue;
             Rational gapSize = upperInterval.getLower().get().subtract(lowerInterval.getUpper().get());
             if (gapSize.signum() == -1) {
                 throw new IllegalArgumentException();
             }
-            Rational diameterSum = lowerInterval.diameter().get().add(upperInterval.diameter().get());
+            Rational diameterSum = lowerDiameter.add(upperDiameter);
             if (Ordering.ge(gapSize, diameterSum)) {
                 return lowerInterval.convexHull(upperInterval);
+            }
+            if (Ordering.lt(lowerDiameter, upperDiameter)) {
+                upperInterval = upperIntervals.next();
+                upperDiameter = upperInterval.diameter().get();
+            } else {
+                lowerInterval = lowerIntervals.next();
+                lowerDiameter = lowerInterval.diameter().get();
             }
         }
     }
@@ -4391,9 +4598,22 @@ public final class Real implements Iterable<Interval> {
         if (that.rational.isPresent()) return compareToUnsafe(that.rational.get());
         Iterator<Interval> thisIntervals = intervals.iterator();
         Iterator<Interval> thatIntervals = that.intervals.iterator();
+        Interval a = thisIntervals.next();
+        Interval b = thatIntervals.next();
+        Optional<Rational> aDiameter = a.diameter();
+        Optional<Rational> bDiameter = b.diameter();
         while (true) {
             Optional<Ordering> o = thisIntervals.next().elementCompare(thatIntervals.next());
-            if (o.isPresent()) return o.get().toInt();
+            if (o.isPresent()) {
+                return o.get().toInt();
+            }
+            if (compareDiameters(aDiameter, bDiameter) == LT) {
+                b = thatIntervals.next();
+                bDiameter = b.diameter();
+            } else {
+                a = thisIntervals.next();
+                aDiameter = a.diameter();
+            }
         }
     }
 
@@ -4423,16 +4643,25 @@ public final class Real implements Iterable<Interval> {
         if (that.rational.isPresent()) return compareTo(that.rational.get(), resolution);
         Iterator<Interval> thisIntervals = intervals.iterator();
         Iterator<Interval> thatIntervals = that.intervals.iterator();
+        Interval a = thisIntervals.next();
+        Interval b = thatIntervals.next();
+        Optional<Rational> aDiameter = a.diameter();
+        Optional<Rational> bDiameter = b.diameter();
         while (true) {
-            Interval thisInterval = thisIntervals.next();
-            Interval thatInterval = thatIntervals.next();
-            Optional<Ordering> o = thisInterval.elementCompare(thatInterval);
+            Optional<Ordering> o = a.elementCompare(b);
             if (o.isPresent()) {
                 return Optional.of(o.get().toInt());
-            } else if (thisInterval.isFinitelyBounded() && thatInterval.isFinitelyBounded() &&
-                    Ordering.lt(thisInterval.diameter().get(), resolution) &&
-                    Ordering.lt(thatInterval.diameter().get(), resolution)) {
+            }
+            if (aDiameter.isPresent() && bDiameter.isPresent() &&
+                    Ordering.lt(aDiameter.get(), resolution) && Ordering.lt(bDiameter.get(), resolution)) {
                 return Optional.empty();
+            }
+            if (compareDiameters(aDiameter, bDiameter) == LT) {
+                b = thatIntervals.next();
+                bDiameter = b.diameter();
+            } else {
+                a = thisIntervals.next();
+                aDiameter = a.diameter();
             }
         }
     }
@@ -4530,18 +4759,26 @@ public final class Real implements Iterable<Interval> {
         if (that.rational.isPresent()) return leUnsafe(that.rational.get());
         Iterator<Interval> thisIntervals = intervals.iterator();
         Iterator<Interval> thatIntervals = that.intervals.iterator();
+        Interval a = thisIntervals.next();
+        Interval b = thatIntervals.next();
+        Optional<Rational> aDiameter = a.diameter();
+        Optional<Rational> bDiameter = b.diameter();
         while (true) {
-            Interval thisInterval = thisIntervals.next();
-            Interval thatInterval = thatIntervals.next();
-            Optional<Rational> thisLower = thisInterval.getLower();
-            Optional<Rational> thisUpper = thisInterval.getUpper();
-            Optional<Rational> thatLower = thatInterval.getLower();
-            Optional<Rational> thatUpper = thatInterval.getUpper();
-            if (thisUpper.isPresent() && thatLower.isPresent() && Ordering.le(thisUpper.get(), thatLower.get())) {
+            Optional<Rational> aLower = a.getLower();
+            Optional<Rational> aUpper = a.getUpper();
+            Optional<Rational> bLower = b.getLower();
+            Optional<Rational> bUpper = b.getUpper();
+            if (aUpper.isPresent() && bLower.isPresent() && Ordering.le(aUpper.get(), bLower.get())) {
                 return true;
-            } else if (thisLower.isPresent() && thatUpper.isPresent() &&
-                    Ordering.gt(thisLower.get(), thatUpper.get())) {
+            } else if (aLower.isPresent() && bUpper.isPresent() && Ordering.gt(aLower.get(), bUpper.get())) {
                 return false;
+            }
+            if (compareDiameters(aDiameter, bDiameter) == LT) {
+                b = thatIntervals.next();
+                bDiameter = b.diameter();
+            } else {
+                a = thisIntervals.next();
+                aDiameter = a.diameter();
             }
         }
     }
@@ -4567,18 +4804,26 @@ public final class Real implements Iterable<Interval> {
         if (that.rational.isPresent()) return geUnsafe(that.rational.get());
         Iterator<Interval> thisIntervals = intervals.iterator();
         Iterator<Interval> thatIntervals = that.intervals.iterator();
+        Interval a = thisIntervals.next();
+        Interval b = thatIntervals.next();
+        Optional<Rational> aDiameter = a.diameter();
+        Optional<Rational> bDiameter = b.diameter();
         while (true) {
-            Interval thisInterval = thisIntervals.next();
-            Interval thatInterval = thatIntervals.next();
-            Optional<Rational> thisLower = thisInterval.getLower();
-            Optional<Rational> thisUpper = thisInterval.getUpper();
-            Optional<Rational> thatLower = thatInterval.getLower();
-            Optional<Rational> thatUpper = thatInterval.getUpper();
-            if (thisLower.isPresent() && thatUpper.isPresent() && Ordering.ge(thisLower.get(), thatUpper.get())) {
+            Optional<Rational> aLower = a.getLower();
+            Optional<Rational> aUpper = a.getUpper();
+            Optional<Rational> bLower = b.getLower();
+            Optional<Rational> bUpper = b.getUpper();
+            if (aLower.isPresent() && bUpper.isPresent() && Ordering.ge(aLower.get(), bUpper.get())) {
                 return true;
-            } else if (thisUpper.isPresent() && thatLower.isPresent() &&
-                    Ordering.lt(thisUpper.get(), thatLower.get())) {
+            } else if (aUpper.isPresent() && bLower.isPresent() && Ordering.lt(aUpper.get(), bLower.get())) {
                 return false;
+            }
+            if (compareDiameters(aDiameter, bDiameter) == LT) {
+                b = thatIntervals.next();
+                bDiameter = b.diameter();
+            } else {
+                a = thisIntervals.next();
+                aDiameter = a.diameter();
             }
         }
     }
@@ -4679,22 +4924,30 @@ public final class Real implements Iterable<Interval> {
         if (that.rational.isPresent()) return le(that.rational.get(), resolution);
         Iterator<Interval> thisIntervals = intervals.iterator();
         Iterator<Interval> thatIntervals = that.intervals.iterator();
+        Interval a = thisIntervals.next();
+        Interval b = thatIntervals.next();
+        Optional<Rational> aDiameter = a.diameter();
+        Optional<Rational> bDiameter = b.diameter();
         while (true) {
-            Interval thisInterval = thisIntervals.next();
-            Interval thatInterval = thatIntervals.next();
-            Optional<Rational> thisLower = thisInterval.getLower();
-            Optional<Rational> thisUpper = thisInterval.getUpper();
-            Optional<Rational> thatLower = thatInterval.getLower();
-            Optional<Rational> thatUpper = thatInterval.getUpper();
-            if (thisUpper.isPresent() && thatLower.isPresent() && Ordering.le(thisUpper.get(), thatLower.get())) {
+            Optional<Rational> aLower = a.getLower();
+            Optional<Rational> aUpper = a.getUpper();
+            Optional<Rational> bLower = b.getLower();
+            Optional<Rational> bUpper = b.getUpper();
+            if (aUpper.isPresent() && bLower.isPresent() && Ordering.le(aUpper.get(), bLower.get())) {
                 return Optional.of(true);
-            } else if (thisLower.isPresent() && thatUpper.isPresent() &&
-                    Ordering.gt(thisLower.get(), thatUpper.get())) {
+            } else if (aLower.isPresent() && bUpper.isPresent() && Ordering.gt(aLower.get(), bUpper.get())) {
                 return Optional.of(false);
-            } else if (thisLower.isPresent() && thisUpper.isPresent() && thatLower.isPresent() &&
-                    thatUpper.isPresent() && Ordering.lt(thisInterval.diameter().get(), resolution) &&
-                    Ordering.lt(thatInterval.diameter().get(), resolution)) {
+            } else if (aLower.isPresent() && aUpper.isPresent() && bLower.isPresent() &&
+                    bUpper.isPresent() && Ordering.lt(aDiameter.get(), resolution) &&
+                    Ordering.lt(bDiameter.get(), resolution)) {
                 return Optional.empty();
+            }
+            if (compareDiameters(aDiameter, bDiameter) == LT) {
+                b = thatIntervals.next();
+                bDiameter = b.diameter();
+            } else {
+                a = thisIntervals.next();
+                aDiameter = a.diameter();
             }
         }
     }
@@ -4723,22 +4976,32 @@ public final class Real implements Iterable<Interval> {
         if (that.rational.isPresent()) return ge(that.rational.get(), resolution);
         Iterator<Interval> thisIntervals = intervals.iterator();
         Iterator<Interval> thatIntervals = that.intervals.iterator();
+        Interval a = thisIntervals.next();
+        Interval b = thatIntervals.next();
+        Optional<Rational> aDiameter = a.diameter();
+        Optional<Rational> bDiameter = b.diameter();
         while (true) {
             Interval thisInterval = thisIntervals.next();
             Interval thatInterval = thatIntervals.next();
-            Optional<Rational> thisLower = thisInterval.getLower();
-            Optional<Rational> thisUpper = thisInterval.getUpper();
-            Optional<Rational> thatLower = thatInterval.getLower();
-            Optional<Rational> thatUpper = thatInterval.getUpper();
-            if (thisLower.isPresent() && thatUpper.isPresent() && Ordering.ge(thisLower.get(), thatUpper.get())) {
+            Optional<Rational> aLower = thisInterval.getLower();
+            Optional<Rational> aUpper = thisInterval.getUpper();
+            Optional<Rational> bLower = thatInterval.getLower();
+            Optional<Rational> bUpper = thatInterval.getUpper();
+            if (aLower.isPresent() && bUpper.isPresent() && Ordering.ge(aLower.get(), bUpper.get())) {
                 return Optional.of(true);
-            } else if (thisUpper.isPresent() && thatLower.isPresent() &&
-                    Ordering.lt(thisUpper.get(), thatLower.get())) {
+            } else if (aUpper.isPresent() && bLower.isPresent() && Ordering.lt(aUpper.get(), bLower.get())) {
                 return Optional.of(false);
-            } else if (thisLower.isPresent() && thisUpper.isPresent() && thatLower.isPresent() &&
-                    thatUpper.isPresent() && Ordering.lt(thisInterval.diameter().get(), resolution) &&
-                    Ordering.lt(thatInterval.diameter().get(), resolution)) {
+            } else if (aLower.isPresent() && aUpper.isPresent() && bLower.isPresent() &&
+                    bUpper.isPresent() && Ordering.lt(aDiameter.get(), resolution) &&
+                    Ordering.lt(bDiameter.get(), resolution)) {
                 return Optional.empty();
+            }
+            if (compareDiameters(aDiameter, bDiameter) == LT) {
+                b = thatIntervals.next();
+                bDiameter = b.diameter();
+            } else {
+                a = thisIntervals.next();
+                aDiameter = a.diameter();
             }
         }
     }

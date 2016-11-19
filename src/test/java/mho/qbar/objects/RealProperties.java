@@ -6,7 +6,6 @@ import mho.wheels.iterables.CachedIterator;
 import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.math.BinaryFraction;
-import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.BigDecimalUtils;
 import mho.wheels.numberUtils.FloatingPointUtils;
 import mho.wheels.numberUtils.IntegerUtils;
@@ -130,8 +129,13 @@ public class RealProperties extends QBarTestProperties {
         propertiesPowUnsafe_int();
         propertiesPow_int_Rational();
         propertiesRootOfRational();
+        propertiesSqrtOfRational();
+        propertiesCbrtOfRational();
         propertiesRootUnsafe();
         propertiesRoot();
+        propertiesSqrtUnsafe();
+        propertiesSqrt();
+        propertiesCbrt();
         propertiesIntervalExtensionUnsafe();
         propertiesFractionalPartUnsafe();
         propertiesFractionalPart();
@@ -4212,7 +4216,7 @@ public class RealProperties extends QBarTestProperties {
 
     private void propertiesProduct() {
         initialize("product(List<Real>)");
-        for (List<Real> xs : take(LIMIT, P.withScale(4).lists(P.reals()))) {
+        for (List<Real> xs : take(LIMIT, P.withScale(1).lists(P.reals()))) {
             Real product = product(xs);
             product.validate();
             Optional<Boolean> equal = product.eq(product_simplest(xs), DEFAULT_RESOLUTION);
@@ -4246,8 +4250,8 @@ public class RealProperties extends QBarTestProperties {
         Map<String, Function<List<Real>, Real>> functions = new LinkedHashMap<>();
         functions.put("simplest", RealProperties::product_simplest);
         functions.put("standard", Real::product);
-        Iterable<List<Real>> xss = P.lists(P.reals());
-        compareImplementations("product(Iterable<Real>)", take(SMALL_LIMIT, xss), functions, v -> P.reset());
+        Iterable<List<Real>> xss = P.withScale(1).lists(P.reals());
+        compareImplementations("product(Iterable<Real>)", take(LIMIT, xss), functions, v -> P.reset());
     }
 
     private void propertiesDelta() {
@@ -4554,6 +4558,35 @@ public class RealProperties extends QBarTestProperties {
         }
     }
 
+    private void propertiesSqrtOfRational() {
+        initialize("sqrtOfRational(Rational)");
+        for (Rational x : take(LIMIT, P.rangeUp(Rational.ZERO))) {
+            Real y = sqrtOfRational(x);
+            x.validate();
+            Optional<Boolean> inverse = y.powUnsafe(2).eq(x, DEFAULT_RESOLUTION);
+            assertTrue(x, !inverse.isPresent() || inverse.get());
+            assertNotEquals(x, y.signumUnsafe(), -1);
+        }
+
+        for (Rational x : take(LIMIT, P.negativeRationals())) {
+            try {
+                sqrtOfRational(x);
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesCbrtOfRational() {
+        initialize("cbrtOfRational(Rational)");
+        for (Rational x : take(LIMIT, P.rangeUp(Rational.ZERO))) {
+            Real y = cbrtOfRational(x);
+            x.validate();
+            Optional<Boolean> inverse = y.powUnsafe(3).eq(x, DEFAULT_RESOLUTION);
+            assertTrue(x, !inverse.isPresent() || inverse.get());
+            assertEquals(x, y.signumUnsafe(), x.signum());
+        }
+    }
+
     private void propertiesRootUnsafe() {
         initialize("rootUnsafe(int)");
         Iterable<Pair<Real, Integer>> ps = filterInfinite(
@@ -4735,29 +4768,112 @@ public class RealProperties extends QBarTestProperties {
                 P.integersGeometric(),
                 P.rangeDown(Rational.ZERO)
         );
-        for (Triple<Real, Integer, Rational> p : take(LIMIT, tsFail)) {
+        for (Triple<Real, Integer, Rational> t : take(LIMIT, tsFail)) {
             try {
-                p.a.root(p.b, p.c);
+                t.a.root(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesSqrtUnsafe() {
+        initialize("sqrtUnsafe()");
+        Iterable<Real> xs = filterInfinite(
+                x -> x.ge(Rational.ZERO, DEFAULT_RESOLUTION).orElse(false),
+                P.withScale(4).reals()
+        );
+        for (Real x : take(MEDIUM_LIMIT, xs)) {
+            Real y = x.sqrtUnsafe();
+            y.validate();
+            Optional<Boolean> inverse = y.powUnsafe(2).eq(x, DEFAULT_RESOLUTION);
+            assertTrue(x, !inverse.isPresent() || inverse.get());
+            assertTrue(x, y.geUnsafe(Rational.ZERO));
+        }
+
+        for (Real x : take(LIMIT, P.negativeReals())) {
+            try {
+                //noinspection ResultOfMethodCallIgnored
+                x.sqrtUnsafe().toString();
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesSqrt() {
+        initialize("sqrt()");
+        //noinspection RedundantCast
+        Iterable<Pair<Real, Rational>> ps = map(
+                q -> {
+                    Real r;
+                    switch (q.a.b) {
+                        case NONE:
+                            r = q.a.a.realValue();
+                            break;
+                        case LEFT:
+                            r = leftFuzzyRepresentation(q.a.a.rationalValueExact());
+                            break;
+                        case RIGHT:
+                            r = rightFuzzyRepresentation(q.a.a.rationalValueExact());
+                            break;
+                        case BOTH:
+                            r = fuzzyRepresentation(q.a.a.rationalValueExact());
+                            break;
+                        default:
+                            throw new IllegalStateException("unreachable");
+                    }
+                    return new Pair<>(r, q.b);
+                },
+                filterInfinite(
+                        p -> rootCheck(p.a.a, 2, p.a.b),
+                        P.pairs(
+                                P.withScale(1).choose(
+                                        map(x -> new Pair<>(x, FuzzinessType.NONE), P.withScale(4).algebraics()),
+                                        P.choose(
+                                                (List<Iterable<Pair<Algebraic, FuzzinessType>>>) Arrays.asList(
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.LEFT),
+                                                                P.withScale(4).rationals()
+                                                        ),
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.RIGHT),
+                                                                P.withScale(4).rationals()
+                                                        ),
+                                                        map(
+                                                                r -> new Pair<>(Algebraic.of(r), FuzzinessType.BOTH),
+                                                                P.withScale(4).rationals()
+                                                        )
+                                                )
+                                        )
+                                ),
+                                P.positiveRationals()
+                        )
+                )
+        );
+        for (Pair<Real, Rational> p : take(MEDIUM_LIMIT, ps)) {
+            Optional<Real> ox = p.a.sqrt(p.b);
+            if (ox.isPresent()) {
+                ox.get().validate();
+                Optional<Boolean> equal = ox.get().eq(p.a.sqrtUnsafe(), DEFAULT_RESOLUTION);
+                assertTrue(p, !equal.isPresent() || equal.get());
+            }
+        }
+
+        for (Pair<Real, Rational> p : take(LIMIT, P.pairs(P.reals(), P.rangeDown(Rational.ZERO)))) {
+            try {
+                p.a.sqrt(p.b);
                 fail(p);
             } catch (IllegalArgumentException ignored) {}
         }
     }
 
-    private static boolean irrationalRootCheck(@NotNull Algebraic x, int r, @NotNull FuzzinessType ft) {
-        if ((r & 1) == 0 && x.signum() == -1) {
-            return false;
+    private void propertiesCbrt() {
+        initialize("cbrt()");
+        for (Real x : take(MEDIUM_LIMIT, P.withScale(4).reals())) {
+            Real y = x.cbrt();
+            y.validate();
+            Optional<Boolean> inverse = y.powUnsafe(3).eq(x, DEFAULT_RESOLUTION);
+            assertTrue(x, !inverse.isPresent() || inverse.get());
         }
-        if (r < 0 && x == Algebraic.ZERO) {
-            return false;
-        }
-        if (ft == FuzzinessType.NONE || !x.isRational()) {
-            return true;
-        }
-        Rational xr = x.rationalValueExact();
-        BigInteger n = xr.getNumerator().abs();
-        BigInteger d = xr.getDenominator();
-        int ar = Math.abs(r);
-        return !MathUtils.ceilingRoot(ar, n).pow(ar).equals(n) || !MathUtils.ceilingRoot(ar, d).pow(ar).equals(d);
     }
 
     private void propertiesIntervalExtensionUnsafe() {

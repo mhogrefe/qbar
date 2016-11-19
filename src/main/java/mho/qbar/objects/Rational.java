@@ -1866,7 +1866,7 @@ public final class Rational implements Comparable<Rational> {
      *  <li>The result may be any {@code Rational}, or empty.</li>
      * </ul>
      *
-     * @param r the degree of the root extracted from this
+     * @param r the degree of the root extracted from {@code this}
      * @return {@code this}<sup>1/{@code r}</sup>
      */
     public @NotNull Optional<Rational> root(int r) {
@@ -1885,34 +1885,45 @@ public final class Rational implements Comparable<Rational> {
         if ((r & 1) == 0 && signum() == -1) {
             throw new ArithmeticException("If r is even, this cannot be negative. r: " + r + ", this: " + this);
         }
-        BigInteger rootNumerator = numerator;
-        int numeratorSign = rootNumerator.signum();
-        Pair<BigInteger, Integer> numeratorPowers;
-        if (rootNumerator.abs().equals(BigInteger.ONE)) {
-            numeratorPowers = new Pair<>(BigInteger.ONE, 0);
-        } else {
-            numeratorPowers = MathUtils.expressAsPower(rootNumerator.abs());
+        Optional<BigInteger> numeratorRoot = MathUtils.root(numerator, r);
+        if (!numeratorRoot.isPresent()) {
+            return Optional.empty();
         }
-        BigInteger rootDenominator = denominator;
-        Pair<BigInteger, Integer> denominatorPowers;
-        if (rootDenominator.equals(BigInteger.ONE)) {
-            denominatorPowers = new Pair<>(BigInteger.ONE, 0);
-        } else {
-            denominatorPowers = MathUtils.expressAsPower(rootDenominator);
+        Optional<BigInteger> denominatorRoot = MathUtils.root(denominator, r);
+        if (!denominatorRoot.isPresent()) {
+            return Optional.empty();
         }
-        int gcd = MathUtils.gcd(MathUtils.gcd(numeratorPowers.b, denominatorPowers.b), r);
-        if (gcd != 1) {
-            rootNumerator = numeratorPowers.a.pow(numeratorPowers.b / gcd);
-            if (numeratorSign == -1) {
-                rootNumerator = rootNumerator.negate();
-            }
-            rootDenominator = denominatorPowers.a.pow(denominatorPowers.b / gcd);
-            r /= gcd;
-            if (r == 1) {
-                return Optional.of(Rational.of(rootNumerator, rootDenominator));
-            }
-        }
-        return Optional.empty();
+        return Optional.of(new Rational(numeratorRoot.get(), denominatorRoot.get()));
+    }
+
+    /**
+     * If {@code this} is a perfect square, returns the square root of {@code this}. Otherwise, returns empty.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be negative.</li>
+     *  <li>The result is non-negative or empty.</li>
+     * </ul>
+     *
+     * @return sqrt({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Optional<Rational> sqrt() {
+        return root(2);
+    }
+
+    /**
+     * If {@code this} is a perfect cube, returns the cube root of {@code this}. Otherwise, returns empty.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>The result may be any {@code Rational}, or empty.</li>
+     * </ul>
+     *
+     * @return cbrt({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Optional<Rational> cbrt() {
+        return root(3);
     }
 
     /**

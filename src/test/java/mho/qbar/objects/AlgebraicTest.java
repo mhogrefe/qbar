@@ -2261,7 +2261,7 @@ public class AlgebraicTest {
         intervalExtension_helper("1", "sqrt(2)", "[1, 3/2]");
         intervalExtension_helper("1", "(1+sqrt(5))/2", "[1, 2]");
 
-        intervalExtension_helper("root 0 of x^5-x-1", "sqrt(2)", "[9/8, 23/16]");
+        intervalExtension_helper("root 0 of x^5-x-1", "sqrt(2)", "[9/8, 3/2]");
         intervalExtension_helper("root 0 of x^5-x-1", "(1+sqrt(5))/2", "[9/8, 13/8]");
 
         intervalExtension_helper("sqrt(2)", "(1+sqrt(5))/2", "[11/8, 13/8]");
@@ -3792,6 +3792,43 @@ public class AlgebraicTest {
         rootOfRational_fail_helper("2", 0);
         rootOfRational_fail_helper("-1", 2);
         rootOfRational_fail_helper("-1", -2);
+    }
+
+    private static void sqrtOfRational_helper(@NotNull String x, @NotNull String output) {
+        Algebraic y = sqrtOfRational(Rational.readStrict(x).get());
+        y.validate();
+        aeq(y, output);
+    }
+
+    private static void sqrtOfRational_fail_helper(@NotNull String x) {
+        try {
+            sqrtOfRational(Rational.readStrict(x).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testSqrtOfRational() {
+        sqrtOfRational_helper("0", "0");
+        sqrtOfRational_helper("1", "1");
+        sqrtOfRational_helper("1/2", "sqrt(2)/2");
+
+        sqrtOfRational_fail_helper("-1");
+    }
+
+    private static void cbrtOfRational_helper(@NotNull String x, @NotNull String output) {
+        Algebraic y = cbrtOfRational(Rational.readStrict(x).get());
+        y.validate();
+        aeq(y, output);
+    }
+
+    @Test
+    public void testCbrtOfRational() {
+        cbrtOfRational_helper("0", "0");
+        cbrtOfRational_helper("1", "1");
+        cbrtOfRational_helper("-1", "-1");
+        cbrtOfRational_helper("1/2", "root 0 of 2*x^3-1");
+        cbrtOfRational_helper("-4/3", "root 0 of 3*x^3+4");
     }
 
     private static void root_helper(@NotNull String x, int r, @NotNull String output) {

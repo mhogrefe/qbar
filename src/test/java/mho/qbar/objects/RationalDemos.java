@@ -497,6 +497,18 @@ public class RationalDemos extends QBarDemos {
         }
     }
 
+    private void demoSqrt() {
+        for (Rational r : take(LIMIT, P.rangeUp(Rational.ZERO))) {
+            System.out.println("sqrt(" + r + ") = " + r.sqrt());
+        }
+    }
+
+    private void demoCbrt() {
+        for (Rational r : take(LIMIT, P.rationals())) {
+            System.out.println("cbrt(" + r + ") = " + r.cbrt());
+        }
+    }
+
     private void demoFractionalPart() {
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("fractionalPart(" + r + ") = " + r.fractionalPart());

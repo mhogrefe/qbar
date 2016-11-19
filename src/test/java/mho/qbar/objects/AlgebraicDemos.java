@@ -581,6 +581,18 @@ public class AlgebraicDemos extends QBarDemos {
         }
     }
 
+    private void demoSqrtOfRational() {
+        for (Rational x : take(LIMIT, P.withScale(4).rangeUp(Rational.ZERO))) {
+            System.out.println("sqrt(" + x + ") = " + sqrtOfRational(x));
+        }
+    }
+
+    private void demoCbrtOfRational() {
+        for (Rational x : take(LIMIT, P.withScale(4).rationals())) {
+            System.out.println("cbrt(" + x + ") = " + cbrtOfRational(x));
+        }
+    }
+
     private void demoRoot() {
         Iterable<Pair<Algebraic, Integer>> ps = filterInfinite(
                 p -> (p.a != ZERO || p.b >= 0) && ((p.b & 1) != 0 || p.a.signum() != -1),

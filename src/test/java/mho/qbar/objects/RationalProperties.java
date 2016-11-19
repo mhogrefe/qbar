@@ -131,6 +131,8 @@ public class RationalProperties extends QBarTestProperties {
         propertiesPow();
         compareImplementationsPow();
         propertiesRoot();
+        propertiesSqrt();
+        propertiesCbrt();
         propertiesFractionalPart();
         propertiesRoundToDenominator();
         propertiesContinuedFraction();
@@ -2862,8 +2864,14 @@ public class RationalProperties extends QBarTestProperties {
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
             Optional<Rational> or = p.a.root(p.b);
             if (or.isPresent()) {
-                or.get().validate();
-                assertEquals(p, or.get().pow(p.b), p.a);
+                Rational r = or.get();
+                r.validate();
+                if ((p.b & 1) == 0) {
+                    assertNotEquals(p, r.signum(), -1);
+                } else {
+                    assertEquals(p, r.signum(), p.a.signum());
+                }
+                assertEquals(p, r.pow(p.b), p.a);
             }
         }
 
@@ -2902,6 +2910,39 @@ public class RationalProperties extends QBarTestProperties {
                 p.a.root(p.b);
                 fail(p);
             } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesSqrt() {
+        initialize("sqrt()");
+        for (Rational r : take(LIMIT, P.rangeUp(ZERO))) {
+            Optional<Rational> or = r.sqrt();
+            if (or.isPresent()) {
+                Rational x = or.get();
+                x.validate();
+                assertNotEquals(r, x.signum(), -1);
+                assertEquals(r, x.pow(2), r);
+            }
+        }
+
+        for (Rational r : take(LIMIT, P.negativeRationals())) {
+            try {
+                r.sqrt();
+                fail(r);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesCbrt() {
+        initialize("cbrt()");
+        for (Rational r : take(LIMIT, P.rangeUp(ZERO))) {
+            Optional<Rational> or = r.cbrt();
+            if (or.isPresent()) {
+                Rational x = or.get();
+                x.validate();
+                assertEquals(r, x.signum(), r.signum());
+                assertEquals(r, x.pow(3), r);
+            }
         }
     }
 

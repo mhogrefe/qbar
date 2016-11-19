@@ -123,6 +123,8 @@ public class AlgebraicProperties extends QBarTestProperties {
         propertiesPow_int();
         compareImplementationsPow_int();
         propertiesRootOfRational();
+        propertiesSqrtOfRational();
+        propertiesCbrtOfRational();
         propertiesRoot();
         propertiesSqrt();
         propertiesCbrt();
@@ -3095,6 +3097,8 @@ public class AlgebraicProperties extends QBarTestProperties {
             inverse(y -> rootOfRational(y, p.b), (Algebraic y) -> y.pow(p.b).rationalValueExact(), p.a);
             if ((p.b & 1) == 0) {
                 assertNotEquals(p, x.signum(), -1);
+            } else {
+                assertEquals(p, x.signum(), p.a.signum());
             }
         }
 
@@ -3160,6 +3164,33 @@ public class AlgebraicProperties extends QBarTestProperties {
         }
     }
 
+    private void propertiesSqrtOfRational() {
+        initialize("sqrtOfRational(Rational)");
+        for (Rational x : take(LIMIT, P.rangeUp(Rational.ZERO))) {
+            Algebraic y = sqrtOfRational(x);
+            x.validate();
+            inverse(Algebraic::sqrtOfRational, (Algebraic z) -> z.pow(2).rationalValueExact(), x);
+            assertNotEquals(x, y.signum(), -1);
+        }
+
+        for (Rational x : take(LIMIT, P.negativeRationals())) {
+            try {
+                sqrtOfRational(x);
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesCbrtOfRational() {
+        initialize("cbrtOfRational(Rational)");
+        for (Rational x : take(LIMIT, P.rangeUp(Rational.ZERO))) {
+            Algebraic y = cbrtOfRational(x);
+            x.validate();
+            inverse(Algebraic::cbrtOfRational, (Algebraic z) -> z.pow(3).rationalValueExact(), x);
+            assertEquals(x, y.signum(), x.signum());
+        }
+    }
+
     private void propertiesRoot() {
         initialize("root(int)");
         Iterable<Pair<Algebraic, Integer>> ps = filterInfinite(
@@ -3172,6 +3203,8 @@ public class AlgebraicProperties extends QBarTestProperties {
             inverse(y -> y.root(p.b), (Algebraic y) -> y.pow(p.b), p.a);
             if ((p.b & 1) == 0) {
                 assertNotEquals(p, x.signum(), -1);
+            } else {
+                assertEquals(p, x.signum(), p.a.signum());
             }
         }
 
@@ -3249,6 +3282,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             Algebraic y = x.cbrt();
             y.validate();
             inverse(Algebraic::cbrt, (Algebraic z) -> z.pow(3), x);
+            assertEquals(x, y.signum(), x.signum());
         }
 
         for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.pairs(P.withScale(4).algebraics()))) {

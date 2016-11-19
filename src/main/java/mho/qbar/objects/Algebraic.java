@@ -2301,7 +2301,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      *  <li>{@code r} cannot be 0.</li>
      *  <li>If {@code r} is negative, {@code x} cannot be zero.</li>
      *  <li>If {@code r} is even, {@code x} cannot be negative.</li>
-     *  <li>The result is not null.</li>
+     *  <li>The result is a rational power of a rational number.</li>
      * </ul>
      *
      * @param x a {@code Rational}
@@ -2361,6 +2361,38 @@ public final class Algebraic implements Comparable<Algebraic> {
         Polynomial rootMp = Polynomial.of(coefficients);
         Interval rootIsolatingInterval = rootMp.powerOfTwoIsolatingInterval(rootRootIndex);
         return new Algebraic(rootMp, rootRootIndex, rootIsolatingInterval, rootRootIndex + 1);
+    }
+
+    /**
+     * Returns the square root of {@code x}. The principal (non-negative) square root is chosen.
+     *
+     * <ul>
+     *  <li>{@code x} cannot be negative.</li>
+     *  <li>The result is the square root of a rational number.</li>
+     * </ul>
+     *
+     * @param x a {@code Rational}
+     * @return sqrt({@code x})
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull Algebraic sqrtOfRational(@NotNull Rational x) {
+        return rootOfRational(x, 2);
+    }
+
+    /**
+     * Returns the cube root of {@code x}.
+     *
+     * <ul>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>The result is the cube root of a rational number.</li>
+     * </ul>
+     *
+     * @param x a {@code Rational}
+     * @return cbrt({@code x})
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull Algebraic cbrtOfRational(@NotNull Rational x) {
+        return rootOfRational(x, 3);
     }
 
     /**

@@ -3439,6 +3439,52 @@ public class RationalTest {
         root_fail_helper("-1", 2);
     }
 
+    private static void sqrt_helper(@NotNull String x, @NotNull String output) {
+        Optional<Rational> or = readStrict(x).get().sqrt();
+        if (or.isPresent()) {
+            or.get().validate();
+        }
+        aeq(or, output);
+    }
+
+    private static void sqrt_fail_helper(@NotNull String x) {
+        try {
+            readStrict(x).get().sqrt();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testSqrt() {
+        sqrt_helper("0", "Optional[0]");
+        sqrt_helper("1", "Optional[1]");
+        sqrt_helper("2", "Optional.empty");
+        sqrt_helper("4", "Optional[2]");
+        sqrt_helper("64/729", "Optional[8/27]");
+
+        sqrt_fail_helper("-1");
+    }
+
+    private static void cbrt_helper(@NotNull String x, @NotNull String output) {
+        Optional<Rational> or = readStrict(x).get().cbrt();
+        if (or.isPresent()) {
+            or.get().validate();
+        }
+        aeq(or, output);
+    }
+
+    @Test
+    public void testCbrt() {
+        cbrt_helper("0", "Optional[0]");
+        cbrt_helper("1", "Optional[1]");
+        cbrt_helper("-1", "Optional[-1]");
+        cbrt_helper("2", "Optional.empty");
+        cbrt_helper("-2", "Optional.empty");
+        cbrt_helper("4", "Optional.empty");
+        cbrt_helper("64/729", "Optional[4/9]");
+        cbrt_helper("-64/729", "Optional[-4/9]");
+    }
+
     private static void fractionalPart_helper(@NotNull String input, @NotNull String output) {
         Rational r = readStrict(input).get().fractionalPart();
         r.validate();

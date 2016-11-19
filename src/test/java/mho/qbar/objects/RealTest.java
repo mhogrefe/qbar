@@ -422,17 +422,12 @@ public class RealTest {
                 " [82666416490601/30411275102208, 165332832981202001/60822550204416000]," +
                 " [6613313319248080001/2432902008176640000, 508716409172929231/187146308321280000], ...]");
         iterator_helper(PI, 5,
-                "[[281476/89625, 651864872/204778785]," +
-                " [1339760982986645756/426459285655703125, 15305839961353732690848/4871956171187883640625]," +
-                " [90159814330711160623850657403076/28698760246862382335602001953125," +
-                " 206000752128714602309315467175106616/65572075362441045655676878142578125]," +
-                " [11950827742763724038336441397624078583300672396/3804066618602651140286948940075677032470703125," +
-                " 1820381950672004239437026206052012466686191144368/579445571523205428758215494416167327391357421875" +
-                "]," +
-                " [1574353035058098242816726960753383747979148678087888676629836/50113213540244890249873419393114017" +
-                "4949627402324676513671875," +
-                " 3597144788622195741816151737039073386719688033186645699212537048/114500674825293135038520783566162" +
-                "6317331906673927513885498046875], ...]");
+                "[[281476/89625, 651864872/204778785], [1231847548/392109375, 670143059704/213311234375]," +
+                " [25406862797788/8087255859375, 5277328977275528/1679825970703125]," +
+                " [82897734054435918961108/26387168299946630859375," +
+                " 17218914588448662618112448/5480950692586369095703125]," +
+                " [3367720447004809249690544948/1071978712185331878662109375," +
+                " 1538940477244015526362193851552/489859968149906737928466796875], ...]");
 
         iterator_helper(fuzzyRepresentation(Rational.ZERO),
                 "[[-1, 1], [-1/2, 1/2], [-1/4, 1/4], [-1/8, 1/8], [-1/16, 1/16], [-1/32, 1/32], [-1/64, 1/64]," +
@@ -8118,6 +8113,43 @@ public class RealTest {
         rootOfRational_fail_helper("-1", -2);
     }
 
+    private static void sqrtOfRational_helper(@NotNull String x, @NotNull String output) {
+        Real y = sqrtOfRational(Rational.readStrict(x).get());
+        y.validate();
+        aeq(y, output);
+    }
+
+    private static void sqrtOfRational_fail_helper(@NotNull String x) {
+        try {
+            sqrtOfRational(Rational.readStrict(x).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testSqrtOfRational() {
+        sqrtOfRational_helper("0", "0");
+        sqrtOfRational_helper("1", "1");
+        sqrtOfRational_helper("1/2", "0.70710678118654752440...");
+
+        sqrtOfRational_fail_helper("-1");
+    }
+
+    private static void cbrtOfRational_helper(@NotNull String x, @NotNull String output) {
+        Real y = cbrtOfRational(Rational.readStrict(x).get());
+        y.validate();
+        aeq(y, output);
+    }
+
+    @Test
+    public void testCbrtOfRational() {
+        cbrtOfRational_helper("0", "0");
+        cbrtOfRational_helper("1", "1");
+        cbrtOfRational_helper("-1", "-1");
+        cbrtOfRational_helper("1/2", "0.79370052598409973737...");
+        cbrtOfRational_helper("-4/3", "-1.10064241629820889462...");
+    }
+
     private static void rootUnsafe_helper(@NotNull Real x, int r, @NotNull String output) {
         Real y = x.rootUnsafe(r);
         y.validate();
@@ -8576,6 +8608,104 @@ public class RealTest {
         root_fail_helper(SQRT_TWO, 1, Rational.NEGATIVE_ONE);
     }
 
+    private static void sqrtUnsafe_helper(@NotNull Real x, @NotNull String output) {
+        Real y = x.sqrtUnsafe();
+        y.validate();
+        aeq(y, output);
+    }
+
+    private static void sqrtUnsafe_fail_helper(@NotNull Real x) {
+        try {
+            //noinspection ResultOfMethodCallIgnored
+            x.sqrtUnsafe().toString();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testSqrtUnsafe() {
+        sqrtUnsafe_helper(ZERO, "0");
+        sqrtUnsafe_helper(ONE, "1");
+        sqrtUnsafe_helper(ONE_HALF, "0.70710678118654752440...");
+        sqrtUnsafe_helper(SQRT_TWO, "1.18920711500272106671...");
+        sqrtUnsafe_helper(E, "1.64872127070012814684...");
+        sqrtUnsafe_helper(PI, "1.77245385090551602729...");
+        sqrtUnsafe_helper(leftFuzzyRepresentation(Rational.ONE), "0.99999999999999999999...");
+        sqrtUnsafe_helper(rightFuzzyRepresentation(Rational.ONE), "1.00000000000000000000...");
+        sqrtUnsafe_helper(fuzzyRepresentation(Rational.ONE), "~1");
+
+        sqrtUnsafe_fail_helper(NEGATIVE_ONE);
+        sqrtUnsafe_fail_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE));
+    }
+
+    private static void sqrt_helper(@NotNull Real x, @NotNull Rational resolution, @NotNull String output) {
+        Optional<Real> oy = x.sqrt(resolution);
+        if (oy.isPresent()) {
+            oy.get().validate();
+        }
+        aeq(oy, output);
+    }
+
+    private static void sqrt_fail_helper(@NotNull Real x, @NotNull Rational resolution) {
+        try {
+            //noinspection ResultOfMethodCallIgnored
+            x.sqrt(resolution).toString();
+            fail();
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testSqrt() {
+        sqrt_helper(ZERO, DEFAULT_RESOLUTION, "Optional[0]");
+        sqrt_helper(ONE, DEFAULT_RESOLUTION, "Optional[1]");
+        sqrt_helper(ONE_HALF, DEFAULT_RESOLUTION, "Optional[0.70710678118654752440...]");
+        sqrt_helper(SQRT_TWO, DEFAULT_RESOLUTION, "Optional[1.18920711500272106671...]");
+        sqrt_helper(E, DEFAULT_RESOLUTION, "Optional[1.64872127070012814684...]");
+        sqrt_helper(PI, DEFAULT_RESOLUTION, "Optional[1.77245385090551602729...]");
+        sqrt_helper(leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        sqrt_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[0.00000000000000000000...]"
+        );
+        sqrt_helper(fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        sqrt_helper(leftFuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional[0.99999999999999999999...]");
+        sqrt_helper(rightFuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional[1.00000000000000000000...]");
+        root_helper(fuzzyRepresentation(Rational.ONE), 2, DEFAULT_RESOLUTION, "Optional[~1]");
+
+        sqrt_fail_helper(NEGATIVE_ONE, DEFAULT_RESOLUTION);
+        sqrt_fail_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), DEFAULT_RESOLUTION);
+
+        sqrt_fail_helper(ZERO, Rational.ZERO);
+        sqrt_fail_helper(ZERO, Rational.NEGATIVE_ONE);
+        sqrt_fail_helper(SQRT_TWO, Rational.ZERO);
+        sqrt_fail_helper(SQRT_TWO, Rational.NEGATIVE_ONE);
+    }
+
+    private static void cbrt_helper(@NotNull Real x, @NotNull String output) {
+        Real y = x.cbrt();
+        y.validate();
+        aeq(y, output);
+    }
+
+    @Test
+    public void testCbrt() {
+        cbrt_helper(ZERO, "0");
+        cbrt_helper(ONE, "1");
+        cbrt_helper(NEGATIVE_ONE, "-1");
+        cbrt_helper(ONE_HALF, "0.79370052598409973737...");
+        cbrt_helper(NEGATIVE_FOUR_THIRDS, "-1.10064241629820889462...");
+        cbrt_helper(SQRT_TWO, "1.12246204830937298143...");
+        cbrt_helper(E, "1.39561242508608952862...");
+        cbrt_helper(PI, "1.46459188756152326302...");
+        cbrt_helper(leftFuzzyRepresentation(Rational.ONE), "0.99999999999999999999...");
+        cbrt_helper(rightFuzzyRepresentation(Rational.ONE), "1.00000000000000000000...");
+        cbrt_helper(fuzzyRepresentation(Rational.ONE), "~1");
+        cbrt_helper(leftFuzzyRepresentation(Rational.NEGATIVE_ONE), "-1.00000000000000000000...");
+        cbrt_helper(rightFuzzyRepresentation(Rational.NEGATIVE_ONE), "-0.99999999999999999999...");
+        cbrt_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), "~-1");
+    }
+
     private static void intervalExtensionUnsafe_helper(@NotNull Real a, @NotNull Real b, @NotNull String output) {
         aeq(intervalExtensionUnsafe(a, b), output);
     }
@@ -8614,14 +8744,11 @@ public class RealTest {
         intervalExtensionUnsafe_helper(ONE, E, "[1, 7/2]");
         intervalExtensionUnsafe_helper(ONE, PI, "[1, 651864872/204778785]");
 
-        intervalExtensionUnsafe_helper(E, PI,
-                "[65/24," +
-                " 1820381950672004239437026206052012466686191144368/" +
-                "579445571523205428758215494416167327391357421875]");
+        intervalExtensionUnsafe_helper(E, PI, "[65/24, 5277328977275528/1679825970703125]");
 
         intervalExtensionUnsafe_helper(leftFuzzyRepresentation(Rational.ZERO), ONE_HALF, "[-1/2, 1/2]");
         intervalExtensionUnsafe_helper(leftFuzzyRepresentation(Rational.ZERO), ONE, "[-1, 1]");
-        intervalExtensionUnsafe_helper(leftFuzzyRepresentation(Rational.ZERO), E, "[-1/2, 7/2]");
+        intervalExtensionUnsafe_helper(leftFuzzyRepresentation(Rational.ZERO), E, "[-1, 7/2]");
         intervalExtensionUnsafe_helper(leftFuzzyRepresentation(Rational.ZERO), PI, "[-1, 651864872/204778785]");
 
         intervalExtensionUnsafe_helper(rightFuzzyRepresentation(Rational.ZERO), ONE_HALF, "[0, 1/2]");
