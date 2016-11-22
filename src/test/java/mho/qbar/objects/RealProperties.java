@@ -9,6 +9,7 @@ import mho.wheels.math.BinaryFraction;
 import mho.wheels.numberUtils.BigDecimalUtils;
 import mho.wheels.numberUtils.FloatingPointUtils;
 import mho.wheels.numberUtils.IntegerUtils;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Quadruple;
 import mho.wheels.structures.Triple;
@@ -136,6 +137,8 @@ public class RealProperties extends QBarTestProperties {
         propertiesSqrtUnsafe();
         propertiesSqrt();
         propertiesCbrt();
+        propertiesExp_Rational();
+        propertiesExp();
         propertiesIntervalExtensionUnsafe();
         propertiesFractionalPartUnsafe();
         propertiesFractionalPart();
@@ -4876,6 +4879,39 @@ public class RealProperties extends QBarTestProperties {
         }
     }
 
+    private void propertiesExp_Rational() {
+        initialize("exp(Rational)");
+        BigInteger limit = BigInteger.valueOf(SMALL_LIMIT);
+        Iterable<Rational> xs = filterInfinite(
+                x -> Ordering.le(x.bigIntegerValue().abs(), limit),
+                P.withScale(4).rationals()
+        );
+        for (Rational x : take(LIMIT, xs)) {
+            Real y = exp(x);
+            y.validate();
+            assertEquals(x, y.signumUnsafe(), 1);
+            //todo log
+        }
+    }
+
+    private void propertiesExp() {
+        initialize("exp()");
+        BigInteger limit = BigInteger.valueOf(SMALL_LIMIT);
+        Iterable<Real> xs = filterInfinite(
+                x -> {
+                    Optional<BigInteger> i = x.bigIntegerValue(DEFAULT_RESOLUTION);
+                    return i.isPresent() && Ordering.le(i.get().abs(), limit);
+                },
+                P.withScale(4).reals()
+        );
+        for (Real x : take(TINY_LIMIT, xs)) {
+            Real y = x.exp();
+            y.validate();
+            assertEquals(x, y.signumUnsafe(), 1);
+            //todo log
+        }
+    }
+
     private void propertiesIntervalExtensionUnsafe() {
         initialize("intervalExtensionUnsafe(Real, Real)");
         Iterable<Pair<Real, Real>> ps = filterInfinite(
@@ -5793,22 +5829,36 @@ public class RealProperties extends QBarTestProperties {
     private void propertiesToStringBase() {
         initialize("toStringBase(BigInteger, int, Rational)");
         //noinspection Convert2MethodRef
-        Iterable<Quadruple<Real, BigInteger, Integer, Rational>> qs = P.quadruples(
-                P.reals(),
-                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2)),
-                P.withScale(16).integersGeometric(),
-                filterInfinite(r -> r != Rational.ZERO, P.range(Rational.ZERO, Rational.ONE_HALF))
+        Iterable<Quadruple<Real, BigInteger, Integer, Rational>> qs = map(
+                p -> new Quadruple<>(p.a.a, p.a.b, p.a.c, p.b),
+                P.dependentPairsInfiniteIdentityHash(
+                        P.triples(
+                                P.reals(),
+                                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2)),
+                                P.withScale(16).integersGeometric()
+                        ),
+                        t -> filterInfinite(
+                                x -> x != Rational.ZERO,
+                                P.range(Rational.ZERO, Rational.of(t.b).pow(-t.c).shiftRight(1))
+                        )
+                )
         );
         for (Quadruple<Real, BigInteger, Integer, Rational> q : take(LIMIT, qs)) {
             q.a.toStringBase(q.b, q.c, q.d);
         }
 
         //noinspection Convert2MethodRef
-        Iterable<Quadruple<Real, BigInteger, Integer, Rational>> qsFail = P.quadruples(
-                P.reals(),
-                P.rangeDown(BigInteger.ONE),
-                P.withScale(16).integersGeometric(),
-                filterInfinite(r -> r != Rational.ZERO, P.range(Rational.ZERO, Rational.ONE_HALF))
+        Iterable<Quadruple<Real, BigInteger, Integer, Rational>> qsFail = map(
+                p -> new Quadruple<>(p.a.a, p.a.b, p.a.c, p.b),
+                P.dependentPairsInfiniteIdentityHash(
+                        P.triples(P.reals(), P.rangeDown(BigInteger.ONE), P.withScale(16).integersGeometric()),
+                        t -> t.b.signum() != 1 ?
+                                P.rationals() :
+                                filterInfinite(
+                                        x -> x != Rational.ZERO,
+                                        P.range(Rational.ZERO, Rational.of(t.b).pow(-t.c).shiftRight(1))
+                                )
+                )
         );
         for (Quadruple<Real, BigInteger, Integer, Rational> q : take(LIMIT, qsFail)) {
             try {
@@ -5818,13 +5868,13 @@ public class RealProperties extends QBarTestProperties {
         }
 
         //noinspection Convert2MethodRef
-        qsFail = P.quadruples(
-                P.reals(),
-                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2)),
-                P.withScale(16).integersGeometric(),
-                P.withScale(1).choose(
-                        P.rangeDown(Rational.ZERO),
-                        filterInfinite(r -> !r.equals(Rational.ONE_HALF), P.rangeUp(Rational.ONE_HALF))
+        qsFail = filterInfinite(
+                q -> q.d.signum() != 1 || Ordering.gt(q.d, Rational.of(q.b).pow(-q.c).shiftRight(1)),
+                P.quadruples(
+                        P.reals(),
+                        map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2)),
+                        P.withScale(16).integersGeometric(),
+                        P.rationals()
                 )
         );
         for (Quadruple<Real, BigInteger, Integer, Rational> q : take(LIMIT, qsFail)) {

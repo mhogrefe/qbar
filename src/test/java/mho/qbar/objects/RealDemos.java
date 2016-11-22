@@ -7,6 +7,7 @@ import mho.wheels.iterables.IterableUtils;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.numberUtils.FloatingPointUtils;
 import mho.wheels.numberUtils.IntegerUtils;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Quadruple;
 import mho.wheels.structures.Triple;
@@ -1808,6 +1809,31 @@ public class RealDemos extends QBarDemos {
         }
     }
 
+    private void demoExp_Rational() {
+        BigInteger limit = BigInteger.valueOf(SMALL_LIMIT);
+        Iterable<Rational> xs = filterInfinite(
+                x -> Ordering.le(x.bigIntegerValue().abs(), limit),
+                P.withScale(4).rationals()
+        );
+        for (Rational x : take(LIMIT, xs)) {
+            System.out.println("exp(" + x + ") = " + exp(x));
+        }
+    }
+
+    private void demoExp() {
+        BigInteger limit = BigInteger.valueOf(SMALL_LIMIT);
+        Iterable<Real> xs = filterInfinite(
+                x -> {
+                    Optional<BigInteger> i = x.bigIntegerValue(DEFAULT_RESOLUTION);
+                    return i.isPresent() && Ordering.le(i.get().abs(), limit);
+                },
+                P.withScale(4).reals()
+        );
+        for (Real x : take(TINY_LIMIT, xs)) {
+            System.out.println("exp(" + x + ") = " + x.exp());
+        }
+    }
+
     private void demoIntervalExtensionUnsafe() {
         Iterable<Pair<Real, Real>> ps = filterInfinite(
                 p -> p.a.lt(p.b, DEFAULT_RESOLUTION).orElse(false),
@@ -2178,11 +2204,19 @@ public class RealDemos extends QBarDemos {
 
     private void demoToStringBase() {
         //noinspection Convert2MethodRef
-        Iterable<Quadruple<Real, BigInteger, Integer, Rational>> qs = P.quadruples(
-                P.withScale(4).reals(),
-                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2)),
-                P.withScale(16).integersGeometric(),
-                filterInfinite(r -> r != Rational.ZERO, P.range(Rational.ZERO, Rational.ONE_HALF))
+        Iterable<Quadruple<Real, BigInteger, Integer, Rational>> qs = map(
+                p -> new Quadruple<>(p.a.a, p.a.b, p.a.c, p.b),
+                P.dependentPairsInfiniteIdentityHash(
+                        P.triples(
+                                P.withScale(4).reals(),
+                                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2)),
+                                P.withScale(16).integersGeometric()
+                        ),
+                        t -> filterInfinite(
+                                x -> x != Rational.ZERO,
+                                P.range(Rational.ZERO, Rational.of(t.b).pow(-t.c).shiftRight(1))
+                        )
+                )
         );
         for (Quadruple<Real, BigInteger, Integer, Rational> q : take(LIMIT, qs)) {
             System.out.println("toStringBase(" + q.a + ", " + q.b + ", " + q.c + ", " + q.d + ") = " +

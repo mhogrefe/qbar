@@ -58,7 +58,7 @@ public class RealTest {
         constant_helper(CONTINUED_FRACTION_CONSTANT, "0.69777465796400798200...");
         constant_helper(CAHEN, "0.64341054628833802618...");
 
-        constant_helper(DEFAULT_RESOLUTION, "1/1267650600228229401496703205376");
+        constant_helper(DEFAULT_RESOLUTION, "1/4722366482869645213696");
     }
 
     private static void of_Rational_helper(@NotNull String input, @NotNull String output) {
@@ -410,17 +410,29 @@ public class RealTest {
                 " [181/128, 2897/2048], [181/128, 5793/4096], [11585/8192, 5793/4096], [11585/8192, 23171/16384]," +
                 " [11585/8192, 46341/32768], [92681/65536, 46341/32768], [185363/131072, 46341/32768], ...]");
         iterator_helper(E,
-                "[[2, 4], [5/2, 7/2], [8/3, 3], [65/24, 67/24], [163/60, 41/15], [1957/720, 653/240]," +
-                " [685/252, 6851/2520], [109601/40320, 109603/40320], [98641/36288, 11743/4320]," +
-                " [9864101/3628800, 9864103/3628800], [13563139/4989600, 54252557/19958400]," +
-                " [260412269/95800320, 144673483/53222400], [8463398743/3113510400, 1057924843/389188800]," +
-                " [47395032961/17435658240, 236975164807/87178291200]," +
-                " [888656868019/326918592000, 592437912013/217945728000]," +
-                " [56874039553217/20922789888000, 8124862793317/2988969984000]," +
-                " [7437374403113/2736057139200, 241714668101173/88921857024000]," +
-                " [17403456103284421/6402373705728000, 5801152034428141/2134124568576000]," +
-                " [82666416490601/30411275102208, 165332832981202001/60822550204416000]," +
-                " [6613313319248080001/2432902008176640000, 508716409172929231/187146308321280000], ...]");
+                "[[1, Infinity), [2, 3], [8/3, 30/11], [144/53, 280/103], [5760/2119, 45360/16687]," +
+                " [44800/16481, 3991680/1468457], [43545600/16019531, 172972800/63633137]," +
+                " [6706022400/2467007773, 93405312000/34361893981]," +
+                " [42268262400/15549624751, 22230464256000/8178130767479]," +
+                " [376610217984000/138547156531409, 250298560512000/92079694567171]," +
+                " [11640679464960000/4282366656425369, 196503623737344000/72289643288657479]," +
+                " [17841281393295360000/6563440628747948887, 106826515449937920000/39299278806015611311]," +
+                " [26976017466662584320000/9923922230666898717143," +
+                " 215433472824041472000000/79253545592131482810517]," +
+                " [16131658445064225423360000/5934505493938805432851513," +
+                " 38072970106357874688000000/14006262966463963871240459]," +
+                " [1254684545727217532928000000/461572649528573755888451011," +
+                " 315777214062132212662272000000/116167945043852116348068366947]," +
+                " [9146650338351415815045120000000/3364864615063302680426807870189," +
+                " 755081602771159120084992000000/277778998066291010992075323719]," +
+                " [8488091513990113876361871360000000/3122594362778744887436077703535391," +
+                " 271353675587871452984943575040000000/99825438535083000620222109084897031]," +
+                " [20854192204535151575024271360000000/7671828574286240352814978786774597," +
+                " 303916116658416027343136804044800000000/111804491159292960694648762175084674721]," +
+                " [10628380765425749070514269947166720000000/3909962776542130968292859568637246910243," +
+                " 42480719417365262488629566609817600000000/15627783319821171617096460312917391199891]," +
+                " [116824350562117737717222967187865600000000/42977276800008547006855398564359821410109," +
+                " 536786370557827456806323203681655193600000000/197472670029260324553630872514024155201822677], ...]");
         iterator_helper(PI, 5,
                 "[[281476/89625, 651864872/204778785], [1231847548/392109375, 670143059704/213311234375]," +
                 " [25406862797788/8087255859375, 5277328977275528/1679825970703125]," +
@@ -468,7 +480,7 @@ public class RealTest {
         match_helper(PI, targets, 6);
 
         match_fail_helper(ONE, Collections.emptyList());
-        match_fail_helper(of(100), targets);
+        match_fail_helper(of(-100), targets);
     }
 
     private static void isExactInteger_helper(@NotNull Real input, boolean output) {
@@ -1721,8 +1733,6 @@ public class RealTest {
         binaryExponent_helper(fuzzyRepresentation(Rational.TWO), DEFAULT_RESOLUTION, "Optional.empty");
         binaryExponent_helper(fuzzyRepresentation(Rational.ONE_HALF), DEFAULT_RESOLUTION, "Optional.empty");
         binaryExponent_helper(rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
-
-        binaryExponent_helper(E, Rational.TEN, "Optional.empty");
 
         binaryExponent_fail_helper(ZERO, DEFAULT_RESOLUTION);
         binaryExponent_fail_helper(NEGATIVE_ONE, DEFAULT_RESOLUTION);
@@ -8706,6 +8716,67 @@ public class RealTest {
         cbrt_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), "~-1");
     }
 
+    private static void exp_Rational_helper(@NotNull String x, @NotNull String output) {
+        Real y = exp(Rational.readStrict(x).get());
+        y.validate();
+        aeq(y, output);
+    }
+
+    private static void exp_Rational_fail_helper(@NotNull String x) {
+        try {
+            exp(Rational.readStrict(x).get());
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testExp_Rational() {
+        exp_Rational_helper("0", "1");
+        exp_Rational_helper("1", "2.71828182845904523536...");
+        exp_Rational_helper("-1", "0.36787944117144232159...");
+        exp_Rational_helper("1/2", "1.64872127070012814684...");
+        exp_Rational_helper("-1/2", "0.60653065971263342360...");
+        exp_Rational_helper("4/3", "3.79366789468317773539...");
+        exp_Rational_helper("-4/3", "0.26359713811572677007...");
+        exp_Rational_helper("10", "22026.46579480671651695790...");
+        exp_Rational_helper("-10", "0.00004539992976248485...");
+
+        exp_Rational_fail_helper("1000000000000");
+        exp_Rational_fail_helper("-1000000000000");
+    }
+
+    private static void exp_helper(@NotNull Real input, @NotNull String output) {
+        Real x = input.exp();
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void exp_fail_helper(@NotNull Real input) {
+        try {
+            input.exp();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testExp() {
+        exp_helper(ZERO, "1");
+        exp_helper(ONE, "2.71828182845904523536...");
+        exp_helper(NEGATIVE_ONE, "0.36787944117144232159...");
+        exp_helper(ONE_HALF, "1.64872127070012814684...");
+        exp_helper(NEGATIVE_FOUR_THIRDS, "0.26359713811572677007...");
+        exp_helper(SQRT_TWO, "4.11325037878292751717...");
+        exp_helper(E, "15.15426224147926418976...");
+        exp_helper(PI, "23.14069263277926900572...");
+        exp_helper(leftFuzzyRepresentation(Rational.ZERO), "0.99999999999999999999...");
+        exp_helper(rightFuzzyRepresentation(Rational.ZERO), "1.00000000000000000000...");
+        exp_helper(fuzzyRepresentation(Rational.ZERO), "~1");
+        exp_helper(leftFuzzyRepresentation(Rational.ONE), "2.71828182845904523536...");
+        exp_helper(rightFuzzyRepresentation(Rational.ONE), "2.71828182845904523536...");
+        exp_helper(fuzzyRepresentation(Rational.ONE), "2.71828182845904523536...");
+
+        exp_fail_helper(Real.of(Readers.readBigIntegerStrict("1000000000000").get()));
+        exp_fail_helper(Real.of(Readers.readBigIntegerStrict("-1000000000000").get()));
+    }
+
     private static void intervalExtensionUnsafe_helper(@NotNull Real a, @NotNull Real b, @NotNull String output) {
         aeq(intervalExtensionUnsafe(a, b), output);
     }
@@ -8723,42 +8794,42 @@ public class RealTest {
         intervalExtensionUnsafe_helper(PI.negate(), ZERO, "[-651864872/204778785, 0]");
         intervalExtensionUnsafe_helper(PI.negate(), ONE_HALF, "[-651864872/204778785, 1/2]");
         intervalExtensionUnsafe_helper(PI.negate(), ONE, "[-651864872/204778785, 1]");
-        intervalExtensionUnsafe_helper(PI.negate(), E, "[-651864872/204778785, 4]");
+        intervalExtensionUnsafe_helper(PI.negate(), E, "[-670143059704/213311234375, 3]");
         intervalExtensionUnsafe_helper(PI.negate(), PI, "[-651864872/204778785, 651864872/204778785]");
 
         intervalExtensionUnsafe_helper(NEGATIVE_FOUR_THIRDS, ZERO, "[-4/3, 0]");
         intervalExtensionUnsafe_helper(NEGATIVE_FOUR_THIRDS, ONE_HALF, "[-4/3, 1/2]");
         intervalExtensionUnsafe_helper(NEGATIVE_FOUR_THIRDS, ONE, "[-4/3, 1]");
-        intervalExtensionUnsafe_helper(NEGATIVE_FOUR_THIRDS, E, "[-4/3, 4]");
+        intervalExtensionUnsafe_helper(NEGATIVE_FOUR_THIRDS, E, "[-4/3, 3]");
         intervalExtensionUnsafe_helper(NEGATIVE_FOUR_THIRDS, PI, "[-4/3, 651864872/204778785]");
 
         intervalExtensionUnsafe_helper(ZERO, ONE_HALF, "[0, 1/2]");
         intervalExtensionUnsafe_helper(ZERO, ONE, "[0, 1]");
-        intervalExtensionUnsafe_helper(ZERO, E, "[0, 4]");
+        intervalExtensionUnsafe_helper(ZERO, E, "[0, 3]");
         intervalExtensionUnsafe_helper(ZERO, PI, "[0, 651864872/204778785]");
 
         intervalExtensionUnsafe_helper(ONE_HALF, ONE, "[1/2, 1]");
-        intervalExtensionUnsafe_helper(ONE_HALF, E, "[1/2, 7/2]");
+        intervalExtensionUnsafe_helper(ONE_HALF, E, "[1/2, 3]");
         intervalExtensionUnsafe_helper(ONE_HALF, PI, "[1/2, 651864872/204778785]");
 
-        intervalExtensionUnsafe_helper(ONE, E, "[1, 7/2]");
+        intervalExtensionUnsafe_helper(ONE, E, "[1, 3]");
         intervalExtensionUnsafe_helper(ONE, PI, "[1, 651864872/204778785]");
 
-        intervalExtensionUnsafe_helper(E, PI, "[65/24, 5277328977275528/1679825970703125]");
+        intervalExtensionUnsafe_helper(E, PI, "[8/3, 670143059704/213311234375]");
 
         intervalExtensionUnsafe_helper(leftFuzzyRepresentation(Rational.ZERO), ONE_HALF, "[-1/2, 1/2]");
         intervalExtensionUnsafe_helper(leftFuzzyRepresentation(Rational.ZERO), ONE, "[-1, 1]");
-        intervalExtensionUnsafe_helper(leftFuzzyRepresentation(Rational.ZERO), E, "[-1, 7/2]");
+        intervalExtensionUnsafe_helper(leftFuzzyRepresentation(Rational.ZERO), E, "[-1/2, 3]");
         intervalExtensionUnsafe_helper(leftFuzzyRepresentation(Rational.ZERO), PI, "[-1, 651864872/204778785]");
 
         intervalExtensionUnsafe_helper(rightFuzzyRepresentation(Rational.ZERO), ONE_HALF, "[0, 1/2]");
         intervalExtensionUnsafe_helper(rightFuzzyRepresentation(Rational.ZERO), ONE, "[0, 1]");
-        intervalExtensionUnsafe_helper(rightFuzzyRepresentation(Rational.ZERO), E, "[0, 7/2]");
+        intervalExtensionUnsafe_helper(rightFuzzyRepresentation(Rational.ZERO), E, "[0, 3]");
         intervalExtensionUnsafe_helper(rightFuzzyRepresentation(Rational.ZERO), PI, "[0, 651864872/204778785]");
 
         intervalExtensionUnsafe_helper(fuzzyRepresentation(Rational.ZERO), ONE_HALF, "[-1/8, 1/2]");
         intervalExtensionUnsafe_helper(fuzzyRepresentation(Rational.ZERO), ONE, "[-1/4, 1]");
-        intervalExtensionUnsafe_helper(fuzzyRepresentation(Rational.ZERO), E, "[-1/2, 7/2]");
+        intervalExtensionUnsafe_helper(fuzzyRepresentation(Rational.ZERO), E, "[-1/4, 3]");
         intervalExtensionUnsafe_helper(fuzzyRepresentation(Rational.ZERO), PI, "[-1, 651864872/204778785]");
 
         intervalExtensionUnsafe_fail_helper(ZERO, ZERO);
@@ -9808,7 +9879,7 @@ public class RealTest {
         toStringBase_helper(negativeOneSeventh, "83", -1, DEFAULT_RESOLUTION, "-(0)");
         toStringBase_helper(negativeOneSeventh, "83", 0, DEFAULT_RESOLUTION, "-(0)");
         toStringBase_helper(negativeOneSeventh, "83", 5, DEFAULT_RESOLUTION, "-(0).(11)(71)(11)(71)(11)...");
-        toStringBase_helper(negativeOneSeventh, "83", 20, DEFAULT_RESOLUTION,
+        toStringBase_helper(negativeOneSeventh, "83", 20, Rational.TWO.shiftRight(100),
                 "-(0).(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)...");
 
         Real oneThousandth = of(Rational.of(1, 1000));

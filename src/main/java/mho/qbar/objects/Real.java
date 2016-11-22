@@ -185,10 +185,10 @@ public final class Real implements Iterable<Interval> {
     );
 
     /**
-     * 2^(-100), the default resolution of those methods which give up a computation after the bounding interval
-     * becomes too small.
+     * 2^(-72), the default resolution of those methods which give up a computation after the bounding interval becomes
+     * too small.
      */
-    public static final @NotNull Rational DEFAULT_RESOLUTION = Rational.ONE.shiftRight(SMALL_LIMIT);
+    public static final @NotNull Rational DEFAULT_RESOLUTION = Rational.ONE.shiftRight(72);
 
     /**
      * 36, the number of ASCII alphanumeric characters
@@ -3226,6 +3226,161 @@ public final class Real implements Iterable<Interval> {
     }
 
     /**
+     * Returns exp({@code x}), or e<sup>{@code x}</sup>, provided that –1≤{@code x}<0.
+     *
+     * <ul>
+     *  <li>{@code x} must be greater than or equal to –1 and less than 0.</li>
+     *  <li>The result is e raised to a rational power, and greater than or equal to exp(–1) and less than 1.</li>
+     * </ul>
+     *
+     * @param x a negative {@code Rational} greater than or equal to –1
+     * @return exp({@code x})
+     */
+    @SuppressWarnings("JavaDoc")
+    private static @NotNull Real expNeg10(@NotNull Rational x) {
+        return new Real(() -> new NoRemoveIterator<Interval>() {
+            private @NotNull Rational partialSum = Rational.ZERO;
+            private @NotNull BigInteger i = BigInteger.ZERO;
+            private @NotNull BigInteger factorial = BigInteger.ONE;
+            private @NotNull Rational power = Rational.ONE;
+            private boolean first = true;
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public @NotNull Interval next() {
+                if (first) {
+                    first = false;
+                } else {
+                    i = i.add(BigInteger.ONE);
+                    factorial = factorial.multiply(i);
+                    power = power.multiply(x);
+                }
+                partialSum = partialSum.add(power.divide(factorial));
+                Rational upper = partialSum;
+                i = i.add(BigInteger.ONE);
+                factorial = factorial.multiply(i);
+                power = power.multiply(x);
+                partialSum = partialSum.add(power.divide(factorial));
+                return Interval.of(partialSum, upper);
+            }
+        });
+    }
+
+    /**
+     * Returns exp({@code x}), or e<sup>{@code x}</sup>.
+     *
+     * <ul>
+     *  <li>The absolute value of {@code x} must be less than 2<sup>32</sup>.</li>
+     *  <li>The result is e raised to a rational power. The result is exact.</li>
+     * </ul>
+     *
+     * @param x a {@code Rational}
+     * @return exp({@code x})
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull Real exp(@NotNull Rational x) {
+        if (x == Rational.ZERO) {
+            return ONE;
+        } else if (x.signum() == -1) {
+            if (Ordering.ge(x, Rational.NEGATIVE_ONE)) {
+                return expNeg10(x);
+            } else {
+                int negativeFloor = x.floor().negate().intValueExact();
+                return expNeg10(x.divide(negativeFloor)).powUnsafe(negativeFloor);
+            }
+        } else {
+            return exp(x.negate()).invertUnsafe();
+        }
+    }
+
+    /**
+     * Given a {@code Rational x}, returns an {@code Iterable} of bounding intervals of exp({@code x}) that are all
+     * finitely bounded.
+     *
+     * <ul>
+     *  <li>The absolute value of {@code x} must be less than 2<sup>32</sup>.</li>
+     *  <li>The result is finite bounding intervals e raised to a rational power.</li>
+     * </ul>
+     *
+     * @param x a {@code Rational}
+     * @return finite bounding intervals of exp({@code x})
+     */
+    private static @NotNull Iterable<Interval> expSkipUnbounded(@NotNull Rational x) {
+        return dropWhile(a -> !a.isFinitelyBounded(), exp(x));
+    }
+
+    /**
+     * Returns exp({@code this}), or e<sup>{@code this}</sup>.
+     *
+     * <ul>
+     *  <li>The absolute value of {@code this} must be less than 2<sup>32</sup>.</li>
+     *  <li>The result is positive.</li>
+     * </ul>
+     *
+     * @return exp({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Real exp() {
+        if (rational.isPresent()) {
+            return exp(rational.get());
+        }
+        return forceContainment(() -> new NoRemoveIterator<Interval>() {
+            private final @NotNull Iterator<Interval> is = intervals.iterator();
+            private Interval a;
+            private Iterator<Interval> lowerReal = null;
+            private Iterator<Interval> upperReal = null;
+            private Rational previousDiameter = null;
+            private int i = 0;
+            {
+                do {
+                    a = is.next();
+                } while (!a.isFinitelyBounded());
+            }
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public @NotNull Interval next() {
+                if (lowerReal == null) {
+                    lowerReal = expSkipUnbounded(a.getLower().get()).iterator();
+                    upperReal = expSkipUnbounded(a.getUpper().get()).iterator();
+                    for (int j = 0; j < i; j++) {
+                        lowerReal.next();
+                        upperReal.next();
+                    }
+                }
+                Interval lowerInterval = lowerReal.next();
+                Interval upperInterval = upperReal.next();
+                Interval nextInterval = lowerInterval.convexHull(upperInterval);
+                Rational diameter = nextInterval.diameter().get();
+                if (previousDiameter != null && Ordering.gt(diameter, previousDiameter.shiftRight(1))) {
+                    a = is.next();
+                    lowerReal = expSkipUnbounded(a.getLower().get()).iterator();
+                    upperReal = expSkipUnbounded(a.getUpper().get()).iterator();
+                    for (int j = 0; j < i; j++) {
+                        lowerReal.next();
+                        upperReal.next();
+                    }
+                    lowerInterval = lowerReal.next();
+                    upperInterval = upperReal.next();
+                    nextInterval = lowerInterval.convexHull(upperInterval);
+                    diameter = nextInterval.diameter().get();
+                }
+                previousDiameter = diameter;
+                i++;
+                return nextInterval;
+            }
+        });
+    }
+
+    /**
      * Given an interval [{@code lower}, {@code upper}], returns an {@code Interval} (with rational bounds) containing
      * the given interval and with a diameter no more than twice the given interval's.
      *
@@ -3940,24 +4095,6 @@ public final class Real implements Iterable<Interval> {
         });
     }
 
-    public static @NotNull Real exp(@NotNull Rational x) {
-        if (x == Rational.ZERO) return ONE;
-        Interval derivativeBounds;
-        if (x.signum() == 1) {
-            derivativeBounds = Interval.of(Rational.ONE, Rational.of(3).pow(x.ceiling().intValueExact()));
-        } else {
-            derivativeBounds = Interval.of(Rational.ZERO, Rational.ONE);
-        }
-        return fromMaclaurinSeries(
-                map(
-                        i -> Rational.of(BigInteger.ONE, MathUtils.factorial(i)),
-                        ExhaustiveProvider.INSTANCE.rangeUpIncreasing(BigInteger.ZERO)
-                ),
-                k -> derivativeBounds,
-                x
-        );
-    }
-
     public static @NotNull Real sin(@NotNull Rational x) {
         if (x == Rational.ZERO) return ZERO;
         Interval derivativeBounds = Interval.of(Rational.NEGATIVE_ONE, Rational.ONE);
@@ -4128,7 +4265,8 @@ public final class Real implements Iterable<Interval> {
      *  <li>{@code this} may be any {@code Real}.</li>
      *  <li>{@code base} must be at least 2.</li>
      *  <li>{@code scale} may be any {@code int}.</li>
-     *  <li>{@code resolution} must be positive and less than or equal to 1/2.</li>
+     *  <li>{@code resolution} must be positive and less than or equal to
+     *  1/2*{@code base}<sup>{@code scale}</sup>.</li>
      *  <li>The result is a {@code String} representing an {@code Real} in the manner previously described. See the
      *  unit test and demo for further reference.</li>
      * </ul>
@@ -4147,29 +4285,31 @@ public final class Real implements Iterable<Interval> {
         if (resolution.signum() != 1) {
             throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
         }
-        if (Ordering.gt(resolution, Rational.ONE_HALF)) {
+        BigInteger power = base.pow(scale >= 0 ? scale : -scale);
+        Rational adjustedResolution = scale >= 0 ? resolution.multiply(power) : resolution.divide(power);
+        if (Ordering.gt(adjustedResolution, Rational.ONE_HALF)) {
             throw new IllegalArgumentException();
         }
         Optional<Rational> or = rationalValueExact();
         if (or.isPresent()) {
             return or.get().toStringBase(base, scale);
         }
-        BigInteger power = base.pow(scale >= 0 ? scale : -scale);
         Real scaled = scale >= 0 ? multiply(power) : divide(power);
-        Optional<BigInteger> roundedDown = scaled.bigIntegerValue(RoundingMode.DOWN, resolution);
+        Optional<BigInteger> roundedDown = scaled.bigIntegerValue(RoundingMode.DOWN, adjustedResolution);
         Rational rounded;
         boolean fuzzyOnBothSides = false;
         boolean negativeZero = false;
         if (roundedDown.isPresent()) {
             rounded = Rational.of(roundedDown.get());
             if (rounded == Rational.ZERO) {
-                boolean fuzzyOnTheLeft = !scaled.bigIntegerValue(RoundingMode.FLOOR, resolution).isPresent();
-                boolean fuzzyOnTheRight = !scaled.bigIntegerValue(RoundingMode.CEILING, resolution).isPresent();
+                boolean fuzzyOnTheLeft = !scaled.bigIntegerValue(RoundingMode.FLOOR, adjustedResolution).isPresent();
+                boolean fuzzyOnTheRight =
+                        !scaled.bigIntegerValue(RoundingMode.CEILING, adjustedResolution).isPresent();
                 fuzzyOnBothSides = fuzzyOnTheLeft && fuzzyOnTheRight;
                 negativeZero = fuzzyOnTheLeft && !fuzzyOnTheRight;
             }
         } else {
-            Optional<BigInteger> roundedUp = scaled.bigIntegerValue(RoundingMode.UP, resolution);
+            Optional<BigInteger> roundedUp = scaled.bigIntegerValue(RoundingMode.UP, adjustedResolution);
             if (roundedUp.isPresent()) {
                 BigInteger scaledValue = roundedUp.get();
                 if (scaledValue.signum() == 1) {
