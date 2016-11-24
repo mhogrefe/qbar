@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -953,7 +954,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         }
 
         Iterable<List<Variable>> vsFail = filterInfinite(
-                us -> increasing(filter(u -> u != null, us)),
+                us -> increasing(filter(Objects::nonNull, us)),
                 P.listsWithElement(null, P.variables())
         );
         for (List<Variable> vs : take(LIMIT, vsFail)) {
@@ -984,7 +985,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         }
 
         Iterable<List<Variable>> vsFail = filterInfinite(
-                us -> increasing(filter(u -> u != null, us)),
+                us -> increasing(filter(Objects::nonNull, us)),
                 P.listsWithElement(null, P.variables())
         );
         for (List<Variable> vs : take(LIMIT, vsFail)) {
@@ -1015,7 +1016,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         }
 
         Iterable<List<Variable>> vsFail = filterInfinite(
-                us -> increasing(filter(u -> u != null, us)),
+                us -> increasing(filter(Objects::nonNull, us)),
                 P.listsWithElement(null, P.variables())
         );
         for (List<Variable> vs : take(LIMIT, vsFail)) {

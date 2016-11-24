@@ -155,9 +155,7 @@ public class AlgebraicTest {
 
     private static void of_float_helper(float f, @NotNull String output) {
         Optional<Algebraic> x = of(f);
-        if (x.isPresent()) {
-            x.get().validate();
-        }
+        x.ifPresent(Algebraic::validate);
         aeq(x, output);
     }
 
@@ -190,9 +188,7 @@ public class AlgebraicTest {
 
     private static void of_double_helper(double d, @NotNull String output) {
         Optional<Algebraic> x = of(d);
-        if (x.isPresent()) {
-            x.get().validate();
-        }
+        x.ifPresent(Algebraic::validate);
         aeq(x, output);
     }
 
@@ -249,9 +245,7 @@ public class AlgebraicTest {
 
     private static void ofExact_float_helper(float f, @NotNull String output) {
         Optional<Algebraic> x = ofExact(f);
-        if (x.isPresent()) {
-            x.get().validate();
-        }
+        x.ifPresent(Algebraic::validate);
         aeq(x, output);
     }
 
@@ -284,9 +278,7 @@ public class AlgebraicTest {
 
     private static void ofExact_double_helper(double d, @NotNull String output) {
         Optional<Algebraic> x = ofExact(d);
-        if (x.isPresent()) {
-            x.get().validate();
-        }
+        x.ifPresent(Algebraic::validate);
         aeq(x, output);
     }
 
@@ -4633,9 +4625,7 @@ public class AlgebraicTest {
 
     private static void readStrict_String_helper(@NotNull String input, @NotNull String output) {
         Optional<Algebraic> ox = readStrict(input);
-        if (ox.isPresent()) {
-            ox.get().validate();
-        }
+        ox.ifPresent(Algebraic::validate);
         aeq(ox, output);
     }
 
@@ -4697,9 +4687,7 @@ public class AlgebraicTest {
 
     private static void readStrict_int_String_helper(int maxDegree, @NotNull String input, @NotNull String output) {
         Optional<Algebraic> ox = readStrict(maxDegree, input);
-        if (ox.isPresent()) {
-            ox.get().validate();
-        }
+        ox.ifPresent(Algebraic::validate);
         aeq(ox, output);
     }
 

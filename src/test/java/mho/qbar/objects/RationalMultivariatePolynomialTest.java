@@ -2336,9 +2336,7 @@ public class RationalMultivariatePolynomialTest {
             @NotNull String output
     ) {
         Optional<RationalMultivariatePolynomial> oq = readStrict(p, MonomialOrder.readStrict(mo).get());
-        if (oq.isPresent()) {
-            oq.get().validate();
-        }
+        oq.ifPresent(RationalMultivariatePolynomial::validate);
         aeq(oq, output);
     }
 
@@ -2455,9 +2453,7 @@ public class RationalMultivariatePolynomialTest {
 
     private static void readStrict_String_helper(@NotNull String input, @NotNull String output) {
         Optional<RationalMultivariatePolynomial> op = readStrict(input);
-        if (op.isPresent()) {
-            op.get().validate();
-        }
+        op.ifPresent(RationalMultivariatePolynomial::validate);
         aeq(op, output);
     }
 

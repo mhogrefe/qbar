@@ -2811,7 +2811,7 @@ public final class Real implements Iterable<Interval> {
         if (xs.isEmpty()) {
             return ZERO;
         }
-        if (any(x -> x == null, xs)) {
+        if (any(Objects::isNull, xs)) {
             throw new NullPointerException();
         }
         if (xs.size() == 1) {
@@ -2839,7 +2839,7 @@ public final class Real implements Iterable<Interval> {
         if (xs.isEmpty()) {
             return ONE;
         }
-        if (any(x -> x == null, xs)) {
+        if (any(Objects::isNull, xs)) {
             throw new NullPointerException();
         }
         if (xs.size() == 1) {
@@ -4288,7 +4288,8 @@ public final class Real implements Iterable<Interval> {
         BigInteger power = base.pow(scale >= 0 ? scale : -scale);
         Rational adjustedResolution = scale >= 0 ? resolution.multiply(power) : resolution.divide(power);
         if (Ordering.gt(adjustedResolution, Rational.ONE_HALF)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("resolution must be less than or equal to 1/2*base^scale." +
+                    " resolution: " + resolution + ", base: " + base + ", scale: " + scale);
         }
         Optional<Rational> or = rationalValueExact();
         if (or.isPresent()) {

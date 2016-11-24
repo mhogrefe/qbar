@@ -331,9 +331,7 @@ public class RationalTest {
 
     private static void of_float_helper(float f, @NotNull String output) {
         Optional<Rational> or = of(f);
-        if (or.isPresent()) {
-            or.get().validate();
-        }
+        or.ifPresent(Rational::validate);
         aeq(or, output);
     }
 
@@ -366,9 +364,7 @@ public class RationalTest {
 
     private static void of_double_helper(double d, @NotNull String output) {
         Optional<Rational> or = of(d);
-        if (or.isPresent()) {
-            or.get().validate();
-        }
+        or.ifPresent(Rational::validate);
         aeq(or, output);
     }
 
@@ -425,9 +421,7 @@ public class RationalTest {
 
     private static void ofExact_float_helper(float f, @NotNull Object output) {
         Optional<Rational> or = ofExact(f);
-        if (or.isPresent()) {
-            or.get().validate();
-        }
+        or.ifPresent(Rational::validate);
         aeq(or, output);
     }
 
@@ -460,9 +454,7 @@ public class RationalTest {
 
     private static void ofExact_double_helper(double d, @NotNull Object output) {
         Optional<Rational> or = ofExact(d);
-        if (or.isPresent()) {
-            or.get().validate();
-        }
+        or.ifPresent(Rational::validate);
         aeq(or, output);
     }
 
@@ -3372,9 +3364,7 @@ public class RationalTest {
 
     private static void root_helper(@NotNull String x, int r, @NotNull String output) {
         Optional<Rational> or = readStrict(x).get().root(r);
-        if (or.isPresent()) {
-            or.get().validate();
-        }
+        or.ifPresent(Rational::validate);
         aeq(or, output);
     }
 
@@ -3441,9 +3431,7 @@ public class RationalTest {
 
     private static void sqrt_helper(@NotNull String x, @NotNull String output) {
         Optional<Rational> or = readStrict(x).get().sqrt();
-        if (or.isPresent()) {
-            or.get().validate();
-        }
+        or.ifPresent(Rational::validate);
         aeq(or, output);
     }
 
@@ -3467,9 +3455,7 @@ public class RationalTest {
 
     private static void cbrt_helper(@NotNull String x, @NotNull String output) {
         Optional<Rational> or = readStrict(x).get().cbrt();
-        if (or.isPresent()) {
-            or.get().validate();
-        }
+        or.ifPresent(Rational::validate);
         aeq(or, output);
     }
 
@@ -4509,9 +4495,7 @@ public class RationalTest {
 
     private static void readStrict_helper(@NotNull String input, @NotNull String output) {
         Optional<Rational> or = readStrict(input);
-        if (or.isPresent()) {
-            or.get().validate();
-        }
+        or.ifPresent(Rational::validate);
         aeq(or, output);
     }
 

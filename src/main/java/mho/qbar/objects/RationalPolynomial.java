@@ -210,7 +210,7 @@ public final class RationalPolynomial implements
      * @return the {@code RationalPolynomial} with the specified coefficients
      */
     public static @NotNull RationalPolynomial of(@NotNull List<Rational> coefficients) {
-        if (any(i -> i == null, coefficients)) {
+        if (any(Objects::isNull, coefficients)) {
             throw new NullPointerException();
         }
         int actualSize;
@@ -309,7 +309,7 @@ public final class RationalPolynomial implements
      * @return the leading coefficient
      */
     public @NotNull Optional<Rational> leading() {
-        return this == ZERO ? Optional.<Rational>empty() : Optional.of(last(coefficients));
+        return this == ZERO ? Optional.empty() : Optional.of(last(coefficients));
     }
 
     /**
@@ -692,7 +692,7 @@ public final class RationalPolynomial implements
      * @return Πxs
      */
     public static @NotNull RationalPolynomial product(@NotNull List<RationalPolynomial> xs) {
-        if (any(x -> x == null, xs)) {
+        if (any(Objects::isNull, xs)) {
             throw new NullPointerException();
         }
         if (any(x -> x == ZERO, xs)) {
@@ -1514,7 +1514,7 @@ public final class RationalPolynomial implements
                 s,
                 powerString -> {
                     Optional<Integer> oPower = Readers.readIntegerStrict(powerString);
-                    return !oPower.isPresent() || oPower.get() > maxExponent ? Optional.<Integer>empty() : oPower;
+                    return !oPower.isPresent() || oPower.get() > maxExponent ? Optional.empty() : oPower;
                 }
         );
     }
@@ -1561,7 +1561,7 @@ public final class RationalPolynomial implements
      * outside this class.
      */
     public void validate() {
-        assertTrue(this, all(r -> r != null, coefficients));
+        assertTrue(this, all(Objects::nonNull, coefficients));
         if (!coefficients.isEmpty()) {
             assertTrue(this, last(coefficients) != Rational.ZERO);
         }

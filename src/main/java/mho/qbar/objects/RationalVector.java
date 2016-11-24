@@ -134,7 +134,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      */
     public static @NotNull RationalVector of(@NotNull List<Rational> coordinates) {
         if (coordinates.isEmpty()) return ZERO_DIMENSIONAL;
-        if (any(a -> a == null, coordinates)) {
+        if (any(Objects::isNull, coordinates)) {
             throw new NullPointerException();
         }
         return new RationalVector(toList(coordinates));
@@ -749,7 +749,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * this class.
      */
     public void validate() {
-        assertTrue(this, all(r -> r != null, coordinates));
+        assertTrue(this, all(Objects::nonNull, coordinates));
         if (equals(ZERO_DIMENSIONAL)) {
             assertTrue(this, this == ZERO_DIMENSIONAL);
         }

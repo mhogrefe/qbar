@@ -568,11 +568,8 @@ public final class RationalMultivariatePolynomial implements
         Map<Integer, List<Pair<Monomial, Rational>>> coefficientMap = new HashMap<>();
         for (Pair<Monomial, Rational> term : terms) {
             int vPower = term.a.exponent(v);
-            List<Pair<Monomial, Rational>> vPowerTerms = coefficientMap.get(vPower);
-            if (vPowerTerms == null) {
-                vPowerTerms = new ArrayList<>();
-                coefficientMap.put(vPower, vPowerTerms);
-            }
+            List<Pair<Monomial, Rational>> vPowerTerms =
+                    coefficientMap.computeIfAbsent(vPower, k -> new ArrayList<>());
             vPowerTerms.add(new Pair<>(term.a.removeVariable(v), term.b));
         }
         int maxPower = 0;
@@ -611,7 +608,7 @@ public final class RationalMultivariatePolynomial implements
     public @NotNull List<Pair<Monomial, RationalMultivariatePolynomial>> groupVariables(
             @NotNull List<Variable> variables, @NotNull MonomialOrder order
     ) {
-        if (any(v -> v == null, variables)) {
+        if (any(Objects::isNull, variables)) {
             throw new NullPointerException();
         }
         SortedMap<Monomial, RationalMultivariatePolynomial> groupedTerms;
@@ -652,7 +649,7 @@ public final class RationalMultivariatePolynomial implements
     public @NotNull List<Pair<Monomial, RationalMultivariatePolynomial>> groupVariables(
             @NotNull List<Variable> variables
     ) {
-        if (any(v -> v == null, variables)) {
+        if (any(Objects::isNull, variables)) {
             throw new NullPointerException();
         }
         SortedMap<Monomial, RationalMultivariatePolynomial> groupedTerms = new TreeMap<>();
@@ -1031,7 +1028,7 @@ public final class RationalMultivariatePolynomial implements
      * @return Σxs
      */
     public static @NotNull RationalMultivariatePolynomial sum(@NotNull List<RationalMultivariatePolynomial> xs) {
-        if (any(x -> x == null, xs)) {
+        if (any(Objects::isNull, xs)) {
             throw new NullPointerException();
         }
         return foldl(RationalMultivariatePolynomial::add, ZERO, xs);
@@ -1050,7 +1047,7 @@ public final class RationalMultivariatePolynomial implements
      * @return Πxs
      */
     public static @NotNull RationalMultivariatePolynomial product(@NotNull List<RationalMultivariatePolynomial> xs) {
-        if (any(x -> x == null, xs)) {
+        if (any(Objects::isNull, xs)) {
             throw new NullPointerException();
         }
         if (any(x -> x == ZERO, xs)) {
@@ -1452,7 +1449,7 @@ public final class RationalMultivariatePolynomial implements
         //noinspection RedundantCast
         if (!increasing(order, (Iterable<Monomial>) map(t -> t.a, terms))) return Optional.empty();
         if (order != DEFAULT_ORDER) {
-            terms = sort((x, y) -> x.a.compareTo(y.a), terms);
+            terms = sort(Comparator.comparing(x -> x.a), terms);
         }
         return Optional.of(new RationalMultivariatePolynomial(terms));
     }

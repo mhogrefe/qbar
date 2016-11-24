@@ -1265,7 +1265,7 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
     }
 
     private static @NotNull MultivariatePolynomial product_alt(@NotNull List<MultivariatePolynomial> xs) {
-        if (any(x -> x == null, xs)) {
+        if (any(Objects::isNull, xs)) {
             throw new NullPointerException();
         }
         if (any(x -> x == ZERO, xs)) {

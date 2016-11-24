@@ -121,7 +121,7 @@ public final class Vector implements Comparable<Vector>, Iterable<BigInteger> {
      */
     public static @NotNull Vector of(@NotNull List<BigInteger> coordinates) {
         if (coordinates.isEmpty()) return ZERO_DIMENSIONAL;
-        if (any(a -> a == null, coordinates)) {
+        if (any(Objects::isNull, coordinates)) {
             throw new NullPointerException();
         }
         return new Vector(toList(coordinates));
@@ -633,7 +633,7 @@ public final class Vector implements Comparable<Vector>, Iterable<BigInteger> {
      * class.
      */
     public void validate() {
-        assertTrue(this, all(r -> r != null, coordinates));
+        assertTrue(this, all(Objects::nonNull, coordinates));
         if (equals(ZERO_DIMENSIONAL)) {
             assertTrue(this, this == ZERO_DIMENSIONAL);
         }

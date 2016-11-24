@@ -4322,9 +4322,7 @@ public class PolynomialTest {
 
     private static void undoRootRoots_helper(@NotNull String p, int r, @NotNull String output) {
         Optional<Polynomial> oq = readStrict(p).get().undoRootRoots(r);
-        if (oq.isPresent()) {
-            oq.get().validate();
-        }
+        oq.ifPresent(Polynomial::validate);
         aeq(oq, output);
     }
 
@@ -4674,9 +4672,7 @@ public class PolynomialTest {
 
     private static void readStrict_String_helper(@NotNull String input, @NotNull String output) {
         Optional<Polynomial> op = readStrict(input);
-        if (op.isPresent()) {
-            op.get().validate();
-        }
+        op.ifPresent(Polynomial::validate);
         aeq(op, output);
     }
 
@@ -4743,9 +4739,7 @@ public class PolynomialTest {
 
     private static void readStrict_int_String_helper(int maxExponent, @NotNull String input, @NotNull String output) {
         Optional<Polynomial> op = readStrict(maxExponent, input);
-        if (op.isPresent()) {
-            op.get().validate();
-        }
+        op.ifPresent(Polynomial::validate);
         aeq(op, output);
     }
 

@@ -296,9 +296,7 @@ public class IntervalProperties extends QBarTestProperties {
         Iterable<Triple<Interval, Real, Rational>> ts = P.triples(P.intervals(), P.reals(), P.positiveRationals());
         for (Triple<Interval, Real, Rational> t : take(LIMIT, ts)) {
             Optional<Boolean> ob = t.a.contains(t.b, t.c);
-            if (ob.isPresent()) {
-                assertEquals(t, t.a.containsUnsafe(t.b), ob.get());
-            }
+            ob.ifPresent(aBoolean -> assertEquals(t, t.a.containsUnsafe(t.b), aBoolean));
         }
 
         Iterable<Triple<Interval, Real, Rational>> tsFail = P.triples(
@@ -472,9 +470,7 @@ public class IntervalProperties extends QBarTestProperties {
         initialize("intersection(Interval)");
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
             Optional<Interval> oi = p.a.intersection(p.b);
-            if (oi.isPresent()) {
-                oi.get().validate();
-            }
+            oi.ifPresent(Interval::validate);
             commutative(Interval::intersection, p);
             assertEquals(p, oi.isPresent(), !p.a.disjoint(p.b));
         }
@@ -1248,9 +1244,7 @@ public class IntervalProperties extends QBarTestProperties {
                     }
                 } else if (y.isPresent()) {
                     assertTrue(a, le(y.get(), Rational.ZERO));
-                } else if (x.isPresent()) {
-                    assertTrue(a, ge(x.get(), Rational.ZERO));
-                }
+                } else x.ifPresent(rational -> assertTrue(a, ge(rational, Rational.ZERO)));
             } else if (size == 2) {
                 Interval i = inverse.get(0);
                 Interval j = inverse.get(1);
@@ -1317,9 +1311,7 @@ public class IntervalProperties extends QBarTestProperties {
                 }
             } else if (y.isPresent()) {
                 assertTrue(a, le(y.get(), Rational.ZERO));
-            } else if (x.isPresent()) {
-                assertTrue(a, ge(x.get(), Rational.ZERO));
-            }
+            } else x.ifPresent(rational -> assertTrue(a, ge(rational, Rational.ZERO)));
             assertTrue(a, all(inverse::contains, a.invert()));
             Interval back = inverse.invertHull();
             assertTrue(a, back.contains(a));
@@ -1662,7 +1654,7 @@ public class IntervalProperties extends QBarTestProperties {
     }
 
     private static @NotNull Interval sum_simplest(@NotNull List<Interval> xs) {
-        if (any(x -> x == null, xs)) {
+        if (any(Objects::isNull, xs)) {
             throw new NullPointerException();
         }
         return foldl(Interval::add, ONE, xs);

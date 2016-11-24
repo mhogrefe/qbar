@@ -1688,7 +1688,7 @@ public final class Rational implements Comparable<Rational> {
      * @return Σxs
      */
     public static @NotNull Rational sum(@NotNull List<Rational> xs) {
-        if (any(x -> x == null, xs)) {
+        if (any(Objects::isNull, xs)) {
             throw new NullPointerException();
         }
         return foldl(Rational::add, ZERO, xs);
@@ -1706,7 +1706,7 @@ public final class Rational implements Comparable<Rational> {
      * @return Πxs
      */
     public static @NotNull Rational product(@NotNull List<Rational> xs) {
-        if (any(x -> x == null, xs)) {
+        if (any(Objects::isNull, xs)) {
             throw new NullPointerException();
         }
         if (any(x -> x == ZERO, xs)) {
@@ -2592,7 +2592,7 @@ public final class Rational implements Comparable<Rational> {
             Optional<BigInteger> denominator = Readers.readBigIntegerStrict(s.substring(slashIndex + 1));
             if (!denominator.isPresent() || denominator.get().equals(BigInteger.ZERO)) return Optional.empty();
             Rational candidate = of(numerator.get(), denominator.get());
-            return candidate.toString().equals(s) ? Optional.of(candidate) : Optional.<Rational>empty();
+            return candidate.toString().equals(s) ? Optional.of(candidate) : Optional.empty();
         }
     }
 

@@ -3835,7 +3835,7 @@ public strictfp abstract class QBarIterableProvider {
      * @param variables the allowed variables in the result
      */
     public @NotNull Iterable<Monomial> monomials(@NotNull List<Variable> variables) {
-        if (any(v -> v == null, variables)) {
+        if (any(Objects::isNull, variables)) {
             throw new NullPointerException();
         }
         if (!increasing(variables)) {

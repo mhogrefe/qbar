@@ -65,7 +65,7 @@ public class PolynomialVectorProperties extends QBarTestProperties {
         initialize("iterator()");
         for (PolynomialVector v : take(LIMIT, P.polynomialVectors())) {
             List<Polynomial> ps = toList(v);
-            assertTrue(v, all(p -> p != null, ps));
+            assertTrue(v, all(Objects::nonNull, ps));
             //noinspection Convert2MethodRef
             inverse(IterableUtils::toList, (List<Polynomial> qs) -> of(qs), v);
             testNoRemove(v);

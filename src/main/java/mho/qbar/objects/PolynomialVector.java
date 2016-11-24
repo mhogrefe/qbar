@@ -120,7 +120,7 @@ public final class PolynomialVector implements Comparable<PolynomialVector>, Ite
      */
     public static @NotNull PolynomialVector of(@NotNull List<Polynomial> coordinates) {
         if (coordinates.isEmpty()) return ZERO_DIMENSIONAL;
-        if (any(a -> a == null, coordinates)) {
+        if (any(Objects::isNull, coordinates)) {
             throw new NullPointerException();
         }
         return new PolynomialVector(toList(coordinates));
@@ -586,7 +586,7 @@ public final class PolynomialVector implements Comparable<PolynomialVector>, Ite
      * this class.
      */
     public void validate() {
-        assertTrue(this, all(r -> r != null, coordinates));
+        assertTrue(this, all(Objects::nonNull, coordinates));
         if (equals(ZERO_DIMENSIONAL)) {
             assertTrue(this, this == ZERO_DIMENSIONAL);
         }

@@ -114,7 +114,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         initialize("iterator()");
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
             List<Rational> rs = toList(p);
-            assertTrue(p, all(r -> r != null, rs));
+            assertTrue(p, all(Objects::nonNull, rs));
             //noinspection Convert2MethodRef
             inverse(IterableUtils::toList, (List<Rational> ss) -> of(ss), p);
             testNoRemove(p);
@@ -148,7 +148,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
 
         for (Rational i : take(LIMIT, P.rationals())) {
             assertEquals(i, ZERO.apply(i), Rational.ZERO);
-            fixedPoint(X::apply, i);
+            fixedPoint(X, i);
             assertEquals(i, of(Rational.NEGATIVE_ONE, 1).apply(i), i.negate());
         }
 
@@ -1225,7 +1225,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
     }
 
     private static @NotNull RationalPolynomial product_simplest(@NotNull Iterable<RationalPolynomial> xs) {
-        if (any(x -> x == null, xs)) {
+        if (any(Objects::isNull, xs)) {
             throw new NullPointerException();
         }
         if (any(x -> x == ZERO, xs)) {
@@ -1895,8 +1895,8 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         }
 
         Iterable<List<Pair<Rational, Rational>>> pssFail = filterInfinite(
-                qs -> (qs.contains(null) || any(q -> q.a == null || q.b == null, filter(q -> q != null, qs)))
-                        && unique(map(q -> q.a, filter(q -> q != null, qs))),
+                qs -> (qs.contains(null) || any(q -> q.a == null || q.b == null, filter(Objects::nonNull, qs)))
+                        && unique(map(q -> q.a, filter(Objects::nonNull, qs))),
                 P.lists(P.withScale(2).withNull(P.pairs(P.withScale(2).withNull(P.rationals()))))
         );
         for (List<Pair<Rational, Rational>> qs : take(LIMIT, pssFail)) {

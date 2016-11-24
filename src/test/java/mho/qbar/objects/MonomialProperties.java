@@ -268,7 +268,7 @@ public class MonomialProperties extends QBarTestProperties {
     }
 
     private static @NotNull Monomial removeVariables_alt(@NotNull Monomial m, @NotNull List<Variable> vs) {
-        if (any(v -> v == null, vs)) {
+        if (any(Objects::isNull, vs)) {
             throw new NullPointerException();
         }
         if (m == ONE) return m;
@@ -414,7 +414,7 @@ public class MonomialProperties extends QBarTestProperties {
     }
 
     private static @NotNull Monomial product_simplest(@NotNull Iterable<Monomial> xs) {
-        if (any(x -> x == null, xs)) {
+        if (any(Objects::isNull, xs)) {
             throw new NullPointerException();
         }
         return foldl(Monomial::multiply, ONE, xs);

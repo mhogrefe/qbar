@@ -512,9 +512,7 @@ public class PolynomialVectorTest {
 
     private static void readStrict_helper(@NotNull String input, @NotNull String output) {
         Optional<PolynomialVector> ov = readStrict(input);
-        if (ov.isPresent()) {
-            ov.get().validate();
-        }
+        ov.ifPresent(PolynomialVector::validate);
         aeq(ov, output);
     }
 

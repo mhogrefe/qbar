@@ -143,9 +143,7 @@ public class RealTest {
 
     private static void of_float_helper(float f, @NotNull String output) {
         Optional<Real> x = of(f);
-        if (x.isPresent()) {
-            x.get().validate();
-        }
+        x.ifPresent(Real::validate);
         aeq(x, output);
     }
 
@@ -178,9 +176,7 @@ public class RealTest {
 
     private static void of_double_helper(double d, @NotNull String output) {
         Optional<Real> x = of(d);
-        if (x.isPresent()) {
-            x.get().validate();
-        }
+        x.ifPresent(Real::validate);
         aeq(x, output);
     }
 
@@ -221,9 +217,7 @@ public class RealTest {
 
     private static void ofExact_float_helper(float f, @NotNull String output) {
         Optional<Real> x = ofExact(f);
-        if (x.isPresent()) {
-            x.get().validate();
-        }
+        x.ifPresent(Real::validate);
         aeq(x, output);
     }
 
@@ -256,9 +250,7 @@ public class RealTest {
 
     private static void ofExact_double_helper(double d, @NotNull String output) {
         Optional<Real> x = ofExact(d);
-        if (x.isPresent()) {
-            x.get().validate();
-        }
+        x.ifPresent(Real::validate);
         aeq(x, output);
     }
 
@@ -6797,9 +6789,7 @@ public class RealTest {
 
     private static void invert_helper(@NotNull Real input, @NotNull Rational resolution, @NotNull String output) {
         Optional<Real> ox = input.invert(resolution);
-        if (ox.isPresent()) {
-            ox.get().validate();
-        }
+        ox.ifPresent(Real::validate);
         aeq(ox, output);
     }
 
@@ -7153,9 +7143,7 @@ public class RealTest {
             @NotNull String output
     ) {
         Optional<Real> ox = a.divide(b, resolution);
-        if (ox.isPresent()) {
-            ox.get().validate();
-        }
+        ox.ifPresent(Real::validate);
         aeq(ox, output);
     }
 
@@ -7898,9 +7886,7 @@ public class RealTest {
             @NotNull String output
     ) {
         Optional<Real> oy = x.pow(p, resolution);
-        if (oy.isPresent()) {
-            oy.get().validate();
-        }
+        oy.ifPresent(Real::validate);
         aeq(oy, output);
     }
 
@@ -8299,9 +8285,7 @@ public class RealTest {
 
     private static void root_helper(@NotNull Real x, int r, @NotNull Rational resolution, @NotNull String output) {
         Optional<Real> oy = x.root(r, resolution);
-        if (oy.isPresent()) {
-            oy.get().validate();
-        }
+        oy.ifPresent(Real::validate);
         aeq(oy, output);
     }
 
@@ -8650,9 +8634,7 @@ public class RealTest {
 
     private static void sqrt_helper(@NotNull Real x, @NotNull Rational resolution, @NotNull String output) {
         Optional<Real> oy = x.sqrt(resolution);
-        if (oy.isPresent()) {
-            oy.get().validate();
-        }
+        oy.ifPresent(Real::validate);
         aeq(oy, output);
     }
 
@@ -8861,9 +8843,7 @@ public class RealTest {
             @NotNull String output
     ) {
         Optional<Real> ox = input.fractionalPart(resolution);
-        if (ox.isPresent()) {
-            ox.get().validate();
-        }
+        ox.ifPresent(Real::validate);
         aeq(ox, output);
     }
 
@@ -9879,7 +9859,7 @@ public class RealTest {
         toStringBase_helper(negativeOneSeventh, "83", -1, DEFAULT_RESOLUTION, "-(0)");
         toStringBase_helper(negativeOneSeventh, "83", 0, DEFAULT_RESOLUTION, "-(0)");
         toStringBase_helper(negativeOneSeventh, "83", 5, DEFAULT_RESOLUTION, "-(0).(11)(71)(11)(71)(11)...");
-        toStringBase_helper(negativeOneSeventh, "83", 20, Rational.TWO.shiftRight(100),
+        toStringBase_helper(negativeOneSeventh, "83", 20, Rational.ONE.shiftRight(200),
                 "-(0).(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)...");
 
         Real oneThousandth = of(Rational.of(1, 1000));
@@ -9919,7 +9899,7 @@ public class RealTest {
         toStringBase_helper(PI, "83", -1, DEFAULT_RESOLUTION, "(0)");
         toStringBase_helper(PI, "83", 0, DEFAULT_RESOLUTION, "(3)");
         toStringBase_helper(PI, "83", 5, DEFAULT_RESOLUTION, "(3).(11)(62)(35)(69)(50)...");
-        toStringBase_helper(PI, "83", 20, DEFAULT_RESOLUTION,
+        toStringBase_helper(PI, "83", 20, Rational.ONE.shiftRight(200),
                 "(3).(11)(62)(35)(69)(50)(19)(79)(18)(33)(82)(74)(23)(59)(17)(3)(18)(29)(47)(35)(11)...");
 
         toStringBase_helper(PI.negate(), "10", -1, DEFAULT_RESOLUTION, "0");
@@ -9929,7 +9909,7 @@ public class RealTest {
         toStringBase_helper(PI.negate(), "83", -1, DEFAULT_RESOLUTION, "(0)");
         toStringBase_helper(PI.negate(), "83", 0, DEFAULT_RESOLUTION, "-(3)");
         toStringBase_helper(PI.negate(), "83", 5, DEFAULT_RESOLUTION, "-(3).(11)(62)(35)(69)(50)...");
-        toStringBase_helper(PI.negate(), "83", 20, DEFAULT_RESOLUTION,
+        toStringBase_helper(PI.negate(), "83", 20, Rational.ONE.shiftRight(200),
                 "-(3).(11)(62)(35)(69)(50)(19)(79)(18)(33)(82)(74)(23)(59)(17)(3)(18)(29)(47)(35)(11)...");
 
         toStringBase_helper(leftFuzzyRepresentation(Rational.ZERO), "10", 0, DEFAULT_RESOLUTION, "-0");

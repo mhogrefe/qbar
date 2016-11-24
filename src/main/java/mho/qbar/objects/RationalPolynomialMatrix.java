@@ -219,7 +219,7 @@ public final class RationalPolynomialMatrix implements Comparable<RationalPolyno
      * @return a {@code RationalPolynomialMatrix} with the given rows
      */
     public static @NotNull RationalPolynomialMatrix fromRows(@NotNull List<RationalPolynomialVector> rows) {
-        if (any(a -> a == null, rows)) {
+        if (any(Objects::isNull, rows)) {
             throw new NullPointerException();
         } else if (!same(map(RationalPolynomialVector::dimension, rows))) {
             throw new IllegalArgumentException("Every element of rows must have the same dimension. Invalid rows: " +
@@ -244,7 +244,7 @@ public final class RationalPolynomialMatrix implements Comparable<RationalPolyno
      * @return a {@code RationalPolynomialMatrix} with the given columns
      */
     public static @NotNull RationalPolynomialMatrix fromColumns(@NotNull List<RationalPolynomialVector> columns) {
-        if (any(a -> a == null, columns)) {
+        if (any(Objects::isNull, columns)) {
             throw new NullPointerException();
         } else if (!same(map(RationalPolynomialVector::dimension, columns))) {
             throw new IllegalArgumentException("Every element of columns must have the same dimension." +

@@ -662,9 +662,7 @@ public class IntervalTest {
 
     private static void intersection_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
         Optional<Interval> oc = readStrict(a).get().intersection(readStrict(b).get());
-        if (oc.isPresent()) {
-            oc.get().validate();
-        }
+        oc.ifPresent(Interval::validate);
         aeq(oc, output);
     }
 
@@ -2293,9 +2291,7 @@ public class IntervalTest {
 
     private static void readStrict_helper(@NotNull String input, @NotNull String output) {
         Optional<Interval> oa = readStrict(input);
-        if (oa.isPresent()) {
-            oa.get().validate();
-        }
+        oa.ifPresent(Interval::validate);
         aeq(oa, output);
     }
 

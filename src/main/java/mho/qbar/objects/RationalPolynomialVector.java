@@ -137,7 +137,7 @@ public final class RationalPolynomialVector implements
      */
     public static @NotNull RationalPolynomialVector of(@NotNull List<RationalPolynomial> coordinates) {
         if (coordinates.isEmpty()) return ZERO_DIMENSIONAL;
-        if (any(a -> a == null, coordinates)) {
+        if (any(Objects::isNull, coordinates)) {
             throw new NullPointerException();
         }
         return new RationalPolynomialVector(toList(coordinates));
@@ -700,7 +700,7 @@ public final class RationalPolynomialVector implements
      * outside this class.
      */
     public void validate() {
-        assertTrue(this, all(r -> r != null, coordinates));
+        assertTrue(this, all(Objects::nonNull, coordinates));
         if (equals(ZERO_DIMENSIONAL)) {
             assertTrue(this, this == ZERO_DIMENSIONAL);
         }

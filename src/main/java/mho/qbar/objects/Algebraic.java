@@ -1999,7 +1999,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      * @return Σxs
      */
     public static @NotNull Algebraic sum(@NotNull List<Algebraic> xs) {
-        if (any(x -> x == null, xs)) {
+        if (any(Objects::isNull, xs)) {
             throw new NullPointerException();
         }
         switch (xs.size()) {
@@ -2010,11 +2010,7 @@ public final class Algebraic implements Comparable<Algebraic> {
                 for (Algebraic x : xs) {
                     if (x != ZERO) {
                         int degree = x.degree();
-                        List<Algebraic> degreeXs = degreeMap.get(degree);
-                        if (degreeXs == null) {
-                            degreeXs = new ArrayList<>();
-                            degreeMap.put(degree, degreeXs);
-                        }
+                        List<Algebraic> degreeXs = degreeMap.computeIfAbsent(degree, k -> new ArrayList<>());
                         degreeXs.add(x);
                     }
                 }
@@ -2060,10 +2056,10 @@ public final class Algebraic implements Comparable<Algebraic> {
                                 condensed.add(x.multiply(multiple));
                         }
                     }
-                    Collections.sort(condensed, COMPLEXITY_COMPARATOR);
+                    condensed.sort(COMPLEXITY_COMPARATOR);
                     sums.add(foldl(Algebraic::add, ZERO, condensed));
                 }
-                Collections.sort(sums, COMPLEXITY_COMPARATOR);
+                sums.sort(COMPLEXITY_COMPARATOR);
                 return foldl(Algebraic::add, ZERO, sums);
         }
     }
@@ -2080,7 +2076,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      * @return Πxs
      */
     public static @NotNull Algebraic product(@NotNull List<Algebraic> xs) {
-        if (any(x -> x == null, xs)) {
+        if (any(Objects::isNull, xs)) {
             throw new NullPointerException();
         }
         if (any(x -> x == ZERO, xs)) {
@@ -2094,11 +2090,7 @@ public final class Algebraic implements Comparable<Algebraic> {
                 for (Algebraic x : xs) {
                     if (x != ONE) {
                         int degree = x.degree();
-                        List<Algebraic> degreeXs = degreeMap.get(degree);
-                        if (degreeXs == null) {
-                            degreeXs = new ArrayList<>();
-                            degreeMap.put(degree, degreeXs);
-                        }
+                        List<Algebraic> degreeXs = degreeMap.computeIfAbsent(degree, k -> new ArrayList<>());
                         degreeXs.add(x);
                     }
                 }
@@ -2146,10 +2138,10 @@ public final class Algebraic implements Comparable<Algebraic> {
                                 condensed.add(x.pow(power));
                         }
                     }
-                    Collections.sort(condensed, COMPLEXITY_COMPARATOR);
+                    condensed.sort(COMPLEXITY_COMPARATOR);
                     products.add(foldl(Algebraic::multiply, ONE, condensed));
                 }
-                Collections.sort(products, COMPLEXITY_COMPARATOR);
+                products.sort(COMPLEXITY_COMPARATOR);
                 return foldl(Algebraic::multiply, ONE, products);
         }
     }
@@ -2166,7 +2158,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      * @return sgn(Σxs)
      */
     public static int sumSign(@NotNull List<Algebraic> xs) {
-        if (any(x -> x == null, xs)) {
+        if (any(Objects::isNull, xs)) {
             throw new NullPointerException();
         }
         switch (xs.size()) {

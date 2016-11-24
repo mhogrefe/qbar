@@ -1843,7 +1843,7 @@ public class RationalProperties extends QBarTestProperties {
             assertTrue(p, eq(bd, BigDecimal.ZERO) || bd.signum() == p.a.signum());
         }
 
-        ps = filterInfinite(valid::test, P.pairsSquareRootOrder(P.nonzeroRationals(), P.positiveIntegersGeometric()));
+        ps = filterInfinite(valid, P.pairsSquareRootOrder(P.nonzeroRationals(), P.positiveIntegersGeometric()));
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
             BigDecimal bd = p.a.bigDecimalValueByPrecision(p.b);
             assertTrue(p, bd.precision() == p.b);
@@ -3066,7 +3066,7 @@ public class RationalProperties extends QBarTestProperties {
         for (Rational r : take(LIMIT, P.rationals())) {
             List<BigInteger> continuedFraction = toList(r.continuedFraction());
             assertFalse(r, continuedFraction.isEmpty());
-            assertTrue(r, all(i -> i != null, continuedFraction));
+            assertTrue(r, all(Objects::nonNull, continuedFraction));
             assertTrue(r, all(i -> i.signum() == 1, tail(continuedFraction)));
             inverse(Rational::continuedFraction, xs -> fromContinuedFraction(toList(xs)), r);
         }
@@ -3090,6 +3090,7 @@ public class RationalProperties extends QBarTestProperties {
             inverse(Rational::fromContinuedFraction, r -> toList(r.continuedFraction()), is);
         }
 
+        //noinspection RedundantCast
         Iterable<List<BigInteger>> issFail = map(
                 p -> toList(cons(p.a, p.b)),
                 (Iterable<Pair<BigInteger, List<BigInteger>>>) P.pairs(
@@ -3111,7 +3112,7 @@ public class RationalProperties extends QBarTestProperties {
             List<Rational> convergents = toList(r.convergents());
             convergents.forEach(Rational::validate);
             assertFalse(r, convergents.isEmpty());
-            assertTrue(r, all(s -> s != null, convergents));
+            assertTrue(r, all(Objects::nonNull, convergents));
             assertEquals(r, head(convergents), of(r.floor()));
             assertEquals(r, last(convergents), r);
             assertTrue(r, zigzagging(convergents));

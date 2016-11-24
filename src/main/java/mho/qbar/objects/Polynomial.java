@@ -265,7 +265,7 @@ public final class Polynomial implements
      * @return the {@code Polynomial} with the specified coefficients
      */
     public static @NotNull Polynomial of(@NotNull List<BigInteger> coefficients) {
-        if (any(i -> i == null, coefficients)) {
+        if (any(Objects::isNull, coefficients)) {
             throw new NullPointerException();
         }
         int actualSize;
@@ -394,7 +394,7 @@ public final class Polynomial implements
      * @return the leading coefficient
      */
     public @NotNull Optional<BigInteger> leading() {
-        return this == ZERO ? Optional.<BigInteger>empty() : Optional.of(last(coefficients));
+        return this == ZERO ? Optional.empty() : Optional.of(last(coefficients));
     }
 
     /**
@@ -761,7 +761,7 @@ public final class Polynomial implements
      * @return Πxs
      */
     public static @NotNull Polynomial product(@NotNull List<Polynomial> xs) {
-        if (any(x -> x == null, xs)) {
+        if (any(Objects::isNull, xs)) {
             throw new NullPointerException();
         }
         if (any(x -> x == ZERO, xs)) {
@@ -1466,7 +1466,7 @@ public final class Polynomial implements
      * {@code ps}
      */
     public static @NotNull Polynomial gcd(@NotNull List<Polynomial> ps) {
-        if (any(p -> p == null, ps)) {
+        if (any(Objects::isNull, ps)) {
             throw new NullPointerException();
         }
         List<Polynomial> noZeros = toList(filter(p -> p != ZERO, ps));
@@ -3226,7 +3226,7 @@ public final class Polynomial implements
                 s,
                 powerString -> {
                     Optional<Integer> oPower = Readers.readIntegerStrict(powerString);
-                    return !oPower.isPresent() || oPower.get() > maxExponent ? Optional.<Integer>empty() : oPower;
+                    return !oPower.isPresent() || oPower.get() > maxExponent ? Optional.empty() : oPower;
                 }
         );
     }
@@ -3273,7 +3273,7 @@ public final class Polynomial implements
      * class.
      */
     public void validate() {
-        assertTrue(this, all(r -> r != null, coefficients));
+        assertTrue(this, all(Objects::nonNull, coefficients));
         if (!coefficients.isEmpty()) {
             assertTrue(this, !last(coefficients).equals(BigInteger.ZERO));
         }

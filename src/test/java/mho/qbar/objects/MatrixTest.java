@@ -1205,9 +1205,7 @@ public class MatrixTest {
 
     private static void readStrict_helper(@NotNull String input, @NotNull String output) {
         Optional<Matrix> om = readStrict(input);
-        if (om.isPresent()) {
-            om.get().validate();
-        }
+        om.ifPresent(Matrix::validate);
         aeq(om, output);
     }
 

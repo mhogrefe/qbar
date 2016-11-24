@@ -291,7 +291,7 @@ public final class Monomial implements Comparable<Monomial> {
      * @return {@code this} without {@code vs}, or {@code this} with each v in {@code vs} set to 1
      */
     public @NotNull Monomial removeVariables(@NotNull List<Variable> vs) {
-        if (any(v -> v == null, vs)) {
+        if (any(Objects::isNull, vs)) {
             throw new NullPointerException();
         }
         Monomial removed = this;
@@ -315,7 +315,7 @@ public final class Monomial implements Comparable<Monomial> {
      * @return {@code this} with only {@code vs}; {@code this} with every variable not in {@code vs} set to 1
      */
     public @NotNull Monomial retainVariables(@NotNull List<Variable> vs) {
-        if (any(v -> v == null, vs)) {
+        if (any(Objects::isNull, vs)) {
             throw new NullPointerException();
         }
         List<Integer> retainedExponents = new ArrayList<>();

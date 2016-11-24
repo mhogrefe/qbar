@@ -1895,7 +1895,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             assertTrue(p, eq(bd, BigDecimal.ZERO) || bd.signum() == p.a.signum());
         }
 
-        ps = filterInfinite(valid::test, P.pairsSquareRootOrder(P.nonzeroAlgebraics(), P.positiveIntegersGeometric()));
+        ps = filterInfinite(valid, P.pairsSquareRootOrder(P.nonzeroAlgebraics(), P.positiveIntegersGeometric()));
         for (Pair<Algebraic, Integer> p : take(LIMIT, ps)) {
             BigDecimal bd = p.a.bigDecimalValueByPrecision(p.b);
             assertTrue(p, bd.precision() == p.b);
@@ -2750,7 +2750,7 @@ public class AlgebraicProperties extends QBarTestProperties {
     }
 
     public static int sumSign_alt2(@NotNull List<Algebraic> xs) {
-        if (any(x -> x == null, xs)) {
+        if (any(Objects::isNull, xs)) {
             throw new NullPointerException();
         }
         switch (xs.size()) {
@@ -3630,7 +3630,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             List<BigInteger> continuedFraction = toList(take(TINY_LIMIT, x.continuedFraction()));
             assertEquals(x, toList(take(TINY_LIMIT, continuedFraction_alt(x))), continuedFraction);
             assertFalse(x, continuedFraction.isEmpty());
-            assertTrue(x, all(i -> i != null, continuedFraction));
+            assertTrue(x, all(Objects::nonNull, continuedFraction));
             assertTrue(x, all(i -> i.signum() == 1, tail(continuedFraction)));
         }
     }
@@ -3649,7 +3649,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             Pair<List<BigInteger>, List<BigInteger>> cf = x.repeatedContinuedFraction();
             assertNotNull(x, cf.a);
             assertNotNull(x, cf.b);
-            assertTrue(x, all(i -> i != null, cf.a));
+            assertTrue(x, all(Objects::nonNull, cf.a));
             if (!cf.a.isEmpty()) {
                 assertTrue(x, all(i -> i.signum() == 1, tail(cf.a)));
             }
@@ -3713,7 +3713,7 @@ public class AlgebraicProperties extends QBarTestProperties {
         }
 
         psFail = filterInfinite(
-                p -> any(i -> i == null, p.a) || any(i -> i == null, p.b),
+                p -> any(Objects::isNull, p.a) || any(Objects::isNull, p.b),
                 P.pairs(
                         P.withElement(
                                 Collections.emptyList(),
@@ -3740,7 +3740,7 @@ public class AlgebraicProperties extends QBarTestProperties {
         for (Algebraic x : take(LIMIT, P.algebraics())) {
             List<Rational> convergents = toList(take(TINY_LIMIT, x.convergents()));
             assertFalse(x, convergents.isEmpty());
-            assertTrue(x, all(s -> s != null, convergents));
+            assertTrue(x, all(Objects::nonNull, convergents));
             assertEquals(x, head(convergents), Rational.of(x.floor()));
             if (x.isRational()) {
                 assertEquals(x, last(x.convergents()), x.rationalValueExact());

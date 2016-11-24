@@ -2202,9 +2202,7 @@ public class MultivariatePolynomialTest {
             @NotNull String output
     ) {
         Optional<MultivariatePolynomial> oq = readStrict(p, MonomialOrder.readStrict(mo).get());
-        if (oq.isPresent()) {
-            oq.get().validate();
-        }
+        oq.ifPresent(MultivariatePolynomial::validate);
         aeq(oq, output);
     }
 
@@ -2323,9 +2321,7 @@ public class MultivariatePolynomialTest {
 
     private static void readStrict_String_helper(@NotNull String input, @NotNull String output) {
         Optional<MultivariatePolynomial> op = readStrict(input);
-        if (op.isPresent()) {
-            op.get().validate();
-        }
+        op.ifPresent(MultivariatePolynomial::validate);
         aeq(op, output);
     }
 

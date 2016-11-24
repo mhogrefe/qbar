@@ -862,9 +862,7 @@ public class PolynomialMatrixTest {
 
     private static void readStrict_helper(@NotNull String input, @NotNull String output) {
         Optional<PolynomialMatrix> om = readStrict(input);
-        if (om.isPresent()) {
-            om.get().validate();
-        }
+        om.ifPresent(PolynomialMatrix::validate);
         aeq(om, output);
     }
 

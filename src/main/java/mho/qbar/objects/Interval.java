@@ -80,7 +80,7 @@ public final class Interval implements Comparable<Interval> {
      * @return the lower bound
      */
     public @NotNull Optional<Rational> getLower() {
-        return lower == null ? Optional.<Rational>empty() : Optional.of(lower);
+        return lower == null ? Optional.empty() : Optional.of(lower);
     }
 
     /**
@@ -93,7 +93,7 @@ public final class Interval implements Comparable<Interval> {
      * @return the upper bound
      */
     public @NotNull Optional<Rational> getUpper() {
-        return upper == null ? Optional.<Rational>empty() : Optional.of(upper);
+        return upper == null ? Optional.empty() : Optional.of(upper);
     }
 
     /**
@@ -348,7 +348,7 @@ public final class Interval implements Comparable<Interval> {
      */
     @SuppressWarnings("JavaDoc")
     public static @NotNull Interval convexHull(@NotNull List<Interval> as) {
-        if (any(a -> a == null, as)) {
+        if (any(Objects::isNull, as)) {
             throw new NullPointerException();
         }
         if (as.isEmpty()) {
@@ -811,7 +811,7 @@ public final class Interval implements Comparable<Interval> {
     public @NotNull Optional<Integer> signum() {
         int lowerSignum = lower == null ? -1 : lower.signum();
         int upperSignum = upper == null ? 1 : upper.signum();
-        return lowerSignum == upperSignum ? Optional.of(lowerSignum) : Optional.<Integer>empty();
+        return lowerSignum == upperSignum ? Optional.of(lowerSignum) : Optional.empty();
     }
 
     /**
@@ -1279,8 +1279,8 @@ public final class Interval implements Comparable<Interval> {
         List<Rational> lowers = toList(map(x -> x.lower, xs));
         List<Rational> uppers = toList(map(x -> x.upper, xs));
         return new Interval(
-                any(x -> x == null, lowers) ? null : Rational.sum(lowers),
-                any(x -> x == null, uppers) ? null : Rational.sum(uppers)
+                any(Objects::isNull, lowers) ? null : Rational.sum(lowers),
+                any(Objects::isNull, uppers) ? null : Rational.sum(uppers)
         );
     }
 
@@ -1296,7 +1296,7 @@ public final class Interval implements Comparable<Interval> {
      * @return Πxs
      */
     public static @NotNull Interval product(@NotNull List<Interval> xs) {
-        if (any(x -> x == null, xs)) {
+        if (any(Objects::isNull, xs)) {
             throw new NullPointerException();
         }
         if (any(x -> x.equals(ZERO), xs)) {

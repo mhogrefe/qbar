@@ -201,7 +201,7 @@ public final class Matrix implements Comparable<Matrix> {
      * @return a {@code Matrix} with the given rows
      */
     public static @NotNull Matrix fromRows(@NotNull List<Vector> rows) {
-        if (any(a -> a == null, rows)) {
+        if (any(Objects::isNull, rows)) {
             throw new NullPointerException();
         } else if (!same(map(Vector::dimension, rows))) {
             throw new IllegalArgumentException("Every element of rows must have the same dimension. Invalid rows: " +
@@ -226,7 +226,7 @@ public final class Matrix implements Comparable<Matrix> {
      * @return a {@code Matrix} with the given columns
      */
     public static @NotNull Matrix fromColumns(@NotNull List<Vector> columns) {
-        if (any(a -> a == null, columns)) {
+        if (any(Objects::isNull, columns)) {
             throw new NullPointerException();
         } else if (!same(map(Vector::dimension, columns))) {
             throw new IllegalArgumentException("Every element of columns must have the same dimension." +

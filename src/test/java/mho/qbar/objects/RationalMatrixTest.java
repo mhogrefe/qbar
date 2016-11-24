@@ -1200,9 +1200,7 @@ public class RationalMatrixTest {
 
     private static void invert_helper(@NotNull String input, @NotNull String output) {
         Optional<RationalMatrix> om = readStrict(input).get().invert();
-        if (om.isPresent()) {
-            om.get().validate();
-        }
+        om.ifPresent(RationalMatrix::validate);
         aeq(om, output);
     }
 
@@ -1401,9 +1399,7 @@ public class RationalMatrixTest {
 
     private static void readStrict_helper(@NotNull String input, @NotNull String output) {
         Optional<RationalMatrix> om = readStrict(input);
-        if (om.isPresent()) {
-            om.get().validate();
-        }
+        om.ifPresent(RationalMatrix::validate);
         aeq(om, output);
     }
 

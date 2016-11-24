@@ -2295,9 +2295,7 @@ public class RationalPolynomialTest {
 
     private static void readStrict_String_helper(@NotNull String input, @NotNull String output) {
         Optional<RationalPolynomial> op = readStrict(input);
-        if (op.isPresent()) {
-            op.get().validate();
-        }
+        op.ifPresent(RationalPolynomial::validate);
         aeq(op, output);
     }
 
@@ -2366,9 +2364,7 @@ public class RationalPolynomialTest {
 
     private static void readStrict_int_String_helper(int maxExponent, @NotNull String input, @NotNull String output) {
         Optional<RationalPolynomial> op = readStrict(maxExponent, input);
-        if (op.isPresent()) {
-            op.get().validate();
-        }
+        op.ifPresent(RationalPolynomial::validate);
         aeq(op, output);
     }
 
