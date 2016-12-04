@@ -31,7 +31,7 @@ import static mho.wheels.testing.Testing.*;
 
 public class AlgebraicProperties extends QBarTestProperties {
     private static final @NotNull String ALGEBRAIC_CHARS = " ()*+-/0123456789^foqrstx";
-    private static final BigInteger ASCII_ALPHANUMERIC_COUNT = BigInteger.valueOf(36);
+    private static final @NotNull BigInteger ASCII_ALPHANUMERIC_COUNT = BigInteger.valueOf(36);
 
     public AlgebraicProperties() {
         super("Algebraic");

@@ -96,7 +96,7 @@ public final class Real implements Iterable<Interval> {
     /**
      * e, the base of the natural logarithm
      */
-    public static final @NotNull Real E = exp(Rational.ONE);
+    public static final @NotNull Real E = expOfRational(Rational.ONE);
 
     /**
      * arctan(1), or π/4
@@ -108,6 +108,11 @@ public final class Real implements Iterable<Interval> {
      * π, the ratio of a circle's circumference to its diameter
      */
     public static final @NotNull Real PI = ARCTAN_ONE.shiftLeft(2);
+
+    /**
+     * log(2), the unique solution of exp(x)=2
+     */
+    public static final @NotNull  Real LOG_2 = log12(Rational.of(3, 2)).add(log12(Rational.of(4, 3)));
 
     /**
      * The prime constant: the number whose nth binary digit after the decimal point is 1 if n is prime and 0
@@ -2368,6 +2373,7 @@ public final class Real implements Iterable<Interval> {
         return new Real(map(i -> i.add(ri), intervals));
     }
 
+    //todo docs
     private static @NotNull Real zipTwoIntervals(
             @NotNull BiFunction<Interval, Interval, Interval> f,
             @NotNull Real x,
@@ -3203,7 +3209,7 @@ public final class Real implements Iterable<Interval> {
      * </ul>
      *
      * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
-     * @return sqrt({@code r})
+     * @return sqrt({@code this})
      */
     @SuppressWarnings("JavaDoc")
     public @NotNull Optional<Real> sqrt(@NotNull Rational resolution) {
@@ -3218,7 +3224,7 @@ public final class Real implements Iterable<Interval> {
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @return cbrt({@code r})
+     * @return cbrt({@code this})
      */
     @SuppressWarnings("JavaDoc")
     public @NotNull Real cbrt() {
@@ -3282,7 +3288,7 @@ public final class Real implements Iterable<Interval> {
      * @return exp({@code x})
      */
     @SuppressWarnings("JavaDoc")
-    public static @NotNull Real exp(@NotNull Rational x) {
+    public static @NotNull Real expOfRational(@NotNull Rational x) {
         if (x == Rational.ZERO) {
             return ONE;
         } else if (x.signum() == -1) {
@@ -3293,7 +3299,7 @@ public final class Real implements Iterable<Interval> {
                 return expNeg10(x.divide(negativeFloor)).powUnsafe(negativeFloor);
             }
         } else {
-            return exp(x.negate()).invertUnsafe();
+            return expOfRational(x.negate()).invertUnsafe();
         }
     }
 
@@ -3310,7 +3316,7 @@ public final class Real implements Iterable<Interval> {
      * @return finite bounding intervals of exp({@code x})
      */
     private static @NotNull Iterable<Interval> expSkipUnbounded(@NotNull Rational x) {
-        return dropWhile(a -> !a.isFinitelyBounded(), exp(x));
+        return dropWhile(a -> !a.isFinitelyBounded(), expOfRational(x));
     }
 
     /**
@@ -3326,7 +3332,7 @@ public final class Real implements Iterable<Interval> {
     @SuppressWarnings("JavaDoc")
     public @NotNull Real exp() {
         if (rational.isPresent()) {
-            return exp(rational.get());
+            return expOfRational(rational.get());
         }
         return forceContainment(() -> new NoRemoveIterator<Interval>() {
             private final @NotNull Iterator<Interval> is = intervals.iterator();
@@ -3378,6 +3384,192 @@ public final class Real implements Iterable<Interval> {
                 return nextInterval;
             }
         });
+    }
+
+    /**
+     * Returns the natural logarithm of {@code x}, provided that 1<{@code x}<2.
+     *
+     * <ul>
+     *  <li>{@code x} must be greater than 1 and less than 2.</li>
+     *  <li>The result is the natural logarithm of a rational number, positive, and less than log(2).</li>
+     * </ul>
+     *
+     * @param x a {@code Rational} strictly between 1 and 2
+     * @return log({@code x})
+     */
+    @SuppressWarnings("JavaDoc")
+    private static @NotNull Real log12(@NotNull Rational x) {
+        Rational xMinus1 = x.subtract(Rational.ONE);
+        return new Real(() -> new NoRemoveIterator<Interval>() {
+            private @NotNull Rational partialSum = Rational.ZERO;
+            private @NotNull BigInteger i = BigInteger.ZERO;
+            private @NotNull Rational power = Rational.ONE;
+            private boolean sign = false;
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public @NotNull Interval next() {
+                i = i.add(BigInteger.ONE);
+                power = power.multiply(xMinus1);
+                sign = !sign;
+                Rational term = power.divide(i);
+                if (!sign) term = term.negate();
+                partialSum = partialSum.add(term);
+                Rational upper = partialSum;
+                i = i.add(BigInteger.ONE);
+                power = power.multiply(xMinus1);
+                sign = !sign;
+                term = power.divide(i);
+                if (!sign) term = term.negate();
+                partialSum = partialSum.add(term);
+                return Interval.of(partialSum, upper);
+            }
+        });
+    }
+
+    /**
+     * Returns the natural logarithm of {@code x}.
+     *
+     * <ul>
+     *  <li>{@code x} must be positive.</li>
+     *  <li>The is the natural logarithm of a rational number.</li>
+     * </ul>
+     *
+     * @param x a {@code Rational}
+     * @return log({@code x})
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull Real logOfRational(@NotNull Rational x) {
+        if (x == Rational.ONE) {
+            return ZERO;
+        }
+        if (x.signum() != 1) {
+            throw new ArithmeticException("x must be positive. Invalid x: " + x);
+        }
+        if (x.equals(Rational.TWO)) {
+            return LOG_2;
+        }
+        // log(x) when x ~= 2 converges very slowly, so use log(3/2) + log(2/3 * x) instead
+        if (Ordering.le(x.subtract(Rational.TWO).abs(), Rational.TEN.invert())) {
+            return logOfRational(Rational.of(3, 2)).add(logOfRational(x.multiply(Rational.of(2, 3))));
+        }
+        if (Ordering.lt(x, Rational.ONE)) {
+            return logOfRational(x.invert()).negate();
+        } else if (Ordering.lt(x, Rational.TWO)) {
+            return log12(x);
+        } else {
+            int m = x.binaryExponent();
+            return LOG_2.multiply(m).add(logOfRational(x.shiftRight(m)));
+        }
+    }
+
+    /**
+     * Returns the natural logarithm of {@code this}. If {@code this} is equal to zero and fuzzy on the left, this
+     * method will loop forever. To prevent this behavior, use {@link Real#log(Rational)} instead.
+     *
+     * <ul>
+     *  <li>{@code this} must be positive.</li>
+     *  <li>The result is not exact rational unless {@code this} is 1.</li>
+     * </ul>
+     *
+     * @return log({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Real logUnsafe() {
+        if (this == ONE) {
+            return ZERO;
+        }
+        if (rational.isPresent()) {
+            return logOfRational(rational.get());
+        }
+        return forceContainment(() -> new NoRemoveIterator<Interval>() {
+            private final @NotNull Iterator<Interval> is = intervals.iterator();
+            private Interval a;
+            private Iterator<Interval> lowerReal = null;
+            private Iterator<Interval> upperReal = null;
+            private Rational previousDiameter = null;
+            private int i = 0;
+            {
+                do {
+                    a = is.next();
+                    Optional<Rational> upper = a.getUpper();
+                    if (upper.isPresent() && Ordering.le(upper.get(), Rational.ZERO)) {
+                        throw new ArithmeticException("this must be positive. Invalid this: " + this);
+                    }
+                } while (!a.isFinitelyBounded() || a.contains(Rational.ZERO));
+            }
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public @NotNull Interval next() {
+                if (lowerReal == null) {
+                    lowerReal = logOfRational(a.getLower().get()).iterator();
+                    upperReal = logOfRational(a.getUpper().get()).iterator();
+                    for (int j = 0; j < i; j++) {
+                        lowerReal.next();
+                        upperReal.next();
+                    }
+                }
+                Interval lowerInterval = lowerReal.next();
+                Interval upperInterval = upperReal.next();
+                Interval nextInterval = lowerInterval.convexHull(upperInterval);
+                Rational diameter = nextInterval.diameter().get();
+                if (previousDiameter != null && Ordering.gt(diameter, previousDiameter.shiftRight(1))) {
+                    a = is.next();
+                    Optional<Rational> upper = a.getUpper();
+                    if (upper.isPresent() && Ordering.le(upper.get(), Rational.ZERO)) {
+                        throw new ArithmeticException("this must be positive. Invalid this: " + this);
+                    }
+                    lowerReal = logOfRational(a.getLower().get()).iterator();
+                    upperReal = logOfRational(a.getUpper().get()).iterator();
+                    for (int j = 0; j < i; j++) {
+                        lowerReal.next();
+                        upperReal.next();
+                    }
+                    lowerInterval = lowerReal.next();
+                    upperInterval = upperReal.next();
+                    nextInterval = lowerInterval.convexHull(upperInterval);
+                    diameter = nextInterval.diameter().get();
+                }
+                previousDiameter = diameter;
+                i++;
+                return nextInterval;
+            }
+        });
+    }
+
+    /**
+     * Returns the natural logarithm of {@code this}. If {@code this} is equal to zero and fuzzy on the left, this
+     * method will give up and return empty once the approximating interval's diameter is less than the specified
+     * resolution.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be negative, an exact zero, or a zero fuzzy on the left.</li>
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>The result is not exact rational unless {@code this} is an exact 1.</li>
+     * </ul>
+     *
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return log({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Optional<Real> log(@NotNull Rational resolution) {
+        Optional<Boolean> positive = gt(Rational.ZERO, resolution);
+        if (!positive.isPresent()) {
+            return Optional.empty();
+        }
+        if (!positive.get()) {
+            throw new ArithmeticException("this must be positive. Invalid this: " + this);
+        }
+        return Optional.of(logUnsafe());
     }
 
     /**

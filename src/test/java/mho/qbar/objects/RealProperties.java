@@ -32,7 +32,8 @@ import static mho.wheels.testing.Testing.assertTrue;
 
 public class RealProperties extends QBarTestProperties {
     private static final @NotNull String REAL_CHARS = "-.0123456789~";
-    private static final BigInteger ASCII_ALPHANUMERIC_COUNT = BigInteger.valueOf(36);
+    private static final @NotNull BigInteger ASCII_ALPHANUMERIC_COUNT = BigInteger.valueOf(36);
+    private static final @NotNull Rational SMALL_RESOLUTION = Rational.of(1, 256);
 
     public RealProperties() {
         super("Real");
@@ -137,8 +138,11 @@ public class RealProperties extends QBarTestProperties {
         propertiesSqrtUnsafe();
         propertiesSqrt();
         propertiesCbrt();
-        propertiesExp_Rational();
+        propertiesExpOfRational();
         propertiesExp();
+        propertiesLogOfRational();
+        propertiesLogUnsafe();
+        propertiesLog();
         propertiesIntervalExtensionUnsafe();
         propertiesFractionalPartUnsafe();
         propertiesFractionalPart();
@@ -3442,15 +3446,12 @@ public class RealProperties extends QBarTestProperties {
             Real negative = x.negate();
             negative.validate();
             //noinspection SuspiciousNameCombination
-            Optional<Boolean> involution = negative.negate().eq(x, DEFAULT_RESOLUTION);
-            assertTrue(x, !involution.isPresent() || involution.get());
-            Optional<Boolean> inverse = x.add(negative).eq(Rational.ZERO, DEFAULT_RESOLUTION);
-            assertTrue(x, !inverse.isPresent() || inverse.get());
+            assertTrue(x, negative.negate().eq(x, DEFAULT_RESOLUTION).orElse(true));
+            assertTrue(x, x.add(negative).eq(Rational.ZERO, DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Real x : take(LIMIT, P.nonzeroReals())) {
-            Optional<Boolean> unequal = x.ne(x.negate(), DEFAULT_RESOLUTION);
-            assertTrue(x, !unequal.isPresent() || unequal.get());
+            assertTrue(x, x.ne(x.negate(), DEFAULT_RESOLUTION).orElse(true));
         }
     }
 
@@ -3459,18 +3460,13 @@ public class RealProperties extends QBarTestProperties {
         for (Real x : take(LIMIT, P.reals())) {
             Real abs = x.abs();
             abs.validate();
-            Optional<Boolean> idempotent = abs.eq(abs.abs(), DEFAULT_RESOLUTION);
-            assertTrue(x, !idempotent.isPresent() || idempotent.get());
-            Optional<Integer> signum = abs.signum(DEFAULT_RESOLUTION);
-            assertTrue(x, !signum.isPresent() || signum.get() != -1);
-            Optional<Boolean> nonNegative = abs.ge(Rational.ZERO, DEFAULT_RESOLUTION);
-            assertTrue(x, !nonNegative.isPresent() || nonNegative.get());
+            assertTrue(x, abs.eq(abs.abs(), DEFAULT_RESOLUTION).orElse(true));
+            assertTrue(x, abs.signum(DEFAULT_RESOLUTION).map(s -> s != -1).orElse(true));
+            assertTrue(x, abs.ge(Rational.ZERO, DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Real x : take(LIMIT, P.positiveReals())) {
-            //noinspection SuspiciousNameCombination
-            Optional<Boolean> fixedPoint = x.abs().eq(x, DEFAULT_RESOLUTION);
-            assertTrue(x, !fixedPoint.isPresent() || fixedPoint.get());
+            assertTrue(x, x.abs().eq(x, DEFAULT_RESOLUTION).orElse(true));
         }
     }
 
@@ -3513,8 +3509,7 @@ public class RealProperties extends QBarTestProperties {
         for (Pair<Real, Rational> p : take(LIMIT, P.pairs(P.reals(), P.rationals()))) {
             Real sum = p.a.add(p.b);
             sum.validate();
-            Optional<Boolean> inverse = sum.subtract(p.b).eq(p.a, DEFAULT_RESOLUTION);
-            assertTrue(p, !inverse.isPresent() || inverse.get());
+            assertTrue(p, sum.subtract(p.b).eq(p.a, DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Real x : take(LIMIT, P.reals())) {
@@ -3531,22 +3526,18 @@ public class RealProperties extends QBarTestProperties {
         for (Pair<Real, Real> p : take(LIMIT, P.pairs(P.reals()))) {
             Real sum = p.a.add(p.b);
             sum.validate();
-            Optional<Boolean> commutative = p.b.add(p.a).eq(sum, DEFAULT_RESOLUTION);
-            assertTrue(p, !commutative.isPresent() || commutative.get());
-            Optional<Boolean> inverse = sum.subtract(p.b).eq(p.a, DEFAULT_RESOLUTION);
-            assertTrue(p, !inverse.isPresent() || inverse.get());
+            assertTrue(p, p.b.add(p.a).eq(sum, DEFAULT_RESOLUTION).orElse(true));
+            assertTrue(p, sum.subtract(p.b).eq(p.a, DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Real x : take(LIMIT, P.reals())) {
             assertTrue(x, x.add(ZERO) == x);
             assertTrue(x, ZERO.add(x) == x);
-            Optional<Boolean> zero = x.add(x.negate()).eq(Rational.ZERO, DEFAULT_RESOLUTION);
-            assertTrue(x, !zero.isPresent() || zero.get());
+            assertTrue(x, x.add(x.negate()).eq(Rational.ZERO, DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Triple<Real, Real, Real> t : take(SMALL_LIMIT, P.triples(P.reals()))) {
-            Optional<Boolean> associative = t.a.add(t.b).add(t.c).eq(t.a.add(t.b.add(t.c)), DEFAULT_RESOLUTION);
-            assertTrue(t, !associative.isPresent() || associative.get());
+            assertTrue(t, t.a.add(t.b).add(t.c).eq(t.a.add(t.b.add(t.c)), DEFAULT_RESOLUTION).orElse(true));
         }
     }
 
@@ -3555,8 +3546,7 @@ public class RealProperties extends QBarTestProperties {
         for (Pair<Real, Rational> p : take(LIMIT, P.pairs(P.reals(), P.rationals()))) {
             Real difference = p.a.subtract(p.b);
             difference.validate();
-            Optional<Boolean> inverse = difference.add(p.b).eq(p.a, DEFAULT_RESOLUTION);
-            assertTrue(p, !inverse.isPresent() || inverse.get());
+            assertTrue(p, difference.add(p.b).eq(p.a, DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Real x : take(LIMIT, P.reals())) {
@@ -3573,15 +3563,12 @@ public class RealProperties extends QBarTestProperties {
         for (Pair<Real, Real> p : take(SMALL_LIMIT, P.pairs(P.reals()))) {
             Real difference = p.a.subtract(p.b);
             difference.validate();
-            Optional<Boolean> anticommutative = p.b.subtract(p.a).eq(difference.negate(), DEFAULT_RESOLUTION);
-            assertTrue(p, !anticommutative.isPresent() || anticommutative.get());
-            Optional<Boolean> inverse = difference.add(p.b).eq(p.a, DEFAULT_RESOLUTION);
-            assertTrue(p, !inverse.isPresent() || inverse.get());
+            assertTrue(p, p.b.subtract(p.a).eq(difference.negate(), DEFAULT_RESOLUTION).orElse(true));
+            assertTrue(p, difference.add(p.b).eq(p.a, DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Real x : take(LIMIT, P.reals())) {
-            Optional<Boolean> negate = ZERO.subtract(x).eq(x.negate(), DEFAULT_RESOLUTION);
-            assertTrue(x, !negate.isPresent() || negate.get());
+            assertTrue(x, ZERO.subtract(x).eq(x.negate(), DEFAULT_RESOLUTION).orElse(true));
             assertTrue(x, x.subtract(ZERO) == x);
             assertTrue(x, x.subtract(x) == ZERO);
         }
@@ -3592,20 +3579,16 @@ public class RealProperties extends QBarTestProperties {
         for (Pair<Real, Integer> p : take(LIMIT, P.pairs(P.reals(), P.integers()))) {
             Real product = p.a.multiply(p.b);
             product.validate();
-            Optional<Boolean> eq1 = p.a.multiply(of(p.b)).eq(product, DEFAULT_RESOLUTION);
-            assertTrue(p, !eq1.isPresent() || eq1.get());
-            Optional<Boolean> eq2 = of(p.b).multiply(p.a).eq(product, DEFAULT_RESOLUTION);
-            assertTrue(p, !eq2.isPresent() || eq2.get());
+            assertTrue(p, p.a.multiply(of(p.b)).eq(product, DEFAULT_RESOLUTION).orElse(true));
+            assertTrue(p, of(p.b).multiply(p.a).eq(product, DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Pair<Real, Integer> p : take(LIMIT, P.pairs(P.reals(), P.nonzeroIntegers()))) {
-            Optional<Boolean> inverse = p.a.multiply(p.b).divide(p.b).eq(p.a, DEFAULT_RESOLUTION);
-            assertTrue(p, !inverse.isPresent() || inverse.get());
+            assertTrue(p, p.a.multiply(p.b).divide(p.b).eq(p.a, DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (int i : take(LIMIT, P.integers())) {
-            Optional<Boolean> identity = ONE.multiply(i).eq(Rational.of(i), DEFAULT_RESOLUTION);
-            assertTrue(i, !identity.isPresent() || identity.get());
+            assertTrue(i, ONE.multiply(i).eq(Rational.of(i), DEFAULT_RESOLUTION).orElse(true));
             assertTrue(i, ZERO.multiply(i) == ZERO);
         }
 
@@ -3615,16 +3598,12 @@ public class RealProperties extends QBarTestProperties {
         }
 
         for (int i : take(LIMIT, P.nonzeroIntegers())) {
-            Optional<Boolean> inverse = of(i).invertUnsafe().multiply(i).eq(Rational.ONE, DEFAULT_RESOLUTION);
-            assertTrue(i, !inverse.isPresent() || inverse.get());
+            assertTrue(i, of(i).invertUnsafe().multiply(i).eq(Rational.ONE, DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Triple<Real, Real, Integer> t : take(SMALL_LIMIT, P.triples(P.reals(), P.reals(), P.integers()))) {
-            Optional<Boolean> rightDistributive = t.a.add(t.b).multiply(t.c).eq(
-                    t.a.multiply(t.c).add(t.b.multiply(t.c)),
-                    DEFAULT_RESOLUTION
-            );
-            assertTrue(t, !rightDistributive.isPresent() || rightDistributive.get());
+            assertTrue(t, t.a.add(t.b).multiply(t.c).eq(t.a.multiply(t.c).add(t.b.multiply(t.c)), DEFAULT_RESOLUTION)
+                    .orElse(true));
         }
     }
 
@@ -3633,20 +3612,16 @@ public class RealProperties extends QBarTestProperties {
         for (Pair<Real, BigInteger> p : take(LIMIT, P.pairs(P.reals(), P.bigIntegers()))) {
             Real product = p.a.multiply(p.b);
             product.validate();
-            Optional<Boolean> eq1 = p.a.multiply(of(p.b)).eq(product, DEFAULT_RESOLUTION);
-            assertTrue(p, !eq1.isPresent() || eq1.get());
-            Optional<Boolean> eq2 = of(p.b).multiply(p.a).eq(product, DEFAULT_RESOLUTION);
-            assertTrue(p, !eq2.isPresent() || eq2.get());
+            assertTrue(p, p.a.multiply(of(p.b)).eq(product, DEFAULT_RESOLUTION).orElse(true));
+            assertTrue(p, of(p.b).multiply(p.a).eq(product, DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Pair<Real, BigInteger> p : take(LIMIT, P.pairs(P.reals(), P.nonzeroBigIntegers()))) {
-            Optional<Boolean> inverse = p.a.multiply(p.b).divide(p.b).eq(p.a, DEFAULT_RESOLUTION);
-            assertTrue(p, !inverse.isPresent() || inverse.get());
+            assertTrue(p, p.a.multiply(p.b).divide(p.b).eq(p.a, DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
-            Optional<Boolean> identity = ONE.multiply(i).eq(Rational.of(i), DEFAULT_RESOLUTION);
-            assertTrue(i, !identity.isPresent() || identity.get());
+            assertTrue(i, ONE.multiply(i).eq(Rational.of(i), DEFAULT_RESOLUTION).orElse(true));
             assertTrue(i, ZERO.multiply(i) == ZERO);
         }
 
@@ -3656,16 +3631,12 @@ public class RealProperties extends QBarTestProperties {
         }
 
         for (BigInteger i : take(LIMIT, P.nonzeroBigIntegers())) {
-            Optional<Boolean> inverse = of(i).invertUnsafe().multiply(i).eq(Rational.ONE, DEFAULT_RESOLUTION);
-            assertTrue(i, !inverse.isPresent() || inverse.get());
+            assertTrue(i, of(i).invertUnsafe().multiply(i).eq(Rational.ONE, DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Triple<Real, Real, BigInteger> t : take(SMALL_LIMIT, P.triples(P.reals(), P.reals(), P.bigIntegers()))) {
-            Optional<Boolean> rightDistributive = t.a.add(t.b).multiply(t.c).eq(
-                    t.a.multiply(t.c).add(t.b.multiply(t.c)),
-                    DEFAULT_RESOLUTION
-            );
-            assertTrue(t, !rightDistributive.isPresent() || rightDistributive.get());
+            assertTrue(t, t.a.add(t.b).multiply(t.c).eq(t.a.multiply(t.c).add(t.b.multiply(t.c)), DEFAULT_RESOLUTION)
+                    .orElse(true));
         }
     }
 
@@ -3674,23 +3645,18 @@ public class RealProperties extends QBarTestProperties {
         for (Pair<Real, Rational> p : take(LIMIT, P.pairs(P.reals(), P.rationals()))) {
             Real product = p.a.multiply(p.b);
             product.validate();
-            Optional<Boolean> eq1 = p.a.multiply(of(p.b)).eq(product, DEFAULT_RESOLUTION);
-            assertTrue(p, !eq1.isPresent() || eq1.get());
-            Optional<Boolean> eq2 = of(p.b).multiply(p.a).eq(product, DEFAULT_RESOLUTION);
-            assertTrue(p, !eq2.isPresent() || eq2.get());
+            assertTrue(p, p.a.multiply(of(p.b)).eq(product, DEFAULT_RESOLUTION).orElse(true));
+            assertTrue(p, of(p.b).multiply(p.a).eq(product, DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Pair<Real, Rational> p : take(LIMIT, P.pairs(P.reals(), P.nonzeroRationals()))) {
             Real product = p.a.multiply(p.b);
-            Optional<Boolean> inverse1 = product.divide(p.b).eq(p.a, DEFAULT_RESOLUTION);
-            assertTrue(p, !inverse1.isPresent() || inverse1.get());
-            Optional<Boolean> inverse2 = product.eq(p.a.divide(p.b.invert()), DEFAULT_RESOLUTION);
-            assertTrue(p, !inverse2.isPresent() || inverse2.get());
+            assertTrue(p, product.divide(p.b).eq(p.a, DEFAULT_RESOLUTION).orElse(true));
+            assertTrue(p, product.eq(p.a.divide(p.b.invert()), DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            Optional<Boolean> identity = ONE.multiply(r).eq(r, DEFAULT_RESOLUTION);
-            assertTrue(r, !identity.isPresent() || identity.get());
+            assertTrue(r, ONE.multiply(r).eq(r, DEFAULT_RESOLUTION).orElse(true));
             assertTrue(r, ZERO.multiply(r) == ZERO);
         }
 
@@ -3700,16 +3666,12 @@ public class RealProperties extends QBarTestProperties {
         }
 
         for (Rational r : take(LIMIT, P.nonzeroRationals())) {
-            Optional<Boolean> inverse = of(r).invertUnsafe().multiply(r).eq(Rational.ONE, DEFAULT_RESOLUTION);
-            assertTrue(r, !inverse.isPresent() || inverse.get());
+            assertTrue(r, of(r).invertUnsafe().multiply(r).eq(Rational.ONE, DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Triple<Real, Real, Rational> t : take(SMALL_LIMIT, P.triples(P.reals(), P.reals(), P.rationals()))) {
-            Optional<Boolean> rightDistributive = t.a.add(t.b).multiply(t.c).eq(
-                    t.a.multiply(t.c).add(t.b.multiply(t.c)),
-                    DEFAULT_RESOLUTION
-            );
-            assertTrue(t, !rightDistributive.isPresent() || rightDistributive.get());
+            assertTrue(t, t.a.add(t.b).multiply(t.c).eq(t.a.multiply(t.c).add(t.b.multiply(t.c)), DEFAULT_RESOLUTION)
+                    .orElse(true));
         }
     }
 
@@ -3718,16 +3680,13 @@ public class RealProperties extends QBarTestProperties {
         for (Pair<Real, Real> p : take(SMALL_LIMIT, P.pairs(P.reals()))) {
             Real product = p.a.multiply(p.b);
             product.validate();
-            Optional<Boolean> commutative = p.b.multiply(p.a).eq(product, DEFAULT_RESOLUTION);
-            assertTrue(p, !commutative.isPresent() || commutative.get());
+            assertTrue(p, p.b.multiply(p.a).eq(product, DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Pair<Real, Real> p : take(TINY_LIMIT, P.pairs(P.reals(), P.nonzeroReals()))) {
             Real product = p.a.multiply(p.b);
-            Optional<Boolean> inverse = product.divideUnsafe(p.b).eq(p.a, DEFAULT_RESOLUTION);
-            assertTrue(p, !inverse.isPresent() || inverse.get());
-            Optional<Boolean> equivalence = product.eq(p.a.divideUnsafe(p.b.invertUnsafe()), DEFAULT_RESOLUTION);
-            assertTrue(p, !equivalence.isPresent() || equivalence.get());
+            assertTrue(p, product.divideUnsafe(p.b).eq(p.a, DEFAULT_RESOLUTION).orElse(true));
+            assertTrue(p, product.eq(p.a.divideUnsafe(p.b.invertUnsafe()), DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Real x : take(LIMIT, P.reals())) {
@@ -3736,26 +3695,16 @@ public class RealProperties extends QBarTestProperties {
         }
 
         for (Real x : take(LIMIT, P.nonzeroReals())) {
-            Optional<Boolean> inverse = x.invertUnsafe().multiply(x).eq(Rational.ONE, DEFAULT_RESOLUTION);
-            assertTrue(x, !inverse.isPresent() || inverse.get());
+            assertTrue(x, x.invertUnsafe().multiply(x).eq(Rational.ONE, DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Triple<Real, Real, Real> t : take(TINY_LIMIT, P.triples(P.reals()))) {
-            Optional<Boolean> associative = t.a.multiply(t.b).multiply(t.c).eq(
-                    t.a.multiply(t.b.multiply(t.c)),
-                    DEFAULT_RESOLUTION
-            );
-            assertTrue(t, !associative.isPresent() || associative.get());
-            Optional<Boolean> leftDistributive = t.c.multiply(t.a.add(t.b)).eq(
-                    t.c.multiply(t.a).add(t.c.multiply(t.b)),
-                    DEFAULT_RESOLUTION
-            );
-            assertTrue(t, !leftDistributive.isPresent() || leftDistributive.get());
-            Optional<Boolean> rightDistributive = t.a.add(t.b).multiply(t.c).eq(
-                    t.a.multiply(t.c).add(t.b.multiply(t.c)),
-                    DEFAULT_RESOLUTION
-            );
-            assertTrue(t, !rightDistributive.isPresent() || rightDistributive.get());
+            assertTrue(t, t.a.multiply(t.b).multiply(t.c).eq(t.a.multiply(t.b.multiply(t.c)), DEFAULT_RESOLUTION)
+                    .orElse(true));
+            assertTrue(t, t.c.multiply(t.a.add(t.b)).eq(t.c.multiply(t.a).add(t.c.multiply(t.b)), DEFAULT_RESOLUTION)
+                    .orElse(true));
+            assertTrue(t, t.a.add(t.b).multiply(t.c).eq(t.a.multiply(t.c).add(t.b.multiply(t.c)), DEFAULT_RESOLUTION)
+                    .orElse(true));
         }
     }
 
@@ -3764,12 +3713,9 @@ public class RealProperties extends QBarTestProperties {
         for (Real x : take(LIMIT, P.nonzeroReals())) {
             Real y = x.invertUnsafe();
             y.validate();
-            Optional<Boolean> involution = y.invertUnsafe().eq(x, DEFAULT_RESOLUTION);
-            assertTrue(x, !involution.isPresent() || involution.get());
-            Optional<Boolean> inverse = x.invertUnsafe().multiply(x).eq(Rational.ONE, DEFAULT_RESOLUTION);
-            assertTrue(x, !inverse.isPresent() || inverse.get());
-            Optional<Integer> signum = y.signum(DEFAULT_RESOLUTION);
-            assertTrue(x, !signum.isPresent() || signum.get() != 0);
+            assertTrue(x, y.invertUnsafe().eq(x, DEFAULT_RESOLUTION).orElse(true));
+            assertTrue(x, x.invertUnsafe().multiply(x).eq(Rational.ONE, DEFAULT_RESOLUTION).orElse(true));
+            assertTrue(x, y.signum(DEFAULT_RESOLUTION).map(s -> s != 0).orElse(true));
         }
 
         Iterable<Rational> rs = filterInfinite(r -> r.abs() != Rational.ONE, P.withScale(4).nonzeroRationals());
@@ -3787,8 +3733,7 @@ public class RealProperties extends QBarTestProperties {
                 )
         );
         for (Real x : take(LIMIT, xs)) {
-            Optional<Boolean> unequal = x.ne(x.invertUnsafe(), DEFAULT_RESOLUTION);
-            assertTrue(x, !unequal.isPresent() || unequal.get());
+            assertTrue(x, x.ne(x.invertUnsafe(), DEFAULT_RESOLUTION).orElse(true));
         }
     }
 
@@ -3811,8 +3756,7 @@ public class RealProperties extends QBarTestProperties {
             Optional<Real> ox = p.a.invert(p.b);
             if (ox.isPresent()) {
                 ox.get().validate();
-                Optional<Boolean> equal = p.a.invertUnsafe().eq(ox.get(), DEFAULT_RESOLUTION);
-                assertTrue(p, !equal.isPresent() || equal.get());
+                assertTrue(p, p.a.invertUnsafe().eq(ox.get(), DEFAULT_RESOLUTION).orElse(true));
             }
         }
 
@@ -3849,23 +3793,17 @@ public class RealProperties extends QBarTestProperties {
         for (Pair<Real, Integer> p : take(LIMIT, P.pairs(P.reals(), P.nonzeroIntegers()))) {
             Real quotient = p.a.divide(p.b);
             quotient.validate();
-            Optional<Boolean> inverse = quotient.multiply(p.b).eq(p.a, DEFAULT_RESOLUTION);
-            assertTrue(p, !inverse.isPresent() || inverse.get());
+            assertTrue(p, quotient.multiply(p.b).eq(p.a, DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Pair<Real, Integer> p : take(LIMIT, P.pairs(P.nonzeroReals(), P.nonzeroIntegers()))) {
-            Optional<Boolean> antiCommutative = p.a.divide(p.b).eq(
-                    of(p.b).divideUnsafe(p.a).invertUnsafe(),
-                    DEFAULT_RESOLUTION
-            );
-            assertTrue(p, !antiCommutative.isPresent() || antiCommutative.get());
+            assertTrue(p, p.a.divide(p.b).eq(of(p.b).divideUnsafe(p.a).invertUnsafe(), DEFAULT_RESOLUTION)
+                    .orElse(true));
         }
 
         for (int i : take(LIMIT, P.nonzeroIntegers())) {
-            Optional<Boolean> inverse1 = ONE.divide(i).eq(of(i).invertUnsafe(), DEFAULT_RESOLUTION);
-            assertTrue(i, !inverse1.isPresent() || inverse1.get());
-            Optional<Boolean> inverse2 = of(i).divide(i).eq(Rational.ONE, DEFAULT_RESOLUTION);
-            assertTrue(i, !inverse2.isPresent() || inverse2.get());
+            assertTrue(i, ONE.divide(i).eq(of(i).invertUnsafe(), DEFAULT_RESOLUTION).orElse(true));
+            assertTrue(i, of(i).divide(i).eq(Rational.ONE, DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Real x : take(LIMIT, P.reals())) {
@@ -3885,23 +3823,17 @@ public class RealProperties extends QBarTestProperties {
         for (Pair<Real, BigInteger> p : take(LIMIT, P.pairs(P.reals(), P.nonzeroBigIntegers()))) {
             Real quotient = p.a.divide(p.b);
             quotient.validate();
-            Optional<Boolean> inverse = quotient.multiply(p.b).eq(p.a, DEFAULT_RESOLUTION);
-            assertTrue(p, !inverse.isPresent() || inverse.get());
+            assertTrue(p, quotient.multiply(p.b).eq(p.a, DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Pair<Real, BigInteger> p : take(LIMIT, P.pairs(P.nonzeroReals(), P.nonzeroBigIntegers()))) {
-            Optional<Boolean> antiCommutative = p.a.divide(p.b).eq(
-                    of(p.b).divideUnsafe(p.a).invertUnsafe(),
-                    DEFAULT_RESOLUTION
-            );
-            assertTrue(p, !antiCommutative.isPresent() || antiCommutative.get());
+            assertTrue(p, p.a.divide(p.b).eq(of(p.b).divideUnsafe(p.a).invertUnsafe(), DEFAULT_RESOLUTION)
+                    .orElse(true));
         }
 
         for (BigInteger i : take(LIMIT, P.nonzeroBigIntegers())) {
-            Optional<Boolean> inverse1 = ONE.divide(i).eq(of(i).invertUnsafe(), DEFAULT_RESOLUTION);
-            assertTrue(i, !inverse1.isPresent() || inverse1.get());
-            Optional<Boolean> inverse2 = of(i).divide(i).eq(Rational.ONE, DEFAULT_RESOLUTION);
-            assertTrue(i, !inverse2.isPresent() || inverse2.get());
+            assertTrue(i, ONE.divide(i).eq(of(i).invertUnsafe(), DEFAULT_RESOLUTION).orElse(true));
+            assertTrue(i, of(i).divide(i).eq(Rational.ONE, DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Real x : take(LIMIT, P.reals())) {
@@ -3921,26 +3853,18 @@ public class RealProperties extends QBarTestProperties {
         for (Pair<Real, Rational> p : take(LIMIT, P.pairs(P.reals(), P.nonzeroRationals()))) {
             Real quotient = p.a.divide(p.b);
             quotient.validate();
-            Optional<Boolean> inverse = quotient.multiply(p.b).eq(p.a, DEFAULT_RESOLUTION);
-            assertTrue(p, !inverse.isPresent() || inverse.get());
+            assertTrue(p, quotient.multiply(p.b).eq(p.a, DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Pair<Real, Rational> p : take(LIMIT, P.pairs(P.nonzeroReals(), P.nonzeroRationals()))) {
             Real quotient = p.a.divide(p.b);
-            Optional<Boolean> antiCommutative = quotient.eq(
-                    of(p.b).divideUnsafe(p.a).invertUnsafe(),
-                    DEFAULT_RESOLUTION
-            );
-            assertTrue(p, !antiCommutative.isPresent() || antiCommutative.get());
-            Optional<Boolean> inverse = quotient.eq(p.a.multiply(p.b.invert()), DEFAULT_RESOLUTION);
-            assertTrue(p, !inverse.isPresent() || inverse.get());
+            assertTrue(p, quotient.eq(of(p.b).divideUnsafe(p.a).invertUnsafe(), DEFAULT_RESOLUTION).orElse(true));
+            assertTrue(p, quotient.eq(p.a.multiply(p.b.invert()), DEFAULT_RESOLUTION).orElse(true));
         }
 
-        for (Rational i : take(LIMIT, P.nonzeroRationals())) {
-            Optional<Boolean> inverse1 = ONE.divide(i).eq(of(i).invertUnsafe(), DEFAULT_RESOLUTION);
-            assertTrue(i, !inverse1.isPresent() || inverse1.get());
-            Optional<Boolean> inverse2 = of(i).divide(i).eq(Rational.ONE, DEFAULT_RESOLUTION);
-            assertTrue(i, !inverse2.isPresent() || inverse2.get());
+        for (Rational r : take(LIMIT, P.nonzeroRationals())) {
+            assertTrue(r, ONE.divide(r).eq(of(r).invertUnsafe(), DEFAULT_RESOLUTION).orElse(true));
+            assertTrue(r, of(r).divide(r).eq(Rational.ONE, DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Real x : take(LIMIT, P.reals())) {
@@ -3960,18 +3884,13 @@ public class RealProperties extends QBarTestProperties {
         for (Pair<Real, Real> p : take(LIMIT, P.pairs(P.reals(), P.nonzeroReals()))) {
             Real quotient = p.a.divideUnsafe(p.b);
             quotient.validate();
-            Optional<Boolean> inverse1 = quotient.eq(p.a.multiply(p.b.invertUnsafe()), DEFAULT_RESOLUTION);
-            assertTrue(p, !inverse1.isPresent() || inverse1.get());
-            Optional<Boolean> inverse2 = quotient.multiply(p.b).eq(p.a, DEFAULT_RESOLUTION);
-            assertTrue(p, !inverse2.isPresent() || inverse2.get());
+            assertTrue(p, quotient.eq(p.a.multiply(p.b.invertUnsafe()), DEFAULT_RESOLUTION).orElse(true));
+            assertTrue(p, quotient.multiply(p.b).eq(p.a, DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Pair<Real, Real> p : take(LIMIT, P.pairs(P.nonzeroReals()))) {
-            Optional<Boolean> equivalence = p.a.divideUnsafe(p.b).eq(
-                    p.b.divideUnsafe(p.a).invertUnsafe(),
-                    DEFAULT_RESOLUTION
-            );
-            assertTrue(p, !equivalence.isPresent() || equivalence.get());
+            assertTrue(p, p.a.divideUnsafe(p.b).eq(p.b.divideUnsafe(p.a).invertUnsafe(), DEFAULT_RESOLUTION)
+                    .orElse(true));
         }
 
         for (Real x : take(LIMIT, P.reals())) {
@@ -3979,8 +3898,7 @@ public class RealProperties extends QBarTestProperties {
         }
 
         for (Real x : take(LIMIT, P.nonzeroReals())) {
-            Optional<Boolean> inverse = ONE.divideUnsafe(x).eq(x.invertUnsafe(), DEFAULT_RESOLUTION);
-            assertTrue(x, !inverse.isPresent() || inverse.get());
+            assertTrue(x, ONE.divideUnsafe(x).eq(x.invertUnsafe(), DEFAULT_RESOLUTION).orElse(true));
             assertTrue(x, x.divideUnsafe(x) == ONE);
             assertTrue(x, ZERO.divideUnsafe(x) == ZERO);
         }
@@ -4013,8 +3931,7 @@ public class RealProperties extends QBarTestProperties {
             Optional<Real> ox = t.a.divide(t.b, t.c);
             if (ox.isPresent()) {
                 ox.get().validate();
-                Optional<Boolean> equal = t.a.divideUnsafe(t.b).eq(ox.get(), DEFAULT_RESOLUTION);
-                assertTrue(t, !equal.isPresent() || equal.get());
+                assertTrue(t, t.a.divideUnsafe(t.b).eq(ox.get(), DEFAULT_RESOLUTION).orElse(true));
             }
         }
 
@@ -4060,12 +3977,9 @@ public class RealProperties extends QBarTestProperties {
         for (Pair<Real, Integer> p : take(LIMIT, P.pairs(P.reals(), P.integersGeometric()))) {
             Real shifted = p.a.shiftLeft(p.b);
             shifted.validate();
-            Optional<Boolean> equal = shifted.eq(shiftLeft_simplest(p.a, p.b), DEFAULT_RESOLUTION);
-            assertTrue(p, !equal.isPresent() || equal.get());
-            Optional<Boolean> inverse = shifted.shiftRight(p.b).eq(p.a, DEFAULT_RESOLUTION);
-            assertTrue(p, !inverse.isPresent() || inverse.get());
-            Optional<Boolean> leftRight = shifted.eq(p.a.shiftRight(-p.b), DEFAULT_RESOLUTION);
-            assertTrue(p, !leftRight.isPresent() || leftRight.get());
+            assertTrue(p, shifted.eq(shiftLeft_simplest(p.a, p.b), DEFAULT_RESOLUTION).orElse(true));
+            assertTrue(p, shifted.shiftRight(p.b).eq(p.a, DEFAULT_RESOLUTION).orElse(true));
+            assertTrue(p, shifted.eq(p.a.shiftRight(-p.b), DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Real x : take(LIMIT, P.reals())) {
@@ -4073,11 +3987,8 @@ public class RealProperties extends QBarTestProperties {
         }
 
         for (Pair<Real, Integer> p : take(LIMIT, P.pairs(P.reals(), P.naturalIntegersGeometric()))) {
-            Optional<Boolean> equal = p.a.shiftLeft(p.b).eq(
-                    p.a.multiply(BigInteger.ONE.shiftLeft(p.b)),
-                    DEFAULT_RESOLUTION
-            );
-            assertTrue(p, !equal.isPresent() || equal.get());
+            assertTrue(p, p.a.shiftLeft(p.b).eq(p.a.multiply(BigInteger.ONE.shiftLeft(p.b)), DEFAULT_RESOLUTION)
+                    .orElse(true));
         }
     }
 
@@ -4106,12 +4017,9 @@ public class RealProperties extends QBarTestProperties {
         for (Pair<Real, Integer> p : take(LIMIT, P.pairs(P.reals(), P.integersGeometric()))) {
             Real shifted = p.a.shiftRight(p.b);
             shifted.validate();
-            Optional<Boolean> equal = shifted.eq(shiftRight_simplest(p.a, p.b), DEFAULT_RESOLUTION);
-            assertTrue(p, !equal.isPresent() || equal.get());
-            Optional<Boolean> inverse = shifted.shiftLeft(p.b).eq(p.a, DEFAULT_RESOLUTION);
-            assertTrue(p, !inverse.isPresent() || inverse.get());
-            Optional<Boolean> leftRight = shifted.eq(p.a.shiftLeft(-p.b), DEFAULT_RESOLUTION);
-            assertTrue(p, !leftRight.isPresent() || leftRight.get());
+            assertTrue(p, shifted.eq(shiftRight_simplest(p.a, p.b), DEFAULT_RESOLUTION).orElse(true));
+            assertTrue(p, shifted.shiftLeft(p.b).eq(p.a, DEFAULT_RESOLUTION).orElse(true));
+            assertTrue(p, shifted.eq(p.a.shiftLeft(-p.b), DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Real x : take(LIMIT, P.reals())) {
@@ -4119,11 +4027,8 @@ public class RealProperties extends QBarTestProperties {
         }
 
         for (Pair<Real, Integer> p : take(LIMIT, P.pairs(P.reals(), P.naturalIntegersGeometric()))) {
-            Optional<Boolean> equal = p.a.shiftRight(p.b).eq(
-                    p.a.divide(BigInteger.ONE.shiftLeft(p.b)),
-                    DEFAULT_RESOLUTION
-            );
-            assertTrue(p, !equal.isPresent() || equal.get());
+            assertTrue(p, p.a.shiftRight(p.b).eq(p.a.divide(BigInteger.ONE.shiftLeft(p.b)), DEFAULT_RESOLUTION)
+                    .orElse(true));
         }
     }
 
@@ -4148,19 +4053,15 @@ public class RealProperties extends QBarTestProperties {
         for (List<Real> xs : take(LIMIT, P.withScale(4).lists(P.reals()))) {
             Real sum = sum(xs);
             sum.validate();
-            Optional<Boolean> equal = sum.eq(sum_simplest(xs), DEFAULT_RESOLUTION);
-            assertTrue(xs, !equal.isPresent() || equal.get());
+            assertTrue(xs, sum.eq(sum_simplest(xs), DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Real x : take(LIMIT, P.reals())) {
-            //noinspection SuspiciousNameCombination
-            Optional<Boolean> equal = sum(Collections.singletonList(x)).eq(x, DEFAULT_RESOLUTION);
-            assertTrue(x, !equal.isPresent() || equal.get());
+            assertTrue(x, sum(Collections.singletonList(x)).eq(x, DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Pair<Real, Real> p : take(LIMIT, P.pairs(P.reals()))) {
-            Optional<Boolean> equal = sum(Arrays.asList(p.a, p.b)).eq(p.a.add(p.b), DEFAULT_RESOLUTION);
-            assertTrue(p, !equal.isPresent() || equal.get());
+            assertTrue(p, sum(Arrays.asList(p.a, p.b)).eq(p.a.add(p.b), DEFAULT_RESOLUTION).orElse(true));
         }
 
         Iterable<List<Real>> xssFail = map(
@@ -4192,19 +4093,15 @@ public class RealProperties extends QBarTestProperties {
         for (List<Real> xs : take(LIMIT, P.withScale(1).lists(P.reals()))) {
             Real product = product(xs);
             product.validate();
-            Optional<Boolean> equal = product.eq(product_simplest(xs), DEFAULT_RESOLUTION);
-            assertTrue(xs, !equal.isPresent() || equal.get());
+            assertTrue(xs, product.eq(product_simplest(xs), DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Real x : take(LIMIT, P.reals())) {
-            //noinspection SuspiciousNameCombination
-            Optional<Boolean> equal = product(Collections.singletonList(x)).eq(x, DEFAULT_RESOLUTION);
-            assertTrue(x, !equal.isPresent() || equal.get());
+            assertTrue(x, product(Collections.singletonList(x)).eq(x, DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Pair<Real, Real> p : take(LIMIT, P.pairs(P.reals()))) {
-            Optional<Boolean> equal = product(Arrays.asList(p.a, p.b)).eq(p.a.multiply(p.b), DEFAULT_RESOLUTION);
-            assertTrue(p, !equal.isPresent() || equal.get());
+            assertTrue(p, product(Arrays.asList(p.a, p.b)).eq(p.a.multiply(p.b), DEFAULT_RESOLUTION).orElse(true));
         }
 
         Iterable<List<Real>> xssFail = map(
@@ -4236,8 +4133,7 @@ public class RealProperties extends QBarTestProperties {
             aeq(xs, deltaList.size(), length(xs) - 1);
             List<Real> reversed = reverse(map(Real::negate, delta(reverse(xs))));
             for (int i = 0; i < deltaList.size(); i++) {
-                Optional<Boolean> equal = deltaList.get(i).eq(reversed.get(i), DEFAULT_RESOLUTION);
-                assertTrue(xs, !equal.isPresent() || equal.get());
+                assertTrue(xs, deltaList.get(i).eq(reversed.get(i), DEFAULT_RESOLUTION).orElse(true));
             }
             testNoRemove(TINY_LIMIT, deltas);
             testHasNext(deltas);
@@ -4250,8 +4146,7 @@ public class RealProperties extends QBarTestProperties {
         for (Pair<Real, Real> p : take(LIMIT, P.pairs(P.reals()))) {
             List<Real> deltas = toList(delta(Pair.toList(p)));
             assertEquals(p, deltas.size(), 1);
-            Optional<Boolean> equal = deltas.get(0).eq(p.b.subtract(p.a), DEFAULT_RESOLUTION);
-            assertTrue(p, !equal.isPresent() || equal.get());
+            assertTrue(p, deltas.get(0).eq(p.b.subtract(p.a), DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Iterable<Real> xs : take(SMALL_LIMIT, P.prefixPermutations(QBarTesting.QEP.reals()))) {
@@ -4326,18 +4221,13 @@ public class RealProperties extends QBarTestProperties {
         );
         for (Pair<Real, Integer> p : take(SMALL_LIMIT, ps)) {
             Real x = p.a.powUnsafe(p.b);
-            Optional<Boolean> rootIsInverse = x.rootUnsafe(p.b)
-                    .eq(((p.b & 1) == 0 ? p.a.abs() : p.a), DEFAULT_RESOLUTION);
-            assertTrue(p, !rootIsInverse.isPresent() || rootIsInverse.get());
+            assertTrue(p, x.rootUnsafe(p.b).eq(((p.b & 1) == 0 ? p.a.abs() : p.a), DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Pair<Real, Integer> p : take(LIMIT, P.pairs(P.nonzeroReals(), P.withScale(4).integersGeometric()))) {
             Real x = p.a.powUnsafe(p.b);
-            Optional<Boolean> equal1 = p.a.powUnsafe(-p.b).eq(x.invertUnsafe(), DEFAULT_RESOLUTION);
-            assertTrue(p, !equal1.isPresent() || equal1.get());
-            //noinspection SuspiciousNameCombination
-            Optional<Boolean> equal2 = p.a.invertUnsafe().powUnsafe(-p.b).eq(x, DEFAULT_RESOLUTION);
-            assertTrue(p, !equal2.isPresent() || equal2.get());
+            assertTrue(p, p.a.powUnsafe(-p.b).eq(x.invertUnsafe(), DEFAULT_RESOLUTION).orElse(true));
+            assertTrue(p, p.a.invertUnsafe().powUnsafe(-p.b).eq(x, DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (int i : take(LIMIT, P.positiveIntegersGeometric())) {
@@ -4347,13 +4237,11 @@ public class RealProperties extends QBarTestProperties {
         for (Real x : take(LIMIT, P.reals())) {
             assertTrue(x, x.powUnsafe(0) == ONE);
             assertTrue(x, x.powUnsafe(1) == x);
-            Optional<Boolean> pow2 = x.powUnsafe(2).eq(x.multiply(x), DEFAULT_RESOLUTION);
-            assertTrue(x, !pow2.isPresent() || pow2.get());
+            assertTrue(x, x.powUnsafe(2).eq(x.multiply(x), DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Real x : take(LIMIT, P.nonzeroReals())) {
-            Optional<Boolean> invert = x.powUnsafe(-1).eq(x.invertUnsafe(), DEFAULT_RESOLUTION);
-            assertTrue(x, !invert.isPresent() || invert.get());
+            assertTrue(x, x.powUnsafe(-1).eq(x.invertUnsafe(), DEFAULT_RESOLUTION).orElse(true));
         }
 
         Iterable<Triple<Real, Integer, Integer>> ts = filterInfinite(
@@ -4367,12 +4255,10 @@ public class RealProperties extends QBarTestProperties {
         for (Triple<Real, Integer, Integer> t : take(SMALL_LIMIT, ts)) {
             Real expression1 = t.a.powUnsafe(t.b).multiply(t.a.powUnsafe(t.c));
             Real expression2 = t.a.powUnsafe(t.b + t.c);
-            Optional<Boolean> equal1 = expression1.eq(expression2, DEFAULT_RESOLUTION);
-            assertTrue(t, !equal1.isPresent() || equal1.get());
+            assertTrue(t, expression1.eq(expression2, DEFAULT_RESOLUTION).orElse(true));
             Real expression3 = t.a.powUnsafe(t.b).powUnsafe(t.c);
             Real expression4 = t.a.powUnsafe(t.b * t.c);
-            Optional<Boolean> equal2 = expression3.eq(expression4, DEFAULT_RESOLUTION);
-            assertTrue(t, !equal2.isPresent() || equal2.get());
+            assertTrue(t, expression3.eq(expression4, DEFAULT_RESOLUTION).orElse(true));
         }
 
         ts = filterInfinite(
@@ -4386,8 +4272,7 @@ public class RealProperties extends QBarTestProperties {
         for (Triple<Real, Integer, Integer> t : take(SMALL_LIMIT, ts)) {
             Real expression1 = t.a.powUnsafe(t.b).divideUnsafe(t.a.powUnsafe(t.c));
             Real expression2 = t.a.powUnsafe(t.b - t.c);
-            Optional<Boolean> equal1 = expression1.eq(expression2, DEFAULT_RESOLUTION);
-            assertTrue(t, !equal1.isPresent() || equal1.get());
+            assertTrue(t, expression1.eq(expression2, DEFAULT_RESOLUTION).orElse(true));
         }
 
         Iterable<Triple<Real, Real, Integer>> ts2 = filter(
@@ -4403,8 +4288,7 @@ public class RealProperties extends QBarTestProperties {
         for (Triple<Real, Real, Integer> t : take(TINY_LIMIT, ts2)) {
             Real expression1 = t.a.multiply(t.b).powUnsafe(t.c);
             Real expression2 = t.a.powUnsafe(t.c).multiply(t.b.powUnsafe(t.c));
-            Optional<Boolean> equal1 = expression1.eq(expression2, DEFAULT_RESOLUTION);
-            assertTrue(t, !equal1.isPresent() || equal1.get());
+            assertTrue(t, expression1.eq(expression2, DEFAULT_RESOLUTION).orElse(true));
         }
 
         ts2 = filterInfinite(
@@ -4418,8 +4302,7 @@ public class RealProperties extends QBarTestProperties {
         for (Triple<Real, Real, Integer> t : take(TINY_LIMIT, ts2)) {
             Real expression1 = t.a.divideUnsafe(t.b).powUnsafe(t.c);
             Real expression2 = t.a.powUnsafe(t.c).divideUnsafe(t.b.powUnsafe(t.c));
-            Optional<Boolean> equal1 = expression1.eq(expression2, DEFAULT_RESOLUTION);
-            assertTrue(t, !equal1.isPresent() || equal1.get());
+            assertTrue(t, expression1.eq(expression2, DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (int i : take(LIMIT, P.negativeIntegers())) {
@@ -4440,8 +4323,7 @@ public class RealProperties extends QBarTestProperties {
             Optional<Real> ox = t.a.pow(t.b, t.c);
             if (ox.isPresent()) {
                 ox.get().validate();
-                Optional<Boolean> equal = t.a.powUnsafe(t.b).eq(ox.get(), DEFAULT_RESOLUTION);
-                assertTrue(t, !equal.isPresent() || equal.get());
+                assertTrue(t, t.a.powUnsafe(t.b).eq(ox.get(), DEFAULT_RESOLUTION).orElse(true));
             }
         }
 
@@ -4473,8 +4355,7 @@ public class RealProperties extends QBarTestProperties {
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
             Real x = rootOfRational(p.a, p.b);
             x.validate();
-            Optional<Boolean> inverse = x.powUnsafe(p.b).eq(p.a, DEFAULT_RESOLUTION);
-            assertTrue(p, !inverse.isPresent() || inverse.get());
+            assertTrue(p, x.powUnsafe(p.b).eq(p.a, DEFAULT_RESOLUTION).orElse(true));
             if ((p.b & 1) == 0) {
                 assertNotEquals(p, x.signumUnsafe(), -1);
             }
@@ -4485,12 +4366,10 @@ public class RealProperties extends QBarTestProperties {
                 P.pairsSquareRootOrder(P.nonzeroRationals(), P.nonzeroIntegersGeometric())
         );
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            Optional<Boolean> identity1 = rootOfRational(p.a, p.b)
-                    .eq(rootOfRational(p.a, -p.b).invertUnsafe(), DEFAULT_RESOLUTION);
-            assertTrue(p, !identity1.isPresent() || identity1.get());
-            Optional<Boolean> identity2 = rootOfRational(p.a, p.b)
-                    .eq(rootOfRational(p.a.invert(), -p.b), DEFAULT_RESOLUTION);
-            assertTrue(p, !identity2.isPresent() || identity2.get());
+            assertTrue(p, rootOfRational(p.a, p.b).eq(rootOfRational(p.a, -p.b).invertUnsafe(), DEFAULT_RESOLUTION)
+                    .orElse(true));
+            assertTrue(p, rootOfRational(p.a, p.b).eq(rootOfRational(p.a.invert(), -p.b), DEFAULT_RESOLUTION)
+                    .orElse(true));
         }
 
         for (int i : take(LIMIT, P.positiveIntegersGeometric())) {
@@ -4536,8 +4415,7 @@ public class RealProperties extends QBarTestProperties {
         for (Rational x : take(LIMIT, P.rangeUp(Rational.ZERO))) {
             Real y = sqrtOfRational(x);
             x.validate();
-            Optional<Boolean> inverse = y.powUnsafe(2).eq(x, DEFAULT_RESOLUTION);
-            assertTrue(x, !inverse.isPresent() || inverse.get());
+            assertTrue(x, y.powUnsafe(2).eq(x, DEFAULT_RESOLUTION).orElse(true));
             assertNotEquals(x, y.signumUnsafe(), -1);
         }
 
@@ -4554,8 +4432,7 @@ public class RealProperties extends QBarTestProperties {
         for (Rational x : take(LIMIT, P.rangeUp(Rational.ZERO))) {
             Real y = cbrtOfRational(x);
             x.validate();
-            Optional<Boolean> inverse = y.powUnsafe(3).eq(x, DEFAULT_RESOLUTION);
-            assertTrue(x, !inverse.isPresent() || inverse.get());
+            assertTrue(x, y.powUnsafe(3).eq(x, DEFAULT_RESOLUTION).orElse(true));
             assertEquals(x, y.signumUnsafe(), x.signum());
         }
     }
@@ -4590,8 +4467,7 @@ public class RealProperties extends QBarTestProperties {
         for (Pair<Real, Integer> p : take(MEDIUM_LIMIT, ps)) {
             Real x = p.a.rootUnsafe(p.b);
             x.validate();
-            Optional<Boolean> inverse = x.powUnsafe(p.b).eq(p.a, DEFAULT_RESOLUTION);
-            assertTrue(p, !inverse.isPresent() || inverse.get());
+            assertTrue(p, x.powUnsafe(p.b).eq(p.a, DEFAULT_RESOLUTION).orElse(true));
             if ((p.b & 1) == 0) {
                 assertTrue(p, x.geUnsafe(Rational.ZERO));
             }
@@ -4605,12 +4481,10 @@ public class RealProperties extends QBarTestProperties {
                 P.pairsSquareRootOrder(P.withScale(4).nonzeroCleanReals(), P.withScale(4).nonzeroIntegersGeometric())
         );
         for (Pair<Real, Integer> p : take(MEDIUM_LIMIT, ps)) {
-            Optional<Boolean> identity1 = p.a.rootUnsafe(p.b)
-                    .eq(p.a.rootUnsafe(-p.b).invertUnsafe(), DEFAULT_RESOLUTION);
-            assertTrue(p, !identity1.isPresent() || identity1.get());
-            Optional<Boolean> identity2 = p.a.rootUnsafe(p.b)
-                    .eq(p.a.invertUnsafe().rootUnsafe(-p.b), DEFAULT_RESOLUTION);
-            assertTrue(p, !identity2.isPresent() || identity2.get());
+            assertTrue(p, p.a.rootUnsafe(p.b).eq(p.a.rootUnsafe(-p.b).invertUnsafe(), DEFAULT_RESOLUTION)
+                    .orElse(true));
+            assertTrue(p, p.a.rootUnsafe(p.b).eq(p.a.invertUnsafe().rootUnsafe(-p.b), DEFAULT_RESOLUTION)
+                    .orElse(true));
         }
 
         for (int i : take(LIMIT, P.positiveIntegersGeometric())) {
@@ -4622,8 +4496,7 @@ public class RealProperties extends QBarTestProperties {
         }
 
         for (Real x : take(LIMIT, P.nonzeroCleanReals())) {
-            Optional<Boolean> equal = x.rootUnsafe(-1).eq(x.invertUnsafe(), DEFAULT_RESOLUTION);
-            assertTrue(x, !equal.isPresent() || equal.get());
+            assertTrue(x, x.rootUnsafe(-1).eq(x.invertUnsafe(), DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Real x : take(LIMIT, P.reals())) {
@@ -4724,8 +4597,7 @@ public class RealProperties extends QBarTestProperties {
             Optional<Real> ox = t.a.root(t.b, t.c);
             if (ox.isPresent()) {
                 ox.get().validate();
-                Optional<Boolean> equal = ox.get().eq(t.a.rootUnsafe(t.b), DEFAULT_RESOLUTION);
-                assertTrue(t, !equal.isPresent() || equal.get());
+                assertTrue(t, ox.get().eq(t.a.rootUnsafe(t.b), DEFAULT_RESOLUTION).orElse(true));
             }
         }
 
@@ -4758,8 +4630,7 @@ public class RealProperties extends QBarTestProperties {
         for (Real x : take(MEDIUM_LIMIT, xs)) {
             Real y = x.sqrtUnsafe();
             y.validate();
-            Optional<Boolean> inverse = y.powUnsafe(2).eq(x, DEFAULT_RESOLUTION);
-            assertTrue(x, !inverse.isPresent() || inverse.get());
+            assertTrue(x, y.powUnsafe(2).eq(x, DEFAULT_RESOLUTION).orElse(true));
             assertTrue(x, y.geUnsafe(Rational.ZERO));
         }
 
@@ -4826,8 +4697,7 @@ public class RealProperties extends QBarTestProperties {
             Optional<Real> ox = p.a.sqrt(p.b);
             if (ox.isPresent()) {
                 ox.get().validate();
-                Optional<Boolean> equal = ox.get().eq(p.a.sqrtUnsafe(), DEFAULT_RESOLUTION);
-                assertTrue(p, !equal.isPresent() || equal.get());
+                assertTrue(p, ox.get().eq(p.a.sqrtUnsafe(), DEFAULT_RESOLUTION).orElse(true));
             }
         }
 
@@ -4844,23 +4714,26 @@ public class RealProperties extends QBarTestProperties {
         for (Real x : take(MEDIUM_LIMIT, P.withScale(4).reals())) {
             Real y = x.cbrt();
             y.validate();
-            Optional<Boolean> inverse = y.powUnsafe(3).eq(x, DEFAULT_RESOLUTION);
-            assertTrue(x, !inverse.isPresent() || inverse.get());
+            assertTrue(x, y.powUnsafe(3).eq(x, DEFAULT_RESOLUTION).orElse(true));
         }
     }
 
-    private void propertiesExp_Rational() {
-        initialize("exp(Rational)");
+    private void propertiesExpOfRational() {
+        initialize("expOfRational(Rational)");
         BigInteger limit = BigInteger.valueOf(SMALL_LIMIT);
         Iterable<Rational> xs = filterInfinite(
                 x -> Ordering.le(x.bigIntegerValue().abs(), limit),
                 P.withScale(4).rationals()
         );
         for (Rational x : take(LIMIT, xs)) {
-            Real y = exp(x);
+            Real y = expOfRational(x);
             y.validate();
             assertEquals(x, y.signumUnsafe(), 1);
-            //todo log
+        }
+
+        xs = filterInfinite(r -> Ordering.le(r.abs(), Rational.TEN), P.withScale(4).rationals());
+        for (Rational x : take(SMALL_LIMIT, xs)) {
+            assertTrue(x, expOfRational(x).logUnsafe().eq(x, SMALL_RESOLUTION).orElse(true));
         }
     }
 
@@ -4878,7 +4751,72 @@ public class RealProperties extends QBarTestProperties {
             Real y = x.exp();
             y.validate();
             assertEquals(x, y.signumUnsafe(), 1);
-            //todo log
+            assertTrue(x, y.logUnsafe().eq(x, SMALL_RESOLUTION).orElse(true));
+        }
+    }
+
+    private void propertiesLogOfRational() {
+        initialize("logOfRational(Rational)");
+        for (Rational x : take(LIMIT, P.withScale(4).positiveRationals())) {
+            Real y = logOfRational(x);
+            y.validate();
+        }
+
+        for (Rational x : take(SMALL_LIMIT, P.withScale(4).positiveRationals())) {
+            assertTrue(x, logOfRational(x).exp().eq(x, SMALL_RESOLUTION).orElse(true));
+        }
+
+        for (Rational x : take(LIMIT, P.rangeDown(Rational.ZERO))) {
+            try {
+                logOfRational(x);
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesLogUnsafe() {
+        initialize("logUnsafe()");
+        for (Real x : take(TINY_LIMIT, P.withScale(4).positiveReals())) {
+            Real y = x.logUnsafe();
+            y.validate();
+            assertTrue(x, y.exp().eq(x, SMALL_RESOLUTION).orElse(true));
+        }
+
+        for (Real x : take(LIMIT, P.negativeReals())) {
+            try {
+                toList(x.logUnsafe());
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesLog() {
+        initialize("log(Rational)");
+        Iterable<Pair<Real, Rational>> ps = P.pairs(
+                P.withElement(rightFuzzyRepresentation(Rational.ZERO), P.withScale(4).positiveReals()),
+                P.positiveRationals()
+        );
+        for (Pair<Real, Rational> p : take(TINY_LIMIT, ps)) {
+            Optional<Real> ox = p.a.log(p.b);
+            ox.ifPresent(x -> assertTrue(p, x.eq(p.a.logUnsafe(), SMALL_RESOLUTION).orElse(true)));
+        }
+
+        for (Pair<Real, Rational> p : take(LIMIT, P.pairs(P.negativeReals(), P.positiveRationals()))) {
+            try {
+                Optional<Real> ox = p.a.log(p.b);
+                ox.ifPresent(IterableUtils::toList);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<Pair<Real, Rational>> psFail = P.pairs(
+                P.withElement(rightFuzzyRepresentation(Rational.ZERO), P.withScale(4).positiveReals()),
+                P.rangeDown(Rational.ZERO)
+        );
+        for (Pair<Real, Rational> p : take(LIMIT, psFail)) {
+            try {
+                p.a.log(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 
@@ -4948,8 +4886,7 @@ public class RealProperties extends QBarTestProperties {
             fractionalPart.validate();
             assertTrue(x, fractionalPart.geUnsafe(ZERO));
             assertTrue(x, fractionalPart.ltUnsafe(ONE));
-            Optional<Boolean> equal = of(x.floorUnsafe()).add(fractionalPart).eq(x, DEFAULT_RESOLUTION);
-            assertTrue(x, !equal.isPresent() || equal.get());
+            assertTrue(x, of(x.floorUnsafe()).add(fractionalPart).eq(x, DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
@@ -4963,8 +4900,7 @@ public class RealProperties extends QBarTestProperties {
             Optional<Real> ox = p.a.fractionalPart(p.b);
             if (ox.isPresent()) {
                 ox.get().validate();
-                Optional<Boolean> equal = p.a.fractionalPartUnsafe().eq(ox.get(), DEFAULT_RESOLUTION);
-                assertTrue(p, !equal.isPresent() || equal.get());
+                assertTrue(p, p.a.fractionalPartUnsafe().eq(ox.get(), DEFAULT_RESOLUTION).orElse(true));
             }
         }
 
@@ -5082,9 +5018,8 @@ public class RealProperties extends QBarTestProperties {
             rounded.validate();
             assertEquals(t, t.b.mod(rounded.getDenominator()), BigInteger.ZERO);
             assertTrue(t, rounded == Rational.ZERO || rounded.signum() == t.a.signumUnsafe());
-            Optional<Boolean> less = t.a.subtract(rounded).abs()
-                    .lt(of(Rational.of(BigInteger.ONE, t.b)), DEFAULT_RESOLUTION);
-            assertTrue(t, !less.isPresent() || less.get());
+            assertTrue(t, t.a.subtract(rounded).abs().lt(of(Rational.of(BigInteger.ONE, t.b)), DEFAULT_RESOLUTION)
+                    .orElse(true));
         }
 
         //noinspection RedundantCast

@@ -47,6 +47,7 @@ public class RealTest {
         constant_helper(PHI, "1.61803398874989484820...");
         constant_helper(E, "2.71828182845904523536...");
         constant_helper(PI, "3.14159265358979323846...");
+        constant_helper(LOG_2, "0.69314718055994530941...");
 
         aeq(PRIME_CONSTANT.toStringBaseUnsafe(IntegerUtils.TWO, TINY_LIMIT), "0.01101010001010001010...");
         constant_helper(PRIME_CONSTANT, "0.41468250985111166024...");
@@ -432,6 +433,12 @@ public class RealTest {
                 " 17218914588448662618112448/5480950692586369095703125]," +
                 " [3367720447004809249690544948/1071978712185331878662109375," +
                 " 1538940477244015526362193851552/489859968149906737928466796875], ...]");
+        iterator_helper(LOG_2, 10,
+                "[[47/72, 5/6], [391/576, 3/4], [1189/1728, 229/324], [11953/17280, 18077/25920]," +
+                " [193805/279936, 10811/15552], [21725843/31352832, 75515/108864]," +
+                " [54323963/78382080, 2415535/3483648], [162982769/235146240, 21734695/31352832]," +
+                " [28685962429/41385738240, 1195316371/1724405760]," +
+                " [745840435979/1076029194240, 124310937929/179338199040], ...]");
 
         iterator_helper(fuzzyRepresentation(Rational.ZERO),
                 "[[-1, 1], [-1/2, 1/2], [-1/4, 1/4], [-1/8, 1/8], [-1/16, 1/16], [-1/32, 1/32], [-1/64, 1/64]," +
@@ -489,6 +496,7 @@ public class RealTest {
         isExactInteger_helper(SQRT_TWO, false);
         isExactInteger_helper(E, false);
         isExactInteger_helper(PI, false);
+        isExactInteger_helper(LOG_2, false);
         isExactInteger_helper(fuzzyRepresentation(Rational.ZERO), false);
         isExactInteger_helper(leftFuzzyRepresentation(Rational.ZERO), false);
         isExactInteger_helper(rightFuzzyRepresentation(Rational.ZERO), false);
@@ -1171,6 +1179,7 @@ public class RealTest {
         bigIntegerValueUnsafe_helper(SQRT_TWO, "1");
         bigIntegerValueUnsafe_helper(E, "3");
         bigIntegerValueUnsafe_helper(PI, "3");
+        bigIntegerValueUnsafe_helper(LOG_2, "1");
         bigIntegerValueUnsafe_helper(fuzzyRepresentation(Rational.ZERO), "0");
         bigIntegerValueUnsafe_helper(fuzzyRepresentation(Rational.ONE), "1");
         bigIntegerValueUnsafe_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), "-1");
@@ -1205,6 +1214,7 @@ public class RealTest {
         bigIntegerValue_Rational_helper(SQRT_TWO, DEFAULT_RESOLUTION, "Optional[1]");
         bigIntegerValue_Rational_helper(E, DEFAULT_RESOLUTION, "Optional[3]");
         bigIntegerValue_Rational_helper(PI, DEFAULT_RESOLUTION, "Optional[3]");
+        bigIntegerValue_Rational_helper(LOG_2, DEFAULT_RESOLUTION, "Optional[1]");
         bigIntegerValue_Rational_helper(fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[0]");
         bigIntegerValue_Rational_helper(fuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional[1]");
         bigIntegerValue_Rational_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), DEFAULT_RESOLUTION,
@@ -1239,6 +1249,7 @@ public class RealTest {
         floorUnsafe_helper(SQRT_TWO, "1");
         floorUnsafe_helper(E, "2");
         floorUnsafe_helper(PI, "3");
+        floorUnsafe_helper(LOG_2, "0");
         floorUnsafe_helper(rightFuzzyRepresentation(Rational.ZERO), "0");
         floorUnsafe_helper(rightFuzzyRepresentation(Rational.ONE), "1");
         floorUnsafe_helper(rightFuzzyRepresentation(Rational.NEGATIVE_ONE), "-1");
@@ -1273,6 +1284,7 @@ public class RealTest {
         floor_helper(SQRT_TWO, DEFAULT_RESOLUTION, "Optional[1]");
         floor_helper(E, DEFAULT_RESOLUTION, "Optional[2]");
         floor_helper(PI, DEFAULT_RESOLUTION, "Optional[3]");
+        floor_helper(LOG_2, DEFAULT_RESOLUTION, "Optional[0]");
         floor_helper(fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
         floor_helper(fuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional.empty");
         floor_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), DEFAULT_RESOLUTION, "Optional.empty");
@@ -1305,6 +1317,7 @@ public class RealTest {
         ceilingUnsafe_helper(SQRT_TWO, "2");
         ceilingUnsafe_helper(E, "3");
         ceilingUnsafe_helper(PI, "4");
+        ceilingUnsafe_helper(LOG_2, "1");
         ceilingUnsafe_helper(leftFuzzyRepresentation(Rational.ZERO), "0");
         ceilingUnsafe_helper(leftFuzzyRepresentation(Rational.ONE), "1");
         ceilingUnsafe_helper(leftFuzzyRepresentation(Rational.NEGATIVE_ONE), "-1");
@@ -1339,6 +1352,7 @@ public class RealTest {
         ceiling_helper(SQRT_TWO, DEFAULT_RESOLUTION, "Optional[2]");
         ceiling_helper(E, DEFAULT_RESOLUTION, "Optional[3]");
         ceiling_helper(PI, DEFAULT_RESOLUTION, "Optional[4]");
+        ceiling_helper(LOG_2, DEFAULT_RESOLUTION, "Optional[1]");
         ceiling_helper(fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
         ceiling_helper(fuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional.empty");
         ceiling_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), DEFAULT_RESOLUTION, "Optional.empty");
@@ -1376,6 +1390,7 @@ public class RealTest {
         bigIntegerValueExact_fail_helper(SQRT_TWO);
         bigIntegerValueExact_fail_helper(E);
         bigIntegerValueExact_fail_helper(PI);
+        bigIntegerValueExact_fail_helper(LOG_2);
         bigIntegerValueExact_fail_helper(fuzzyRepresentation(Rational.ZERO));
         bigIntegerValueExact_fail_helper(leftFuzzyRepresentation(Rational.ZERO));
         bigIntegerValueExact_fail_helper(rightFuzzyRepresentation(Rational.ZERO));
@@ -1496,6 +1511,7 @@ public class RealTest {
         isExactIntegerPowerOfTwo_helper(SQRT_TWO, false);
         isExactIntegerPowerOfTwo_helper(E, false);
         isExactIntegerPowerOfTwo_helper(PI, false);
+        isExactIntegerPowerOfTwo_helper(LOG_2, false);
         isExactIntegerPowerOfTwo_helper(fuzzyRepresentation(Rational.ZERO), false);
         isExactIntegerPowerOfTwo_helper(leftFuzzyRepresentation(Rational.ZERO), false);
         isExactIntegerPowerOfTwo_helper(rightFuzzyRepresentation(Rational.ZERO), false);
@@ -1521,6 +1537,7 @@ public class RealTest {
         roundUpToIntegerPowerOfTwoUnsafe_helper(SQRT_TWO, "1 << 1");
         roundUpToIntegerPowerOfTwoUnsafe_helper(E, "1 << 2");
         roundUpToIntegerPowerOfTwoUnsafe_helper(PI, "1 << 2");
+        roundUpToIntegerPowerOfTwoUnsafe_helper(LOG_2, "1");
         roundUpToIntegerPowerOfTwoUnsafe_helper(leftFuzzyRepresentation(Rational.ONE), "1");
         roundUpToIntegerPowerOfTwoUnsafe_helper(leftFuzzyRepresentation(Rational.TWO), "1 << 1");
         roundUpToIntegerPowerOfTwoUnsafe_helper(leftFuzzyRepresentation(Rational.ONE_HALF), "1 >> 1");
@@ -1556,6 +1573,7 @@ public class RealTest {
         roundUpToIntegerPowerOfTwo_helper(SQRT_TWO, DEFAULT_RESOLUTION, "Optional[1 << 1]");
         roundUpToIntegerPowerOfTwo_helper(E, DEFAULT_RESOLUTION, "Optional[1 << 2]");
         roundUpToIntegerPowerOfTwo_helper(PI, DEFAULT_RESOLUTION, "Optional[1 << 2]");
+        roundUpToIntegerPowerOfTwo_helper(LOG_2, DEFAULT_RESOLUTION, "Optional[1]");
         roundUpToIntegerPowerOfTwo_helper(leftFuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional[1]");
         roundUpToIntegerPowerOfTwo_helper(leftFuzzyRepresentation(Rational.TWO), DEFAULT_RESOLUTION,
                 "Optional[1 << 1]");
@@ -1592,6 +1610,7 @@ public class RealTest {
         isExactBinaryFraction_helper(SQRT_TWO, false);
         isExactBinaryFraction_helper(E, false);
         isExactBinaryFraction_helper(PI, false);
+        isExactBinaryFraction_helper(LOG_2, false);
         isExactBinaryFraction_helper(fuzzyRepresentation(Rational.ZERO), false);
         isExactBinaryFraction_helper(leftFuzzyRepresentation(Rational.ZERO), false);
         isExactBinaryFraction_helper(rightFuzzyRepresentation(Rational.ZERO), false);
@@ -1621,6 +1640,7 @@ public class RealTest {
         binaryFractionValueExact_fail_helper(SQRT_TWO);
         binaryFractionValueExact_fail_helper(E);
         binaryFractionValueExact_fail_helper(PI);
+        binaryFractionValueExact_fail_helper(LOG_2);
         binaryFractionValueExact_fail_helper(fuzzyRepresentation(Rational.ZERO));
         binaryFractionValueExact_fail_helper(leftFuzzyRepresentation(Rational.ZERO));
         binaryFractionValueExact_fail_helper(rightFuzzyRepresentation(Rational.ZERO));
@@ -1642,6 +1662,7 @@ public class RealTest {
         isExact_helper(SQRT_TWO, false);
         isExact_helper(E, false);
         isExact_helper(PI, false);
+        isExact_helper(LOG_2, false);
 
         isExact_helper(fuzzyRepresentation(Rational.ZERO), false);
         isExact_helper(leftFuzzyRepresentation(Rational.ZERO), false);
@@ -1661,6 +1682,7 @@ public class RealTest {
         rationalValueExact_helper(SQRT_TWO, "Optional.empty");
         rationalValueExact_helper(E, "Optional.empty");
         rationalValueExact_helper(PI, "Optional.empty");
+        rationalValueExact_helper(LOG_2, "Optional.empty");
 
         rationalValueExact_helper(fuzzyRepresentation(Rational.ZERO), "Optional.empty");
         rationalValueExact_helper(leftFuzzyRepresentation(Rational.ZERO), "Optional.empty");
@@ -1687,6 +1709,7 @@ public class RealTest {
         binaryExponentUnsafe_helper(SQRT_TWO, 0);
         binaryExponentUnsafe_helper(E, 1);
         binaryExponentUnsafe_helper(PI, 1);
+        binaryExponentUnsafe_helper(LOG_2, -1);
         binaryExponentUnsafe_helper(rightFuzzyRepresentation(Rational.ONE), 0);
         binaryExponentUnsafe_helper(rightFuzzyRepresentation(Rational.TWO), 1);
         binaryExponentUnsafe_helper(rightFuzzyRepresentation(Rational.ONE_HALF), -1);
@@ -1718,6 +1741,7 @@ public class RealTest {
         binaryExponent_helper(SQRT_TWO, DEFAULT_RESOLUTION, "Optional[0]");
         binaryExponent_helper(E, DEFAULT_RESOLUTION, "Optional[1]");
         binaryExponent_helper(PI, DEFAULT_RESOLUTION, "Optional[1]");
+        binaryExponent_helper(LOG_2, DEFAULT_RESOLUTION, "Optional[-1]");
         binaryExponent_helper(rightFuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional[0]");
         binaryExponent_helper(rightFuzzyRepresentation(Rational.TWO), DEFAULT_RESOLUTION, "Optional[1]");
         binaryExponent_helper(rightFuzzyRepresentation(Rational.ONE_HALF), DEFAULT_RESOLUTION, "Optional[-1]");
@@ -1750,6 +1774,7 @@ public class RealTest {
         isExactAndEqualToFloat_helper(SQRT_TWO, false);
         isExactAndEqualToFloat_helper(E, false);
         isExactAndEqualToFloat_helper(PI, false);
+        isExactAndEqualToFloat_helper(LOG_2, false);
         isExactAndEqualToFloat_helper(fuzzyRepresentation(Rational.ZERO), false);
         isExactAndEqualToFloat_helper(leftFuzzyRepresentation(Rational.ZERO), false);
         isExactAndEqualToFloat_helper(rightFuzzyRepresentation(Rational.ZERO), false);
@@ -1772,6 +1797,7 @@ public class RealTest {
         isExactAndEqualToDouble_helper(SQRT_TWO, false);
         isExactAndEqualToDouble_helper(E, false);
         isExactAndEqualToDouble_helper(PI, false);
+        isExactAndEqualToDouble_helper(LOG_2, false);
         isExactAndEqualToDouble_helper(fuzzyRepresentation(Rational.ZERO), false);
         isExactAndEqualToDouble_helper(leftFuzzyRepresentation(Rational.ZERO), false);
         isExactAndEqualToDouble_helper(rightFuzzyRepresentation(Rational.ZERO), false);
@@ -2283,6 +2309,7 @@ public class RealTest {
         floatValueUnsafe_helper(SQRT_TWO, 1.4142135f);
         floatValueUnsafe_helper(E, 2.7182817f);
         floatValueUnsafe_helper(PI, 3.1415927f);
+        floatValueUnsafe_helper(LOG_2, 0.6931472f);
         floatValueUnsafe_helper(rightFuzzyRepresentation(Rational.ZERO), 0.0f);
         floatValueUnsafe_helper(fuzzyRepresentation(Rational.ONE), 1.0f);
         floatValueUnsafe_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), -1.0f);
@@ -2315,6 +2342,7 @@ public class RealTest {
         floatValue_Rational_helper(SQRT_TWO, DEFAULT_RESOLUTION, "Optional[1.4142135]");
         floatValue_Rational_helper(E, DEFAULT_RESOLUTION, "Optional[2.7182817]");
         floatValue_Rational_helper(PI, DEFAULT_RESOLUTION, "Optional[3.1415927]");
+        floatValue_Rational_helper(LOG_2, DEFAULT_RESOLUTION, "Optional[0.6931472]");
         floatValue_Rational_helper(fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
         floatValue_Rational_helper(fuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional[1.0]");
         floatValue_Rational_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), DEFAULT_RESOLUTION, "Optional[-1.0]");
@@ -2353,6 +2381,7 @@ public class RealTest {
         floatValueExact_fail_helper(SQRT_TWO);
         floatValueExact_fail_helper(E);
         floatValueExact_fail_helper(PI);
+        floatValueExact_fail_helper(LOG_2);
         floatValueExact_fail_helper(fuzzyRepresentation(Rational.ZERO));
         floatValueExact_fail_helper(fuzzyRepresentation(Rational.ONE));
         floatValueExact_fail_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE));
@@ -2895,6 +2924,7 @@ public class RealTest {
         doubleValueUnsafe_helper(SQRT_TWO, 1.4142135623730951);
         doubleValueUnsafe_helper(E, 2.718281828459045);
         doubleValueUnsafe_helper(PI, 3.141592653589793);
+        doubleValueUnsafe_helper(LOG_2, 0.6931471805599453);
         doubleValueUnsafe_helper(rightFuzzyRepresentation(Rational.ZERO), 0.0);
         doubleValueUnsafe_helper(fuzzyRepresentation(Rational.ONE), 1.0);
         doubleValueUnsafe_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), -1.0);
@@ -2927,6 +2957,7 @@ public class RealTest {
         doubleValue_Rational_helper(SQRT_TWO, DEFAULT_RESOLUTION, "Optional[1.4142135623730951]");
         doubleValue_Rational_helper(E, DEFAULT_RESOLUTION, "Optional[2.718281828459045]");
         doubleValue_Rational_helper(PI, DEFAULT_RESOLUTION, "Optional[3.141592653589793]");
+        doubleValue_Rational_helper(LOG_2, DEFAULT_RESOLUTION, "Optional[0.6931471805599453]");
         doubleValue_Rational_helper(fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
         doubleValue_Rational_helper(fuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional[1.0]");
         doubleValue_Rational_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), DEFAULT_RESOLUTION, "Optional[-1.0]");
@@ -2965,6 +2996,7 @@ public class RealTest {
         doubleValueExact_fail_helper(SQRT_TWO);
         doubleValueExact_fail_helper(E);
         doubleValueExact_fail_helper(PI);
+        doubleValueExact_fail_helper(LOG_2);
         doubleValueExact_fail_helper(fuzzyRepresentation(Rational.ZERO));
         doubleValueExact_fail_helper(fuzzyRepresentation(Rational.ONE));
         doubleValueExact_fail_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE));
@@ -6005,6 +6037,7 @@ public class RealTest {
         negate_helper(SQRT_TWO, "-1.41421356237309504880...");
         negate_helper(E, "-2.71828182845904523536...");
         negate_helper(PI, "-3.14159265358979323846...");
+        negate_helper(LOG_2, "-0.69314718055994530941...");
         negate_helper(leftFuzzyRepresentation(Rational.ZERO), "0.00000000000000000000...");
         negate_helper(rightFuzzyRepresentation(Rational.ZERO), "-0.00000000000000000000...");
         negate_helper(fuzzyRepresentation(Rational.ZERO), "~0");
@@ -6026,6 +6059,7 @@ public class RealTest {
         abs_helper(SQRT_TWO, "1.41421356237309504880...");
         abs_helper(E, "2.71828182845904523536...");
         abs_helper(PI, "3.14159265358979323846...");
+        abs_helper(LOG_2, "0.69314718055994530941...");
         abs_helper(leftFuzzyRepresentation(Rational.ZERO), "0.00000000000000000000...");
         abs_helper(rightFuzzyRepresentation(Rational.ZERO), "0.00000000000000000000...");
         abs_helper(fuzzyRepresentation(Rational.ZERO), "0.00000000000000000000...");
@@ -6048,6 +6082,8 @@ public class RealTest {
         signumUnsafe_helper(E.negate(), -1);
         signumUnsafe_helper(PI, 1);
         signumUnsafe_helper(PI.negate(), -1);
+        signumUnsafe_helper(LOG_2, 1);
+        signumUnsafe_helper(LOG_2.negate(), -1);
     }
 
     private static void signum_helper(@NotNull Real input, @NotNull Rational resolution, @NotNull String output) {
@@ -6074,6 +6110,8 @@ public class RealTest {
         signum_helper(E.negate(), DEFAULT_RESOLUTION, "Optional[-1]");
         signum_helper(PI, DEFAULT_RESOLUTION, "Optional[1]");
         signum_helper(PI.negate(), DEFAULT_RESOLUTION, "Optional[-1]");
+        signum_helper(LOG_2, DEFAULT_RESOLUTION, "Optional[1]");
+        signum_helper(LOG_2.negate(), DEFAULT_RESOLUTION, "Optional[-1]");
 
         signum_helper(leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
         signum_helper(rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
@@ -6783,6 +6821,7 @@ public class RealTest {
         invertUnsafe_helper(SQRT_TWO, "0.70710678118654752440...");
         invertUnsafe_helper(E, "0.36787944117144232159...");
         invertUnsafe_helper(PI, "0.31830988618379067153...");
+        invertUnsafe_helper(LOG_2, "1.44269504088896340735...");
 
         invertUnsafe_fail_helper(ZERO);
     }
@@ -6809,6 +6848,7 @@ public class RealTest {
         invert_helper(SQRT_TWO, DEFAULT_RESOLUTION, "Optional[0.70710678118654752440...]");
         invert_helper(E, DEFAULT_RESOLUTION, "Optional[0.36787944117144232159...]");
         invert_helper(PI, DEFAULT_RESOLUTION, "Optional[0.31830988618379067153...]");
+        invert_helper(LOG_2, DEFAULT_RESOLUTION, "Optional[1.44269504088896340735...]");
 
         invert_helper(leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
         invert_helper(rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
@@ -8624,6 +8664,7 @@ public class RealTest {
         sqrtUnsafe_helper(SQRT_TWO, "1.18920711500272106671...");
         sqrtUnsafe_helper(E, "1.64872127070012814684...");
         sqrtUnsafe_helper(PI, "1.77245385090551602729...");
+        sqrtUnsafe_helper(LOG_2, "0.83255461115769775635...");
         sqrtUnsafe_helper(leftFuzzyRepresentation(Rational.ONE), "0.99999999999999999999...");
         sqrtUnsafe_helper(rightFuzzyRepresentation(Rational.ONE), "1.00000000000000000000...");
         sqrtUnsafe_helper(fuzzyRepresentation(Rational.ONE), "~1");
@@ -8654,6 +8695,7 @@ public class RealTest {
         sqrt_helper(SQRT_TWO, DEFAULT_RESOLUTION, "Optional[1.18920711500272106671...]");
         sqrt_helper(E, DEFAULT_RESOLUTION, "Optional[1.64872127070012814684...]");
         sqrt_helper(PI, DEFAULT_RESOLUTION, "Optional[1.77245385090551602729...]");
+        sqrt_helper(LOG_2, DEFAULT_RESOLUTION, "Optional[0.83255461115769775635...]");
         sqrt_helper(leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
         sqrt_helper(
                 rightFuzzyRepresentation(Rational.ZERO),
@@ -8690,6 +8732,7 @@ public class RealTest {
         cbrt_helper(SQRT_TWO, "1.12246204830937298143...");
         cbrt_helper(E, "1.39561242508608952862...");
         cbrt_helper(PI, "1.46459188756152326302...");
+        cbrt_helper(LOG_2, "0.88499704450051771874...");
         cbrt_helper(leftFuzzyRepresentation(Rational.ONE), "0.99999999999999999999...");
         cbrt_helper(rightFuzzyRepresentation(Rational.ONE), "1.00000000000000000000...");
         cbrt_helper(fuzzyRepresentation(Rational.ONE), "~1");
@@ -8698,32 +8741,32 @@ public class RealTest {
         cbrt_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), "~-1");
     }
 
-    private static void exp_Rational_helper(@NotNull String x, @NotNull String output) {
-        Real y = exp(Rational.readStrict(x).get());
+    private static void expOfRational_helper(@NotNull String x, @NotNull String output) {
+        Real y = expOfRational(Rational.readStrict(x).get());
         y.validate();
         aeq(y, output);
     }
 
-    private static void exp_Rational_fail_helper(@NotNull String x) {
+    private static void expOfRational_fail_helper(@NotNull String x) {
         try {
-            exp(Rational.readStrict(x).get());
+            expOfRational(Rational.readStrict(x).get());
         } catch (ArithmeticException ignored) {}
     }
 
     @Test
-    public void testExp_Rational() {
-        exp_Rational_helper("0", "1");
-        exp_Rational_helper("1", "2.71828182845904523536...");
-        exp_Rational_helper("-1", "0.36787944117144232159...");
-        exp_Rational_helper("1/2", "1.64872127070012814684...");
-        exp_Rational_helper("-1/2", "0.60653065971263342360...");
-        exp_Rational_helper("4/3", "3.79366789468317773539...");
-        exp_Rational_helper("-4/3", "0.26359713811572677007...");
-        exp_Rational_helper("10", "22026.46579480671651695790...");
-        exp_Rational_helper("-10", "0.00004539992976248485...");
+    public void testExpOfRational() {
+        expOfRational_helper("0", "1");
+        expOfRational_helper("1", "2.71828182845904523536...");
+        expOfRational_helper("-1", "0.36787944117144232159...");
+        expOfRational_helper("1/2", "1.64872127070012814684...");
+        expOfRational_helper("-1/2", "0.60653065971263342360...");
+        expOfRational_helper("4/3", "3.79366789468317773539...");
+        expOfRational_helper("-4/3", "0.26359713811572677007...");
+        expOfRational_helper("10", "22026.46579480671651695790...");
+        expOfRational_helper("-10", "0.00004539992976248485...");
 
-        exp_Rational_fail_helper("1000000000000");
-        exp_Rational_fail_helper("-1000000000000");
+        expOfRational_fail_helper("1000000000000");
+        expOfRational_fail_helper("-1000000000000");
     }
 
     private static void exp_helper(@NotNull Real input, @NotNull String output) {
@@ -8748,6 +8791,7 @@ public class RealTest {
         exp_helper(SQRT_TWO, "4.11325037878292751717...");
         exp_helper(E, "15.15426224147926418976...");
         exp_helper(PI, "23.14069263277926900572...");
+        exp_helper(LOG_2, "~2");
         exp_helper(leftFuzzyRepresentation(Rational.ZERO), "0.99999999999999999999...");
         exp_helper(rightFuzzyRepresentation(Rational.ZERO), "1.00000000000000000000...");
         exp_helper(fuzzyRepresentation(Rational.ZERO), "~1");
@@ -8768,6 +8812,110 @@ public class RealTest {
             intervalExtensionUnsafe(a, b);
             fail();
         } catch (IllegalArgumentException ignored) {}
+    }
+
+    private static void logOfRational_helper(@NotNull String x, @NotNull String output) {
+        Real y = logOfRational(Rational.readStrict(x).get());
+        y.validate();
+        aeq(y, output);
+    }
+
+    private static void logOfRational_fail_helper(@NotNull String x) {
+        try {
+            logOfRational(Rational.readStrict(x).get());
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testLogOfRational() {
+        logOfRational_helper("1", "0");
+        logOfRational_helper("2", "0.69314718055994530941...");
+        logOfRational_helper("1/2", "-0.69314718055994530941...");
+        logOfRational_helper("4/3", "0.28768207245178092743...");
+        logOfRational_helper("10", "2.30258509299404568401...");
+        logOfRational_helper("1/10", "-2.30258509299404568401...");
+        logOfRational_helper("199/100", "0.68813463873640102737...");
+        logOfRational_helper("201/100", "0.69813472207098438302...");
+        logOfRational_helper("1000000000000", "27.63102111592854820821...");
+        logOfRational_helper("1/1000000000000", "-27.63102111592854820821...");
+
+        logOfRational_fail_helper("0");
+        logOfRational_fail_helper("-1");
+        logOfRational_fail_helper("-1/2");
+        logOfRational_fail_helper("-10");
+    }
+
+    private static void logUnsafe_helper(@NotNull Real input, @NotNull String output) {
+        Real x = input.logUnsafe();
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void logUnsafe_fail_helper(@NotNull Real input) {
+        try {
+            toList(input.logUnsafe());
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testLogUnsafe() {
+        logUnsafe_helper(ONE, "0");
+        logUnsafe_helper(ONE_HALF, "-0.69314718055994530941...");
+        logUnsafe_helper(TWO, "0.69314718055994530941...");
+        logUnsafe_helper(SQRT_TWO, "0.34657359027997265470...");
+        logUnsafe_helper(E, "~1");
+        logUnsafe_helper(PI, "1.14472988584940017414...");
+        logUnsafe_helper(LOG_2, "-0.36651292058166432701...");
+        logUnsafe_helper(leftFuzzyRepresentation(Rational.ONE), "-0.00000000000000000000...");
+        logUnsafe_helper(rightFuzzyRepresentation(Rational.ONE), "0.00000000000000000000...");
+        logUnsafe_helper(fuzzyRepresentation(Rational.ONE), "~0");
+        logUnsafe_helper(leftFuzzyRepresentation(Rational.TWO), "0.69314718055994530941...");
+        logUnsafe_helper(rightFuzzyRepresentation(Rational.TWO), "0.69314718055994530941...");
+        logUnsafe_helper(fuzzyRepresentation(Rational.TWO), "0.69314718055994530941...");
+
+        logUnsafe_fail_helper(ZERO);
+        logUnsafe_fail_helper(NEGATIVE_ONE);
+        logUnsafe_fail_helper(NEGATIVE_FOUR_THIRDS);
+        logUnsafe_fail_helper(leftFuzzyRepresentation(Rational.ZERO));
+    }
+
+    private static void log_helper(@NotNull Real input, @NotNull Rational resolution, @NotNull String output) {
+        Optional<Real> ox = input.log(resolution);
+        ox.ifPresent(Real::validate);
+        aeq(ox, output);
+    }
+
+    private static void log_fail_helper(@NotNull Real input, @NotNull Rational resolution) {
+        try {
+            input.log(resolution);
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testLog() {
+        log_helper(ONE, DEFAULT_RESOLUTION, "Optional[0]");
+        log_helper(ONE_HALF, DEFAULT_RESOLUTION, "Optional[-0.69314718055994530941...]");
+        log_helper(TWO, DEFAULT_RESOLUTION, "Optional[0.69314718055994530941...]");
+        log_helper(SQRT_TWO, DEFAULT_RESOLUTION, "Optional[0.34657359027997265470...]");
+        log_helper(E, DEFAULT_RESOLUTION, "Optional[~1]");
+        log_helper(PI, DEFAULT_RESOLUTION, "Optional[1.14472988584940017414...]");
+        log_helper(LOG_2, DEFAULT_RESOLUTION, "Optional[-0.36651292058166432701...]");
+        log_helper(leftFuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional[-0.00000000000000000000...]");
+        log_helper(rightFuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional[0.00000000000000000000...]");
+        log_helper(fuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional[~0]");
+        log_helper(leftFuzzyRepresentation(Rational.TWO), DEFAULT_RESOLUTION, "Optional[0.69314718055994530941...]");
+        log_helper(rightFuzzyRepresentation(Rational.TWO), DEFAULT_RESOLUTION, "Optional[0.69314718055994530941...]");
+        log_helper(fuzzyRepresentation(Rational.TWO), DEFAULT_RESOLUTION, "Optional[0.69314718055994530941...]");
+        log_helper(rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        log_helper(fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+
+        log_fail_helper(ZERO, DEFAULT_RESOLUTION);
+        log_fail_helper(NEGATIVE_ONE, DEFAULT_RESOLUTION);
+        log_fail_helper(NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION);
+        log_fail_helper(leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION);
+
+        log_fail_helper(ONE, Rational.ZERO);
+        log_fail_helper(ONE, Rational.NEGATIVE_ONE);
     }
 
     @Test
@@ -8864,6 +9012,7 @@ public class RealTest {
         fractionalPart_helper(SQRT_TWO, DEFAULT_RESOLUTION, "Optional[0.41421356237309504880...]");
         fractionalPart_helper(E, DEFAULT_RESOLUTION, "Optional[0.71828182845904523536...]");
         fractionalPart_helper(PI, DEFAULT_RESOLUTION, "Optional[0.14159265358979323846...]");
+        fractionalPart_helper(LOG_2, DEFAULT_RESOLUTION, "Optional[0.69314718055994530941...]");
         fractionalPart_helper(leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
         fractionalPart_helper(rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION,
                 "Optional[0.00000000000000000000...]");
@@ -8997,6 +9146,7 @@ public class RealTest {
                 "[-2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, ...]");
         continuedFractionUnsafe_helper(E, "[2, 1, 2, 1, 1, 4, 1, 1, 6, 1, 1, 8, 1, 1, 10, 1, 1, 12, 1, 1, ...]");
         continuedFractionUnsafe_helper(PI, "[3, 7, 15, 1, 292, 1, 1, 1, 2, 1, 3, 1, 14, 2, 1, 1, 2, 2, 2, 2, ...]");
+        continuedFractionUnsafe_helper(LOG_2, "[0, 1, 2, 3, 1, 6, 3, 1, 1, 2, 1, 1, 1, 1, 3, 10, 1, 1, 1, 2, ...]");
         continuedFractionUnsafe_helper(PRIME_CONSTANT,
                 "[0, 2, 2, 2, 3, 12, 131, 1, 7, 1, 2, 1, 3, 3, 1, 2, 5, 39, 2, 1, ...]");
         continuedFractionUnsafe_helper(THUE_MORSE,
@@ -9074,6 +9224,10 @@ public class RealTest {
                 " 1146408/364913, 4272943/1360120, 5419351/1725033, 80143857/25510582, 165707065/52746197," +
                 " 245850922/78256779, 411557987/131002976, 1068966896/340262731, 2549491779/811528438," +
                 " 6167950454/1963319607, 14885392687/4738167652, ...]");
+        convergentsUnsafe_helper(LOG_2,
+                "[0, 1, 2/3, 7/10, 9/13, 61/88, 192/277, 253/365, 445/642, 1143/1649, 1588/2291, 2731/3940," +
+                " 4319/6231, 7050/10171, 25469/36744, 261740/377611, 287209/414355, 548949/791966, 836158/1206321," +
+                " 2221265/3204608, ...]");
         convergentsUnsafe_helper(PRIME_CONSTANT,
                 "[0, 1/2, 2/5, 5/12, 17/41, 209/504, 27396/66065, 27605/66569, 220631/532048, 248236/598617," +
                 " 717103/1729282, 965339/2327899, 3613120/8712979, 11804699/28466836, 15417819/37179815," +

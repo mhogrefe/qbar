@@ -64,6 +64,10 @@ public class RealDemos extends QBarDemos {
         constant_helper(PI);
     }
 
+    private void demoLog2() {
+        constant_helper(LOG_2);
+    }
+
     private void demoPrimeConstant() {
         constant_helper(PRIME_CONSTANT);
     }
@@ -1809,14 +1813,14 @@ public class RealDemos extends QBarDemos {
         }
     }
 
-    private void demoExp_Rational() {
+    private void demoExpOfRational() {
         BigInteger limit = BigInteger.valueOf(SMALL_LIMIT);
         Iterable<Rational> xs = filterInfinite(
                 x -> Ordering.le(x.bigIntegerValue().abs(), limit),
                 P.withScale(4).rationals()
         );
         for (Rational x : take(LIMIT, xs)) {
-            System.out.println("exp(" + x + ") = " + exp(x));
+            System.out.println("expOfRational(" + x + ") = " + expOfRational(x));
         }
     }
 
@@ -1829,8 +1833,32 @@ public class RealDemos extends QBarDemos {
                 },
                 P.withScale(4).reals()
         );
+        long s = System.currentTimeMillis();
         for (Real x : take(TINY_LIMIT, xs)) {
             System.out.println("exp(" + x + ") = " + x.exp());
+        }
+        System.out.println("time: " + (System.currentTimeMillis() - s));
+    }
+
+    private void demoLogOfRational() {
+        for (Rational x : take(MEDIUM_LIMIT, P.withScale(4).positiveRationals())) {
+            System.out.println("logOfRational(" + x + ") = " + logOfRational(x));
+        }
+    }
+
+    private void demoLogUnsafe() {
+        for (Real x : take(TINY_LIMIT, P.withScale(4).positiveReals())) {
+            System.out.println("logUnsafe(" + x + ") = " + x.logUnsafe());
+        }
+    }
+
+    private void demoLog() {
+        Iterable<Pair<Real, Rational>> ps = P.pairs(
+                P.withElement(rightFuzzyRepresentation(Rational.ZERO), P.withScale(4).positiveReals()),
+                P.positiveRationals()
+        );
+        for (Pair<Real, Rational> p : take(TINY_LIMIT, ps)) {
+            System.out.println("log(" + p.a + ", " + p.b + ") = " + p.a.log(p.b));
         }
     }
 
