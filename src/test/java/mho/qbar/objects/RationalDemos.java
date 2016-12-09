@@ -509,6 +509,16 @@ public class RationalDemos extends QBarDemos {
         }
     }
 
+    private void demoLog() {
+        Iterable<Pair<Rational, Rational>> ps = P.pairs(
+                P.positiveRationals(),
+                filterInfinite(r -> r != ONE, P.positiveRationals())
+        );
+        for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
+            System.out.println("log(" + p.a + ", " + p.b + ") = " + p.a.log(p.b));
+        }
+    }
+
     private void demoFractionalPart() {
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("fractionalPart(" + r + ") = " + r.fractionalPart());

@@ -151,7 +151,7 @@ public final class Variable implements Comparable<Variable> {
     public @NotNull String toString() {
         char letter = (char) ('a' + index % ALPHABET.length());
         int multiplicity = 1 + index / ALPHABET.length();
-        return replicate(multiplicity, letter);
+        return replicateString(multiplicity, letter);
     }
 
     /**

@@ -1927,6 +1927,75 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
+     * Returns the base-{@code base} logarithm of {@code this}, if the result is rational. Otherwise, returns empty.
+     *
+     * <ul>
+     *  <li>{@code this} must be positive.</li>
+     *  <li>{@code base} must be positive and cannot equal 1.</li>
+     *  <li>The result may be any {@code Rational}, or empty.</li>
+     * </ul>
+     *
+     * @param base the base of the logarithm
+     * @return log<sub>{@code base}</sub>({@code this}), if rational
+     */
+    public @NotNull Optional<Rational> log(@NotNull Rational base) {
+        if (base.signum() != 1) {
+            throw new ArithmeticException("base must be positive. Invalid base: " + base);
+        }
+        if (base == ONE) {
+            throw new ArithmeticException("base cannot equal 1.");
+        }
+        if (this == ONE) {
+            return Optional.of(ZERO);
+        }
+        if (signum() != 1) {
+            throw new ArithmeticException("this must be positive. Invalid this: " + this);
+        }
+        if (equals(base)) {
+            return Optional.of(ONE);
+        }
+        if (lt(base, ONE)) {
+            return log(base.invert()).map(Rational::negate);
+        }
+        if (lt(this, ONE)) {
+            return invert().log(base).map(Rational::negate);
+        }
+        boolean bn1 = base.numerator.equals(BigInteger.ONE);
+        boolean xn1 = numerator.equals(BigInteger.ONE);
+        if (bn1 != xn1) {
+            return Optional.empty();
+        }
+        Rational np;
+        if (bn1) {
+            np = ONE; //unused
+        } else {
+            Pair<BigInteger, Integer> bn = MathUtils.expressAsPower(base.numerator);
+            Pair<BigInteger, Integer> xn = MathUtils.expressAsPower(numerator);
+            if (!bn.a.equals(xn.a)) {
+                return Optional.empty();
+            }
+            np = of(xn.b, bn.b);
+        }
+        boolean bd1 = base.denominator.equals(BigInteger.ONE);
+        boolean xd1 = denominator.equals(BigInteger.ONE);
+        if (bd1 != xd1) {
+            return Optional.empty();
+        }
+        Rational dp;
+        if (bd1) {
+            dp = ONE; //unused
+        } else {
+            Pair<BigInteger, Integer> bd = MathUtils.expressAsPower(base.denominator);
+            Pair<BigInteger, Integer> xd = MathUtils.expressAsPower(denominator);
+            if (!bd.a.equals(xd.a)) {
+                return Optional.empty();
+            }
+            dp = of(xd.b, bd.b);
+        }
+        return (bn1 || bd1 || np.equals(dp)) ? Optional.of(np) : Optional.empty();
+    }
+
+    /**
      * Returns the fractional part of {@code this}; {@code this}–⌊{@code this}⌋.
      *
      * <ul>

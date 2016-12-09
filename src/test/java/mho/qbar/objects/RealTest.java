@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.numberUtils.FloatingPointUtils;
 import mho.wheels.numberUtils.IntegerUtils;
@@ -8814,35 +8815,35 @@ public class RealTest {
         } catch (IllegalArgumentException ignored) {}
     }
 
-    private static void logOfRational_helper(@NotNull String x, @NotNull String output) {
+    private static void logOfRational_Rational_helper(@NotNull String x, @NotNull String output) {
         Real y = logOfRational(Rational.readStrict(x).get());
         y.validate();
         aeq(y, output);
     }
 
-    private static void logOfRational_fail_helper(@NotNull String x) {
+    private static void logOfRational_Rational_fail_helper(@NotNull String x) {
         try {
             logOfRational(Rational.readStrict(x).get());
         } catch (ArithmeticException ignored) {}
     }
 
     @Test
-    public void testLogOfRational() {
-        logOfRational_helper("1", "0");
-        logOfRational_helper("2", "0.69314718055994530941...");
-        logOfRational_helper("1/2", "-0.69314718055994530941...");
-        logOfRational_helper("4/3", "0.28768207245178092743...");
-        logOfRational_helper("10", "2.30258509299404568401...");
-        logOfRational_helper("1/10", "-2.30258509299404568401...");
-        logOfRational_helper("199/100", "0.68813463873640102737...");
-        logOfRational_helper("201/100", "0.69813472207098438302...");
-        logOfRational_helper("1000000000000", "27.63102111592854820821...");
-        logOfRational_helper("1/1000000000000", "-27.63102111592854820821...");
+    public void testLogOfRational_Rational() {
+        logOfRational_Rational_helper("1", "0");
+        logOfRational_Rational_helper("2", "0.69314718055994530941...");
+        logOfRational_Rational_helper("1/2", "-0.69314718055994530941...");
+        logOfRational_Rational_helper("4/3", "0.28768207245178092743...");
+        logOfRational_Rational_helper("10", "2.30258509299404568401...");
+        logOfRational_Rational_helper("1/10", "-2.30258509299404568401...");
+        logOfRational_Rational_helper("199/100", "0.68813463873640102737...");
+        logOfRational_Rational_helper("201/100", "0.69813472207098438302...");
+        logOfRational_Rational_helper("1000000000000", "27.63102111592854820821...");
+        logOfRational_Rational_helper("1/1000000000000", "-27.63102111592854820821...");
 
-        logOfRational_fail_helper("0");
-        logOfRational_fail_helper("-1");
-        logOfRational_fail_helper("-1/2");
-        logOfRational_fail_helper("-10");
+        logOfRational_Rational_fail_helper("0");
+        logOfRational_Rational_fail_helper("-1");
+        logOfRational_Rational_fail_helper("-1/2");
+        logOfRational_Rational_fail_helper("-10");
     }
 
     private static void logUnsafe_helper(@NotNull Real input, @NotNull String output) {
@@ -8879,43 +8880,362 @@ public class RealTest {
         logUnsafe_fail_helper(leftFuzzyRepresentation(Rational.ZERO));
     }
 
-    private static void log_helper(@NotNull Real input, @NotNull Rational resolution, @NotNull String output) {
+    private static void log_Rational_helper(
+            @NotNull Real input,
+            @NotNull Rational resolution,
+            @NotNull String output
+    ) {
         Optional<Real> ox = input.log(resolution);
         ox.ifPresent(Real::validate);
         aeq(ox, output);
     }
 
-    private static void log_fail_helper(@NotNull Real input, @NotNull Rational resolution) {
+    private static void log_Rational_fail_helper(@NotNull Real input, @NotNull Rational resolution) {
         try {
             input.log(resolution);
         } catch (ArithmeticException | IllegalArgumentException ignored) {}
     }
 
     @Test
-    public void testLog() {
-        log_helper(ONE, DEFAULT_RESOLUTION, "Optional[0]");
-        log_helper(ONE_HALF, DEFAULT_RESOLUTION, "Optional[-0.69314718055994530941...]");
-        log_helper(TWO, DEFAULT_RESOLUTION, "Optional[0.69314718055994530941...]");
-        log_helper(SQRT_TWO, DEFAULT_RESOLUTION, "Optional[0.34657359027997265470...]");
-        log_helper(E, DEFAULT_RESOLUTION, "Optional[~1]");
-        log_helper(PI, DEFAULT_RESOLUTION, "Optional[1.14472988584940017414...]");
-        log_helper(LOG_2, DEFAULT_RESOLUTION, "Optional[-0.36651292058166432701...]");
-        log_helper(leftFuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional[-0.00000000000000000000...]");
-        log_helper(rightFuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional[0.00000000000000000000...]");
-        log_helper(fuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional[~0]");
-        log_helper(leftFuzzyRepresentation(Rational.TWO), DEFAULT_RESOLUTION, "Optional[0.69314718055994530941...]");
-        log_helper(rightFuzzyRepresentation(Rational.TWO), DEFAULT_RESOLUTION, "Optional[0.69314718055994530941...]");
-        log_helper(fuzzyRepresentation(Rational.TWO), DEFAULT_RESOLUTION, "Optional[0.69314718055994530941...]");
-        log_helper(rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
-        log_helper(fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+    public void testLog_Rational() {
+        log_Rational_helper(ONE, DEFAULT_RESOLUTION, "Optional[0]");
+        log_Rational_helper(ONE_HALF, DEFAULT_RESOLUTION, "Optional[-0.69314718055994530941...]");
+        log_Rational_helper(TWO, DEFAULT_RESOLUTION, "Optional[0.69314718055994530941...]");
+        log_Rational_helper(SQRT_TWO, DEFAULT_RESOLUTION, "Optional[0.34657359027997265470...]");
+        log_Rational_helper(E, DEFAULT_RESOLUTION, "Optional[~1]");
+        log_Rational_helper(PI, DEFAULT_RESOLUTION, "Optional[1.14472988584940017414...]");
+        log_Rational_helper(LOG_2, DEFAULT_RESOLUTION, "Optional[-0.36651292058166432701...]");
+        log_Rational_helper(
+                leftFuzzyRepresentation(Rational.ONE),
+                DEFAULT_RESOLUTION,
+                "Optional[-0.00000000000000000000...]"
+        );
+        log_Rational_helper(
+                rightFuzzyRepresentation(Rational.ONE),
+                DEFAULT_RESOLUTION,
+                "Optional[0.00000000000000000000...]"
+        );
+        log_Rational_helper(fuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional[~0]");
+        log_Rational_helper(
+                leftFuzzyRepresentation(Rational.TWO),
+                DEFAULT_RESOLUTION,
+                "Optional[0.69314718055994530941...]"
+        );
+        log_Rational_helper(
+                rightFuzzyRepresentation(Rational.TWO),
+                DEFAULT_RESOLUTION,
+                "Optional[0.69314718055994530941...]"
+        );
+        log_Rational_helper(
+                fuzzyRepresentation(Rational.TWO),
+                DEFAULT_RESOLUTION,
+                "Optional[0.69314718055994530941...]"
+        );
+        log_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        log_Rational_helper(fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
 
-        log_fail_helper(ZERO, DEFAULT_RESOLUTION);
-        log_fail_helper(NEGATIVE_ONE, DEFAULT_RESOLUTION);
-        log_fail_helper(NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION);
-        log_fail_helper(leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION);
+        log_Rational_fail_helper(ZERO, DEFAULT_RESOLUTION);
+        log_Rational_fail_helper(NEGATIVE_ONE, DEFAULT_RESOLUTION);
+        log_Rational_fail_helper(NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION);
+        log_Rational_fail_helper(leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION);
 
-        log_fail_helper(ONE, Rational.ZERO);
-        log_fail_helper(ONE, Rational.NEGATIVE_ONE);
+        log_Rational_fail_helper(ONE, Rational.ZERO);
+        log_Rational_fail_helper(ONE, Rational.NEGATIVE_ONE);
+    }
+
+    private static void logOfRational_Rational_Rational_helper(
+            @NotNull String x,
+            @NotNull String base,
+            @NotNull String output
+    ) {
+        Real y = logOfRational(Rational.readStrict(x).get(), Rational.readStrict(base).get());
+        y.validate();
+        aeq(y, output);
+    }
+
+    private static void logOfRational_Rational_Rational_fail_helper(@NotNull String x, @NotNull String base) {
+        try {
+            logOfRational(Rational.readStrict(x).get(), Rational.readStrict(base).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testLogOfRational_Rational_Rational() {
+        logOfRational_Rational_Rational_helper("1", "2", "0");
+        logOfRational_Rational_Rational_helper("1", "4/3", "0");
+        logOfRational_Rational_Rational_helper("1", "10", "0");
+        logOfRational_Rational_Rational_helper("1", "1/2", "0");
+
+        logOfRational_Rational_Rational_helper("1/2", "1/2", "1");
+        logOfRational_Rational_Rational_helper("4/3", "4/3", "1");
+        logOfRational_Rational_Rational_helper("2", "2", "1");
+        logOfRational_Rational_Rational_helper("10", "10", "1");
+
+        logOfRational_Rational_Rational_helper("2", "1/2", "-1");
+        logOfRational_Rational_Rational_helper("3/4", "4/3", "-1");
+        logOfRational_Rational_Rational_helper("1/2", "2", "-1");
+        logOfRational_Rational_Rational_helper("1/10", "10", "-1");
+
+        logOfRational_Rational_Rational_helper("4", "2", "2");
+        logOfRational_Rational_Rational_helper("8", "2", "3");
+        logOfRational_Rational_Rational_helper("16", "2", "4");
+        logOfRational_Rational_Rational_helper("1/4", "2", "-2");
+        logOfRational_Rational_Rational_helper("3", "2", "1.58496250072115618145...");
+        logOfRational_Rational_Rational_helper("3/2", "2", "0.58496250072115618145...");
+        logOfRational_Rational_Rational_helper("10", "2", "3.32192809488736234787...");
+        logOfRational_Rational_Rational_helper("2", "10", "0.30102999566398119521...");
+
+        logOfRational_Rational_Rational_helper("4/9", "2/3", "2");
+        logOfRational_Rational_Rational_helper("9/4", "2/3", "-2");
+        logOfRational_Rational_Rational_helper("4", "16", "0.5");
+        logOfRational_Rational_Rational_helper("1/4", "16", "-0.5");
+        logOfRational_Rational_Rational_helper("125/8", "25/4", "1.5");
+        logOfRational_Rational_Rational_helper("64/27", "16/9", "1.5");
+        logOfRational_Rational_Rational_helper("64/25", "16/9", "1.63376057896174247547...");
+
+        logOfRational_Rational_Rational_fail_helper("2", "0");
+        logOfRational_Rational_Rational_fail_helper("2", "-1");
+        logOfRational_Rational_Rational_fail_helper("2", "-2/3");
+        logOfRational_Rational_Rational_fail_helper("0", "2");
+        logOfRational_Rational_Rational_fail_helper("-1", "2");
+        logOfRational_Rational_Rational_fail_helper("-2/3", "2");
+        logOfRational_Rational_Rational_fail_helper("2", "1");
+        logOfRational_Rational_Rational_fail_helper("1", "1");
+    }
+
+    private static void logUnsafe_Rational_helper(
+            @NotNull Real input,
+            @NotNull String base,
+            @NotNull String output
+    ) {
+        Real x = input.logUnsafe(Rational.readStrict(base).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void logUnsafe_Rational_fail_helper(@NotNull Real input, @NotNull String base) {
+        try {
+            toList(input.logUnsafe(Rational.readStrict(base).get()));
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testLogUnsafe_Rational() {
+        logUnsafe_Rational_helper(ONE, "2", "0");
+        logUnsafe_Rational_helper(ONE_HALF, "2", "-1");
+        logUnsafe_Rational_helper(TWO, "2", "1");
+        logUnsafe_Rational_helper(SQRT_TWO, "2", "~0.5");
+        logUnsafe_Rational_helper(E, "2", "1.44269504088896340735...");
+        logUnsafe_Rational_helper(PI, "2", "1.65149612947231879804...");
+        logUnsafe_Rational_helper(LOG_2, "2", "-0.52876637294489761424...");
+        logUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ONE), "2", "-0.00000000000000000000...");
+        logUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.ONE), "2", "0.00000000000000000000...");
+        logUnsafe_Rational_helper(fuzzyRepresentation(Rational.ONE), "2", "~0");
+        logUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.TWO), "2", "~1");
+        logUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.TWO), "2", "~1");
+        logUnsafe_Rational_helper(fuzzyRepresentation(Rational.TWO), "2", "~1");
+
+        logUnsafe_Rational_helper(ONE, "10", "0");
+        logUnsafe_Rational_helper(ONE_HALF, "10", "-0.30102999566398119521...");
+        logUnsafe_Rational_helper(TWO, "10", "0.30102999566398119521...");
+        logUnsafe_Rational_helper(SQRT_TWO, "10", "0.15051499783199059760...");
+        logUnsafe_Rational_helper(E, "10", "0.43429448190325182765...");
+        logUnsafe_Rational_helper(PI, "10", "0.49714987269413385435...");
+        logUnsafe_Rational_helper(LOG_2, "10", "-0.15917453895486159238...");
+        logUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ONE), "10", "-0.00000000000000000000...");
+        logUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.ONE), "10", "0.00000000000000000000...");
+        logUnsafe_Rational_helper(fuzzyRepresentation(Rational.ONE), "10", "~0");
+        logUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.TWO), "10", "0.30102999566398119521...");
+        logUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.TWO), "10", "0.30102999566398119521...");
+        logUnsafe_Rational_helper(fuzzyRepresentation(Rational.TWO), "10", "0.30102999566398119521...");
+
+        logUnsafe_Rational_helper(ONE, "1/3", "0");
+        logUnsafe_Rational_helper(ONE_HALF, "1/3", "0.63092975357145743709...");
+        logUnsafe_Rational_helper(TWO, "1/3", "-0.63092975357145743709...");
+        logUnsafe_Rational_helper(SQRT_TWO, "1/3", "-0.31546487678572871854...");
+        logUnsafe_Rational_helper(E, "1/3", "-0.91023922662683739361...");
+        logUnsafe_Rational_helper(PI, "1/3", "-1.04197804599218586511...");
+        logUnsafe_Rational_helper(LOG_2, "1/3", "0.33361443737899761067...");
+        logUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ONE), "1/3", "0.00000000000000000000...");
+        logUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.ONE), "1/3", "-0.00000000000000000000...");
+        logUnsafe_Rational_helper(fuzzyRepresentation(Rational.ONE), "1/3", "~0");
+        logUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.TWO), "1/3", "-0.63092975357145743709...");
+        logUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.TWO), "1/3", "-0.63092975357145743709...");
+        logUnsafe_Rational_helper(fuzzyRepresentation(Rational.TWO), "1/3", "-0.63092975357145743709...");
+
+        logUnsafe_Rational_fail_helper(ZERO, "2");
+        logUnsafe_Rational_fail_helper(NEGATIVE_ONE, "2");
+        logUnsafe_Rational_fail_helper(NEGATIVE_FOUR_THIRDS, "2");
+        logUnsafe_Rational_fail_helper(leftFuzzyRepresentation(Rational.ZERO), "2");
+        logUnsafe_Rational_fail_helper(ONE, "0");
+        logUnsafe_Rational_fail_helper(TWO, "0");
+        logUnsafe_Rational_fail_helper(ONE, "-1");
+        logUnsafe_Rational_fail_helper(TWO, "-1");
+        logUnsafe_Rational_fail_helper(ONE, "1");
+        logUnsafe_Rational_fail_helper(TWO, "1");
+    }
+
+    private static void log_Rational_Rational_helper(
+            @NotNull Real input,
+            @NotNull String base,
+            @NotNull Rational resolution,
+            @NotNull String output
+    ) {
+        Optional<Real> x = input.log(Rational.readStrict(base).get(), resolution);
+        x.ifPresent(Real::validate);
+        aeq(x, output);
+    }
+
+    private static void log_Rational_Rational_fail_helper(
+            @NotNull Real input,
+            @NotNull Rational resolution,
+            @NotNull String base
+    ) {
+        try {
+            input.log(Rational.readStrict(base).get(), resolution).ifPresent(IterableUtils::toList);
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testLog_Rational_Rational() {
+        log_Rational_Rational_helper(ONE, "2", DEFAULT_RESOLUTION, "Optional[0]");
+        log_Rational_Rational_helper(ONE_HALF, "2", DEFAULT_RESOLUTION, "Optional[-1]");
+        log_Rational_Rational_helper(TWO, "2", DEFAULT_RESOLUTION, "Optional[1]");
+        log_Rational_Rational_helper(SQRT_TWO, "2", DEFAULT_RESOLUTION, "Optional[~0.5]");
+        log_Rational_Rational_helper(E, "2", DEFAULT_RESOLUTION, "Optional[1.44269504088896340735...]");
+        log_Rational_Rational_helper(PI, "2", DEFAULT_RESOLUTION, "Optional[1.65149612947231879804...]");
+        log_Rational_Rational_helper(LOG_2, "2", DEFAULT_RESOLUTION, "Optional[-0.52876637294489761424...]");
+        log_Rational_Rational_helper(
+                leftFuzzyRepresentation(Rational.ONE),
+                "2",
+                DEFAULT_RESOLUTION,
+                "Optional[-0.00000000000000000000...]"
+        );
+        log_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ONE),
+                "2",
+                DEFAULT_RESOLUTION,
+                "Optional[0.00000000000000000000...]"
+        );
+        log_Rational_Rational_helper(fuzzyRepresentation(Rational.ONE), "2", DEFAULT_RESOLUTION, "Optional[~0]");
+        log_Rational_Rational_helper(leftFuzzyRepresentation(Rational.TWO), "2", DEFAULT_RESOLUTION, "Optional[~1]");
+        log_Rational_Rational_helper(rightFuzzyRepresentation(Rational.TWO), "2", DEFAULT_RESOLUTION, "Optional[~1]");
+        log_Rational_Rational_helper(fuzzyRepresentation(Rational.TWO), "2", DEFAULT_RESOLUTION, "Optional[~1]");
+        log_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "2",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        log_Rational_Rational_helper(fuzzyRepresentation(Rational.ZERO), "2", DEFAULT_RESOLUTION, "Optional.empty");
+
+        log_Rational_Rational_helper(ONE, "10", DEFAULT_RESOLUTION, "Optional[0]");
+        log_Rational_Rational_helper(ONE_HALF, "10", DEFAULT_RESOLUTION, "Optional[-0.30102999566398119521...]");
+        log_Rational_Rational_helper(TWO, "10", DEFAULT_RESOLUTION, "Optional[0.30102999566398119521...]");
+        log_Rational_Rational_helper(SQRT_TWO, "10", DEFAULT_RESOLUTION, "Optional[0.15051499783199059760...]");
+        log_Rational_Rational_helper(E, "10", DEFAULT_RESOLUTION, "Optional[0.43429448190325182765...]");
+        log_Rational_Rational_helper(PI, "10", DEFAULT_RESOLUTION, "Optional[0.49714987269413385435...]");
+        log_Rational_Rational_helper(LOG_2, "10", DEFAULT_RESOLUTION, "Optional[-0.15917453895486159238...]");
+        log_Rational_Rational_helper(
+                leftFuzzyRepresentation(Rational.ONE),
+                "10",
+                DEFAULT_RESOLUTION,
+                "Optional[-0.00000000000000000000...]"
+        );
+        log_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ONE),
+                "10",
+                DEFAULT_RESOLUTION,
+                "Optional[0.00000000000000000000...]"
+        );
+        log_Rational_Rational_helper(fuzzyRepresentation(Rational.ONE), "10", DEFAULT_RESOLUTION, "Optional[~0]");
+        log_Rational_Rational_helper(
+                leftFuzzyRepresentation(Rational.TWO),
+                "10",
+                DEFAULT_RESOLUTION,
+                "Optional[0.30102999566398119521...]"
+        );
+        log_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.TWO),
+                "10",
+                DEFAULT_RESOLUTION,
+                "Optional[0.30102999566398119521...]"
+        );
+        log_Rational_Rational_helper(
+                fuzzyRepresentation(Rational.TWO),
+                "10",
+                DEFAULT_RESOLUTION,
+                "Optional[0.30102999566398119521...]"
+        );
+        log_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "10",
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        log_Rational_Rational_helper(fuzzyRepresentation(Rational.ZERO), "10", DEFAULT_RESOLUTION, "Optional.empty");
+
+        log_Rational_Rational_helper(ONE, "1/3", DEFAULT_RESOLUTION, "Optional[0]");
+        log_Rational_Rational_helper(ONE_HALF, "1/3", DEFAULT_RESOLUTION, "Optional[0.63092975357145743709...]");
+        log_Rational_Rational_helper(TWO, "1/3", DEFAULT_RESOLUTION, "Optional[-0.63092975357145743709...]");
+        log_Rational_Rational_helper(SQRT_TWO, "1/3", DEFAULT_RESOLUTION, "Optional[-0.31546487678572871854...]");
+        log_Rational_Rational_helper(E, "1/3", DEFAULT_RESOLUTION, "Optional[-0.91023922662683739361...]");
+        log_Rational_Rational_helper(PI, "1/3", DEFAULT_RESOLUTION, "Optional[-1.04197804599218586511...]");
+        log_Rational_Rational_helper(LOG_2, "1/3", DEFAULT_RESOLUTION, "Optional[0.33361443737899761067...]");
+        log_Rational_Rational_helper(
+                leftFuzzyRepresentation(Rational.ONE),
+                "1/3",
+                DEFAULT_RESOLUTION,
+                "Optional[0.00000000000000000000...]"
+        );
+        log_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ONE),
+                "1/3",
+                DEFAULT_RESOLUTION,
+                "Optional[-0.00000000000000000000...]"
+        );
+        log_Rational_Rational_helper(fuzzyRepresentation(Rational.ONE), "1/3", DEFAULT_RESOLUTION, "Optional[~0]");
+        log_Rational_Rational_helper(
+                leftFuzzyRepresentation(Rational.TWO),
+                "1/3",
+                DEFAULT_RESOLUTION,
+                "Optional[-0.63092975357145743709...]"
+        );
+        log_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.TWO),
+                "1/3",
+                DEFAULT_RESOLUTION,
+                "Optional[-0.63092975357145743709...]"
+        );
+        log_Rational_Rational_helper(
+                fuzzyRepresentation(Rational.TWO),
+                "1/3",
+                DEFAULT_RESOLUTION,
+                "Optional[-0.63092975357145743709...]"
+        );
+        log_Rational_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                "1/3",
+                DEFAULT_RESOLUTION,
+                "Optional.empty");
+        log_Rational_Rational_helper(fuzzyRepresentation(Rational.ZERO), "1/3", DEFAULT_RESOLUTION, "Optional.empty");
+
+        log_Rational_Rational_fail_helper(ZERO, DEFAULT_RESOLUTION, "2");
+        log_Rational_Rational_fail_helper(NEGATIVE_ONE, DEFAULT_RESOLUTION, "2");
+        log_Rational_Rational_fail_helper(NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "2");
+        log_Rational_Rational_fail_helper(leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "2");
+        log_Rational_Rational_fail_helper(ONE, DEFAULT_RESOLUTION, "0");
+        log_Rational_Rational_fail_helper(TWO, DEFAULT_RESOLUTION, "0");
+        log_Rational_Rational_fail_helper(ONE, DEFAULT_RESOLUTION, "-1");
+        log_Rational_Rational_fail_helper(TWO, DEFAULT_RESOLUTION, "-1");
+        log_Rational_Rational_fail_helper(ONE, DEFAULT_RESOLUTION, "1");
+        log_Rational_Rational_fail_helper(TWO, DEFAULT_RESOLUTION, "1");
+
+        log_Rational_Rational_fail_helper(TWO, Rational.ZERO, "2");
+        log_Rational_Rational_fail_helper(TWO, Rational.NEGATIVE_ONE, "2");
+        log_Rational_Rational_fail_helper(fuzzyRepresentation(Rational.TWO), Rational.ZERO, "2");
+        log_Rational_Rational_fail_helper(fuzzyRepresentation(Rational.TWO), Rational.NEGATIVE_ONE, "2");
     }
 
     @Test

@@ -133,6 +133,7 @@ public class RationalProperties extends QBarTestProperties {
         propertiesRoot();
         propertiesSqrt();
         propertiesCbrt();
+        propertiesLog();
         propertiesFractionalPart();
         propertiesRoundToDenominator();
         propertiesContinuedFraction();
@@ -2774,6 +2775,11 @@ public class RationalProperties extends QBarTestProperties {
             inverse(x -> x.pow(p.b), (Rational x) -> x.root(p.b).get(), p.a);
         }
 
+        ps = P.pairs(filterInfinite(r -> r != ONE, P.positiveRationals()), P.withScale(4).nonzeroIntegersGeometric());
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            inverse(p.a::pow, (Rational x) -> x.log(p.a).get().intValueExact(), p.b);
+        }
+
         for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.nonzeroRationals(), P.integersGeometric()))) {
             homomorphic(Function.identity(), i -> -i, Rational::invert, Rational::pow, Rational::pow, p);
             homomorphic(Rational::invert, i -> -i, Function.identity(), Rational::pow, Rational::pow, p);
@@ -2943,6 +2949,40 @@ public class RationalProperties extends QBarTestProperties {
                 assertEquals(r, x.signum(), r.signum());
                 assertEquals(r, x.pow(3), r);
             }
+        }
+    }
+
+    private void propertiesLog() {
+        initialize("log(Rational)");
+        Iterable<Pair<Rational, Rational>> ps = P.pairs(
+                P.positiveRationals(),
+                filterInfinite(r -> r != ONE, P.positiveRationals())
+        );
+        for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
+            Optional<Rational> ox = p.a.log(p.b);
+            //todo rational pow
+            ox.ifPresent(Rational::validate);
+        }
+
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rangeDown(ZERO), P.positiveRationals()))) {
+            try {
+                p.a.log(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.positiveRationals(), P.rangeDown(ZERO)))) {
+            try {
+                p.a.log(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        for (Rational r : take(LIMIT, P.positiveRationals())) {
+            try {
+                r.log(ONE);
+                fail(r);
+            } catch (ArithmeticException ignored) {}
         }
     }
 

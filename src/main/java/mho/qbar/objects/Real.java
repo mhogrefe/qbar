@@ -2373,7 +2373,22 @@ public final class Real implements Iterable<Interval> {
         return new Real(map(i -> i.add(ri), intervals));
     }
 
-    //todo docs
+    /**
+     * Given two {@code Real}s, combines their {@code Interval}s using a given function to product a new {@code Real}.
+     *
+     * <ul>
+     *  <li>{@code f} must not return null. As the diameters of its arguments approach zero, the diameter of the result
+     *  must approach zero as well.</li>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>{@code y} cannot be null.</li>
+     *  <li>The result may be any {@code Real}</li>
+     * </ul>
+     *
+     * @param f a function that combines two {@code Interval}s into one
+     * @param x the first {@code Real}
+     * @param y the second {@code Real}
+     * @return a {@code Real} produced from {@code x} and {@code y} using {@code f}
+     */
     private static @NotNull Real zipTwoIntervals(
             @NotNull BiFunction<Interval, Interval, Interval> f,
             @NotNull Real x,
@@ -3573,6 +3588,70 @@ public final class Real implements Iterable<Interval> {
     }
 
     /**
+     * Returns the base-{@code base} logarithm of {@code x}.
+     *
+     * <ul>
+     *  <li>{@code x} must be positive.</li>
+     *  <li>{@code base} must be positive and cannot equal 1.</li>
+     * </ul>
+     *
+     * @param x a {@code Rational}
+     * @param base the base of the logarithm
+     * @return log<sub>{@code base}</sub>({@code x})
+     */
+    public static @NotNull Real logOfRational(@NotNull Rational x, @NotNull Rational base) {
+        Optional<Rational> log = x.log(base);
+        if (log.isPresent()) {
+            return new Real(log.get());
+        }
+        return logOfRational(x).divideUnsafe(logOfRational(base));
+    }
+
+    /**
+     * Returns the base-{@code base} logarithm of {@code this}. If {@code this} is equal to zero and fuzzy on the left,
+     * this method will loop forever. To prevent this behavior, use {@link Real#log(Rational, Rational)} instead.
+     *
+     * <ul>
+     *  <li>{@code this} must be positive.</li>
+     *  <li>{@code base} must be positive and cannot equal 1.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return log<sub>{@code base}</sub>({@code this})
+     */
+    public @NotNull Real logUnsafe(@NotNull Rational base) {
+        if (rational.isPresent()) {
+            return logOfRational(rational.get(), base);
+        }
+        return logUnsafe().divideUnsafe(logOfRational(base));
+    }
+
+    /**
+     * Returns the base-{@code base} logarithm of {@code this}. If {@code this} is equal to zero and fuzzy on the left,
+     * this method will give up and return empty once the approximating interval's diameter is less than the specified
+     * resolution.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be negative, an exact zero, or a zero fuzzy on the left.</li>
+     *  <li>{@code base} must be positive and cannot equal 1.</li>
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>The result is not exact rational unless {@code this} is an exact 1.</li>
+     * </ul>
+     *
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return log<sub>{@code base}</sub>({@code this})
+     */
+    public @NotNull Optional<Real> log(@NotNull Rational base, @NotNull Rational resolution) {
+        if (resolution.signum() != 1) {
+            throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
+        }
+        if (rational.isPresent()) {
+            return Optional.of(logOfRational(rational.get(), base));
+        }
+        return log(resolution).map(x -> x.divideUnsafe(logOfRational(base)));
+    }
+
+    /**
      * Given an interval [{@code lower}, {@code upper}], returns an {@code Interval} (with rational bounds) containing
      * the given interval and with a diameter no more than twice the given interval's.
      *
@@ -4413,7 +4492,7 @@ public final class Real implements Iterable<Interval> {
             }
             if (Ordering.le(base, ASCII_ALPHANUMERIC_COUNT)) {
                 int missingZeros = scale - result.length() + dotIndex + 1;
-                result += replicate(missingZeros, '0');
+                result += replicateString(missingZeros, '0');
             } else {
                 int missingZeros = scale;
                 for (int i = dotIndex + 1; i < result.length(); i++) {
@@ -4535,7 +4614,7 @@ public final class Real implements Iterable<Interval> {
             }
             if (Ordering.le(base, ASCII_ALPHANUMERIC_COUNT)) {
                 int missingZeros = scale - result.length() + dotIndex + 1;
-                result += replicate(missingZeros, '0');
+                result += replicateString(missingZeros, '0');
             } else {
                 int missingZeros = scale;
                 for (int i = dotIndex + 1; i < result.length(); i++) {

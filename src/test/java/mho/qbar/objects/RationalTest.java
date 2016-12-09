@@ -3471,6 +3471,63 @@ public class RationalTest {
         cbrt_helper("-64/729", "Optional[-4/9]");
     }
 
+    private static void log_helper(@NotNull String x, @NotNull String base, @NotNull String output) {
+        Optional<Rational> oy = readStrict(x).get().log(readStrict(base).get());
+        oy.ifPresent(Rational::validate);
+        aeq(oy, output);
+    }
+
+    private static void log_fail_helper(@NotNull String x, @NotNull String base) {
+        try {
+            readStrict(x).get().log(readStrict(base).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testLog() {
+        log_helper("1", "2", "Optional[0]");
+        log_helper("1", "4/3", "Optional[0]");
+        log_helper("1", "10", "Optional[0]");
+        log_helper("1", "1/2", "Optional[0]");
+
+        log_helper("1/2", "1/2", "Optional[1]");
+        log_helper("4/3", "4/3", "Optional[1]");
+        log_helper("2", "2", "Optional[1]");
+        log_helper("10", "10", "Optional[1]");
+
+        log_helper("2", "1/2", "Optional[-1]");
+        log_helper("3/4", "4/3", "Optional[-1]");
+        log_helper("1/2", "2", "Optional[-1]");
+        log_helper("1/10", "10", "Optional[-1]");
+
+        log_helper("4", "2", "Optional[2]");
+        log_helper("8", "2", "Optional[3]");
+        log_helper("16", "2", "Optional[4]");
+        log_helper("1/4", "2", "Optional[-2]");
+        log_helper("3", "2", "Optional.empty");
+        log_helper("3/2", "2", "Optional.empty");
+        log_helper("10", "2", "Optional.empty");
+        log_helper("2", "10", "Optional.empty");
+
+        log_helper("4/9", "2/3", "Optional[2]");
+        log_helper("9/4", "2/3", "Optional[-2]");
+        log_helper("4", "16", "Optional[1/2]");
+        log_helper("1/4", "16", "Optional[-1/2]");
+        log_helper("125/8", "25/4", "Optional[3/2]");
+        log_helper("64/27", "16/9", "Optional[3/2]");
+        log_helper("64/25", "16/9", "Optional.empty");
+
+        log_fail_helper("2", "0");
+        log_fail_helper("2", "-1");
+        log_fail_helper("2", "-2/3");
+        log_fail_helper("0", "2");
+        log_fail_helper("-1", "2");
+        log_fail_helper("-2/3", "2");
+        log_fail_helper("2", "1");
+        log_fail_helper("1", "1");
+    }
+
     private static void fractionalPart_helper(@NotNull String input, @NotNull String output) {
         Rational r = readStrict(input).get().fractionalPart();
         r.validate();
