@@ -2459,7 +2459,7 @@ public final class Rational implements Comparable<Rational> {
             }
             if (le(base, ASCII_ALPHANUMERIC_COUNT)) {
                 int missingZeros = scale - result.length() + dotIndex + 1;
-                result += replicate(missingZeros, '0');
+                result += replicateString(missingZeros, '0');
             } else {
                 int missingZeros = scale;
                 for (int i = dotIndex + 1; i < result.length(); i++) {
