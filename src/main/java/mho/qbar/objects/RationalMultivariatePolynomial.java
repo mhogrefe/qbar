@@ -465,7 +465,9 @@ public final class RationalMultivariatePolynomial implements
         if (o == DEFAULT_ORDER) {
             return leadingTerm();
         } else {
-            return this == ZERO ? Optional.empty() : Optional.of(argmax(o, t -> t.a, terms));
+            return this == ZERO ?
+                    Optional.empty() :
+                    Optional.of(Ordering.maximum((x, y) -> o.compare(x.a, y.a), terms));
         }
     }
 
