@@ -1840,7 +1840,7 @@ public class RealDemos extends QBarDemos {
         System.out.println("time: " + (System.currentTimeMillis() - s));
     }
 
-    private void demoLogOfRational() {
+    private void demoLogOfRational_Rational() {
         for (Rational x : take(MEDIUM_LIMIT, P.withScale(4).positiveRationals())) {
             System.out.println("logOfRational(" + x + ") = " + logOfRational(x));
         }
@@ -1852,13 +1852,44 @@ public class RealDemos extends QBarDemos {
         }
     }
 
-    private void demoLog() {
+    private void demoLog_Rational() {
         Iterable<Pair<Real, Rational>> ps = P.pairs(
                 P.withElement(rightFuzzyRepresentation(Rational.ZERO), P.withScale(4).positiveReals()),
                 P.positiveRationals()
         );
         for (Pair<Real, Rational> p : take(TINY_LIMIT, ps)) {
             System.out.println("log(" + p.a + ", " + p.b + ") = " + p.a.log(p.b));
+        }
+    }
+
+    private void demoLogOfRational_Rational_Rational() {
+        Iterable<Pair<Rational, Rational>> ps = P.pairs(
+                P.withScale(4).positiveRationals(),
+                filterInfinite(r -> r != Rational.ONE, P.withScale(4).positiveRationals())
+        );
+        for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
+            System.out.println("logOfRational(" + p.a + ", " + p.b + ") = " + logOfRational(p.a, p.b));
+        }
+    }
+
+    private void demoLogUnsafe_Rational() {
+        Iterable<Pair<Real, Rational>> ps = P.pairs(
+                P.withScale(4).positiveReals(),
+                filterInfinite(r -> r != Rational.ONE, P.withScale(4).positiveRationals())
+        );
+        for (Pair<Real, Rational> p : take(TINY_LIMIT, ps)) {
+            System.out.println("logUnsafe(" + p.a + ", " + p.b + ") = " + p.a.logUnsafe(p.b));
+        }
+    }
+
+    private void demoLog_Rational_Rational() {
+        Iterable<Triple<Real, Rational, Rational>> ts = P.triples(
+                P.withElement(rightFuzzyRepresentation(Rational.ZERO), P.withScale(4).positiveReals()),
+                filterInfinite(r -> r != Rational.ONE, P.withScale(4).positiveRationals()),
+                P.positiveRationals()
+        );
+        for (Triple<Real, Rational, Rational> t : take(TINY_LIMIT, ts)) {
+            System.out.println("log(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.log(t.b, t.c));
         }
     }
 

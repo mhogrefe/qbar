@@ -140,9 +140,12 @@ public class RealProperties extends QBarTestProperties {
         propertiesCbrt();
         propertiesExpOfRational();
         propertiesExp();
-        propertiesLogOfRational();
+        propertiesLogOfRational_Rational();
         propertiesLogUnsafe();
-        propertiesLog();
+        propertiesLog_Rational();
+        propertiesLogOfRational_Rational_Rational();
+        propertiesLogUnsafe_Rational();
+        propertiesLog_Rational_Rational();
         propertiesIntervalExtensionUnsafe();
         propertiesFractionalPartUnsafe();
         propertiesFractionalPart();
@@ -4755,7 +4758,7 @@ public class RealProperties extends QBarTestProperties {
         }
     }
 
-    private void propertiesLogOfRational() {
+    private void propertiesLogOfRational_Rational() {
         initialize("logOfRational(Rational)");
         for (Rational x : take(LIMIT, P.withScale(4).positiveRationals())) {
             Real y = logOfRational(x);
@@ -4790,7 +4793,7 @@ public class RealProperties extends QBarTestProperties {
         }
     }
 
-    private void propertiesLog() {
+    private void propertiesLog_Rational() {
         initialize("log(Rational)");
         Iterable<Pair<Real, Rational>> ps = P.pairs(
                 P.withElement(rightFuzzyRepresentation(Rational.ZERO), P.withScale(4).positiveReals()),
@@ -4816,6 +4819,132 @@ public class RealProperties extends QBarTestProperties {
             try {
                 p.a.log(p.b);
                 fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesLogOfRational_Rational_Rational() {
+        initialize("logOfRational(Rational, Rational)");
+        Iterable<Pair<Rational, Rational>> ps = P.pairs(
+                P.positiveRationals(),
+                filterInfinite(r -> r != Rational.ONE, P.positiveRationals())
+        );
+        for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
+            Real x = logOfRational(p.a, p.b);
+            x.validate();
+            //todo rational pow
+        }
+
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rangeDown(Rational.ZERO), P.positiveRationals()))) {
+            try {
+                logOfRational(p.a, p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.positiveRationals(), P.rangeDown(Rational.ZERO)))) {
+            try {
+                logOfRational(p.a, p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        for (Rational r : take(LIMIT, P.positiveRationals())) {
+            try {
+                logOfRational(r, Rational.ONE);
+                fail(r);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesLogUnsafe_Rational() {
+        initialize("logUnsafe(Rational)");
+        Iterable<Pair<Real, Rational>> ps = P.pairs(
+                P.withScale(4).positiveReals(),
+                filterInfinite(r -> r != Rational.ONE, P.withScale(4).positiveRationals())
+        );
+        for (Pair<Real, Rational> p : take(TINY_LIMIT, ps)) {
+            Real y = p.a.logUnsafe(p.b);
+            y.validate();
+            //todo pow
+        }
+
+        for (Pair<Real, Rational> p : take(LIMIT, P.pairs(P.negativeReals(), P.positiveRationals()))) {
+            try {
+                toList(p.a.logUnsafe(p.b));
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        for (Pair<Real, Rational> p : take(LIMIT, P.pairs(P.positiveReals(), P.rangeDown(Rational.ZERO)))) {
+            try {
+                p.a.logUnsafe(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        for (Real x : take(LIMIT, P.positiveReals())) {
+            try {
+                x.logUnsafe(Rational.ONE);
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesLog_Rational_Rational() {
+        initialize("log(Rational, Rational)");
+        Iterable<Triple<Real, Rational, Rational>> ts = P.triples(
+                P.withElement(rightFuzzyRepresentation(Rational.ZERO), P.withScale(4).positiveReals()),
+                filterInfinite(r -> r != Rational.ONE, P.withScale(4).positiveRationals()),
+                P.positiveRationals()
+        );
+        for (Triple<Real, Rational, Rational> t : take(TINY_LIMIT, ts)) {
+            Optional<Real> ox = t.a.log(t.b, t.c);
+            ox.ifPresent(x -> assertTrue(t, x.eq(t.a.logUnsafe(t.b), SMALL_RESOLUTION).orElse(true)));
+        }
+
+        Iterable<Triple<Real, Rational, Rational>> tsFail = P.triples(
+                P.withElement(rightFuzzyRepresentation(Rational.ZERO), P.withScale(4).positiveReals()),
+                P.rangeDown(Rational.ZERO),
+                P.positiveRationals()
+        );
+        for (Triple<Real, Rational, Rational> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.log(t.b, t.c);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        tsFail = P.triples(
+                P.negativeReals(),
+                filterInfinite(r -> r != Rational.ONE, P.withScale(4).positiveRationals()),
+                P.positiveRationals()
+        );
+        for (Triple<Real, Rational, Rational> t : take(LIMIT, tsFail)) {
+            try {
+                Optional<Real> ox = t.a.log(t.b, t.c);
+                ox.ifPresent(IterableUtils::toList);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<Pair<Real, Rational>> psFail = P.pairs(
+                P.withElement(rightFuzzyRepresentation(Rational.ZERO), P.withScale(4).positiveReals()),
+                P.positiveRationals()
+        );
+        for (Pair<Real, Rational> p : take(LIMIT, psFail)) {
+            try {
+                p.a.log(Rational.ONE, p.b);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        tsFail = P.triples(
+                P.withElement(rightFuzzyRepresentation(Rational.ZERO), P.withScale(4).positiveReals()),
+                filterInfinite(r -> r != Rational.ONE, P.withScale(4).positiveRationals()),
+                P.rangeDown(Rational.ZERO)
+        );
+        for (Triple<Real, Rational, Rational> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.log(t.b, t.c);
+                fail(t);
             } catch (IllegalArgumentException ignored) {}
         }
     }
