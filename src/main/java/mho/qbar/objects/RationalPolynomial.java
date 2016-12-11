@@ -1462,7 +1462,7 @@ public final class RationalPolynomial implements
         }
         if (any(p -> p.a == Rational.ZERO, monomials)) return Optional.empty();
         //noinspection RedundantCast
-        if (!increasing((Iterable<Integer>) map(p -> p.b, monomials))) return Optional.empty();
+        if (!Ordering.increasing((Iterable<Integer>) map(p -> p.b, monomials))) return Optional.empty();
         int degree = last(monomials).b;
         List<Rational> coefficients = toList(replicate(degree + 1, Rational.ZERO));
         for (Pair<Rational, Integer> monomial : monomials) {

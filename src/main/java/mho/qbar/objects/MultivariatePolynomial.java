@@ -1538,7 +1538,7 @@ public final class MultivariatePolynomial implements
             }
         }
         //noinspection RedundantCast
-        if (!increasing(order, (Iterable<Monomial>) map(t -> t.a, terms))) return Optional.empty();
+        if (!Ordering.increasing(order, (Iterable<Monomial>) map(t -> t.a, terms))) return Optional.empty();
         if (order != DEFAULT_ORDER) {
             terms = sort(Comparator.comparing(x -> x.a), terms);
         }
@@ -1625,7 +1625,7 @@ public final class MultivariatePolynomial implements
         assertEquals(this, DEFAULT_ORDER, MonomialOrder.GREVLEX);
         assertTrue(this, all(t -> t != null && t.a != null && t.b != null && !t.b.equals(BigInteger.ZERO), terms));
         //noinspection RedundantCast
-        assertTrue(this, increasing((Iterable<Monomial>) map(t -> t.a, terms)));
+        assertTrue(this, Ordering.increasing((Iterable<Monomial>) map(t -> t.a, terms)));
         if (equals(ZERO)) {
             assertTrue(this, this == ZERO);
         }

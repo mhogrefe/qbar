@@ -576,7 +576,7 @@ public final class Monomial implements Comparable<Monomial> {
             }
         }
         //noinspection RedundantCast
-        if (!increasing((Iterable<Variable>) map(t -> t.a, terms))) return Optional.empty();
+        if (!Ordering.increasing((Iterable<Variable>) map(t -> t.a, terms))) return Optional.empty();
         return Optional.of(fromTerms(terms));
     }
 

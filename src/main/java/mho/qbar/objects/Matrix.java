@@ -442,10 +442,10 @@ public final class Matrix implements Comparable<Matrix> {
      * @return a submatrix of {@code this}
      */
     public @NotNull Matrix submatrix(@NotNull List<Integer> rowIndices, @NotNull List<Integer> columnIndices) {
-        if (!increasing(rowIndices)) {
+        if (!Ordering.increasing(rowIndices)) {
             throw new IllegalArgumentException("rowIndices must be in ascending order and cannot have any" +
                     " repetitions. Invalid rowIndices: " + rowIndices);
-        } else if (!increasing(columnIndices)) {
+        } else if (!Ordering.increasing(columnIndices)) {
             throw new IllegalArgumentException("columnIndices must be in ascending order and cannot have any" +
                     " repetitions. Invalid columnIndices: " + columnIndices);
         } else if (!rowIndices.isEmpty() && (head(rowIndices) < 0 || last(rowIndices) >= height())) {

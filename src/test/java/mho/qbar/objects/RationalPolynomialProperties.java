@@ -2188,7 +2188,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         for (RationalPolynomial p : take(LIMIT, P.withScale(4).rationalPolynomialsAtLeast(0))) {
             List<Algebraic> realRoots = p.realRoots();
             realRoots.forEach(Algebraic::validate);
-            assertTrue(p, increasing(realRoots));
+            assertTrue(p, Ordering.increasing(realRoots));
             assertEquals(p, realRoots.size(), p.constantFactor().b.rootCount());
             for (Algebraic root : realRoots) {
                 assertEquals(p, p.apply(root), Algebraic.ZERO);

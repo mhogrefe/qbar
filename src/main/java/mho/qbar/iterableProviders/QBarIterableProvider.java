@@ -3838,7 +3838,7 @@ public strictfp abstract class QBarIterableProvider {
         if (any(Objects::isNull, variables)) {
             throw new NullPointerException();
         }
-        if (!increasing(variables)) {
+        if (!Ordering.increasing(variables)) {
             throw new IllegalArgumentException("variables must be in increasing order and cannot contain " +
                     "repetitions. Invalid variables: " + variables);
         }

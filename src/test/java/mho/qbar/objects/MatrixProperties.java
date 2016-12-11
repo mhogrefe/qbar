@@ -490,7 +490,8 @@ public class MatrixProperties extends QBarTestProperties {
                                     toList(EP.range(0, m.width() - 1));
                             return P.pairs(
                                     filterInfinite(
-                                            is -> any(i -> i == null || i < 0 || i >= height, is) || !increasing(is),
+                                            is -> any(i -> i == null || i < 0 || i >= height, is) ||
+                                                    !Ordering.increasing(is),
                                             P.lists(P.withNull(P.integersGeometric()))
                                     ),
                                     map(bs -> toList(select(bs, allColumns)), P.lists(m.width(), P.booleans()))
@@ -517,7 +518,8 @@ public class MatrixProperties extends QBarTestProperties {
                             return P.pairs(
                                     map(bs -> toList(select(bs, allRows)), P.lists(m.height(), P.booleans())),
                                     filterInfinite(
-                                            is -> any(i -> i == null || i < 0 || i >= width, is) || !increasing(is),
+                                            is -> any(i -> i == null || i < 0 || i >= width, is) ||
+                                                    !Ordering.increasing(is),
                                             P.lists(P.withNull(P.integersGeometric()))
                                     )
                             );
@@ -1952,7 +1954,7 @@ public class MatrixProperties extends QBarTestProperties {
         for (Matrix m : take(LIMIT, P.withScale(4).squareMatrices())) {
             List<Algebraic> realEigenvalues = m.realEigenvalues();
             realEigenvalues.forEach(Algebraic::validate);
-            assertTrue(m, increasing(realEigenvalues));
+            assertTrue(m, Ordering.increasing(realEigenvalues));
             assertEquals(m, realEigenvalues.size(), m.characteristicPolynomial().rootCount());
         }
 

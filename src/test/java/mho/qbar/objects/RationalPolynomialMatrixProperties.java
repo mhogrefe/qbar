@@ -5,6 +5,7 @@ import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
 import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.IterableUtils;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
@@ -518,7 +519,8 @@ public class RationalPolynomialMatrixProperties extends QBarTestProperties {
                                     toList(EP.range(0, m.width() - 1));
                             return P.pairs(
                                     filterInfinite(
-                                            is -> any(i -> i == null || i < 0 || i >= height, is) || !increasing(is),
+                                            is -> any(i -> i == null || i < 0 || i >= height, is) ||
+                                                    !Ordering.increasing(is),
                                             P.lists(P.withNull(P.integersGeometric()))
                                     ),
                                     map(bs -> toList(select(bs, allColumns)), P.lists(m.width(), P.booleans()))
@@ -545,7 +547,8 @@ public class RationalPolynomialMatrixProperties extends QBarTestProperties {
                             return P.pairs(
                                     map(bs -> toList(select(bs, allRows)), P.lists(m.height(), P.booleans())),
                                     filterInfinite(
-                                            is -> any(i -> i == null || i < 0 || i >= width, is) || !increasing(is),
+                                            is -> any(i -> i == null || i < 0 || i >= width, is) ||
+                                                    !Ordering.increasing(is),
                                             P.lists(P.withNull(P.integersGeometric()))
                                     )
                             );

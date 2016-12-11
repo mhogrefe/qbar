@@ -3175,7 +3175,7 @@ public final class Polynomial implements
         }
         if (any(p -> BigInteger.ZERO.equals(p.a), monomials)) return Optional.empty();
         //noinspection RedundantCast
-        if (!increasing((Iterable<Integer>) map(p -> p.b, monomials))) return Optional.empty();
+        if (!Ordering.increasing((Iterable<Integer>) map(p -> p.b, monomials))) return Optional.empty();
         int degree = last(monomials).b;
         List<BigInteger> coefficients = toList(replicate(degree + 1, BigInteger.ZERO));
         for (Pair<BigInteger, Integer> monomial : monomials) {
