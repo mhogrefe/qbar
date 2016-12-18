@@ -3498,6 +3498,9 @@ public final class Real implements Iterable<Interval> {
         if (this == ONE) {
             return ZERO;
         }
+        if (this == E) {
+            return ONE;
+        }
         if (rational.isPresent()) {
             return logOfRational(rational.get());
         }
@@ -3649,6 +3652,78 @@ public final class Real implements Iterable<Interval> {
             return Optional.of(logOfRational(rational.get(), base));
         }
         return log(resolution).map(x -> x.divideUnsafe(logOfRational(base)));
+    }
+
+    /**
+     * Returns the base-{@code base} logarithm of {@code this}. If {@code this} is equal to zero and fuzzy on the left,
+     * or {@code base} is equal to zero and fuzzy on the left, or {@code base} is equal to 1, this method will loop
+     * forever. To prevent this behavior, use {@link Real#log(Real, Rational)} instead.
+     *
+     * <ul>
+     *  <li>{@code this} must be positive.</li>
+     *  <li>{@code base} must be positive and cannot equal 1.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return log<sub>{@code base}</sub>({@code this})
+     */
+    public @NotNull Real logUnsafe(@NotNull Real base) {
+        if (base.rational.isPresent()) {
+            return logUnsafe(base.rational.get());
+        }
+        if (this == base) {
+            return ONE;
+        }
+        return logUnsafe().divideUnsafe(base.logUnsafe());
+    }
+
+    /**
+     * Returns the base-{@code base} logarithm of {@code this}. If {@code this} is equal to zero and fuzzy on the left,
+     * or {@code base} is equal to zero and fuzzy on the left, or {@code base} is equal to 1, this method will give up
+     * and return empty once the approximating interval's diameter is less than the specified resolution.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be negative, an exact zero, or a zero fuzzy on the left.</li>
+     *  <li>{@code base} cannot be negative, an exact zero, or a zero fuzzy on the left. {@code base} cannot be an
+     *  exact 1.</li>
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>The result is not exact rational unless {@code this} is an exact 1.</li>
+     * </ul>
+     *
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return log<sub>{@code base}</sub>({@code this})
+     */
+    public @NotNull Optional<Real> log(@NotNull Real base, @NotNull Rational resolution) {
+        if (this == base) {
+            Optional<Boolean> positive = gt(Rational.ZERO, resolution);
+            if (!positive.isPresent()) {
+                return Optional.empty();
+            }
+            if (!positive.get()) {
+                throw new ArithmeticException("this cannot be negative, an exact zero, or a zero fuzzy on the left." +
+                        " Invalid this: " + this);
+            }
+            Optional<Boolean> equalTo1 = eq(Rational.ONE, resolution);
+            if (!equalTo1.isPresent()) {
+                return Optional.empty();
+            }
+            if (equalTo1.get()) {
+                throw new ArithmeticException("base cannot be an exact 1.");
+            }
+            return Optional.of(ONE);
+        }
+        if (base.rational.isPresent()) {
+            return log(base.rational.get(), resolution);
+        }
+        Optional<Real> log = log(resolution);
+        if (!log.isPresent()) {
+            return Optional.empty();
+        }
+        Optional<Real> baseLog = base.log(resolution);
+        if (!baseLog.isPresent()) {
+            return Optional.empty();
+        }
+        return log.get().divide(baseLog.get(), resolution);
     }
 
     /**

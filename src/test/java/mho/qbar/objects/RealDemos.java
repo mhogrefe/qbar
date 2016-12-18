@@ -1893,6 +1893,36 @@ public class RealDemos extends QBarDemos {
         }
     }
 
+    private void demoLogUnsafe_Real() {
+        Iterable<Pair<Real, Real>> ps = P.pairs(
+                P.withScale(4).positiveReals(),
+                filterInfinite(
+                        x -> x.ne(Rational.ONE, DEFAULT_RESOLUTION).orElse(false),
+                        P.withScale(4).positiveReals()
+                )
+        );
+        for (Pair<Real, Real> p : take(TINY_LIMIT, ps)) {
+            System.out.println("logUnsafe(" + p.a + ", " + p.b + ") = " + p.a.logUnsafe(p.b));
+        }
+    }
+
+    private void demoLog_Real_Rational() {
+        Iterable<Triple<Real, Real, Rational>> ts = P.triples(
+                P.withElement(rightFuzzyRepresentation(Rational.ZERO), P.withScale(4).positiveReals()),
+                P.withElement(
+                        rightFuzzyRepresentation(Rational.ZERO),
+                        filterInfinite(
+                                x -> x.ne(Rational.ONE, DEFAULT_RESOLUTION).orElse(false),
+                                P.withScale(4).positiveReals()
+                        )
+                ),
+                P.positiveRationals()
+        );
+        for (Triple<Real, Real, Rational> t : take(TINY_LIMIT, ts)) {
+            System.out.println("log(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.log(t.b, t.c));
+        }
+    }
+
     private void demoIntervalExtensionUnsafe() {
         Iterable<Pair<Real, Real>> ps = filterInfinite(
                 p -> p.a.lt(p.b, DEFAULT_RESOLUTION).orElse(false),
