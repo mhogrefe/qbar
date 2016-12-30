@@ -1923,6 +1923,91 @@ public class RealDemos extends QBarDemos {
         }
     }
 
+    private void demoPowUnsafe_Real() {
+        BigInteger lower = BigInteger.valueOf(Integer.MIN_VALUE);
+        BigInteger upper = BigInteger.valueOf(Integer.MAX_VALUE);
+        Rational smallResolution = Rational.of(1, 10000);
+        Iterable<Pair<Real, Real>> ps = filterInfinite(
+                p -> {
+                    boolean xZero = p.a.eq(Rational.ZERO, DEFAULT_RESOLUTION).orElse(true);
+                    if (xZero) {
+                        Optional<Integer> xSign = p.b.signum(DEFAULT_RESOLUTION);
+                        if (!xSign.isPresent() || xSign.get() != 0 && xSign.get() != 1) {
+                            return false;
+                        }
+                    }
+                    if (!p.a.eq(Rational.ZERO, DEFAULT_RESOLUTION).isPresent()) {
+                        if (!p.b.isExact()) {
+                            return false;
+                        }
+                    }
+                    if (p.a.lt(Rational.ZERO, DEFAULT_RESOLUTION).orElse(true)) {
+                        if (!p.b.isExact() || !p.b.rationalValueExact().get().getDenominator().testBit(0)) {
+                            return false;
+                        }
+                    }
+                    if (!p.a.isExact() && p.b.isExact()) {
+                        Rational r = p.b.rationalValueExact().get();
+                        if (!(Ordering.ge(r.getNumerator(), lower) && Ordering.le(r.getNumerator(), upper) &&
+                                        Ordering.le(r.getDenominator(), upper))) {
+                            return false;
+                        }
+                    }
+                    return true;
+                },
+                P.pairs(P.withScale(3).withSecondaryScale(4).reals())
+        );
+        for (Pair<Real, Real> p : take(TINY_LIMIT, ps)) {
+            System.out.println("powUnsafe(" + p.a + ", " + p.b + ") = " +
+                    p.a.powUnsafe(p.b).toStringBase(BigInteger.TEN, 3, smallResolution));
+        }
+    }
+
+    private void demoPow_Real_Rational() {
+        BigInteger lower = BigInteger.valueOf(Integer.MIN_VALUE);
+        BigInteger upper = BigInteger.valueOf(Integer.MAX_VALUE);
+        Rational smallResolution = Rational.of(1, 10000);
+        Iterable<Triple<Real, Real, Rational>> ts = filterInfinite(
+                t -> {
+                    if (t.a.eq(Rational.ZERO, DEFAULT_RESOLUTION).orElse(true)) {
+                        if (t.b.lt(Rational.ZERO, DEFAULT_RESOLUTION).orElse(true)) {
+                            return false;
+                        }
+                    }
+                    if (!t.a.eq(Rational.ZERO, DEFAULT_RESOLUTION).isPresent()) {
+                        if (!t.b.isExact()) {
+                            return false;
+                        }
+                    }
+                    if (t.a.lt(Rational.ZERO, DEFAULT_RESOLUTION).orElse(true)) {
+                        if (!t.b.isExact() || !t.b.rationalValueExact().get().getDenominator().testBit(0)) {
+                            return false;
+                        }
+                    }
+                    if (!t.a.isExact() && t.b.isExact()) {
+                        Rational r = t.b.rationalValueExact().get();
+                        if (!(Ordering.ge(r.getNumerator(), lower) && Ordering.le(r.getNumerator(), upper) &&
+                                        Ordering.le(r.getDenominator(), upper))) {
+                            return false;
+                        }
+                    }
+                    return true;
+                },
+                P.triples(
+                        P.withScale(3).withSecondaryScale(4).reals(),
+                        filterInfinite(
+                                x -> x.abs().lt(Rational.TEN, DEFAULT_RESOLUTION).orElse(true),
+                                P.withScale(3).withSecondaryScale(4).reals()
+                        ),
+                        P.positiveRationals()
+                )
+        );
+        for (Triple<Real, Real, Rational> t : take(TINY_LIMIT, ts)) {
+            System.out.println("pow(" + t.a + ", " + t.b + ", " + t.c + ") = " +
+                    t.a.pow(t.b, t.c).map(x -> x.toStringBase(BigInteger.TEN, 3, smallResolution)));
+        }
+    }
+
     private void demoIntervalExtensionUnsafe() {
         Iterable<Pair<Real, Real>> ps = filterInfinite(
                 p -> p.a.lt(p.b, DEFAULT_RESOLUTION).orElse(false),
@@ -2403,25 +2488,9 @@ public class RealDemos extends QBarDemos {
     }
 
     private void demoLtUnsafe_Rational() {
-        //noinspection RedundantCast
-        Iterable<Pair<Real, Rational>> ps = map(
-                p -> new Pair<>(p.b, p.a),
-                (Iterable<Pair<Rational, Real>>) P.dependentPairsInfinite(
-                        P.withScale(4).rationals(),
-                        r -> {
-                            Iterable<Rational> rs = filterInfinite(s -> !r.equals(s), P.withScale(4).rationals());
-                            return P.withScale(1).choose(
-                                    map(Algebraic::realValue, P.withScale(4).algebraics()),
-                                    P.choose(
-                                            Arrays.asList(
-                                                    map(Real::leftFuzzyRepresentation, rs),
-                                                    map(Real::rightFuzzyRepresentation, rs),
-                                                    map(Real::fuzzyRepresentation, rs)
-                                            )
-                                    )
-                            );
-                        }
-                )
+        Iterable<Pair<Real, Rational>> ps = filterInfinite(
+                p -> p.a.lt(p.b, DEFAULT_RESOLUTION).isPresent(),
+                P.pairs(P.withScale(4).reals(), P.withScale(4).rationals())
         );
         for (Pair<Real, Rational> p : take(LIMIT, ps)) {
             System.out.println("ltUnsafe(" + p.a + ", " + p.b + ") = " + p.a.ltUnsafe(p.b));
@@ -2429,25 +2498,9 @@ public class RealDemos extends QBarDemos {
     }
 
     private void demoGtUnsafe_Rational() {
-        //noinspection RedundantCast
-        Iterable<Pair<Real, Rational>> ps = map(
-                p -> new Pair<>(p.b, p.a),
-                (Iterable<Pair<Rational, Real>>) P.dependentPairsInfinite(
-                        P.withScale(4).rationals(),
-                        r -> {
-                            Iterable<Rational> rs = filterInfinite(s -> !r.equals(s), P.withScale(4).rationals());
-                            return P.withScale(1).choose(
-                                    map(Algebraic::realValue, P.withScale(4).algebraics()),
-                                    P.choose(
-                                            Arrays.asList(
-                                                    map(Real::leftFuzzyRepresentation, rs),
-                                                    map(Real::rightFuzzyRepresentation, rs),
-                                                    map(Real::fuzzyRepresentation, rs)
-                                            )
-                                    )
-                            );
-                        }
-                )
+        Iterable<Pair<Real, Rational>> ps = filterInfinite(
+                p -> p.a.gt(p.b, DEFAULT_RESOLUTION).isPresent(),
+                P.pairs(P.withScale(4).reals(), P.withScale(4).rationals())
         );
         for (Pair<Real, Rational> p : take(LIMIT, ps)) {
             System.out.println("gtUnsafe(" + p.a + ", " + p.b + ") = " + p.a.gtUnsafe(p.b));

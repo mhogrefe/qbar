@@ -20,6 +20,8 @@ import static mho.qbar.objects.Rational.*;
 import static mho.qbar.objects.Rational.sum;
 import static mho.qbar.testing.QBarTesting.QEP;
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.ordering.Ordering.ge;
+import static mho.wheels.ordering.Ordering.le;
 import static mho.wheels.testing.Testing.*;
 
 @SuppressWarnings("UnusedDeclaration")
@@ -477,7 +479,7 @@ public class RationalDemos extends QBarDemos {
         }
     }
 
-    private void demoPow() {
+    private void demoPow_int() {
         Iterable<Pair<Rational, Integer>> ps = filterInfinite(
                 p -> p.a != ZERO || p.b >= 0,
                 P.pairs(P.rationals(), P.integersGeometric())
@@ -506,6 +508,25 @@ public class RationalDemos extends QBarDemos {
     private void demoCbrt() {
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("cbrt(" + r + ") = " + r.cbrt());
+        }
+    }
+
+    private void demoPow_Rational() {
+        BigInteger lower = BigInteger.valueOf(Integer.MIN_VALUE);
+        BigInteger upper = BigInteger.valueOf(Integer.MAX_VALUE);
+        Iterable<Pair<Rational, Rational>> ps = filterInfinite(
+                p -> (p.a != ZERO || p.b.signum() != -1) && (p.a.signum() != -1 || p.b.getDenominator().testBit(0)),
+                P.pairsSquareRootOrder(
+                        P.rationals(),
+                        filterInfinite(
+                                r -> ge(r.getNumerator(), lower) && le(r.getNumerator(), upper) &&
+                                        le(r.getDenominator(), upper),
+                                P.withScale(3).rationals()
+                        )
+                )
+        );
+        for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " ^ " + p.b + " = " + p.a.pow(p.b));
         }
     }
 

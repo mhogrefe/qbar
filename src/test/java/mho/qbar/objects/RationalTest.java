@@ -3297,13 +3297,13 @@ public class RationalTest {
         harmonicNumber_fail_helper(-5);
     }
 
-    private static void pow_helper(@NotNull String r, int p, @NotNull String output) {
+    private static void pow_int_helper(@NotNull String r, int p, @NotNull String output) {
         Rational s = readStrict(r).get().pow(p);
         s.validate();
         aeq(s, output);
     }
 
-    private static void pow_fail_helper(@NotNull String r, int p) {
+    private static void pow_int_fail_helper(@NotNull String r, int p) {
         try {
             readStrict(r).get().pow(p);
             fail();
@@ -3311,55 +3311,55 @@ public class RationalTest {
     }
 
     @Test
-    public void testPow() {
-        pow_helper("2/3", 0, "1");
-        pow_helper("2/3", 1, "2/3");
-        pow_helper("2/3", 2, "4/9");
-        pow_helper("2/3", 3, "8/27");
-        pow_helper("2/3", -1, "3/2");
-        pow_helper("2/3", -2, "9/4");
-        pow_helper("2/3", -3, "27/8");
+    public void testPow_int() {
+        pow_int_helper("2/3", 0, "1");
+        pow_int_helper("2/3", 1, "2/3");
+        pow_int_helper("2/3", 2, "4/9");
+        pow_int_helper("2/3", 3, "8/27");
+        pow_int_helper("2/3", -1, "3/2");
+        pow_int_helper("2/3", -2, "9/4");
+        pow_int_helper("2/3", -3, "27/8");
 
-        pow_helper("-2/3", 0, "1");
-        pow_helper("-2/3", 1, "-2/3");
-        pow_helper("-2/3", 2, "4/9");
-        pow_helper("-2/3", 3, "-8/27");
-        pow_helper("-2/3", -1, "-3/2");
-        pow_helper("-2/3", -2, "9/4");
-        pow_helper("-2/3", -3, "-27/8");
+        pow_int_helper("-2/3", 0, "1");
+        pow_int_helper("-2/3", 1, "-2/3");
+        pow_int_helper("-2/3", 2, "4/9");
+        pow_int_helper("-2/3", 3, "-8/27");
+        pow_int_helper("-2/3", -1, "-3/2");
+        pow_int_helper("-2/3", -2, "9/4");
+        pow_int_helper("-2/3", -3, "-27/8");
 
-        pow_helper("2", 0, "1");
-        pow_helper("2", 1, "2");
-        pow_helper("2", 2, "4");
-        pow_helper("2", 3, "8");
-        pow_helper("2", -1, "1/2");
-        pow_helper("2", -2, "1/4");
-        pow_helper("2", -3, "1/8");
+        pow_int_helper("2", 0, "1");
+        pow_int_helper("2", 1, "2");
+        pow_int_helper("2", 2, "4");
+        pow_int_helper("2", 3, "8");
+        pow_int_helper("2", -1, "1/2");
+        pow_int_helper("2", -2, "1/4");
+        pow_int_helper("2", -3, "1/8");
 
-        pow_helper("-2", 0, "1");
-        pow_helper("-2", 1, "-2");
-        pow_helper("-2", 2, "4");
-        pow_helper("-2", 3, "-8");
-        pow_helper("-2", -1, "-1/2");
-        pow_helper("-2", -2, "1/4");
-        pow_helper("-2", -3, "-1/8");
+        pow_int_helper("-2", 0, "1");
+        pow_int_helper("-2", 1, "-2");
+        pow_int_helper("-2", 2, "4");
+        pow_int_helper("-2", 3, "-8");
+        pow_int_helper("-2", -1, "-1/2");
+        pow_int_helper("-2", -2, "1/4");
+        pow_int_helper("-2", -3, "-1/8");
 
-        pow_helper("0", 0, "1");
-        pow_helper("0", 1, "0");
-        pow_helper("0", 2, "0");
-        pow_helper("0", 3, "0");
+        pow_int_helper("0", 0, "1");
+        pow_int_helper("0", 1, "0");
+        pow_int_helper("0", 2, "0");
+        pow_int_helper("0", 3, "0");
 
-        pow_helper("1", 0, "1");
-        pow_helper("1", 1, "1");
-        pow_helper("1", 2, "1");
-        pow_helper("1", 3, "1");
-        pow_helper("1", -1, "1");
-        pow_helper("1", -2, "1");
-        pow_helper("1", -3, "1");
+        pow_int_helper("1", 0, "1");
+        pow_int_helper("1", 1, "1");
+        pow_int_helper("1", 2, "1");
+        pow_int_helper("1", 3, "1");
+        pow_int_helper("1", -1, "1");
+        pow_int_helper("1", -2, "1");
+        pow_int_helper("1", -3, "1");
 
-        pow_fail_helper("0", -1);
-        pow_fail_helper("0", -2);
-        pow_fail_helper("0", -3);
+        pow_int_fail_helper("0", -1);
+        pow_int_fail_helper("0", -2);
+        pow_int_fail_helper("0", -3);
     }
 
     private static void root_helper(@NotNull String x, int r, @NotNull String output) {
@@ -3469,6 +3469,96 @@ public class RationalTest {
         cbrt_helper("4", "Optional.empty");
         cbrt_helper("64/729", "Optional[4/9]");
         cbrt_helper("-64/729", "Optional[-4/9]");
+    }
+
+    private static void pow_Rational_helper(@NotNull String r, @NotNull String p, @NotNull String output) {
+        Optional<Rational> ox = readStrict(r).get().pow(readStrict(p).get());
+        ox.ifPresent(Rational::validate);
+        aeq(ox, output);
+    }
+
+    private static void pow_Rational_fail_helper(@NotNull String r, @NotNull String p) {
+        try {
+            readStrict(r).get().pow(readStrict(p).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testPow_Rational() {
+        pow_Rational_helper("2/3", "0", "Optional[1]");
+        pow_Rational_helper("2/3", "1", "Optional[2/3]");
+        pow_Rational_helper("2/3", "2", "Optional[4/9]");
+        pow_Rational_helper("2/3", "3", "Optional[8/27]");
+        pow_Rational_helper("2/3", "-1", "Optional[3/2]");
+        pow_Rational_helper("2/3", "-2", "Optional[9/4]");
+        pow_Rational_helper("2/3", "-3", "Optional[27/8]");
+
+        pow_Rational_helper("-2/3", "0", "Optional[1]");
+        pow_Rational_helper("-2/3", "1", "Optional[-2/3]");
+        pow_Rational_helper("-2/3", "2", "Optional[4/9]");
+        pow_Rational_helper("-2/3", "3", "Optional[-8/27]");
+        pow_Rational_helper("-2/3", "-1", "Optional[-3/2]");
+        pow_Rational_helper("-2/3", "-2", "Optional[9/4]");
+        pow_Rational_helper("-2/3", "-3", "Optional[-27/8]");
+
+        pow_Rational_helper("2", "0", "Optional[1]");
+        pow_Rational_helper("2", "1", "Optional[2]");
+        pow_Rational_helper("2", "2", "Optional[4]");
+        pow_Rational_helper("2", "3", "Optional[8]");
+        pow_Rational_helper("2", "-1", "Optional[1/2]");
+        pow_Rational_helper("2", "-2", "Optional[1/4]");
+        pow_Rational_helper("2", "-3", "Optional[1/8]");
+
+        pow_Rational_helper("-2", "0", "Optional[1]");
+        pow_Rational_helper("-2", "1", "Optional[-2]");
+        pow_Rational_helper("-2", "2", "Optional[4]");
+        pow_Rational_helper("-2", "3", "Optional[-8]");
+        pow_Rational_helper("-2", "-1", "Optional[-1/2]");
+        pow_Rational_helper("-2", "-2", "Optional[1/4]");
+        pow_Rational_helper("-2", "-3", "Optional[-1/8]");
+
+        pow_Rational_helper("0", "0", "Optional[1]");
+        pow_Rational_helper("0", "1", "Optional[0]");
+        pow_Rational_helper("0", "2", "Optional[0]");
+        pow_Rational_helper("0", "3", "Optional[0]");
+        pow_Rational_helper("0", "1/2", "Optional[0]");
+        pow_Rational_helper("0", "1/3", "Optional[0]");
+        pow_Rational_helper("0", "2/3", "Optional[0]");
+
+        pow_Rational_helper("1", "0", "Optional[1]");
+        pow_Rational_helper("1", "1", "Optional[1]");
+        pow_Rational_helper("1", "2", "Optional[1]");
+        pow_Rational_helper("1", "3", "Optional[1]");
+        pow_Rational_helper("1", "1/2", "Optional[1]");
+        pow_Rational_helper("1", "1/3", "Optional[1]");
+        pow_Rational_helper("1", "2/3", "Optional[1]");
+        pow_Rational_helper("1", "-1", "Optional[1]");
+        pow_Rational_helper("1", "-2", "Optional[1]");
+        pow_Rational_helper("1", "-3", "Optional[1]");
+        pow_Rational_helper("1", "-1/2", "Optional[1]");
+        pow_Rational_helper("1", "-1/3", "Optional[1]");
+        pow_Rational_helper("1", "-2/3", "Optional[1]");
+
+        pow_Rational_helper("4", "1/2", "Optional[2]");
+        pow_Rational_helper("4", "3/2", "Optional[8]");
+        pow_Rational_helper("-27/125", "1/3", "Optional[-3/5]");
+        pow_Rational_helper("-27/125", "2/3", "Optional[9/25]");
+        pow_Rational_helper("4", "-1/2", "Optional[1/2]");
+        pow_Rational_helper("4", "-3/2", "Optional[1/8]");
+        pow_Rational_helper("-27/125", "-1/3", "Optional[-5/3]");
+        pow_Rational_helper("-27/125", "-2/3", "Optional[25/9]");
+        pow_Rational_helper("4", "1/3", "Optional.empty");
+        pow_Rational_helper("8", "1/2", "Optional.empty");
+        pow_Rational_helper("4", "-1/3", "Optional.empty");
+        pow_Rational_helper("8", "-1/2", "Optional.empty");
+
+        pow_Rational_fail_helper("0", "-1");
+        pow_Rational_fail_helper("0", "-2");
+        pow_Rational_fail_helper("0", "-3");
+        pow_Rational_fail_helper("0", "-1/2");
+        pow_Rational_fail_helper("0", "-1/3");
+        pow_Rational_fail_helper("0", "-2/3");
     }
 
     private static void log_helper(@NotNull String x, @NotNull String base, @NotNull String output) {

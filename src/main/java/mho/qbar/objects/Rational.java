@@ -1927,7 +1927,31 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * Returns the base-{@code base} logarithm of {@code this}, if the result is rational. Otherwise, returns empty.
+     * Returns {@code this} raised to the power of {@code p}. 0<sup>0</sup> yields 1. If {@code p} has an even
+     * denominator, the principal (non-negative) root is chosen. If the result is irrational, an empty {@code Optional}
+     * is returned. To get a usable irrational result, see {@link Algebraic#pow(Rational)}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>{@code p} must have a numerator greater than or equal to –2<sup>31</sup> and less than 2<sup>31</sup> and
+     *  a denominator less than 2<sup>31</sup>.</li>
+     *  <li>If {@code p} is negative, {@code this} cannot be 0.</li>
+     *  <li>If {@code p} has an even denominator, {@code this} cannot be negative.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param p the power that {@code this} is raised to
+     * @return {@code this}<sup>{@code p}</sup>
+     */
+    public @NotNull Optional<Rational> pow(@NotNull Rational p) {
+        int smallDenominator = p.getDenominator().intValueExact();
+        int smallNumerator = p.getNumerator().intValueExact();
+        return root(smallDenominator).map(x -> x.pow(smallNumerator));
+    }
+
+    /**
+     * Returns the base-{@code base} logarithm of {@code this}, if the result is rational. Otherwise, returns empty. To
+     * get a usable irrational result, see {@link Real#logOfRational(Rational, Rational)}.
      *
      * <ul>
      *  <li>{@code this} must be positive.</li>

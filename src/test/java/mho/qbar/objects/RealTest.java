@@ -9450,6 +9450,411 @@ public class RealTest {
         log_Real_Rational_fail_helper(E, TWO, Rational.NEGATIVE_ONE);
     }
 
+    private static void powUnsafe_Real_helper(@NotNull Real a, @NotNull Real b, @NotNull String output) {
+        Real x = a.powUnsafe(b);
+        x.validate();
+        aeq(x.toStringBase(BigInteger.TEN, 5, Rational.of(1, 1000000)), output);
+    }
+
+    private static void powUnsafe_Real_fail_helper(@NotNull Real a, @NotNull Real b) {
+        try {
+            toList(a.powUnsafe(b));
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testPowUnsafe_Real() {
+        powUnsafe_Real_helper(ZERO, ZERO, "1");
+        powUnsafe_Real_helper(ZERO, ONE, "0");
+        powUnsafe_Real_helper(ZERO, SQRT_TWO, "0");
+        powUnsafe_Real_helper(ZERO, E, "0");
+        powUnsafe_Real_helper(ZERO, PI, "0");
+
+        powUnsafe_Real_helper(ONE, ZERO, "1");
+        powUnsafe_Real_helper(ONE, ONE, "1");
+        powUnsafe_Real_helper(ONE, NEGATIVE_FOUR_THIRDS, "1");
+        powUnsafe_Real_helper(ONE, SQRT_TWO, "1");
+        powUnsafe_Real_helper(ONE, E, "1");
+        powUnsafe_Real_helper(ONE, PI, "1");
+        powUnsafe_Real_helper(ONE, leftFuzzyRepresentation(Rational.ZERO), "1");
+        powUnsafe_Real_helper(ONE, rightFuzzyRepresentation(Rational.ZERO), "1");
+        powUnsafe_Real_helper(ONE, fuzzyRepresentation(Rational.ZERO), "1");
+
+        powUnsafe_Real_helper(TWO, ZERO, "1");
+        powUnsafe_Real_helper(TWO, ONE, "2");
+        powUnsafe_Real_helper(TWO, NEGATIVE_FOUR_THIRDS, "~0.39685");
+        powUnsafe_Real_helper(TWO, SQRT_TWO, "2.66514...");
+        powUnsafe_Real_helper(TWO, E, "6.58088...");
+        powUnsafe_Real_helper(TWO, PI, "8.82497...");
+        powUnsafe_Real_helper(TWO, leftFuzzyRepresentation(Rational.ZERO), "0.99999...");
+        powUnsafe_Real_helper(TWO, rightFuzzyRepresentation(Rational.ZERO), "1.00000...");
+        powUnsafe_Real_helper(TWO, fuzzyRepresentation(Rational.ZERO), "~1");
+
+        powUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, ZERO, "1");
+        powUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, ONE, "-1.33333...");
+        powUnsafe_Real_helper(NEGATIVE_FOUR_THIRDS, NEGATIVE_FOUR_THIRDS, "~0.68142");
+
+        powUnsafe_Real_helper(SQRT_TWO, ZERO, "1");
+        powUnsafe_Real_helper(SQRT_TWO, ONE, "1.41421...");
+        powUnsafe_Real_helper(SQRT_TWO, NEGATIVE_FOUR_THIRDS, "0.62996...");
+        powUnsafe_Real_helper(SQRT_TWO, SQRT_TWO, "1.63252...");
+        powUnsafe_Real_helper(SQRT_TWO, E, "2.56532...");
+        powUnsafe_Real_helper(SQRT_TWO, PI, "2.97068...");
+        powUnsafe_Real_helper(SQRT_TWO, leftFuzzyRepresentation(Rational.ZERO), "0.99999...");
+        powUnsafe_Real_helper(SQRT_TWO, rightFuzzyRepresentation(Rational.ZERO), "1.00000...");
+        powUnsafe_Real_helper(SQRT_TWO, fuzzyRepresentation(Rational.ZERO), "~1");
+
+        powUnsafe_Real_helper(E, ZERO, "1");
+        powUnsafe_Real_helper(E, ONE, "2.71828...");
+        powUnsafe_Real_helper(E, NEGATIVE_FOUR_THIRDS, "0.26359...");
+        powUnsafe_Real_helper(E, SQRT_TWO, "~4.11325");
+        powUnsafe_Real_helper(E, E, "15.15426...");
+        powUnsafe_Real_helper(E, PI, "23.14069...");
+        powUnsafe_Real_helper(E, leftFuzzyRepresentation(Rational.ZERO), "0.99999...");
+        powUnsafe_Real_helper(E, rightFuzzyRepresentation(Rational.ZERO), "1.00000...");
+        powUnsafe_Real_helper(E, fuzzyRepresentation(Rational.ZERO), "~1");
+
+        powUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), ZERO, "1");
+        powUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), ONE, "-0.00000...");
+        powUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), TWO, "0.00000...");
+        powUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), of(Rational.of(1, 3)), "-0.00000...");
+
+        powUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), ZERO, "1");
+        powUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), ONE, "0.00000...");
+        powUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), TWO, "0.00000...");
+        powUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), ONE_HALF, "0.00000...");
+        powUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), of(Rational.of(1, 3)), "0.00000...");
+
+        powUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), ZERO, "1");
+        powUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), ONE, "~0");
+        powUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), TWO, "0.00000...");
+        powUnsafe_Real_helper(fuzzyRepresentation(Rational.ZERO), of(Rational.of(1, 3)), "~0");
+
+        powUnsafe_Real_helper(TWO, of(3).logUnsafe(Rational.TWO), "~3");
+        powUnsafe_Real_helper(SQRT_TWO.negate(), of(Rational.of(1, 3)), "-1.12246...");
+
+        powUnsafe_Real_fail_helper(ZERO, NEGATIVE_ONE);
+        powUnsafe_Real_fail_helper(ZERO, NEGATIVE_FOUR_THIRDS);
+        powUnsafe_Real_fail_helper(ZERO, SQRT_TWO.negate());
+        powUnsafe_Real_fail_helper(NEGATIVE_FOUR_THIRDS, SQRT_TWO);
+        powUnsafe_Real_fail_helper(NEGATIVE_FOUR_THIRDS, ONE_HALF);
+        powUnsafe_Real_fail_helper(SQRT_TWO.negate(), SQRT_TWO);
+        powUnsafe_Real_fail_helper(SQRT_TWO.negate(), ONE_HALF);
+        powUnsafe_Real_fail_helper(SQRT_TWO, TEN.powUnsafe(20));
+        powUnsafe_Real_fail_helper(SQRT_TWO, TEN.powUnsafe(-20));
+    }
+
+    private static void pow_Real_Rational_helper(
+            @NotNull Real a,
+            @NotNull Real b,
+            @NotNull Rational resolution,
+            @NotNull String output
+    ) {
+        Optional<Real> ox = a.pow(b, resolution);
+        ox.ifPresent(Real::validate);
+        aeq(ox.map(x -> x.toStringBase(BigInteger.TEN, 5, Rational.of(1, 1000000))), output);
+    }
+
+    private static void pow_Real_Rational_fail_helper(@NotNull Real a, @NotNull Real b, @NotNull Rational resolution) {
+        try {
+            a.pow(b, resolution).map(IterableUtils::toList);
+            fail();
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testPow_Real_Rational() {
+        pow_Real_Rational_helper(ZERO, ZERO, DEFAULT_RESOLUTION, "Optional[1]");
+        pow_Real_Rational_helper(ZERO, ONE, DEFAULT_RESOLUTION, "Optional[0]");
+        pow_Real_Rational_helper(ZERO, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[0]");
+        pow_Real_Rational_helper(ZERO, E, DEFAULT_RESOLUTION, "Optional[0]");
+        pow_Real_Rational_helper(ZERO, PI, DEFAULT_RESOLUTION, "Optional[0]");
+        pow_Real_Rational_helper(ZERO, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        pow_Real_Rational_helper(ZERO, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        pow_Real_Rational_helper(ZERO, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+
+        pow_Real_Rational_helper(ONE, ZERO, DEFAULT_RESOLUTION, "Optional[1]");
+        pow_Real_Rational_helper(ONE, ONE, DEFAULT_RESOLUTION, "Optional[1]");
+        pow_Real_Rational_helper(ONE, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[1]");
+        pow_Real_Rational_helper(ONE, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[1]");
+        pow_Real_Rational_helper(ONE, E, DEFAULT_RESOLUTION, "Optional[1]");
+        pow_Real_Rational_helper(ONE, PI, DEFAULT_RESOLUTION, "Optional[1]");
+        pow_Real_Rational_helper(ONE, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[1]");
+        pow_Real_Rational_helper(ONE, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[1]");
+        pow_Real_Rational_helper(ONE, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[1]");
+
+        pow_Real_Rational_helper(TWO, ZERO, DEFAULT_RESOLUTION, "Optional[1]");
+        pow_Real_Rational_helper(TWO, ONE, DEFAULT_RESOLUTION, "Optional[2]");
+        pow_Real_Rational_helper(TWO, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[~0.39685]");
+        pow_Real_Rational_helper(TWO, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[2.66514...]");
+        pow_Real_Rational_helper(TWO, E, DEFAULT_RESOLUTION, "Optional[6.58088...]");
+        pow_Real_Rational_helper(TWO, PI, DEFAULT_RESOLUTION, "Optional[8.82497...]");
+        pow_Real_Rational_helper(
+                TWO,
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[0.99999...]"
+        );
+        pow_Real_Rational_helper(
+                TWO,
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[1.00000...]"
+        );
+        pow_Real_Rational_helper(TWO, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[~1]");
+
+        pow_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, ZERO, DEFAULT_RESOLUTION, "Optional[1]");
+        pow_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, ONE, DEFAULT_RESOLUTION, "Optional[-1.33333...]");
+        pow_Real_Rational_helper(NEGATIVE_FOUR_THIRDS, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[~0.68142]");
+
+        pow_Real_Rational_helper(SQRT_TWO, ZERO, DEFAULT_RESOLUTION, "Optional[1]");
+        pow_Real_Rational_helper(SQRT_TWO, ONE, DEFAULT_RESOLUTION, "Optional[1.41421...]");
+        pow_Real_Rational_helper(SQRT_TWO, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[0.62996...]");
+        pow_Real_Rational_helper(SQRT_TWO, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[1.63252...]");
+        pow_Real_Rational_helper(SQRT_TWO, E, DEFAULT_RESOLUTION, "Optional[2.56532...]");
+        pow_Real_Rational_helper(SQRT_TWO, PI, DEFAULT_RESOLUTION, "Optional[2.97068...]");
+        pow_Real_Rational_helper(
+                SQRT_TWO,
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[0.99999...]"
+        );
+        pow_Real_Rational_helper(
+                SQRT_TWO,
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[1.00000...]"
+        );
+        pow_Real_Rational_helper(SQRT_TWO, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[~1]");
+
+        pow_Real_Rational_helper(E, ZERO, DEFAULT_RESOLUTION, "Optional[1]");
+        pow_Real_Rational_helper(E, ONE, DEFAULT_RESOLUTION, "Optional[2.71828...]");
+        pow_Real_Rational_helper(E, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[0.26359...]");
+        pow_Real_Rational_helper(E, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[~4.11325]");
+        pow_Real_Rational_helper(E, E, DEFAULT_RESOLUTION, "Optional[15.15426...]");
+        pow_Real_Rational_helper(E, PI, DEFAULT_RESOLUTION, "Optional[23.14069...]");
+        pow_Real_Rational_helper(
+                E,
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[0.99999...]"
+        );
+        pow_Real_Rational_helper(
+                E,
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[1.00000...]"
+        );
+        pow_Real_Rational_helper(E, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[~1]");
+
+        pow_Real_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), ZERO, DEFAULT_RESOLUTION, "Optional[1]");
+        pow_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                ONE,
+                DEFAULT_RESOLUTION,
+                "Optional[-0.00000...]"
+        );
+        pow_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                TWO,
+                DEFAULT_RESOLUTION,
+                "Optional[0.00000...]"
+        );
+        pow_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                ONE_HALF,
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        pow_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                of(Rational.of(1, 3)),
+                DEFAULT_RESOLUTION,
+                "Optional[-0.00000...]"
+        );
+        pow_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                NEGATIVE_ONE,
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        pow_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                NEGATIVE_FOUR_THIRDS,
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        pow_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                SQRT_TWO,
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        pow_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                SQRT_TWO.negate(),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        pow_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        pow_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        pow_Real_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        pow_Real_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), ZERO, DEFAULT_RESOLUTION, "Optional[1]");
+        pow_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                ONE,
+                DEFAULT_RESOLUTION,
+                "Optional[0.00000...]"
+        );
+        pow_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                TWO,
+                DEFAULT_RESOLUTION,
+                "Optional[0.00000...]"
+        );
+        pow_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                ONE_HALF,
+                DEFAULT_RESOLUTION,
+                "Optional[0.00000...]"
+        );
+        pow_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                of(Rational.of(1, 3)),
+                DEFAULT_RESOLUTION,
+                "Optional[0.00000...]"
+        );
+        pow_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                NEGATIVE_ONE,
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        pow_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                NEGATIVE_FOUR_THIRDS,
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        pow_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                SQRT_TWO,
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        pow_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                SQRT_TWO.negate(),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        pow_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        pow_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        pow_Real_Rational_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        pow_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), ZERO, DEFAULT_RESOLUTION, "Optional[1]");
+        pow_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), ONE, DEFAULT_RESOLUTION, "Optional[~0]");
+        pow_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), TWO, DEFAULT_RESOLUTION, "Optional[0.00000...]");
+        pow_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), ONE_HALF, DEFAULT_RESOLUTION, "Optional.empty");
+        pow_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                of(Rational.of(1, 3)),
+                DEFAULT_RESOLUTION,
+                "Optional[~0]"
+        );
+        pow_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                NEGATIVE_ONE,
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        pow_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                NEGATIVE_FOUR_THIRDS,
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        pow_Real_Rational_helper(fuzzyRepresentation(Rational.ZERO), SQRT_TWO, DEFAULT_RESOLUTION, "Optional.empty");
+        pow_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                SQRT_TWO.negate(),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        pow_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        pow_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        pow_Real_Rational_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        pow_Real_Rational_helper(TWO, of(3).logUnsafe(Rational.TWO), DEFAULT_RESOLUTION, "Optional[~3]");
+        pow_Real_Rational_helper(
+                SQRT_TWO.negate(),
+                of(Rational.of(1, 3)),
+                DEFAULT_RESOLUTION,
+                "Optional[-1.12246...]"
+        );
+
+        pow_Real_Rational_fail_helper(ZERO, NEGATIVE_ONE, DEFAULT_RESOLUTION);
+        pow_Real_Rational_fail_helper(ZERO, NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION);
+        pow_Real_Rational_fail_helper(ZERO, SQRT_TWO.negate(), DEFAULT_RESOLUTION);
+        pow_Real_Rational_fail_helper(NEGATIVE_FOUR_THIRDS, SQRT_TWO, DEFAULT_RESOLUTION);
+        pow_Real_Rational_fail_helper(NEGATIVE_FOUR_THIRDS, ONE_HALF, DEFAULT_RESOLUTION);
+        pow_Real_Rational_fail_helper(SQRT_TWO.negate(), SQRT_TWO, DEFAULT_RESOLUTION);
+        pow_Real_Rational_fail_helper(SQRT_TWO.negate(), ONE_HALF, DEFAULT_RESOLUTION);
+        pow_Real_Rational_fail_helper(SQRT_TWO, TEN.powUnsafe(20), DEFAULT_RESOLUTION);
+        pow_Real_Rational_fail_helper(SQRT_TWO, TEN.powUnsafe(-20), DEFAULT_RESOLUTION);
+        pow_Real_Rational_fail_helper(ZERO, ZERO, Rational.ZERO);
+        pow_Real_Rational_fail_helper(ZERO, ZERO, Rational.NEGATIVE_ONE);
+        pow_Real_Rational_fail_helper(PI, PI, Rational.ZERO);
+        pow_Real_Rational_fail_helper(PI, PI, Rational.NEGATIVE_ONE);
+    }
+
     @Test
     public void testIntervalExtensionUnsafe() {
         intervalExtensionUnsafe_helper(PI.negate(), NEGATIVE_FOUR_THIRDS, "[-651864872/204778785, -4/3]");
@@ -11170,6 +11575,7 @@ public class RealTest {
         ltUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "100/3", true);
         ltUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "1/100", true);
 
+        ltUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "0", false);
         ltUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "1", true);
         ltUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "-1", false);
         ltUnsafe_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), "100/3", true);
@@ -11235,6 +11641,7 @@ public class RealTest {
         gtUnsafe_Rational_helper(PI, "100/3", false);
         gtUnsafe_Rational_helper(PI, "1/100", true);
 
+        gtUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "0", false);
         gtUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "1", false);
         gtUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "-1", true);
         gtUnsafe_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "100/3", false);

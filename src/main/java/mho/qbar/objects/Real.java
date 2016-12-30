@@ -3727,6 +3727,134 @@ public final class Real implements Iterable<Interval> {
     }
 
     /**
+     * Returns {@code this} raised to the power of {@code p}. 0<sup>0</sup> yields 1. If {@code this} is zero and
+     * {@code p} is a fuzzy zero, or if {@code this} is a fuzzy zero and {@code p} is negative or a fuzzy zero or not
+     * exact rational, or if {@code this} is a zero fuzzy on the left and {@code p} is exact rational with an even
+     * denominator, this method will loop forever. To prevent this behavior, use {@link Real#pow(Real, Rational)}
+     * instead.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code p} may be any {@code Real}.</li>
+     *  <li>If {@code this} is 0, {@code p} cannot be negative or a fuzzy zero.</li>
+     *  <li>If {@code this} is negative or a zero fuzzy on the left, {@code p} must be exact rational with an odd
+     *  denominator.</li>
+     *  <li>If {@code p} is exact rational and {@code this} is not, {@code p} must have a numerator greater than or
+     *  equal to –2<sup>31</sup> and less than 2<sup>31</sup> and a denominator less than 2<sup>31</sup>.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param p the power that {@code this} is raised to
+     * @return {@code this}<sup>{@code p}</sup>
+     */
+    public @NotNull Real powUnsafe(@NotNull Real p) {
+        if (p == ZERO || this == ONE) return ONE;
+        if (p == ONE) return this;
+        if (this == ZERO) {
+            switch (p.signumUnsafe()) { // this may loop forever
+                case 1: return ZERO;
+                case 0: return ONE;
+                case -1:
+                    throw new ArithmeticException("If this is 0, p cannot be negative. this: " + this + ", p: " + p);
+                default: throw new IllegalStateException("unreachable");
+            }
+        }
+        if (this == E) return p.exp();
+        if (p.rational.isPresent()) {
+            if (rational.isPresent()) {
+                return Algebraic.of(rational.get()).pow(p.rational.get()).realValue();
+            } else {
+                int smallNumerator = p.rational.get().getNumerator().intValueExact();
+                int smallDenominator = p.rational.get().getDenominator().intValueExact();
+                if ((smallDenominator & 1) == 0) {
+                    if (ltUnsafe(Rational.ZERO)) {
+                        throw new ArithmeticException("If this is negative or a zero fuzzy on the left, p must be an" +
+                                " exact rational with an odd denominator. this: " + this + ", p: " + p);
+                    }
+                }
+                return rootUnsafe(smallDenominator).powUnsafe(smallNumerator);
+            }
+        }
+        if (ltUnsafe(Rational.ZERO)) { // this may loop forever
+            throw new ArithmeticException("If this is negative or a zero fuzzy on the left, p must be an exact" +
+                    " rational with an odd denominator. this: " + this + ", p: " + p);
+        }
+        return logUnsafe().multiply(p).exp();
+    }
+
+    /**
+     * Returns {@code this} raised to the power of {@code p}. 0<sup>0</sup> yields 1. If {@code this} is zero and
+     * {@code p} is a fuzzy zero, or if {@code this} is a fuzzy zero and {@code p} is negative or a fuzzy zero or not
+     * exact rational, or if {@code this} is a zero fuzzy on the left and {@code p} is exact rational with an even
+     * denominator, this method will give up and return empty once the approximating interval's diameter is less than
+     * the specified resolution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>{@code p} may be any {@code Real}.</li>
+     *  <li>If {@code this} is 0, {@code p} cannot be negative.</li>
+     *  <li>If {@code this} is a fuzzy zero, {@code p} must be exact rational.</li>
+     *  <li>If {@code this} is negative, {@code p} must be exact rational with an odd denominator.</li>
+     *  <li>If {@code p} is exact rational and {@code this} is not, {@code p} must have a numerator greater than or
+     *  equal to –2<sup>31</sup> and less than 2<sup>31</sup> and a denominator less than 2<sup>31</sup>.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param p the power that {@code this} is raised to
+     * @return {@code this}<sup>{@code p}</sup>
+     */
+    public @NotNull Optional<Real> pow(@NotNull Real p, @NotNull Rational resolution) {
+        if (resolution.signum() != 1) {
+            throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
+        }
+        if (p == ZERO || this == ONE) return Optional.of(ONE);
+        if (p == ONE) return Optional.of(this);
+        if (this == ZERO) {
+            Optional<Integer> sign = p.signum(resolution);
+            if (!sign.isPresent()) {
+                return Optional.empty();
+            }
+            switch (sign.get()) {
+                case 1: return Optional.of(ZERO);
+                case 0: return Optional.of(ONE);
+                case -1:
+                    throw new ArithmeticException("If this is 0, p cannot be negative. this: " + this + ", p: " + p);
+                default: throw new IllegalStateException("unreachable");
+            }
+        }
+        if (this == E) return Optional.of(p.exp());
+        if (p.rational.isPresent()) {
+            if (rational.isPresent()) {
+                return Optional.of(Algebraic.of(rational.get()).pow(p.rational.get()).realValue());
+            } else {
+                int smallNumerator = p.rational.get().getNumerator().intValueExact();
+                int smallDenominator = p.rational.get().getDenominator().intValueExact();
+                if ((smallDenominator & 1) == 0) {
+                    Optional<Boolean> negative = lt(Rational.ZERO, DEFAULT_RESOLUTION);
+                    if (!negative.isPresent()) {
+                        return Optional.empty();
+                    }
+                    if (negative.get()) {
+                        throw new ArithmeticException("If this is negative or a zero fuzzy on the left, p must be an" +
+                                " exact rational with an odd denominator. this: " + this + ", p: " + p);
+                    }
+                }
+                return root(smallDenominator, DEFAULT_RESOLUTION)
+                        .flatMap(x -> x.pow(smallNumerator, DEFAULT_RESOLUTION));
+            }
+        }
+        Optional<Boolean> negative = lt(Rational.ZERO, DEFAULT_RESOLUTION);
+        if (!negative.isPresent()) {
+            return Optional.empty();
+        }
+        if (negative.get()) {
+            throw new ArithmeticException("If this is negative or a zero fuzzy on the left, p must be an exact" +
+                    " rational with an odd denominator. this: " + this + ", p: " + p);
+        }
+        return log(resolution).map(x -> x.multiply(p).exp());
+    }
+
+    /**
      * Given an interval [{@code lower}, {@code upper}], returns an {@code Interval} (with rational bounds) containing
      * the given interval and with a diameter no more than twice the given interval's.
      *
@@ -4825,35 +4953,61 @@ public final class Real implements Iterable<Interval> {
     }
 
     /**
-     * Determines whether {@code this} is less than {@code that}. If {@code this} is fuzzy and equal to that, this
-     * method will loop forever. To avoid this behavior, use {@link Real#lt(Rational, Rational)} instead.
+     * Determines whether {@code this} is less than {@code that}. If {@code this} is fuzzy on the left and equal to
+     * that, this method will loop forever. To avoid this behavior, use {@link Real#lt(Rational, Rational)} instead.
      *
      * <li>{@code this} may be any {@code Real}.</li>
      * <li>{@code that} cannot be null.</li>
-     * <li>{@code this} cannot be fuzzy and equal to {@code that}.</li>
+     * <li>{@code this} cannot be fuzzy on the left and equal to {@code that}.</li>
      * <li>The result may be either {@code boolean}.</li>
      *
      * @param that the {@code Rational} to be compared with {@code this}
      * @return x{@literal <}y
      */
     public boolean ltUnsafe(@NotNull Rational that) {
-        return compareToUnsafe(that) < 0;
+        if (rational.isPresent()) {
+            return Ordering.lt(rational.get(), that);
+        }
+        for (Interval interval : intervals) {
+            if (interval.getLower().isPresent() && interval.getLower().get().equals(that)) {
+                return false;
+            } else if (!interval.contains(that)) {
+                Rational sample = interval.getLower().isPresent() ?
+                        interval.getLower().get() :
+                        interval.getUpper().get();
+                return Ordering.lt(sample, that);
+            }
+        }
+        throw new IllegalStateException("unreachable");
     }
 
     /**
-     * Determines whether {@code this} is greater than {@code that}. If {@code this} is fuzzy and equal to that, this
-     * method will loop forever. To avoid this behavior, use {@link Real#gt(Rational, Rational)} instead.
+     * Determines whether {@code this} is greater than {@code that}. If {@code this} is fuzzy on the right and equal to
+     * that, this method will loop forever. To avoid this behavior, use {@link Real#gt(Rational, Rational)} instead.
      *
      * <li>{@code this} may be any {@code Real}.</li>
      * <li>{@code that} cannot be null.</li>
-     * <li>{@code this} cannot be fuzzy and equal to {@code that}.</li>
+     * <li>{@code this} cannot be fuzzy on the right and equal to {@code that}.</li>
      * <li>The result may be either {@code boolean}.</li>
      *
      * @param that the {@code Rational} to be compared with {@code this}
      * @return x{@literal >}y
      */
     public boolean gtUnsafe(@NotNull Rational that) {
-        return compareToUnsafe(that) > 0;
+        if (rational.isPresent()) {
+            return Ordering.gt(rational.get(), that);
+        }
+        for (Interval interval : intervals) {
+            if (interval.getUpper().isPresent() && interval.getUpper().get().equals(that)) {
+                return false;
+            } else if (!interval.contains(that)) {
+                Rational sample = interval.getLower().isPresent() ?
+                        interval.getLower().get() :
+                        interval.getUpper().get();
+                return Ordering.gt(sample, that);
+            }
+        }
+        throw new IllegalStateException("unreachable");
     }
 
     /**
@@ -4953,9 +5107,9 @@ public final class Real implements Iterable<Interval> {
     }
 
     /**
-     * Determines whether {@code this} is less than {@code that}. If {@code this} is fuzzy and equal to that, this
-     * method will give up and return empty once the approximating interval's diameter is less than the specified
-     * resolution.
+     * Determines whether {@code this} is less than {@code that}. If {@code this} is fuzzy on the left and equal to
+     * that, this method will give up and return empty once the approximating interval's diameter is less than the
+     * specified resolution.
      *
      * <li>{@code this} may be any {@code Real}.</li>
      * <li>{@code that} cannot be null.</li>
@@ -4967,13 +5121,32 @@ public final class Real implements Iterable<Interval> {
      * @return x{@literal <}y
      */
     public @NotNull Optional<Boolean> lt(@NotNull Rational that, @NotNull Rational resolution) {
-        return compareTo(that, resolution).map(c -> c < 0);
+        if (resolution.signum() != 1) {
+            throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
+        }
+        if (rational.isPresent()) {
+            return Optional.of(Ordering.lt(rational.get(), that));
+        }
+        for (Interval interval : intervals) {
+            if (interval.getLower().isPresent() && interval.getLower().get().equals(that)) {
+                return Optional.of(false);
+            } else if (!interval.contains(that)) {
+                Rational sample = interval.getLower().isPresent() ?
+                        interval.getLower().get() :
+                        interval.getUpper().get();
+                return Optional.of(Ordering.lt(sample, that));
+            }
+            if (interval.isFinitelyBounded() && Ordering.lt(interval.diameter().get(), resolution)) {
+                return Optional.empty();
+            }
+        }
+        throw new IllegalStateException("unreachable");
     }
 
     /**
-     * Determines whether {@code this} is greater than {@code that}. If {@code this} is fuzzy and equal to that, this
-     * method will give up and return empty once the approximating interval's diameter is less than the specified
-     * resolution.
+     * Determines whether {@code this} is greater than {@code that}. If {@code this} is fuzzy on the right and equal to
+     * that, this method will give up and return empty once the approximating interval's diameter is less than the
+     * specified resolution.
      *
      * <li>{@code this} may be any {@code Real}.</li>
      * <li>{@code that} cannot be null.</li>
@@ -4985,7 +5158,26 @@ public final class Real implements Iterable<Interval> {
      * @return x{@literal >}y
      */
     public @NotNull Optional<Boolean> gt(@NotNull Rational that, @NotNull Rational resolution) {
-        return compareTo(that, resolution).map(c -> c > 0);
+        if (resolution.signum() != 1) {
+            throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
+        }
+        if (rational.isPresent()) {
+            return Optional.of(Ordering.gt(rational.get(), that));
+        }
+        for (Interval interval : intervals) {
+            if (interval.getUpper().isPresent() && interval.getUpper().get().equals(that)) {
+                return Optional.of(false);
+            } else if (!interval.contains(that)) {
+                Rational sample = interval.getLower().isPresent() ?
+                        interval.getLower().get() :
+                        interval.getUpper().get();
+                return Optional.of(Ordering.gt(sample, that));
+            }
+            if (interval.isFinitelyBounded() && Ordering.lt(interval.diameter().get(), resolution)) {
+                return Optional.empty();
+            }
+        }
+        throw new IllegalStateException("unreachable");
     }
 
     /**
