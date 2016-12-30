@@ -13219,6 +13219,7 @@ public class RealTest {
         ltUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), E, true);
         ltUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), PI, true);
 
+        ltUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), leftFuzzyRepresentation(Rational.ZERO), false);
         ltUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), ONE, true);
         ltUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), NEGATIVE_FOUR_THIRDS, false);
         ltUnsafe_Real_helper(rightFuzzyRepresentation(Rational.ZERO), SQRT_TWO, true);
@@ -13295,6 +13296,7 @@ public class RealTest {
         gtUnsafe_Real_helper(PI, rightFuzzyRepresentation(Rational.ZERO), true);
         gtUnsafe_Real_helper(PI, fuzzyRepresentation(Rational.ZERO), true);
 
+        gtUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), rightFuzzyRepresentation(Rational.ZERO), false);
         gtUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), ONE, false);
         gtUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), NEGATIVE_FOUR_THIRDS, true);
         gtUnsafe_Real_helper(leftFuzzyRepresentation(Rational.ZERO), SQRT_TWO, false);
@@ -13928,7 +13930,7 @@ public class RealTest {
         lt_Real_Rational_helper(ZERO, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[true]");
         lt_Real_Rational_helper(ZERO, E, DEFAULT_RESOLUTION, "Optional[true]");
         lt_Real_Rational_helper(ZERO, PI, DEFAULT_RESOLUTION, "Optional[true]");
-        lt_Real_Rational_helper(ZERO, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        lt_Real_Rational_helper(ZERO, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[false]");
         lt_Real_Rational_helper(ZERO, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
         lt_Real_Rational_helper(ZERO, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
 
@@ -14040,7 +14042,7 @@ public class RealTest {
                 "Optional.empty"
         );
 
-        lt_Real_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), ZERO, DEFAULT_RESOLUTION, "Optional.empty");
+        lt_Real_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), ZERO, DEFAULT_RESOLUTION, "Optional[false]");
         lt_Real_Rational_helper(rightFuzzyRepresentation(Rational.ZERO), ONE, DEFAULT_RESOLUTION, "Optional[true]");
         lt_Real_Rational_helper(
                 rightFuzzyRepresentation(Rational.ZERO),
@@ -14060,7 +14062,7 @@ public class RealTest {
                 rightFuzzyRepresentation(Rational.ZERO),
                 leftFuzzyRepresentation(Rational.ZERO),
                 DEFAULT_RESOLUTION,
-                "Optional.empty"
+                "Optional[false]"
         );
         lt_Real_Rational_helper(
                 rightFuzzyRepresentation(Rational.ZERO),
@@ -14138,7 +14140,7 @@ public class RealTest {
         gt_Real_Rational_helper(ZERO, E, DEFAULT_RESOLUTION, "Optional[false]");
         gt_Real_Rational_helper(ZERO, PI, DEFAULT_RESOLUTION, "Optional[false]");
         gt_Real_Rational_helper(ZERO, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
-        gt_Real_Rational_helper(ZERO, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        gt_Real_Rational_helper(ZERO, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[false]");
         gt_Real_Rational_helper(ZERO, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
 
         gt_Real_Rational_helper(ONE, ZERO, DEFAULT_RESOLUTION, "Optional[true]");
@@ -14216,7 +14218,7 @@ public class RealTest {
         gt_Real_Rational_helper(PI, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[true]");
         gt_Real_Rational_helper(PI, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[true]");
 
-        gt_Real_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), ZERO, DEFAULT_RESOLUTION, "Optional.empty");
+        gt_Real_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), ZERO, DEFAULT_RESOLUTION, "Optional[false]");
         gt_Real_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), ONE, DEFAULT_RESOLUTION, "Optional[false]");
         gt_Real_Rational_helper(
                 leftFuzzyRepresentation(Rational.ZERO),
@@ -14242,7 +14244,7 @@ public class RealTest {
                 leftFuzzyRepresentation(Rational.ZERO),
                 rightFuzzyRepresentation(Rational.ZERO),
                 DEFAULT_RESOLUTION,
-                "Optional.empty"
+                "Optional[false]"
         );
         gt_Real_Rational_helper(
                 leftFuzzyRepresentation(Rational.ZERO),

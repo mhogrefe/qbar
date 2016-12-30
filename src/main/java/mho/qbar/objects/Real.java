@@ -5388,15 +5388,41 @@ public final class Real implements Iterable<Interval> {
      *
      * <li>{@code this} may be any {@code Real}.</li>
      * <li>{@code that} cannot be null.</li>
-     * <li>If {@code this} is equal to {@code that}, they must be either be the same object or both must be
-     *  exact.</li>
+     * <li>If {@code this} is equal to {@code that}, they must be either be the same object or {@code this} must be
+     * non-fuzzy on the left and {@code that} must be non-fuzzy on the right.</li>
      * <li>The result may be either {@code boolean}.</li>
      *
      * @param that the {@code Real} to be compared with {@code this}
      * @return x{@literal <}y
      */
     public boolean ltUnsafe(@NotNull Real that) {
-        return compareToUnsafe(that) < 0;
+        if (this == that) return false;
+        if (rational.isPresent()) return that.gtUnsafe(rational.get());
+        if (that.rational.isPresent()) return ltUnsafe(that.rational.get());
+        Iterator<Interval> thisIntervals = intervals.iterator();
+        Iterator<Interval> thatIntervals = that.intervals.iterator();
+        Interval a = thisIntervals.next();
+        Interval b = thatIntervals.next();
+        Optional<Rational> aDiameter = a.diameter();
+        Optional<Rational> bDiameter = b.diameter();
+        while (true) {
+            Optional<Rational> aLower = a.getLower();
+            Optional<Rational> aUpper = a.getUpper();
+            Optional<Rational> bLower = b.getLower();
+            Optional<Rational> bUpper = b.getUpper();
+            if (aLower.isPresent() && bUpper.isPresent() && Ordering.ge(aLower.get(), bUpper.get())) {
+                return false;
+            } else if (aUpper.isPresent() && bLower.isPresent() && Ordering.lt(aUpper.get(), bLower.get())) {
+                return true;
+            }
+            if (compareDiameters(aDiameter, bDiameter) == LT) {
+                b = thatIntervals.next();
+                bDiameter = b.diameter();
+            } else {
+                a = thisIntervals.next();
+                aDiameter = a.diameter();
+            }
+        }
     }
 
     /**
@@ -5406,15 +5432,41 @@ public final class Real implements Iterable<Interval> {
      *
      * <li>{@code this} may be any {@code Real}.</li>
      * <li>{@code that} cannot be null.</li>
-     * <li>If {@code this} is equal to {@code that}, they must be either be the same object or both must be
-     *  exact.</li>
+     * <li>If {@code this} is equal to {@code that}, they must be either be the same object or {@code this} must be
+     * non-fuzzy on the right and {@code that} must be non-fuzzy on the left.</li>
      * <li>The result may be either {@code boolean}.</li>
      *
      * @param that the {@code Real} to be compared with {@code this}
      * @return x{@literal >}y
      */
     public boolean gtUnsafe(@NotNull Real that) {
-        return compareToUnsafe(that) > 0;
+        if (this == that) return false;
+        if (rational.isPresent()) return that.ltUnsafe(rational.get());
+        if (that.rational.isPresent()) return gtUnsafe(that.rational.get());
+        Iterator<Interval> thisIntervals = intervals.iterator();
+        Iterator<Interval> thatIntervals = that.intervals.iterator();
+        Interval a = thisIntervals.next();
+        Interval b = thatIntervals.next();
+        Optional<Rational> aDiameter = a.diameter();
+        Optional<Rational> bDiameter = b.diameter();
+        while (true) {
+            Optional<Rational> aLower = a.getLower();
+            Optional<Rational> aUpper = a.getUpper();
+            Optional<Rational> bLower = b.getLower();
+            Optional<Rational> bUpper = b.getUpper();
+            if (aUpper.isPresent() && bLower.isPresent() && Ordering.le(aUpper.get(), bLower.get())) {
+                return false;
+            } else if (aLower.isPresent() && bUpper.isPresent() && Ordering.gt(aLower.get(), bUpper.get())) {
+                return true;
+            }
+            if (compareDiameters(aDiameter, bDiameter) == LT) {
+                b = thatIntervals.next();
+                bDiameter = b.diameter();
+            } else {
+                a = thisIntervals.next();
+                aDiameter = a.diameter();
+            }
+        }
     }
 
     /**
@@ -5558,7 +5610,42 @@ public final class Real implements Iterable<Interval> {
      * @return x{@literal <}y
      */
     public @NotNull Optional<Boolean> lt(@NotNull Real that, @NotNull Rational resolution) {
-        return compareTo(that, resolution).map(c -> c < 0);
+        if (resolution.signum() != 1) {
+            throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
+        }
+        if (this == that) return Optional.of(false);
+        if (rational.isPresent()) return that.gt(rational.get(), resolution);
+        if (that.rational.isPresent()) return lt(that.rational.get(), resolution);
+        Iterator<Interval> thisIntervals = intervals.iterator();
+        Iterator<Interval> thatIntervals = that.intervals.iterator();
+        Interval a = thisIntervals.next();
+        Interval b = thatIntervals.next();
+        Optional<Rational> aDiameter = a.diameter();
+        Optional<Rational> bDiameter = b.diameter();
+        while (true) {
+            Interval thisInterval = thisIntervals.next();
+            Interval thatInterval = thatIntervals.next();
+            Optional<Rational> aLower = thisInterval.getLower();
+            Optional<Rational> aUpper = thisInterval.getUpper();
+            Optional<Rational> bLower = thatInterval.getLower();
+            Optional<Rational> bUpper = thatInterval.getUpper();
+            if (aLower.isPresent() && bUpper.isPresent() && Ordering.ge(aLower.get(), bUpper.get())) {
+                return Optional.of(false);
+            } else if (aUpper.isPresent() && bLower.isPresent() && Ordering.lt(aUpper.get(), bLower.get())) {
+                return Optional.of(true);
+            } else if (aLower.isPresent() && aUpper.isPresent() && bLower.isPresent() &&
+                    bUpper.isPresent() && Ordering.lt(aDiameter.get(), resolution) &&
+                    Ordering.lt(bDiameter.get(), resolution)) {
+                return Optional.empty();
+            }
+            if (compareDiameters(aDiameter, bDiameter) == LT) {
+                b = thatIntervals.next();
+                bDiameter = b.diameter();
+            } else {
+                a = thisIntervals.next();
+                aDiameter = a.diameter();
+            }
+        }
     }
 
     /**
@@ -5576,7 +5663,40 @@ public final class Real implements Iterable<Interval> {
      * @return x{@literal >}y
      */
     public @NotNull Optional<Boolean> gt(@NotNull Real that, @NotNull Rational resolution) {
-        return compareTo(that, resolution).map(c -> c > 0);
+        if (resolution.signum() != 1) {
+            throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
+        }
+        if (this == that) return Optional.of(false);
+        if (rational.isPresent()) return that.lt(rational.get(), resolution);
+        if (that.rational.isPresent()) return gt(that.rational.get(), resolution);
+        Iterator<Interval> thisIntervals = intervals.iterator();
+        Iterator<Interval> thatIntervals = that.intervals.iterator();
+        Interval a = thisIntervals.next();
+        Interval b = thatIntervals.next();
+        Optional<Rational> aDiameter = a.diameter();
+        Optional<Rational> bDiameter = b.diameter();
+        while (true) {
+            Optional<Rational> aLower = a.getLower();
+            Optional<Rational> aUpper = a.getUpper();
+            Optional<Rational> bLower = b.getLower();
+            Optional<Rational> bUpper = b.getUpper();
+            if (aUpper.isPresent() && bLower.isPresent() && Ordering.le(aUpper.get(), bLower.get())) {
+                return Optional.of(false);
+            } else if (aLower.isPresent() && bUpper.isPresent() && Ordering.gt(aLower.get(), bUpper.get())) {
+                return Optional.of(true);
+            } else if (aLower.isPresent() && aUpper.isPresent() && bLower.isPresent() &&
+                    bUpper.isPresent() && Ordering.lt(aDiameter.get(), resolution) &&
+                    Ordering.lt(bDiameter.get(), resolution)) {
+                return Optional.empty();
+            }
+            if (compareDiameters(aDiameter, bDiameter) == LT) {
+                b = thatIntervals.next();
+                bDiameter = b.diameter();
+            } else {
+                a = thisIntervals.next();
+                aDiameter = a.diameter();
+            }
+        }
     }
 
     /**

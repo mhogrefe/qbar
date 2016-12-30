@@ -5257,7 +5257,6 @@ public class RealProperties extends QBarTestProperties {
                 )
         );
         for (Triple<Real, Real, Rational> t : take(TINY_LIMIT, ts)) {
-            System.out.println(t);
             Optional<Real> ox = t.a.pow(t.b, t.c);
             ox.ifPresent(x -> assertTrue(t, x.eq(t.a.powUnsafe(t.b), SMALL_RESOLUTION).orElse(true)));
         }
