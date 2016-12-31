@@ -12178,7 +12178,7 @@ public class RealTest {
                 rightFuzzyRepresentation(Rational.ZERO),
                 "0",
                 DEFAULT_RESOLUTION,
-                "Optional.empty"
+                "Optional[false]"
         );
         lt_Rational_Rational_helper(
                 rightFuzzyRepresentation(Rational.ZERO),
@@ -12287,7 +12287,12 @@ public class RealTest {
         gt_Rational_Rational_helper(PI, "100/3", DEFAULT_RESOLUTION, "Optional[false]");
         gt_Rational_Rational_helper(PI, "1/100", DEFAULT_RESOLUTION, "Optional[true]");
 
-        gt_Rational_Rational_helper(leftFuzzyRepresentation(Rational.ZERO), "0", DEFAULT_RESOLUTION, "Optional.empty");
+        gt_Rational_Rational_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                "0",
+                DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
         gt_Rational_Rational_helper(
                 leftFuzzyRepresentation(Rational.ZERO),
                 "1",
