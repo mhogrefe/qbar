@@ -17,9 +17,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.ordering.Ordering.EQ;
-import static mho.wheels.ordering.Ordering.GT;
-import static mho.wheels.ordering.Ordering.LT;
+import static mho.wheels.ordering.Ordering.*;
 import static mho.wheels.testing.Testing.*;
 
 /**
@@ -3855,6 +3853,462 @@ public final class Real implements Iterable<Interval> {
     }
 
     /**
+     * Returns the sine of {@code x}.
+     *
+     * <ul>
+     *  <li>{@code x} may be any {@code Real}.</li>
+     *  <li>The result the sine of a rational number. If it is –1 it is fuzzy on the right and if it is 1 it is fuzzy
+     *  on the left. If it is nonzero, it is not exact.</li>
+     * </ul>
+     *
+     * @param x a {@code Rational}
+     * @return sin({@code x})
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull Real sin(@NotNull Rational x) {
+        if (x == Rational.ZERO) return ZERO;
+        if (x.signum() == -1) return sin(x.negate()).negate();
+        Rational xSquared = x.pow(2);
+        return forceContainment(() -> new NoRemoveIterator<Interval>() {
+            private @NotNull Rational partialSum = Rational.ZERO;
+            private @NotNull BigInteger i = BigInteger.ONE;
+            private @NotNull BigInteger j = BigInteger.ONE;
+            private @NotNull BigInteger factorial = BigInteger.ONE;
+            private @NotNull Rational power = x;
+            private boolean sign = true;
+            private boolean first = true;
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public @NotNull Interval next() {
+                if (first) {
+                    first = false;
+                } else {
+                    i = i.add(BigInteger.ONE);
+                    j = j.add(BigInteger.ONE);
+                    factorial = factorial.multiply(j);
+                    j = j.add(BigInteger.ONE);
+                    factorial = factorial.multiply(j);
+                    power = power.multiply(xSquared);
+                    sign = !sign;
+                }
+                Rational term = power.divide(factorial);
+                if (!sign) term = term.negate();
+                partialSum = partialSum.add(term);
+                Rational upper = partialSum;
+
+                i = i.add(BigInteger.ONE);
+                j = j.add(BigInteger.ONE);
+                factorial = factorial.multiply(j);
+                j = j.add(BigInteger.ONE);
+                factorial = factorial.multiply(j);
+                power = power.multiply(xSquared);
+                sign = !sign;
+                term = power.divide(factorial);
+                if (!sign) term = term.negate();
+                partialSum = partialSum.add(term);
+
+                return Interval.of(partialSum, upper);
+            }
+        });
+    }
+
+    /**
+     * Returns the cosine of {@code x}.
+     *
+     * <ul>
+     *  <li>{@code x} may be any {@code Real}.</li>
+     *  <li>The result the cosine of a rational number. If it is –1 it is fuzzy on the right and if it is 1 it is fuzzy
+     *  on the left. If it is not equal to 1, it is not exact.</li>
+     * </ul>
+     *
+     * @param x a {@code Rational}
+     * @return cos({@code x})
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull Real cos(@NotNull Rational x) {
+        if (x == Rational.ZERO) return ONE;
+        if (x.signum() == -1) return cos(x.negate());
+        Rational xSquared = x.pow(2);
+        return forceContainment((() -> new NoRemoveIterator<Interval>() {
+            private @NotNull Rational partialSum = Rational.ONE;
+            private @NotNull BigInteger i = BigInteger.ZERO;
+            private @NotNull BigInteger j = BigInteger.ZERO;
+            private @NotNull BigInteger factorial = BigInteger.ONE;
+            private @NotNull Rational power = Rational.ONE;
+            private boolean sign = true;
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public @NotNull Interval next() {
+                i = i.add(BigInteger.ONE);
+                j = j.add(BigInteger.ONE);
+                factorial = factorial.multiply(j);
+                j = j.add(BigInteger.ONE);
+                factorial = factorial.multiply(j);
+                power = power.multiply(xSquared);
+                sign = !sign;
+                Rational term = power.divide(factorial);
+                if (!sign) term = term.negate();
+                partialSum = partialSum.add(term);
+                Rational lower = partialSum;
+
+                i = i.add(BigInteger.ONE);
+                j = j.add(BigInteger.ONE);
+                factorial = factorial.multiply(j);
+                j = j.add(BigInteger.ONE);
+                factorial = factorial.multiply(j);
+                power = power.multiply(xSquared);
+                sign = !sign;
+                term = power.divide(factorial);
+                if (!sign) term = term.negate();
+                partialSum = partialSum.add(term);
+
+                return Interval.of(lower, partialSum);
+            }
+        }));
+    }
+
+    /**
+     * Divide the real line into blocks of length π/2, so that block n is the interval [nπ/2, (n+1)π/2). Given a
+     * finitely bounded interval, this method determines which blocks the lower and upper limits fall into.
+     *
+     * <ul>
+     *  <li>{@code a} must be finitely bounded.</li>
+     *  <li>The result is a pair whose first element is less than or equal to the second.</li>
+     * </ul>
+     *
+     * @param a a finitely-bounded interval
+     * @return the π/2-length blocks that the lower and upper limits of {@code a} fall into
+     */
+    private static @NotNull Pair<BigInteger, BigInteger> piOver2Blocks(@NotNull Interval a) {
+        Rational lower = a.getLower().get();
+        Rational upper = a.getUpper().get();
+        BigInteger lowerBlock = lower == Rational.ZERO ?
+                BigInteger.ZERO :
+                ARCTAN_ONE.shiftLeft(1).divide(lower).invertUnsafe().floorUnsafe();
+        BigInteger upperBlock = upper == Rational.ZERO ?
+                BigInteger.ZERO :
+                ARCTAN_ONE.shiftLeft(1).divide(upper).invertUnsafe().floorUnsafe();
+        return new Pair<>(lowerBlock, upperBlock);
+    }
+
+    /**
+     * Determines whether an interval contains any (irrational) element whose sine is 1.
+     *
+     * <ul>
+     *  <li>{@code a} may be any {@code Interval}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @param a an {@code Interval}
+     * @return ∃x∈{@code a}:sin(x)=1
+     */
+    private static boolean containsElementWhoseSinIs1(@NotNull Interval a) {
+        if (!a.isFinitelyBounded()) return true;
+        Pair<BigInteger, BigInteger> blocks = piOver2Blocks(a);
+        if (Ordering.ge(blocks.b.subtract(blocks.a), BigInteger.valueOf(4))) return true;
+        BigInteger three = BigInteger.valueOf(3);
+        boolean multipleOf4Seen = false;
+        for (BigInteger i = blocks.a; Ordering.le(i, blocks.b); i = i.add(BigInteger.ONE)) {
+            int j = i.and(three).intValueExact();
+            if (!multipleOf4Seen && j == 0) {
+                multipleOf4Seen = true;
+            }
+            if (multipleOf4Seen && j == 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Determines whether an interval contains any (irrational) element whose sine is –1.
+     *
+     * <ul>
+     *  <li>{@code a} may be any {@code Interval}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @param a an {@code Interval}
+     * @return ∃x∈{@code a}:sin(x)=–1
+     */
+    private static boolean containsElementWhoseSinIsNegative1(@NotNull Interval a) {
+        if (!a.isFinitelyBounded()) return true;
+        Pair<BigInteger, BigInteger> blocks = piOver2Blocks(a);
+        if (Ordering.ge(blocks.b.subtract(blocks.a), BigInteger.valueOf(4))) return true;
+        BigInteger three = BigInteger.valueOf(3);
+        boolean fourMod2Seen = false;
+        for (BigInteger i = blocks.a; Ordering.le(i, blocks.b); i = i.add(BigInteger.ONE)) {
+            int j = i.and(three).intValueExact();
+            if (!fourMod2Seen && j == 2) {
+                fourMod2Seen = true;
+            }
+            if (fourMod2Seen && j == 3) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Determines whether an interval contains any (not necessarily rational) element whose cosine is 1.
+     *
+     * <ul>
+     *  <li>{@code a} may be any {@code Interval}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @param a an {@code Interval}
+     * @return ∃x∈{@code a}:cos(x)=1
+     */
+    private static boolean containsElementWhoseCosIs1(@NotNull Interval a) {
+        if (!a.isFinitelyBounded()) return true;
+        if (a.getLower().get() == Rational.ZERO && a.getUpper().get() == Rational.ZERO) return true;
+        Pair<BigInteger, BigInteger> blocks = piOver2Blocks(a);
+        if (Ordering.ge(blocks.b.subtract(blocks.a), BigInteger.valueOf(4))) return true;
+        BigInteger three = BigInteger.valueOf(3);
+        boolean fourMod3Seen = false;
+        for (BigInteger i = blocks.a; Ordering.le(i, blocks.b); i = i.add(BigInteger.ONE)) {
+            int j = i.and(three).intValueExact();
+            if (!fourMod3Seen && j == 3) {
+                fourMod3Seen = true;
+            }
+            if (fourMod3Seen && j == 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Determines whether an interval contains any (irrational) element whose cosine is –1.
+     *
+     * <ul>
+     *  <li>{@code a} may be any {@code Interval}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @param a an {@code Interval}
+     * @return ∃x∈{@code a}:cos(x)=–1
+     */
+    private static boolean containsElementWhoseCosIsNegative1(@NotNull Interval a) {
+        if (!a.isFinitelyBounded()) return true;
+        Pair<BigInteger, BigInteger> blocks = piOver2Blocks(a);
+        if (Ordering.ge(blocks.b.subtract(blocks.a), BigInteger.valueOf(4))) return true;
+        BigInteger three = BigInteger.valueOf(3);
+        boolean fourMod1Seen = false;
+        for (BigInteger i = blocks.a; Ordering.le(i, blocks.b); i = i.add(BigInteger.ONE)) {
+            int j = i.and(three).intValueExact();
+            if (!fourMod1Seen && j == 1) {
+                fourMod1Seen = true;
+            }
+            if (fourMod1Seen && j == 2) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns the sine of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>The result is between –1 and 1, inclusive. If it is –1, it is fuzzy on the right. If it is 1, it is fuzzy
+     *  on the left. If it is nonzero, it is not exact.</li>
+     * </ul>
+     *
+     * @return sin({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Real sin() {
+        if (this == ZERO) {
+            return ZERO;
+        }
+        if (rational.isPresent()) {
+            return sin(rational.get());
+        }
+        return forceContainment(() -> new NoRemoveIterator<Interval>() {
+            private final @NotNull Iterator<Interval> is = intervals.iterator();
+            private Interval a;
+            private Iterator<Interval> lowerReal = null;
+            private Iterator<Interval> upperReal = null;
+            private Rational previousDiameter = null;
+            private int i = 0;
+            private boolean sinAContains1;
+            private boolean sinAContainsNegative1;
+            {
+                do {
+                    a = is.next();
+                } while (!a.isFinitelyBounded());
+                sinAContains1 = containsElementWhoseSinIs1(a);
+                sinAContainsNegative1 = containsElementWhoseSinIsNegative1(a);
+            }
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public @NotNull Interval next() {
+                if (lowerReal == null) {
+                    lowerReal = sin(a.getLower().get()).iterator();
+                    upperReal = sin(a.getUpper().get()).iterator();
+                    for (int j = 0; j < i; j++) {
+                        lowerReal.next();
+                        upperReal.next();
+                    }
+                }
+                Interval lowerInterval = lowerReal.next();
+                Interval upperInterval = upperReal.next();
+                Interval nextInterval = lowerInterval.convexHull(upperInterval);
+                if (sinAContains1 && sinAContainsNegative1) {
+                    nextInterval = Interval.of(Rational.NEGATIVE_ONE, Rational.ONE);
+                } else if (sinAContains1) {
+                    nextInterval = Interval.of(nextInterval.getLower().get(), Rational.ONE);
+                } else if (sinAContainsNegative1) {
+                    nextInterval = Interval.of(Rational.NEGATIVE_ONE, nextInterval.getUpper().get());
+                }
+                Rational diameter = nextInterval.diameter().get();
+                if (previousDiameter != null && Ordering.gt(diameter, previousDiameter.shiftRight(1))) {
+                    a = is.next();
+                    if (sinAContains1) {
+                        sinAContains1 = containsElementWhoseSinIs1(a);
+                    }
+                    if (sinAContainsNegative1) {
+                        sinAContainsNegative1 = containsElementWhoseSinIsNegative1(a);
+                    }
+                    lowerReal = sin(a.getLower().get()).iterator();
+                    upperReal = sin(a.getUpper().get()).iterator();
+                    for (int j = 0; j < i; j++) {
+                        lowerReal.next();
+                        upperReal.next();
+                    }
+                    lowerInterval = lowerReal.next();
+                    upperInterval = upperReal.next();
+                    nextInterval = lowerInterval.convexHull(upperInterval);
+                    if (sinAContains1 && sinAContainsNegative1) {
+                        nextInterval = Interval.of(Rational.NEGATIVE_ONE, Rational.ONE);
+                    } else if (sinAContains1) {
+                        nextInterval = Interval.of(nextInterval.getLower().get(), Rational.ONE);
+                    } else if (sinAContainsNegative1) {
+                        nextInterval = Interval.of(Rational.NEGATIVE_ONE, nextInterval.getUpper().get());
+                    }
+                    diameter = nextInterval.diameter().get();
+                }
+                previousDiameter = diameter;
+                i++;
+                return nextInterval;
+            }
+        });
+    }
+
+    /**
+     * Returns the cosine of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>The result is between –1 and 1, inclusive. If it is –1, it is fuzzy on the right. If it is 1, it is exact
+     *  or fuzzy on the left. If it is not 1, it is not exact.</li>
+     * </ul>
+     *
+     * @return cos({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Real cos() {
+        if (this == ZERO) {
+            return ONE;
+        }
+        if (rational.isPresent()) {
+            return cos(rational.get());
+        }
+        return forceContainment(() -> new NoRemoveIterator<Interval>() {
+            private final @NotNull Iterator<Interval> is = intervals.iterator();
+            private Interval a;
+            private Iterator<Interval> lowerReal = null;
+            private Iterator<Interval> upperReal = null;
+            private Rational previousDiameter = null;
+            private int i = 0;
+            private boolean cosAContains1;
+            private boolean cosAContainsNegative1;
+            {
+                do {
+                    a = is.next();
+                } while (!a.isFinitelyBounded());
+                cosAContains1 = containsElementWhoseCosIs1(a);
+                cosAContainsNegative1 = containsElementWhoseCosIsNegative1(a);
+            }
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public @NotNull Interval next() {
+                if (lowerReal == null) {
+                    lowerReal = cos(a.getLower().get()).iterator();
+                    upperReal = cos(a.getUpper().get()).iterator();
+                    for (int j = 0; j < i; j++) {
+                        lowerReal.next();
+                        upperReal.next();
+                    }
+                }
+                Interval lowerInterval = lowerReal.next();
+                Interval upperInterval = upperReal.next();
+                Interval nextInterval = lowerInterval.convexHull(upperInterval);
+                if (cosAContains1 && cosAContainsNegative1) {
+                    nextInterval = Interval.of(Rational.NEGATIVE_ONE, Rational.ONE);
+                } else if (cosAContains1) {
+                    nextInterval = Interval.of(nextInterval.getLower().get(), Rational.ONE);
+                } else if (cosAContainsNegative1) {
+                    nextInterval = Interval.of(Rational.NEGATIVE_ONE, nextInterval.getUpper().get());
+                }
+                Rational diameter = nextInterval.diameter().get();
+                if (previousDiameter != null && Ordering.gt(diameter, previousDiameter.shiftRight(1))) {
+                    a = is.next();
+                    if (cosAContains1) {
+                        cosAContains1 = containsElementWhoseCosIs1(a);
+                    }
+                    if (cosAContainsNegative1) {
+                        cosAContainsNegative1 = containsElementWhoseCosIsNegative1(a);
+                    }
+                    lowerReal = cos(a.getLower().get()).iterator();
+                    upperReal = cos(a.getUpper().get()).iterator();
+                    for (int j = 0; j < i; j++) {
+                        lowerReal.next();
+                        upperReal.next();
+                    }
+                    lowerInterval = lowerReal.next();
+                    upperInterval = upperReal.next();
+                    nextInterval = lowerInterval.convexHull(upperInterval);
+                    if (cosAContains1 && cosAContainsNegative1) {
+                        nextInterval = Interval.of(Rational.NEGATIVE_ONE, Rational.ONE);
+                    } else if (cosAContains1) {
+                        nextInterval = Interval.of(nextInterval.getLower().get(), Rational.ONE);
+                    } else if (cosAContainsNegative1) {
+                        nextInterval = Interval.of(Rational.NEGATIVE_ONE, nextInterval.getUpper().get());
+                    }
+                    diameter = nextInterval.diameter().get();
+                }
+                previousDiameter = diameter;
+                i++;
+                return nextInterval;
+            }
+        });
+    }
+
+    /**
      * Given an interval [{@code lower}, {@code upper}], returns an {@code Interval} (with rational bounds) containing
      * the given interval and with a diameter no more than twice the given interval's.
      *
@@ -4567,24 +5021,6 @@ public final class Real implements Iterable<Interval> {
                 return Interval.of(center).add(error);
             }
         });
-    }
-
-    public static @NotNull Real sin(@NotNull Rational x) {
-        if (x == Rational.ZERO) return ZERO;
-        Interval derivativeBounds = Interval.of(Rational.NEGATIVE_ONE, Rational.ONE);
-        return fromMaclaurinSeries(
-                map(
-                        i -> i.testBit(0) ?
-                                Rational.of(
-                                        i.testBit(1) ? IntegerUtils.NEGATIVE_ONE : BigInteger.ONE,
-                                        MathUtils.factorial(i)
-                                ) :
-                                Rational.ZERO,
-                        ExhaustiveProvider.INSTANCE.rangeUpIncreasing(BigInteger.ZERO)
-                ),
-                k -> derivativeBounds,
-                x
-        );
     }
 
     private static @NotNull Real arctan01(@NotNull Rational x) {

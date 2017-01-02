@@ -378,6 +378,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             BigInteger rounded = p.a.bigIntegerValue(p.b);
             assertTrue(p, rounded.equals(BigInteger.ZERO) || rounded.signum() == p.a.signum());
             assertTrue(p, lt(p.a.subtract(of(rounded)).abs(), ONE));
+            assertEquals(p, p.a.realValue().bigIntegerValueUnsafe(p.b), rounded);
         }
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
@@ -431,6 +432,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             BigInteger rounded = x.bigIntegerValue();
             assertTrue(x, rounded.equals(BigInteger.ZERO) || rounded.signum() == x.signum());
             assertTrue(x, le(x.subtract(of(x.bigIntegerValue())).abs(), ONE_HALF));
+            assertEquals(x, x.realValue().bigIntegerValueUnsafe(), rounded);
         }
 
         for (Algebraic x : take(LIMIT, filterInfinite(s -> lt(s.abs().fractionalPart(), ONE_HALF), P.algebraics()))) {
@@ -457,6 +459,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             BigInteger floor = x.floor();
             assertTrue(x, le(of(floor), x));
             assertTrue(x, le(x.subtract(of(floor)), ONE));
+            assertEquals(x, x.realValue().floorUnsafe(), floor);
         }
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
@@ -470,6 +473,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             BigInteger ceiling = x.ceiling();
             assertTrue(x, ge(of(ceiling), x));
             assertTrue(x, le(of(ceiling).subtract(x), ONE));
+            assertEquals(x, x.realValue().ceilingUnsafe(), ceiling);
         }
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
@@ -481,7 +485,8 @@ public class AlgebraicProperties extends QBarTestProperties {
         initialize("bigIntegerValueExact()");
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
             Algebraic x = of(i);
-            assertEquals(i, x.bigIntegerValueExact(), i);
+            BigInteger j = x.bigIntegerValueExact();
+            assertEquals(i, j, i);
             inverse(Algebraic::bigIntegerValueExact, Algebraic::of, x);
             homomorphic(
                     Algebraic::negate,
@@ -490,6 +495,7 @@ public class AlgebraicProperties extends QBarTestProperties {
                     Algebraic::bigIntegerValueExact,
                     x
             );
+            assertEquals(x, x.realValue().bigIntegerValueExact(), j);
         }
 
         for (Algebraic x : take(LIMIT, filterInfinite(s -> !s.isInteger(), P.algebraics()))) {
@@ -504,8 +510,10 @@ public class AlgebraicProperties extends QBarTestProperties {
         initialize("byteValueExact()");
         for (byte b : take(LIMIT, P.bytes())) {
             Algebraic x = of(b);
+            byte c = x.byteValueExact();
             assertEquals(b, x.byteValueExact(), b);
-            inverse(Algebraic::byteValueExact, c -> of((int) c), x);
+            inverse(Algebraic::byteValueExact, d -> of((int) d), x);
+            assertEquals(x, x.realValue().byteValueExact(), c);
         }
 
         for (byte b : take(LIMIT, filter(c -> c != Byte.MIN_VALUE, P.bytes()))) {
@@ -539,8 +547,10 @@ public class AlgebraicProperties extends QBarTestProperties {
         initialize("shortValueExact()");
         for (short s : take(LIMIT, P.shorts())) {
             Algebraic x = of(s);
-            assertEquals(s, x.shortValueExact(), s);
-            inverse(Algebraic::shortValueExact, t -> of((int) t), x);
+            short t = x.shortValueExact();
+            assertEquals(s, t, s);
+            inverse(Algebraic::shortValueExact, u -> of((int) u), x);
+            assertEquals(s, x.realValue().shortValueExact(), t);
         }
 
         for (short s : take(LIMIT, filter(t -> t != Short.MIN_VALUE, P.shorts()))) {
@@ -574,8 +584,10 @@ public class AlgebraicProperties extends QBarTestProperties {
         initialize("intValueExact()");
         for (int i : take(LIMIT, P.integers())) {
             Algebraic x = of(i);
-            assertEquals(i, x.intValueExact(), i);
+            int j = x.intValueExact();
+            assertEquals(i, j, i);
             inverse(Algebraic::intValueExact, Algebraic::of, x);
+            assertEquals(i, x.realValue().intValueExact(), j);
         }
 
         for (int i : take(LIMIT, filter(j -> j != Integer.MIN_VALUE, P.integers()))) {
@@ -613,8 +625,10 @@ public class AlgebraicProperties extends QBarTestProperties {
         initialize("longValueExact()");
         for (long l : take(LIMIT, P.longs())) {
             Algebraic x = of(l);
-            assertEquals(l, x.longValueExact(), l);
+            long m = x.longValueExact();
+            assertEquals(l, m, l);
             inverse(Algebraic::longValueExact, Algebraic::of, x);
+            assertEquals(l, x.realValue().longValueExact(), m);
         }
 
         for (long l : take(LIMIT, filter(m -> m != Long.MIN_VALUE, P.longs()))) {
@@ -650,7 +664,9 @@ public class AlgebraicProperties extends QBarTestProperties {
     private void propertiesIsIntegerPowerOfTwo() {
         initialize("isPowerOfTwo()");
         for (Algebraic x : take(LIMIT, P.positiveAlgebraics())) {
+            boolean b = x.isIntegerPowerOfTwo();
             assertEquals(x, x.isIntegerPowerOfTwo(), ONE.shiftLeft(x.binaryExponent()).equals(x));
+            assertEquals(x, x.realValue().isExactIntegerPowerOfTwo(), b);
         }
 
         for (Algebraic x : take(LIMIT, P.rangeDown(ZERO))) {
@@ -668,6 +684,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             assertTrue(x, powerOfTwo.isPowerOfTwo());
             assertTrue(x, le(x, of(powerOfTwo)));
             assertTrue(x, lt(of(powerOfTwo.shiftRight(1)), x));
+            assertEquals(x, x.realValue().roundUpToIntegerPowerOfTwoUnsafe(), powerOfTwo);
         }
 
         for (Algebraic x : take(LIMIT, P.rangeDown(ZERO))) {
@@ -681,7 +698,7 @@ public class AlgebraicProperties extends QBarTestProperties {
     private void propertiesIsBinaryFraction() {
         initialize("isBinaryFraction()");
         for (Algebraic x : take(LIMIT, P.algebraics())) {
-            x.isBinaryFraction();
+            boolean b = x.isBinaryFraction();
             homomorphic(
                     Algebraic::negate,
                     Function.identity(),
@@ -689,6 +706,7 @@ public class AlgebraicProperties extends QBarTestProperties {
                     Algebraic::isBinaryFraction,
                     x
             );
+            assertEquals(x, x.realValue().isExactBinaryFraction(), b);
         }
     }
 
@@ -703,6 +721,7 @@ public class AlgebraicProperties extends QBarTestProperties {
                     Algebraic::binaryFractionValueExact,
                     x
             );
+            assertEquals(x, x.realValue().binaryFractionValueExact(), x.binaryFractionValueExact());
         }
 
         for (Algebraic x : take(LIMIT, filterInfinite(s -> !s.isBinaryFraction(), P.algebraics()))) {
@@ -716,7 +735,7 @@ public class AlgebraicProperties extends QBarTestProperties {
     private void propertiesIsRational() {
         initialize("isRational()");
         for (Algebraic x : take(LIMIT, P.algebraics())) {
-            x.isRational();
+            boolean b = x.isRational();
             homomorphic(
                     Algebraic::negate,
                     Function.identity(),
@@ -724,6 +743,7 @@ public class AlgebraicProperties extends QBarTestProperties {
                     Algebraic::isRational,
                     x
             );
+            assertEquals(x, x.realValue().isExact(), b);
         }
     }
 
@@ -752,6 +772,7 @@ public class AlgebraicProperties extends QBarTestProperties {
                     Algebraic::rationalValueExact,
                     x
             );
+            assertEquals(x, x.realValue().rationalValueExact().get(), x.rationalValueExact());
         }
 
         for (Algebraic x : take(LIMIT, filterInfinite(y -> !y.isRational(), P.algebraics()))) {
@@ -776,6 +797,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             Algebraic power = ONE.shiftLeft(exponent);
             assertTrue(x, le(power, x));
             assertTrue(x, le(x, power.shiftLeft(1)));
+            assertEquals(x, x.realValue().binaryExponentUnsafe(), exponent);
         }
 
         for (Algebraic x : take(LIMIT, P.rangeDown(ZERO))) {
@@ -804,6 +826,7 @@ public class AlgebraicProperties extends QBarTestProperties {
                     x
             );
             assertEquals(x, isEqualToFloat_simplest(x), ietf);
+            assertEquals(x, x.realValue().isExactAndEqualToFloat(), ietf);
         }
 
         for (float f : take(LIMIT, filter(g -> Float.isFinite(g) && !isNegativeZero(g), P.floats()))) {
@@ -836,6 +859,7 @@ public class AlgebraicProperties extends QBarTestProperties {
                     x
             );
             assertEquals(x, isEqualToDouble_simplest(x), ietd);
+            assertEquals(x, x.realValue().isExactAndEqualToDouble(), ietd);
         }
 
         for (double d : take(LIMIT, filter(e -> Double.isFinite(e) && !isNegativeZero(e), P.doubles()))) {
@@ -871,6 +895,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             float rounded = p.a.floatValue(p.b);
             assertTrue(p, !Float.isNaN(rounded));
             assertTrue(p, rounded == 0.0f || Math.signum(rounded) == p.a.signum());
+            assertEquals(p, p.a.realValue().floatValueUnsafe(p.b), rounded);
         }
 
         Iterable<Algebraic> xs = map(
@@ -1103,6 +1128,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             aeqf(x, rounded, x.floatValue(RoundingMode.HALF_EVEN));
             assertTrue(x, !Float.isNaN(rounded));
             assertTrue(x, rounded == 0.0f || Math.signum(rounded) == x.signum());
+            assertEquals(x, x.realValue().floatValueUnsafe(), rounded);
         }
 
         Iterable<Algebraic> xs = filterInfinite(
@@ -1178,6 +1204,7 @@ public class AlgebraicProperties extends QBarTestProperties {
                     Algebraic::floatValueExact,
                     x
             );
+            assertEquals(x, x.realValue().floatValueExact(), f);
         }
 
         Iterable<Algebraic> xs = map(
@@ -1220,6 +1247,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             double rounded = p.a.doubleValue(p.b);
             assertTrue(p, !Double.isNaN(rounded));
             assertTrue(p, rounded == 0.0 || Math.signum(rounded) == p.a.signum());
+            assertEquals(p, p.a.realValue().doubleValueUnsafe(p.b), rounded);
         }
 
         Iterable<Algebraic> xs = map(
@@ -1484,6 +1512,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             aeqd(x, rounded, x.doubleValue(RoundingMode.HALF_EVEN));
             assertTrue(x, !Double.isNaN(rounded));
             assertTrue(x, rounded == 0.0 || Math.signum(rounded) == x.signum());
+            assertEquals(x, x.realValue().doubleValueUnsafe(), rounded);
         }
 
         Iterable<Algebraic> xs = filterInfinite(
@@ -1570,6 +1599,7 @@ public class AlgebraicProperties extends QBarTestProperties {
                     Algebraic::doubleValueExact,
                     x
             );
+            assertEquals(x, x.realValue().doubleValueExact(), d);
         }
 
         xs = map(d -> ofExact(d).get(), filter(d -> Double.isFinite(d) && !isNegativeZero(d), P.doubles()));
@@ -1632,6 +1662,7 @@ public class AlgebraicProperties extends QBarTestProperties {
         for (Triple<Algebraic, Integer, RoundingMode> t : take(LIMIT, ts)) {
             BigDecimal bd = t.a.bigDecimalValueByPrecision(t.b, t.c);
             assertTrue(t, eq(bd, BigDecimal.ZERO) || bd.signum() == t.a.signum());
+            assertEquals(t, t.a.realValue().bigDecimalValueByPrecisionUnsafe(t.b, t.c), bd);
         }
 
         ts = filterInfinite(valid, P.triples(P.nonzeroAlgebraics(), P.positiveIntegersGeometric(), P.roundingModes()));
@@ -1770,6 +1801,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             BigDecimal bd = t.a.bigDecimalValueByScale(t.b, t.c);
             assertTrue(t, bd.scale() == t.b);
             assertTrue(t, eq(bd, BigDecimal.ZERO) || bd.signum() == t.a.signum());
+            assertEquals(t, t.a.realValue().bigDecimalValueByScaleUnsafe(t.b, t.c), bd);
         }
 
         Iterable<Pair<Algebraic, Integer>> ps = filterInfinite(
@@ -1893,6 +1925,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             BigDecimal bd = p.a.bigDecimalValueByPrecision(p.b);
             assertEquals(p, bd, p.a.bigDecimalValueByPrecision(p.b, RoundingMode.HALF_EVEN));
             assertTrue(p, eq(bd, BigDecimal.ZERO) || bd.signum() == p.a.signum());
+            assertEquals(p, p.a.realValue().bigDecimalValueByPrecisionUnsafe(p.b), bd);
         }
 
         ps = filterInfinite(valid, P.pairsSquareRootOrder(P.nonzeroAlgebraics(), P.positiveIntegersGeometric()));
@@ -1945,6 +1978,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             assertEquals(p, bd, p.a.bigDecimalValueByScale(p.b, RoundingMode.HALF_EVEN));
             assertTrue(p, eq(bd, BigDecimal.ZERO) || bd.signum() == p.a.signum());
             assertTrue(p, bd.scale() == p.b);
+            assertEquals(p, p.a.realValue().bigDecimalValueByScaleUnsafe(p.b), bd);
         }
 
         BigInteger five = BigInteger.valueOf(5);
@@ -1993,6 +2027,7 @@ public class AlgebraicProperties extends QBarTestProperties {
                     Algebraic::bigDecimalValueExact,
                     x
             );
+            assertEquals(x, x.realValue().bigDecimalValueExact(), bd);
         }
 
         Iterable<Algebraic> xsFail = filterInfinite(
@@ -2066,6 +2101,7 @@ public class AlgebraicProperties extends QBarTestProperties {
                     p,
                     p.b.realValue().subtract(p.a.realValue()).geUnsafe(extension.diameter().get().shiftRight(1))
             );
+            assertEquals(p, Real.intervalExtensionUnsafe(p.a.realValue(), p.b.realValue()), extension);
         }
 
         Iterable<Pair<Algebraic, Algebraic>> ps = P.subsetPairs(filterInfinite(y -> !y.isRational(), P.algebraics()));
@@ -2090,6 +2126,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             negative.validate();
             involution(Algebraic::negate, x);
             assertTrue(x, x.add(negative) == ZERO);
+            assertTrue(x, x.realValue().negate().eq(negative.realValue(), Real.DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Algebraic x : take(LIMIT, P.nonzeroAlgebraics())) {
@@ -2105,6 +2142,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             idempotent(Algebraic::abs, x);
             assertNotEquals(x, abs.signum(), -1);
             assertTrue(x, ge(abs, ZERO));
+            assertTrue(x, x.realValue().abs().eq(abs.realValue(), Real.DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Algebraic x : take(LIMIT, P.positiveAlgebraics())) {
@@ -2118,6 +2156,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             int signum = x.signum();
             assertEquals(x, signum, Ordering.compare(x, ZERO).toInt());
             assertTrue(x, signum == -1 || signum == 0 || signum == 1);
+            assertEquals(x, x.realValue().signumUnsafe(), signum);
         }
     }
 
@@ -2146,6 +2185,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             sum.validate();
             assertEquals(p, sum.degree(), p.a.degree());
             inverse(x -> x.add(p.b), (Algebraic x) -> x.subtract(p.b), p.a);
+            assertTrue(p, p.a.realValue().add(p.b).eq(sum.realValue(), Real.DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Algebraic x : take(LIMIT, P.algebraics())) {
@@ -2166,6 +2206,10 @@ public class AlgebraicProperties extends QBarTestProperties {
             assertTrue(p, sum.degree() <= p.a.degree() * p.b.degree());
             commutative(Algebraic::add, p);
             inverse(x -> x.add(p.b), (Algebraic x) -> x.subtract(p.b), p.a);
+            assertTrue(
+                    p,
+                    p.a.realValue().add(p.b.realValue()).eq(sum.realValue(), Real.DEFAULT_RESOLUTION).orElse(true)
+            );
         }
 
         for (Algebraic x : take(LIMIT, P.algebraics())) {
@@ -2207,6 +2251,10 @@ public class AlgebraicProperties extends QBarTestProperties {
             difference.validate();
             assertEquals(p, difference.degree(), p.a.degree());
             inverse(x -> x.subtract(p.b), (Algebraic x) -> x.add(p.b), p.a);
+            assertTrue(
+                    p,
+                    p.a.realValue().subtract(p.b).eq(difference.realValue(), Real.DEFAULT_RESOLUTION).orElse(true)
+            );
         }
 
         for (Algebraic x : take(LIMIT, P.algebraics())) {
@@ -2227,6 +2275,11 @@ public class AlgebraicProperties extends QBarTestProperties {
             assertTrue(p, difference.degree() <= p.a.degree() * p.b.degree());
             antiCommutative(Algebraic::subtract, Algebraic::negate, p);
             inverse(x -> x.subtract(p.b), (Algebraic x) -> x.add(p.b), p.a);
+            assertTrue(
+                    p,
+                    p.a.realValue().subtract(p.b.realValue()).eq(difference.realValue(), Real.DEFAULT_RESOLUTION)
+                            .orElse(true)
+            );
         }
 
         for (Algebraic x : take(LIMIT, P.algebraics())) {
@@ -2243,6 +2296,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             product.validate();
             assertEquals(p, product, p.a.multiply(of(p.b)));
             assertEquals(p, product, of(p.b).multiply(p.a));
+            assertTrue(p, p.a.realValue().multiply(p.b).eq(product.realValue(), Real.DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Pair<Algebraic, Integer> p : take(LIMIT, P.pairs(P.algebraics(), P.nonzeroIntegers()))) {
@@ -2280,6 +2334,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             product.validate();
             assertEquals(p, product, p.a.multiply(of(p.b)));
             assertEquals(p, product, of(p.b).multiply(p.a));
+            assertTrue(p, p.a.realValue().multiply(p.b).eq(product.realValue(), Real.DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Pair<Algebraic, BigInteger> p : take(LIMIT, P.pairs(P.algebraics(), P.nonzeroBigIntegers()))) {
@@ -2317,6 +2372,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             product.validate();
             assertEquals(p, product, p.a.multiply(of(p.b)));
             assertEquals(p, product, of(p.b).multiply(p.a));
+            assertTrue(p, p.a.realValue().multiply(p.b).eq(product.realValue(), Real.DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Pair<Algebraic, Rational> p : take(LIMIT, P.pairs(P.algebraics(), P.nonzeroRationals()))) {
@@ -2354,6 +2410,11 @@ public class AlgebraicProperties extends QBarTestProperties {
             Algebraic product = p.a.multiply(p.b);
             product.validate();
             commutative(Algebraic::multiply, p);
+            assertTrue(
+                    p,
+                    p.a.realValue().multiply(p.b.realValue()).eq(product.realValue(), Real.DEFAULT_RESOLUTION)
+                            .orElse(true)
+            );
         }
 
         ps = P.pairs(
@@ -2394,6 +2455,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             involution(Algebraic::invert, x);
             assertTrue(x, x.multiply(inverse) == ONE);
             assertTrue(x, inverse != ZERO);
+            assertTrue(x, x.realValue().invertUnsafe().eq(inverse.realValue(), Real.DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Algebraic x : take(LIMIT, filterInfinite(s -> s.abs() != ONE, P.nonzeroAlgebraics()))) {
@@ -2407,6 +2469,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             Algebraic quotient = p.a.divide(p.b);
             quotient.validate();
             inverse(x -> x.divide(p.b), (Algebraic x) -> x.multiply(p.b), p.a);
+            assertTrue(p, p.a.realValue().divide(p.b).eq(quotient.realValue(), Real.DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Pair<Algebraic, Integer> p : take(LIMIT, P.pairs(P.nonzeroAlgebraics(), P.nonzeroIntegers()))) {
@@ -2436,6 +2499,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             Algebraic quotient = p.a.divide(p.b);
             quotient.validate();
             inverse(x -> x.divide(p.b), (Algebraic x) -> x.multiply(p.b), p.a);
+            assertTrue(p, p.a.realValue().divide(p.b).eq(quotient.realValue(), Real.DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Pair<Algebraic, BigInteger> p : take(LIMIT, P.pairs(P.nonzeroAlgebraics(), P.nonzeroBigIntegers()))) {
@@ -2465,6 +2529,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             Algebraic quotient = p.a.divide(p.b);
             quotient.validate();
             inverse(x -> x.divide(p.b), (Algebraic x) -> x.multiply(p.b), p.a);
+            assertTrue(p, p.a.realValue().divide(p.b).eq(quotient.realValue(), Real.DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Pair<Algebraic, Rational> p : take(LIMIT, P.pairs(P.nonzeroAlgebraics(), P.nonzeroRationals()))) {
@@ -2499,6 +2564,11 @@ public class AlgebraicProperties extends QBarTestProperties {
             quotient.validate();
             assertEquals(p, quotient, p.a.multiply(p.b.invert()));
             inverse(x -> x.divide(p.b), (Algebraic x) -> x.multiply(p.b), p.a);
+            assertTrue(
+                    p,
+                    p.a.realValue().divideUnsafe(p.b.realValue()).eq(quotient.realValue(), Real.DEFAULT_RESOLUTION)
+                            .orElse(true)
+            );
         }
 
         ps = P.pairs(P.withScale(1).withSecondaryScale(4).nonzeroAlgebraics());
@@ -2548,6 +2618,10 @@ public class AlgebraicProperties extends QBarTestProperties {
             assertEquals(p, shifted, shiftLeft_simplest(p.a, p.b));
             inverse(x -> x.shiftLeft(p.b), (Algebraic x) -> x.shiftRight(p.b), p.a);
             assertEquals(p, shifted, p.a.shiftRight(-p.b));
+            assertTrue(
+                    p,
+                    p.a.realValue().shiftLeft(p.b).eq(shifted.realValue(), Real.DEFAULT_RESOLUTION).orElse(true)
+            );
         }
 
         for (Algebraic x : take(LIMIT, P.algebraics())) {
@@ -2595,6 +2669,10 @@ public class AlgebraicProperties extends QBarTestProperties {
             assertEquals(p, shifted, shiftRight_simplest(p.a, p.b));
             inverse(x -> x.shiftRight(p.b), (Algebraic x) -> x.shiftLeft(p.b), p.a);
             assertEquals(p, shifted, p.a.shiftLeft(-p.b));
+            assertTrue(
+                    p,
+                    p.a.realValue().shiftRight(p.b).eq(shifted.realValue(), Real.DEFAULT_RESOLUTION).orElse(true)
+            );
         }
 
         for (Algebraic x : take(LIMIT, P.algebraics())) {
@@ -2632,6 +2710,11 @@ public class AlgebraicProperties extends QBarTestProperties {
             Algebraic sum = sum(xs);
             sum.validate();
             assertEquals(xs, sum(xs), sum_simplest(xs));
+            assertTrue(
+                    xs,
+                    Real.sum(toList(map(Algebraic::realValue, xs))).eq(sum.realValue(), Real.DEFAULT_RESOLUTION)
+                            .orElse(true)
+            );
         }
 
         Iterable<Pair<List<Algebraic>, List<Algebraic>>> ps = filterInfinite(
@@ -2690,6 +2773,11 @@ public class AlgebraicProperties extends QBarTestProperties {
             Algebraic product = product(xs);
             product.validate();
             assertEquals(xs, product(xs), product_simplest(xs));
+            assertTrue(
+                    xs,
+                    Real.product(toList(map(Algebraic::realValue, xs)))
+                            .eq(product.realValue(), Real.DEFAULT_RESOLUTION).orElse(true)
+            );
         }
 
         Iterable<Pair<List<Algebraic>, List<Algebraic>>> ps = filterInfinite(
@@ -2863,6 +2951,16 @@ public class AlgebraicProperties extends QBarTestProperties {
             aeqit(xs, deltas, reversed);
             testNoRemove(TINY_LIMIT, deltas);
             testHasNext(deltas);
+            assertTrue(
+                    xs,
+                    and(
+                            zipWith(
+                                    (x, y) -> x.eq(y.realValue(), Real.DEFAULT_RESOLUTION).orElse(true),
+                                    Real.delta(map(Algebraic::realValue, xs)),
+                                    deltas
+                            )
+                    )
+            );
         }
 
         for (Algebraic x : take(LIMIT, P.algebraics())) {
@@ -2974,6 +3072,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             }
             assertEquals(p, x, pow_int_alt(p.a, p.b));
             assertEquals(p, x, pow_int_alt2(p.a, p.b));
+            assertTrue(p, p.a.realValue().powUnsafe(p.b).eq(x.realValue(), Real.DEFAULT_RESOLUTION).orElse(true));
         }
 
         ps = P.pairs(P.withScale(1).withSecondaryScale(4).nonzeroAlgebraics(), P.withScale(1).integersGeometric());
@@ -3100,6 +3199,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             } else {
                 assertEquals(p, x.signum(), p.a.signum());
             }
+            assertTrue(p, Real.rootOfRational(p.a, p.b).eq(x.realValue(), Real.DEFAULT_RESOLUTION).orElse(true));
         }
 
         ps = filterInfinite(
@@ -3171,6 +3271,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             x.validate();
             inverse(Algebraic::sqrtOfRational, (Algebraic z) -> z.pow(2).rationalValueExact(), x);
             assertNotEquals(x, y.signum(), -1);
+            assertTrue(x, Real.sqrtOfRational(x).eq(y.realValue(), Real.DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Rational x : take(LIMIT, P.negativeRationals())) {
@@ -3188,6 +3289,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             x.validate();
             inverse(Algebraic::cbrtOfRational, (Algebraic z) -> z.pow(3).rationalValueExact(), x);
             assertEquals(x, y.signum(), x.signum());
+            assertTrue(x, Real.cbrtOfRational(x).eq(y.realValue(), Real.DEFAULT_RESOLUTION).orElse(true));
         }
     }
 
@@ -3206,6 +3308,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             } else {
                 assertEquals(p, x.signum(), p.a.signum());
             }
+            assertTrue(p, p.a.realValue().rootUnsafe(p.b).eq(x.realValue(), Real.DEFAULT_RESOLUTION).orElse(true));
         }
 
         ps = filterInfinite(
@@ -3262,6 +3365,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             y.validate();
             inverse(Algebraic::sqrt, (Algebraic z) -> z.pow(2), x);
             assertNotEquals(x, x.signum(), -1);
+            assertTrue(x, x.realValue().sqrtUnsafe().eq(y.realValue(), Real.DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.pairs(P.withScale(4).rangeUp(ZERO)))) {
@@ -3283,6 +3387,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             y.validate();
             inverse(Algebraic::cbrt, (Algebraic z) -> z.pow(3), x);
             assertEquals(x, y.signum(), x.signum());
+            assertTrue(x, x.realValue().cbrt().eq(y.realValue(), Real.DEFAULT_RESOLUTION).orElse(true));
         }
 
         for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.pairs(P.withScale(4).algebraics()))) {
@@ -3309,6 +3414,10 @@ public class AlgebraicProperties extends QBarTestProperties {
         for (Pair<Algebraic, Rational> p : take(SMALL_LIMIT, ps)) {
             Algebraic x = p.a.pow(p.b);
             x.validate();
+            assertTrue(
+                    p,
+                    p.a.realValue().powUnsafe(Real.of(p.b)).eq(x.realValue(), Real.DEFAULT_RESOLUTION).orElse(true)
+            );
         }
 
         BigInteger five = BigInteger.valueOf(5);
@@ -3479,6 +3588,11 @@ public class AlgebraicProperties extends QBarTestProperties {
             assertTrue(x, ge(fractionalPart, ZERO));
             assertTrue(x, lt(fractionalPart, ONE));
             assertEquals(x, of(x.floor()).add(fractionalPart), x);
+            assertTrue(
+                    x,
+                    x.realValue().fractionalPartUnsafe().eq(fractionalPart.realValue(), Real.DEFAULT_RESOLUTION)
+                            .orElse(true)
+            );
         }
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
@@ -3499,6 +3613,7 @@ public class AlgebraicProperties extends QBarTestProperties {
             assertEquals(t, t.b.mod(rounded.getDenominator()), BigInteger.ZERO);
             assertTrue(t, rounded == Rational.ZERO || rounded.signum() == t.a.signum());
             assertTrue(t, lt(t.a.subtract(rounded).abs(), of(Rational.of(BigInteger.ONE, t.b))));
+            assertEquals(t, t.a.realValue().roundToDenominatorUnsafe(t.b, t.c), rounded);
         }
 
         Iterable<Pair<Algebraic, RoundingMode>> ps = filterInfinite(
@@ -3952,6 +4067,9 @@ public class AlgebraicProperties extends QBarTestProperties {
     private void propertiesCompareTo() {
         initialize("compareTo(Algebraic)");
         QBarTesting.propertiesCompareToHelper(LIMIT, P, QBarIterableProvider::algebraics);
+        for (Pair<Algebraic, Algebraic> p : take(LIMIT, P.subsetPairs(P.algebraics()))) {
+            assertEquals(p, p.a.compareTo(p.b), p.a.realValue().compareToUnsafe(p.b.realValue()));
+        }
     }
 
     private void propertiesReadStrict() {

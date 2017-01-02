@@ -9855,6 +9855,86 @@ public class RealTest {
         pow_Real_Rational_fail_helper(PI, PI, Rational.NEGATIVE_ONE);
     }
 
+    private static void sin_Rational_helper(@NotNull String input, @NotNull String output) {
+        aeq(sin(Rational.readStrict(input).get()), output);
+    }
+
+    @Test
+    public void testSin_Rational() {
+        sin_Rational_helper("0", "0");
+        sin_Rational_helper("1", "0.84147098480789650665...");
+        sin_Rational_helper("-1", "-0.84147098480789650665...");
+        sin_Rational_helper("1/2", "0.47942553860420300027...");
+        sin_Rational_helper("-4/3", "-0.97193790136331277628...");
+        sin_Rational_helper("10", "-0.54402111088936981340...");
+        sin_Rational_helper("100", "-0.50636564110975879365...");
+    }
+
+    private static void cos_Rational_helper(@NotNull String input, @NotNull String output) {
+        aeq(cos(Rational.readStrict(input).get()), output);
+    }
+
+    @Test
+    public void testCos_Rational() {
+        cos_Rational_helper("0", "1");
+        cos_Rational_helper("1", "0.54030230586813971740...");
+        cos_Rational_helper("-1", "0.54030230586813971740...");
+        cos_Rational_helper("1/2", "0.87758256189037271611...");
+        cos_Rational_helper("-4/3", "0.23523757330298934301...");
+        cos_Rational_helper("10", "-0.83907152907645245225...");
+        cos_Rational_helper("100", "0.86231887228768393410...");
+    }
+
+    private static void sin_helper(@NotNull Real input, @NotNull String output) {
+        aeq(input.sin(), output);
+    }
+
+    @Test
+    public void testSin() {
+        sin_helper(ZERO, "0");
+        sin_helper(ONE, "0.84147098480789650665...");
+        sin_helper(NEGATIVE_ONE, "-0.84147098480789650665...");
+        sin_helper(ONE_HALF, "0.47942553860420300027...");
+        sin_helper(NEGATIVE_FOUR_THIRDS, "-0.97193790136331277628...");
+        sin_helper(TEN, "-0.54402111088936981340...");
+        sin_helper(TEN.powUnsafe(2), "-0.50636564110975879365...");
+        sin_helper(SQRT_TWO, "0.98776594599273552706...");
+        sin_helper(E, "0.41078129050290869547...");
+        sin_helper(PI.shiftRight(1), "0.99999999999999999999...");
+        sin_helper(PI, "~0");
+        sin_helper(PI.multiply(Rational.of(3, 2)), "-0.99999999999999999999...");
+        sin_helper(PI.shiftLeft(1), "~0");
+        sin_helper(LOG_2, "~0.63896127631363480115");
+        sin_helper(leftFuzzyRepresentation(Rational.ZERO), "-0.00000000000000000000...");
+        sin_helper(rightFuzzyRepresentation(Rational.ZERO), "0.00000000000000000000...");
+        sin_helper(fuzzyRepresentation(Rational.ZERO), "~0");
+    }
+
+    private static void cos_helper(@NotNull Real input, @NotNull String output) {
+        aeq(input.cos(), output);
+    }
+
+    @Test
+    public void testCos() {
+        cos_helper(ZERO, "1");
+        cos_helper(ONE, "0.54030230586813971740...");
+        cos_helper(NEGATIVE_ONE, "0.54030230586813971740...");
+        cos_helper(ONE_HALF, "0.87758256189037271611...");
+        cos_helper(NEGATIVE_FOUR_THIRDS, "0.23523757330298934301...");
+        cos_helper(TEN, "-0.83907152907645245225...");
+        cos_helper(TEN.powUnsafe(2), "0.86231887228768393410...");
+        cos_helper(SQRT_TWO, "0.15594369476537447345...");
+        cos_helper(E, "-0.91173391478696509789...");
+        cos_helper(PI.shiftRight(1), "~0");
+        cos_helper(PI, "-0.99999999999999999999...");
+        cos_helper(PI.multiply(Rational.of(3, 2)), "~0");
+        cos_helper(PI.shiftLeft(1), "0.99999999999999999999...");
+        cos_helper(LOG_2, "0.76923890136397212657...");
+        cos_helper(leftFuzzyRepresentation(Rational.ZERO), "0.99999999999999999999...");
+        cos_helper(rightFuzzyRepresentation(Rational.ZERO), "0.99999999999999999999...");
+        cos_helper(fuzzyRepresentation(Rational.ZERO), "0.99999999999999999999...");
+    }
+
     @Test
     public void testIntervalExtensionUnsafe() {
         intervalExtensionUnsafe_helper(PI.negate(), NEGATIVE_FOUR_THIRDS, "[-651864872/204778785, -4/3]");

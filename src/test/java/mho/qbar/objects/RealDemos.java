@@ -2008,6 +2008,44 @@ public class RealDemos extends QBarDemos {
         }
     }
 
+    private void demoSin_Rational() {
+        Rational max = Rational.of(100);
+        for (Rational x : take(LIMIT, filterInfinite(x -> Ordering.le(x.abs(), max), P.withScale(4).rationals()))) {
+            System.out.println("sin(" + x + ") = " + sin(x));
+        }
+    }
+
+    private void demoCos_Rational() {
+        Rational max = Rational.of(100);
+        for (Rational x : take(LIMIT, filterInfinite(x -> Ordering.le(x.abs(), max), P.withScale(4).rationals()))) {
+            System.out.println("cos(" + x + ") = " + cos(x));
+        }
+    }
+
+    private void demoSin() {
+        Rational smallResolution = Rational.of(1, 10000);
+        Rational max = Rational.of(100);
+        Iterable<Real> xs = filterInfinite(
+                x -> x.abs().le(max, DEFAULT_RESOLUTION).orElse(true),
+                P.withScale(4).reals()
+        );
+        for (Real x : take(LIMIT, xs)) {
+            System.out.println("sin(" + x + ") = " + x.sin().toStringBase(BigInteger.TEN, 3, smallResolution));
+        }
+    }
+
+    private void demoCos() {
+        Rational smallResolution = Rational.of(1, 10000);
+        Rational max = Rational.of(100);
+        Iterable<Real> xs = filterInfinite(
+                x -> x.abs().le(max, DEFAULT_RESOLUTION).orElse(true),
+                P.withScale(4).reals()
+        );
+        for (Real x : take(LIMIT, xs)) {
+            System.out.println("cos(" + x + ") = " + x.cos().toStringBase(BigInteger.TEN, 3, smallResolution));
+        }
+    }
+
     private void demoIntervalExtensionUnsafe() {
         Iterable<Pair<Real, Real>> ps = filterInfinite(
                 p -> p.a.lt(p.b, DEFAULT_RESOLUTION).orElse(false),
