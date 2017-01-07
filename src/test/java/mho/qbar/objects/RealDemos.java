@@ -2008,17 +2008,17 @@ public class RealDemos extends QBarDemos {
         }
     }
 
-    private void demoSin_Rational() {
+    private void demoSinOfRational() {
         Rational max = Rational.of(100);
         for (Rational x : take(LIMIT, filterInfinite(x -> Ordering.le(x.abs(), max), P.withScale(4).rationals()))) {
-            System.out.println("sin(" + x + ") = " + sin(x));
+            System.out.println("sinOfRational(" + x + ") = " + sinOfRational(x));
         }
     }
 
-    private void demoCos_Rational() {
+    private void demoCosOfRational() {
         Rational max = Rational.of(100);
         for (Rational x : take(LIMIT, filterInfinite(x -> Ordering.le(x.abs(), max), P.withScale(4).rationals()))) {
-            System.out.println("cos(" + x + ") = " + cos(x));
+            System.out.println("cosOfRational(" + x + ") = " + cosOfRational(x));
         }
     }
 
@@ -2043,6 +2043,80 @@ public class RealDemos extends QBarDemos {
         );
         for (Real x : take(LIMIT, xs)) {
             System.out.println("cos(" + x + ") = " + x.cos().toStringBase(BigInteger.TEN, 3, smallResolution));
+        }
+    }
+
+    private void demoTanOfRational() {
+        Rational max = Rational.of(100);
+        for (Rational x : take(LIMIT, filterInfinite(x -> Ordering.le(x.abs(), max), P.withScale(4).rationals()))) {
+            System.out.println("tanOfRational(" + x + ") = " + tanOfRational(x));
+        }
+    }
+
+    private void demoCotOfRational() {
+        Rational max = Rational.of(100);
+        Iterable<Rational> xs = filterInfinite(x -> Ordering.le(x.abs(), max), P.withScale(4).nonzeroRationals());
+        for (Rational x : take(LIMIT, xs)) {
+            System.out.println("cotOfRational(" + x + ") = " + cotOfRational(x));
+        }
+    }
+
+    private void demoTanUnsafe() {
+        Rational smallResolution = Rational.of(1, 10000);
+        Rational max = Rational.of(100);
+        Iterable<Real> xs = filterInfinite(
+                x -> x.abs().le(max, DEFAULT_RESOLUTION).orElse(true),
+                P.withScale(4).reals()
+        );
+        for (Real x : take(LIMIT, xs)) {
+            System.out.println("tanUnsafe(" + x + ") = " +
+                    x.tanUnsafe().toStringBase(BigInteger.TEN, 3, smallResolution));
+        }
+    }
+
+    private void demoTan() {
+        Rational smallResolution = Rational.of(1, 10000);
+        Rational max = Rational.of(100);
+        Iterable<Pair<Real, Rational>> ps = P.pairs(
+                filterInfinite(
+                        x -> x.abs().le(max, DEFAULT_RESOLUTION).orElse(true),
+                        P.withScale(4).reals()
+                ),
+                P.positiveRationals()
+        );
+        for (Pair<Real, Rational> p : take(LIMIT, ps)) {
+            System.out.println("tan(" + p.a + ", " + p.b + ") = " +
+                    p.a.tan(p.b).map(x -> x.toStringBase(BigInteger.TEN, 3, smallResolution)));
+        }
+    }
+
+    private void demoCotUnsafe() {
+        Rational smallResolution = Rational.of(1, 10000);
+        Rational max = Rational.of(100);
+        Iterable<Real> xs = filterInfinite(
+                x -> x.abs().le(max, DEFAULT_RESOLUTION).orElse(true),
+                P.withScale(4).nonzeroReals()
+        );
+        for (Real x : take(LIMIT, xs)) {
+            System.out.println("cotUnsafe(" + x + ") = " +
+                    x.cotUnsafe().toStringBase(BigInteger.TEN, 3, smallResolution));
+        }
+    }
+
+    private void demoCot() {
+        Rational smallResolution = Rational.of(1, 10000);
+        Rational max = Rational.of(100);
+        Iterable<Pair<Real, Rational>> ps = P.pairs(
+                filterInfinite(
+                        x -> (!x.isExact() || x.rationalValueExact().get() != Rational.ZERO) &&
+                                x.abs().le(max, DEFAULT_RESOLUTION).orElse(true),
+                        P.withScale(4).reals()
+                ),
+                P.positiveRationals()
+        );
+        for (Pair<Real, Rational> p : take(LIMIT, ps)) {
+            System.out.println("cot(" + p.a + ", " + p.b + ") = " +
+                    p.a.cot(p.b).map(x -> x.toStringBase(BigInteger.TEN, 3, smallResolution)));
         }
     }
 

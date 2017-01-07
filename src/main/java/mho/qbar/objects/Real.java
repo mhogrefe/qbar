@@ -28,11 +28,12 @@ import static mho.wheels.testing.Testing.*;
  * to use the methods of this class, which, when given valid {@code Real}s, will always return valid {@code Real}s.</p>
  *
  * <p>Any real number may be represented by infinitely many {@code Real}s. Given a rational number r, the {@code Real}
- * whose intervals are [r, r], [r, r], [r, r], ... is called the exact representation of r, and all other {@code Real}s
- * representing r are called fuzzy representations. Fuzzy {@code Real}s are difficult to work with, but also difficult
- * to avoid. Sometimes, a method that takes a {@code Real} will loop forever given certain fuzzy {@code Real}s. If this
- * is the case, that behavior is documented and the method is labeled unsafe. Often, a safe alternative is provided
- * that gives up after the diameters of the approximating intervals decrease below a certain resolution.</p>
+ * whose {@code rational} field is set to {@code r} is called the exact representation of r, and all other
+ * {@code Real}s representing r are called fuzzy representations. Fuzzy {@code Real}s are difficult to work with, but
+ * also difficult to avoid. Sometimes, a method that takes a {@code Real} will loop forever given certain fuzzy
+ * {@code Real}s. If this is the case, that behavior is documented and the method is labeled unsafe. Often, a safe
+ * alternative is provided that gives up after the diameters of the approximating intervals decrease below a certain
+ * resolution.</p>
  *
  * <p>Every {@code Real} is either irrational, exact, or fuzzy. Irrational or exact {@code Real}s are also called
  * clean.</p>
@@ -3790,6 +3791,7 @@ public final class Real implements Iterable<Interval> {
      * <ul>
      *  <li>{@code this} may be any {@code Real}.</li>
      *  <li>{@code p} may be any {@code Real}.</li>
+     *  <li>{@code resolution} must be positive.</li>
      *  <li>If {@code this} is 0, {@code p} cannot be negative.</li>
      *  <li>If {@code this} is a fuzzy zero, {@code p} must be exact rational.</li>
      *  <li>If {@code this} is negative, {@code p} must be exact rational with an odd denominator.</li>
@@ -3799,6 +3801,7 @@ public final class Real implements Iterable<Interval> {
      * </ul>
      *
      * @param p the power that {@code this} is raised to
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
      * @return {@code this}<sup>{@code p}</sup>
      */
     public @NotNull Optional<Real> pow(@NotNull Real p, @NotNull Rational resolution) {
@@ -3856,18 +3859,18 @@ public final class Real implements Iterable<Interval> {
      * Returns the sine of {@code x}.
      *
      * <ul>
-     *  <li>{@code x} may be any {@code Real}.</li>
-     *  <li>The result the sine of a rational number. If it is –1 it is fuzzy on the right and if it is 1 it is fuzzy
-     *  on the left. If it is nonzero, it is not exact.</li>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>The result is the sine of a rational number. If it is –1 it is fuzzy on the right and if it is 1 it is
+     *  fuzzy on the left. If it is nonzero, it is not exact.</li>
      * </ul>
      *
      * @param x a {@code Rational}
      * @return sin({@code x})
      */
     @SuppressWarnings("JavaDoc")
-    public static @NotNull Real sin(@NotNull Rational x) {
+    public static @NotNull Real sinOfRational(@NotNull Rational x) {
         if (x == Rational.ZERO) return ZERO;
-        if (x.signum() == -1) return sin(x.negate()).negate();
+        if (x.signum() == -1) return sinOfRational(x.negate()).negate();
         Rational xSquared = x.pow(2);
         return forceContainment(() -> new NoRemoveIterator<Interval>() {
             private @NotNull Rational partialSum = Rational.ZERO;
@@ -3921,18 +3924,18 @@ public final class Real implements Iterable<Interval> {
      * Returns the cosine of {@code x}.
      *
      * <ul>
-     *  <li>{@code x} may be any {@code Real}.</li>
-     *  <li>The result the cosine of a rational number. If it is –1 it is fuzzy on the right and if it is 1 it is fuzzy
-     *  on the left. If it is not equal to 1, it is not exact.</li>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>The result is the cosine of a rational number. If it is –1 it is fuzzy on the right and if it is 1 it is
+     *  fuzzy on the left. If it is not equal to 1, it is not exact.</li>
      * </ul>
      *
      * @param x a {@code Rational}
      * @return cos({@code x})
      */
     @SuppressWarnings("JavaDoc")
-    public static @NotNull Real cos(@NotNull Rational x) {
+    public static @NotNull Real cosOfRational(@NotNull Rational x) {
         if (x == Rational.ZERO) return ONE;
-        if (x.signum() == -1) return cos(x.negate());
+        if (x.signum() == -1) return cosOfRational(x.negate());
         Rational xSquared = x.pow(2);
         return forceContainment((() -> new NoRemoveIterator<Interval>() {
             private @NotNull Rational partialSum = Rational.ONE;
@@ -4135,7 +4138,7 @@ public final class Real implements Iterable<Interval> {
             return ZERO;
         }
         if (rational.isPresent()) {
-            return sin(rational.get());
+            return sinOfRational(rational.get());
         }
         return forceContainment(() -> new NoRemoveIterator<Interval>() {
             private final @NotNull Iterator<Interval> is = intervals.iterator();
@@ -4162,8 +4165,8 @@ public final class Real implements Iterable<Interval> {
             @Override
             public @NotNull Interval next() {
                 if (lowerReal == null) {
-                    lowerReal = sin(a.getLower().get()).iterator();
-                    upperReal = sin(a.getUpper().get()).iterator();
+                    lowerReal = sinOfRational(a.getLower().get()).iterator();
+                    upperReal = sinOfRational(a.getUpper().get()).iterator();
                     for (int j = 0; j < i; j++) {
                         lowerReal.next();
                         upperReal.next();
@@ -4188,8 +4191,8 @@ public final class Real implements Iterable<Interval> {
                     if (sinAContainsNegative1) {
                         sinAContainsNegative1 = containsElementWhoseSinIsNegative1(a);
                     }
-                    lowerReal = sin(a.getLower().get()).iterator();
-                    upperReal = sin(a.getUpper().get()).iterator();
+                    lowerReal = sinOfRational(a.getLower().get()).iterator();
+                    upperReal = sinOfRational(a.getUpper().get()).iterator();
                     for (int j = 0; j < i; j++) {
                         lowerReal.next();
                         upperReal.next();
@@ -4230,7 +4233,7 @@ public final class Real implements Iterable<Interval> {
             return ONE;
         }
         if (rational.isPresent()) {
-            return cos(rational.get());
+            return cosOfRational(rational.get());
         }
         return forceContainment(() -> new NoRemoveIterator<Interval>() {
             private final @NotNull Iterator<Interval> is = intervals.iterator();
@@ -4257,8 +4260,8 @@ public final class Real implements Iterable<Interval> {
             @Override
             public @NotNull Interval next() {
                 if (lowerReal == null) {
-                    lowerReal = cos(a.getLower().get()).iterator();
-                    upperReal = cos(a.getUpper().get()).iterator();
+                    lowerReal = cosOfRational(a.getLower().get()).iterator();
+                    upperReal = cosOfRational(a.getUpper().get()).iterator();
                     for (int j = 0; j < i; j++) {
                         lowerReal.next();
                         upperReal.next();
@@ -4283,8 +4286,8 @@ public final class Real implements Iterable<Interval> {
                     if (cosAContainsNegative1) {
                         cosAContainsNegative1 = containsElementWhoseCosIsNegative1(a);
                     }
-                    lowerReal = cos(a.getLower().get()).iterator();
-                    upperReal = cos(a.getUpper().get()).iterator();
+                    lowerReal = cosOfRational(a.getLower().get()).iterator();
+                    upperReal = cosOfRational(a.getUpper().get()).iterator();
                     for (int j = 0; j < i; j++) {
                         lowerReal.next();
                         upperReal.next();
@@ -4306,6 +4309,124 @@ public final class Real implements Iterable<Interval> {
                 return nextInterval;
             }
         });
+    }
+
+    /**
+     * Returns the tangent of {@code x}.
+     *
+     * <ul>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>The result is the tangent of a rational number. If it is nonzero, it is not exact.</li>
+     * </ul>
+     *
+     * @param x a {@code Rational}
+     * @return tan({@code x})
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull Real tanOfRational(@NotNull Rational x) {
+        return sinOfRational(x).divideUnsafe(cosOfRational(x));
+    }
+
+    /**
+     * Returns the cotangent of {@code x}.
+     *
+     * <ul>
+     *  <li>{@code x} cannot be zero.</li>
+     *  <li>The result is the cotangent of a rational number.</li>
+     * </ul>
+     *
+     * @param x a {@code Rational}
+     * @return cot({@code x})
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull Real cotOfRational(@NotNull Rational x) {
+        return cosOfRational(x).divideUnsafe(sinOfRational(x));
+    }
+
+    /**
+     * Returns the tangent of {@code this}. If {@code this} is an odd multiple of π/2, this method will loop forever.
+     * To avoid this behavior, use {@link Real#tan(Rational)} instead.
+     *
+     * <ul>
+     *  <li>{@code this} may not be an odd multiple of π/2.</li>
+     *  <li>If the result is nonzero, it is not exact.</li>
+     * </ul>
+     *
+     * @return tan({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Real tanUnsafe() {
+        if (rational.isPresent()) {
+            return tanOfRational(rational.get());
+        }
+        return sin().divideUnsafe(cos());
+    }
+
+    /**
+     * Returns the tangent of {@code this}. If {@code this} is an odd multiple of π/2, this method will give up and
+     * return empty once the approximating interval's diameter is less than the specified resolution.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be null.</li>
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>If the result is nonzero, it is not exact.</li>
+     * </ul>
+     *
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return tan({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Optional<Real> tan(@NotNull Rational resolution) {
+        if (resolution.signum() != 1) {
+            throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
+        }
+        if (rational.isPresent()) {
+            return Optional.of(tanOfRational(rational.get()));
+        }
+        return sin().divide(cos(), resolution);
+    }
+
+    /**
+     * Returns the cotangent of {@code this}. If {@code this} is a multiple of π that is not an exact zero, this method
+     * will loop forever. To avoid this behavior, use {@link Real#cot(Rational)} instead.
+     *
+     * <ul>
+     *  <li>{@code this} may not a multiple of π.</li>
+     *  <li>The result is not exact.</li>
+     * </ul>
+     *
+     * @return cot({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Real cotUnsafe() {
+        if (rational.isPresent()) {
+            return cotOfRational(rational.get());
+        }
+        return cos().divideUnsafe(sin());
+    }
+
+    /**
+     * Returns the cotangent of {@code this}. If {@code this} is a multiple of π that is not an exact zero, this method
+     * will give up and return empty once the approximating interval's diameter is less than the specified resolution.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be an exact zero.</li>
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>The result is not exact.</li>
+     * </ul>
+     *
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return tan({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Optional<Real> cot(@NotNull Rational resolution) {
+        if (resolution.signum() != 1) {
+            throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
+        }
+        if (rational.isPresent()) {
+            return Optional.of(cotOfRational(rational.get()));
+        }
+        return cos().divide(sin(), resolution);
     }
 
     /**

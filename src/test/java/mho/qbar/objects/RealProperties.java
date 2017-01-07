@@ -150,10 +150,16 @@ public class RealProperties extends QBarTestProperties {
         propertiesLog_Real_Rational();
         propertiesPowUnsafe_Real();
         propertiesPow_Real_Rational();
-        propertiesSin_Rational();
-        propertiesCos_Rational();
+        propertiesSinOfRational();
+        propertiesCosOfRational();
         propertiesSin();
         propertiesCos();
+        propertiesTanOfRational();
+        propertiesCotOfRational();
+        propertiesTanUnsafe();
+        propertiesTan();
+        propertiesCotUnsafe();
+        propertiesCot();
         propertiesIntervalExtensionUnsafe();
         propertiesFractionalPartUnsafe();
         propertiesFractionalPart();
@@ -4809,7 +4815,11 @@ public class RealProperties extends QBarTestProperties {
         );
         for (Pair<Real, Rational> p : take(TINY_LIMIT, ps)) {
             Optional<Real> ox = p.a.log(p.b);
-            ox.ifPresent(x -> assertTrue(p, x.eq(p.a.logUnsafe(), SMALL_RESOLUTION).orElse(true)));
+            if (ox.isPresent()) {
+                Real x = ox.get();
+                x.validate();
+                assertTrue(p, x.eq(p.a.logUnsafe(), SMALL_RESOLUTION).orElse(true));
+            }
         }
 
         for (Pair<Real, Rational> p : take(LIMIT, P.pairs(P.negativeReals(), P.positiveRationals()))) {
@@ -4916,7 +4926,11 @@ public class RealProperties extends QBarTestProperties {
         );
         for (Triple<Real, Rational, Rational> t : take(TINY_LIMIT, ts)) {
             Optional<Real> ox = t.a.log(t.b, t.c);
-            ox.ifPresent(x -> assertTrue(t, x.eq(t.a.logUnsafe(t.b), SMALL_RESOLUTION).orElse(true)));
+            if (ox.isPresent()) {
+                Real x = ox.get();
+                x.validate();
+                assertTrue(t, x.eq(t.a.logUnsafe(t.b), SMALL_RESOLUTION).orElse(true));
+            }
         }
 
         Iterable<Triple<Real, Rational, Rational>> tsFail = P.triples(
@@ -5024,7 +5038,11 @@ public class RealProperties extends QBarTestProperties {
         );
         for (Triple<Real, Real, Rational> t : take(TINY_LIMIT, ts)) {
             Optional<Real> ox = t.a.log(t.b, t.c);
-            ox.ifPresent(x -> assertTrue(t, x.eq(t.a.logUnsafe(t.b), SMALL_RESOLUTION).orElse(true)));
+            if (ox.isPresent()) {
+                Real x = ox.get();
+                x.validate();
+                assertTrue(t, x.eq(t.a.logUnsafe(t.b), SMALL_RESOLUTION).orElse(true));
+            }
         }
 
         Iterable<Triple<Real, Real, Rational>> tsFail = P.triples(
@@ -5262,7 +5280,11 @@ public class RealProperties extends QBarTestProperties {
         );
         for (Triple<Real, Real, Rational> t : take(TINY_LIMIT, ts)) {
             Optional<Real> ox = t.a.pow(t.b, t.c);
-            ox.ifPresent(x -> assertTrue(t, x.eq(t.a.powUnsafe(t.b), SMALL_RESOLUTION).orElse(true)));
+            if (ox.isPresent()) {
+                Real x = ox.get();
+                x.validate();
+                assertTrue(t, x.eq(t.a.powUnsafe(t.b), SMALL_RESOLUTION).orElse(true));
+            }
         }
 
         Iterable<Triple<Real, Real, Rational>> tsFail = P.triples(
@@ -5348,30 +5370,47 @@ public class RealProperties extends QBarTestProperties {
         }
     }
 
-    private void propertiesSin_Rational() {
-        initialize("sin(Rational)");
+    private void propertiesSinOfRational() {
+        initialize("sinOfRational(Rational)");
         Rational max = Rational.of(100);
-        for (Rational x : take(LIMIT, filterInfinite(x -> Ordering.le(x.abs(), max), P.withScale(4).rationals()))) {
-            Real y = sin(x);
+        Iterable<Rational> xs = filterInfinite(x -> Ordering.le(x.abs(), max), P.withScale(4).rationals());
+        for (Rational x : take(LIMIT, xs)) {
+            Real y = sinOfRational(x);
             y.validate();
             assertTrue(x, y.leUnsafe(Rational.ONE));
             assertTrue(x, y.geUnsafe(Rational.NEGATIVE_ONE));
             assertTrue(x, x == Rational.ZERO || !y.isExact());
             //todo arcsin
-            assertTrue(x, y.powUnsafe(2).add(cos(x).powUnsafe(2)).eq(Rational.ONE, DEFAULT_RESOLUTION).orElse(true));
+        }
+
+        for (Rational x : take(TINY_LIMIT, xs)) {
+            Real y = sinOfRational(x);
+            assertTrue(x, sinOfRational(x.negate()).eq(y.negate(), SMALL_RESOLUTION).orElse(true));
+            assertTrue(x, PI.shiftRight(1).subtract(x).cos().eq(y, SMALL_RESOLUTION).orElse(true));
+            assertTrue(
+                    x,
+                    y.powUnsafe(2).add(cosOfRational(x).powUnsafe(2)).eq(Rational.ONE, SMALL_RESOLUTION).orElse(true)
+            );
         }
     }
 
-    private void propertiesCos_Rational() {
-        initialize("cos(Rational)");
+    private void propertiesCosOfRational() {
+        initialize("cosOfRational(Rational)");
         Rational max = Rational.of(100);
-        for (Rational x : take(LIMIT, filterInfinite(x -> Ordering.le(x.abs(), max), P.withScale(4).rationals()))) {
-            Real y = cos(x);
+        Iterable<Rational> xs = filterInfinite(x -> Ordering.le(x.abs(), max), P.withScale(4).rationals());
+        for (Rational x : take(LIMIT, xs)) {
+            Real y = cosOfRational(x);
             y.validate();
             assertTrue(x, y.leUnsafe(Rational.ONE));
             assertTrue(x, y.geUnsafe(Rational.NEGATIVE_ONE));
             assertTrue(x, x == Rational.ZERO || !y.isExact());
             //todo arccos
+        }
+
+        for (Rational x : take(TINY_LIMIT, xs)) {
+            Real y = cosOfRational(x);
+            assertTrue(x, cosOfRational(x.negate()).eq(y, SMALL_RESOLUTION).orElse(true));
+            assertTrue(x, PI.shiftRight(1).subtract(x).sin().eq(y, SMALL_RESOLUTION).orElse(true));
         }
     }
 
@@ -5382,7 +5421,7 @@ public class RealProperties extends QBarTestProperties {
                 x -> x.abs().le(max, DEFAULT_RESOLUTION).orElse(true),
                 P.withScale(4).reals()
         );
-        for (Real x : take(LIMIT, xs)) {
+        for (Real x : take(SMALL_LIMIT, xs)) {
             Real y = x.sin();
             y.validate();
             assertTrue(x, y.leUnsafe(Rational.ONE));
@@ -5391,10 +5430,13 @@ public class RealProperties extends QBarTestProperties {
             //todo arcsin
         }
 
-        for (Real x : take(SMALL_LIMIT, xs)) {
+        for (Real x : take(TINY_LIMIT, xs)) {
+            Real y = x.sin();
+            assertTrue(x, x.negate().sin().eq(y.negate(), SMALL_RESOLUTION).orElse(true));
+            assertTrue(x, PI.shiftRight(1).subtract(x).cos().eq(y, SMALL_RESOLUTION).orElse(true));
             assertTrue(
                     x,
-                    x.sin().powUnsafe(2).add(x.cos().powUnsafe(2)).eq(Rational.ONE, SMALL_RESOLUTION).orElse(true)
+                    y.powUnsafe(2).add(x.cos().powUnsafe(2)).eq(Rational.ONE, SMALL_RESOLUTION).orElse(true)
             );
         }
     }
@@ -5406,13 +5448,171 @@ public class RealProperties extends QBarTestProperties {
                 x -> x.abs().le(max, DEFAULT_RESOLUTION).orElse(true),
                 P.withScale(4).reals()
         );
-        for (Real x : take(LIMIT, xs)) {
+        for (Real x : take(SMALL_LIMIT, xs)) {
             Real y = x.cos();
             y.validate();
             assertTrue(x, y.leUnsafe(Rational.ONE));
             assertTrue(x, y.geUnsafe(Rational.NEGATIVE_ONE));
             assertTrue(x, x.isExact() && x.rationalValueExact().get() == Rational.ZERO || !y.isExact());
             //todo arccos
+        }
+
+        for (Real x : take(TINY_LIMIT, xs)) {
+            Real y = x.cos();
+            assertTrue(x, x.negate().cos().eq(y, SMALL_RESOLUTION).orElse(true));
+            assertTrue(x, PI.shiftRight(1).subtract(x).sin().eq(y, SMALL_RESOLUTION).orElse(true));
+        }
+    }
+
+    private void propertiesTanOfRational() {
+        initialize("tanOfRational(Rational)");
+        Rational max = Rational.of(100);
+        Iterable<Rational> xs = filterInfinite(x -> Ordering.le(x.abs(), max), P.withScale(4).rationals());
+        for (Rational x : take(LIMIT, xs)) {
+            Real y = tanOfRational(x);
+            y.validate();
+            assertTrue(x, x == Rational.ZERO || !y.isExact());
+            //todo arctan
+        }
+
+        for (Rational x : take(TINY_LIMIT, xs)) {
+            Real y = tanOfRational(x);
+            assertTrue(x, tanOfRational(x.negate()).eq(y.negate(), SMALL_RESOLUTION).orElse(true));
+            assertTrue(x, PI.shiftRight(1).subtract(x).cotUnsafe().eq(y, SMALL_RESOLUTION).orElse(true));
+        }
+
+        xs = filterInfinite(x -> Ordering.le(x.abs(), max), P.withScale(4).nonzeroRationals());
+        for (Rational x : take(TINY_LIMIT, xs)) {
+            assertTrue(x, tanOfRational(x).eq(cotOfRational(x).invertUnsafe(), DEFAULT_RESOLUTION).orElse(true));
+        }
+    }
+
+    private void propertiesCotOfRational() {
+        initialize("cotOfRational(Rational)");
+        Rational max = Rational.of(100);
+        Iterable<Rational> xs = filterInfinite(x -> Ordering.le(x.abs(), max), P.withScale(4).nonzeroRationals());
+        for (Rational x : take(LIMIT, xs)) {
+            Real y = cotOfRational(x);
+            y.validate();
+            assertFalse(x, y.isExact());
+            //todo arccot
+        }
+
+        for (Rational x : take(TINY_LIMIT, xs)) {
+            Real y = cotOfRational(x);
+            assertTrue(x, cotOfRational(x.negate()).eq(y.negate(), SMALL_RESOLUTION).orElse(true));
+            assertTrue(x, PI.shiftRight(1).subtract(x).tanUnsafe().eq(y, SMALL_RESOLUTION).orElse(true));
+            assertTrue(x, cotOfRational(x).eq(tanOfRational(x).invertUnsafe(), DEFAULT_RESOLUTION).orElse(true));
+        }
+    }
+
+    private void propertiesTanUnsafe() {
+        initialize("tanUnsafe()");
+        Rational max = Rational.of(100);
+        Iterable<Real> xs = filterInfinite(
+                x -> x.abs().le(max, DEFAULT_RESOLUTION).orElse(true),
+                P.withScale(4).reals()
+        );
+        for (Real x : take(SMALL_LIMIT, xs)) {
+            Real y = x.tanUnsafe();
+            y.validate();
+            assertTrue(x, x.isExact() && x.rationalValueExact().get() == Rational.ZERO || !y.isExact());
+            //todo arctan
+        }
+
+        for (Real x : take(TINY_LIMIT, xs)) {
+            Real y = x.tanUnsafe();
+            assertTrue(x, x.negate().tanUnsafe().eq(y.negate(), SMALL_RESOLUTION).orElse(true));
+            assertTrue(x, PI.shiftRight(1).subtract(x).cotUnsafe().eq(y, SMALL_RESOLUTION).orElse(true));
+        }
+
+        xs = filterInfinite(x -> x.abs().le(max, DEFAULT_RESOLUTION).orElse(true), P.withScale(4).nonzeroReals());
+        for (Real x : take(TINY_LIMIT, xs)) {
+            Real y = x.tanUnsafe();
+            assertTrue(x, x.cotUnsafe().invertUnsafe().eq(y, SMALL_RESOLUTION).orElse(true));
+        }
+    }
+
+    private void propertiesTan() {
+        initialize("tan(Rational)");
+        Rational max = Rational.of(100);
+        Iterable<Pair<Real, Rational>> ps = P.pairs(
+                filterInfinite(
+                        x -> x.abs().le(max, DEFAULT_RESOLUTION).orElse(true),
+                        P.withScale(4).reals()
+                ),
+                P.positiveRationals()
+        );
+        for (Pair<Real, Rational> p : take(SMALL_LIMIT, ps)) {
+            Optional<Real> oy = p.a.tan(p.b);
+            if (oy.isPresent()) {
+                Real y = oy.get();
+                y.validate();
+                assertTrue(p, y.eq(p.a.tanUnsafe(), SMALL_RESOLUTION).orElse(true));
+            }
+        }
+
+        for (Pair<Real, Rational> p : take(LIMIT, P.pairs(P.reals(), P.rangeDown(Rational.ZERO)))) {
+            try {
+                p.a.tan(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesCotUnsafe() {
+        initialize("cotUnsafe()");
+        Rational max = Rational.of(100);
+        Iterable<Real> xs = filterInfinite(
+                x -> x.abs().le(max, DEFAULT_RESOLUTION).orElse(true),
+                P.withScale(4).nonzeroReals()
+        );
+        for (Real x : take(SMALL_LIMIT, xs)) {
+            Real y = x.cotUnsafe();
+            y.validate();
+            //todo arccot
+        }
+
+        for (Real x : take(TINY_LIMIT, xs)) {
+            Real y = x.cotUnsafe();
+            assertTrue(x, x.negate().cotUnsafe().eq(y.negate(), SMALL_RESOLUTION).orElse(true));
+            assertTrue(x, PI.shiftRight(1).subtract(x).tanUnsafe().eq(y, SMALL_RESOLUTION).orElse(true));
+            assertTrue(x, x.tanUnsafe().invertUnsafe().eq(y, SMALL_RESOLUTION).orElse(true));
+        }
+    }
+
+    private void propertiesCot() {
+        initialize("cot(Rational)");
+        Rational max = Rational.of(100);
+        Iterable<Pair<Real, Rational>> ps = P.pairs(
+                filterInfinite(
+                        x -> (!x.isExact() || x.rationalValueExact().get() != Rational.ZERO) &&
+                                x.abs().le(max, DEFAULT_RESOLUTION).orElse(true),
+                        P.withScale(4).reals()
+                ),
+                P.positiveRationals()
+        );
+        for (Pair<Real, Rational> p : take(SMALL_LIMIT, ps)) {
+            Optional<Real> oy = p.a.cot(p.b);
+            if (oy.isPresent()) {
+                Real y = oy.get();
+                y.validate();
+                assertTrue(p, y.eq(p.a.cotUnsafe(), SMALL_RESOLUTION).orElse(true));
+            }
+        }
+
+        for (Rational r : take(LIMIT, P.positiveRationals())) {
+            try {
+                ZERO.cot(r);
+                fail(r);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        for (Pair<Real, Rational> p : take(LIMIT, P.pairs(P.nonzeroReals(), P.rangeDown(Rational.ZERO)))) {
+            try {
+                p.a.cot(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 

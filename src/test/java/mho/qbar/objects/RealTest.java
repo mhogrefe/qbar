@@ -9855,38 +9855,46 @@ public class RealTest {
         pow_Real_Rational_fail_helper(PI, PI, Rational.NEGATIVE_ONE);
     }
 
-    private static void sin_Rational_helper(@NotNull String input, @NotNull String output) {
-        aeq(sin(Rational.readStrict(input).get()), output);
+    private static void sinOfRational_helper(@NotNull String input, @NotNull String output) {
+        Real x = sinOfRational(Rational.readStrict(input).get());
+        x.validate();
+        aeq(x, output);
     }
 
     @Test
-    public void testSin_Rational() {
-        sin_Rational_helper("0", "0");
-        sin_Rational_helper("1", "0.84147098480789650665...");
-        sin_Rational_helper("-1", "-0.84147098480789650665...");
-        sin_Rational_helper("1/2", "0.47942553860420300027...");
-        sin_Rational_helper("-4/3", "-0.97193790136331277628...");
-        sin_Rational_helper("10", "-0.54402111088936981340...");
-        sin_Rational_helper("100", "-0.50636564110975879365...");
+    public void testSinOfRational() {
+        sinOfRational_helper("0", "0");
+        sinOfRational_helper("1", "0.84147098480789650665...");
+        sinOfRational_helper("-1", "-0.84147098480789650665...");
+        sinOfRational_helper("1/2", "0.47942553860420300027...");
+        sinOfRational_helper("-4/3", "-0.97193790136331277628...");
+        sinOfRational_helper("10", "-0.54402111088936981340...");
+        sinOfRational_helper("100", "-0.50636564110975879365...");
+        sinOfRational_helper("22/7", "-0.00126448893037735340...");
     }
 
-    private static void cos_Rational_helper(@NotNull String input, @NotNull String output) {
-        aeq(cos(Rational.readStrict(input).get()), output);
+    private static void cosOfRational_helper(@NotNull String input, @NotNull String output) {
+        Real x = cosOfRational(Rational.readStrict(input).get());
+        x.validate();
+        aeq(x, output);
     }
 
     @Test
-    public void testCos_Rational() {
-        cos_Rational_helper("0", "1");
-        cos_Rational_helper("1", "0.54030230586813971740...");
-        cos_Rational_helper("-1", "0.54030230586813971740...");
-        cos_Rational_helper("1/2", "0.87758256189037271611...");
-        cos_Rational_helper("-4/3", "0.23523757330298934301...");
-        cos_Rational_helper("10", "-0.83907152907645245225...");
-        cos_Rational_helper("100", "0.86231887228768393410...");
+    public void testCosOfRational() {
+        cosOfRational_helper("0", "1");
+        cosOfRational_helper("1", "0.54030230586813971740...");
+        cosOfRational_helper("-1", "0.54030230586813971740...");
+        cosOfRational_helper("1/2", "0.87758256189037271611...");
+        cosOfRational_helper("-4/3", "0.23523757330298934301...");
+        cosOfRational_helper("10", "-0.83907152907645245225...");
+        cosOfRational_helper("100", "0.86231887228768393410...");
+        cosOfRational_helper("22/7", "-0.99999920053355290326...");
     }
 
     private static void sin_helper(@NotNull Real input, @NotNull String output) {
-        aeq(input.sin(), output);
+        Real x = input.sin();
+        x.validate();
+        aeq(x, output);
     }
 
     @Test
@@ -9911,7 +9919,9 @@ public class RealTest {
     }
 
     private static void cos_helper(@NotNull Real input, @NotNull String output) {
-        aeq(input.cos(), output);
+        Real x = input.cos();
+        x.validate();
+        aeq(x, output);
     }
 
     @Test
@@ -9933,6 +9943,188 @@ public class RealTest {
         cos_helper(leftFuzzyRepresentation(Rational.ZERO), "0.99999999999999999999...");
         cos_helper(rightFuzzyRepresentation(Rational.ZERO), "0.99999999999999999999...");
         cos_helper(fuzzyRepresentation(Rational.ZERO), "0.99999999999999999999...");
+    }
+
+    private static void tanOfRational_helper(@NotNull String input, @NotNull String output) {
+        Real x = tanOfRational(Rational.readStrict(input).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testTanOfRational() {
+        tanOfRational_helper("0", "0");
+        tanOfRational_helper("1", "1.55740772465490223050...");
+        tanOfRational_helper("-1", "-1.55740772465490223050...");
+        tanOfRational_helper("1/2", "0.54630248984379051325...");
+        tanOfRational_helper("-4/3", "-4.13172899089314666508...");
+        tanOfRational_helper("10", "0.64836082745908667125...");
+        tanOfRational_helper("100", "-0.58721391515692907667...");
+        tanOfRational_helper("22/7", "0.00126448994129463415...");
+    }
+
+    private static void cotOfRational_helper(@NotNull String input, @NotNull String output) {
+        Real x = cotOfRational(Rational.readStrict(input).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void cotOfRational_fail_helper(@NotNull String input) {
+        try {
+            cotOfRational(Rational.readStrict(input).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testCotOfRational() {
+        cotOfRational_helper("1", "0.64209261593433070300...");
+        cotOfRational_helper("-1", "-0.64209261593433070300...");
+        cotOfRational_helper("1/2", "1.83048772171245191926...");
+        cotOfRational_helper("-4/3", "-0.24202942695518667705...");
+        cotOfRational_helper("10", "1.54235104535692004827...");
+        cotOfRational_helper("100", "-1.70295691942646921609...");
+        cotOfRational_helper("22/7", "790.83270443113289503853...");
+
+        cotOfRational_fail_helper("0");
+    }
+
+    private static void tanUnsafe_helper(@NotNull Real input, @NotNull String output) {
+        Real x = input.tanUnsafe();
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testTanUnsafe() {
+        tanUnsafe_helper(ZERO, "0");
+        tanUnsafe_helper(ONE, "1.55740772465490223050...");
+        tanUnsafe_helper(NEGATIVE_ONE, "-1.55740772465490223050...");
+        tanUnsafe_helper(ONE_HALF, "0.54630248984379051325...");
+        tanUnsafe_helper(NEGATIVE_FOUR_THIRDS, "-4.13172899089314666508...");
+        tanUnsafe_helper(TEN, "0.64836082745908667125...");
+        tanUnsafe_helper(TEN.powUnsafe(2), "-0.58721391515692907667...");
+        tanUnsafe_helper(SQRT_TWO, "6.33411916704219155405...");
+        tanUnsafe_helper(E, "-0.45054953406980749571...");
+        tanUnsafe_helper(PI, "~0");
+        tanUnsafe_helper(PI.shiftLeft(1), "~0");
+        tanUnsafe_helper(LOG_2, "0.83064087786078394703...");
+        tanUnsafe_helper(leftFuzzyRepresentation(Rational.ZERO), "-0.00000000000000000000...");
+        tanUnsafe_helper(rightFuzzyRepresentation(Rational.ZERO), "0.00000000000000000000...");
+        tanUnsafe_helper(fuzzyRepresentation(Rational.ZERO), "~0");
+    }
+
+    private static void tan_helper(@NotNull Real input, @NotNull Rational resolution, @NotNull String output) {
+        Optional<Real> ox = input.tan(resolution);
+        ox.ifPresent(Real::validate);
+        aeq(ox, output);
+    }
+
+    private static void tan_fail_helper(@NotNull Real input, @NotNull Rational resolution) {
+        try {
+            input.tan(resolution);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testTan() {
+        tan_helper(ZERO, DEFAULT_RESOLUTION, "Optional[0]");
+        tan_helper(ONE, DEFAULT_RESOLUTION, "Optional[1.55740772465490223050...]");
+        tan_helper(NEGATIVE_ONE, DEFAULT_RESOLUTION, "Optional[-1.55740772465490223050...]");
+        tan_helper(ONE_HALF, DEFAULT_RESOLUTION, "Optional[0.54630248984379051325...]");
+        tan_helper(NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[-4.13172899089314666508...]");
+        tan_helper(TEN, DEFAULT_RESOLUTION, "Optional[0.64836082745908667125...]");
+        tan_helper(TEN.powUnsafe(2), DEFAULT_RESOLUTION, "Optional[-0.58721391515692907667...]");
+        tan_helper(SQRT_TWO, DEFAULT_RESOLUTION, "Optional[6.33411916704219155405...]");
+        tan_helper(E, DEFAULT_RESOLUTION, "Optional[-0.45054953406980749571...]");
+        tan_helper(PI.shiftRight(1), DEFAULT_RESOLUTION, "Optional.empty");
+        tan_helper(PI, DEFAULT_RESOLUTION, "Optional[~0]");
+        tan_helper(PI.multiply(Rational.of(3, 2)), DEFAULT_RESOLUTION, "Optional.empty");
+        tan_helper(PI.shiftLeft(1), DEFAULT_RESOLUTION, "Optional[~0]");
+        tan_helper(LOG_2, DEFAULT_RESOLUTION, "Optional[0.83064087786078394703...]");
+        tan_helper(leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[-0.00000000000000000000...]");
+        tan_helper(rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[0.00000000000000000000...]");
+        tan_helper(fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[~0]");
+
+        tan_fail_helper(ZERO, Rational.ZERO);
+        tan_fail_helper(ZERO, Rational.NEGATIVE_ONE);
+        tan_fail_helper(ONE, Rational.ZERO);
+        tan_fail_helper(ONE, Rational.NEGATIVE_ONE);
+        tan_fail_helper(E, Rational.ZERO);
+        tan_fail_helper(E, Rational.NEGATIVE_ONE);
+    }
+
+    private static void cotUnsafe_helper(@NotNull Real input, @NotNull String output) {
+        Real x = input.cotUnsafe();
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void cotUnsafe_fail_helper(@NotNull Real input) {
+        try {
+            input.cotUnsafe();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testCotUnsafe() {
+        cotUnsafe_helper(ONE, "0.64209261593433070300...");
+        cotUnsafe_helper(NEGATIVE_ONE, "-0.64209261593433070300...");
+        cotUnsafe_helper(ONE_HALF, "1.83048772171245191926...");
+        cotUnsafe_helper(NEGATIVE_FOUR_THIRDS, "-0.24202942695518667705...");
+        cotUnsafe_helper(TEN, "1.54235104535692004827...");
+        cotUnsafe_helper(TEN.powUnsafe(2), "-1.70295691942646921609...");
+        cotUnsafe_helper(SQRT_TWO, "0.15787514785058337412...");
+        cotUnsafe_helper(E, "-2.21951178368117331285...");
+        cotUnsafe_helper(PI.shiftRight(1), "~0");
+        cotUnsafe_helper(PI.multiply(Rational.of(3, 2)), "~0");
+        cotUnsafe_helper(LOG_2, "1.20388970330400808025...");
+
+        cotUnsafe_fail_helper(ZERO);
+    }
+
+    private static void cot_helper(@NotNull Real input, @NotNull Rational resolution, @NotNull String output) {
+        Optional<Real> ox = input.cot(resolution);
+        ox.ifPresent(Real::validate);
+        aeq(ox, output);
+    }
+
+    private static void cot_fail_helper(@NotNull Real input, @NotNull Rational resolution) {
+        try {
+            input.cot(resolution);
+            fail();
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testCot() {
+        cot_helper(ONE, DEFAULT_RESOLUTION, "Optional[0.64209261593433070300...]");
+        cot_helper(NEGATIVE_ONE, DEFAULT_RESOLUTION, "Optional[-0.64209261593433070300...]");
+        cot_helper(ONE_HALF, DEFAULT_RESOLUTION, "Optional[1.83048772171245191926...]");
+        cot_helper(NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[-0.24202942695518667705...]");
+        cot_helper(TEN, DEFAULT_RESOLUTION, "Optional[1.54235104535692004827...]");
+        cot_helper(TEN.powUnsafe(2), DEFAULT_RESOLUTION, "Optional[-1.70295691942646921609...]");
+        cot_helper(SQRT_TWO, DEFAULT_RESOLUTION, "Optional[0.15787514785058337412...]");
+        cot_helper(E, DEFAULT_RESOLUTION, "Optional[-2.21951178368117331285...]");
+        cot_helper(PI.shiftRight(1), DEFAULT_RESOLUTION, "Optional[~0]");
+        cot_helper(PI, DEFAULT_RESOLUTION, "Optional.empty");
+        cot_helper(PI.multiply(Rational.of(3, 2)), DEFAULT_RESOLUTION, "Optional[~0]");
+        cot_helper(PI.shiftLeft(1), DEFAULT_RESOLUTION, "Optional.empty");
+        cot_helper(LOG_2, DEFAULT_RESOLUTION, "Optional[1.20388970330400808025...]");
+        cot_helper(leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        cot_helper(rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        cot_helper(fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+
+        cot_fail_helper(ZERO, DEFAULT_RESOLUTION);
+
+        cot_fail_helper(ZERO, Rational.ZERO);
+        cot_fail_helper(ZERO, Rational.NEGATIVE_ONE);
+        cot_fail_helper(ONE, Rational.ZERO);
+        cot_fail_helper(ONE, Rational.NEGATIVE_ONE);
+        cot_fail_helper(E, Rational.ZERO);
+        cot_fail_helper(E, Rational.NEGATIVE_ONE);
     }
 
     @Test
