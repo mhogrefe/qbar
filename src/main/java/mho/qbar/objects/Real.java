@@ -4430,6 +4430,124 @@ public final class Real implements Iterable<Interval> {
     }
 
     /**
+     * Returns the secant of {@code x}.
+     *
+     * <ul>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>The result is the secant of a rational number. If it is not equal to 1, it is not exact.</li>
+     * </ul>
+     *
+     * @param x a {@code Rational}
+     * @return sec({@code x})
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull Real secOfRational(@NotNull Rational x) {
+        return cosOfRational(x).invertUnsafe();
+    }
+
+    /**
+     * Returns the cosecant of {@code x}.
+     *
+     * <ul>
+     *  <li>{@code x} cannot be zero.</li>
+     *  <li>The result is the cosecant of a rational number.</li>
+     * </ul>
+     *
+     * @param x a {@code Rational}
+     * @return csc({@code x})
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull Real cscOfRational(@NotNull Rational x) {
+        return sinOfRational(x).invertUnsafe();
+    }
+
+    /**
+     * Returns the secant of {@code this}. If {@code this} is an odd multiple of π/2, this method will loop forever. To
+     * avoid this behavior, use {@link Real#tan(Rational)} instead.
+     *
+     * <ul>
+     *  <li>{@code this} may not be an odd multiple of π/2.</li>
+     *  <li>If the result is not equal to 1, it is not exact.</li>
+     * </ul>
+     *
+     * @return sec({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Real secUnsafe() {
+        if (rational.isPresent()) {
+            return secOfRational(rational.get());
+        }
+        return cos().invertUnsafe();
+    }
+
+    /**
+     * Returns the secant of {@code this}. If {@code this} is an odd multiple of π/2, this method will give up and
+     * return empty once the approximating interval's diameter is less than the specified resolution.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be null.</li>
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>If the result is not equal to 1, it is not exact.</li>
+     * </ul>
+     *
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return sec({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Optional<Real> sec(@NotNull Rational resolution) {
+        if (resolution.signum() != 1) {
+            throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
+        }
+        if (rational.isPresent()) {
+            return Optional.of(secOfRational(rational.get()));
+        }
+        return cos().invert(resolution);
+    }
+
+    /**
+     * Returns the cosecant of {@code this}. If {@code this} is a multiple of π that is not an exact zero, this method
+     * will loop forever. To avoid this behavior, use {@link Real#cot(Rational)} instead.
+     *
+     * <ul>
+     *  <li>{@code this} may not a multiple of π.</li>
+     *  <li>The result is not exact.</li>
+     * </ul>
+     *
+     * @return csc({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Real cscUnsafe() {
+        if (rational.isPresent()) {
+            return cscOfRational(rational.get());
+        }
+        return sin().invertUnsafe();
+    }
+
+    /**
+     * Returns the cosecant of {@code this}. If {@code this} is a multiple of π that is not an exact zero, this method
+     * will give up and return empty once the approximating interval's diameter is less than the specified resolution.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be an exact zero.</li>
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>The result is not exact.</li>
+     * </ul>
+     *
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return csc({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Optional<Real> csc(@NotNull Rational resolution) {
+        if (resolution.signum() != 1) {
+            throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
+        }
+        if (rational.isPresent()) {
+            return Optional.of(cscOfRational(rational.get()));
+        }
+        return sin().invert(resolution);
+    }
+
+    /**
      * Given an interval [{@code lower}, {@code upper}], returns an {@code Interval} (with rational bounds) containing
      * the given interval and with a diameter no more than twice the given interval's.
      *

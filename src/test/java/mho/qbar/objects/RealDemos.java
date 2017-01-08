@@ -2120,6 +2120,80 @@ public class RealDemos extends QBarDemos {
         }
     }
 
+    private void demoSecOfRational() {
+        Rational max = Rational.of(100);
+        for (Rational x : take(LIMIT, filterInfinite(x -> Ordering.le(x.abs(), max), P.withScale(4).rationals()))) {
+            System.out.println("secOfRational(" + x + ") = " + secOfRational(x));
+        }
+    }
+
+    private void demoCscOfRational() {
+        Rational max = Rational.of(100);
+        Iterable<Rational> xs = filterInfinite(x -> Ordering.le(x.abs(), max), P.withScale(4).nonzeroRationals());
+        for (Rational x : take(LIMIT, xs)) {
+            System.out.println("cscOfRational(" + x + ") = " + cscOfRational(x));
+        }
+    }
+
+    private void demoSecUnsafe() {
+        Rational smallResolution = Rational.of(1, 10000);
+        Rational max = Rational.of(100);
+        Iterable<Real> xs = filterInfinite(
+                x -> x.abs().le(max, DEFAULT_RESOLUTION).orElse(true),
+                P.withScale(4).reals()
+        );
+        for (Real x : take(LIMIT, xs)) {
+            System.out.println("secUnsafe(" + x + ") = " +
+                    x.secUnsafe().toStringBase(BigInteger.TEN, 3, smallResolution));
+        }
+    }
+
+    private void demoSec() {
+        Rational smallResolution = Rational.of(1, 10000);
+        Rational max = Rational.of(100);
+        Iterable<Pair<Real, Rational>> ps = P.pairs(
+                filterInfinite(
+                        x -> x.abs().le(max, DEFAULT_RESOLUTION).orElse(true),
+                        P.withScale(4).reals()
+                ),
+                P.positiveRationals()
+        );
+        for (Pair<Real, Rational> p : take(LIMIT, ps)) {
+            System.out.println("sec(" + p.a + ", " + p.b + ") = " +
+                    p.a.sec(p.b).map(x -> x.toStringBase(BigInteger.TEN, 3, smallResolution)));
+        }
+    }
+
+    private void demoCscUnsafe() {
+        Rational smallResolution = Rational.of(1, 10000);
+        Rational max = Rational.of(100);
+        Iterable<Real> xs = filterInfinite(
+                x -> x.abs().le(max, DEFAULT_RESOLUTION).orElse(true),
+                P.withScale(4).nonzeroReals()
+        );
+        for (Real x : take(LIMIT, xs)) {
+            System.out.println("cscUnsafe(" + x + ") = " +
+                    x.cscUnsafe().toStringBase(BigInteger.TEN, 3, smallResolution));
+        }
+    }
+
+    private void demoCsc() {
+        Rational smallResolution = Rational.of(1, 10000);
+        Rational max = Rational.of(100);
+        Iterable<Pair<Real, Rational>> ps = P.pairs(
+                filterInfinite(
+                        x -> (!x.isExact() || x.rationalValueExact().get() != Rational.ZERO) &&
+                                x.abs().le(max, DEFAULT_RESOLUTION).orElse(true),
+                        P.withScale(4).reals()
+                ),
+                P.positiveRationals()
+        );
+        for (Pair<Real, Rational> p : take(LIMIT, ps)) {
+            System.out.println("csc(" + p.a + ", " + p.b + ") = " +
+                    p.a.csc(p.b).map(x -> x.toStringBase(BigInteger.TEN, 3, smallResolution)));
+        }
+    }
+
     private void demoIntervalExtensionUnsafe() {
         Iterable<Pair<Real, Real>> ps = filterInfinite(
                 p -> p.a.lt(p.b, DEFAULT_RESOLUTION).orElse(false),

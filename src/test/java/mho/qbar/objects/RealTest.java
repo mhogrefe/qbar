@@ -10127,6 +10127,188 @@ public class RealTest {
         cot_fail_helper(E, Rational.NEGATIVE_ONE);
     }
 
+    private static void secOfRational_helper(@NotNull String input, @NotNull String output) {
+        Real x = secOfRational(Rational.readStrict(input).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testSecOfRational() {
+        secOfRational_helper("0", "1");
+        secOfRational_helper("1", "1.85081571768092561791...");
+        secOfRational_helper("-1", "1.85081571768092561791...");
+        secOfRational_helper("1/2", "1.13949392732454912231...");
+        secOfRational_helper("-4/3", "4.25102157771363235851...");
+        secOfRational_helper("10", "-1.19179350668789581087...");
+        secOfRational_helper("100", "1.15966382290469383255...");
+        secOfRational_helper("22/7", "-1.00000079946708624384...");
+    }
+
+    private static void cscOfRational_helper(@NotNull String input, @NotNull String output) {
+        Real x = cscOfRational(Rational.readStrict(input).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void cscOfRational_fail_helper(@NotNull String input) {
+        try {
+            cscOfRational(Rational.readStrict(input).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testCscOfRational() {
+        cscOfRational_helper("1", "1.18839510577812121626...");
+        cscOfRational_helper("-1", "-1.18839510577812121626...");
+        cscOfRational_helper("1/2", "2.08582964293348818577...");
+        cscOfRational_helper("-4/3", "-1.02887231642816400702...");
+        cscOfRational_helper("10", "-1.83816396088966558870...");
+        cscOfRational_helper("100", "-1.97485753142409996121...");
+        cscOfRational_helper("22/7", "-790.83333667585081293439...");
+
+        cscOfRational_fail_helper("0");
+    }
+
+    private static void secUnsafe_helper(@NotNull Real input, @NotNull String output) {
+        Real x = input.secUnsafe();
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testSecUnsafe() {
+        secUnsafe_helper(ZERO, "1");
+        secUnsafe_helper(ONE, "1.85081571768092561791...");
+        secUnsafe_helper(NEGATIVE_ONE, "1.85081571768092561791...");
+        secUnsafe_helper(ONE_HALF, "1.13949392732454912231...");
+        secUnsafe_helper(NEGATIVE_FOUR_THIRDS, "4.25102157771363235851...");
+        secUnsafe_helper(TEN, "-1.19179350668789581087...");
+        secUnsafe_helper(TEN.powUnsafe(2), "1.15966382290469383255...");
+        secUnsafe_helper(SQRT_TWO, "6.41257090582952279853...");
+        secUnsafe_helper(E, "-1.09681123382764484945...");
+        secUnsafe_helper(PI, "-1.00000000000000000000...");
+        secUnsafe_helper(PI.shiftLeft(1), "1.00000000000000000000...");
+        secUnsafe_helper(LOG_2, "1.29998625684017667428...");
+        secUnsafe_helper(leftFuzzyRepresentation(Rational.ZERO), "1.00000000000000000000...");
+        secUnsafe_helper(rightFuzzyRepresentation(Rational.ZERO), "1.00000000000000000000...");
+        secUnsafe_helper(fuzzyRepresentation(Rational.ZERO), "1.00000000000000000000...");
+    }
+
+    private static void sec_helper(@NotNull Real input, @NotNull Rational resolution, @NotNull String output) {
+        Optional<Real> ox = input.sec(resolution);
+        ox.ifPresent(Real::validate);
+        aeq(ox, output);
+    }
+
+    private static void sec_fail_helper(@NotNull Real input, @NotNull Rational resolution) {
+        try {
+            input.sec(resolution);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testSec() {
+        sec_helper(ZERO, DEFAULT_RESOLUTION, "Optional[1]");
+        sec_helper(ONE, DEFAULT_RESOLUTION, "Optional[1.85081571768092561791...]");
+        sec_helper(NEGATIVE_ONE, DEFAULT_RESOLUTION, "Optional[1.85081571768092561791...]");
+        sec_helper(ONE_HALF, DEFAULT_RESOLUTION, "Optional[1.13949392732454912231...]");
+        sec_helper(NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[4.25102157771363235851...]");
+        sec_helper(TEN, DEFAULT_RESOLUTION, "Optional[-1.19179350668789581087...]");
+        sec_helper(TEN.powUnsafe(2), DEFAULT_RESOLUTION, "Optional[1.15966382290469383255...]");
+        sec_helper(SQRT_TWO, DEFAULT_RESOLUTION, "Optional[6.41257090582952279853...]");
+        sec_helper(E, DEFAULT_RESOLUTION, "Optional[-1.09681123382764484945...]");
+        sec_helper(PI.shiftRight(1), DEFAULT_RESOLUTION, "Optional.empty");
+        sec_helper(PI, DEFAULT_RESOLUTION, "Optional[-1.00000000000000000000...]");
+        sec_helper(PI.multiply(Rational.of(3, 2)), DEFAULT_RESOLUTION, "Optional.empty");
+        sec_helper(PI.shiftLeft(1), DEFAULT_RESOLUTION, "Optional[1.00000000000000000000...]");
+        sec_helper(LOG_2, DEFAULT_RESOLUTION, "Optional[1.29998625684017667428...]");
+        sec_helper(leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[1.00000000000000000000...]");
+        sec_helper(rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[1.00000000000000000000...]");
+        sec_helper(fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[1.00000000000000000000...]");
+
+        sec_fail_helper(ZERO, Rational.ZERO);
+        sec_fail_helper(ZERO, Rational.NEGATIVE_ONE);
+        sec_fail_helper(ONE, Rational.ZERO);
+        sec_fail_helper(ONE, Rational.NEGATIVE_ONE);
+        sec_fail_helper(E, Rational.ZERO);
+        sec_fail_helper(E, Rational.NEGATIVE_ONE);
+    }
+
+    private static void cscUnsafe_helper(@NotNull Real input, @NotNull String output) {
+        Real x = input.cscUnsafe();
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void cscUnsafe_fail_helper(@NotNull Real input) {
+        try {
+            input.cscUnsafe();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testCscUnsafe() {
+        cscUnsafe_helper(ONE, "1.18839510577812121626...");
+        cscUnsafe_helper(NEGATIVE_ONE, "-1.18839510577812121626...");
+        cscUnsafe_helper(ONE_HALF, "2.08582964293348818577...");
+        cscUnsafe_helper(NEGATIVE_FOUR_THIRDS, "-1.02887231642816400702...");
+        cscUnsafe_helper(TEN, "-1.83816396088966558870...");
+        cscUnsafe_helper(TEN.powUnsafe(2), "-1.97485753142409996121...");
+        cscUnsafe_helper(SQRT_TWO, "1.01238557986018526664...");
+        cscUnsafe_helper(E, "2.43438545795434447624...");
+        cscUnsafe_helper(PI.shiftRight(1), "1.00000000000000000000...");
+        cscUnsafe_helper(PI.multiply(Rational.of(3, 2)), "-1.00000000000000000000...");
+        cscUnsafe_helper(LOG_2, "1.56504006904660834118...");
+
+        cscUnsafe_fail_helper(ZERO);
+    }
+
+    private static void csc_helper(@NotNull Real input, @NotNull Rational resolution, @NotNull String output) {
+        Optional<Real> ox = input.csc(resolution);
+        ox.ifPresent(Real::validate);
+        aeq(ox, output);
+    }
+
+    private static void csc_fail_helper(@NotNull Real input, @NotNull Rational resolution) {
+        try {
+            input.csc(resolution);
+            fail();
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testCsc() {
+        csc_helper(ONE, DEFAULT_RESOLUTION, "Optional[1.18839510577812121626...]");
+        csc_helper(NEGATIVE_ONE, DEFAULT_RESOLUTION, "Optional[-1.18839510577812121626...]");
+        csc_helper(ONE_HALF, DEFAULT_RESOLUTION, "Optional[2.08582964293348818577...]");
+        csc_helper(NEGATIVE_FOUR_THIRDS, DEFAULT_RESOLUTION, "Optional[-1.02887231642816400702...]");
+        csc_helper(TEN, DEFAULT_RESOLUTION, "Optional[-1.83816396088966558870...]");
+        csc_helper(TEN.powUnsafe(2), DEFAULT_RESOLUTION, "Optional[-1.97485753142409996121...]");
+        csc_helper(SQRT_TWO, DEFAULT_RESOLUTION, "Optional[1.01238557986018526664...]");
+        csc_helper(E, DEFAULT_RESOLUTION, "Optional[2.43438545795434447624...]");
+        csc_helper(PI.shiftRight(1), DEFAULT_RESOLUTION, "Optional[1.00000000000000000000...]");
+        csc_helper(PI, DEFAULT_RESOLUTION, "Optional.empty");
+        csc_helper(PI.multiply(Rational.of(3, 2)), DEFAULT_RESOLUTION, "Optional[-1.00000000000000000000...]");
+        csc_helper(PI.shiftLeft(1), DEFAULT_RESOLUTION, "Optional.empty");
+        csc_helper(LOG_2, DEFAULT_RESOLUTION, "Optional[1.56504006904660834118...]");
+        csc_helper(leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        csc_helper(rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        csc_helper(fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+
+        csc_fail_helper(ZERO, DEFAULT_RESOLUTION);
+
+        csc_fail_helper(ZERO, Rational.ZERO);
+        csc_fail_helper(ZERO, Rational.NEGATIVE_ONE);
+        csc_fail_helper(ONE, Rational.ZERO);
+        csc_fail_helper(ONE, Rational.NEGATIVE_ONE);
+        csc_fail_helper(E, Rational.ZERO);
+        csc_fail_helper(E, Rational.NEGATIVE_ONE);
+    }
+
     @Test
     public void testIntervalExtensionUnsafe() {
         intervalExtensionUnsafe_helper(PI.negate(), NEGATIVE_FOUR_THIRDS, "[-651864872/204778785, -4/3]");
