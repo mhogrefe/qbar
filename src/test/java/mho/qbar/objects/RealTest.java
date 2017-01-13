@@ -10309,6 +10309,88 @@ public class RealTest {
         csc_fail_helper(E, Rational.NEGATIVE_ONE);
     }
 
+    private static void arctanOfRational_helper(@NotNull String input, @NotNull String output) {
+        Real x = arctanOfRational(Rational.readStrict(input).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testArctanOfRational() {
+        arctanOfRational_helper("0", "0");
+        arctanOfRational_helper("1", "0.78539816339744830961...");
+        arctanOfRational_helper("-1", "-0.78539816339744830961...");
+        arctanOfRational_helper("1/2", "0.46364760900080611621...");
+        arctanOfRational_helper("-4/3", "-0.92729521800161223242...");
+        arctanOfRational_helper("10", "1.47112767430373459185...");
+        arctanOfRational_helper("100", "1.56079666010823138102...");
+    }
+
+    private static void arccotOfRational_helper(@NotNull String input, @NotNull String output) {
+        Real x = arccotOfRational(Rational.readStrict(input).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testArccotOfRational() {
+        arccotOfRational_helper("0", "1.57079632679489661923...");
+        arccotOfRational_helper("1", "0.78539816339744830961...");
+        arccotOfRational_helper("-1", "2.35619449019234492884...");
+        arccotOfRational_helper("1/2", "1.10714871779409050301...");
+        arccotOfRational_helper("-4/3", "2.49809154479650885165...");
+        arccotOfRational_helper("10", "0.09966865249116202737...");
+        arccotOfRational_helper("100", "0.00999966668666523820...");
+    }
+
+    private static void arctan_helper(@NotNull Real input, @NotNull String output) {
+        Real x = input.arctan();
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testArctan() {
+        arctan_helper(ZERO, "0");
+        arctan_helper(ONE, "0.78539816339744830961...");
+        arctan_helper(NEGATIVE_ONE, "-0.78539816339744830961...");
+        arctan_helper(ONE_HALF, "0.46364760900080611621...");
+        arctan_helper(NEGATIVE_FOUR_THIRDS, "-0.92729521800161223242...");
+        arctan_helper(TEN, "1.47112767430373459185...");
+        arctan_helper(TEN.powUnsafe(2), "1.56079666010823138102...");
+        arctan_helper(SQRT_TWO, "0.95531661812450927816...");
+        arctan_helper(E, "1.21828290501727762176...");
+        arctan_helper(PI, "1.26262725567891168344...");
+        arctan_helper(LOG_2, "0.60611193473285500238...");
+        arctan_helper(leftFuzzyRepresentation(Rational.ZERO), "-0.00000000000000000000...");
+        arctan_helper(rightFuzzyRepresentation(Rational.ZERO), "0.00000000000000000000...");
+        arctan_helper(fuzzyRepresentation(Rational.ZERO), "~0");
+    }
+
+    private static void arccot_helper(@NotNull Real input, @NotNull String output) {
+        Real x = input.arccot();
+        x.validate();
+        aeq(x, output);
+    }
+
+    @Test
+    public void testArccot() {
+        arccot_helper(ZERO, "1.57079632679489661923...");
+        arccot_helper(ONE, "0.78539816339744830961...");
+        arccot_helper(NEGATIVE_ONE, "2.35619449019234492884...");
+        arccot_helper(ONE_HALF, "1.10714871779409050301...");
+        arccot_helper(NEGATIVE_FOUR_THIRDS, "2.49809154479650885165...");
+        arccot_helper(TEN, "0.09966865249116202737...");
+        arccot_helper(TEN.powUnsafe(2), "0.00999966668666523820...");
+        arccot_helper(SQRT_TWO, "0.61547970867038734106...");
+        arccot_helper(E, "0.35251342177761899747...");
+        arccot_helper(PI, "0.30816907111598493578...");
+        arccot_helper(LOG_2, "0.96468439206204161684...");
+        arccot_helper(leftFuzzyRepresentation(Rational.ZERO), "1.57079632679489661923...");
+        arccot_helper(rightFuzzyRepresentation(Rational.ZERO), "1.57079632679489661923...");
+        arccot_helper(fuzzyRepresentation(Rational.ZERO), "1.57079632679489661923...");
+    }
+
     @Test
     public void testIntervalExtensionUnsafe() {
         intervalExtensionUnsafe_helper(PI.negate(), NEGATIVE_FOUR_THIRDS, "[-651864872/204778785, -4/3]");

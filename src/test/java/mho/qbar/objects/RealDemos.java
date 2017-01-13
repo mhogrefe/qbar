@@ -2194,6 +2194,32 @@ public class RealDemos extends QBarDemos {
         }
     }
 
+    private void demoArctanOfRational() {
+        for (Rational x : take(LIMIT, P.withScale(4).rationals())) {
+            System.out.println("arctanOfRational(" + x + ") = " + arctanOfRational(x));
+        }
+    }
+
+    private void demoArccotOfRational() {
+        for (Rational x : take(LIMIT, P.withScale(4).rationals())) {
+            System.out.println("arccotOfRational(" + x + ") = " + arccotOfRational(x));
+        }
+    }
+
+    private void demoArctan() {
+        Rational smallResolution = Rational.of(1, 10000);
+        for (Real x : take(LIMIT, P.withScale(4).reals())) {
+            System.out.println("arctan(" + x + ") = " + x.arctan().toStringBase(BigInteger.TEN, 3, smallResolution));
+        }
+    }
+
+    private void demoArccot() {
+        Rational smallResolution = Rational.of(1, 10000);
+        for (Real x : take(LIMIT, P.withScale(4).reals())) {
+            System.out.println("arccot(" + x + ") = " + x.arccot().toStringBase(BigInteger.TEN, 3, smallResolution));
+        }
+    }
+
     private void demoIntervalExtensionUnsafe() {
         Iterable<Pair<Real, Real>> ps = filterInfinite(
                 p -> p.a.lt(p.b, DEFAULT_RESOLUTION).orElse(false),

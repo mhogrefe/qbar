@@ -1,6 +1,5 @@
 package mho.qbar.objects;
 
-import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.NoRemoveIterator;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.math.MathUtils;
@@ -4548,6 +4547,180 @@ public final class Real implements Iterable<Interval> {
     }
 
     /**
+     * Returns the arctangent of {@code x}, provided that 0≤{@code x}≤1.
+     *
+     * <ul>
+     *  <li>{@code x} must be non-negative and no greater than 1.</li>
+     *  <li>The result is the arctangent of a rational number, non-negative, and less than or equal to π/4.</li>
+     * </ul>
+     *
+     * @param x a {@code Rational} between 0 and 1, inclusive
+     * @return arctan({@code x})
+     */
+    @SuppressWarnings("JavaDoc")
+    private static @NotNull Real arctan01(@NotNull Rational x) {
+        if (x == Rational.ZERO) return ZERO;
+        if (x == Rational.ONE) return ARCTAN_ONE;
+        Rational xSquared = x.pow(2);
+        return new Real(() -> new NoRemoveIterator<Interval>() {
+            private @NotNull Rational partialSum = x;
+            private @NotNull Rational xPower = x;
+            private @NotNull BigInteger denominator = BigInteger.ONE;
+            private boolean first = true;
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public @NotNull Interval next() {
+                Rational upper;
+                if (first) {
+                    first = false;
+                    upper = partialSum;
+                } else {
+                    xPower = xPower.multiply(xSquared);
+                    denominator = denominator.add(IntegerUtils.TWO);
+                    partialSum = partialSum.add(xPower.divide(denominator));
+                    upper = partialSum;
+                }
+                xPower = xPower.multiply(xSquared);
+                denominator = denominator.add(IntegerUtils.TWO);
+                partialSum = partialSum.subtract(xPower.divide(denominator));
+                return Interval.of(partialSum, upper);
+            }
+        });
+    }
+
+    /**
+     * Returns the arctangent of {@code x}.
+     *
+     * <ul>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>The result is the arctangent of a rational number. It is strictly between –π/2 and π/2. If it is nonzero,
+     *  it is not exact.</li>
+     * </ul>
+     *
+     * @param x a {@code Rational}
+     * @return arctan({@code x})
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull Real arctanOfRational(@NotNull Rational x) {
+        if (x.signum() == -1) {
+            return arctanOfRational(x.negate()).negate();
+        }
+        // arctan(x) when x ~= 1 converges very slowly, so use 2*arctan(x/2)-arctan(x^3/(3*x^2+4)) instead
+        if (Ordering.le(x.subtract(Rational.ONE).abs(), Rational.TEN.invert())) {
+            return arctanOfRational(x.shiftRight(1)).shiftLeft(1)
+                    .subtract(arctanOfRational(x.pow(3).divide(x.pow(2).multiply(3).add(Rational.of(4)))));
+        }
+        if (Ordering.gt(x, Rational.ONE)) {
+            return ARCTAN_ONE.shiftLeft(1).subtract(arctanOfRational(x.invert()));
+        } else {
+            return arctan01(x);
+        }
+    }
+
+    /**
+     * Returns the arccotangent of {@code x}.
+     *
+     * <ul>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>The result is the arccotangent of a rational number. It is strictly between 0 and π. It is not exact.</li>
+     * </ul>
+     *
+     * @param x a {@code Rational}
+     * @return arccot({@code x})
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull Real arccotOfRational(@NotNull Rational x) {
+        return PI.shiftRight(1).subtract(arctanOfRational(x));
+    }
+
+    /**
+     * Returns the arctangent of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>The result is strictly between –π/2 and π/2. If it is nonzero, it is not exact.</li>
+     * </ul>
+     *
+     * @return arctan({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Real arctan() {
+        if (rational.isPresent()) {
+            return arctanOfRational(rational.get());
+        }
+        return forceContainment(() -> new NoRemoveIterator<Interval>() {
+            private final @NotNull Iterator<Interval> is = intervals.iterator();
+            private Interval a;
+            private Iterator<Interval> lowerReal = null;
+            private Iterator<Interval> upperReal = null;
+            private Rational previousDiameter = null;
+            private int i = 0;
+            {
+                do {
+                    a = is.next();
+                } while (!a.isFinitelyBounded());
+            }
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public @NotNull Interval next() {
+                if (lowerReal == null) {
+                    lowerReal = arctanOfRational(a.getLower().get()).iterator();
+                    upperReal = arctanOfRational(a.getUpper().get()).iterator();
+                    for (int j = 0; j < i; j++) {
+                        lowerReal.next();
+                        upperReal.next();
+                    }
+                }
+                Interval lowerInterval = lowerReal.next();
+                Interval upperInterval = upperReal.next();
+                Interval nextInterval = lowerInterval.convexHull(upperInterval);
+                Rational diameter = nextInterval.diameter().get();
+                if (previousDiameter != null && Ordering.gt(diameter, previousDiameter.shiftRight(1))) {
+                    a = is.next();
+                    lowerReal = arctanOfRational(a.getLower().get()).iterator();
+                    upperReal = arctanOfRational(a.getUpper().get()).iterator();
+                    for (int j = 0; j < i; j++) {
+                        lowerReal.next();
+                        upperReal.next();
+                    }
+                    lowerInterval = lowerReal.next();
+                    upperInterval = upperReal.next();
+                    nextInterval = lowerInterval.convexHull(upperInterval);
+                    diameter = nextInterval.diameter().get();
+                }
+                previousDiameter = diameter;
+                i++;
+                return nextInterval;
+            }
+        });
+    }
+
+    /**
+     * Returns the arccotangent of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Real}.</li>
+     *  <li>The result is strictly between 0 and π. It is not exact.</li>
+     * </ul>
+     *
+     * @return arccot({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Real arccot() {
+        return PI.shiftRight(1).subtract(arctan());
+    }
+
+    /**
      * Given an interval [{@code lower}, {@code upper}], returns an {@code Interval} (with rational bounds) containing
      * the given interval and with a diameter no more than twice the given interval's.
      *
@@ -5227,95 +5400,6 @@ public final class Real implements Iterable<Interval> {
                 BigInteger.valueOf(base),
                 Collections.emptyList(),
                 map(i -> BigInteger.valueOf(i), MathUtils.greedyNormalSequence(base))
-        );
-    }
-
-    public static @NotNull Real fromMaclaurinSeries(
-            @NotNull Iterable<Rational> maclaurinCoefficients,
-            @NotNull Function<Integer, Interval> derivativeBound,
-            @NotNull Rational x
-    ) {
-        return new Real(() -> new Iterator<Interval>() {
-            private int k = 0;
-            private final @NotNull Iterator<Rational> maclaurinIterator = maclaurinCoefficients.iterator();
-            private @NotNull Rational center = Rational.ZERO;
-            private @NotNull Rational xPower = Rational.ONE;
-            private @NotNull BigInteger errorDenominator = BigInteger.ONE;
-
-            @Override
-            public boolean hasNext() {
-                return true;
-            }
-
-            @Override
-            public Interval next() {
-                Rational coefficient = maclaurinIterator.next();
-                if (coefficient != Rational.ZERO) {
-                    center = center.add(xPower.multiply(coefficient));
-                }
-                xPower = xPower.multiply(x);
-                k++;
-                errorDenominator = errorDenominator.multiply(BigInteger.valueOf(k));
-                Interval error = derivativeBound.apply(k).multiply(xPower.divide(errorDenominator));
-                return Interval.of(center).add(error);
-            }
-        });
-    }
-
-    private static @NotNull Real arctan01(@NotNull Rational x) {
-        if (x == Rational.ZERO) return ZERO;
-        if (x == Rational.ONE) return ARCTAN_ONE;
-        Rational xSquared = x.pow(2);
-        return new Real(() -> new NoRemoveIterator<Interval>() {
-            private @NotNull Rational partialSum = x;
-            private @NotNull Rational xPower = x;
-            private @NotNull BigInteger denominator = BigInteger.ONE;
-            private boolean first = true;
-
-            @Override
-            public boolean hasNext() {
-                return true;
-            }
-
-            @Override
-            public @NotNull Interval next() {
-                Rational upper;
-                if (first) {
-                    first = false;
-                    upper = partialSum;
-                } else {
-                    xPower = xPower.multiply(xSquared);
-                    denominator = denominator.add(IntegerUtils.TWO);
-                    partialSum = partialSum.add(xPower.divide(denominator));
-                    upper = partialSum;
-                }
-                xPower = xPower.multiply(xSquared);
-                denominator = denominator.add(IntegerUtils.TWO);
-                partialSum = partialSum.subtract(xPower.divide(denominator));
-                return Interval.of(partialSum, upper);
-            }
-        });
-    }
-
-    public static @NotNull Real atan(@NotNull Rational x) {
-        if (x == Rational.ZERO) return ZERO;
-        return fromMaclaurinSeries(
-                map(
-                        i -> i.and(BigInteger.ONE).equals(BigInteger.ZERO) ?
-                                Rational.ZERO :
-                                Rational.of(
-                                        i.and(IntegerUtils.TWO).equals(BigInteger.ZERO) ?
-                                                BigInteger.ONE :
-                                                IntegerUtils.NEGATIVE_ONE,
-                                        i
-                                ),
-                        ExhaustiveProvider.INSTANCE.rangeUpIncreasing(BigInteger.ZERO)
-                ),
-                k -> {
-                    Rational bound = Rational.of(MathUtils.factorial(k - 1));
-                    return Interval.of(bound.negate(), bound);
-                },
-                x
         );
     }
 
