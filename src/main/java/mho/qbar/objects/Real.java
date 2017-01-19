@@ -3860,7 +3860,7 @@ public final class Real implements Iterable<Interval> {
      * <ul>
      *  <li>{@code x} cannot be null.</li>
      *  <li>The result is the sine of a rational number. If it is –1 it is fuzzy on the right and if it is 1 it is
-     *  fuzzy on the left. If it is nonzero, it is not exact.</li>
+     *  fuzzy on the left. It is strictly between –1 and 1. If it is nonzero, it is not exact.</li>
      * </ul>
      *
      * @param x a {@code Rational}
@@ -3873,7 +3873,6 @@ public final class Real implements Iterable<Interval> {
         Rational xSquared = x.pow(2);
         return forceContainment(() -> new NoRemoveIterator<Interval>() {
             private @NotNull Rational partialSum = Rational.ZERO;
-            private @NotNull BigInteger i = BigInteger.ONE;
             private @NotNull BigInteger j = BigInteger.ONE;
             private @NotNull BigInteger factorial = BigInteger.ONE;
             private @NotNull Rational power = x;
@@ -3890,7 +3889,6 @@ public final class Real implements Iterable<Interval> {
                 if (first) {
                     first = false;
                 } else {
-                    i = i.add(BigInteger.ONE);
                     j = j.add(BigInteger.ONE);
                     factorial = factorial.multiply(j);
                     j = j.add(BigInteger.ONE);
@@ -3903,7 +3901,6 @@ public final class Real implements Iterable<Interval> {
                 partialSum = partialSum.add(term);
                 Rational upper = partialSum;
 
-                i = i.add(BigInteger.ONE);
                 j = j.add(BigInteger.ONE);
                 factorial = factorial.multiply(j);
                 j = j.add(BigInteger.ONE);
@@ -3925,7 +3922,7 @@ public final class Real implements Iterable<Interval> {
      * <ul>
      *  <li>{@code x} cannot be null.</li>
      *  <li>The result is the cosine of a rational number. If it is –1 it is fuzzy on the right and if it is 1 it is
-     *  fuzzy on the left. If it is not equal to 1, it is not exact.</li>
+     *  fuzzy on the left. It is strictly between –1 and 1. If it is not equal to 1, it is not exact.</li>
      * </ul>
      *
      * @param x a {@code Rational}
@@ -3938,7 +3935,6 @@ public final class Real implements Iterable<Interval> {
         Rational xSquared = x.pow(2);
         return forceContainment((() -> new NoRemoveIterator<Interval>() {
             private @NotNull Rational partialSum = Rational.ONE;
-            private @NotNull BigInteger i = BigInteger.ZERO;
             private @NotNull BigInteger j = BigInteger.ZERO;
             private @NotNull BigInteger factorial = BigInteger.ONE;
             private @NotNull Rational power = Rational.ONE;
@@ -3951,7 +3947,6 @@ public final class Real implements Iterable<Interval> {
 
             @Override
             public @NotNull Interval next() {
-                i = i.add(BigInteger.ONE);
                 j = j.add(BigInteger.ONE);
                 factorial = factorial.multiply(j);
                 j = j.add(BigInteger.ONE);
@@ -3963,7 +3958,6 @@ public final class Real implements Iterable<Interval> {
                 partialSum = partialSum.add(term);
                 Rational lower = partialSum;
 
-                i = i.add(BigInteger.ONE);
                 j = j.add(BigInteger.ONE);
                 factorial = factorial.multiply(j);
                 j = j.add(BigInteger.ONE);
@@ -4433,7 +4427,8 @@ public final class Real implements Iterable<Interval> {
      *
      * <ul>
      *  <li>{@code x} cannot be null.</li>
-     *  <li>The result is the secant of a rational number. If it is not equal to 1, it is not exact.</li>
+     *  <li>The result is the secant of a rational number. It is less than –1 or greater than or equal to 1. If it is
+     *  not equal to 1, it is not exact.</li>
      * </ul>
      *
      * @param x a {@code Rational}
@@ -4449,7 +4444,8 @@ public final class Real implements Iterable<Interval> {
      *
      * <ul>
      *  <li>{@code x} cannot be zero.</li>
-     *  <li>The result is the cosecant of a rational number.</li>
+     *  <li>The result is the cosecant of a rational number. It is less than –1 or greater than 1. It is not
+     *  exact.</li>
      * </ul>
      *
      * @param x a {@code Rational}
@@ -4466,7 +4462,8 @@ public final class Real implements Iterable<Interval> {
      *
      * <ul>
      *  <li>{@code this} may not be an odd multiple of π/2.</li>
-     *  <li>If the result is not equal to 1, it is not exact.</li>
+     *  <li>If the result is not equal to 1, it is not exact. It is less than or equal to –1 or greater than or equal
+     *  to 1.</li>
      * </ul>
      *
      * @return sec({@code this})
@@ -4486,7 +4483,8 @@ public final class Real implements Iterable<Interval> {
      * <ul>
      *  <li>{@code this} cannot be null.</li>
      *  <li>{@code resolution} must be positive.</li>
-     *  <li>If the result is not equal to 1, it is not exact.</li>
+     *  <li>If the result is not equal to 1, it is not exact. It is less than or equal to –1 or greater than or equal
+     *  to 1.</li>
      * </ul>
      *
      * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
@@ -4508,7 +4506,7 @@ public final class Real implements Iterable<Interval> {
      * will loop forever. To avoid this behavior, use {@link Real#cot(Rational)} instead.
      *
      * <ul>
-     *  <li>{@code this} may not a multiple of π.</li>
+     *  <li>{@code this} may not a multiple of π. It is less than or equal to –1 or greater than or equal to 1.</li>
      *  <li>The result is not exact.</li>
      * </ul>
      *
@@ -4529,7 +4527,7 @@ public final class Real implements Iterable<Interval> {
      * <ul>
      *  <li>{@code this} cannot be an exact zero.</li>
      *  <li>{@code resolution} must be positive.</li>
-     *  <li>The result is not exact.</li>
+     *  <li>The result is not exact. It is less than or equal to –1 or greater than or equal to 1.</li>
      * </ul>
      *
      * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
@@ -4547,20 +4545,18 @@ public final class Real implements Iterable<Interval> {
     }
 
     /**
-     * Returns the arctangent of {@code x}, provided that 0≤{@code x}≤1.
+     * Returns the arctangent of {@code x}, provided that 0<{@code x}<1.
      *
      * <ul>
-     *  <li>{@code x} must be non-negative and no greater than 1.</li>
-     *  <li>The result is the arctangent of a rational number, non-negative, and less than or equal to π/4.</li>
+     *  <li>{@code x} must be strictly between 0 and 1.</li>
+     *  <li>The result is the arctangent of a rational number, positive, and less than π/4.</li>
      * </ul>
      *
-     * @param x a {@code Rational} between 0 and 1, inclusive
+     * @param x a {@code Rational} between 0 and 1
      * @return arctan({@code x})
      */
     @SuppressWarnings("JavaDoc")
     private static @NotNull Real arctan01(@NotNull Rational x) {
-        if (x == Rational.ZERO) return ZERO;
-        if (x == Rational.ONE) return ARCTAN_ONE;
         Rational xSquared = x.pow(2);
         return new Real(() -> new NoRemoveIterator<Interval>() {
             private @NotNull Rational partialSum = x;
@@ -4607,6 +4603,8 @@ public final class Real implements Iterable<Interval> {
      */
     @SuppressWarnings("JavaDoc")
     public static @NotNull Real arctanOfRational(@NotNull Rational x) {
+        if (x == Rational.ZERO) return ZERO;
+        if (x == Rational.ONE) return ARCTAN_ONE;
         if (x.signum() == -1) {
             return arctanOfRational(x.negate()).negate();
         }
@@ -4718,6 +4716,256 @@ public final class Real implements Iterable<Interval> {
     @SuppressWarnings("JavaDoc")
     public @NotNull Real arccot() {
         return PI.shiftRight(1).subtract(arctan());
+    }
+
+    /**
+     * Returns the arcsine of {@code x}, provided that 0<{@code x}<1.
+     *
+     * <ul>
+     *  <li>{@code x} must be greater than 0 and less than 1.</li>
+     *  <li>The result is the arcsine of a rational number, positive, and less than π/2.</li>
+     * </ul>
+     *
+     * @param x a {@code Rational} strictly between 0 and 1
+     * @return arcsin({@code x})
+     */
+    @SuppressWarnings("JavaDoc")
+    private static @NotNull Real arcsin01(@NotNull Rational x) {
+        Real limit = ARCTAN_ONE.shiftLeft(1);
+        return new Real(() -> new NoRemoveIterator<Interval>() {
+            private boolean first = true;
+            private @NotNull Rational lower = Rational.ZERO;
+            private @NotNull Rational upper = Rational.TWO;
+            private boolean upperOverLimit = true;
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public @NotNull Interval next() {
+                if (first) {
+                    first = false;
+                    return Interval.of(lower, upper);
+                }
+                Rational midpoint = lower.add(upper).shiftRight(1);
+                if (upperOverLimit && limit.ltUnsafe(midpoint)) {
+                    upper = midpoint;
+                } else if (sinOfRational(midpoint).gtUnsafe(x)) {
+                    upperOverLimit = false;
+                    upper = midpoint;
+                } else {
+                    lower = midpoint;
+                }
+                return Interval.of(lower, upper);
+            }
+        });
+    }
+
+    /**
+     * Returns the arcsine of {@code x}.
+     *
+     * <ul>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>The result is the arcsine of a rational number. If it is nonzero, it is not exact. It is between –π/2 and
+     *  π/2.</li>
+     * </ul>
+     *
+     * @param x a {@code Rational}
+     * @return arcsin({@code x})
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull Real arcsinOfRational(@NotNull Rational x) {
+        if (x == Rational.ZERO) {
+            return ZERO;
+        } else if (x == Rational.ONE) {
+            return ARCTAN_ONE.shiftLeft(1);
+        } else if (Ordering.gt(x.abs(), Rational.ONE)) {
+            throw new ArithmeticException("x must be between –1 and 1, inclusive. Invalid x: " + x);
+        } else if (x.signum() == -1) {
+            return arcsinOfRational(x.negate()).negate();
+        } else {
+            return arcsin01(x);
+        }
+    }
+
+    /**
+     * Returns the arccosine of {@code x}.
+     *
+     * <ul>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>The result is the arccosine of a rational number. If it is nonzero, it is not exact. It is between 0 and
+     *  π.</li>
+     * </ul>
+     *
+     * @param x a {@code Rational}
+     * @return arccos({@code x})
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull Real arccosOfRational(@NotNull Rational x) {
+        if (x == Rational.ONE) {
+            return ZERO;
+        } else {
+            return ARCTAN_ONE.shiftLeft(1).subtract(arcsinOfRational(x));
+        }
+    }
+
+    /**
+     * Returns the arcsine of {@code this}. If {@code this} is 1 and fuzzy on the right, or –1 and fuzzy on the left,
+     * this method will loop forever. To avoid this behavior, use {@link Real#arcsin(Rational)} instead.
+     *
+     * <ul>
+     *  <li>{@code this} must be between –1 and 1. It cannot be 1 and fuzzy on the right or –1 and fuzzy on the
+     *  left.</li>
+     *  <li>If {@code this} is not an exact zero, the result is not exact. The result is between –π/2 and π/2.</li>
+     * </ul>
+     *
+     * @return arcsin({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Real arcsinUnsafe() {
+        if (this.rational.isPresent()) {
+            return arcsinOfRational(this.rational.get());
+        }
+        Interval domain = Interval.of(Rational.NEGATIVE_ONE, Rational.ONE);
+        return forceContainment(() -> new NoRemoveIterator<Interval>() {
+            private final @NotNull Iterator<Interval> is = intervals.iterator();
+            private Interval a;
+            private Iterator<Interval> lowerReal = null;
+            private Iterator<Interval> upperReal = null;
+            private Rational previousDiameter = null;
+            private int i = 0;
+            {
+                do {
+                    Optional<Interval> oa = is.next().intersection(domain);
+                    if (!oa.isPresent() || oa.get().getLower().equals(oa.get().getUpper())) {
+                        throw new ArithmeticException("this must be between –1 and 1, inclusive. Invalid this: " +
+                                this);
+                    }
+                    a = oa.get();
+                } while (!a.isFinitelyBounded());
+            }
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public @NotNull Interval next() {
+                if (lowerReal == null) {
+                    lowerReal = arcsinOfRational(a.getLower().get()).iterator();
+                    upperReal = arcsinOfRational(a.getUpper().get()).iterator();
+                    for (int j = 0; j < i; j++) {
+                        lowerReal.next();
+                        upperReal.next();
+                    }
+                }
+                Interval lowerInterval = lowerReal.next();
+                Interval upperInterval = upperReal.next();
+                Interval nextInterval = lowerInterval.convexHull(upperInterval);
+                Rational diameter = nextInterval.diameter().get();
+                if (previousDiameter != null && Ordering.gt(diameter, previousDiameter.shiftRight(1))) {
+                    Optional<Interval> oa = is.next().intersection(domain);
+                    if (!oa.isPresent() || oa.get().getLower().equals(oa.get().getUpper())) {
+                        throw new ArithmeticException("this must be between –1 and 1, inclusive. Invalid this: " +
+                                this);
+                    }
+                    a = oa.get();
+                    lowerReal = arcsinOfRational(a.getLower().get()).iterator();
+                    upperReal = arcsinOfRational(a.getUpper().get()).iterator();
+                    for (int j = 0; j < i; j++) {
+                        lowerReal.next();
+                        upperReal.next();
+                    }
+                    lowerInterval = lowerReal.next();
+                    upperInterval = upperReal.next();
+                    nextInterval = lowerInterval.convexHull(upperInterval);
+                    diameter = nextInterval.diameter().get();
+                }
+                previousDiameter = diameter;
+                i++;
+                return nextInterval;
+            }
+        });
+    }
+
+    /**
+     * Returns the arcsine of {@code this}. If {@code this} is 1 and fuzzy on the right, or –1 and fuzzy on the left,
+     * this method will give up and return empty once the approximating interval's diameter is less than the specified
+     * resolution
+     *
+     * <ul>
+     *  <li>{@code this} must be between –1 and 1.</li>
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>If {@code this} is not an exact zero, the result is not exact. The result is between –π/2 and π/2.</li>
+     * </ul>
+     *
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return arcsin({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Optional<Real> arcsin(@NotNull Rational resolution) {
+        if (resolution.signum() != 1) {
+            throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
+        }
+        if (this.rational.isPresent()) {
+            return Optional.of(arcsinOfRational(rational.get()));
+        }
+        Optional<Boolean> inDomain = abs().le(Rational.ONE, resolution);
+        if (!inDomain.isPresent()) {
+            return Optional.empty();
+        }
+        if (!inDomain.get()) {
+            throw new ArithmeticException("this must be between –1 and 1, inclusive. Invalid this: " + this);
+        }
+        return Optional.of(arcsinUnsafe());
+    }
+
+    /**
+     * Returns the arccosine of {@code this}. If {@code this} is 1 and fuzzy on the right, or –1 and fuzzy on the left,
+     * this method will loop forever. To avoid this behavior, use {@link Real#arccos(Rational)} instead.
+     *
+     * <ul>
+     *  <li>{@code this} must be between –1 and 1. It cannot be 1 and fuzzy on the right or –1 and fuzzy on the
+     *  left.</li>
+     *  <li>If {@code this} is not an exact 1, the result is not exact. The result is between 0 and π.</li>
+     * </ul>
+     *
+     * @return arccos({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Real arccosUnsafe() {
+        if (this.rational.isPresent()) {
+            return arccosOfRational(this.rational.get());
+        }
+        return ARCTAN_ONE.shiftLeft(1).subtract(arcsinUnsafe());
+    }
+
+    /**
+     * Returns the arccosine of {@code this}. If {@code this} is 1 and fuzzy on the right, or –1 and fuzzy on the left,
+     * this method will give up and return empty once the approximating interval's diameter is less than the specified
+     * resolution
+     *
+     * <ul>
+     *  <li>{@code this} must be between –1 and 1.</li>
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>If {@code this} is not an exact 1, the result is not exact. The result is between 0 and π.</li>
+     * </ul>
+     *
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return arccos({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Optional<Real> arccos(@NotNull Rational resolution) {
+        if (resolution.signum() != 1) {
+            throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
+        }
+        if (this.rational.isPresent()) {
+            return Optional.of(arccosOfRational(rational.get()));
+        }
+        return arcsin(resolution).map(x -> ARCTAN_ONE.shiftLeft(1).subtract(x));
     }
 
     /**

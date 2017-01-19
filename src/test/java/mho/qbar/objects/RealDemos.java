@@ -2220,6 +2220,66 @@ public class RealDemos extends QBarDemos {
         }
     }
 
+    private void demoArcsinOfRational() {
+        for (Rational x : take(LIMIT, P.withScale(4).range(Rational.NEGATIVE_ONE, Rational.ONE))) {
+            System.out.println("arcsinOfRational(" + x + ") = " + arcsinOfRational(x));
+        }
+    }
+
+    private void demoArccosOfRational() {
+        for (Rational x : take(LIMIT, P.withScale(4).range(Rational.NEGATIVE_ONE, Rational.ONE))) {
+            System.out.println("arccosOfRational(" + x + ") = " + arccosOfRational(x));
+        }
+    }
+
+    private void demoArcsinUnsafe() {
+        Rational smallResolution = Rational.of(1, 10000);
+        Iterable<Real> xs = filterInfinite(
+                x -> x.abs().le(Rational.ONE, DEFAULT_RESOLUTION).orElse(false),
+                P.withScale(4).realRange(Algebraic.NEGATIVE_ONE, Algebraic.ONE)
+        );
+        for (Real x : take(MEDIUM_LIMIT, xs)) {
+            System.out.println("arcsinUnsafe(" + x + ") = " +
+                    x.arcsinUnsafe().toStringBase(BigInteger.TEN, 3, smallResolution));
+        }
+    }
+
+    private void demoArcsin() {
+        Rational smallResolution = Rational.of(1, 10000);
+        Iterable<Pair<Real, Rational>> ps = P.pairs(
+                P.realRange(Algebraic.NEGATIVE_ONE, Algebraic.ONE),
+                P.positiveRationals()
+        );
+        for (Pair<Real, Rational> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("arcsin(" + p.a + ", " + p.b + ") = " +
+                    p.a.arcsin(p.b).map(x -> x.toStringBase(BigInteger.TEN, 3, smallResolution)));
+        }
+    }
+
+    private void demoArccosUnsafe() {
+        Rational smallResolution = Rational.of(1, 10000);
+        Iterable<Real> xs = filterInfinite(
+                x -> x.abs().le(Rational.ONE, DEFAULT_RESOLUTION).orElse(false),
+                P.withScale(4).realRange(Algebraic.NEGATIVE_ONE, Algebraic.ONE)
+        );
+        for (Real x : take(MEDIUM_LIMIT, xs)) {
+            System.out.println("arccosUnsafe(" + x + ") = " +
+                    x.arccosUnsafe().toStringBase(BigInteger.TEN, 3, smallResolution));
+        }
+    }
+
+    private void demoArccos() {
+        Rational smallResolution = Rational.of(1, 10000);
+        Iterable<Pair<Real, Rational>> ps = P.pairs(
+                P.realRange(Algebraic.NEGATIVE_ONE, Algebraic.ONE),
+                P.positiveRationals()
+        );
+        for (Pair<Real, Rational> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("arccos(" + p.a + ", " + p.b + ") = " +
+                    p.a.arccos(p.b).map(x -> x.toStringBase(BigInteger.TEN, 3, smallResolution)));
+        }
+    }
+
     private void demoIntervalExtensionUnsafe() {
         Iterable<Pair<Real, Real>> ps = filterInfinite(
                 p -> p.a.lt(p.b, DEFAULT_RESOLUTION).orElse(false),

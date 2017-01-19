@@ -170,6 +170,12 @@ public class RealProperties extends QBarTestProperties {
         propertiesArccotOfRational();
         propertiesArctan();
         propertiesArccot();
+        propertiesArcsinOfRational();
+        propertiesArccosOfRational();
+        propertiesArcsinUnsafe();
+        propertiesArcsin();
+        propertiesArccosUnsafe();
+        propertiesArccos();
         propertiesIntervalExtensionUnsafe();
         propertiesFractionalPartUnsafe();
         propertiesFractionalPart();
@@ -5391,7 +5397,6 @@ public class RealProperties extends QBarTestProperties {
             assertTrue(x, y.geUnsafe(Rational.NEGATIVE_ONE));
             assertTrue(x, x == Rational.ZERO || !y.isExact());
             assertTrue(x, of(x).sin().eq(y, SMALL_RESOLUTION).orElse(true));
-            //todo arcsin
         }
 
         for (Rational x : take(TINY_LIMIT, xs)) {
@@ -5403,6 +5408,11 @@ public class RealProperties extends QBarTestProperties {
                     x,
                     y.powUnsafe(2).add(cosOfRational(x).powUnsafe(2)).eq(Rational.ONE, SMALL_RESOLUTION).orElse(true)
             );
+        }
+
+        xs = filterInfinite(y -> PI.shiftRight(1).gtUnsafe(y.abs()), P.range(Rational.TWO.negate(), Rational.TWO));
+        for (Rational x : take(TINY_LIMIT, xs)) {
+            assertTrue(x, sinOfRational(x).arcsinUnsafe().eq(x, SMALL_RESOLUTION).orElse(true));
         }
     }
 
@@ -5417,7 +5427,6 @@ public class RealProperties extends QBarTestProperties {
             assertTrue(x, y.geUnsafe(Rational.NEGATIVE_ONE));
             assertTrue(x, x == Rational.ZERO || !y.isExact());
             assertTrue(x, of(x).cos().eq(y, SMALL_RESOLUTION).orElse(true));
-            //todo arccos
         }
 
         for (Rational x : take(TINY_LIMIT, xs)) {
@@ -5425,6 +5434,11 @@ public class RealProperties extends QBarTestProperties {
             assertTrue(x, cosOfRational(x.negate()).eq(y, SMALL_RESOLUTION).orElse(true));
             assertTrue(x, PI.shiftRight(1).subtract(x).sin().eq(y, SMALL_RESOLUTION).orElse(true));
             assertTrue(x, PI.shiftLeft(1).add(x).cos().eq(y, SMALL_RESOLUTION).orElse(true));
+        }
+
+        xs = filterInfinite(PI::gtUnsafe, P.range(Rational.ZERO, Rational.of(4)));
+        for (Rational x : take(TINY_LIMIT, xs)) {
+            assertTrue(x, cosOfRational(x).arccosUnsafe().eq(x, SMALL_RESOLUTION).orElse(true));
         }
     }
 
@@ -5441,7 +5455,6 @@ public class RealProperties extends QBarTestProperties {
             assertTrue(x, y.leUnsafe(Rational.ONE));
             assertTrue(x, y.geUnsafe(Rational.NEGATIVE_ONE));
             assertTrue(x, x.isExact() && x.rationalValueExact().get() == Rational.ZERO || !y.isExact());
-            //todo arcsin
         }
 
         for (Real x : take(TINY_LIMIT, xs)) {
@@ -5453,6 +5466,14 @@ public class RealProperties extends QBarTestProperties {
                     x,
                     y.powUnsafe(2).add(x.cos().powUnsafe(2)).eq(Rational.ONE, SMALL_RESOLUTION).orElse(true)
             );
+        }
+
+        xs = filterInfinite(
+                y -> y.abs().ltUnsafe(PI.shiftRight(1)),
+                P.realRange(Algebraic.TWO.negate(), Algebraic.TWO)
+        );
+        for (Real x : take(TINY_LIMIT, xs)) {
+            assertTrue(x, x.sin().arcsinUnsafe().eq(x, SMALL_RESOLUTION).orElse(true));
         }
     }
 
@@ -5469,7 +5490,6 @@ public class RealProperties extends QBarTestProperties {
             assertTrue(x, y.leUnsafe(Rational.ONE));
             assertTrue(x, y.geUnsafe(Rational.NEGATIVE_ONE));
             assertTrue(x, x.isExact() && x.rationalValueExact().get() == Rational.ZERO || !y.isExact());
-            //todo arccos
         }
 
         for (Real x : take(TINY_LIMIT, xs)) {
@@ -5477,6 +5497,11 @@ public class RealProperties extends QBarTestProperties {
             assertTrue(x, x.negate().cos().eq(y, SMALL_RESOLUTION).orElse(true));
             assertTrue(x, PI.shiftRight(1).subtract(x).sin().eq(y, SMALL_RESOLUTION).orElse(true));
             assertTrue(x, x.add(PI.shiftLeft(1)).cos().eq(y, SMALL_RESOLUTION).orElse(true));
+        }
+
+        xs = filterInfinite(y -> y.ltUnsafe(PI), P.realRange(Algebraic.ZERO, Algebraic.of(4)));
+        for (Real x : take(TINY_LIMIT, xs)) {
+            assertTrue(x, x.cos().arccosUnsafe().eq(x, SMALL_RESOLUTION).orElse(true));
         }
     }
 
@@ -5890,6 +5915,172 @@ public class RealProperties extends QBarTestProperties {
         for (Real x : take(TINY_LIMIT, P.withScale(4).reals())) {
             Real y = x.arccot();
             assertTrue(x, y.cotUnsafe().eq(x, SMALL_RESOLUTION).orElse(true));
+        }
+    }
+
+    private void propertiesArcsinOfRational() {
+        initialize("arcsinOfRational(Rational)");
+        for (Rational x : take(LIMIT, P.withScale(4).range(Rational.NEGATIVE_ONE, Rational.ONE))) {
+            Real y = arcsinOfRational(x);
+            y.validate();
+            assertTrue(x, y.le(PI.shiftRight(1), SMALL_RESOLUTION).orElse(true));
+            assertTrue(x, y.ge(PI.shiftRight(1).negate(), SMALL_RESOLUTION).orElse(true));
+            assertTrue(x, x == Rational.ZERO || !y.isExact());
+            assertTrue(x, of(x).arcsinUnsafe().eq(y, SMALL_RESOLUTION).orElse(true));
+        }
+
+        for (Rational x : take(LIMIT, P.withScale(4).range(Rational.NEGATIVE_ONE, Rational.ONE))) {
+            Real y = arcsinOfRational(x);
+            assertTrue(x, arcsinOfRational(x.negate()).eq(y.negate(), SMALL_RESOLUTION).orElse(true));
+            assertTrue(x, y.sin().eq(x, SMALL_RESOLUTION).orElse(true));
+        }
+
+        Iterable<Rational> xsFail = filterInfinite(
+                x -> Ordering.gt(x.abs(), Rational.ONE),
+                P.withScale(4).rationals()
+        );
+        for (Rational x : take(LIMIT, xsFail)) {
+            try {
+                arcsinOfRational(x);
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesArccosOfRational() {
+        initialize("arccosOfRational(Rational)");
+        for (Rational x : take(LIMIT, P.withScale(4).range(Rational.NEGATIVE_ONE, Rational.ONE))) {
+            Real y = arccosOfRational(x);
+            y.validate();
+            assertTrue(x, y.le(PI, SMALL_RESOLUTION).orElse(true));
+            assertTrue(x, y.geUnsafe(Rational.ZERO));
+            assertTrue(x, x == Rational.ONE || !y.isExact());
+            assertTrue(x, of(x).arccosUnsafe().eq(y, SMALL_RESOLUTION).orElse(true));
+        }
+
+        for (Rational x : take(LIMIT, P.withScale(4).range(Rational.NEGATIVE_ONE, Rational.ONE))) {
+            Real y = arccosOfRational(x);
+            assertTrue(x, y.cos().eq(x, SMALL_RESOLUTION).orElse(true));
+        }
+
+        Iterable<Rational> xsFail = filterInfinite(
+                x -> Ordering.gt(x.abs(), Rational.ONE),
+                P.withScale(4).rationals()
+        );
+        for (Rational x : take(LIMIT, xsFail)) {
+            try {
+                arccosOfRational(x);
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesArcsinUnsafe() {
+        initialize("arcsinUnsafe()");
+        Iterable<Real> xs = filterInfinite(
+                x -> x.abs().le(Rational.ONE, DEFAULT_RESOLUTION).orElse(false),
+                P.withScale(4).realRange(Algebraic.NEGATIVE_ONE, Algebraic.ONE)
+        );
+        for (Real x : take(SMALL_LIMIT, xs)) {
+            Real y = x.arcsinUnsafe();
+            y.validate();
+            assertTrue(x, y.le(PI.shiftRight(1), SMALL_RESOLUTION).orElse(true));
+            assertTrue(x, y.ge(PI.shiftRight(1).negate(), SMALL_RESOLUTION).orElse(true));
+            assertTrue(x, x.isExact() && x.rationalValueExact().get() == Rational.ZERO || !y.isExact());
+        }
+
+        for (Real x : take(TINY_LIMIT, xs)) {
+            Real y = x.arcsinUnsafe();
+            assertTrue(x, x.negate().arcsinUnsafe().eq(y.negate(), SMALL_RESOLUTION).orElse(true));
+            assertTrue(x, y.sin().eq(x, SMALL_RESOLUTION).orElse(true));
+        }
+
+        Iterable<Real> xsFail = filterInfinite(
+                x -> x.abs().gt(Rational.ONE, SMALL_RESOLUTION).orElse(false),
+                P.withScale(4).reals()
+        );
+        for (Real x : take(LIMIT, xsFail)) {
+            try {
+                toList(x.arcsinUnsafe());
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesArcsin() {
+        initialize("arcsin(Rational)");
+        Iterable<Pair<Real, Rational>> ps = P.pairs(
+                P.realRange(Algebraic.NEGATIVE_ONE, Algebraic.ONE),
+                P.positiveRationals()
+        );
+        for (Pair<Real, Rational> p : take(MEDIUM_LIMIT, ps)) {
+            Optional<Real> oy = p.a.arcsin(p.b);
+            if (oy.isPresent()) {
+                Real y = oy.get();
+                y.validate();
+                assertTrue(p, y.eq(p.a.arcsinUnsafe(), SMALL_RESOLUTION).orElse(true));
+            }
+        }
+
+        for (Pair<Real, Rational> p : take(LIMIT, P.pairs(P.nonzeroReals(), P.rangeDown(Rational.ZERO)))) {
+            try {
+                p.a.arcsin(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesArccosUnsafe() {
+        initialize("arccosUnsafe()");
+        Iterable<Real> xs = filterInfinite(
+                x -> x.abs().le(Rational.ONE, DEFAULT_RESOLUTION).orElse(false),
+                P.withScale(4).realRange(Algebraic.NEGATIVE_ONE, Algebraic.ONE)
+        );
+        for (Real x : take(SMALL_LIMIT, xs)) {
+            Real y = x.arccosUnsafe();
+            y.validate();
+            assertTrue(x, y.le(PI, SMALL_RESOLUTION).orElse(true));
+            assertTrue(x, y.ge(Rational.ZERO, SMALL_RESOLUTION).orElse(true));
+            assertTrue(x, x.isExact() && x.rationalValueExact().get() == Rational.ONE || !y.isExact());
+        }
+
+        for (Real x : take(TINY_LIMIT, xs)) {
+            Real y = x.arccosUnsafe();
+            assertTrue(x, y.cos().eq(x, SMALL_RESOLUTION).orElse(true));
+        }
+
+        Iterable<Real> xsFail = filterInfinite(
+                x -> x.abs().gt(Rational.ONE, SMALL_RESOLUTION).orElse(false),
+                P.withScale(4).reals()
+        );
+        for (Real x : take(LIMIT, xsFail)) {
+            try {
+                toList(x.arccosUnsafe());
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesArccos() {
+        initialize("arccos(Rational)");
+        Iterable<Pair<Real, Rational>> ps = P.pairs(
+                P.realRange(Algebraic.NEGATIVE_ONE, Algebraic.ONE),
+                P.positiveRationals()
+        );
+        for (Pair<Real, Rational> p : take(MEDIUM_LIMIT, ps)) {
+            Optional<Real> oy = p.a.arccos(p.b);
+            if (oy.isPresent()) {
+                Real y = oy.get();
+                y.validate();
+                assertTrue(p, y.eq(p.a.arccosUnsafe(), SMALL_RESOLUTION).orElse(true));
+            }
+        }
+
+        for (Pair<Real, Rational> p : take(LIMIT, P.pairs(P.nonzeroReals(), P.rangeDown(Rational.ZERO)))) {
+            try {
+                p.a.arccos(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 

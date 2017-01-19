@@ -61,6 +61,11 @@ public class RealTest {
         constant_helper(CAHEN, "0.64341054628833802618...");
 
         constant_helper(DEFAULT_RESOLUTION, "1/4722366482869645213696");
+
+        assertTrue("testConstants", SQRT_TWO.doubleValueUnsafe() == Math.sqrt(2.0));
+        assertTrue("testConstants", E.doubleValueUnsafe() == Math.E);
+        assertTrue("testConstants", PI.doubleValueUnsafe() == Math.PI);
+        assertTrue("testConstants", LOG_2.doubleValueUnsafe() == Math.log1p(1.0));
     }
 
     private static void of_Rational_helper(@NotNull String input, @NotNull String output) {
@@ -10389,6 +10394,262 @@ public class RealTest {
         arccot_helper(leftFuzzyRepresentation(Rational.ZERO), "1.57079632679489661923...");
         arccot_helper(rightFuzzyRepresentation(Rational.ZERO), "1.57079632679489661923...");
         arccot_helper(fuzzyRepresentation(Rational.ZERO), "1.57079632679489661923...");
+    }
+
+    private static void arcsinOfRational_helper(@NotNull String input, @NotNull String output) {
+        Real x = arcsinOfRational(Rational.readStrict(input).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void arcsinOfRational_fail_helper(@NotNull String input) {
+        try {
+            arcsinOfRational(Rational.readStrict(input).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testArcsinOfRational() {
+        arcsinOfRational_helper("0", "0");
+        arcsinOfRational_helper("1", "1.57079632679489661923...");
+        arcsinOfRational_helper("-1", "-1.57079632679489661923...");
+        arcsinOfRational_helper("1/2", "0.52359877559829887307...");
+        arcsinOfRational_helper("-2/3", "-0.72972765622696636345...");
+        arcsinOfRational_helper("9/10", "1.11976951499863418668...");
+        arcsinOfRational_helper("99/100", "1.42925685347046940048...");
+
+        arcsinOfRational_fail_helper("2");
+        arcsinOfRational_fail_helper("-2");
+        arcsinOfRational_fail_helper("11/10");
+        arcsinOfRational_fail_helper("-11/10");
+    }
+
+    private static void arccosOfRational_helper(@NotNull String input, @NotNull String output) {
+        Real x = arccosOfRational(Rational.readStrict(input).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void arccosOfRational_fail_helper(@NotNull String input) {
+        try {
+            arccosOfRational(Rational.readStrict(input).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testArccosOfRational() {
+        arccosOfRational_helper("0", "1.57079632679489661923...");
+        arccosOfRational_helper("1", "0");
+        arccosOfRational_helper("-1", "3.14159265358979323846...");
+        arccosOfRational_helper("1/2", "1.04719755119659774615...");
+        arccosOfRational_helper("-2/3", "2.30052398302186298268...");
+        arccosOfRational_helper("9/10", "0.45102681179626243254...");
+        arccosOfRational_helper("99/100", "0.14153947332442721874...");
+
+        arccosOfRational_fail_helper("2");
+        arccosOfRational_fail_helper("-2");
+        arccosOfRational_fail_helper("11/10");
+        arccosOfRational_fail_helper("-11/10");
+    }
+
+    private static void arcsinUnsafe_helper(@NotNull Real input, @NotNull String output) {
+        Real x = input.arcsinUnsafe();
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void arcsinUnsafe_fail_helper(@NotNull Real input) {
+        try {
+            toList(input.arcsinUnsafe());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testArcsinUnsafe() {
+        arcsinUnsafe_helper(ZERO, "0");
+        arcsinUnsafe_helper(ONE, "1.57079632679489661923...");
+        arcsinUnsafe_helper(NEGATIVE_ONE, "-1.57079632679489661923...");
+        arcsinUnsafe_helper(ONE_HALF, "0.52359877559829887307...");
+        arcsinUnsafe_helper(of(Rational.of(-2, 3)), "-0.72972765622696636345...");
+        arcsinUnsafe_helper(of(Rational.of(9, 10)), "1.11976951499863418668...");
+        arcsinUnsafe_helper(of(Rational.of(99, 100)), "1.42925685347046940048...");
+        arcsinUnsafe_helper(SQRT_TWO.shiftRight(1), "0.78539816339744830961...");
+        arcsinUnsafe_helper(E.shiftRight(2), "0.74717695655009621355...");
+        arcsinUnsafe_helper(PI.shiftRight(2), "0.90333911076651284735...");
+        arcsinUnsafe_helper(LOG_2, "0.76584619481908021544...");
+        arcsinUnsafe_helper(leftFuzzyRepresentation(Rational.ZERO), "-0.00000000000000000000...");
+        arcsinUnsafe_helper(rightFuzzyRepresentation(Rational.ZERO), "0.00000000000000000000...");
+        arcsinUnsafe_helper(fuzzyRepresentation(Rational.ZERO), "~0");
+        arcsinUnsafe_helper(leftFuzzyRepresentation(Rational.ONE), "1.57079632679489661923...");
+        arcsinUnsafe_helper(rightFuzzyRepresentation(Rational.NEGATIVE_ONE), "-1.57079632679489661923...");
+
+        arcsinUnsafe_fail_helper(TWO);
+        arcsinUnsafe_fail_helper(TWO.negate());
+        arcsinUnsafe_fail_helper(SQRT_TWO);
+        arcsinUnsafe_fail_helper(SQRT_TWO.negate());
+    }
+
+    private static void arcsin_helper(@NotNull Real input, @NotNull Rational resolution, @NotNull String output) {
+        Optional<Real> ox = input.arcsin(resolution);
+        ox.ifPresent(Real::validate);
+        aeq(ox, output);
+    }
+
+    private static void arcsin_fail_helper(@NotNull Real input, @NotNull Rational resolution) {
+        try {
+            input.arcsin(resolution).map(IterableUtils::toList);
+            fail();
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testArcsin() {
+        arcsin_helper(ZERO, DEFAULT_RESOLUTION, "Optional[0]");
+        arcsin_helper(ONE, DEFAULT_RESOLUTION, "Optional[1.57079632679489661923...]");
+        arcsin_helper(NEGATIVE_ONE, DEFAULT_RESOLUTION, "Optional[-1.57079632679489661923...]");
+        arcsin_helper(ONE_HALF, DEFAULT_RESOLUTION, "Optional[0.52359877559829887307...]");
+        arcsin_helper(of(Rational.of(-2, 3)), DEFAULT_RESOLUTION, "Optional[-0.72972765622696636345...]");
+        arcsin_helper(of(Rational.of(9, 10)), DEFAULT_RESOLUTION, "Optional[1.11976951499863418668...]");
+        arcsin_helper(of(Rational.of(99, 100)), DEFAULT_RESOLUTION, "Optional[1.42925685347046940048...]");
+        arcsin_helper(SQRT_TWO.shiftRight(1), DEFAULT_RESOLUTION, "Optional[0.78539816339744830961...]");
+        arcsin_helper(E.shiftRight(2), DEFAULT_RESOLUTION, "Optional[0.74717695655009621355...]");
+        arcsin_helper(PI.shiftRight(2), DEFAULT_RESOLUTION, "Optional[0.90333911076651284735...]");
+        arcsin_helper(LOG_2, DEFAULT_RESOLUTION, "Optional[0.76584619481908021544...]");
+        arcsin_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[-0.00000000000000000000...]"
+        );
+        arcsin_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[0.00000000000000000000...]"
+        );
+        arcsin_helper(fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[~0]");
+        arcsin_helper(
+                leftFuzzyRepresentation(Rational.ONE),
+                DEFAULT_RESOLUTION,
+                "Optional[1.57079632679489661923...]"
+        );
+        arcsin_helper(rightFuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional.empty");
+        arcsin_helper(fuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional.empty");
+        arcsin_helper(leftFuzzyRepresentation(Rational.NEGATIVE_ONE), DEFAULT_RESOLUTION, "Optional.empty");
+        arcsin_helper(
+                rightFuzzyRepresentation(Rational.NEGATIVE_ONE),
+                DEFAULT_RESOLUTION,
+                "Optional[-1.57079632679489661923...]"
+        );
+        arcsin_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), DEFAULT_RESOLUTION, "Optional.empty");
+
+        arcsin_fail_helper(TWO, DEFAULT_RESOLUTION);
+        arcsin_fail_helper(TWO.negate(), DEFAULT_RESOLUTION);
+        arcsin_fail_helper(SQRT_TWO, DEFAULT_RESOLUTION);
+        arcsin_fail_helper(SQRT_TWO.negate(), DEFAULT_RESOLUTION);
+
+        arcsin_fail_helper(ZERO, Rational.ZERO);
+        arcsin_fail_helper(ZERO, Rational.NEGATIVE_ONE);
+        arcsin_fail_helper(SQRT_TWO.shiftRight(1), Rational.ZERO);
+        arcsin_fail_helper(SQRT_TWO.shiftRight(1), Rational.NEGATIVE_ONE);
+    }
+
+    private static void arccosUnsafe_helper(@NotNull Real input, @NotNull String output) {
+        Real x = input.arccosUnsafe();
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void arccosUnsafe_fail_helper(@NotNull Real input) {
+        try {
+            toList(input.arccosUnsafe());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testArccosUnsafe() {
+        arccosUnsafe_helper(ZERO, "1.57079632679489661923...");
+        arccosUnsafe_helper(ONE, "0");
+        arccosUnsafe_helper(NEGATIVE_ONE, "3.14159265358979323846...");
+        arccosUnsafe_helper(ONE_HALF, "1.04719755119659774615...");
+        arccosUnsafe_helper(of(Rational.of(-2, 3)), "2.30052398302186298268...");
+        arccosUnsafe_helper(of(Rational.of(9, 10)), "0.45102681179626243254...");
+        arccosUnsafe_helper(of(Rational.of(99, 100)), "0.14153947332442721874...");
+        arccosUnsafe_helper(SQRT_TWO.shiftRight(1), "0.78539816339744830961...");
+        arccosUnsafe_helper(E.shiftRight(2), "0.82361937024480040568...");
+        arccosUnsafe_helper(PI.shiftRight(2), "0.66745721602838377187...");
+        arccosUnsafe_helper(LOG_2, "0.80495013197581640378...");
+        arccosUnsafe_helper(leftFuzzyRepresentation(Rational.ZERO), "1.57079632679489661923...");
+        arccosUnsafe_helper(rightFuzzyRepresentation(Rational.ZERO), "1.57079632679489661923...");
+        arccosUnsafe_helper(fuzzyRepresentation(Rational.ZERO), "1.57079632679489661923...");
+        arccosUnsafe_helper(leftFuzzyRepresentation(Rational.ONE), "~0");
+        arccosUnsafe_helper(rightFuzzyRepresentation(Rational.NEGATIVE_ONE), "3.14159265358979323846...");
+
+        arccosUnsafe_fail_helper(TWO);
+        arccosUnsafe_fail_helper(TWO.negate());
+        arccosUnsafe_fail_helper(SQRT_TWO);
+        arccosUnsafe_fail_helper(SQRT_TWO.negate());
+    }
+
+    private static void arccos_helper(@NotNull Real input, @NotNull Rational resolution, @NotNull String output) {
+        Optional<Real> ox = input.arccos(resolution);
+        ox.ifPresent(Real::validate);
+        aeq(ox, output);
+    }
+
+    private static void arccos_fail_helper(@NotNull Real input, @NotNull Rational resolution) {
+        try {
+            input.arccos(resolution).map(IterableUtils::toList);
+            fail();
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testArccos() {
+        arccos_helper(ZERO, DEFAULT_RESOLUTION, "Optional[1.57079632679489661923...]");
+        arccos_helper(ONE, DEFAULT_RESOLUTION, "Optional[0]");
+        arccos_helper(NEGATIVE_ONE, DEFAULT_RESOLUTION, "Optional[3.14159265358979323846...]");
+        arccos_helper(ONE_HALF, DEFAULT_RESOLUTION, "Optional[1.04719755119659774615...]");
+        arccos_helper(of(Rational.of(-2, 3)), DEFAULT_RESOLUTION, "Optional[2.30052398302186298268...]");
+        arccos_helper(of(Rational.of(9, 10)), DEFAULT_RESOLUTION, "Optional[0.45102681179626243254...]");
+        arccos_helper(of(Rational.of(99, 100)), DEFAULT_RESOLUTION, "Optional[0.14153947332442721874...]");
+        arccos_helper(SQRT_TWO.shiftRight(1), DEFAULT_RESOLUTION, "Optional[0.78539816339744830961...]");
+        arccos_helper(E.shiftRight(2), DEFAULT_RESOLUTION, "Optional[0.82361937024480040568...]");
+        arccos_helper(PI.shiftRight(2), DEFAULT_RESOLUTION, "Optional[0.66745721602838377187...]");
+        arccos_helper(LOG_2, DEFAULT_RESOLUTION, "Optional[0.80495013197581640378...]");
+        arccos_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[1.57079632679489661923...]"
+        );
+        arccos_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[1.57079632679489661923...]"
+        );
+        arccos_helper(fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[1.57079632679489661923...]");
+        arccos_helper(leftFuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional[~0]");
+        arccos_helper(rightFuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional.empty");
+        arccos_helper(fuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional.empty");
+        arccos_helper(leftFuzzyRepresentation(Rational.NEGATIVE_ONE), DEFAULT_RESOLUTION, "Optional.empty");
+        arccos_helper(
+                rightFuzzyRepresentation(Rational.NEGATIVE_ONE),
+                DEFAULT_RESOLUTION,
+                "Optional[3.14159265358979323846...]"
+        );
+        arccos_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), DEFAULT_RESOLUTION, "Optional.empty");
+
+        arccos_fail_helper(TWO, DEFAULT_RESOLUTION);
+        arccos_fail_helper(TWO.negate(), DEFAULT_RESOLUTION);
+        arccos_fail_helper(SQRT_TWO, DEFAULT_RESOLUTION);
+        arccos_fail_helper(SQRT_TWO.negate(), DEFAULT_RESOLUTION);
+
+        arccos_fail_helper(ZERO, Rational.ZERO);
+        arccos_fail_helper(ZERO, Rational.NEGATIVE_ONE);
+        arccos_fail_helper(SQRT_TWO.shiftRight(1), Rational.ZERO);
+        arccos_fail_helper(SQRT_TWO.shiftRight(1), Rational.NEGATIVE_ONE);
     }
 
     @Test
