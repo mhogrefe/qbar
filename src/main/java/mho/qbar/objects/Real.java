@@ -4767,9 +4767,9 @@ public final class Real implements Iterable<Interval> {
      * Returns the arcsine of {@code x}.
      *
      * <ul>
-     *  <li>{@code x} cannot be null.</li>
+     *  <li>{@code x} must be greater than or equal to –1 and less than or equal to 1.</li>
      *  <li>The result is the arcsine of a rational number. If it is nonzero, it is not exact. It is between –π/2 and
-     *  π/2.</li>
+     *  π/2, inclusive.</li>
      * </ul>
      *
      * @param x a {@code Rational}
@@ -4794,9 +4794,9 @@ public final class Real implements Iterable<Interval> {
      * Returns the arccosine of {@code x}.
      *
      * <ul>
-     *  <li>{@code x} cannot be null.</li>
-     *  <li>The result is the arccosine of a rational number. If it is nonzero, it is not exact. It is between 0 and
-     *  π.</li>
+     *  <li>{@code x} must be greater than or equal to –1 and less than or equal to 1.</li>
+     *  <li>The result is the arccosine of a rational number. If it is nonzero, it is not exact. It is between 0 and π,
+     *  inclusive.</li>
      * </ul>
      *
      * @param x a {@code Rational}
@@ -4818,7 +4818,8 @@ public final class Real implements Iterable<Interval> {
      * <ul>
      *  <li>{@code this} must be between –1 and 1. It cannot be 1 and fuzzy on the right or –1 and fuzzy on the
      *  left.</li>
-     *  <li>If {@code this} is not an exact zero, the result is not exact. The result is between –π/2 and π/2.</li>
+     *  <li>If {@code this} is not an exact zero, the result is not exact. The result is between –π/2 and π/2,
+     *  inclusive.</li>
      * </ul>
      *
      * @return arcsin({@code this})
@@ -4894,12 +4895,13 @@ public final class Real implements Iterable<Interval> {
     /**
      * Returns the arcsine of {@code this}. If {@code this} is 1 and fuzzy on the right, or –1 and fuzzy on the left,
      * this method will give up and return empty once the approximating interval's diameter is less than the specified
-     * resolution
+     * resolution.
      *
      * <ul>
      *  <li>{@code this} must be between –1 and 1.</li>
      *  <li>{@code resolution} must be positive.</li>
-     *  <li>If {@code this} is not an exact zero, the result is not exact. The result is between –π/2 and π/2.</li>
+     *  <li>If {@code this} is not an exact zero, the result is not exact. The result is between –π/2 and π/2,
+     *  inclusive.</li>
      * </ul>
      *
      * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
@@ -4930,7 +4932,7 @@ public final class Real implements Iterable<Interval> {
      * <ul>
      *  <li>{@code this} must be between –1 and 1. It cannot be 1 and fuzzy on the right or –1 and fuzzy on the
      *  left.</li>
-     *  <li>If {@code this} is not an exact 1, the result is not exact. The result is between 0 and π.</li>
+     *  <li>If {@code this} is not an exact 1, the result is not exact. The result is between 0 and π, inclusive.</li>
      * </ul>
      *
      * @return arccos({@code this})
@@ -4946,12 +4948,12 @@ public final class Real implements Iterable<Interval> {
     /**
      * Returns the arccosine of {@code this}. If {@code this} is 1 and fuzzy on the right, or –1 and fuzzy on the left,
      * this method will give up and return empty once the approximating interval's diameter is less than the specified
-     * resolution
+     * resolution.
      *
      * <ul>
      *  <li>{@code this} must be between –1 and 1.</li>
      *  <li>{@code resolution} must be positive.</li>
-     *  <li>If {@code this} is not an exact 1, the result is not exact. The result is between 0 and π.</li>
+     *  <li>If {@code this} is not an exact 1, the result is not exact. The result is between 0 and π, inclusive.</li>
      * </ul>
      *
      * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
@@ -4966,6 +4968,146 @@ public final class Real implements Iterable<Interval> {
             return Optional.of(arccosOfRational(rational.get()));
         }
         return arcsin(resolution).map(x -> ARCTAN_ONE.shiftLeft(1).subtract(x));
+    }
+
+    /**
+     * Returns the arcsecant of {@code x}.
+     *
+     * <ul>
+     *  <li>{@code x} must be less than or equal to –1 or greater than or equal to 1.</li>
+     *  <li>The result is the arcsecant of a rational number. If it is not equal to 1, it is not exact. It is between 0
+     *  and π, inclusive.</li>
+     * </ul>
+     *
+     * @param x a {@code Rational}
+     * @return arcsec({@code x})
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull Real arcsecOfRational(@NotNull Rational x) {
+        return arccosOfRational(x.invert());
+    }
+
+    /**
+     * Returns the arccosecant of {@code x}.
+     *
+     * <ul>
+     *  <li>{@code x} must be less than or equal to –1 or greater than or equal to 1.</li>
+     *  <li>The result is the arccosecant of a rational number. If it is nonzero, it is not exact. It is between –π/2
+     *  and π/2, inclusive.</li>
+     * </ul>
+     *
+     * @param x a {@code Rational}
+     * @return arccsc({@code x})
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull Real arccscOfRational(@NotNull Rational x) {
+        return arcsinOfRational(x.invert());
+    }
+
+    /**
+     * Returns the arcsecant of {@code this}. If {@code this} is 1 and fuzzy on the left, or –1 and fuzzy on the right,
+     * or a fuzzy zero, this method will loop forever. To avoid this behavior, use {@link Real#arcsec(Rational)}
+     * instead.
+     *
+     * <ul>
+     *  <li>{@code this} must be between less than or equal to –1 or greater than or equal to 1. It cannot be 1 and
+     *  fuzzy on the left or –1 and fuzzy on the right.</li>
+     *  <li>If {@code this} is not exact and equal to 1, the result is not exact. The result is between 0 and π,
+     *  inclusive.</li>
+     * </ul>
+     *
+     * @return arcsec({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Real arcsecUnsafe() {
+        return invertUnsafe().arccosUnsafe();
+    }
+
+    /**
+     * Returns the arcsecant of {@code this}. If {@code this} is 1 and fuzzy on the left, or –1 and fuzzy on the right,
+     * or a fuzzy zero, this method will give up and return empty once the approximating interval's diameter is less
+     * than the specified resolution.
+     *
+     * <ul>
+     *  <li>{@code this} must be less than or equal to –1 or greater than or equal to 1.</li>
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>If {@code this} is not exact and equal to 1, the result is not exact. The result is between 0 and π,
+     *  inclusive.</li>
+     * </ul>
+     *
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return arcsec({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Optional<Real> arcsec(@NotNull Rational resolution) {
+        if (resolution.signum() != 1) {
+            throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
+        }
+        if (this.rational.isPresent()) {
+            return Optional.of(arcsecOfRational(rational.get()));
+        }
+        Optional<Boolean> inDomain = abs().ge(Rational.ONE, resolution);
+        if (!inDomain.isPresent()) {
+            return Optional.empty();
+        }
+        if (!inDomain.get()) {
+            throw new ArithmeticException("this must be less than or equal to –1 or greater than or equal to 1." +
+                    " Invalid this: " + this);
+        }
+        return Optional.of(arcsecUnsafe());
+    }
+
+    /**
+     * Returns the arccosecant of {@code this}. If {@code this} is 1 and fuzzy on the left, or –1 and fuzzy on the
+     * right, or a fuzzy zero, this method will loop forever. To avoid this behavior, use {@link Real#arccsc(Rational)}
+     * instead.
+     *
+     * <ul>
+     *  <li>{@code this} must be between less than or equal to –1 or greater than or equal to 1. It cannot be 1 and
+     *  fuzzy on the left or –1 and fuzzy on the right.</li>
+     *  <li>If {@code this} is not exact and equal to 1, the result is not exact. The result is between –π/2 and π/2,
+     *  inclusive.</li>
+     * </ul>
+     *
+     * @return arccsc({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Real arccscUnsafe() {
+        return invertUnsafe().arcsinUnsafe();
+    }
+
+    /**
+     * Returns the arccosecant of {@code this}. If {@code this} is 1 and fuzzy on the left, or –1 and fuzzy on the
+     * right, or a fuzzy zero, this method will give up and return empty once the approximating interval's diameter is
+     * less than the specified resolution.
+     *
+     * <ul>
+     *  <li>{@code this} must be less than or equal to –1 or greater than or equal to 1.</li>
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>If {@code this} is not exact and equal to 1, the result is not exact. The result is between –π/2 and π/2,
+     *  inclusive.</li>
+     * </ul>
+     *
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return arccsc({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Optional<Real> arccsc(@NotNull Rational resolution) {
+        if (resolution.signum() != 1) {
+            throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
+        }
+        if (this.rational.isPresent()) {
+            return Optional.of(arccscOfRational(rational.get()));
+        }
+        Optional<Boolean> inDomain = abs().ge(Rational.ONE, resolution);
+        if (!inDomain.isPresent()) {
+            return Optional.empty();
+        }
+        if (!inDomain.get()) {
+            throw new ArithmeticException("this must be less than or equal to –1 or greater than or equal to 1." +
+                    " Invalid this: " + this);
+        }
+        return Optional.of(arccscUnsafe());
     }
 
     /**

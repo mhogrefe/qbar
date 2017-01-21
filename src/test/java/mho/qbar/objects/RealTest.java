@@ -10652,6 +10652,239 @@ public class RealTest {
         arccos_fail_helper(SQRT_TWO.shiftRight(1), Rational.NEGATIVE_ONE);
     }
 
+    private static void arcsecOfRational_helper(@NotNull String input, @NotNull String output) {
+        Real x = arcsecOfRational(Rational.readStrict(input).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void arcsecOfRational_fail_helper(@NotNull String input) {
+        try {
+            arcsecOfRational(Rational.readStrict(input).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testArcsecOfRational() {
+        arcsecOfRational_helper("1", "0");
+        arcsecOfRational_helper("-1", "3.14159265358979323846...");
+        arcsecOfRational_helper("2", "1.04719755119659774615...");
+        arcsecOfRational_helper("-4/3", "2.41885840577637762728...");
+        arcsecOfRational_helper("10/9", "0.45102681179626243254...");
+        arcsecOfRational_helper("100/99", "0.14153947332442721874...");
+
+        arcsecOfRational_fail_helper("0");
+        arcsecOfRational_fail_helper("1/2");
+        arcsecOfRational_fail_helper("-1/2");
+        arcsecOfRational_fail_helper("10/11");
+        arcsecOfRational_fail_helper("-10/11");
+    }
+
+    private static void arccscOfRational_helper(@NotNull String input, @NotNull String output) {
+        Real x = arccscOfRational(Rational.readStrict(input).get());
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void arccscOfRational_fail_helper(@NotNull String input) {
+        try {
+            arccscOfRational(Rational.readStrict(input).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testArccscOfRational() {
+        arccscOfRational_helper("1", "1.57079632679489661923...");
+        arccscOfRational_helper("-1", "-1.57079632679489661923...");
+        arccscOfRational_helper("2", "0.52359877559829887307...");
+        arccscOfRational_helper("-4/3", "-0.84806207898148100805...");
+        arccscOfRational_helper("10/9", "1.11976951499863418668...");
+        arccscOfRational_helper("100/99", "1.42925685347046940048...");
+
+        arccscOfRational_fail_helper("0");
+        arccscOfRational_fail_helper("1/2");
+        arccscOfRational_fail_helper("-1/2");
+        arccscOfRational_fail_helper("10/11");
+        arccscOfRational_fail_helper("-10/11");
+    }
+
+    private static void arcsecUnsafe_helper(@NotNull Real input, @NotNull String output) {
+        Real x = input.arcsecUnsafe();
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void arcsecUnsafe_fail_helper(@NotNull Real input) {
+        try {
+            toList(input.arcsecUnsafe());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testArcsecUnsafe() {
+        arcsecUnsafe_helper(ONE, "0");
+        arcsecUnsafe_helper(NEGATIVE_ONE, "3.14159265358979323846...");
+        arcsecUnsafe_helper(TWO, "1.04719755119659774615...");
+        arcsecUnsafe_helper(of(Rational.of(-4, 3)), "2.41885840577637762728...");
+        arcsecUnsafe_helper(of(Rational.of(10, 9)), "0.45102681179626243254...");
+        arcsecUnsafe_helper(of(Rational.of(100, 99)), "0.14153947332442721874...");
+        arcsecUnsafe_helper(SQRT_TWO, "0.78539816339744830961...");
+        arcsecUnsafe_helper(E, "1.19406881873632158996...");
+        arcsecUnsafe_helper(PI, "1.24685021986291589925...");
+        arcsecUnsafe_helper(LOG_2.shiftLeft(1), "0.76505030212039704438...");
+        arcsecUnsafe_helper(rightFuzzyRepresentation(Rational.ONE), "~0");
+        arcsecUnsafe_helper(leftFuzzyRepresentation(Rational.NEGATIVE_ONE), "3.14159265358979323846...");
+
+        arcsecUnsafe_fail_helper(ZERO);
+        arcsecUnsafe_fail_helper(ONE_HALF);
+        arcsecUnsafe_fail_helper(ONE_HALF.negate());
+        arcsecUnsafe_fail_helper(SQRT_TWO.shiftRight(1));
+        arcsecUnsafe_fail_helper(SQRT_TWO.shiftRight(1).negate());
+    }
+
+    private static void arcsec_helper(@NotNull Real input, @NotNull Rational resolution, @NotNull String output) {
+        Optional<Real> ox = input.arcsec(resolution);
+        ox.ifPresent(Real::validate);
+        aeq(ox, output);
+    }
+
+    private static void arcsec_fail_helper(@NotNull Real input, @NotNull Rational resolution) {
+        try {
+            input.arcsec(resolution).map(IterableUtils::toList);
+            fail();
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testArcsec() {
+        arcsec_helper(ONE, DEFAULT_RESOLUTION, "Optional[0]");
+        arcsec_helper(NEGATIVE_ONE, DEFAULT_RESOLUTION, "Optional[3.14159265358979323846...]");
+        arcsec_helper(TWO, DEFAULT_RESOLUTION, "Optional[1.04719755119659774615...]");
+        arcsec_helper(of(Rational.of(-4, 3)), DEFAULT_RESOLUTION, "Optional[2.41885840577637762728...]");
+        arcsec_helper(of(Rational.of(10, 9)), DEFAULT_RESOLUTION, "Optional[0.45102681179626243254...]");
+        arcsec_helper(of(Rational.of(100, 99)), DEFAULT_RESOLUTION, "Optional[0.14153947332442721874...]");
+        arcsec_helper(SQRT_TWO, DEFAULT_RESOLUTION, "Optional[0.78539816339744830961...]");
+        arcsec_helper(E, DEFAULT_RESOLUTION, "Optional[1.19406881873632158996...]");
+        arcsec_helper(PI, DEFAULT_RESOLUTION, "Optional[1.24685021986291589925...]");
+        arcsec_helper(LOG_2.shiftLeft(1), DEFAULT_RESOLUTION, "Optional[0.76505030212039704438...]");
+        arcsec_helper(leftFuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional.empty");
+        arcsec_helper(rightFuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional[~0]");
+        arcsec_helper(fuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional.empty");
+        arcsec_helper(
+                leftFuzzyRepresentation(Rational.NEGATIVE_ONE),
+                DEFAULT_RESOLUTION,
+                "Optional[3.14159265358979323846...]"
+        );
+        arcsec_helper(rightFuzzyRepresentation(Rational.NEGATIVE_ONE), DEFAULT_RESOLUTION, "Optional.empty");
+        arcsec_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), DEFAULT_RESOLUTION, "Optional.empty");
+
+        arcsec_fail_helper(ZERO, DEFAULT_RESOLUTION);
+        arcsec_fail_helper(leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION);
+        arcsec_fail_helper(rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION);
+        arcsec_fail_helper(fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION);
+        arcsec_fail_helper(ONE_HALF, DEFAULT_RESOLUTION);
+        arcsec_fail_helper(ONE_HALF.negate(), DEFAULT_RESOLUTION);
+        arcsec_fail_helper(SQRT_TWO.shiftRight(1), DEFAULT_RESOLUTION);
+        arcsec_fail_helper(SQRT_TWO.shiftRight(1).negate(), DEFAULT_RESOLUTION);
+
+        arcsec_fail_helper(TWO, Rational.ZERO);
+        arcsec_fail_helper(TWO, Rational.NEGATIVE_ONE);
+        arcsec_fail_helper(SQRT_TWO, Rational.ZERO);
+        arcsec_fail_helper(SQRT_TWO, Rational.NEGATIVE_ONE);
+    }
+
+    private static void arccscUnsafe_helper(@NotNull Real input, @NotNull String output) {
+        Real x = input.arccscUnsafe();
+        x.validate();
+        aeq(x, output);
+    }
+
+    private static void arccscUnsafe_fail_helper(@NotNull Real input) {
+        try {
+            toList(input.arccscUnsafe());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testArccscUnsafe() {
+        arccscUnsafe_helper(ONE, "1.57079632679489661923...");
+        arccscUnsafe_helper(NEGATIVE_ONE, "-1.57079632679489661923...");
+        arccscUnsafe_helper(TWO, "0.52359877559829887307...");
+        arccscUnsafe_helper(of(Rational.of(-4, 3)), "-0.84806207898148100805...");
+        arccscUnsafe_helper(of(Rational.of(10, 9)), "1.11976951499863418668...");
+        arccscUnsafe_helper(of(Rational.of(100, 99)), "1.42925685347046940048...");
+        arccscUnsafe_helper(SQRT_TWO, "0.78539816339744830961...");
+        arccscUnsafe_helper(E, "0.37672750805857502927...");
+        arccscUnsafe_helper(PI, "0.32394610693198071998...");
+        arccscUnsafe_helper(LOG_2.shiftLeft(1), "0.80574602467449957485...");
+        arccscUnsafe_helper(rightFuzzyRepresentation(Rational.ONE), "1.57079632679489661923...");
+        arccscUnsafe_helper(leftFuzzyRepresentation(Rational.NEGATIVE_ONE), "-1.57079632679489661923...");
+
+        arccscUnsafe_fail_helper(ZERO);
+        arccscUnsafe_fail_helper(ONE_HALF);
+        arccscUnsafe_fail_helper(ONE_HALF.negate());
+        arccscUnsafe_fail_helper(SQRT_TWO.shiftRight(1));
+        arccscUnsafe_fail_helper(SQRT_TWO.shiftRight(1).negate());
+    }
+
+    private static void arccsc_helper(@NotNull Real input, @NotNull Rational resolution, @NotNull String output) {
+        Optional<Real> ox = input.arccsc(resolution);
+        ox.ifPresent(Real::validate);
+        aeq(ox, output);
+    }
+
+    private static void arccsc_fail_helper(@NotNull Real input, @NotNull Rational resolution) {
+        try {
+            input.arccsc(resolution).map(IterableUtils::toList);
+            fail();
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testArccsc() {
+        arccsc_helper(ONE, DEFAULT_RESOLUTION, "Optional[1.57079632679489661923...]");
+        arccsc_helper(NEGATIVE_ONE, DEFAULT_RESOLUTION, "Optional[-1.57079632679489661923...]");
+        arccsc_helper(TWO, DEFAULT_RESOLUTION, "Optional[0.52359877559829887307...]");
+        arccsc_helper(of(Rational.of(-4, 3)), DEFAULT_RESOLUTION, "Optional[-0.84806207898148100805...]");
+        arccsc_helper(of(Rational.of(10, 9)), DEFAULT_RESOLUTION, "Optional[1.11976951499863418668...]");
+        arccsc_helper(of(Rational.of(100, 99)), DEFAULT_RESOLUTION, "Optional[1.42925685347046940048...]");
+        arccsc_helper(SQRT_TWO, DEFAULT_RESOLUTION, "Optional[0.78539816339744830961...]");
+        arccsc_helper(E, DEFAULT_RESOLUTION, "Optional[0.37672750805857502927...]");
+        arccsc_helper(PI, DEFAULT_RESOLUTION, "Optional[0.32394610693198071998...]");
+        arccsc_helper(LOG_2.shiftLeft(1), DEFAULT_RESOLUTION, "Optional[0.80574602467449957485...]");
+        arccsc_helper(leftFuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional.empty");
+        arccsc_helper(
+                rightFuzzyRepresentation(Rational.ONE),
+                DEFAULT_RESOLUTION,
+                "Optional[1.57079632679489661923...]"
+        );
+        arccsc_helper(fuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional.empty");
+        arccsc_helper(
+                leftFuzzyRepresentation(Rational.NEGATIVE_ONE),
+                DEFAULT_RESOLUTION,
+                "Optional[-1.57079632679489661923...]"
+        );
+        arccsc_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), DEFAULT_RESOLUTION, "Optional.empty");
+
+        arccsc_fail_helper(ZERO, DEFAULT_RESOLUTION);
+        arccsc_fail_helper(leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION);
+        arccsc_fail_helper(rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION);
+        arccsc_fail_helper(fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION);
+        arccsc_fail_helper(ONE_HALF, DEFAULT_RESOLUTION);
+        arccsc_fail_helper(ONE_HALF.negate(), DEFAULT_RESOLUTION);
+        arccsc_fail_helper(SQRT_TWO.shiftRight(1), DEFAULT_RESOLUTION);
+        arccsc_fail_helper(SQRT_TWO.shiftRight(1).negate(), DEFAULT_RESOLUTION);
+
+        arccsc_fail_helper(TWO, Rational.ZERO);
+        arccsc_fail_helper(TWO, Rational.NEGATIVE_ONE);
+        arccsc_fail_helper(SQRT_TWO, Rational.ZERO);
+        arccsc_fail_helper(SQRT_TWO, Rational.NEGATIVE_ONE);
+    }
+
     @Test
     public void testIntervalExtensionUnsafe() {
         intervalExtensionUnsafe_helper(PI.negate(), NEGATIVE_FOUR_THIRDS, "[-651864872/204778785, -4/3]");

@@ -2280,6 +2280,74 @@ public class RealDemos extends QBarDemos {
         }
     }
 
+    private void demoArcsecOfRational() {
+        Iterable<Rational> xs = filterInfinite(x -> Ordering.ge(x.abs(), Rational.ONE), P.withScale(4).rationals());
+        for (Rational x : take(LIMIT, xs)) {
+            System.out.println("arcsecOfRational(" + x + ") = " + arcsecOfRational(x));
+        }
+    }
+
+    private void demoArccscOfRational() {
+        Iterable<Rational> xs = filterInfinite(x -> Ordering.ge(x.abs(), Rational.ONE), P.withScale(4).rationals());
+        for (Rational x : take(LIMIT, xs)) {
+            System.out.println("arccscOfRational(" + x + ") = " + arccscOfRational(x));
+        }
+    }
+
+    private void demoArcsecUnsafe() {
+        Rational smallResolution = Rational.of(1, 10000);
+        Iterable<Real> xs = filterInfinite(
+                x -> x.abs().ge(Rational.ONE, DEFAULT_RESOLUTION).orElse(false),
+                P.withScale(4).reals()
+        );
+        for (Real x : take(MEDIUM_LIMIT, xs)) {
+            System.out.println("arcsecUnsafe(" + x + ") = " +
+                    x.arcsecUnsafe().toStringBase(BigInteger.TEN, 3, smallResolution));
+        }
+    }
+
+    private void demoArcsec() {
+        Rational smallResolution = Rational.of(1, 10000);
+        Iterable<Pair<Real, Rational>> ps = P.pairs(
+                filterInfinite(
+                        x -> x.abs().ge(Rational.ONE, DEFAULT_RESOLUTION).orElse(true),
+                        P.withScale(4).reals()
+                ),
+                P.positiveRationals()
+        );
+        for (Pair<Real, Rational> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("arcsec(" + p.a + ", " + p.b + ") = " +
+                    p.a.arcsec(p.b).map(x -> x.toStringBase(BigInteger.TEN, 3, smallResolution)));
+        }
+    }
+
+    private void demoArccscUnsafe() {
+        Rational smallResolution = Rational.of(1, 10000);
+        Iterable<Real> xs = filterInfinite(
+                x -> x.abs().ge(Rational.ONE, DEFAULT_RESOLUTION).orElse(false),
+                P.withScale(4).reals()
+        );
+        for (Real x : take(MEDIUM_LIMIT, xs)) {
+            System.out.println("arccscUnsafe(" + x + ") = " +
+                    x.arccscUnsafe().toStringBase(BigInteger.TEN, 3, smallResolution));
+        }
+    }
+
+    private void demoArccsc() {
+        Rational smallResolution = Rational.of(1, 10000);
+        Iterable<Pair<Real, Rational>> ps = P.pairs(
+                filterInfinite(
+                        x -> x.abs().ge(Rational.ONE, DEFAULT_RESOLUTION).orElse(true),
+                        P.withScale(4).reals()
+                ),
+                P.positiveRationals()
+        );
+        for (Pair<Real, Rational> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("arccsc(" + p.a + ", " + p.b + ") = " +
+                    p.a.arccsc(p.b).map(x -> x.toStringBase(BigInteger.TEN, 3, smallResolution)));
+        }
+    }
+
     private void demoIntervalExtensionUnsafe() {
         Iterable<Pair<Real, Real>> ps = filterInfinite(
                 p -> p.a.lt(p.b, DEFAULT_RESOLUTION).orElse(false),
