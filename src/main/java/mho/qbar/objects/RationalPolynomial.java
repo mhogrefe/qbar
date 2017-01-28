@@ -4,6 +4,7 @@ import mho.wheels.io.Readers;
 import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.NoRemoveIterable;
 import mho.wheels.numberUtils.IntegerUtils;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.ordering.comparators.ShortlexComparator;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -209,7 +210,7 @@ public final class RationalPolynomial implements
      * @return the {@code RationalPolynomial} with the specified coefficients
      */
     public static @NotNull RationalPolynomial of(@NotNull List<Rational> coefficients) {
-        if (any(i -> i == null, coefficients)) {
+        if (any(Objects::isNull, coefficients)) {
             throw new NullPointerException();
         }
         int actualSize;
@@ -279,7 +280,7 @@ public final class RationalPolynomial implements
     public int maxCoefficientBitLength() {
         if (this == ZERO) return 0;
         //noinspection RedundantCast
-        return maximum((Iterable<Integer>) map(Rational::bitLength, coefficients));
+        return Ordering.maximum((Iterable<Integer>) map(Rational::bitLength, coefficients));
     }
 
     /**
@@ -308,7 +309,7 @@ public final class RationalPolynomial implements
      * @return the leading coefficient
      */
     public @NotNull Optional<Rational> leading() {
-        return this == ZERO ? Optional.<Rational>empty() : Optional.of(last(coefficients));
+        return this == ZERO ? Optional.empty() : Optional.of(last(coefficients));
     }
 
     /**
@@ -691,7 +692,7 @@ public final class RationalPolynomial implements
      * @return Πxs
      */
     public static @NotNull RationalPolynomial product(@NotNull List<RationalPolynomial> xs) {
-        if (any(x -> x == null, xs)) {
+        if (any(Objects::isNull, xs)) {
             throw new NullPointerException();
         }
         if (any(x -> x == ZERO, xs)) {
@@ -1123,7 +1124,7 @@ public final class RationalPolynomial implements
     @SuppressWarnings("JavaDoc")
     public static @NotNull RationalMatrix coefficientMatrix(@NotNull List<RationalPolynomial> ps) {
         if (ps.isEmpty()) return RationalMatrix.zero(0, 0);
-        int width = maximum(map(RationalPolynomial::degree, ps)) + 1;
+        int width = Ordering.maximum(map(RationalPolynomial::degree, ps)) + 1;
         if (ps.size() > width) {
             throw new IllegalArgumentException("ps may not have more elements than one more than the maximum degree" +
                     " of ps. Invalid ps: " + ps);
@@ -1461,7 +1462,7 @@ public final class RationalPolynomial implements
         }
         if (any(p -> p.a == Rational.ZERO, monomials)) return Optional.empty();
         //noinspection RedundantCast
-        if (!increasing((Iterable<Integer>) map(p -> p.b, monomials))) return Optional.empty();
+        if (!Ordering.increasing((Iterable<Integer>) map(p -> p.b, monomials))) return Optional.empty();
         int degree = last(monomials).b;
         List<Rational> coefficients = toList(replicate(degree + 1, Rational.ZERO));
         for (Pair<Rational, Integer> monomial : monomials) {
@@ -1513,7 +1514,7 @@ public final class RationalPolynomial implements
                 s,
                 powerString -> {
                     Optional<Integer> oPower = Readers.readIntegerStrict(powerString);
-                    return !oPower.isPresent() || oPower.get() > maxExponent ? Optional.<Integer>empty() : oPower;
+                    return !oPower.isPresent() || oPower.get() > maxExponent ? Optional.empty() : oPower;
                 }
         );
     }
@@ -1560,7 +1561,7 @@ public final class RationalPolynomial implements
      * outside this class.
      */
     public void validate() {
-        assertTrue(this, all(r -> r != null, coefficients));
+        assertTrue(this, all(Objects::nonNull, coefficients));
         if (!coefficients.isEmpty()) {
             assertTrue(this, last(coefficients) != Rational.ZERO);
         }

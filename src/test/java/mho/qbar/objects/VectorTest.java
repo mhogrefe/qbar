@@ -565,9 +565,7 @@ public class VectorTest {
 
     private static void readStrict_helper(@NotNull String input, @NotNull String output) {
         Optional<Vector> ov = readStrict(input);
-        if (ov.isPresent()) {
-            ov.get().validate();
-        }
+        ov.ifPresent(Vector::validate);
         aeq(ov, output);
     }
 

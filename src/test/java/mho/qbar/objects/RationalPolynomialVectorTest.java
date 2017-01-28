@@ -700,9 +700,7 @@ public class RationalPolynomialVectorTest {
 
     private static void readStrict_helper(@NotNull String input, @NotNull String output) {
         Optional<RationalPolynomialVector> ov = readStrict(input);
-        if (ov.isPresent()) {
-            ov.get().validate();
-        }
+        ov.ifPresent(RationalPolynomialVector::validate);
         aeq(ov, output);
     }
 

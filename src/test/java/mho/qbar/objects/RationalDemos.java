@@ -20,6 +20,8 @@ import static mho.qbar.objects.Rational.*;
 import static mho.qbar.objects.Rational.sum;
 import static mho.qbar.testing.QBarTesting.QEP;
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.ordering.Ordering.ge;
+import static mho.wheels.ordering.Ordering.le;
 import static mho.wheels.testing.Testing.*;
 
 @SuppressWarnings("UnusedDeclaration")
@@ -29,6 +31,12 @@ public class RationalDemos extends QBarDemos {
 
     public RationalDemos(boolean useRandom) {
         super(useRandom);
+    }
+
+    private void demoHarmonicNumbers() {
+        for (Rational r : take(MEDIUM_LIMIT, HARMONIC_NUMBERS)) {
+            System.out.println(r);
+        }
     }
 
     private void demoGetNumerator() {
@@ -471,13 +479,64 @@ public class RationalDemos extends QBarDemos {
         }
     }
 
-    private void demoPow() {
+    private void demoPow_int() {
         Iterable<Pair<Rational, Integer>> ps = filterInfinite(
                 p -> p.a != ZERO || p.b >= 0,
                 P.pairs(P.rationals(), P.integersGeometric())
         );
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
             System.out.println(p.a + " ^ " + p.b + " = " + p.a.pow(p.b));
+        }
+    }
+
+    private void demoRoot() {
+        Iterable<Pair<Rational, Integer>> ps = filterInfinite(
+                p -> (p.a != Rational.ZERO || p.b >= 0) && ((p.b & 1) != 0 || p.a.signum() != -1),
+                P.pairsSquareRootOrder(P.rationals(), P.nonzeroIntegersGeometric())
+        );
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            System.out.println("(" + p.a + ") ^ (1/" + p.b + ") = " + p.a.root(p.b));
+        }
+    }
+
+    private void demoSqrt() {
+        for (Rational r : take(LIMIT, P.rangeUp(Rational.ZERO))) {
+            System.out.println("sqrt(" + r + ") = " + r.sqrt());
+        }
+    }
+
+    private void demoCbrt() {
+        for (Rational r : take(LIMIT, P.rationals())) {
+            System.out.println("cbrt(" + r + ") = " + r.cbrt());
+        }
+    }
+
+    private void demoPow_Rational() {
+        BigInteger lower = BigInteger.valueOf(Integer.MIN_VALUE);
+        BigInteger upper = BigInteger.valueOf(Integer.MAX_VALUE);
+        Iterable<Pair<Rational, Rational>> ps = filterInfinite(
+                p -> (p.a != ZERO || p.b.signum() != -1) && (p.a.signum() != -1 || p.b.getDenominator().testBit(0)),
+                P.pairsSquareRootOrder(
+                        P.rationals(),
+                        filterInfinite(
+                                r -> ge(r.getNumerator(), lower) && le(r.getNumerator(), upper) &&
+                                        le(r.getDenominator(), upper),
+                                P.withScale(3).rationals()
+                        )
+                )
+        );
+        for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " ^ " + p.b + " = " + p.a.pow(p.b));
+        }
+    }
+
+    private void demoLog() {
+        Iterable<Pair<Rational, Rational>> ps = P.pairs(
+                P.positiveRationals(),
+                filterInfinite(r -> r != ONE, P.positiveRationals())
+        );
+        for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
+            System.out.println("log(" + p.a + ", " + p.b + ") = " + p.a.log(p.b));
         }
     }
 
@@ -521,10 +580,7 @@ public class RationalDemos extends QBarDemos {
     }
 
     private void demoPositionalNotation() {
-        Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
-                P.withElement(ZERO, P.withScale(4).positiveRationals()),
-                P.rangeUp(IntegerUtils.TWO)
-        );
+        Iterable<Pair<Rational, BigInteger>> ps = P.pairs(P.withScale(4).rangeUp(ZERO), P.rangeUp(IntegerUtils.TWO));
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             System.out.println("positionalNotation(" + p.a + ", " + p.b + ") = " + p.a.positionalNotation(p.b));
         }
@@ -552,7 +608,7 @@ public class RationalDemos extends QBarDemos {
     private void demoDigits() {
         //noinspection Convert2MethodRef
         Iterable<Pair<Rational, BigInteger>> ps = P.pairsSquareRootOrder(
-                P.withElement(ZERO, P.positiveRationals()),
+                P.rangeUp(ZERO),
                 map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
         );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
@@ -566,7 +622,7 @@ public class RationalDemos extends QBarDemos {
         Iterable<Triple<BigInteger, Rational, Rational>> ts = map(
                 p -> new Triple<>(p.b, p.a.a, p.a.b),
                 P.pairsSquareRootOrder(
-                        filterInfinite(p -> p.a != p.b, P.pairs(P.withElement(ZERO, P.positiveRationals()))),
+                        filterInfinite(p -> p.a != p.b, P.pairs(P.rangeUp(ZERO))),
                         map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
                 )
         );

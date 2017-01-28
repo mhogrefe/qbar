@@ -1100,9 +1100,7 @@ public class RationalPolynomialMatrixTest {
 
     private static void readString_helper(@NotNull String input, @NotNull String output) {
         Optional<RationalPolynomialMatrix> om = readStrict(input);
-        if (om.isPresent()) {
-            om.get().validate();
-        }
+        om.ifPresent(RationalPolynomialMatrix::validate);
         aeq(om, output);
     }
 

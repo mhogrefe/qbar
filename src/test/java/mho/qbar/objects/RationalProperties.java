@@ -130,6 +130,12 @@ public class RationalProperties extends QBarTestProperties {
         propertiesHarmonicNumber();
         propertiesPow();
         compareImplementationsPow();
+        propertiesRoot();
+        propertiesSqrt();
+        propertiesCbrt();
+        propertiesPow_Rational();
+        compareImplementationsPow_Rational();
+        propertiesLog();
         propertiesFractionalPart();
         propertiesRoundToDenominator();
         propertiesContinuedFraction();
@@ -675,7 +681,7 @@ public class RationalProperties extends QBarTestProperties {
             assertEquals(r, r.isPowerOfTwo(), ONE.shiftLeft(r.binaryExponent()).equals(r));
         }
 
-        for (Rational r : take(LIMIT, P.withElement(ZERO, P.negativeRationals()))) {
+        for (Rational r : take(LIMIT, P.rangeDown(ZERO))) {
             try {
                 r.isPowerOfTwo();
                 fail(r);
@@ -692,7 +698,7 @@ public class RationalProperties extends QBarTestProperties {
             assertTrue(r, lt(of(powerOfTwo.shiftRight(1)), r));
         }
 
-        for (Rational r : take(LIMIT, P.withElement(ZERO, P.negativeRationals()))) {
+        for (Rational r : take(LIMIT, P.rangeDown(ZERO))) {
             try {
                 r.roundUpToPowerOfTwo();
                 fail(r);
@@ -768,7 +774,7 @@ public class RationalProperties extends QBarTestProperties {
             assertEquals(bf, r.binaryExponent(), r.getNumerator().bitLength() - r.getDenominator().bitLength());
         }
 
-        for (Rational r : take(LIMIT, P.withElement(ZERO, P.negativeRationals()))) {
+        for (Rational r : take(LIMIT, P.rangeDown(ZERO))) {
             try {
                 r.binaryExponent();
                 fail(r);
@@ -1840,7 +1846,7 @@ public class RationalProperties extends QBarTestProperties {
             assertTrue(p, eq(bd, BigDecimal.ZERO) || bd.signum() == p.a.signum());
         }
 
-        ps = filterInfinite(valid::test, P.pairsSquareRootOrder(P.nonzeroRationals(), P.positiveIntegersGeometric()));
+        ps = filterInfinite(valid, P.pairsSquareRootOrder(P.nonzeroRationals(), P.positiveIntegersGeometric()));
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
             BigDecimal bd = p.a.bigDecimalValueByPrecision(p.b);
             assertTrue(p, bd.precision() == p.b);
@@ -1926,7 +1932,7 @@ public class RationalProperties extends QBarTestProperties {
             BigDecimal bd = r.bigDecimalValueExact();
             assertTrue(bd, BigDecimalUtils.isCanonical(bd));
             assertEquals(r, bd, r.bigDecimalValueByPrecision(0, RoundingMode.UNNECESSARY));
-            assertTrue(r, bd.signum() == r.signum());
+            assertEquals(r, bd.signum(), r.signum());
             inverse(Rational::bigDecimalValueExact, Rational::of, r);
             homomorphic(
                     Rational::negate,
@@ -1935,13 +1941,6 @@ public class RationalProperties extends QBarTestProperties {
                     Rational::bigDecimalValueExact,
                     r
             );
-        }
-
-        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.negativeIntegers()))) {
-            try {
-                p.a.bigDecimalValueByPrecision(p.b);
-                fail(p);
-            } catch (IllegalArgumentException ignored) {}
         }
 
         Iterable<Rational> rsFail = filterInfinite(r -> !r.hasTerminatingBaseExpansion(BigInteger.TEN), P.rationals());
@@ -2770,6 +2769,19 @@ public class RationalProperties extends QBarTestProperties {
             assertEquals(p, r, pow_simplest(p.a, p.b));
         }
 
+        ps = filterInfinite(
+                p -> (p.b > 0 || p.a != ZERO) && (p.a.signum() != -1 && (p.b & 1) != 0),
+                P.pairs(P.rationals(), P.withScale(4).nonzeroIntegersGeometric())
+        );
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            inverse(x -> x.pow(p.b), (Rational x) -> x.root(p.b).get(), p.a);
+        }
+
+        ps = P.pairs(filterInfinite(r -> r != ONE, P.positiveRationals()), P.withScale(4).nonzeroIntegersGeometric());
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            inverse(p.a::pow, (Rational x) -> x.log(p.a).get().intValueExact(), p.b);
+        }
+
         for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.nonzeroRationals(), P.integersGeometric()))) {
             homomorphic(Function.identity(), i -> -i, Rational::invert, Rational::pow, Rational::pow, p);
             homomorphic(Rational::invert, i -> -i, Function.identity(), Rational::pow, Rational::pow, p);
@@ -2849,6 +2861,304 @@ public class RationalProperties extends QBarTestProperties {
                 P.pairs(P.rationals(), P.integersGeometric())
         );
         compareImplementations("pow(int", take(LIMIT, ps), functions, v -> P.reset());
+    }
+
+    private void propertiesRoot() {
+        initialize("root(int)");
+        Iterable<Pair<Rational, Integer>> ps = filterInfinite(
+                p -> (p.a != Rational.ZERO || p.b >= 0) && ((p.b & 1) != 0 || p.a.signum() != -1),
+                P.pairsSquareRootOrder(P.rationals(), P.nonzeroIntegersGeometric())
+        );
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            Optional<Rational> or = p.a.root(p.b);
+            if (or.isPresent()) {
+                Rational r = or.get();
+                r.validate();
+                if ((p.b & 1) == 0) {
+                    assertNotEquals(p, r.signum(), -1);
+                } else {
+                    assertEquals(p, r.signum(), p.a.signum());
+                }
+                assertEquals(p, r.pow(p.b), p.a);
+            }
+        }
+
+        for (int i : take(LIMIT, P.positiveIntegersGeometric())) {
+            assertEquals(i, ZERO.root(i).get(), ZERO);
+        }
+
+        for (int i : take(LIMIT, P.nonzeroIntegersGeometric())) {
+            assertEquals(i, ONE.root(i).get(), ONE);
+        }
+
+        for (int i : take(LIMIT, P.integersGeometric())) {
+            assertEquals(i, NEGATIVE_ONE.root((i << 1) + 1).get(), NEGATIVE_ONE);
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            try {
+                r.root(0);
+                fail(r);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        for (int i : take(LIMIT, P.negativeIntegersGeometric())) {
+            try {
+                ZERO.root(i);
+                fail(i);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<Pair<Rational, Integer>> psFail = P.pairs(
+                P.negativeRationals(),
+                map(i -> i * 2, P.integersGeometric())
+        );
+        for (Pair<Rational, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.root(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesSqrt() {
+        initialize("sqrt()");
+        for (Rational r : take(LIMIT, P.rangeUp(ZERO))) {
+            Optional<Rational> or = r.sqrt();
+            if (or.isPresent()) {
+                Rational x = or.get();
+                x.validate();
+                assertNotEquals(r, x.signum(), -1);
+                assertEquals(r, x.pow(2), r);
+            }
+        }
+
+        for (Rational r : take(LIMIT, P.negativeRationals())) {
+            try {
+                r.sqrt();
+                fail(r);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesCbrt() {
+        initialize("cbrt()");
+        for (Rational r : take(LIMIT, P.rangeUp(ZERO))) {
+            Optional<Rational> or = r.cbrt();
+            if (or.isPresent()) {
+                Rational x = or.get();
+                x.validate();
+                assertEquals(r, x.signum(), r.signum());
+                assertEquals(r, x.pow(3), r);
+            }
+        }
+    }
+
+    private static @NotNull Optional<Rational> pow_Rational_alt(@NotNull Rational x, @NotNull Rational p) {
+        return x.root(p.getDenominator().intValueExact()).map(y -> y.pow(p.getNumerator().intValueExact()));
+    }
+
+    private void propertiesPow_Rational() {
+        initialize("pow(Rational)");
+        BigInteger lower = BigInteger.valueOf(Integer.MIN_VALUE);
+        BigInteger upper = BigInteger.valueOf(Integer.MAX_VALUE);
+        Iterable<Rational> rs = filterInfinite(
+                r -> ge(r.getNumerator(), lower) && le(r.getNumerator(), upper) && le(r.getDenominator(), upper),
+                P.withScale(3).rationals()
+        );
+        Iterable<Pair<Rational, Rational>> ps = filterInfinite(
+                p -> (p.a != ZERO || p.b.signum() != -1) && (p.a.signum() != -1 || p.b.getDenominator().testBit(0)),
+                P.pairsSquareRootOrder(P.rationals(), rs)
+        );
+        for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
+            Optional<Rational> ox = p.a.pow(p.b);
+            ox.ifPresent(Rational::validate);
+            assertEquals(p, ox, pow_Rational_alt(p.a, p.b));
+            if (ox.isPresent() && p.b != Rational.ZERO && (p.b.getNumerator().testBit(0) || p.a.signum() != -1)) {
+                assertEquals(p, ox.get().pow(p.b.invert()).get(), p.a);
+            }
+        }
+
+        ps = filterInfinite(
+                p -> p.b.getDenominator().testBit(0) || p.a.signum() == 1,
+                P.pairs(P.nonzeroRationals(), rs)
+        );
+        for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
+            homomorphic(
+                    Function.identity(),
+                    Rational::negate,
+                    ox -> ox.map(Rational::invert),
+                    Rational::pow,
+                    Rational::pow,
+                    p
+            );
+            homomorphic(Rational::invert, Rational::negate, Function.identity(), Rational::pow, Rational::pow, p);
+        }
+
+        Iterable<Rational> positiveRs = filterInfinite(
+                r -> ge(r.getNumerator(), lower) && le(r.getNumerator(), upper) && le(r.getDenominator(), upper),
+                P.withScale(4).positiveRationals()
+        );
+        for (Rational r : take(LIMIT, positiveRs)) {
+            fixedPoint(j -> j.pow(r).get(), ZERO);
+        }
+
+        for (Rational x : take(LIMIT, P.withScale(4).rationals())) {
+            assertTrue(x, x.pow(Rational.ZERO).get() == ONE);
+            fixedPoint(y -> y.pow(Rational.ONE).get(), x);
+            assertEquals(x, x.pow(Rational.TWO).get(), x.multiply(x));
+        }
+
+        for (Rational x : take(LIMIT, P.nonzeroRationals())) {
+            assertEquals(x, x.pow(Rational.NEGATIVE_ONE).get(), x.invert());
+        }
+
+        Iterable<Triple<Rational, Rational, Rational>> ts = filterInfinite(
+                t -> t.a != ZERO || (t.b.signum() != -1 && t.c.signum() != -1),
+                P.triples(P.positiveRationals(), rs, rs)
+        );
+        for (Triple<Rational, Rational, Rational> t : take(LIMIT, ts)) {
+            Optional<Rational> sub1 = t.a.pow(t.b);
+            Optional<Rational> sub2 = t.a.pow(t.c);
+            Optional<Rational> expression1 = sub1.isPresent() && sub2.isPresent() ?
+                    Optional.of(sub1.get().multiply(sub2.get())) :
+                    Optional.empty();
+            Optional<Rational> expression2 = t.a.pow(t.b.add(t.c));
+            assertTrue(t, !expression1.isPresent() || expression1.equals(expression2));
+            Optional<Rational> expression3 = sub1.isPresent() ? sub1.get().pow(t.c) : Optional.empty();
+            Optional<Rational> expression4 = t.a.pow(t.b.multiply(t.c));
+            assertTrue(t, !expression3.isPresent() || expression3.equals(expression4));
+        }
+
+        ts = filterInfinite(
+                t -> t.a != ZERO || (t.c == Rational.ZERO && t.b.signum() != -1),
+                P.triples(P.positiveRationals(), rs, rs)
+        );
+        for (Triple<Rational, Rational, Rational> t : take(LIMIT, ts)) {
+            Optional<Rational> sub1 = t.a.pow(t.b);
+            Optional<Rational> sub2 = t.a.pow(t.c);
+            Optional<Rational> expression1 = sub1.isPresent() && sub2.isPresent() ?
+                    Optional.of(sub1.get().divide(sub2.get())) :
+                    Optional.empty();
+            Optional<Rational> expression2 = t.a.pow(t.b.subtract(t.c));
+            assertTrue(t, !expression1.isPresent() || expression1.equals(expression2));
+        }
+
+        ts = P.triples(P.positiveRationals(), P.positiveRationals(), rs);
+        for (Triple<Rational, Rational, Rational> t : take(LIMIT, ts)) {
+            Optional<Rational> expression1 = t.a.multiply(t.b).pow(t.c);
+            Optional<Rational> sub1 = t.a.pow(t.c);
+            Optional<Rational> sub2 = t.b.pow(t.c);
+            Optional<Rational> expression2 = sub1.isPresent() && sub2.isPresent() ?
+                    Optional.of(sub1.get().multiply(sub2.get())) :
+                    Optional.empty();
+            assertTrue(t, !expression2.isPresent() || expression1.equals(expression2));
+        }
+
+        for (Triple<Rational, Rational, Rational> t : take(SMALL_LIMIT, ts)) {
+            Optional<Rational> expression1 = t.a.divide(t.b).pow(t.c);
+            Optional<Rational> sub1 = t.a.pow(t.c);
+            Optional<Rational> sub2 = t.b.pow(t.c);
+            Optional<Rational> expression2 = sub1.isPresent() && sub2.isPresent() ?
+                    Optional.of(sub1.get().divide(sub2.get())) :
+                    Optional.empty();
+            assertTrue(t, !expression2.isPresent() || expression1.equals(expression2));
+        }
+
+        for (int i : take(LIMIT, P.negativeIntegers())) {
+            try {
+                ZERO.pow(i);
+                fail(i);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<Pair<Rational, Rational>> psFail = P.pairs(
+                P.negativeRationals(),
+                filterInfinite(r -> !r.getDenominator().testBit(0), rs)
+        );
+        for (Pair<Rational, Rational> p : take(LIMIT, psFail)) {
+            try {
+                p.a.pow(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<Rational> rsFail = filterInfinite(
+                r -> lt(r.getNumerator(), lower) || gt(r.getNumerator(), upper) || gt(r.getDenominator(), upper),
+                map(
+                        p -> Rational.of(p.a, p.b),
+                        P.choose(
+                                P.pairs(
+                                        P.withScale(1).choose(
+                                                P.withScale(33).rangeDown(lower.subtract(BigInteger.ONE)),
+                                                P.withScale(33).rangeUp(upper.add(BigInteger.ONE))
+                                        ),
+                                        P.positiveBigIntegers()
+                                ),
+                                P.pairs(P.bigIntegers(), P.withScale(33).rangeUp(upper.add(BigInteger.ONE)))
+                        )
+                )
+        );
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals(), rsFail))) {
+            try {
+                p.a.pow(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void compareImplementationsPow_Rational() {
+        Map<String, Function<Pair<Rational, Rational>, Optional<Rational>>> functions = new LinkedHashMap<>();
+        functions.put("alt", p -> pow_Rational_alt(p.a, p.b));
+        functions.put("standard", p -> p.a.pow(p.b));
+        BigInteger lower = BigInteger.valueOf(Integer.MIN_VALUE);
+        BigInteger upper = BigInteger.valueOf(Integer.MAX_VALUE);
+        Iterable<Rational> rs = filterInfinite(
+                r -> ge(r.getNumerator(), lower) && le(r.getNumerator(), upper) && le(r.getDenominator(), upper),
+                P.withScale(3).rationals()
+        );
+        Iterable<Pair<Rational, Rational>> ps = filterInfinite(
+                p -> (p.a != ZERO || p.b.signum() != -1) && (p.a.signum() != -1 || p.b.getDenominator().testBit(0)),
+                P.pairsSquareRootOrder(P.rationals(), rs)
+        );
+        compareImplementations("pow(Rational)", take(LIMIT, ps), functions, v -> P.reset());
+    }
+
+    private void propertiesLog() {
+        initialize("log(Rational)");
+        Iterable<Pair<Rational, Rational>> ps = P.pairs(
+                P.positiveRationals(),
+                filterInfinite(r -> r != ONE, P.positiveRationals())
+        );
+        for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
+            Optional<Rational> ox = p.a.log(p.b);
+            if (ox.isPresent()) {
+                Rational x = ox.get();
+                x.validate();
+                assertEquals(p, p.b.pow(x).get(), p.a);
+            }
+        }
+
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rangeDown(ZERO), P.positiveRationals()))) {
+            try {
+                p.a.log(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.positiveRationals(), P.rangeDown(ZERO)))) {
+            try {
+                p.a.log(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        for (Rational r : take(LIMIT, P.positiveRationals())) {
+            try {
+                r.log(ONE);
+                fail(r);
+            } catch (ArithmeticException ignored) {}
+        }
     }
 
     private void propertiesFractionalPart() {
@@ -2944,7 +3254,7 @@ public class RationalProperties extends QBarTestProperties {
 
         Iterable<Triple<Rational, BigInteger, RoundingMode>> tsFail = P.triples(
                 P.rationals(),
-                P.withElement(BigInteger.ZERO, P.negativeBigIntegers()),
+                P.rangeDown(BigInteger.ZERO),
                 P.roundingModes()
         );
         for (Triple<Rational, BigInteger, RoundingMode> t : take(LIMIT, tsFail)) {
@@ -2971,7 +3281,7 @@ public class RationalProperties extends QBarTestProperties {
         for (Rational r : take(LIMIT, P.rationals())) {
             List<BigInteger> continuedFraction = toList(r.continuedFraction());
             assertFalse(r, continuedFraction.isEmpty());
-            assertTrue(r, all(i -> i != null, continuedFraction));
+            assertTrue(r, all(Objects::nonNull, continuedFraction));
             assertTrue(r, all(i -> i.signum() == 1, tail(continuedFraction)));
             inverse(Rational::continuedFraction, xs -> fromContinuedFraction(toList(xs)), r);
         }
@@ -2995,6 +3305,7 @@ public class RationalProperties extends QBarTestProperties {
             inverse(Rational::fromContinuedFraction, r -> toList(r.continuedFraction()), is);
         }
 
+        //noinspection RedundantCast
         Iterable<List<BigInteger>> issFail = map(
                 p -> toList(cons(p.a, p.b)),
                 (Iterable<Pair<BigInteger, List<BigInteger>>>) P.pairs(
@@ -3016,7 +3327,7 @@ public class RationalProperties extends QBarTestProperties {
             List<Rational> convergents = toList(r.convergents());
             convergents.forEach(Rational::validate);
             assertFalse(r, convergents.isEmpty());
-            assertTrue(r, all(s -> s != null, convergents));
+            assertTrue(r, all(Objects::nonNull, convergents));
             assertEquals(r, head(convergents), of(r.floor()));
             assertEquals(r, last(convergents), r);
             assertTrue(r, zigzagging(convergents));
@@ -3029,7 +3340,7 @@ public class RationalProperties extends QBarTestProperties {
     private void propertiesPositionalNotation() {
         initialize("positionalNotation(BigInteger)");
         Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
-                P.withElement(ZERO, P.withScale(4).positiveRationals()),
+                P.withScale(4).rangeUp(ZERO),
                 P.withScale(8).rangeUp(IntegerUtils.TWO)
         );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
@@ -3233,10 +3544,7 @@ public class RationalProperties extends QBarTestProperties {
     private void propertiesDigits() {
         initialize("digits(BigInteger)");
         //noinspection Convert2MethodRef
-        Iterable<Pair<Rational, BigInteger>> ps = P.pairsSquareRootOrder(
-                P.withElement(ZERO, P.positiveRationals()),
-                P.rangeUp(IntegerUtils.TWO)
-        );
+        Iterable<Pair<Rational, BigInteger>> ps = P.pairsSquareRootOrder(P.rangeUp(ZERO), P.rangeUp(IntegerUtils.TWO));
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             Pair<List<BigInteger>, Iterable<BigInteger>> digits = p.a.digits(p.b);
             assertTrue(p, digits.a.isEmpty() || !head(digits.a).equals(BigInteger.ZERO));
@@ -3244,10 +3552,7 @@ public class RationalProperties extends QBarTestProperties {
             assertEquals(p, IntegerUtils.fromBigEndianDigits(p.b, digits.a), p.a.floor());
         }
 
-        ps = P.pairsSquareRootOrder(
-                P.withElement(ZERO, P.withScale(8).positiveRationals()),
-                P.rangeUp(IntegerUtils.TWO)
-        );
+        ps = P.pairsSquareRootOrder(P.withScale(8).rangeUp(ZERO), P.rangeUp(IntegerUtils.TWO));
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             Pair<List<BigInteger>, Iterable<BigInteger>> digits = p.a.digits(p.b);
             Pair<List<BigInteger>, Iterable<BigInteger>> alt = digits_alt(p.a, p.b);
@@ -3257,13 +3562,11 @@ public class RationalProperties extends QBarTestProperties {
 
         ps = filterInfinite(
                 q -> q.a.hasTerminatingBaseExpansion(q.b),
-                P.pairsSquareRootOrder(
-                        P.withElement(ZERO, P.positiveRationals()),
-                        P.withScale(4).rangeUp(IntegerUtils.TWO)
-                )
+                P.pairsSquareRootOrder(P.rangeUp(ZERO), P.withScale(4).rangeUp(IntegerUtils.TWO))
         );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
-            toList(p.a.digits(p.b).b);
+            List<BigInteger> afterDecimal = toList(p.a.digits(p.b).b);
+            assertTrue(p, afterDecimal.isEmpty() || !last(afterDecimal).equals(BigInteger.ZERO));
         }
 
         Iterable<Pair<Rational, BigInteger>> psFail = P.pairs(P.negativeRationals(), P.rangeUp(IntegerUtils.TWO));
@@ -3288,7 +3591,7 @@ public class RationalProperties extends QBarTestProperties {
         functions.put("standard", p -> toList(take(TINY_LIMIT, p.a.digits(p.b).b)));
         //noinspection Convert2MethodRef
         Iterable<Pair<Rational, BigInteger>> ps = P.pairsSquareRootOrder(
-                P.withElement(ZERO, P.withScale(4).positiveRationals()),
+                P.withScale(4).rangeUp(ZERO),
                 P.withScale(4).rangeUp(IntegerUtils.TWO)
         );
         compareImplementations("digits(BigInteger)", take(LIMIT, ps), functions, v -> P.reset());
@@ -3300,7 +3603,7 @@ public class RationalProperties extends QBarTestProperties {
         Iterable<Triple<BigInteger, Rational, Rational>> ts = map(
                 p -> new Triple<>(p.b, p.a.a, p.a.b),
                 P.pairsSquareRootOrder(
-                        filterInfinite(p -> p.a != p.b, P.pairs(P.withElement(ZERO, P.positiveRationals()))),
+                        filterInfinite(p -> p.a != p.b, P.pairs(P.rangeUp(ZERO))),
                         map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
                 )
         );
@@ -3320,7 +3623,7 @@ public class RationalProperties extends QBarTestProperties {
         Iterable<Triple<BigInteger, Rational, Rational>> tsFail = map(
                 p -> new Triple<>(p.b, p.a.a, p.a.b),
                 P.pairsSquareRootOrder(
-                        filterInfinite(p -> p.a != p.b, P.pairs(P.withElement(ZERO, P.positiveRationals()))),
+                        filterInfinite(p -> p.a != p.b, P.pairs(P.rangeUp(ZERO))),
                         P.rangeDown(BigInteger.valueOf(-2))
                 )
         );
@@ -3335,7 +3638,7 @@ public class RationalProperties extends QBarTestProperties {
         tsFail = map(
                 p -> new Triple<>(p.b, p.a.a, p.a.b),
                 P.pairsSquareRootOrder(
-                        P.pairs(P.withElement(ZERO, P.positiveRationals()), P.negativeRationals()),
+                        P.pairs(P.rangeUp(ZERO), P.negativeRationals()),
                         map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
                 )
         );
@@ -3350,7 +3653,7 @@ public class RationalProperties extends QBarTestProperties {
         tsFail = map(
                 p -> new Triple<>(p.b, p.a.a, p.a.b),
                 P.pairsSquareRootOrder(
-                        P.pairs(P.negativeRationals(), P.withElement(ZERO, P.positiveRationals())),
+                        P.pairs(P.negativeRationals(), P.rangeUp(ZERO)),
                         map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
                 )
         );
@@ -3363,7 +3666,7 @@ public class RationalProperties extends QBarTestProperties {
 
         //noinspection Convert2MethodRef
         Iterable<Pair<Rational, BigInteger>> psFail = P.pairsSquareRootOrder(
-                P.withElement(ZERO, P.positiveRationals()),
+                P.rangeUp(ZERO),
                 map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
         );
         for (Pair<Rational, BigInteger> p : take(LIMIT, psFail)) {
@@ -3456,6 +3759,17 @@ public class RationalProperties extends QBarTestProperties {
             if (ellipsis) {
                 assertTrue(t, error != ZERO);
             }
+        }
+
+        //noinspection Convert2MethodRef
+        ts = P.triples(
+                P.negativeRationals(),
+                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2)),
+                P.integersGeometric()
+        );
+        for (Triple<Rational, BigInteger, Integer> t : take(LIMIT, ts)) {
+            String s = t.a.toStringBase(t.b, t.c);
+            assertEquals(t, head(s), '-');
         }
 
         String smallBaseChars = charsToString(
@@ -3629,7 +3943,7 @@ public class RationalProperties extends QBarTestProperties {
 
         Pair<Iterable<String>, Iterable<String>> slashPartition = partition(
                 s -> s.contains("/"),
-                filterInfinite(s -> readStrict(s).isPresent(), P.strings(RATIONAL_CHARS))
+                filterInfinite(s -> Rational.readStrict(s).isPresent(), P.strings(RATIONAL_CHARS))
         );
         for (String s : take(LIMIT, slashPartition.a)) {
             int slashIndex = s.indexOf('/');

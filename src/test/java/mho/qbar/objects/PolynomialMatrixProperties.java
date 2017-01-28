@@ -474,7 +474,8 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
                                     toList(EP.range(0, m.width() - 1));
                             return P.pairs(
                                     filterInfinite(
-                                            is -> any(i -> i == null || i < 0 || i >= height, is) || !increasing(is),
+                                            is -> any(i -> i == null || i < 0 || i >= height, is) ||
+                                                    !Ordering.increasing(is),
                                             P.lists(P.withNull(P.integersGeometric()))
                                     ),
                                     map(bs -> toList(select(bs, allColumns)), P.lists(m.width(), P.booleans()))
@@ -501,7 +502,8 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
                             return P.pairs(
                                     map(bs -> toList(select(bs, allRows)), P.lists(m.height(), P.booleans())),
                                     filterInfinite(
-                                            is -> any(i -> i == null || i < 0 || i >= width, is) || !increasing(is),
+                                            is -> any(i -> i == null || i < 0 || i >= width, is) ||
+                                                    !Ordering.increasing(is),
                                             P.lists(P.withNull(P.integersGeometric()))
                                     )
                             );

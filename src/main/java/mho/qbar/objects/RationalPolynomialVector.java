@@ -2,6 +2,7 @@ package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
 import mho.wheels.iterables.NoRemoveIterable;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.ordering.comparators.ShortlexComparator;
 import org.jetbrains.annotations.NotNull;
 
@@ -136,7 +137,7 @@ public final class RationalPolynomialVector implements
      */
     public static @NotNull RationalPolynomialVector of(@NotNull List<RationalPolynomial> coordinates) {
         if (coordinates.isEmpty()) return ZERO_DIMENSIONAL;
-        if (any(a -> a == null, coordinates)) {
+        if (any(Objects::isNull, coordinates)) {
             throw new NullPointerException();
         }
         return new RationalPolynomialVector(toList(coordinates));
@@ -189,7 +190,7 @@ public final class RationalPolynomialVector implements
      */
     public int maxCoordinateBitLength() {
         if (this == ZERO_DIMENSIONAL) return 0;
-        return maximum(map(RationalPolynomial::maxCoefficientBitLength, coordinates));
+        return Ordering.maximum(map(RationalPolynomial::maxCoefficientBitLength, coordinates));
     }
 
     /**
@@ -699,7 +700,7 @@ public final class RationalPolynomialVector implements
      * outside this class.
      */
     public void validate() {
-        assertTrue(this, all(r -> r != null, coordinates));
+        assertTrue(this, all(Objects::nonNull, coordinates));
         if (equals(ZERO_DIMENSIONAL)) {
             assertTrue(this, this == ZERO_DIMENSIONAL);
         }

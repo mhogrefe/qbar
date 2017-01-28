@@ -4,6 +4,7 @@ import mho.wheels.io.Readers;
 import mho.wheels.iterables.NoRemoveIterable;
 import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.IntegerUtils;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
@@ -360,7 +361,7 @@ public final class MultivariatePolynomial implements
     public int maxCoefficientBitLength() {
         if (this == ZERO) return 0;
         //noinspection RedundantCast
-        return maximum((Iterable<Integer>) map(t -> t.b.abs().bitLength(), terms));
+        return Ordering.maximum((Iterable<Integer>) map(t -> t.b.abs().bitLength(), terms));
     }
 
     /**
@@ -434,7 +435,9 @@ public final class MultivariatePolynomial implements
         if (o == DEFAULT_ORDER) {
             return leadingTerm();
         } else {
-            return this == ZERO ? Optional.empty() : Optional.of(argmax(o, t -> t.a, terms));
+            return this == ZERO ?
+                    Optional.empty() :
+                    Optional.of(Ordering.maximum((x, y) -> o.compare(x.a, y.a), terms));
         }
     }
 
@@ -537,11 +540,8 @@ public final class MultivariatePolynomial implements
         Map<Integer, List<Pair<Monomial, BigInteger>>> coefficientMap = new HashMap<>();
         for (Pair<Monomial, BigInteger> term : terms) {
             int vPower = term.a.exponent(v);
-            List<Pair<Monomial, BigInteger>> vPowerTerms = coefficientMap.get(vPower);
-            if (vPowerTerms == null) {
-                vPowerTerms = new ArrayList<>();
-                coefficientMap.put(vPower, vPowerTerms);
-            }
+            List<Pair<Monomial, BigInteger>> vPowerTerms =
+                    coefficientMap.computeIfAbsent(vPower, k -> new ArrayList<>());
             vPowerTerms.add(new Pair<>(term.a.removeVariable(v), term.b));
         }
         int maxPower = 0;
@@ -580,7 +580,7 @@ public final class MultivariatePolynomial implements
     public @NotNull List<Pair<Monomial, MultivariatePolynomial>> groupVariables(
             @NotNull List<Variable> variables, @NotNull MonomialOrder order
     ) {
-        if (any(v -> v == null, variables)) {
+        if (any(Objects::isNull, variables)) {
             throw new NullPointerException();
         }
         SortedMap<Monomial, MultivariatePolynomial> groupedTerms;
@@ -621,7 +621,7 @@ public final class MultivariatePolynomial implements
     public @NotNull List<Pair<Monomial, MultivariatePolynomial>> groupVariables(
             @NotNull List<Variable> variables
     ) {
-        if (any(v -> v == null, variables)) {
+        if (any(Objects::isNull, variables)) {
             throw new NullPointerException();
         }
         SortedMap<Monomial, MultivariatePolynomial> groupedTerms = new TreeMap<>();
@@ -942,7 +942,7 @@ public final class MultivariatePolynomial implements
      * @return Σxs
      */
     public static @NotNull MultivariatePolynomial sum(@NotNull List<MultivariatePolynomial> xs) {
-        if (any(x -> x == null, xs)) {
+        if (any(Objects::isNull, xs)) {
             throw new NullPointerException();
         }
         return foldl(MultivariatePolynomial::add, ZERO, xs);
@@ -961,7 +961,7 @@ public final class MultivariatePolynomial implements
      * @return Πxs
      */
     public static @NotNull MultivariatePolynomial product(@NotNull List<MultivariatePolynomial> xs) {
-        if (any(x -> x == null, xs)) {
+        if (any(Objects::isNull, xs)) {
             throw new NullPointerException();
         }
         if (any(x -> x == ZERO, xs)) {
@@ -1538,9 +1538,9 @@ public final class MultivariatePolynomial implements
             }
         }
         //noinspection RedundantCast
-        if (!increasing(order, (Iterable<Monomial>) map(t -> t.a, terms))) return Optional.empty();
+        if (!Ordering.increasing(order, (Iterable<Monomial>) map(t -> t.a, terms))) return Optional.empty();
         if (order != DEFAULT_ORDER) {
-            terms = sort((x, y) -> x.a.compareTo(y.a), terms);
+            terms = sort(Comparator.comparing(x -> x.a), terms);
         }
         return Optional.of(new MultivariatePolynomial(terms));
     }
@@ -1625,7 +1625,7 @@ public final class MultivariatePolynomial implements
         assertEquals(this, DEFAULT_ORDER, MonomialOrder.GREVLEX);
         assertTrue(this, all(t -> t != null && t.a != null && t.b != null && !t.b.equals(BigInteger.ZERO), terms));
         //noinspection RedundantCast
-        assertTrue(this, increasing((Iterable<Monomial>) map(t -> t.a, terms)));
+        assertTrue(this, Ordering.increasing((Iterable<Monomial>) map(t -> t.a, terms)));
         if (equals(ZERO)) {
             assertTrue(this, this == ZERO);
         }

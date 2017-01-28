@@ -118,7 +118,7 @@ public class RationalMultivariatePolynomialProperties extends QBarTestProperties
             List<Pair<Monomial, Rational>> terms = toList(termIterable);
             assertFalse(p, any(t -> t == null || t.a == null || t.b == null, terms));
             //noinspection RedundantCast
-            assertTrue(p, increasing(p.b, (Iterable<Monomial>) map(t -> t.a, terms)));
+            assertTrue(p, Ordering.increasing(p.b, (Iterable<Monomial>) map(t -> t.a, terms)));
             //noinspection Convert2MethodRef
             inverse(IterableUtils::toList, (List<Pair<Monomial, Rational>> ts) -> of(ts), p.a);
             testNoRemove(termIterable);
@@ -132,7 +132,7 @@ public class RationalMultivariatePolynomialProperties extends QBarTestProperties
             List<Pair<Monomial, Rational>> terms = toList(p);
             assertFalse(p, any(t -> t == null || t.a == null || t.b == null, terms));
             //noinspection RedundantCast
-            assertTrue(p, increasing((Iterable<Monomial>) map(t -> t.a, terms)));
+            assertTrue(p, Ordering.increasing((Iterable<Monomial>) map(t -> t.a, terms)));
             //noinspection Convert2MethodRef
             inverse(IterableUtils::toList, (List<Pair<Monomial, Rational>> ts) -> of(ts), p);
             testNoRemove(p);
@@ -365,7 +365,7 @@ public class RationalMultivariatePolynomialProperties extends QBarTestProperties
         initialize("variables()");
         for (RationalMultivariatePolynomial p : take(LIMIT, P.rationalMultivariatePolynomials())) {
             List<Variable> vs = p.variables();
-            assertTrue(p, increasing(vs));
+            assertTrue(p, Ordering.increasing(vs));
         }
     }
 
@@ -635,7 +635,7 @@ public class RationalMultivariatePolynomialProperties extends QBarTestProperties
             List<Pair<Monomial, RationalMultivariatePolynomial>> groups = t.a.groupVariables(t.b, t.c);
             groups.forEach(q -> q.b.validate());
             //noinspection RedundantCast
-            assertTrue(t, increasing(t.c, (Iterable<Monomial>) map(g -> g.a, groups)));
+            assertTrue(t, Ordering.increasing(t.c, (Iterable<Monomial>) map(g -> g.a, groups)));
             assertTrue(t, all(g -> t.b.containsAll(g.a.variables()), groups));
             assertTrue(t, all(g -> !any(t.b::contains, g.b.variables()), groups));
             assertTrue(t, !any(g -> g.b == ZERO, groups));
@@ -692,7 +692,7 @@ public class RationalMultivariatePolynomialProperties extends QBarTestProperties
             List<Pair<Monomial, RationalMultivariatePolynomial>> groups = p.a.groupVariables(p.b);
             groups.forEach(q -> q.b.validate());
             //noinspection RedundantCast
-            assertTrue(p, increasing((Iterable<Monomial>) map(g -> g.a, groups)));
+            assertTrue(p, Ordering.increasing((Iterable<Monomial>) map(g -> g.a, groups)));
             assertTrue(p, all(g -> p.b.containsAll(g.a.variables()), groups));
             assertTrue(p, all(g -> !any(p.b::contains, g.b.variables()), groups));
             assertTrue(p, !any(g -> g.b == ZERO, groups));
@@ -1479,8 +1479,9 @@ public class RationalMultivariatePolynomialProperties extends QBarTestProperties
             assertTrue(
                     ps,
                     ps.isEmpty() ||
-                            sum.degree() <=
-                                    maximum((Iterable<Integer>) map(RationalMultivariatePolynomial::degree, ps))
+                            sum.degree() <= Ordering.maximum(
+                                    (Iterable<Integer>) map(RationalMultivariatePolynomial::degree, ps)
+                            )
             );
         }
 

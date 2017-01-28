@@ -778,7 +778,7 @@ public final class Rational implements Comparable<Rational> {
      * the left- and right-neighboring {@code float}s will both be equal to that {@code float} and to each other. This
      * method returns the pair made up of the left- and right-neighboring {@code float}s. If the left-neighboring
      * {@code float} is a zero, it is a positive zero; if the right-neighboring {@code float} is a zero, it is a
-     * negative zero. The exception is when {@code this} is equal to zero; then both neighbors are positive zeroes.
+     * negative zero. The exception is when {@code this} is equal to zero; then both neighbors are positive zeros.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Rational}.</li>
@@ -851,7 +851,7 @@ public final class Rational implements Comparable<Rational> {
      * and to each other. This method returns the pair made up of the left- and right-neighboring {@code double}s. If
      * the left-neighboring {@code double} is a zero, it is a positive zero; if the right-neighboring {@code double} is
      * a zero, it is a negative zero. The exception is when {@code this} is equal to zero; then both neighbors are
-     * positive zeroes.
+     * positive zeros.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Rational}.</li>
@@ -1688,7 +1688,7 @@ public final class Rational implements Comparable<Rational> {
      * @return Σxs
      */
     public static @NotNull Rational sum(@NotNull List<Rational> xs) {
-        if (any(x -> x == null, xs)) {
+        if (any(Objects::isNull, xs)) {
             throw new NullPointerException();
         }
         return foldl(Rational::add, ZERO, xs);
@@ -1706,7 +1706,7 @@ public final class Rational implements Comparable<Rational> {
      * @return Πxs
      */
     public static @NotNull Rational product(@NotNull List<Rational> xs) {
-        if (any(x -> x == null, xs)) {
+        if (any(Objects::isNull, xs)) {
             throw new NullPointerException();
         }
         if (any(x -> x == ZERO, xs)) {
@@ -1852,6 +1852,171 @@ public final class Rational implements Comparable<Rational> {
             powDenominator = powDenominator.negate();
         }
         return new Rational(powNumerator, powDenominator);
+    }
+
+    /**
+     * If {@code this} is a perfect {@code r}th power, returns the {@code r}th root of {@code this}. Otherwise, returns
+     * empty.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>{@code r} cannot be zero.</li>
+     *  <li>If {@code r} is negative, {@code this} cannot be zero.</li>
+     *  <li>If {@code r} is even, {@code this} cannot be negative.</li>
+     *  <li>The result may be any {@code Rational}, or empty.</li>
+     * </ul>
+     *
+     * @param r the degree of the root extracted from {@code this}
+     * @return {@code this}<sup>1/{@code r}</sup>
+     */
+    public @NotNull Optional<Rational> root(int r) {
+        if (r == 0) {
+            throw new ArithmeticException("r cannot be zero.");
+        }
+        if (this == Rational.ONE || r == 1) {
+            return Optional.of(this);
+        }
+        if (r < 0) {
+            return invert().root(-r);
+        }
+        if (this == Rational.ZERO) {
+            return Optional.of(ZERO);
+        }
+        if ((r & 1) == 0 && signum() == -1) {
+            throw new ArithmeticException("If r is even, this cannot be negative. r: " + r + ", this: " + this);
+        }
+        Optional<BigInteger> numeratorRoot = MathUtils.root(numerator, r);
+        if (!numeratorRoot.isPresent()) {
+            return Optional.empty();
+        }
+        Optional<BigInteger> denominatorRoot = MathUtils.root(denominator, r);
+        if (!denominatorRoot.isPresent()) {
+            return Optional.empty();
+        }
+        return Optional.of(new Rational(numeratorRoot.get(), denominatorRoot.get()));
+    }
+
+    /**
+     * If {@code this} is a perfect square, returns the square root of {@code this}. Otherwise, returns empty.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be negative.</li>
+     *  <li>The result is non-negative or empty.</li>
+     * </ul>
+     *
+     * @return sqrt({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Optional<Rational> sqrt() {
+        return root(2);
+    }
+
+    /**
+     * If {@code this} is a perfect cube, returns the cube root of {@code this}. Otherwise, returns empty.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>The result may be any {@code Rational}, or empty.</li>
+     * </ul>
+     *
+     * @return cbrt({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Optional<Rational> cbrt() {
+        return root(3);
+    }
+
+    /**
+     * Returns {@code this} raised to the power of {@code p}. 0<sup>0</sup> yields 1. If {@code p} has an even
+     * denominator, the principal (non-negative) root is chosen. If the result is irrational, an empty {@code Optional}
+     * is returned. To get a usable irrational result, see {@link Algebraic#pow(Rational)}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>{@code p} must have a numerator greater than or equal to –2<sup>31</sup> and less than 2<sup>31</sup> and
+     *  a denominator less than 2<sup>31</sup>.</li>
+     *  <li>If {@code p} is negative, {@code this} cannot be 0.</li>
+     *  <li>If {@code p} has an even denominator, {@code this} cannot be negative.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param p the power that {@code this} is raised to
+     * @return {@code this}<sup>{@code p}</sup>
+     */
+    public @NotNull Optional<Rational> pow(@NotNull Rational p) {
+        int smallDenominator = p.getDenominator().intValueExact();
+        int smallNumerator = p.getNumerator().intValueExact();
+        return root(smallDenominator).map(x -> x.pow(smallNumerator));
+    }
+
+    /**
+     * Returns the base-{@code base} logarithm of {@code this}, if the result is rational. Otherwise, returns empty. To
+     * get a usable irrational result, see {@link Real#logOfRational(Rational, Rational)}.
+     *
+     * <ul>
+     *  <li>{@code this} must be positive.</li>
+     *  <li>{@code base} must be positive and cannot equal 1.</li>
+     *  <li>The result may be any {@code Rational}, or empty.</li>
+     * </ul>
+     *
+     * @param base the base of the logarithm
+     * @return log<sub>{@code base}</sub>({@code this}), if rational
+     */
+    public @NotNull Optional<Rational> log(@NotNull Rational base) {
+        if (base.signum() != 1) {
+            throw new ArithmeticException("base must be positive. Invalid base: " + base);
+        }
+        if (base == ONE) {
+            throw new ArithmeticException("base cannot equal 1.");
+        }
+        if (this == ONE) {
+            return Optional.of(ZERO);
+        }
+        if (signum() != 1) {
+            throw new ArithmeticException("this must be positive. Invalid this: " + this);
+        }
+        if (equals(base)) {
+            return Optional.of(ONE);
+        }
+        if (lt(base, ONE)) {
+            return log(base.invert()).map(Rational::negate);
+        }
+        if (lt(this, ONE)) {
+            return invert().log(base).map(Rational::negate);
+        }
+        boolean bn1 = base.numerator.equals(BigInteger.ONE);
+        boolean xn1 = numerator.equals(BigInteger.ONE);
+        if (bn1 != xn1) {
+            return Optional.empty();
+        }
+        Rational np;
+        if (bn1) {
+            np = ONE; //unused
+        } else {
+            Pair<BigInteger, Integer> bn = MathUtils.expressAsPower(base.numerator);
+            Pair<BigInteger, Integer> xn = MathUtils.expressAsPower(numerator);
+            if (!bn.a.equals(xn.a)) {
+                return Optional.empty();
+            }
+            np = of(xn.b, bn.b);
+        }
+        boolean bd1 = base.denominator.equals(BigInteger.ONE);
+        boolean xd1 = denominator.equals(BigInteger.ONE);
+        if (bd1 != xd1) {
+            return Optional.empty();
+        }
+        Rational dp;
+        if (bd1) {
+            dp = ONE; //unused
+        } else {
+            Pair<BigInteger, Integer> bd = MathUtils.expressAsPower(base.denominator);
+            Pair<BigInteger, Integer> xd = MathUtils.expressAsPower(denominator);
+            if (!bd.a.equals(xd.a)) {
+                return Optional.empty();
+            }
+            dp = of(xd.b, bd.b);
+        }
+        return (bn1 || bd1 || np.equals(dp)) ? Optional.of(np) : Optional.empty();
     }
 
     /**
@@ -2088,7 +2253,7 @@ public final class Rational implements Comparable<Rational> {
     /**
      * Returns the digits of (non-negative) {@code this} in a given base. The return value is a pair consisting of the
      * digits before the decimal point (in a list) and the digits after the decimal point (in a possibly-infinite
-     * {@code Iterable}). Trailing zeroes are not included.
+     * {@code Iterable}). Trailing zeros are not included.
      *
      * <ul>
      *  <li>{@code this} cannot be negative.</li>
@@ -2230,8 +2395,8 @@ public final class Rational implements Comparable<Rational> {
      * expansion in the base. If the base is 36 or less, the digits are '0' through '9' followed by 'A' through 'Z'. If
      * the base is greater than 36, the digits are written in decimal and each digit is surrounded by parentheses. If
      * {@code this} has a fractional part, a decimal point is used. Zero is represented by "0" if the base is 36 or
-     * less, or "(0)" otherwise. There are no leading zeroes before the decimal point (unless {@code this} is less than
-     * 1, in which case there is exactly one zero) and no trailing zeroes after. Scientific notation is not used. If
+     * less, or "(0)" otherwise. There are no leading zeros before the decimal point (unless {@code this} is less than
+     * 1, in which case there is exactly one zero) and no trailing zeros after. Scientific notation is not used. If
      * {@code this} is negative, the result will contain a leading '-'.
      *
      * <ul>
@@ -2276,10 +2441,10 @@ public final class Rational implements Comparable<Rational> {
      * an ellipsis ("...") is appended. If the base is 36 or less, the digits are '0' through '9' followed by 'A'
      * through 'Z'. If the base is greater than 36, the digits are written in decimal and each digit is surrounded by
      * parentheses. If {@code this} has a fractional part, a decimal point is used. Zero is represented by "0" if the
-     * base is 36 or less, or "(0)" otherwise. There are no leading zeroes before the decimal point (unless
-     * {@code this} is less than 1, in which case there is exactly one zero) and no trailing zeroes after (unless an
-     * ellipsis is present, in which case there may be any number of trailing zeroes). Scientific notation is not used.
-     * If {@code this} is negative, the result will contain a leading '-'.
+     * base is 36 or less, or "(0)" otherwise. There are no leading zeros before the decimal point (unless {@code this}
+     * is less than 1, in which case there is exactly one zero) and no trailing zeros after (unless an ellipsis is
+     * present, in which case there may be any number of trailing zeros). Scientific notation is not used. If
+     * {@code this} is negative, the result will contain a leading '-'.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Rational}.</li>
@@ -2303,23 +2468,28 @@ public final class Rational implements Comparable<Rational> {
         Rational scaled = scale >= 0 ? multiply(power) : divide(power);
         Rational rounded = of(scaled.bigIntegerValue(RoundingMode.DOWN));
         rounded = scale >= 0 ? rounded.divide(power) : rounded.multiply(power);
-        String result = rounded.toStringBase(base);
+        String result;
+        if (rounded == ZERO && signum() == -1) {
+            result = "-" + rounded.toStringBase(base);
+        } else {
+            result = rounded.toStringBase(base);
+        }
         if (scale > 0 && !scaled.isInteger()) { //append ellipsis
-            //pad with trailing zeroes if necessary
+            //pad with trailing zeros if necessary
             int dotIndex = result.indexOf('.');
             if (dotIndex == -1) {
                 dotIndex = result.length();
                 result = result + ".";
             }
             if (le(base, ASCII_ALPHANUMERIC_COUNT)) {
-                int missingZeroes = scale - result.length() + dotIndex + 1;
-                result += replicate(missingZeroes, '0');
+                int missingZeros = scale - result.length() + dotIndex + 1;
+                result += replicateString(missingZeros, '0');
             } else {
-                int missingZeroes = scale;
+                int missingZeros = scale;
                 for (int i = dotIndex + 1; i < result.length(); i++) {
-                    if (result.charAt(i) == '(') missingZeroes--;
+                    if (result.charAt(i) == '(') missingZeros--;
                 }
-                result += concatStrings(replicate(missingZeroes, "(0)"));
+                result += concatStrings(replicate(missingZeros, "(0)"));
             }
             result += "...";
         }
@@ -2330,8 +2500,8 @@ public final class Rational implements Comparable<Rational> {
      * Converts a {@code String} written in some base to a {@code Rational}. If the base is 36 or less, the digits are
      * '0' through '9' followed by 'A' through 'Z'. If the base is greater than 36, the digits are written in decimal
      * and each digit is surrounded by parentheses (in this case, the {@code String} representing the digit cannot be
-     * empty and no leading zeroes are allowed unless the digit is 0). The empty {@code String} represents 0. Leading
-     * zeroes are permitted. If the {@code String} is invalid, an exception is thrown.
+     * empty and no leading zeros are allowed unless the digit is 0). The empty {@code String} represents 0. Leading
+     * zeros are permitted. If the {@code String} is invalid, an exception is thrown.
      *
      * <ul>
      *  <li>{@code base} must be at least 2.</li>
@@ -2515,7 +2685,7 @@ public final class Rational implements Comparable<Rational> {
             Optional<BigInteger> denominator = Readers.readBigIntegerStrict(s.substring(slashIndex + 1));
             if (!denominator.isPresent() || denominator.get().equals(BigInteger.ZERO)) return Optional.empty();
             Rational candidate = of(numerator.get(), denominator.get());
-            return candidate.toString().equals(s) ? Optional.of(candidate) : Optional.<Rational>empty();
+            return candidate.toString().equals(s) ? Optional.of(candidate) : Optional.empty();
         }
     }
 

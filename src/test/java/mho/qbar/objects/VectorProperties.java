@@ -70,7 +70,7 @@ public class VectorProperties extends QBarTestProperties {
         initialize("iterator()");
         for (Vector v : take(LIMIT, P.vectors())) {
             List<BigInteger> is = toList(v);
-            assertTrue(v, all(i -> i != null, is));
+            assertTrue(v, all(Objects::nonNull, is));
             //noinspection Convert2MethodRef
             inverse(IterableUtils::toList, (List<BigInteger> js) -> of(js), v);
             testNoRemove(v);

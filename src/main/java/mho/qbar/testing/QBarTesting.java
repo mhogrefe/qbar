@@ -33,7 +33,6 @@ public class QBarTesting {
         String name = "";
         List<String> list = null;
         Map<String, String> map = null;
-        String key = null;
         boolean quoted = false;
         for (String line : new TextInput(QBarTesting.class, "testOutput.txt")) {
             switch (state) {
@@ -105,8 +104,6 @@ public class QBarTesting {
                     }
             }
         }
-        list = null;
-        map = null;
     }
 
     private static @NotNull String readTestOutput(@NotNull String s, boolean quoted) {
@@ -226,11 +223,7 @@ public class QBarTesting {
             Map<Integer, Set<String>> sortedActual = new TreeMap<>(Comparator.reverseOrder());
             for (Map.Entry<String, String> entry : actual.entrySet()) {
                 int frequency = Integer.parseInt(entry.getValue());
-                Set<String> values = sortedActual.get(frequency);
-                if (values == null) {
-                    values = new TreeSet<>();
-                    sortedActual.put(frequency, values);
-                }
+                Set<String> values = sortedActual.computeIfAbsent(frequency, k -> new TreeSet<>());
                 values.add(entry.getKey());
             }
             for (Map.Entry<Integer, Set<String>> entry : sortedActual.entrySet()) {

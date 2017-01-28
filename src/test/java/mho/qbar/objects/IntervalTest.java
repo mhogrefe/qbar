@@ -234,6 +234,288 @@ public class IntervalTest {
         contains_Algebraic_helper("[-6, Infinity)", "-10*sqrt(2)", false);
     }
 
+    private static void containsUnsafe_helper(@NotNull String a, @NotNull Real x, boolean output) {
+        aeq(readStrict(a).get().containsUnsafe(x), output);
+    }
+
+    @Test
+    public void testContainsUnsafe() {
+        containsUnsafe_helper("[0, 0]", Real.ZERO, true);
+        containsUnsafe_helper("[0, 0]", Real.ONE, false);
+        containsUnsafe_helper("[0, 0]", Real.PI, false);
+
+        containsUnsafe_helper("[1, 1]", Real.ONE, true);
+        containsUnsafe_helper("[1, 1]", Real.ZERO, false);
+        containsUnsafe_helper("[1, 1]", Real.PI, false);
+        containsUnsafe_helper("[1, 1]", Real.leftFuzzyRepresentation(Rational.ZERO), false);
+        containsUnsafe_helper("[1, 1]", Real.rightFuzzyRepresentation(Rational.ZERO), false);
+        containsUnsafe_helper("[1, 1]", Real.fuzzyRepresentation(Rational.ZERO), false);
+
+        containsUnsafe_helper("(-Infinity, Infinity)", Real.ONE, true);
+        containsUnsafe_helper("(-Infinity, Infinity)", Real.of(Rational.of(-4, 3)), true);
+        containsUnsafe_helper("(-Infinity, Infinity)", Real.PI, true);
+        containsUnsafe_helper("(-Infinity, Infinity)", Real.leftFuzzyRepresentation(Rational.ZERO), true);
+        containsUnsafe_helper("(-Infinity, Infinity)", Real.rightFuzzyRepresentation(Rational.ZERO), true);
+        containsUnsafe_helper("(-Infinity, Infinity)", Real.fuzzyRepresentation(Rational.ZERO), true);
+
+        containsUnsafe_helper("[-2, 5/3]", Real.of(-2), true);
+        containsUnsafe_helper("[-2, 5/3]", Real.NEGATIVE_ONE, true);
+        containsUnsafe_helper("[-2, 5/3]", Real.ZERO, true);
+        containsUnsafe_helper("[-2, 5/3]", Real.ONE, true);
+        containsUnsafe_helper("[-2, 5/3]", Real.of(Rational.of(5, 3)), true);
+        containsUnsafe_helper("[-2, 5/3]", Real.SQRT_TWO, true);
+        containsUnsafe_helper("[-2, 5/3]", Real.SQRT_TWO.negate(), true);
+        containsUnsafe_helper("[-2, 5/3]", Real.of(-3), false);
+        containsUnsafe_helper("[-2, 5/3]", Real.TWO, false);
+        containsUnsafe_helper("[-2, 5/3]", Real.leftFuzzyRepresentation(Rational.of(5, 3)), true);
+        containsUnsafe_helper("[-2, 5/3]", Real.rightFuzzyRepresentation(Rational.of(-2)), true);
+
+        containsUnsafe_helper("[4, 4]", Real.of(4), true);
+        containsUnsafe_helper("[4, 4]", Real.of(3), false);
+        containsUnsafe_helper("[4, 4]", Real.of(5), false);
+        containsUnsafe_helper("[4, 4]", Real.PI, false);
+        containsUnsafe_helper("[4, 4]", Real.leftFuzzyRepresentation(Rational.ZERO), false);
+        containsUnsafe_helper("[4, 4]", Real.rightFuzzyRepresentation(Rational.ZERO), false);
+        containsUnsafe_helper("[4, 4]", Real.fuzzyRepresentation(Rational.ZERO), false);
+
+        containsUnsafe_helper("(-Infinity, 3/2]", Real.ZERO, true);
+        containsUnsafe_helper("(-Infinity, 3/2]", Real.ONE, true);
+        containsUnsafe_helper("(-Infinity, 3/2]", Real.of(-10), true);
+        containsUnsafe_helper("(-Infinity, 3/2]", Real.of(Rational.of(3, 2)), true);
+        containsUnsafe_helper("(-Infinity, 3/2]", Real.SQRT_TWO, true);
+        containsUnsafe_helper("(-Infinity, 3/2]", Real.PI, false);
+        containsUnsafe_helper("(-Infinity, 3/2]", Real.TWO, false);
+        containsUnsafe_helper("(-Infinity, 3/2]", Real.leftFuzzyRepresentation(Rational.of(3, 2)), true);
+
+        containsUnsafe_helper("[-6, Infinity)", Real.ZERO, true);
+        containsUnsafe_helper("[-6, Infinity)", Real.ONE, true);
+        containsUnsafe_helper("[-6, Infinity)", Real.of(-4), true);
+        containsUnsafe_helper("[-6, Infinity)", Real.of(-5), true);
+        containsUnsafe_helper("[-6, Infinity)", Real.PI, true);
+        containsUnsafe_helper("[-6, Infinity)", Real.of(-8), false);
+        containsUnsafe_helper("[-6, Infinity)", Real.PI.negate().multiply(10), false);
+        containsUnsafe_helper("[-6, Infinity)", Real.rightFuzzyRepresentation(Rational.of(-6)), true);
+    }
+
+    private static void contains_Real_Rational_helper(
+            @NotNull String a,
+            @NotNull Real x,
+            @NotNull Rational resolution,
+            @NotNull String output
+    ) {
+        aeq(readStrict(a).get().contains(x, resolution), output);
+    }
+
+    @Test
+    public void testContains_Real_Rational() {
+        contains_Real_Rational_helper("[0, 0]", Real.ZERO, Real.DEFAULT_RESOLUTION, "Optional[true]");
+        contains_Real_Rational_helper("[0, 0]", Real.ONE, Real.DEFAULT_RESOLUTION, "Optional[false]");
+        contains_Real_Rational_helper("[0, 0]", Real.PI, Real.DEFAULT_RESOLUTION, "Optional[false]");
+        contains_Real_Rational_helper(
+                "[0, 0]",
+                Real.leftFuzzyRepresentation(Rational.ZERO),
+                Real.DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        contains_Real_Rational_helper(
+                "[0, 0]",
+                Real.rightFuzzyRepresentation(Rational.ZERO),
+                Real.DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        contains_Real_Rational_helper(
+                "[0, 0]",
+                Real.fuzzyRepresentation(Rational.ZERO),
+                Real.DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        contains_Real_Rational_helper("[1, 1]", Real.ONE, Real.DEFAULT_RESOLUTION, "Optional[true]");
+        contains_Real_Rational_helper("[1, 1]", Real.ZERO, Real.DEFAULT_RESOLUTION, "Optional[false]");
+        contains_Real_Rational_helper("[1, 1]", Real.PI, Real.DEFAULT_RESOLUTION, "Optional[false]");
+        contains_Real_Rational_helper(
+                "[1, 1]",
+                Real.leftFuzzyRepresentation(Rational.ZERO),
+                Real.DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        contains_Real_Rational_helper(
+                "[1, 1]",
+                Real.rightFuzzyRepresentation(Rational.ZERO),
+                Real.DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        contains_Real_Rational_helper(
+                "[1, 1]",
+                Real.fuzzyRepresentation(Rational.ZERO),
+                Real.DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+
+        contains_Real_Rational_helper("(-Infinity, Infinity)", Real.ONE, Real.DEFAULT_RESOLUTION, "Optional[true]");
+        contains_Real_Rational_helper(
+                "(-Infinity, Infinity)",
+                Real.of(Rational.of(-4, 3)),
+                Real.DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        contains_Real_Rational_helper("(-Infinity, Infinity)", Real.PI, Real.DEFAULT_RESOLUTION, "Optional[true]");
+        contains_Real_Rational_helper(
+                "(-Infinity, Infinity)",
+                Real.leftFuzzyRepresentation(Rational.ZERO),
+                Real.DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        contains_Real_Rational_helper(
+                "(-Infinity, Infinity)",
+                Real.rightFuzzyRepresentation(Rational.ZERO),
+                Real.DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        contains_Real_Rational_helper(
+                "(-Infinity, Infinity)",
+                Real.fuzzyRepresentation(Rational.ZERO),
+                Real.DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+
+        contains_Real_Rational_helper("[-2, 5/3]", Real.of(-2), Real.DEFAULT_RESOLUTION, "Optional[true]");
+        contains_Real_Rational_helper("[-2, 5/3]", Real.NEGATIVE_ONE, Real.DEFAULT_RESOLUTION, "Optional[true]");
+        contains_Real_Rational_helper("[-2, 5/3]", Real.ZERO, Real.DEFAULT_RESOLUTION, "Optional[true]");
+        contains_Real_Rational_helper("[-2, 5/3]", Real.ONE, Real.DEFAULT_RESOLUTION, "Optional[true]");
+        contains_Real_Rational_helper(
+                "[-2, 5/3]",
+                Real.of(Rational.of(5, 3)),
+                Real.DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        contains_Real_Rational_helper("[-2, 5/3]", Real.SQRT_TWO, Real.DEFAULT_RESOLUTION, "Optional[true]");
+        contains_Real_Rational_helper("[-2, 5/3]", Real.SQRT_TWO.negate(), Real.DEFAULT_RESOLUTION, "Optional[true]");
+        contains_Real_Rational_helper("[-2, 5/3]", Real.of(-3), Real.DEFAULT_RESOLUTION, "Optional[false]");
+        contains_Real_Rational_helper("[-2, 5/3]", Real.TWO, Real.DEFAULT_RESOLUTION, "Optional[false]");
+        contains_Real_Rational_helper(
+                "[-2, 5/3]",
+                Real.leftFuzzyRepresentation(Rational.of(5, 3)),
+                Real.DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        contains_Real_Rational_helper(
+                "[-2, 5/3]",
+                Real.rightFuzzyRepresentation(Rational.of(5, 3)),
+                Real.DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        contains_Real_Rational_helper(
+                "[-2, 5/3]",
+                Real.fuzzyRepresentation(Rational.of(5, 3)),
+                Real.DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        contains_Real_Rational_helper(
+                "[-2, 5/3]",
+                Real.leftFuzzyRepresentation(Rational.of(-2)),
+                Real.DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        contains_Real_Rational_helper(
+                "[-2, 5/3]",
+                Real.rightFuzzyRepresentation(Rational.of(-2)),
+                Real.DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        contains_Real_Rational_helper(
+                "[-2, 5/3]",
+                Real.fuzzyRepresentation(Rational.of(-2)),
+                Real.DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        contains_Real_Rational_helper("[4, 4]", Real.of(4), Real.DEFAULT_RESOLUTION, "Optional[true]");
+        contains_Real_Rational_helper("[4, 4]", Real.of(3), Real.DEFAULT_RESOLUTION, "Optional[false]");
+        contains_Real_Rational_helper("[4, 4]", Real.of(5), Real.DEFAULT_RESOLUTION, "Optional[false]");
+        contains_Real_Rational_helper("[4, 4]", Real.PI, Real.DEFAULT_RESOLUTION, "Optional[false]");
+        contains_Real_Rational_helper(
+                "[4, 4]",
+                Real.leftFuzzyRepresentation(Rational.ZERO),
+                Real.DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        contains_Real_Rational_helper(
+                "[4, 4]",
+                Real.rightFuzzyRepresentation(Rational.ZERO),
+                Real.DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        contains_Real_Rational_helper(
+                "[4, 4]",
+                Real.fuzzyRepresentation(Rational.ZERO),
+                Real.DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+
+        contains_Real_Rational_helper("(-Infinity, 3/2]", Real.ZERO, Real.DEFAULT_RESOLUTION, "Optional[true]");
+        contains_Real_Rational_helper("(-Infinity, 3/2]", Real.ONE, Real.DEFAULT_RESOLUTION, "Optional[true]");
+        contains_Real_Rational_helper("(-Infinity, 3/2]", Real.of(-10), Real.DEFAULT_RESOLUTION, "Optional[true]");
+        contains_Real_Rational_helper(
+                "(-Infinity, 3/2]",
+                Real.of(Rational.of(3, 2)),
+                Real.DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        contains_Real_Rational_helper("(-Infinity, 3/2]", Real.SQRT_TWO, Real.DEFAULT_RESOLUTION, "Optional[true]");
+        contains_Real_Rational_helper("(-Infinity, 3/2]", Real.PI, Real.DEFAULT_RESOLUTION, "Optional[false]");
+        contains_Real_Rational_helper("(-Infinity, 3/2]", Real.TWO, Real.DEFAULT_RESOLUTION, "Optional[false]");
+        contains_Real_Rational_helper(
+                "(-Infinity, 3/2]",
+                Real.leftFuzzyRepresentation(Rational.of(3, 2)),
+                Real.DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        contains_Real_Rational_helper(
+                "(-Infinity, 3/2]",
+                Real.rightFuzzyRepresentation(Rational.of(3, 2)),
+                Real.DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        contains_Real_Rational_helper(
+                "(-Infinity, 3/2]",
+                Real.fuzzyRepresentation(Rational.of(3, 2)),
+                Real.DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        contains_Real_Rational_helper("[-6, Infinity)", Real.ZERO, Real.DEFAULT_RESOLUTION, "Optional[true]");
+        contains_Real_Rational_helper("[-6, Infinity)", Real.ONE, Real.DEFAULT_RESOLUTION, "Optional[true]");
+        contains_Real_Rational_helper("[-6, Infinity)", Real.of(-4), Real.DEFAULT_RESOLUTION, "Optional[true]");
+        contains_Real_Rational_helper("[-6, Infinity)", Real.of(-5), Real.DEFAULT_RESOLUTION, "Optional[true]");
+        contains_Real_Rational_helper("[-6, Infinity)", Real.PI, Real.DEFAULT_RESOLUTION, "Optional[true]");
+        contains_Real_Rational_helper("[-6, Infinity)", Real.of(-8), Real.DEFAULT_RESOLUTION, "Optional[false]");
+        contains_Real_Rational_helper(
+                "[-6, Infinity)",
+                Real.PI.negate().multiply(10),
+                Real.DEFAULT_RESOLUTION,
+                "Optional[false]"
+        );
+        contains_Real_Rational_helper(
+                "[-6, Infinity)",
+                Real.leftFuzzyRepresentation(Rational.of(-6)),
+                Real.DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        contains_Real_Rational_helper(
+                "[-6, Infinity)",
+                Real.rightFuzzyRepresentation(Rational.of(-6)),
+                Real.DEFAULT_RESOLUTION,
+                "Optional[true]"
+        );
+        contains_Real_Rational_helper(
+                "[-6, Infinity)",
+                Real.fuzzyRepresentation(Rational.of(-6)),
+                Real.DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+    }
+
     private static void contains_Interval_helper(@NotNull String a, @NotNull String b, boolean output) {
         aeq(readStrict(a).get().contains(readStrict(b).get()), output);
     }
@@ -380,9 +662,7 @@ public class IntervalTest {
 
     private static void intersection_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
         Optional<Interval> oc = readStrict(a).get().intersection(readStrict(b).get());
-        if (oc.isPresent()) {
-            oc.get().validate();
-        }
+        oc.ifPresent(Interval::validate);
         aeq(oc, output);
     }
 
@@ -2011,9 +2291,7 @@ public class IntervalTest {
 
     private static void readStrict_helper(@NotNull String input, @NotNull String output) {
         Optional<Interval> oa = readStrict(input);
-        if (oa.isPresent()) {
-            oa.get().validate();
-        }
+        oa.ifPresent(Interval::validate);
         aeq(oa, output);
     }
 

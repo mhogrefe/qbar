@@ -28,7 +28,7 @@ Progress
 | RationalPolynomialMatrix | ✔       | ✔       | ✔     | ✔     | ✔          |
 | RationalPolynomialVector | ✔       | ✔       | ✔     | ✔     | ✔          |
 | RationalVector           | ✔       | ✔       | ✔     | ✔     | ✔          |
-| Real                     | ✘       | ✘       | ✘     | ✘     | ✘          |
+| Real                     | ✔       | ✔       | ✔     | ✔     | ✔          |
 | Variable                 | ✔       | ✔       | ✔     | ✔     | ✔          |
 | Vector                   | ✔       | ✔       | ✔     | ✔     | ✔          |
 | QBarDemos                | ✘       | ✘       | ✘     | ✘     | ✘          |

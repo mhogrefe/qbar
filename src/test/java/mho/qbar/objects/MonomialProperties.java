@@ -6,6 +6,7 @@ import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.numberUtils.IntegerUtils;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
@@ -100,7 +101,7 @@ public class MonomialProperties extends QBarTestProperties {
             List<Pair<Variable, Integer>> terms = toList(termsIterable);
             assertTrue(m, all(t -> t.b > 0, terms));
             //noinspection RedundantCast
-            assertTrue(m, increasing((Iterable<Variable>) map(t -> t.a, terms)));
+            assertTrue(m, Ordering.increasing((Iterable<Variable>) map(t -> t.a, terms)));
             inverse(u -> toList(u.terms()), Monomial::fromTerms, m);
         }
     }
@@ -226,7 +227,7 @@ public class MonomialProperties extends QBarTestProperties {
         initialize("variables()");
         for (Monomial m : take(LIMIT, P.monomials())) {
             List<Variable> variables = m.variables();
-            assertTrue(m, increasing(variables));
+            assertTrue(m, Ordering.increasing(variables));
             String s = m.toString();
             for (Variable v : variables) {
                 assertTrue(m, s.contains(v.toString()));
@@ -268,7 +269,7 @@ public class MonomialProperties extends QBarTestProperties {
     }
 
     private static @NotNull Monomial removeVariables_alt(@NotNull Monomial m, @NotNull List<Variable> vs) {
-        if (any(v -> v == null, vs)) {
+        if (any(Objects::isNull, vs)) {
             throw new NullPointerException();
         }
         if (m == ONE) return m;
@@ -414,7 +415,7 @@ public class MonomialProperties extends QBarTestProperties {
     }
 
     private static @NotNull Monomial product_simplest(@NotNull Iterable<Monomial> xs) {
-        if (any(x -> x == null, xs)) {
+        if (any(Objects::isNull, xs)) {
             throw new NullPointerException();
         }
         return foldl(Monomial::multiply, ONE, xs);

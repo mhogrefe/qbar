@@ -100,6 +100,15 @@ public final class Algebraic implements Comparable<Algebraic> {
             p -> gt(p.a, p.b) ? new Pair<>(p.b, p.a) : p
     );
 
+    /**
+     * A {@code Comparator} that compares two {@code Algebraic}s by complexity. If two {@code Algebraic}s have
+     * different degrees, the lower-degree one is less complex. If they have the same degrees but their minimal
+     * polynomials have different bit lengths (where the bit length of a polynomial is the sum of the bit lengths of
+     * its coefficients), the one with the shorter minimal polynomial is less complex. If they have the same degrees
+     * and their minimal polynomials have the same bit length but the minimal polynomials are different, the one with
+     * the smaller minimal polynomial is less complex. If they have the same minimal polynomial, the one with the
+     * smaller root index is less complex.
+     */
     private static final @NotNull Comparator<Algebraic> COMPLEXITY_COMPARATOR = (a, b) -> {
         int aDegree = a.degree();
         int bDegree = b.degree();
@@ -121,11 +130,6 @@ public final class Algebraic implements Comparable<Algebraic> {
         if (pCompare != 0) return pCompare;
         return Integer.compare(a.rootIndex, b.rootIndex);
     };
-
-    /**
-     * 36, the number of ASCII alphanumeric characters
-     */
-    private static final @NotNull BigInteger ASCII_ALPHANUMERIC_COUNT = BigInteger.valueOf(36);
 
     /**
      * The minimal polynomial of {@code this}; the unique primitive, irreducible polynomial of minimal degree with
@@ -292,17 +296,17 @@ public final class Algebraic implements Comparable<Algebraic> {
      * Creates an {@code Algebraic} equal to a {@code Rational}.
      *
      * <ul>
-     *  <li>{@code rational} cannot be null.</li>
+     *  <li>{@code r} cannot be null.</li>
      *  <li>The result is rational.</li>
      * </ul>
      *
-     * @param rational a {@code Rational}
-     * @return the {@code Algebraic} equal to {@code rational}
+     * @param r a {@code Rational}
+     * @return the {@code Algebraic} equal to {@code r}
      */
-    public static @NotNull Algebraic of(@NotNull Rational rational) {
-        if (rational == Rational.ZERO) return ZERO;
-        if (rational == Rational.ONE) return ONE;
-        return new Algebraic(rational);
+    public static @NotNull Algebraic of(@NotNull Rational r) {
+        if (r == Rational.ZERO) return ZERO;
+        if (r == Rational.ONE) return ONE;
+        return new Algebraic(r);
     }
 
     /**
@@ -523,7 +527,7 @@ public final class Algebraic implements Comparable<Algebraic> {
             return roots;
         }
 
-        SortedMap<Real, Algebraic> rootMap = new TreeMap<>();
+        SortedMap<Real, Algebraic> rootMap = new TreeMap<>(Real::compareToUnsafe);
         for (Polynomial factor : factors) {
             if (factor.degree() == 1) {
                 Rational r = Rational.of(factor.coefficient(0).negate(), factor.coefficient(1));
@@ -571,7 +575,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      *
      * <ul>
      *  <li>{@code this} may be any {@code Algebraic}.</li>
-     *  <li>{@code roundingMode} may be any {@code RoundingMode}.</li>
+     *  <li>{@code roundingMode} cannot be null.</li>
      *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#UNNECESSARY}, {@code this} must be an
      *  integer.</li>
      *  <li>The result is not null.</li>
@@ -592,7 +596,7 @@ public final class Algebraic implements Comparable<Algebraic> {
                 throw new ArithmeticException("If roundingMode is UNNECESSARY, this must be an integer. Invalid" +
                         " this: " + this);
             }
-            return realValue().bigIntegerValue(roundingMode);
+            return realValue().bigIntegerValueUnsafe(roundingMode);
         }
     }
 
@@ -619,7 +623,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @return ⌊{@code this}⌋;
+     * @return ⌊{@code this}⌋
      */
     public @NotNull BigInteger floor() {
         return bigIntegerValue(RoundingMode.FLOOR);
@@ -754,7 +758,7 @@ public final class Algebraic implements Comparable<Algebraic> {
         if (rational.isPresent()) {
             return rational.get().roundUpToPowerOfTwo();
         } else {
-            return realValue().roundUpToIntegerPowerOfTwo();
+            return realValue().roundUpToIntegerPowerOfTwoUnsafe();
         }
     }
 
@@ -863,7 +867,7 @@ public final class Algebraic implements Comparable<Algebraic> {
 
     /**
      * This method returns the floor of the base-2 logarithm of {@code this}. In other words, every positive
-     * {@code Algebrauc} may be written as a×2<sup>b</sup>, where a is an {@code Algebraic} such that 1≤a{@literal <}2
+     * {@code Algebraic} may be written as a×2<sup>b</sup>, where a is an {@code Algebraic} such that 1≤a{@literal <}2
      * and b is an integer; this method returns b.
      *
      * <ul>
@@ -881,7 +885,7 @@ public final class Algebraic implements Comparable<Algebraic> {
         if (rational.isPresent()) {
             return rational.get().binaryExponent();
         } else {
-            return realValue().binaryExponent();
+            return realValue().binaryExponentUnsafe();
         }
     }
 
@@ -972,7 +976,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      * </ul>
      *
      * @param roundingMode specifies the details of how to round {@code this}.
-     * @return {@code this}, rounded
+     * @return {@code this}, rounded to a {@code float}
      */
     public float floatValue(@NotNull RoundingMode roundingMode) {
         if (this == ZERO) return 0.0f;
@@ -984,7 +988,7 @@ public final class Algebraic implements Comparable<Algebraic> {
                 throw new ArithmeticException("If roundingMode is UNNECESSARY, this must be exactly equal to a" +
                         " float. Invalid this: " + this);
             }
-            return realValue().floatValue(roundingMode);
+            return realValue().floatValueUnsafe(roundingMode);
         }
     }
 
@@ -1002,7 +1006,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      *  <li>The result may be any {@code float} except {@code NaN}.</li>
      * </ul>
      *
-     * @return {@code this}, rounded
+     * @return {@code this}, rounded to a {@code float}
      */
     public float floatValue() {
         return floatValue(RoundingMode.HALF_EVEN);
@@ -1086,7 +1090,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      * </ul>
      *
      * @param roundingMode specifies the details of how to round {@code this}.
-     * @return {@code this}, rounded
+     * @return {@code this}, rounded to a {@code double}
      */
     public double doubleValue(@NotNull RoundingMode roundingMode) {
         if (this == ZERO) return 0.0;
@@ -1098,7 +1102,7 @@ public final class Algebraic implements Comparable<Algebraic> {
                 throw new ArithmeticException("If roundingMode is UNNECESSARY, this must be exactly equal to a" +
                         " double. Invalid this: " + this);
             }
-            return realValue().doubleValue(roundingMode);
+            return realValue().doubleValueUnsafe(roundingMode);
         }
     }
 
@@ -1116,7 +1120,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      *  <li>The result may be any {@code double} except {@code NaN}.</li>
      * </ul>
      *
-     * @return {@code this}, rounded
+     * @return {@code this}, rounded to a {@code double}
      */
     public double doubleValue() {
         return doubleValue(RoundingMode.HALF_EVEN);
@@ -1170,7 +1174,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      * <ul>
      *  <li>{@code this} may be any {@code Algebraic}.</li>
      *  <li>{@code precision} cannot be negative.</li>
-     *  <li>{@code roundingMode} may be any {@code RoundingMode}.</li>
+     *  <li>{@code roundingMode} cannot be null.</li>
      *  <li>If {@code precision} is 0, then {@code this} must be an {@code Algebraic} with a terminating decimal
      *  expansion; that is, it must be rational and its denominator must only have 2 or 5 as prime factors.</li>
      *  <li>If {@code roundingMode} is {@code RoundingMode.UNNECESSARY}, then {@code precision} must be at least as
@@ -1194,7 +1198,7 @@ public final class Algebraic implements Comparable<Algebraic> {
                 throw new ArithmeticException("If roundingMode is RoundingMode.UNNECESSARY, then precision must" +
                         " be as large as the number of digits in this's decimal expansion. Invalid this: " + this);
             }
-            return realValue().bigDecimalValueByPrecision(precision, roundingMode);
+            return realValue().bigDecimalValueByPrecisionUnsafe(precision, roundingMode);
         }
     }
 
@@ -1204,9 +1208,9 @@ public final class Algebraic implements Comparable<Algebraic> {
      * Scale may be negative; for example, {@code 1E+1} has a scale of –1.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
      *  <li>{@code scale} may be any {@code int}.</li>
-     *  <li>{@code roundingMode} may be any {@code RoundingMode}.</li>
+     *  <li>{@code roundingMode} cannot be null.</li>
      *  <li>If {@code roundingMode} is {@code RoundingMode.UNNECESSARY}, then {@code scale} must be at least as large
      *  as the smallest n such that {@code this}×10<sup>n</sup> is an integer (and such an n must exist).</li>
      *  <li>The result is non-null.</li>
@@ -1225,7 +1229,7 @@ public final class Algebraic implements Comparable<Algebraic> {
                         " at least as large as the smallest n such that this*10^n is an integer. But n does not" +
                         " exist, since this = " + this);
             }
-            return realValue().bigDecimalValueByScale(scale, roundingMode);
+            return realValue().bigDecimalValueByScaleUnsafe(scale, roundingMode);
         }
     }
 
@@ -1390,7 +1394,7 @@ public final class Algebraic implements Comparable<Algebraic> {
             }
             return Interval.of(lower.rationalValueExact(), upper.rationalValueExact());
         }
-        return Real.intervalExtension(lower.realValue(), upper.realValue());
+        return Real.intervalExtensionUnsafe(lower.realValue(), upper.realValue());
     }
 
     /**
@@ -1603,8 +1607,8 @@ public final class Algebraic implements Comparable<Algebraic> {
      * @return {@code this}–{@code that}
      */
     public @NotNull Algebraic subtract(@NotNull Rational that) {
-        if (this == ZERO) return of(that.negate());
         if (that == Rational.ZERO) return this;
+        if (this == ZERO) return of(that.negate());
         if (isRational()) {
             return of(rational.get().subtract(that));
         }
@@ -1626,6 +1630,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      * @return {@code this}–{@code that}
      */
     public @NotNull Algebraic subtract(@NotNull Algebraic that) {
+        if (this == that) return ZERO;
         if (this == ZERO) return that.negate();
         if (that == ZERO) return this;
         if (isRational()) return that.subtract(rational.get()).negate();
@@ -1664,7 +1669,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      * Returns the product of {@code this} and {@code that}.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code BigInteger}.</li>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
      *  <li>{@code that} cannot be null.</li>
      *  <li>The result is not null.</li>
      * </ul>
@@ -1691,7 +1696,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      * Returns the product of {@code this} and {@code that}.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
      *  <li>{@code that} cannot be null.</li>
      *  <li>The result is not null.</li>
      * </ul>
@@ -1924,6 +1929,11 @@ public final class Algebraic implements Comparable<Algebraic> {
      * @return {@code this}/{@code that}
      */
     public @NotNull Algebraic divide(@NotNull Algebraic that) {
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        if (this == ZERO) return ZERO;
+        if (this == that) return ONE;
         return multiply(that.invert());
     }
 
@@ -1989,7 +1999,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      * @return Σxs
      */
     public static @NotNull Algebraic sum(@NotNull List<Algebraic> xs) {
-        if (any(x -> x == null, xs)) {
+        if (any(Objects::isNull, xs)) {
             throw new NullPointerException();
         }
         switch (xs.size()) {
@@ -2000,11 +2010,7 @@ public final class Algebraic implements Comparable<Algebraic> {
                 for (Algebraic x : xs) {
                     if (x != ZERO) {
                         int degree = x.degree();
-                        List<Algebraic> degreeXs = degreeMap.get(degree);
-                        if (degreeXs == null) {
-                            degreeXs = new ArrayList<>();
-                            degreeMap.put(degree, degreeXs);
-                        }
+                        List<Algebraic> degreeXs = degreeMap.computeIfAbsent(degree, k -> new ArrayList<>());
                         degreeXs.add(x);
                     }
                 }
@@ -2015,11 +2021,7 @@ public final class Algebraic implements Comparable<Algebraic> {
                         continue;
                     }
                     if (entry.getKey() == 1) {
-                        sums.add(
-                                Algebraic.of(
-                                        Rational.sum(toList(map(Algebraic::rationalValueExact, entry.getValue())))
-                                )
-                        );
+                        sums.add(of(Rational.sum(toList(map(Algebraic::rationalValueExact, entry.getValue())))));
                         continue;
                     }
                     List<Algebraic> equalDegreeXs = entry.getValue();
@@ -2054,10 +2056,10 @@ public final class Algebraic implements Comparable<Algebraic> {
                                 condensed.add(x.multiply(multiple));
                         }
                     }
-                    Collections.sort(condensed, COMPLEXITY_COMPARATOR);
+                    condensed.sort(COMPLEXITY_COMPARATOR);
                     sums.add(foldl(Algebraic::add, ZERO, condensed));
                 }
-                Collections.sort(sums, COMPLEXITY_COMPARATOR);
+                sums.sort(COMPLEXITY_COMPARATOR);
                 return foldl(Algebraic::add, ZERO, sums);
         }
     }
@@ -2074,7 +2076,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      * @return Πxs
      */
     public static @NotNull Algebraic product(@NotNull List<Algebraic> xs) {
-        if (any(x -> x == null, xs)) {
+        if (any(Objects::isNull, xs)) {
             throw new NullPointerException();
         }
         if (any(x -> x == ZERO, xs)) {
@@ -2088,11 +2090,7 @@ public final class Algebraic implements Comparable<Algebraic> {
                 for (Algebraic x : xs) {
                     if (x != ONE) {
                         int degree = x.degree();
-                        List<Algebraic> degreeXs = degreeMap.get(degree);
-                        if (degreeXs == null) {
-                            degreeXs = new ArrayList<>();
-                            degreeMap.put(degree, degreeXs);
-                        }
+                        List<Algebraic> degreeXs = degreeMap.computeIfAbsent(degree, k -> new ArrayList<>());
                         degreeXs.add(x);
                     }
                 }
@@ -2104,9 +2102,7 @@ public final class Algebraic implements Comparable<Algebraic> {
                     }
                     if (entry.getKey() == 1) {
                         products.add(
-                                Algebraic.of(
-                                        Rational.product(toList(map(Algebraic::rationalValueExact, entry.getValue())))
-                                )
+                                of(Rational.product(toList(map(Algebraic::rationalValueExact, entry.getValue()))))
                         );
                         continue;
                     }
@@ -2142,10 +2138,10 @@ public final class Algebraic implements Comparable<Algebraic> {
                                 condensed.add(x.pow(power));
                         }
                     }
-                    Collections.sort(condensed, COMPLEXITY_COMPARATOR);
+                    condensed.sort(COMPLEXITY_COMPARATOR);
                     products.add(foldl(Algebraic::multiply, ONE, condensed));
                 }
-                Collections.sort(products, COMPLEXITY_COMPARATOR);
+                products.sort(COMPLEXITY_COMPARATOR);
                 return foldl(Algebraic::multiply, ONE, products);
         }
     }
@@ -2162,7 +2158,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      * @return sgn(Σxs)
      */
     public static int sumSign(@NotNull List<Algebraic> xs) {
-        if (any(x -> x == null, xs)) {
+        if (any(Objects::isNull, xs)) {
             throw new NullPointerException();
         }
         switch (xs.size()) {
@@ -2289,6 +2285,109 @@ public final class Algebraic implements Comparable<Algebraic> {
     }
 
     /**
+     * Returns the {@code r}th root of {@code x}, or {@code x}<sup>1/{@code r}</sup>. If {@code r} is even, the
+     * principal (non-negative) root is chosen.
+     *
+     * <ul>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>{@code r} cannot be 0.</li>
+     *  <li>If {@code r} is negative, {@code x} cannot be zero.</li>
+     *  <li>If {@code r} is even, {@code x} cannot be negative.</li>
+     *  <li>The result is a rational power of a rational number.</li>
+     * </ul>
+     *
+     * @param x a {@code Rational}
+     * @param r the index of the root
+     * @return {@code x}<sup>1/{@code r}</sup>
+     */
+    public static @NotNull Algebraic rootOfRational(@NotNull Rational x, int r) {
+        if (r == 0) {
+            throw new ArithmeticException("r cannot be zero.");
+        }
+        if (x == Rational.ONE || r == 1) {
+            return of(x);
+        }
+        if (r < 0) {
+            return rootOfRational(x.invert(), -r);
+        }
+        if (x == Rational.ZERO) {
+            return ZERO;
+        }
+        if ((r & 1) == 0 && x.signum() == -1) {
+            throw new ArithmeticException("If r is even, x cannot be negative. r: " + r + ", x: " + x);
+        }
+        BigInteger numerator = x.getNumerator();
+        int numeratorSign = numerator.signum();
+        Pair<BigInteger, Integer> numeratorPowers;
+        if (numerator.abs().equals(BigInteger.ONE)) {
+            numeratorPowers = new Pair<>(BigInteger.ONE, 0);
+        } else {
+            numeratorPowers = MathUtils.expressAsPower(numerator.abs());
+        }
+        BigInteger denominator = x.getDenominator();
+        Pair<BigInteger, Integer> denominatorPowers;
+        if (denominator.equals(BigInteger.ONE)) {
+            denominatorPowers = new Pair<>(BigInteger.ONE, 0);
+        } else {
+            denominatorPowers = MathUtils.expressAsPower(denominator);
+        }
+        int gcd = MathUtils.gcd(MathUtils.gcd(numeratorPowers.b, denominatorPowers.b), r);
+        if (gcd != 1) {
+            numerator = numeratorPowers.a.pow(numeratorPowers.b / gcd);
+            if (numeratorSign == -1) {
+                numerator = numerator.negate();
+            }
+            denominator = denominatorPowers.a.pow(denominatorPowers.b / gcd);
+            r /= gcd;
+            if (r == 1) {
+                return new Algebraic(Rational.of(numerator, denominator));
+            }
+        }
+        int rootRootIndex = (r & 1) == 0 ? 1 : 0;
+        List<BigInteger> coefficients = new ArrayList<>();
+        coefficients.add(numerator.negate());
+        for (int i = 0; i < r - 1; i++) {
+            coefficients.add(BigInteger.ZERO);
+        }
+        coefficients.add(denominator);
+        Polynomial rootMp = Polynomial.of(coefficients);
+        Interval rootIsolatingInterval = rootMp.powerOfTwoIsolatingInterval(rootRootIndex);
+        return new Algebraic(rootMp, rootRootIndex, rootIsolatingInterval, rootRootIndex + 1);
+    }
+
+    /**
+     * Returns the square root of {@code x}. The principal (non-negative) square root is chosen.
+     *
+     * <ul>
+     *  <li>{@code x} cannot be negative.</li>
+     *  <li>The result is the square root of a rational number.</li>
+     * </ul>
+     *
+     * @param x a {@code Rational}
+     * @return sqrt({@code x})
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull Algebraic sqrtOfRational(@NotNull Rational x) {
+        return rootOfRational(x, 2);
+    }
+
+    /**
+     * Returns the cube root of {@code x}.
+     *
+     * <ul>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>The result is the cube root of a rational number.</li>
+     * </ul>
+     *
+     * @param x a {@code Rational}
+     * @return cbrt({@code x})
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull Algebraic cbrtOfRational(@NotNull Rational x) {
+        return rootOfRational(x, 3);
+    }
+
+    /**
      * Returns the {@code r}th root of {@code this}, or {@code this}<sup>1/{@code r}</sup>. If {@code r} is even, the
      * principal (non-negative) root is chosen.
      *
@@ -2320,43 +2419,7 @@ public final class Algebraic implements Comparable<Algebraic> {
             throw new ArithmeticException("If r is even, this cannot be negative. r: " + r + ", this: " + this);
         }
         if (rational.isPresent()) {
-            BigInteger numerator = rational.get().getNumerator();
-            int numeratorSign = numerator.signum();
-            Pair<BigInteger, Integer> numeratorPowers;
-            if (numerator.abs().equals(BigInteger.ONE)) {
-                numeratorPowers = new Pair<>(BigInteger.ONE, 0);
-            } else {
-                numeratorPowers = MathUtils.expressAsPower(numerator.abs());
-            }
-            BigInteger denominator = rational.get().getDenominator();
-            Pair<BigInteger, Integer> denominatorPowers;
-            if (denominator.equals(BigInteger.ONE)) {
-                denominatorPowers = new Pair<>(BigInteger.ONE, 0);
-            } else {
-                denominatorPowers = MathUtils.expressAsPower(denominator);
-            }
-            int gcd = MathUtils.gcd(MathUtils.gcd(numeratorPowers.b, denominatorPowers.b), r);
-            if (gcd != 1) {
-                numerator = numeratorPowers.a.pow(numeratorPowers.b / gcd);
-                if (numeratorSign == -1) {
-                    numerator = numerator.negate();
-                }
-                denominator = denominatorPowers.a.pow(denominatorPowers.b / gcd);
-                r /= gcd;
-                if (r == 1) {
-                    return new Algebraic(Rational.of(numerator, denominator));
-                }
-            }
-            int rootRootIndex = (r & 1) == 0 ? 1 : 0;
-            List<BigInteger> coefficients = new ArrayList<>();
-            coefficients.add(numerator.negate());
-            for (int i = 0; i < r - 1; i++) {
-                coefficients.add(BigInteger.ZERO);
-            }
-            coefficients.add(denominator);
-            Polynomial rootMp = Polynomial.of(coefficients);
-            Interval rootIsolatingInterval = rootMp.powerOfTwoIsolatingInterval(rootRootIndex);
-            return new Algebraic(rootMp, rootRootIndex, rootIsolatingInterval, rootRootIndex + 1);
+            return rootOfRational(rational.get(), r);
         }
         Polynomial rootMp = minimalPolynomial.rootRoots(r);
         int rootRootIndex = rootIndex;
@@ -2416,7 +2479,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      * @return {@code this}<sup>{@code p}</sup>
      */
     public @NotNull Algebraic pow(@NotNull Rational p) {
-        if (p.getDenominator().and(BigInteger.ONE).equals(BigInteger.ZERO) && signum() == -1) {
+        if (!p.getDenominator().testBit(0) && signum() == -1) {
             throw new ArithmeticException("If p has an even denominator, this cannot be negative. this: " +
                     this + ", p: " + p);
         }
@@ -2526,7 +2589,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      *
      * Length is O(log({@code denominator})) if {@code this} is rational, infinite otherwise
      *
-     * @return the continued-fraction-representation of {@code this}
+     * @return the continued fraction representation of {@code this}
      */
     public @NotNull Iterable<BigInteger> continuedFraction() {
         if (rational.isPresent()) {
@@ -2575,7 +2638,7 @@ public final class Algebraic implements Comparable<Algebraic> {
                 }
             };
         } else {
-            return realValue().continuedFraction();
+            return realValue().continuedFractionUnsafe();
         }
     }
 
@@ -2594,7 +2657,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      *  {@link mho.wheels.iterables.IterableUtils#minimize(List, List)}</li>
      * </ul>
      *
-     * @return the repeated continued-fraction-representation of {@code this}
+     * @return the repeated continued fraction representation of {@code this}
      */
     public @NotNull Pair<List<BigInteger>, List<BigInteger>> repeatedContinuedFraction() {
         if (rational.isPresent()) {
@@ -2724,7 +2787,7 @@ public final class Algebraic implements Comparable<Algebraic> {
     /**
      * Returns the digits of (non-negative) {@code this} in a given base. The return value is a pair consisting of the
      * digits before the decimal point (in a list) and the digits after the decimal point (in a possibly-infinite
-     * {@code Iterable}). Trailing zeroes are not included.
+     * {@code Iterable}). Trailing zeros are not included.
      *
      * <ul>
      *  <li>{@code this} cannot be negative.</li>
@@ -2828,9 +2891,9 @@ public final class Algebraic implements Comparable<Algebraic> {
      * an ellipsis ("...") is appended. If the base is 36 or less, the digits are '0' through '9' followed by 'A'
      * through 'Z'. If the base is greater than 36, the digits are written in decimal and each digit is surrounded by
      * parentheses. If {@code this} has a fractional part, a decimal point is used. Zero is represented by "0" if the
-     * base is 36 or less, or "(0)" otherwise. There are no leading zeroes before the decimal point (unless
-     * {@code this} is less than 1, in which case there is exactly one zero) and no trailing zeroes after (unless an
-     * ellipsis is present, in which case there may be any number of trailing zeroes). Scientific notation is not used.
+     * base is 36 or less, or "(0)" otherwise. There are no leading zeros before the decimal point (unless
+     * |{@code this}| is less than 1, in which case there is exactly one zero) and no trailing zeres after (unless an
+     * ellipsis is present, in which case there may be any number of trailing zeros). Scientific notation is not used.
      * If {@code this} is negative, the result will contain a leading '-'.
      *
      * <ul>
@@ -2850,35 +2913,9 @@ public final class Algebraic implements Comparable<Algebraic> {
     public @NotNull String toStringBase(@NotNull BigInteger base, int scale) {
         if (rational.isPresent()) {
             return rational.get().toStringBase(base, scale);
+        } else {
+            return realValue().toStringBaseUnsafe(base, scale);
         }
-        if (lt(base, IntegerUtils.TWO)) {
-            throw new IllegalArgumentException("base must be at least 2. Invalid base: " + base);
-        }
-        BigInteger power = base.pow(scale >= 0 ? scale : -scale);
-        Algebraic scaled = scale >= 0 ? multiply(power) : divide(power);
-        Rational rounded = Rational.of(scaled.bigIntegerValue(RoundingMode.DOWN));
-        rounded = scale >= 0 ? rounded.divide(power) : rounded.multiply(power);
-        String result = rounded.toStringBase(base);
-        if (scale > 0 && !scaled.isInteger()) { //append ellipsis
-            //pad with trailing zeroes if necessary
-            int dotIndex = result.indexOf('.');
-            if (dotIndex == -1) {
-                dotIndex = result.length();
-                result = result + ".";
-            }
-            if (le(base, ASCII_ALPHANUMERIC_COUNT)) {
-                int missingZeroes = scale - result.length() + dotIndex + 1;
-                result += replicate(missingZeroes, '0');
-            } else {
-                int missingZeroes = scale;
-                for (int i = dotIndex + 1; i < result.length(); i++) {
-                    if (result.charAt(i) == '(') missingZeroes--;
-                }
-                result += concatStrings(replicate(missingZeroes, "(0)"));
-            }
-            result += "...";
-        }
-        return result;
     }
 
     /**
@@ -2947,11 +2984,11 @@ public final class Algebraic implements Comparable<Algebraic> {
         if (rational.isPresent() && that.rational.isPresent()) {
             return rational.get().compareTo(that.rational.get());
         } else if (rational.isPresent()) {
-            return -that.realValue().compareTo(rational.get());
+            return -that.realValue().compareToUnsafe(rational.get());
         } else if (that.rational.isPresent()) {
-            return realValue().compareTo(that.rational.get());
+            return realValue().compareToUnsafe(that.rational.get());
         } else {
-            return realValue().compareTo(that.realValue());
+            return realValue().compareToUnsafe(that.realValue());
         }
     }
 

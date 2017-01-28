@@ -7,6 +7,7 @@ import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.NoRemoveIterable;
 import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.IntegerUtils;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.ordering.comparators.ShortlexComparator;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -264,7 +265,7 @@ public final class Polynomial implements
      * @return the {@code Polynomial} with the specified coefficients
      */
     public static @NotNull Polynomial of(@NotNull List<BigInteger> coefficients) {
-        if (any(i -> i == null, coefficients)) {
+        if (any(Objects::isNull, coefficients)) {
             throw new NullPointerException();
         }
         int actualSize;
@@ -364,7 +365,7 @@ public final class Polynomial implements
     public int maxCoefficientBitLength() {
         if (this == ZERO) return 0;
         //noinspection RedundantCast
-        return maximum((Iterable<Integer>) map(c -> c.abs().bitLength(), coefficients));
+        return Ordering.maximum((Iterable<Integer>) map(c -> c.abs().bitLength(), coefficients));
     }
 
     /**
@@ -393,7 +394,7 @@ public final class Polynomial implements
      * @return the leading coefficient
      */
     public @NotNull Optional<BigInteger> leading() {
-        return this == ZERO ? Optional.<BigInteger>empty() : Optional.of(last(coefficients));
+        return this == ZERO ? Optional.empty() : Optional.of(last(coefficients));
     }
 
     /**
@@ -760,7 +761,7 @@ public final class Polynomial implements
      * @return Πxs
      */
     public static @NotNull Polynomial product(@NotNull List<Polynomial> xs) {
-        if (any(x -> x == null, xs)) {
+        if (any(Objects::isNull, xs)) {
             throw new NullPointerException();
         }
         if (any(x -> x == ZERO, xs)) {
@@ -1465,7 +1466,7 @@ public final class Polynomial implements
      * {@code ps}
      */
     public static @NotNull Polynomial gcd(@NotNull List<Polynomial> ps) {
-        if (any(p -> p == null, ps)) {
+        if (any(Objects::isNull, ps)) {
             throw new NullPointerException();
         }
         List<Polynomial> noZeros = toList(filter(p -> p != ZERO, ps));
@@ -1723,7 +1724,7 @@ public final class Polynomial implements
     @SuppressWarnings("JavaDoc")
     public static @NotNull Matrix coefficientMatrix(@NotNull List<Polynomial> ps) {
         if (ps.isEmpty()) return Matrix.zero(0, 0);
-        int width = maximum(map(Polynomial::degree, ps)) + 1;
+        int width = Ordering.maximum(map(Polynomial::degree, ps)) + 1;
         if (ps.size() > width) {
             throw new IllegalArgumentException("ps may not have more elements than one more than the maximum degree" +
                     " of ps. Invalid ps: " + ps);
@@ -2240,7 +2241,7 @@ public final class Polynomial implements
         if (degree() < 1) return Interval.ZERO;
         BigInteger denominator = leading().get().abs();
         //noinspection RedundantCast
-        Rational max = maximum(
+        Rational max = Ordering.maximum(
                 (Iterable<Rational>) map(c -> Rational.of(c.abs(), denominator), init(coefficients))
         ).add(Rational.ONE);
         max = postProcessor.apply(max);
@@ -3174,7 +3175,7 @@ public final class Polynomial implements
         }
         if (any(p -> BigInteger.ZERO.equals(p.a), monomials)) return Optional.empty();
         //noinspection RedundantCast
-        if (!increasing((Iterable<Integer>) map(p -> p.b, monomials))) return Optional.empty();
+        if (!Ordering.increasing((Iterable<Integer>) map(p -> p.b, monomials))) return Optional.empty();
         int degree = last(monomials).b;
         List<BigInteger> coefficients = toList(replicate(degree + 1, BigInteger.ZERO));
         for (Pair<BigInteger, Integer> monomial : monomials) {
@@ -3225,7 +3226,7 @@ public final class Polynomial implements
                 s,
                 powerString -> {
                     Optional<Integer> oPower = Readers.readIntegerStrict(powerString);
-                    return !oPower.isPresent() || oPower.get() > maxExponent ? Optional.<Integer>empty() : oPower;
+                    return !oPower.isPresent() || oPower.get() > maxExponent ? Optional.empty() : oPower;
                 }
         );
     }
@@ -3272,7 +3273,7 @@ public final class Polynomial implements
      * class.
      */
     public void validate() {
-        assertTrue(this, all(r -> r != null, coefficients));
+        assertTrue(this, all(Objects::nonNull, coefficients));
         if (!coefficients.isEmpty()) {
             assertTrue(this, !last(coefficients).equals(BigInteger.ZERO));
         }

@@ -1,6 +1,7 @@
 package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.*;
+import mho.qbar.objects.Vector;
 import mho.wheels.iterables.IterableProvider;
 import mho.wheels.iterables.RandomProvider;
 import mho.wheels.math.BinaryFraction;
@@ -13,10 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.*;
@@ -1304,6 +1302,22 @@ public strictfp abstract class QBarIterableProvider {
     }
 
     /**
+     * Generates pairs of values where the second value depends on the first, and where the type of the first value has
+     * no hash code.
+     *
+     * @param xs an {@code Iterable} of values
+     * @param f a function from a value of type {@code a} to an {@code Iterable} of type-{@code B} values
+     * @param <A> the type of values in the first slot, with no available hash code
+     * @param <B> the type of values in the second slot
+     */
+    public @NotNull <A, B> Iterable<Pair<A, B>> dependentPairsIdentityHash(
+            @NotNull Iterable<A> xs,
+            @NotNull Function<A, Iterable<B>> f
+    ) {
+        return wheelsProvider.dependentPairsIdentityHash(xs, f);
+    }
+
+    /**
      * Generates pairs of values where the second value depends on the first. There must be an infinite number of
      * possible first values, and every first value must be associated with an infinite number of possible second
      * values.
@@ -1318,6 +1332,23 @@ public strictfp abstract class QBarIterableProvider {
             @NotNull Function<A, Iterable<B>> f
     ) {
         return wheelsProvider.dependentPairsInfinite(xs, f);
+    }
+
+    /**
+     * Generates pairs of values where the second value depends on the first, and where the type of the first value has
+     * no hash code. There must be an infinite number of possible first values, and every first value must be
+     * associated with an infinite number of possible second values.
+     *
+     * @param xs an {@code Iterable} of values
+     * @param f a function from a value of type {@code a} to an infinite {@code Iterable} of type-{@code B} values
+     * @param <A> the type of values in the first slot, with no available hash code
+     * @param <B> the type of values in the second slot
+     */
+    public @NotNull <A, B> Iterable<Pair<A, B>> dependentPairsInfiniteIdentityHash(
+            @NotNull Iterable<A> xs,
+            @NotNull Function<A, Iterable<B>> f
+    ) {
+        return wheelsProvider.dependentPairsInfiniteIdentityHash(xs, f);
     }
 
     /**
@@ -3182,6 +3213,18 @@ public strictfp abstract class QBarIterableProvider {
     }
 
     /**
+     * Generates all {@code IdentityHashMap}s whose keys are {@code ks} and whose values are subsets of {@code vs}.
+     *
+     * @param ks the keys of the resulting maps
+     * @param vs a set where the values of the resulting maps are drawn from
+     * @param <K> the type of the maps' keys
+     * @param <V> the type of the maps' values
+     */
+    public @NotNull <K, V> Iterable<IdentityHashMap<K, V>> identityMaps(@NotNull List<K> ks, Iterable<V> vs) {
+        return wheelsProvider.identityMaps(ks, vs);
+    }
+
+    /**
      * Generates all {@code RandomProvider}s with a fixed {@code scale}, {@code secondaryScale}, and
      * {@code tertiaryScale}.
      *
@@ -3792,10 +3835,10 @@ public strictfp abstract class QBarIterableProvider {
      * @param variables the allowed variables in the result
      */
     public @NotNull Iterable<Monomial> monomials(@NotNull List<Variable> variables) {
-        if (any(v -> v == null, variables)) {
+        if (any(Objects::isNull, variables)) {
             throw new NullPointerException();
         }
-        if (!increasing(variables)) {
+        if (!Ordering.increasing(variables)) {
             throw new IllegalArgumentException("variables must be in increasing order and cannot contain " +
                     "repetitions. Invalid variables: " + variables);
         }
@@ -3933,6 +3976,181 @@ public strictfp abstract class QBarIterableProvider {
                 )
         );
     }
+
+    /**
+     * Generates clean {@code Real}s greater than or equal to a given value.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     * </ul>
+     *
+     * @param a the inclusive lower bound of the generated {@code Real}s
+     */
+    public @NotNull Iterable<Real> cleanRealRangeUp(@NotNull Algebraic a) {
+        return map(Algebraic::realValue, rangeUp(a));
+    }
+
+    /**
+     * Generates {@code Real}s greater than or equal to a given value.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     * </ul>
+     *
+     * @param a the inclusive lower bound of the generated {@code Real}s
+     */
+    public @NotNull Iterable<Real> realRangeUp(@NotNull Algebraic a) {
+        return withScale(1).choose(
+                map(Algebraic::realValue, rangeUp(a)),
+                choose(
+                        Arrays.asList(
+                                map(x -> Real.leftFuzzyRepresentation(x.rationalValueExact()), rangeUp(1, a)),
+                                map(x -> Real.rightFuzzyRepresentation(x.rationalValueExact()), rangeUp(1, a)),
+                                map(x -> Real.fuzzyRepresentation(x.rationalValueExact()), rangeUp(1, a))
+                        )
+                )
+        );
+    }
+
+    /**
+     * Generates clean {@code Real}s less than or equal to a given value.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     * </ul>
+     *
+     * @param a the inclusive upper bound of the generated {@code Real}s
+     */
+    public @NotNull Iterable<Real> cleanRealRangeDown(@NotNull Algebraic a) {
+        return map(Algebraic::realValue, rangeDown(a));
+    }
+
+    /**
+     * Generates {@code Real}s less than or equal to a given value.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     * </ul>
+     *
+     * @param a the inclusive upper bound of the generated {@code Real}s
+     */
+    public @NotNull Iterable<Real> realRangeDown(@NotNull Algebraic a) {
+        return withScale(1).choose(
+                map(Algebraic::realValue, rangeDown(a)),
+                choose(
+                        Arrays.asList(
+                                map(x -> Real.leftFuzzyRepresentation(x.rationalValueExact()), rangeDown(1, a)),
+                                map(x -> Real.rightFuzzyRepresentation(x.rationalValueExact()), rangeDown(1, a)),
+                                map(x -> Real.fuzzyRepresentation(x.rationalValueExact()), rangeDown(1, a))
+                        )
+                )
+        );
+    }
+
+    /**
+     * Generates clean {@code Real}s between {@code a} and {@code b}, inclusive.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>{@code b} cannot be null.</li>
+     *  <li>{@code a} must be less than or equal to {@code b}.</li>
+     * </ul>
+     *
+     * @param a the inclusive lower bound of the generated {@code Real}s
+     * @param b the inclusive upper bound of the generated {@code Real}s
+     */
+    public @NotNull Iterable<Real> cleanRealRange(@NotNull Algebraic a, @NotNull Algebraic b) {
+        return map(Algebraic::realValue, range(a, b));
+    }
+
+    /**
+     * Generates {@code Real}s between {@code a} and {@code b}, inclusive.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>{@code b} cannot be null.</li>
+     *  <li>{@code a} must be less than or equal to {@code b}.</li>
+     * </ul>
+     *
+     * @param a the inclusive lower bound of the generated {@code Real}s
+     * @param b the inclusive upper bound of the generated {@code Real}s
+     */
+    public @NotNull Iterable<Real> realRange(@NotNull Algebraic a, @NotNull Algebraic b) {
+        if (a.equals(b) && !a.isRational()) {
+            return map(Algebraic::realValue, range(a, a));
+        } else {
+            return withScale(1).choose(
+                    map(Algebraic::realValue, range(a, b)),
+                    choose(
+                            Arrays.asList(
+                                    map(x -> Real.leftFuzzyRepresentation(x.rationalValueExact()), range(1, a, b)),
+                                    map(x -> Real.rightFuzzyRepresentation(x.rationalValueExact()), range(1, a, b)),
+                                    map(x -> Real.fuzzyRepresentation(x.rationalValueExact()), range(1, a, b))
+                            )
+                    )
+            );
+        }
+    }
+
+    /**
+     * Generates clean {@code Real}s contained in a given {@code Interval}.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     * </ul>
+     *
+     * @param a an {@code Interval}
+     */
+    public @NotNull Iterable<Real> cleanRealsIn(@NotNull Interval a) {
+        return map(Algebraic::realValue, algebraicsIn(a));
+    }
+
+    /**
+     * Generates {@code Real}s contained in a given {@code Interval}.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     * </ul>
+     *
+     * @param a an {@code Interval}
+     */
+    public @NotNull Iterable<Real> realsIn(@NotNull Interval a) {
+        if (!a.getLower().isPresent() && !a.getUpper().isPresent()) {
+            return reals();
+        } else if (!a.getLower().isPresent()) {
+            return realRangeDown(Algebraic.of(a.getUpper().get()));
+        } else if (!a.getUpper().isPresent()) {
+            return realRangeUp(Algebraic.of(a.getLower().get()));
+        } else {
+            return realRange(Algebraic.of(a.getLower().get()), Algebraic.of(a.getUpper().get()));
+        }
+    }
+
+    /**
+     * Generates {@code Real}s not contained in a given {@code Interval}.
+     *
+     * <ul>
+     *  <li>{@code degree} must be positive.</li>
+     *  <li>{@code a} cannot be (–∞, ∞).</li>
+     * </ul>
+     *
+     * @param a an {@code Interval}
+     */
+    public @NotNull Iterable<Real> cleanRealsNotIn(@NotNull Interval a) {
+        return map(Algebraic::realValue, algebraicsNotIn(a));
+    }
+
+    /**
+     * Generates {@code Real}s not contained in a given {@code Interval}.
+     *
+     * <ul>
+     *  <li>{@code degree} must be positive.</li>
+     *  <li>{@code a} cannot be (–∞, ∞).</li>
+     * </ul>
+     *
+     * @param a an {@code Interval}
+     */
+    public abstract @NotNull Iterable<Real> realsNotIn(@NotNull Interval a);
 
     /**
      * Generates positive {@code Algebraic}s with a given degree.

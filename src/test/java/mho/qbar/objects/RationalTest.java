@@ -331,9 +331,7 @@ public class RationalTest {
 
     private static void of_float_helper(float f, @NotNull String output) {
         Optional<Rational> or = of(f);
-        if (or.isPresent()) {
-            or.get().validate();
-        }
+        or.ifPresent(Rational::validate);
         aeq(or, output);
     }
 
@@ -366,9 +364,7 @@ public class RationalTest {
 
     private static void of_double_helper(double d, @NotNull String output) {
         Optional<Rational> or = of(d);
-        if (or.isPresent()) {
-            or.get().validate();
-        }
+        or.ifPresent(Rational::validate);
         aeq(or, output);
     }
 
@@ -425,9 +421,7 @@ public class RationalTest {
 
     private static void ofExact_float_helper(float f, @NotNull Object output) {
         Optional<Rational> or = ofExact(f);
-        if (or.isPresent()) {
-            or.get().validate();
-        }
+        or.ifPresent(Rational::validate);
         aeq(or, output);
     }
 
@@ -460,9 +454,7 @@ public class RationalTest {
 
     private static void ofExact_double_helper(double d, @NotNull Object output) {
         Optional<Rational> or = ofExact(d);
-        if (or.isPresent()) {
-            or.get().validate();
-        }
+        or.ifPresent(Rational::validate);
         aeq(or, output);
     }
 
@@ -728,8 +720,8 @@ public class RationalTest {
         ceiling_helper("1", 1);
     }
 
-    private static void bigIntegerValueExact_helper(@NotNull String r, int output) {
-        aeq(readStrict(r).get().bigIntegerValueExact(), output);
+    private static void bigIntegerValueExact_helper(@NotNull String input) {
+        aeq(readStrict(input).get().bigIntegerValueExact(), input);
     }
 
     private static void bigIntegerValueExact_fail_helper(@NotNull String r) {
@@ -741,9 +733,9 @@ public class RationalTest {
 
     @Test
     public void testBigIntegerValueExact() {
-        bigIntegerValueExact_helper("1", 1);
-        bigIntegerValueExact_helper("0", 0);
-        bigIntegerValueExact_helper("-1", -1);
+        bigIntegerValueExact_helper("1");
+        bigIntegerValueExact_helper("0");
+        bigIntegerValueExact_helper("-1");
 
         bigIntegerValueExact_fail_helper("11/2");
         bigIntegerValueExact_fail_helper("5/2");
@@ -755,13 +747,13 @@ public class RationalTest {
         bigIntegerValueExact_fail_helper("-11/2");
     }
 
-    private static void byteValueExact_helper(@NotNull String r) {
-        aeq(readStrict(r).get().byteValueExact(), r);
+    private static void byteValueExact_helper(@NotNull String input) {
+        aeq(readStrict(input).get().byteValueExact(), input);
     }
 
-    private static void byteValueExact_fail_helper(@NotNull String r) {
+    private static void byteValueExact_fail_helper(@NotNull String input) {
         try {
-            readStrict(r).get().byteValueExact();
+            readStrict(input).get().byteValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -779,13 +771,13 @@ public class RationalTest {
         byteValueExact_fail_helper("1000");
     }
 
-    private static void shortValueExact_helper(@NotNull String r) {
-        aeq(readStrict(r).get().shortValueExact(), r);
+    private static void shortValueExact_helper(@NotNull String input) {
+        aeq(readStrict(input).get().shortValueExact(), input);
     }
 
-    private static void shortValueExact_fail_helper(@NotNull String r) {
+    private static void shortValueExact_fail_helper(@NotNull String input) {
         try {
-            readStrict(r).get().shortValueExact();
+            readStrict(input).get().shortValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -803,13 +795,13 @@ public class RationalTest {
         shortValueExact_fail_helper("100000");
     }
 
-    private static void intValueExact_helper(@NotNull String r) {
-        aeq(readStrict(r).get().intValueExact(), r);
+    private static void intValueExact_helper(@NotNull String input) {
+        aeq(readStrict(input).get().intValueExact(), input);
     }
 
-    private static void intValueExact_fail_helper(@NotNull String r) {
+    private static void intValueExact_fail_helper(@NotNull String input) {
         try {
-            readStrict(r).get().intValueExact();
+            readStrict(input).get().intValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -827,13 +819,13 @@ public class RationalTest {
         intValueExact_fail_helper("10000000000");
     }
 
-    private static void longValueExact_helper(@NotNull String r) {
-        aeq(readStrict(r).get().longValueExact(), r);
+    private static void longValueExact_helper(@NotNull String input) {
+        aeq(readStrict(input).get().longValueExact(), input);
     }
 
-    private static void longValueExact_fail_helper(@NotNull String r) {
+    private static void longValueExact_fail_helper(@NotNull String input) {
         try {
-            readStrict(r).get().longValueExact();
+            readStrict(input).get().longValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -3305,13 +3297,13 @@ public class RationalTest {
         harmonicNumber_fail_helper(-5);
     }
 
-    private static void pow_helper(@NotNull String r, int p, @NotNull String output) {
+    private static void pow_int_helper(@NotNull String r, int p, @NotNull String output) {
         Rational s = readStrict(r).get().pow(p);
         s.validate();
         aeq(s, output);
     }
 
-    private static void pow_fail_helper(@NotNull String r, int p) {
+    private static void pow_int_fail_helper(@NotNull String r, int p) {
         try {
             readStrict(r).get().pow(p);
             fail();
@@ -3319,55 +3311,311 @@ public class RationalTest {
     }
 
     @Test
-    public void testPow() {
-        pow_helper("2/3", 0, "1");
-        pow_helper("2/3", 1, "2/3");
-        pow_helper("2/3", 2, "4/9");
-        pow_helper("2/3", 3, "8/27");
-        pow_helper("2/3", -1, "3/2");
-        pow_helper("2/3", -2, "9/4");
-        pow_helper("2/3", -3, "27/8");
+    public void testPow_int() {
+        pow_int_helper("2/3", 0, "1");
+        pow_int_helper("2/3", 1, "2/3");
+        pow_int_helper("2/3", 2, "4/9");
+        pow_int_helper("2/3", 3, "8/27");
+        pow_int_helper("2/3", -1, "3/2");
+        pow_int_helper("2/3", -2, "9/4");
+        pow_int_helper("2/3", -3, "27/8");
 
-        pow_helper("-2/3", 0, "1");
-        pow_helper("-2/3", 1, "-2/3");
-        pow_helper("-2/3", 2, "4/9");
-        pow_helper("-2/3", 3, "-8/27");
-        pow_helper("-2/3", -1, "-3/2");
-        pow_helper("-2/3", -2, "9/4");
-        pow_helper("-2/3", -3, "-27/8");
+        pow_int_helper("-2/3", 0, "1");
+        pow_int_helper("-2/3", 1, "-2/3");
+        pow_int_helper("-2/3", 2, "4/9");
+        pow_int_helper("-2/3", 3, "-8/27");
+        pow_int_helper("-2/3", -1, "-3/2");
+        pow_int_helper("-2/3", -2, "9/4");
+        pow_int_helper("-2/3", -3, "-27/8");
 
-        pow_helper("2", 0, "1");
-        pow_helper("2", 1, "2");
-        pow_helper("2", 2, "4");
-        pow_helper("2", 3, "8");
-        pow_helper("2", -1, "1/2");
-        pow_helper("2", -2, "1/4");
-        pow_helper("2", -3, "1/8");
+        pow_int_helper("2", 0, "1");
+        pow_int_helper("2", 1, "2");
+        pow_int_helper("2", 2, "4");
+        pow_int_helper("2", 3, "8");
+        pow_int_helper("2", -1, "1/2");
+        pow_int_helper("2", -2, "1/4");
+        pow_int_helper("2", -3, "1/8");
 
-        pow_helper("-2", 0, "1");
-        pow_helper("-2", 1, "-2");
-        pow_helper("-2", 2, "4");
-        pow_helper("-2", 3, "-8");
-        pow_helper("-2", -1, "-1/2");
-        pow_helper("-2", -2, "1/4");
-        pow_helper("-2", -3, "-1/8");
+        pow_int_helper("-2", 0, "1");
+        pow_int_helper("-2", 1, "-2");
+        pow_int_helper("-2", 2, "4");
+        pow_int_helper("-2", 3, "-8");
+        pow_int_helper("-2", -1, "-1/2");
+        pow_int_helper("-2", -2, "1/4");
+        pow_int_helper("-2", -3, "-1/8");
 
-        pow_helper("0", 0, "1");
-        pow_helper("0", 1, "0");
-        pow_helper("0", 2, "0");
-        pow_helper("0", 3, "0");
+        pow_int_helper("0", 0, "1");
+        pow_int_helper("0", 1, "0");
+        pow_int_helper("0", 2, "0");
+        pow_int_helper("0", 3, "0");
 
-        pow_helper("1", 0, "1");
-        pow_helper("1", 1, "1");
-        pow_helper("1", 2, "1");
-        pow_helper("1", 3, "1");
-        pow_helper("1", -1, "1");
-        pow_helper("1", -2, "1");
-        pow_helper("1", -3, "1");
+        pow_int_helper("1", 0, "1");
+        pow_int_helper("1", 1, "1");
+        pow_int_helper("1", 2, "1");
+        pow_int_helper("1", 3, "1");
+        pow_int_helper("1", -1, "1");
+        pow_int_helper("1", -2, "1");
+        pow_int_helper("1", -3, "1");
 
-        pow_fail_helper("0", -1);
-        pow_fail_helper("0", -2);
-        pow_fail_helper("0", -3);
+        pow_int_fail_helper("0", -1);
+        pow_int_fail_helper("0", -2);
+        pow_int_fail_helper("0", -3);
+    }
+
+    private static void root_helper(@NotNull String x, int r, @NotNull String output) {
+        Optional<Rational> or = readStrict(x).get().root(r);
+        or.ifPresent(Rational::validate);
+        aeq(or, output);
+    }
+
+    private static void root_fail_helper(@NotNull String x, int r) {
+        try {
+            readStrict(x).get().root(r);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testRoot() {
+        root_helper("0", 1, "Optional[0]");
+        root_helper("0", 2, "Optional[0]");
+        root_helper("0", 3, "Optional[0]");
+
+        root_helper("1", 1, "Optional[1]");
+        root_helper("1", 2, "Optional[1]");
+        root_helper("1", 3, "Optional[1]");
+        root_helper("1", -1, "Optional[1]");
+        root_helper("1", -2, "Optional[1]");
+        root_helper("1", -3, "Optional[1]");
+
+        root_helper("-1", 1, "Optional[-1]");
+        root_helper("-1", 3, "Optional[-1]");
+        root_helper("-1", -1, "Optional[-1]");
+        root_helper("-1", -3, "Optional[-1]");
+
+        root_helper("2", 1, "Optional[2]");
+        root_helper("2", 2, "Optional.empty");
+        root_helper("2", 3, "Optional.empty");
+        root_helper("2", -1, "Optional[1/2]");
+        root_helper("2", -2, "Optional.empty");
+        root_helper("2", -3, "Optional.empty");
+
+        root_helper("-2", 1, "Optional[-2]");
+        root_helper("-2", 3, "Optional.empty");
+        root_helper("-2", -1, "Optional[-1/2]");
+        root_helper("-2", -3, "Optional.empty");
+
+        root_helper("4", 1, "Optional[4]");
+        root_helper("4", 2, "Optional[2]");
+        root_helper("4", 3, "Optional.empty");
+        root_helper("4", -1, "Optional[1/4]");
+        root_helper("4", -2, "Optional[1/2]");
+        root_helper("4", -3, "Optional.empty");
+
+        root_helper("64/729", 1, "Optional[64/729]");
+        root_helper("64/729", 2, "Optional[8/27]");
+        root_helper("64/729", 3, "Optional[4/9]");
+        root_helper("64/729", -1, "Optional[729/64]");
+        root_helper("64/729", -2, "Optional[27/8]");
+        root_helper("64/729", -3, "Optional[9/4]");
+
+        root_helper("-64/729", 1, "Optional[-64/729]");
+        root_helper("-64/729", 3, "Optional[-4/9]");
+        root_helper("-64/729", -1, "Optional[-729/64]");
+        root_helper("-64/729", -3, "Optional[-9/4]");
+
+        root_fail_helper("0", -1);
+        root_fail_helper("1", 0);
+        root_fail_helper("-1", 2);
+    }
+
+    private static void sqrt_helper(@NotNull String x, @NotNull String output) {
+        Optional<Rational> or = readStrict(x).get().sqrt();
+        or.ifPresent(Rational::validate);
+        aeq(or, output);
+    }
+
+    private static void sqrt_fail_helper(@NotNull String x) {
+        try {
+            readStrict(x).get().sqrt();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testSqrt() {
+        sqrt_helper("0", "Optional[0]");
+        sqrt_helper("1", "Optional[1]");
+        sqrt_helper("2", "Optional.empty");
+        sqrt_helper("4", "Optional[2]");
+        sqrt_helper("64/729", "Optional[8/27]");
+
+        sqrt_fail_helper("-1");
+    }
+
+    private static void cbrt_helper(@NotNull String x, @NotNull String output) {
+        Optional<Rational> or = readStrict(x).get().cbrt();
+        or.ifPresent(Rational::validate);
+        aeq(or, output);
+    }
+
+    @Test
+    public void testCbrt() {
+        cbrt_helper("0", "Optional[0]");
+        cbrt_helper("1", "Optional[1]");
+        cbrt_helper("-1", "Optional[-1]");
+        cbrt_helper("2", "Optional.empty");
+        cbrt_helper("-2", "Optional.empty");
+        cbrt_helper("4", "Optional.empty");
+        cbrt_helper("64/729", "Optional[4/9]");
+        cbrt_helper("-64/729", "Optional[-4/9]");
+    }
+
+    private static void pow_Rational_helper(@NotNull String r, @NotNull String p, @NotNull String output) {
+        Optional<Rational> ox = readStrict(r).get().pow(readStrict(p).get());
+        ox.ifPresent(Rational::validate);
+        aeq(ox, output);
+    }
+
+    private static void pow_Rational_fail_helper(@NotNull String r, @NotNull String p) {
+        try {
+            readStrict(r).get().pow(readStrict(p).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testPow_Rational() {
+        pow_Rational_helper("2/3", "0", "Optional[1]");
+        pow_Rational_helper("2/3", "1", "Optional[2/3]");
+        pow_Rational_helper("2/3", "2", "Optional[4/9]");
+        pow_Rational_helper("2/3", "3", "Optional[8/27]");
+        pow_Rational_helper("2/3", "-1", "Optional[3/2]");
+        pow_Rational_helper("2/3", "-2", "Optional[9/4]");
+        pow_Rational_helper("2/3", "-3", "Optional[27/8]");
+
+        pow_Rational_helper("-2/3", "0", "Optional[1]");
+        pow_Rational_helper("-2/3", "1", "Optional[-2/3]");
+        pow_Rational_helper("-2/3", "2", "Optional[4/9]");
+        pow_Rational_helper("-2/3", "3", "Optional[-8/27]");
+        pow_Rational_helper("-2/3", "-1", "Optional[-3/2]");
+        pow_Rational_helper("-2/3", "-2", "Optional[9/4]");
+        pow_Rational_helper("-2/3", "-3", "Optional[-27/8]");
+
+        pow_Rational_helper("2", "0", "Optional[1]");
+        pow_Rational_helper("2", "1", "Optional[2]");
+        pow_Rational_helper("2", "2", "Optional[4]");
+        pow_Rational_helper("2", "3", "Optional[8]");
+        pow_Rational_helper("2", "-1", "Optional[1/2]");
+        pow_Rational_helper("2", "-2", "Optional[1/4]");
+        pow_Rational_helper("2", "-3", "Optional[1/8]");
+
+        pow_Rational_helper("-2", "0", "Optional[1]");
+        pow_Rational_helper("-2", "1", "Optional[-2]");
+        pow_Rational_helper("-2", "2", "Optional[4]");
+        pow_Rational_helper("-2", "3", "Optional[-8]");
+        pow_Rational_helper("-2", "-1", "Optional[-1/2]");
+        pow_Rational_helper("-2", "-2", "Optional[1/4]");
+        pow_Rational_helper("-2", "-3", "Optional[-1/8]");
+
+        pow_Rational_helper("0", "0", "Optional[1]");
+        pow_Rational_helper("0", "1", "Optional[0]");
+        pow_Rational_helper("0", "2", "Optional[0]");
+        pow_Rational_helper("0", "3", "Optional[0]");
+        pow_Rational_helper("0", "1/2", "Optional[0]");
+        pow_Rational_helper("0", "1/3", "Optional[0]");
+        pow_Rational_helper("0", "2/3", "Optional[0]");
+
+        pow_Rational_helper("1", "0", "Optional[1]");
+        pow_Rational_helper("1", "1", "Optional[1]");
+        pow_Rational_helper("1", "2", "Optional[1]");
+        pow_Rational_helper("1", "3", "Optional[1]");
+        pow_Rational_helper("1", "1/2", "Optional[1]");
+        pow_Rational_helper("1", "1/3", "Optional[1]");
+        pow_Rational_helper("1", "2/3", "Optional[1]");
+        pow_Rational_helper("1", "-1", "Optional[1]");
+        pow_Rational_helper("1", "-2", "Optional[1]");
+        pow_Rational_helper("1", "-3", "Optional[1]");
+        pow_Rational_helper("1", "-1/2", "Optional[1]");
+        pow_Rational_helper("1", "-1/3", "Optional[1]");
+        pow_Rational_helper("1", "-2/3", "Optional[1]");
+
+        pow_Rational_helper("4", "1/2", "Optional[2]");
+        pow_Rational_helper("4", "3/2", "Optional[8]");
+        pow_Rational_helper("-27/125", "1/3", "Optional[-3/5]");
+        pow_Rational_helper("-27/125", "2/3", "Optional[9/25]");
+        pow_Rational_helper("4", "-1/2", "Optional[1/2]");
+        pow_Rational_helper("4", "-3/2", "Optional[1/8]");
+        pow_Rational_helper("-27/125", "-1/3", "Optional[-5/3]");
+        pow_Rational_helper("-27/125", "-2/3", "Optional[25/9]");
+        pow_Rational_helper("4", "1/3", "Optional.empty");
+        pow_Rational_helper("8", "1/2", "Optional.empty");
+        pow_Rational_helper("4", "-1/3", "Optional.empty");
+        pow_Rational_helper("8", "-1/2", "Optional.empty");
+
+        pow_Rational_fail_helper("0", "-1");
+        pow_Rational_fail_helper("0", "-2");
+        pow_Rational_fail_helper("0", "-3");
+        pow_Rational_fail_helper("0", "-1/2");
+        pow_Rational_fail_helper("0", "-1/3");
+        pow_Rational_fail_helper("0", "-2/3");
+    }
+
+    private static void log_helper(@NotNull String x, @NotNull String base, @NotNull String output) {
+        Optional<Rational> oy = readStrict(x).get().log(readStrict(base).get());
+        oy.ifPresent(Rational::validate);
+        aeq(oy, output);
+    }
+
+    private static void log_fail_helper(@NotNull String x, @NotNull String base) {
+        try {
+            readStrict(x).get().log(readStrict(base).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testLog() {
+        log_helper("1", "2", "Optional[0]");
+        log_helper("1", "4/3", "Optional[0]");
+        log_helper("1", "10", "Optional[0]");
+        log_helper("1", "1/2", "Optional[0]");
+
+        log_helper("1/2", "1/2", "Optional[1]");
+        log_helper("4/3", "4/3", "Optional[1]");
+        log_helper("2", "2", "Optional[1]");
+        log_helper("10", "10", "Optional[1]");
+
+        log_helper("2", "1/2", "Optional[-1]");
+        log_helper("3/4", "4/3", "Optional[-1]");
+        log_helper("1/2", "2", "Optional[-1]");
+        log_helper("1/10", "10", "Optional[-1]");
+
+        log_helper("4", "2", "Optional[2]");
+        log_helper("8", "2", "Optional[3]");
+        log_helper("16", "2", "Optional[4]");
+        log_helper("1/4", "2", "Optional[-2]");
+        log_helper("3", "2", "Optional.empty");
+        log_helper("3/2", "2", "Optional.empty");
+        log_helper("10", "2", "Optional.empty");
+        log_helper("2", "10", "Optional.empty");
+
+        log_helper("4/9", "2/3", "Optional[2]");
+        log_helper("9/4", "2/3", "Optional[-2]");
+        log_helper("4", "16", "Optional[1/2]");
+        log_helper("1/4", "16", "Optional[-1/2]");
+        log_helper("125/8", "25/4", "Optional[3/2]");
+        log_helper("64/27", "16/9", "Optional[3/2]");
+        log_helper("64/25", "16/9", "Optional.empty");
+
+        log_fail_helper("2", "0");
+        log_fail_helper("2", "-1");
+        log_fail_helper("2", "-2/3");
+        log_fail_helper("0", "2");
+        log_fail_helper("-1", "2");
+        log_fail_helper("-2/3", "2");
+        log_fail_helper("2", "1");
+        log_fail_helper("1", "1");
     }
 
     private static void fractionalPart_helper(@NotNull String input, @NotNull String output) {
@@ -4196,12 +4444,12 @@ public class RationalTest {
         toStringBase_BigInteger_int_helper("198", "83", -1, "(2)(0)");
         toStringBase_BigInteger_int_helper("198", "83", -2, "(0)");
 
-        toStringBase_BigInteger_int_helper("-1/7", "10", -1, "0");
-        toStringBase_BigInteger_int_helper("-1/7", "10", 0, "0");
+        toStringBase_BigInteger_int_helper("-1/7", "10", -1, "-0");
+        toStringBase_BigInteger_int_helper("-1/7", "10", 0, "-0");
         toStringBase_BigInteger_int_helper("-1/7", "10", 5, "-0.14285...");
         toStringBase_BigInteger_int_helper("-1/7", "10", 20, "-0.14285714285714285714...");
-        toStringBase_BigInteger_int_helper("-1/7", "83", -1, "(0)");
-        toStringBase_BigInteger_int_helper("-1/7", "83", 0, "(0)");
+        toStringBase_BigInteger_int_helper("-1/7", "83", -1, "-(0)");
+        toStringBase_BigInteger_int_helper("-1/7", "83", 0, "-(0)");
         toStringBase_BigInteger_int_helper("-1/7", "83", 5, "-(0).(11)(71)(11)(71)(11)...");
         toStringBase_BigInteger_int_helper("-1/7", "83", 20,
                 "-(0).(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)...");
@@ -4241,6 +4489,9 @@ public class RationalTest {
         toStringBase_BigInteger_int_helper("1000001/10000000", "100", 3, "(0).(10)(0)(0)...");
         toStringBase_BigInteger_int_helper("1000001/10000000", "100", 4, "(0).(10)(0)(0)(10)");
         toStringBase_BigInteger_int_helper("1000001/10000000", "100", 5, "(0).(10)(0)(0)(10)");
+
+        toStringBase_BigInteger_int_helper(of(Float.MIN_VALUE).get(), "10", 20, "0.00000000000000000000...");
+        toStringBase_BigInteger_int_helper(of(-Float.MIN_VALUE).get(), "10", 20, "-0.00000000000000000000...");
 
         toStringBase_BigInteger_int_fail_helper("-1/2", "1", 5);
         toStringBase_BigInteger_int_fail_helper("-1/2", "0", 5);
@@ -4391,9 +4642,7 @@ public class RationalTest {
 
     private static void readStrict_helper(@NotNull String input, @NotNull String output) {
         Optional<Rational> or = readStrict(input);
-        if (or.isPresent()) {
-            or.get().validate();
-        }
+        or.ifPresent(Rational::validate);
         aeq(or, output);
     }
 

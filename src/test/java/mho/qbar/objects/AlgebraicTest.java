@@ -155,9 +155,7 @@ public class AlgebraicTest {
 
     private static void of_float_helper(float f, @NotNull String output) {
         Optional<Algebraic> x = of(f);
-        if (x.isPresent()) {
-            x.get().validate();
-        }
+        x.ifPresent(Algebraic::validate);
         aeq(x, output);
     }
 
@@ -190,9 +188,7 @@ public class AlgebraicTest {
 
     private static void of_double_helper(double d, @NotNull String output) {
         Optional<Algebraic> x = of(d);
-        if (x.isPresent()) {
-            x.get().validate();
-        }
+        x.ifPresent(Algebraic::validate);
         aeq(x, output);
     }
 
@@ -249,9 +245,7 @@ public class AlgebraicTest {
 
     private static void ofExact_float_helper(float f, @NotNull String output) {
         Optional<Algebraic> x = ofExact(f);
-        if (x.isPresent()) {
-            x.get().validate();
-        }
+        x.ifPresent(Algebraic::validate);
         aeq(x, output);
     }
 
@@ -284,9 +278,7 @@ public class AlgebraicTest {
 
     private static void ofExact_double_helper(double d, @NotNull String output) {
         Optional<Algebraic> x = ofExact(d);
-        if (x.isPresent()) {
-            x.get().validate();
-        }
+        x.ifPresent(Algebraic::validate);
         aeq(x, output);
     }
 
@@ -518,21 +510,21 @@ public class AlgebraicTest {
         ceiling_helper("root 0 of x^5-x-1", "2");
     }
 
-    private static void bigIntegerValueExact_helper(@NotNull String x, @NotNull String output) {
-        aeq(readStrict(x).get().bigIntegerValueExact(), output);
+    private static void bigIntegerValueExact_helper(@NotNull String input) {
+        aeq(readStrict(input).get().bigIntegerValueExact(), input);
     }
 
-    private static void bigIntegerValueExact_fail_helper(@NotNull String x) {
+    private static void bigIntegerValueExact_fail_helper(@NotNull String input) {
         try {
-            readStrict(x).get().bigIntegerValueExact();
+            readStrict(input).get().bigIntegerValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
     }
 
     @Test
     public void testBigIntegerValueExact() {
-        bigIntegerValueExact_helper("0", "0");
-        bigIntegerValueExact_helper("1", "1");
+        bigIntegerValueExact_helper("0");
+        bigIntegerValueExact_helper("1");
 
         bigIntegerValueExact_fail_helper("1/2");
         bigIntegerValueExact_fail_helper("-4/3");
@@ -542,13 +534,13 @@ public class AlgebraicTest {
         bigIntegerValueExact_fail_helper("root 0 of x^5-x-1");
     }
 
-    private static void byteValueExact_helper(@NotNull String r) {
-        aeq(readStrict(r).get().byteValueExact(), r);
+    private static void byteValueExact_helper(@NotNull String input) {
+        aeq(readStrict(input).get().byteValueExact(), input);
     }
 
-    private static void byteValueExact_fail_helper(@NotNull String r) {
+    private static void byteValueExact_fail_helper(@NotNull String input) {
         try {
-            readStrict(r).get().byteValueExact();
+            readStrict(input).get().byteValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -566,13 +558,13 @@ public class AlgebraicTest {
         byteValueExact_fail_helper("1000");
     }
 
-    private static void shortValueExact_helper(@NotNull String r) {
-        aeq(readStrict(r).get().shortValueExact(), r);
+    private static void shortValueExact_helper(@NotNull String input) {
+        aeq(readStrict(input).get().shortValueExact(), input);
     }
 
-    private static void shortValueExact_fail_helper(@NotNull String r) {
+    private static void shortValueExact_fail_helper(@NotNull String input) {
         try {
-            readStrict(r).get().shortValueExact();
+            readStrict(input).get().shortValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -590,13 +582,13 @@ public class AlgebraicTest {
         shortValueExact_fail_helper("100000");
     }
 
-    private static void intValueExact_helper(@NotNull String r) {
-        aeq(readStrict(r).get().intValueExact(), r);
+    private static void intValueExact_helper(@NotNull String input) {
+        aeq(readStrict(input).get().intValueExact(), input);
     }
 
-    private static void intValueExact_fail_helper(@NotNull String r) {
+    private static void intValueExact_fail_helper(@NotNull String input) {
         try {
-            readStrict(r).get().intValueExact();
+            readStrict(input).get().intValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -614,13 +606,13 @@ public class AlgebraicTest {
         intValueExact_fail_helper("10000000000");
     }
 
-    private static void longValueExact_helper(@NotNull String r) {
-        aeq(readStrict(r).get().longValueExact(), r);
+    private static void longValueExact_helper(@NotNull String input) {
+        aeq(readStrict(input).get().longValueExact(), input);
     }
 
-    private static void longValueExact_fail_helper(@NotNull String r) {
+    private static void longValueExact_fail_helper(@NotNull String input) {
         try {
-            readStrict(r).get().longValueExact();
+            readStrict(input).get().longValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -2261,7 +2253,7 @@ public class AlgebraicTest {
         intervalExtension_helper("1", "sqrt(2)", "[1, 3/2]");
         intervalExtension_helper("1", "(1+sqrt(5))/2", "[1, 2]");
 
-        intervalExtension_helper("root 0 of x^5-x-1", "sqrt(2)", "[9/8, 23/16]");
+        intervalExtension_helper("root 0 of x^5-x-1", "sqrt(2)", "[9/8, 3/2]");
         intervalExtension_helper("root 0 of x^5-x-1", "(1+sqrt(5))/2", "[9/8, 13/8]");
 
         intervalExtension_helper("sqrt(2)", "(1+sqrt(5))/2", "[11/8, 13/8]");
@@ -3730,6 +3722,107 @@ public class AlgebraicTest {
         pow_int_fail_helper("0", -3);
     }
 
+    private static void rootOfRational_helper(@NotNull String x, int r, @NotNull String output) {
+        Algebraic y = rootOfRational(Rational.readStrict(x).get(), r);
+        y.validate();
+        aeq(y, output);
+    }
+
+    private static void rootOfRational_fail_helper(@NotNull String x, int r) {
+        try {
+            rootOfRational(Rational.readStrict(x).get(), r);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testRootOfRational() {
+        rootOfRational_helper("0", 1, "0");
+        rootOfRational_helper("0", 2, "0");
+        rootOfRational_helper("0", 3, "0");
+        rootOfRational_helper("0", 10, "0");
+
+        rootOfRational_helper("1", 1, "1");
+        rootOfRational_helper("1", 2, "1");
+        rootOfRational_helper("1", 3, "1");
+        rootOfRational_helper("1", 10, "1");
+        rootOfRational_helper("1", -1, "1");
+        rootOfRational_helper("1", -2, "1");
+        rootOfRational_helper("1", -3, "1");
+        rootOfRational_helper("1", -10, "1");
+
+        rootOfRational_helper("-1", 1, "-1");
+        rootOfRational_helper("-1", 3, "-1");
+        rootOfRational_helper("-1", 9, "-1");
+        rootOfRational_helper("-1", -1, "-1");
+        rootOfRational_helper("-1", -3, "-1");
+        rootOfRational_helper("-1", -9, "-1");
+
+        rootOfRational_helper("1/2", 1, "1/2");
+        rootOfRational_helper("1/2", 2, "sqrt(2)/2");
+        rootOfRational_helper("1/2", 3, "root 0 of 2*x^3-1");
+        rootOfRational_helper("1/2", 10, "root 1 of 2*x^10-1");
+        rootOfRational_helper("1/2", -1, "2");
+        rootOfRational_helper("1/2", -2, "sqrt(2)");
+        rootOfRational_helper("1/2", -3, "root 0 of x^3-2");
+        rootOfRational_helper("1/2", -10, "root 1 of x^10-2");
+
+        rootOfRational_helper("-4/3", 1, "-4/3");
+        rootOfRational_helper("-4/3", 3, "root 0 of 3*x^3+4");
+        rootOfRational_helper("-4/3", 9, "root 0 of 3*x^9+4");
+        rootOfRational_helper("-4/3", -1, "-3/4");
+        rootOfRational_helper("-4/3", -3, "root 0 of 4*x^3+3");
+        rootOfRational_helper("-4/3", -9, "root 0 of 4*x^9+3");
+
+        rootOfRational_helper("4", 4, "sqrt(2)");
+        rootOfRational_helper("1728/117649", 12, "root 1 of 49*x^4-12");
+
+        rootOfRational_fail_helper("0", -1);
+        rootOfRational_fail_helper("0", -2);
+        rootOfRational_fail_helper("0", -3);
+        rootOfRational_fail_helper("1", 0);
+        rootOfRational_fail_helper("2", 0);
+        rootOfRational_fail_helper("-1", 2);
+        rootOfRational_fail_helper("-1", -2);
+    }
+
+    private static void sqrtOfRational_helper(@NotNull String x, @NotNull String output) {
+        Algebraic y = sqrtOfRational(Rational.readStrict(x).get());
+        y.validate();
+        aeq(y, output);
+    }
+
+    private static void sqrtOfRational_fail_helper(@NotNull String x) {
+        try {
+            sqrtOfRational(Rational.readStrict(x).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testSqrtOfRational() {
+        sqrtOfRational_helper("0", "0");
+        sqrtOfRational_helper("1", "1");
+        sqrtOfRational_helper("1/2", "sqrt(2)/2");
+
+        sqrtOfRational_fail_helper("-1");
+    }
+
+    private static void cbrtOfRational_helper(@NotNull String x, @NotNull String output) {
+        Algebraic y = cbrtOfRational(Rational.readStrict(x).get());
+        y.validate();
+        aeq(y, output);
+    }
+
+    @Test
+    public void testCbrtOfRational() {
+        cbrtOfRational_helper("0", "0");
+        cbrtOfRational_helper("1", "1");
+        cbrtOfRational_helper("-1", "-1");
+        cbrtOfRational_helper("1/2", "root 0 of 2*x^3-1");
+        cbrtOfRational_helper("-4/3", "root 0 of 3*x^3+4");
+    }
+
     private static void root_helper(@NotNull String x, int r, @NotNull String output) {
         Algebraic y = readStrict(x).get().root(r);
         y.validate();
@@ -4418,12 +4511,12 @@ public class AlgebraicTest {
         toStringBase_helper("198", "83", -1, "(2)(0)");
         toStringBase_helper("198", "83", -2, "(0)");
 
-        toStringBase_helper("-1/7", "10", -1, "0");
-        toStringBase_helper("-1/7", "10", 0, "0");
+        toStringBase_helper("-1/7", "10", -1, "-0");
+        toStringBase_helper("-1/7", "10", 0, "-0");
         toStringBase_helper("-1/7", "10", 5, "-0.14285...");
         toStringBase_helper("-1/7", "10", 20, "-0.14285714285714285714...");
-        toStringBase_helper("-1/7", "83", -1, "(0)");
-        toStringBase_helper("-1/7", "83", 0, "(0)");
+        toStringBase_helper("-1/7", "83", -1, "-(0)");
+        toStringBase_helper("-1/7", "83", 0, "-(0)");
         toStringBase_helper("-1/7", "83", 5, "-(0).(11)(71)(11)(71)(11)...");
         toStringBase_helper("-1/7", "83", 20,
                 "-(0).(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)...");
@@ -4532,9 +4625,7 @@ public class AlgebraicTest {
 
     private static void readStrict_String_helper(@NotNull String input, @NotNull String output) {
         Optional<Algebraic> ox = readStrict(input);
-        if (ox.isPresent()) {
-            ox.get().validate();
-        }
+        ox.ifPresent(Algebraic::validate);
         aeq(ox, output);
     }
 
@@ -4596,9 +4687,7 @@ public class AlgebraicTest {
 
     private static void readStrict_int_String_helper(int maxDegree, @NotNull String input, @NotNull String output) {
         Optional<Algebraic> ox = readStrict(maxDegree, input);
-        if (ox.isPresent()) {
-            ox.get().validate();
-        }
+        ox.ifPresent(Algebraic::validate);
         aeq(ox, output);
     }
 

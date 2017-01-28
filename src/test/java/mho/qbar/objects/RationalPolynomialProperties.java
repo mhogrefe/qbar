@@ -114,7 +114,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         initialize("iterator()");
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
             List<Rational> rs = toList(p);
-            assertTrue(p, all(r -> r != null, rs));
+            assertTrue(p, all(Objects::nonNull, rs));
             //noinspection Convert2MethodRef
             inverse(IterableUtils::toList, (List<Rational> ss) -> of(ss), p);
             testNoRemove(p);
@@ -148,7 +148,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
 
         for (Rational i : take(LIMIT, P.rationals())) {
             assertEquals(i, ZERO.apply(i), Rational.ZERO);
-            fixedPoint(X::apply, i);
+            fixedPoint(X, i);
             assertEquals(i, of(Rational.NEGATIVE_ONE, 1).apply(i), i.negate());
         }
 
@@ -1190,7 +1190,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         for (List<RationalPolynomial> ps : take(LIMIT, P.lists(P.rationalPolynomials()))) {
             RationalPolynomial sum = sum(ps);
             assertEquals(ps, sum, sum_simplest(ps));
-            assertTrue(ps, ps.isEmpty() || sum.degree() <= maximum(map(RationalPolynomial::degree, ps)));
+            assertTrue(ps, ps.isEmpty() || sum.degree() <= Ordering.maximum(map(RationalPolynomial::degree, ps)));
         }
 
         Iterable<Pair<List<RationalPolynomial>, Rational>> ps = P.pairs(
@@ -1225,7 +1225,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
     }
 
     private static @NotNull RationalPolynomial product_simplest(@NotNull Iterable<RationalPolynomial> xs) {
-        if (any(x -> x == null, xs)) {
+        if (any(Objects::isNull, xs)) {
             throw new NullPointerException();
         }
         if (any(x -> x == ZERO, xs)) {
@@ -1895,8 +1895,8 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         }
 
         Iterable<List<Pair<Rational, Rational>>> pssFail = filterInfinite(
-                qs -> (qs.contains(null) || any(q -> q.a == null || q.b == null, filter(q -> q != null, qs)))
-                        && unique(map(q -> q.a, filter(q -> q != null, qs))),
+                qs -> (qs.contains(null) || any(q -> q.a == null || q.b == null, filter(Objects::nonNull, qs)))
+                        && unique(map(q -> q.a, filter(Objects::nonNull, qs))),
                 P.lists(P.withScale(2).withNull(P.pairs(P.withScale(2).withNull(P.rationals()))))
         );
         for (List<Pair<Rational, Rational>> qs : take(LIMIT, pssFail)) {
@@ -1969,7 +1969,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         Iterable<List<RationalPolynomial>> pss = P.withElement(
                 Collections.emptyList(),
                 filterInfinite(
-                        ps -> ps.size() <= maximum(map(RationalPolynomial::degree, ps)) + 1,
+                        ps -> ps.size() <= Ordering.maximum(map(RationalPolynomial::degree, ps)) + 1,
                         P.listsAtLeast(1, P.rationalPolynomials())
                 )
         );
@@ -1978,7 +1978,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
             assertEquals(ps, coefficientMatrix.height(), ps.size());
             assertTrue(ps, coefficientMatrix.height() <= coefficientMatrix.width());
             if (!ps.isEmpty()) {
-                assertEquals(ps, coefficientMatrix.width(), maximum(map(RationalPolynomial::degree, ps)) + 1);
+                assertEquals(ps, coefficientMatrix.width(), Ordering.maximum(map(RationalPolynomial::degree, ps)) + 1);
                 assertFalse(
                         ps,
                         coefficientMatrix.submatrix(
@@ -1990,7 +1990,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         }
 
         Iterable<List<RationalPolynomial>> pssFail = filterInfinite(
-                ps -> ps.size() > maximum(map(RationalPolynomial::degree, ps)) + 1,
+                ps -> ps.size() > Ordering.maximum(map(RationalPolynomial::degree, ps)) + 1,
                 P.listsAtLeast(1, P.rationalPolynomials())
         );
         for (List<RationalPolynomial> ps : take(LIMIT, pssFail)) {
@@ -2069,7 +2069,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
 
         Iterable<Pair<RationalPolynomial, Rational>> psFail = P.pairs(
                 P.rationalPolynomials(),
-                P.withElement(Rational.ZERO, P.negativeRationals())
+                P.rangeDown(Rational.ZERO)
         );
         for (Pair<RationalPolynomial, Rational> p : take(LIMIT, psFail)) {
             try {
@@ -2188,7 +2188,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         for (RationalPolynomial p : take(LIMIT, P.withScale(4).rationalPolynomialsAtLeast(0))) {
             List<Algebraic> realRoots = p.realRoots();
             realRoots.forEach(Algebraic::validate);
-            assertTrue(p, increasing(realRoots));
+            assertTrue(p, Ordering.increasing(realRoots));
             assertEquals(p, realRoots.size(), p.constantFactor().b.rootCount());
             for (Algebraic root : realRoots) {
                 assertEquals(p, p.apply(root), Algebraic.ZERO);

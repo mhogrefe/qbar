@@ -383,7 +383,7 @@ public class RationalPolynomialDemos extends QBarDemos {
         Iterable<List<RationalPolynomial>> pss = P.withElement(
                 Collections.emptyList(),
                 filterInfinite(
-                        ps -> ps.size() <= maximum(map(RationalPolynomial::degree, ps)) + 1,
+                        ps -> ps.size() <= Ordering.maximum(map(RationalPolynomial::degree, ps)) + 1,
                         P.withScale(4).listsAtLeast(1, P.withScale(4).rationalPolynomials())
                 )
         );

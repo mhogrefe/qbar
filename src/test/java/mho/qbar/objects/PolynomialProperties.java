@@ -197,7 +197,7 @@ public class PolynomialProperties extends QBarTestProperties {
         initialize("iterator()");
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             List<BigInteger> is = toList(p);
-            assertTrue(p, all(r -> r != null, is));
+            assertTrue(p, all(Objects::nonNull, is));
             //noinspection Convert2MethodRef
             inverse(IterableUtils::toList, (List<BigInteger> js) -> of(js), p);
             testNoRemove(p);
@@ -307,7 +307,7 @@ public class PolynomialProperties extends QBarTestProperties {
 
         for (Rational r : take(LIMIT, P.rationals())) {
             assertEquals(r, ZERO.apply(r), Rational.ZERO);
-            fixedPoint(X::apply, r);
+            fixedPoint(X, r);
             assertEquals(r, of(IntegerUtils.NEGATIVE_ONE, 1).apply(r), r.negate());
         }
 
@@ -1320,7 +1320,7 @@ public class PolynomialProperties extends QBarTestProperties {
     }
 
     private static @NotNull Polynomial product_simplest(@NotNull Iterable<Polynomial> xs) {
-        if (any(x -> x == null, xs)) {
+        if (any(Objects::isNull, xs)) {
             throw new NullPointerException();
         }
         if (any(x -> x == ZERO, xs)) {
@@ -2982,8 +2982,8 @@ public class PolynomialProperties extends QBarTestProperties {
         }
 
         Iterable<List<Pair<BigInteger, BigInteger>>> pssFail = filterInfinite(
-                qs -> (qs.contains(null) || any(q -> q.a == null || q.b == null, filter(q -> q != null, qs)))
-                        && unique(map(q -> q.a, filter(q -> q != null, qs))),
+                qs -> (qs.contains(null) || any(q -> q.a == null || q.b == null, filter(Objects::nonNull, qs)))
+                        && unique(map(q -> q.a, filter(Objects::nonNull, qs))),
                 P.lists(P.withScale(2).withNull(P.pairs(P.withScale(2).withNull(P.bigIntegers()))))
         );
         for (List<Pair<BigInteger, BigInteger>> qs : take(LIMIT, pssFail)) {

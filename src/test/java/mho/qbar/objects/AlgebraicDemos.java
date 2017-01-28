@@ -571,6 +571,28 @@ public class AlgebraicDemos extends QBarDemos {
         }
     }
 
+    private void demoRootOfRational() {
+        Iterable<Pair<Rational, Integer>> ps = filterInfinite(
+                p -> (p.a != Rational.ZERO || p.b >= 0) && ((p.b & 1) != 0 || p.a.signum() != -1),
+                P.pairsSquareRootOrder(P.withScale(4).rationals(), P.nonzeroIntegersGeometric())
+        );
+        for (Pair<Rational, Integer> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("(" + p.a + ") ^ (1/" + p.b + ") = " + rootOfRational(p.a, p.b));
+        }
+    }
+
+    private void demoSqrtOfRational() {
+        for (Rational x : take(LIMIT, P.withScale(4).rangeUp(Rational.ZERO))) {
+            System.out.println("sqrt(" + x + ") = " + sqrtOfRational(x));
+        }
+    }
+
+    private void demoCbrtOfRational() {
+        for (Rational x : take(LIMIT, P.withScale(4).rationals())) {
+            System.out.println("cbrt(" + x + ") = " + cbrtOfRational(x));
+        }
+    }
+
     private void demoRoot() {
         Iterable<Pair<Algebraic, Integer>> ps = filterInfinite(
                 p -> (p.a != ZERO || p.b >= 0) && ((p.b & 1) != 0 || p.a.signum() != -1),
@@ -582,7 +604,7 @@ public class AlgebraicDemos extends QBarDemos {
     }
 
     private void demoSqrt() {
-        for (Algebraic x : take(LIMIT, P.withElement(ZERO, P.withScale(4).positiveAlgebraics()))) {
+        for (Algebraic x : take(LIMIT, P.withScale(4).rangeUp(ZERO))) {
             System.out.println("sqrt(" + x + ") = " + x.sqrt());
         }
     }
@@ -597,8 +619,7 @@ public class AlgebraicDemos extends QBarDemos {
         BigInteger lower = BigInteger.valueOf(Integer.MIN_VALUE);
         BigInteger upper = BigInteger.valueOf(Integer.MAX_VALUE);
         Iterable<Pair<Algebraic, Rational>> ps = filterInfinite(
-                p -> (p.a != ZERO || p.b.signum() != -1) &&
-                        (p.a.signum() != -1 || !p.b.getDenominator().and(BigInteger.ONE).equals(BigInteger.ZERO)),
+                p -> (p.a != ZERO || p.b.signum() != -1) && (p.a.signum() != -1 || p.b.getDenominator().testBit(0)),
                 P.pairsSquareRootOrder(
                         P.withScale(1).withSecondaryScale(4).algebraics(),
                         filterInfinite(
@@ -685,7 +706,7 @@ public class AlgebraicDemos extends QBarDemos {
     private void demoDigits() {
         //noinspection Convert2MethodRef
         Iterable<Pair<Algebraic, BigInteger>> ps = P.pairsSquareRootOrder(
-                P.withElement(ZERO, P.withScale(4).positiveAlgebraics()),
+                P.withScale(4).rangeUp(ZERO),
                 map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
         );
         for (Pair<Algebraic, BigInteger> p : take(LIMIT, ps)) {
@@ -699,10 +720,7 @@ public class AlgebraicDemos extends QBarDemos {
         Iterable<Triple<BigInteger, Algebraic, Algebraic>> ts = map(
                 p -> new Triple<>(p.b, p.a.a, p.a.b),
                 P.pairsSquareRootOrder(
-                        filterInfinite(
-                                p -> p.a != p.b,
-                                P.pairs(P.withElement(ZERO, P.withScale(4).positiveAlgebraics()))
-                        ),
+                        filterInfinite(p -> p.a != p.b, P.pairs(P.withScale(4).rangeUp(ZERO))),
                         map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
                 )
         );
@@ -751,13 +769,13 @@ public class AlgebraicDemos extends QBarDemos {
 
     private void demoReadStrict_String() {
         for (String s : take(LIMIT, P.strings())) {
-            System.out.println("readStrict(" + nicePrint(s) + ") = " + readStrict(s));
+            System.out.println("readStrict(" + nicePrint(s) + ") = " + Algebraic.readStrict(s));
         }
     }
 
     private void demoReadStrict_String_targeted() {
         for (String s : take(LIMIT, P.strings(ALGEBRAIC_CHARS))) {
-            System.out.println("readStrict(" + s + ") = " + readStrict(s));
+            System.out.println("readStrict(" + s + ") = " + Algebraic.readStrict(s));
         }
     }
 

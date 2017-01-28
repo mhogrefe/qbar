@@ -2,7 +2,6 @@ package mho.qbar.objects;
 
 import mho.wheels.numberUtils.FloatingPointUtils;
 import mho.wheels.ordering.Ordering;
-import mho.wheels.ordering.comparators.WithNullComparator;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
@@ -81,7 +80,7 @@ public final class Interval implements Comparable<Interval> {
      * @return the lower bound
      */
     public @NotNull Optional<Rational> getLower() {
-        return lower == null ? Optional.<Rational>empty() : Optional.of(lower);
+        return lower == null ? Optional.empty() : Optional.of(lower);
     }
 
     /**
@@ -94,7 +93,7 @@ public final class Interval implements Comparable<Interval> {
      * @return the upper bound
      */
     public @NotNull Optional<Rational> getUpper() {
-        return upper == null ? Optional.<Rational>empty() : Optional.of(upper);
+        return upper == null ? Optional.empty() : Optional.of(upper);
     }
 
     /**
@@ -223,6 +222,61 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
+     * Determines whether {@code this} contains a {@code Real}. If {@code this} has a finite lower bound and {@code x}
+     * is equal to it and fuzzy on the left, or if {@code this} has a finite upper bound and {@code x} is equal to it
+     * and fuzzy on the right, this method will loop forever. To prevent this behavior, use
+     * {@link Interval#contains(Real, Rational)} instead.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>If {@code this} has a finite lower bound, {@code x} cannot be equal to it and fuzzy on the left. If
+     *  {@code this} has a finite upper bound, {@code x} cannot be equal to it and fuzzy on the right.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @param x the test {@code Real}
+     * @return {@code x}∈{@code this}
+     */
+    public boolean containsUnsafe(@NotNull Real x) {
+        return (lower == null || x.geUnsafe(lower)) && (upper == null || x.leUnsafe(upper));
+    }
+
+    /**
+     * Determines whether {@code this} contains a {@code Real}. If {@code this} has a finite lower bound and {@code x}
+     * is equal to it and fuzzy on the left, or if {@code this} has a finite upper bound and {@code x} is equal to it
+     * and fuzzy on the right, this method will give up and return empty once the approximating interval's diameter is
+     * less than the specified resolution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>If {@code this} has a finite lower bound, {@code x} cannot be equal to it and fuzzy on the left. If
+     *  {@code this} has a finite upper bound, {@code x} cannot be equal to it and fuzzy on the right.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @param x the test {@code Real}
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return {@code x}∈{@code this}
+     */
+    public @NotNull Optional<Boolean> contains(@NotNull Real x, @NotNull Rational resolution) {
+        if (resolution.signum() != 1) {
+            throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
+        }
+        Optional<Boolean> lowerTest = lower == null ? Optional.of(true) : x.ge(lower, resolution);
+        Optional<Boolean> upperTest = upper == null ? Optional.of(true) : x.le(upper, resolution);
+        if (lowerTest.isPresent() && !lowerTest.get() || upperTest.isPresent() && !upperTest.get()) {
+            return Optional.of(false);
+        } else if (!lowerTest.isPresent() || !upperTest.isPresent()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(true);
+        }
+    }
+
+    /**
      * Determines whether {@code this} contains (is a superset of) an {@code Interval}. Every {@code Interval} contains
      * itself.
      *
@@ -294,7 +348,7 @@ public final class Interval implements Comparable<Interval> {
      */
     @SuppressWarnings("JavaDoc")
     public static @NotNull Interval convexHull(@NotNull List<Interval> as) {
-        if (any(a -> a == null, as)) {
+        if (any(Objects::isNull, as)) {
             throw new NullPointerException();
         }
         if (as.isEmpty()) {
@@ -386,7 +440,7 @@ public final class Interval implements Comparable<Interval> {
             throw new NullPointerException();
         }
         if (as.size() < 2) return as;
-        Map<Rational, Rational> lowerMap = new TreeMap<>(new WithNullComparator<>());
+        Map<Rational, Rational> lowerMap = new TreeMap<>(Comparator.nullsFirst(Comparator.naturalOrder()));
         for (Interval a : as) {
             Rational lower = a.lower;
             Rational upper = a.upper;
@@ -757,7 +811,7 @@ public final class Interval implements Comparable<Interval> {
     public @NotNull Optional<Integer> signum() {
         int lowerSignum = lower == null ? -1 : lower.signum();
         int upperSignum = upper == null ? 1 : upper.signum();
-        return lowerSignum == upperSignum ? Optional.of(lowerSignum) : Optional.<Integer>empty();
+        return lowerSignum == upperSignum ? Optional.of(lowerSignum) : Optional.empty();
     }
 
     /**
@@ -1028,14 +1082,12 @@ public final class Interval implements Comparable<Interval> {
             }
         } else if (lower.signum() == 1) {
             return new Interval(upper.invert(), lower.invert());
+        } else if (upper == Rational.ZERO) {
+            return new Interval(null, lower.invert());
+        } else if (upper.signum() == -1) {
+            return new Interval(upper.invert(), lower.invert());
         } else {
-            if (upper == Rational.ZERO) {
-                return new Interval(null, lower.invert());
-            } else if (upper.signum() == -1) {
-                return new Interval(upper.invert(), lower.invert());
-            } else {
-                return ALL;
-            }
+            return ALL;
         }
     }
 
@@ -1227,8 +1279,8 @@ public final class Interval implements Comparable<Interval> {
         List<Rational> lowers = toList(map(x -> x.lower, xs));
         List<Rational> uppers = toList(map(x -> x.upper, xs));
         return new Interval(
-                any(x -> x == null, lowers) ? null : Rational.sum(lowers),
-                any(x -> x == null, uppers) ? null : Rational.sum(uppers)
+                any(Objects::isNull, lowers) ? null : Rational.sum(lowers),
+                any(Objects::isNull, uppers) ? null : Rational.sum(uppers)
         );
     }
 
@@ -1244,7 +1296,7 @@ public final class Interval implements Comparable<Interval> {
      * @return Πxs
      */
     public static @NotNull Interval product(@NotNull List<Interval> xs) {
-        if (any(x -> x == null, xs)) {
+        if (any(Objects::isNull, xs)) {
             throw new NullPointerException();
         }
         if (any(x -> x.equals(ZERO), xs)) {
