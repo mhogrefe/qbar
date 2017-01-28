@@ -2576,6 +2576,100 @@ public final class Algebraic implements Comparable<Algebraic> {
                 Interval.of(Rational.NEGATIVE_ONE, Rational.ZERO).contains(realConjugates().get(0));
     }
 
+    private static @NotNull BigInteger sigma(int s, int k) {
+        if ((k & 1) == 0) {
+            k >>= 1;
+            BigInteger result = MathUtils.binomialCoefficient(BigInteger.valueOf(s - k), k);
+            return (k & 1) == 0 ? result : result.negate();
+        } else {
+            k = (k + 1) >> 1;
+            BigInteger result = MathUtils.binomialCoefficient(BigInteger.valueOf(s - k), k - 1);
+            return (k & 1) == 0 ? result : result.negate();
+        }
+    }
+
+    private static @NotNull Polynomial cosMPOddPrimeDenominator(int p) {
+        int s = (p - 1) / 2;
+        List<BigInteger> coefficients = toList(replicate(s + 1, BigInteger.ZERO));
+        boolean sign = false;
+        int exp = s + 1;
+        for (int i = 0; i <= s; i++) {
+            sign = !sign;
+            exp--;
+            BigInteger coefficient = sigma(s, i).shiftLeft(exp);
+            if (!sign) coefficient = coefficient.negate();
+            coefficients.set(s - i, coefficient);
+        }
+        return Polynomial.of(coefficients);
+    }
+
+    private static @NotNull RationalPolynomial cosMP(@NotNull Map<Integer, RationalPolynomial> mpCache, int n) {
+        RationalPolynomial result = mpCache.get(n);
+        if (result != null) {
+            return result;
+        }
+        if (n == 1) {
+            result = RationalPolynomial.of(Arrays.asList(Rational.NEGATIVE_ONE, Rational.ONE));
+        } else if (n == 2) {
+            result = RationalPolynomial.of(Arrays.asList(Rational.ONE, Rational.ONE));
+        } else if (MathUtils.isPrime(n)) {
+            result = cosMPOddPrimeDenominator(n).toRationalPolynomial().makeMonic();
+        } else {
+            int s = n >> 1;
+            RationalPolynomial rhs = RationalPolynomial.product(
+                    toList(map(i -> cosMP(mpCache, i), filter(d -> d != n, MathUtils.factors(n))))
+            ).shiftLeft(s);
+            Polynomial lhs;
+            if ((n & 1) == 0) {
+                lhs = Polynomial.chebyshev1(s + 1).subtract(Polynomial.chebyshev1(s - 1));
+            } else {
+                lhs = Polynomial.chebyshev1(s + 1).subtract(Polynomial.chebyshev1(s));
+            }
+            Pair<RationalPolynomial, RationalPolynomial> qr = lhs.toRationalPolynomial().divide(rhs);
+            if (qr.b != RationalPolynomial.ZERO) {
+                throw new ArithmeticException("Error computing minimal polynomial of cos(2*pi/" + n + ")");
+            }
+            result = qr.a;
+        }
+        mpCache.put(n, result);
+        return result;
+    }
+
+    private static @NotNull Polynomial cosMP(int n) {
+        if ((n & 1) == 1 && MathUtils.isPrime(n)) {
+            return cosMPOddPrimeDenominator(n);
+        } else {
+            return cosMP(new HashMap<>(), n).constantFactor().b;
+        }
+    }
+
+    static @NotNull Algebraic cosHelper(@NotNull Rational turns) {
+        if (turns == Rational.ZERO) {
+            return ONE;
+        }
+        int n = turns.getNumerator().intValueExact();
+        int d = turns.getDenominator().intValueExact();
+        if (d == 2) return NEGATIVE_ONE;
+        if (d == 3) return ONE_HALF.negate();
+        if (d == 4) return ZERO;
+        if (d == 6) return ONE_HALF;
+        Polynomial mp = cosMP(d);
+        int rootIndex = 0;
+        if (n << 1 > d) {
+            n = d - n;
+        }
+        for (int i = d >> 1; i > 0; i--) {
+            if (MathUtils.gcd(i, d) != 1) {
+                continue;
+            }
+            if (i == n) {
+                break;
+            }
+            rootIndex++;
+        }
+        return new Algebraic(mp, rootIndex, mp.powerOfTwoIsolatingInterval(rootIndex), MathUtils.totient(d) >> 1);
+    }
+
     /**
      * Finds the continued fraction of {@code this}. If we pretend that the result is an array called a, then
      * {@code this}=a[0]+1/(a[1]+1/(a[2]+...+1/a[n-1])...).
