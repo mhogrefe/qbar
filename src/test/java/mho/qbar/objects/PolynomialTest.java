@@ -4642,6 +4642,64 @@ public class PolynomialTest {
         realRoots_fail_helper("0");
     }
 
+    private static void chebyshev1_helper(int input, @NotNull String output) {
+        Polynomial p = chebyshev1(input);
+        p.validate();
+        aeq(p, output);
+    }
+
+    private static void chebyshev1_fail_helper(int input) {
+        try {
+            chebyshev1(input);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testChebyshev1() {
+        chebyshev1_helper(0, "1");
+        chebyshev1_helper(1, "x");
+        chebyshev1_helper(2, "2*x^2-1");
+        chebyshev1_helper(3, "4*x^3-3*x");
+        chebyshev1_helper(4, "8*x^4-8*x^2+1");
+        chebyshev1_helper(5, "16*x^5-20*x^3+5*x");
+        chebyshev1_helper(6, "32*x^6-48*x^4+18*x^2-1");
+        chebyshev1_helper(20,
+                "524288*x^20-2621440*x^18+5570560*x^16-6553600*x^14+4659200*x^12-2050048*x^10+549120*x^8-84480*x^6+" +
+                "6600*x^4-200*x^2+1");
+
+        chebyshev1_fail_helper(-1);
+    }
+
+    private static void chebyshev2_helper(int input, @NotNull String output) {
+        Polynomial p = chebyshev2(input);
+        p.validate();
+        aeq(p, output);
+    }
+
+    private static void chebyshev2_fail_helper(int input) {
+        try {
+            chebyshev2(input);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testChebyshev2() {
+        chebyshev2_helper(0, "1");
+        chebyshev2_helper(1, "2*x");
+        chebyshev2_helper(2, "4*x^2-1");
+        chebyshev2_helper(3, "8*x^3-4*x");
+        chebyshev2_helper(4, "16*x^4-12*x^2+1");
+        chebyshev2_helper(5, "32*x^5-32*x^3+6*x");
+        chebyshev2_helper(6, "64*x^6-80*x^4+24*x^2-1");
+        chebyshev2_helper(20,
+                "1048576*x^20-4980736*x^18+10027008*x^16-11141120*x^14+7454720*x^12-3075072*x^10+768768*x^8-" +
+                "109824*x^6+7920*x^4-220*x^2+1");
+
+        chebyshev2_fail_helper(-1);
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

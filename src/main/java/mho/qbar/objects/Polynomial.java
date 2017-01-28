@@ -3019,6 +3019,62 @@ public final class Polynomial implements
     }
 
     /**
+     * Returns the Chebyshev polynomial of the first kind with the given index.
+     *
+     * <ul>
+     *  <li>{@code n} cannot be negative.</li>
+     *  <li>The result is a Chebyshev polynomial of the first kind.</li>
+     * </ul>
+     *
+     * @param n the index of the polynomial
+     * @return T_{@code n}
+     */
+    public static @NotNull Polynomial chebyshev1(int n) {
+        if (n < 0) {
+            throw new IllegalArgumentException("n cannot be negative. Invalid n: " + n);
+        }
+        if (n == 0) {
+            return ONE;
+        }
+        Polynomial oneBefore = ONE;
+        Polynomial next = X;
+        for (int i = 1; i < n; i++) {
+            Polynomial twoBefore = oneBefore;
+            oneBefore = next;
+            next = oneBefore.multiplyByPowerOfX(1).shiftLeft(1).subtract(twoBefore);
+        }
+        return next;
+    }
+
+    /**
+     * Returns the Chebyshev polynomial of the second kind with the given index.
+     *
+     * <ul>
+     *  <li>{@code n} cannot be negative.</li>
+     *  <li>The result is a Chebyshev polynomial of the second kind.</li>
+     * </ul>
+     *
+     * @param n the index of the polynomial
+     * @return U_{@code n}
+     */
+    public static @NotNull Polynomial chebyshev2(int n) {
+        if (n < 0) {
+            throw new IllegalArgumentException("n cannot be negative. Invalid n: " + n);
+        }
+        if (n == 0) {
+            return ONE;
+        }
+        Polynomial oneBefore = ONE;
+        Polynomial next = of(IntegerUtils.TWO, 1);
+        for (int i = 1; i < n; i++) {
+            Polynomial twoBefore = oneBefore;
+            oneBefore = next;
+            next = oneBefore.multiplyByPowerOfX(1).shiftLeft(1).subtract(twoBefore);
+        }
+        return next;
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>

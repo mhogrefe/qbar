@@ -185,6 +185,8 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementationsRootPower();
         propertiesRealRoots();
         compareImplementationsRealRoots();
+        propertiesChebyshev1();
+        propertiesChebyshev2();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -4782,6 +4784,43 @@ public class PolynomialProperties extends QBarTestProperties {
 
         for (Polynomial p : take(LIMIT, P.polynomials(0))) {
             assertTrue(p, p.realRoots().isEmpty());
+        }
+    }
+
+    private void propertiesChebyshev1() {
+        initialize("chebyshev1(int)");
+        for (int i : take(SMALL_LIMIT, P.withScale(4).naturalIntegersGeometric())) {
+            Polynomial p = chebyshev1(i);
+            p.validate();
+            assertEquals(i, p.degree(), i);
+        }
+
+        for (int i : take(SMALL_LIMIT, P.withScale(4).positiveIntegersGeometric())) {
+            assertEquals(i, chebyshev1(i).leading().get(), BigInteger.ONE.shiftLeft(i - 1));
+        }
+
+        for (int i : take(LIMIT, P.negativeIntegersGeometric())) {
+            try {
+                chebyshev1(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesChebyshev2() {
+        initialize("chebyshev2(int)");
+        for (int i : take(SMALL_LIMIT, P.withScale(4).naturalIntegersGeometric())) {
+            Polynomial p = chebyshev2(i);
+            p.validate();
+            assertEquals(i, p.degree(), i);
+            assertEquals(i, p.leading().get(), BigInteger.ONE.shiftLeft(i));
+        }
+
+        for (int i : take(LIMIT, P.negativeIntegersGeometric())) {
+            try {
+                chebyshev2(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 

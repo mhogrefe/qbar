@@ -866,6 +866,18 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoChebyshev1() {
+        for (int i : take(SMALL_LIMIT, P.withScale(4).naturalIntegersGeometric())) {
+            System.out.println("T_" + i + " = " + chebyshev1(i));
+        }
+    }
+
+    private void demoChebyshev2() {
+        for (int i : take(SMALL_LIMIT, P.withScale(4).naturalIntegersGeometric())) {
+            System.out.println("U_" + i + " = " + chebyshev2(i));
+        }
+    }
+
     private void demoEquals_Polynomial() {
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.withScale(4).polynomials()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);
