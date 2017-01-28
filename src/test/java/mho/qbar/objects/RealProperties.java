@@ -182,6 +182,9 @@ public class RealProperties extends QBarTestProperties {
         propertiesArcsec();
         propertiesArccscUnsafe();
         propertiesArccsc();
+        propertiesAtan2OfRational();
+        propertiesAtan2Unsafe();
+        propertiesAtan2();
         propertiesIntervalExtensionUnsafe();
         propertiesFractionalPartUnsafe();
         propertiesFractionalPart();
@@ -6292,6 +6295,116 @@ public class RealProperties extends QBarTestProperties {
             try {
                 p.a.arccsc(p.b);
                 fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesAtan2OfRational() {
+        initialize("atan2OfRational(Rational, Rational)");
+        Iterable<Pair<Rational, Rational>> ps = filterInfinite(
+                p -> p.a != Rational.ZERO || p.b != Rational.ZERO,
+                P.pairs(P.withScale(4).rationals())
+        );
+        for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
+            Real theta = atan2OfRational(p.a, p.b);
+            theta.validate();
+        }
+
+        for (Pair<Rational, Rational> p : take(TINY_LIMIT, ps)) {
+            Real r = sqrtOfRational(p.a.pow(2).add(p.b.pow(2)));
+            Real theta = atan2OfRational(p.a, p.b);
+            assertTrue(p, theta.sin().multiply(r).eq(p.a, SMALL_RESOLUTION).orElse(true));
+            assertTrue(p, theta.cos().multiply(r).eq(p.b, SMALL_RESOLUTION).orElse(true));
+        }
+
+        ps = P.pairs(P.withScale(4).rationals(), P.withScale(4).positiveRationals());
+        for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
+            assertTrue(
+                    p,
+                    atan2OfRational(p.a, p.b).eq(arctanOfRational(p.a.divide(p.b)), SMALL_RESOLUTION).orElse(true)
+            );
+        }
+
+        for (Rational r : take(LIMIT, P.positiveRationals())) {
+            assertTrue(r, atan2OfRational(Rational.ZERO, r) == ZERO);
+            assertTrue(r, atan2OfRational(Rational.ZERO, r.negate()).eq(PI, SMALL_RESOLUTION).orElse(true));
+            assertTrue(r, atan2OfRational(r, Rational.ZERO).eq(PI.shiftRight(1), SMALL_RESOLUTION).orElse(true));
+            assertTrue(
+                    r,
+                    atan2OfRational(r.negate(), Rational.ZERO).eq(PI.shiftRight(1).negate(), SMALL_RESOLUTION)
+                            .orElse(true)
+            );
+        }
+    }
+
+    private void propertiesAtan2Unsafe() {
+        initialize("atan2Unsafe(Real, Real)");
+        Iterable<Pair<Real, Real>> ps = filterInfinite(
+                p -> (p.a.isExact() && p.b.ne(Rational.ZERO, DEFAULT_RESOLUTION).orElse(false)) ||
+                        p.a.ne(Rational.ZERO, DEFAULT_RESOLUTION).orElse(false) ||
+                        p.a.gt(Rational.ZERO, DEFAULT_RESOLUTION).orElse(false),
+                P.pairs(P.withScale(4).reals())
+        );
+        for (Pair<Real, Real> p : take(MEDIUM_LIMIT, ps)) {
+            Real theta = atan2Unsafe(p.a, p.b);
+            theta.validate();
+        }
+
+        for (Pair<Real, Real> p : take(TINY_LIMIT, ps)) {
+            Real r = p.a.powUnsafe(2).add(p.b.powUnsafe(2)).sqrtUnsafe();
+            Real theta = atan2Unsafe(p.a, p.b);
+            assertTrue(p, theta.sin().multiply(r).eq(p.a, SMALL_RESOLUTION).orElse(true));
+            assertTrue(p, theta.cos().multiply(r).eq(p.b, SMALL_RESOLUTION).orElse(true));
+        }
+
+        ps = P.pairs(P.withScale(4).reals(), P.withScale(4).positiveReals());
+        for (Pair<Real, Real> p : take(TINY_LIMIT, ps)) {
+            assertTrue(p, atan2Unsafe(p.a, p.b).eq(p.a.divideUnsafe(p.b).arctan(), SMALL_RESOLUTION).orElse(true));
+        }
+
+        for (Real r : take(TINY_LIMIT, P.positiveReals())) {
+            assertTrue(r, atan2Unsafe(Real.ZERO, r) == ZERO);
+            assertTrue(r, atan2Unsafe(Real.ZERO, r.negate()).eq(PI, SMALL_RESOLUTION).orElse(true));
+            assertTrue(r, atan2Unsafe(r, Real.ZERO).eq(PI.shiftRight(1), SMALL_RESOLUTION).orElse(true));
+            assertTrue(
+                    r,
+                    atan2Unsafe(r.negate(), Real.ZERO).eq(PI.shiftRight(1).negate(), SMALL_RESOLUTION).orElse(true)
+            );
+        }
+    }
+
+    private void propertiesAtan2() {
+        initialize("atan2(Real, Real, Rational)");
+        Iterable<Triple<Real, Real, Rational>> ts = filterInfinite(
+                t -> !t.a.isExact() || !t.b.isExact() || t.a.rationalValueExact().get() != Rational.ZERO ||
+                        t.b.rationalValueExact().get() != Rational.ZERO,
+                P.triples(P.withScale(4).reals(), P.withScale(4).reals(), P.positiveRationals())
+        );
+        for (Triple<Real, Real, Rational> t : take(MEDIUM_LIMIT, ts)) {
+            Optional<Real> oTheta = atan2(t.a, t.b, t.c);
+            if (oTheta.isPresent()) {
+                Real theta = oTheta.get();
+                theta.validate();
+                assertTrue(t, theta.eq(atan2Unsafe(t.a, t.b), SMALL_RESOLUTION).orElse(true));
+            }
+        }
+
+        for (Rational r : take(LIMIT, P.positiveRationals())) {
+            try {
+                atan2(ZERO, ZERO, r);
+                fail(r);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<Triple<Real, Real, Rational>> tsFail = filterInfinite(
+                t -> !t.a.isExact() || !t.b.isExact() || t.a.rationalValueExact().get() != Rational.ZERO ||
+                        t.b.rationalValueExact().get() != Rational.ZERO,
+                P.triples(P.withScale(4).reals(), P.withScale(4).reals(), P.rangeDown(Rational.ZERO))
+        );
+        for (Triple<Real, Real, Rational> t : take(MEDIUM_LIMIT, tsFail)) {
+            try {
+                atan2(t.a, t.b, t.c);
+                fail(t);
             } catch (IllegalArgumentException ignored) {}
         }
     }

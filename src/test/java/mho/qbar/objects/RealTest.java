@@ -10885,6 +10885,422 @@ public class RealTest {
         arccsc_fail_helper(SQRT_TWO, Rational.NEGATIVE_ONE);
     }
 
+    private static void atan2OfRational_helper(@NotNull String y, @NotNull String x, @NotNull String output) {
+        Real theta = atan2OfRational(Rational.readStrict(y).get(), Rational.readStrict(x).get());
+        theta.validate();
+        aeq(theta, output);
+    }
+
+    private static void atan2OfRational_fail_helper(@NotNull String y, @NotNull String x) {
+        try {
+            atan2OfRational(Rational.readStrict(y).get(), Rational.readStrict(x).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testAtan2OfRational() {
+        atan2OfRational_helper("0", "1", "0");
+        atan2OfRational_helper("1", "0", "1.57079632679489661923...");
+        atan2OfRational_helper("0", "-1", "3.14159265358979323846...");
+        atan2OfRational_helper("-1", "0", "-1.57079632679489661923...");
+
+        atan2OfRational_helper("1", "1", "0.78539816339744830961...");
+        atan2OfRational_helper("1", "-1", "2.35619449019234492884...");
+        atan2OfRational_helper("-1", "-1", "-2.35619449019234492884...");
+        atan2OfRational_helper("-1", "1", "-0.78539816339744830961...");
+
+        atan2OfRational_helper("2", "1", "1.10714871779409050301...");
+        atan2OfRational_helper("1", "-2", "2.67794504458898712224...");
+        atan2OfRational_helper("-2", "-1", "-2.03444393579570273544...");
+        atan2OfRational_helper("-1", "2", "-0.46364760900080611621...");
+
+        atan2OfRational_fail_helper("0", "0");
+    }
+
+    private static void atan2Unsafe_helper(@NotNull Real y, @NotNull Real x, @NotNull String output) {
+        Rational smallResolution = Rational.of(1, 10000);
+        Real theta = atan2Unsafe(y, x);
+        theta.validate();
+        aeq(theta.toStringBase(BigInteger.TEN, 3, smallResolution), output);
+    }
+
+    private static void atan2Unsafe_fail_helper(@NotNull Real y, @NotNull Real x) {
+        try {
+            atan2Unsafe(y, x);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testAtan2Unsafe() {
+        atan2Unsafe_helper(ZERO, ONE, "0");
+        atan2Unsafe_helper(ONE, ZERO, "1.570...");
+        atan2Unsafe_helper(ZERO, NEGATIVE_ONE, "3.141...");
+        atan2Unsafe_helper(NEGATIVE_ONE, ZERO, "-1.570...");
+
+        atan2Unsafe_helper(ONE, ONE, "0.785...");
+        atan2Unsafe_helper(ONE, NEGATIVE_ONE, "2.356...");
+        atan2Unsafe_helper(NEGATIVE_ONE, NEGATIVE_ONE, "-2.356...");
+        atan2Unsafe_helper(NEGATIVE_ONE, ONE, "-0.785...");
+
+        atan2Unsafe_helper(TWO, ONE, "1.107...");
+        atan2Unsafe_helper(ONE, TWO.negate(), "2.677...");
+        atan2Unsafe_helper(TWO.negate(), NEGATIVE_ONE, "-2.034...");
+        atan2Unsafe_helper(NEGATIVE_ONE, TWO, "-0.463...");
+
+        atan2Unsafe_helper(leftFuzzyRepresentation(Rational.ZERO), ONE, "-0.000...");
+        atan2Unsafe_helper(rightFuzzyRepresentation(Rational.ZERO), ONE, "0.000...");
+        atan2Unsafe_helper(fuzzyRepresentation(Rational.ZERO), ONE, "~0");
+        atan2Unsafe_helper(SQRT_TWO, ZERO, "1.570...");
+        atan2Unsafe_helper(SQRT_TWO.negate(), ZERO, "-1.570...");
+
+        atan2Unsafe_helper(fuzzyRepresentation(Rational.ONE), ONE, "0.785...");
+        atan2Unsafe_helper(fuzzyRepresentation(Rational.ONE), NEGATIVE_ONE, "2.356...");
+        atan2Unsafe_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), NEGATIVE_ONE, "-2.356...");
+        atan2Unsafe_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), ONE, "-0.785...");
+
+        atan2Unsafe_helper(SQRT_TWO, ONE, "0.955...");
+        atan2Unsafe_helper(SQRT_TWO.negate(), NEGATIVE_ONE, "-2.186...");
+
+        atan2Unsafe_helper(ZERO, SQRT_TWO, "0");
+        atan2Unsafe_helper(ONE, leftFuzzyRepresentation(Rational.ZERO), "1.570...");
+        atan2Unsafe_helper(ONE, rightFuzzyRepresentation(Rational.ZERO), "1.570...");
+        atan2Unsafe_helper(ONE, fuzzyRepresentation(Rational.ZERO), "1.570...");
+        atan2Unsafe_helper(ZERO, SQRT_TWO.negate(), "3.141...");
+        atan2Unsafe_helper(NEGATIVE_ONE, leftFuzzyRepresentation(Rational.ZERO), "-1.570...");
+        atan2Unsafe_helper(NEGATIVE_ONE, rightFuzzyRepresentation(Rational.ZERO), "-1.570...");
+        atan2Unsafe_helper(NEGATIVE_ONE, fuzzyRepresentation(Rational.ZERO), "-1.570...");
+
+        atan2Unsafe_helper(ONE, fuzzyRepresentation(Rational.ONE), "0.785...");
+        atan2Unsafe_helper(ONE, fuzzyRepresentation(Rational.NEGATIVE_ONE), "2.356...");
+        atan2Unsafe_helper(NEGATIVE_ONE, fuzzyRepresentation(Rational.NEGATIVE_ONE), "-2.356...");
+        atan2Unsafe_helper(NEGATIVE_ONE, fuzzyRepresentation(Rational.ONE), "-0.785...");
+
+        atan2Unsafe_helper(ONE, SQRT_TWO.negate(), "2.526...");
+        atan2Unsafe_helper(NEGATIVE_ONE, SQRT_TWO, "-0.615...");
+
+        atan2Unsafe_helper(leftFuzzyRepresentation(Rational.ZERO), fuzzyRepresentation(Rational.ONE), "-0.000...");
+        atan2Unsafe_helper(rightFuzzyRepresentation(Rational.ZERO), fuzzyRepresentation(Rational.ONE), "0.000...");
+        atan2Unsafe_helper(fuzzyRepresentation(Rational.ZERO), fuzzyRepresentation(Rational.ONE), "~0");
+        atan2Unsafe_helper(SQRT_TWO, leftFuzzyRepresentation(Rational.ZERO), "1.570...");
+        atan2Unsafe_helper(SQRT_TWO, rightFuzzyRepresentation(Rational.ZERO), "1.570...");
+        atan2Unsafe_helper(SQRT_TWO, fuzzyRepresentation(Rational.ZERO), "1.570...");
+        atan2Unsafe_helper(SQRT_TWO.negate(), leftFuzzyRepresentation(Rational.ZERO), "-1.570...");
+        atan2Unsafe_helper(SQRT_TWO.negate(), rightFuzzyRepresentation(Rational.ZERO), "-1.570...");
+        atan2Unsafe_helper(SQRT_TWO.negate(), fuzzyRepresentation(Rational.ZERO), "-1.570...");
+        atan2Unsafe_helper(leftFuzzyRepresentation(Rational.ZERO), SQRT_TWO, "-0.000...");
+        atan2Unsafe_helper(rightFuzzyRepresentation(Rational.ZERO), SQRT_TWO, "0.000...");
+        atan2Unsafe_helper(fuzzyRepresentation(Rational.ZERO), SQRT_TWO, "~0");
+        atan2Unsafe_helper(fuzzyRepresentation(Rational.ONE), leftFuzzyRepresentation(Rational.ZERO), "1.570...");
+        atan2Unsafe_helper(fuzzyRepresentation(Rational.ONE), rightFuzzyRepresentation(Rational.ZERO), "1.570...");
+        atan2Unsafe_helper(fuzzyRepresentation(Rational.ONE), fuzzyRepresentation(Rational.ZERO), "1.570...");
+        atan2Unsafe_helper(
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                leftFuzzyRepresentation(Rational.ZERO),
+                "-1.570..."
+        );
+        atan2Unsafe_helper(
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                rightFuzzyRepresentation(Rational.ZERO),
+                "-1.570..."
+        );
+        atan2Unsafe_helper(
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                fuzzyRepresentation(Rational.ZERO),
+                "-1.570..."
+        );
+
+        atan2Unsafe_helper(fuzzyRepresentation(Rational.ONE), fuzzyRepresentation(Rational.ONE), "0.785...");
+        atan2Unsafe_helper(fuzzyRepresentation(Rational.ONE), fuzzyRepresentation(Rational.NEGATIVE_ONE), "2.356...");
+        atan2Unsafe_helper(
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                "-2.356..."
+        );
+        atan2Unsafe_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), fuzzyRepresentation(Rational.ONE), "-0.785...");
+
+        atan2Unsafe_helper(SQRT_TWO, E, "0.479...");
+        atan2Unsafe_helper(E, SQRT_TWO.negate(), "2.050...");
+        atan2Unsafe_helper(SQRT_TWO.negate(), E.negate(), "-2.661...");
+        atan2Unsafe_helper(E.negate(), SQRT_TWO, "-1.091...");
+
+        atan2Unsafe_fail_helper(ZERO, ZERO);
+    }
+
+    private static void atan2_helper(
+            @NotNull Real y,
+            @NotNull Real x,
+            @NotNull Rational resolution,
+            @NotNull String output
+    ) {
+        Rational smallResolution = Rational.of(1, 10000);
+        Optional<Real> theta = atan2(y, x, resolution);
+        theta.ifPresent(Real::validate);
+        aeq(theta.map(t -> t.toStringBase(BigInteger.TEN, 3, smallResolution)), output);
+    }
+
+    private static void atan2_fail_helper(@NotNull Real y, @NotNull Real x, @NotNull Rational resolution) {
+        try {
+            atan2(y, x, resolution);
+            fail();
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testAtan2() {
+        atan2_helper(ZERO, ONE, DEFAULT_RESOLUTION, "Optional[0]");
+        atan2_helper(ONE, ZERO, DEFAULT_RESOLUTION, "Optional[1.570...]");
+        atan2_helper(ZERO, NEGATIVE_ONE, DEFAULT_RESOLUTION, "Optional[3.141...]");
+        atan2_helper(NEGATIVE_ONE, ZERO, DEFAULT_RESOLUTION, "Optional[-1.570...]");
+
+        atan2_helper(ONE, ONE, DEFAULT_RESOLUTION, "Optional[0.785...]");
+        atan2_helper(ONE, NEGATIVE_ONE, DEFAULT_RESOLUTION, "Optional[2.356...]");
+        atan2_helper(NEGATIVE_ONE, NEGATIVE_ONE, DEFAULT_RESOLUTION, "Optional[-2.356...]");
+        atan2_helper(NEGATIVE_ONE, ONE, DEFAULT_RESOLUTION, "Optional[-0.785...]");
+
+        atan2_helper(TWO, ONE, DEFAULT_RESOLUTION, "Optional[1.107...]");
+        atan2_helper(ONE, TWO.negate(), DEFAULT_RESOLUTION, "Optional[2.677...]");
+        atan2_helper(TWO.negate(), NEGATIVE_ONE, DEFAULT_RESOLUTION, "Optional[-2.034...]");
+        atan2_helper(NEGATIVE_ONE, TWO, DEFAULT_RESOLUTION, "Optional[-0.463...]");
+
+        atan2_helper(leftFuzzyRepresentation(Rational.ZERO), ONE, DEFAULT_RESOLUTION, "Optional[-0.000...]");
+        atan2_helper(rightFuzzyRepresentation(Rational.ZERO), ONE, DEFAULT_RESOLUTION, "Optional[0.000...]");
+        atan2_helper(fuzzyRepresentation(Rational.ZERO), ONE, DEFAULT_RESOLUTION, "Optional[~0]");
+        atan2_helper(SQRT_TWO, ZERO, DEFAULT_RESOLUTION, "Optional[1.570...]");
+        atan2_helper(leftFuzzyRepresentation(Rational.ZERO), NEGATIVE_ONE, DEFAULT_RESOLUTION, "Optional.empty");
+        atan2_helper(rightFuzzyRepresentation(Rational.ZERO), NEGATIVE_ONE, DEFAULT_RESOLUTION, "Optional.empty");
+        atan2_helper(fuzzyRepresentation(Rational.ZERO), NEGATIVE_ONE, DEFAULT_RESOLUTION, "Optional.empty");
+        atan2_helper(SQRT_TWO.negate(), ZERO, DEFAULT_RESOLUTION, "Optional[-1.570...]");
+
+        atan2_helper(fuzzyRepresentation(Rational.ONE), ONE, DEFAULT_RESOLUTION, "Optional[0.785...]");
+        atan2_helper(fuzzyRepresentation(Rational.ONE), NEGATIVE_ONE, DEFAULT_RESOLUTION, "Optional[2.356...]");
+        atan2_helper(
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                NEGATIVE_ONE,
+                DEFAULT_RESOLUTION,
+                "Optional[-2.356...]"
+        );
+        atan2_helper(fuzzyRepresentation(Rational.NEGATIVE_ONE), ONE, DEFAULT_RESOLUTION, "Optional[-0.785...]");
+
+        atan2_helper(SQRT_TWO, ONE, DEFAULT_RESOLUTION, "Optional[0.955...]");
+        atan2_helper(SQRT_TWO.negate(), NEGATIVE_ONE, DEFAULT_RESOLUTION, "Optional[-2.186...]");
+
+        atan2_helper(ZERO, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[0]");
+        atan2_helper(ONE, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[1.570...]");
+        atan2_helper(ONE, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[1.570...]");
+        atan2_helper(ONE, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[1.570...]");
+        atan2_helper(ZERO, SQRT_TWO.negate(), DEFAULT_RESOLUTION, "Optional[3.141...]");
+        atan2_helper(NEGATIVE_ONE, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[-1.570...]");
+        atan2_helper(NEGATIVE_ONE, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[-1.570...]");
+        atan2_helper(NEGATIVE_ONE, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[-1.570...]");
+
+        atan2_helper(ONE, fuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional[0.785...]");
+        atan2_helper(ONE, fuzzyRepresentation(Rational.NEGATIVE_ONE), DEFAULT_RESOLUTION, "Optional[2.356...]");
+        atan2_helper(
+                NEGATIVE_ONE,
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                DEFAULT_RESOLUTION,
+                "Optional[-2.356...]"
+        );
+        atan2_helper(NEGATIVE_ONE, fuzzyRepresentation(Rational.ONE), DEFAULT_RESOLUTION, "Optional[-0.785...]");
+
+        atan2_helper(ONE, SQRT_TWO.negate(), DEFAULT_RESOLUTION, "Optional[2.526...]");
+        atan2_helper(NEGATIVE_ONE, SQRT_TWO, DEFAULT_RESOLUTION, "Optional[-0.615...]");
+
+        atan2_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                fuzzyRepresentation(Rational.ONE),
+                DEFAULT_RESOLUTION,
+                "Optional[-0.000...]"
+        );
+        atan2_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                fuzzyRepresentation(Rational.ONE),
+                DEFAULT_RESOLUTION,
+                "Optional[0.000...]"
+        );
+        atan2_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                fuzzyRepresentation(Rational.ONE),
+                DEFAULT_RESOLUTION,
+                "Optional[~0]"
+        );
+        atan2_helper(SQRT_TWO, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[1.570...]");
+        atan2_helper(SQRT_TWO, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[1.570...]");
+        atan2_helper(SQRT_TWO, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[1.570...]");
+        atan2_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        atan2_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        atan2_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        atan2_helper(
+                SQRT_TWO.negate(),
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[-1.570...]"
+        );
+        atan2_helper(
+                SQRT_TWO.negate(),
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[-1.570...]"
+        );
+        atan2_helper(SQRT_TWO.negate(), fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional[-1.570...]");
+        atan2_helper(leftFuzzyRepresentation(Rational.ZERO), SQRT_TWO, DEFAULT_RESOLUTION, "Optional[-0.000...]");
+        atan2_helper(rightFuzzyRepresentation(Rational.ZERO), SQRT_TWO, DEFAULT_RESOLUTION, "Optional[0.000...]");
+        atan2_helper(fuzzyRepresentation(Rational.ZERO), SQRT_TWO, DEFAULT_RESOLUTION, "Optional[~0]");
+        atan2_helper(
+                fuzzyRepresentation(Rational.ONE),
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[1.570...]"
+        );
+        atan2_helper(
+                fuzzyRepresentation(Rational.ONE),
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[1.570...]"
+        );
+        atan2_helper(
+                fuzzyRepresentation(Rational.ONE),
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[1.570...]"
+        );
+        atan2_helper(leftFuzzyRepresentation(Rational.ZERO), SQRT_TWO.negate(), DEFAULT_RESOLUTION, "Optional.empty");
+        atan2_helper(rightFuzzyRepresentation(Rational.ZERO), SQRT_TWO.negate(), DEFAULT_RESOLUTION, "Optional.empty");
+        atan2_helper(fuzzyRepresentation(Rational.ZERO), SQRT_TWO.negate(), DEFAULT_RESOLUTION, "Optional.empty");
+        atan2_helper(
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[-1.570...]"
+        );
+        atan2_helper(
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[-1.570...]"
+        );
+        atan2_helper(
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional[-1.570...]"
+        );
+
+        atan2_helper(
+                fuzzyRepresentation(Rational.ONE),
+                fuzzyRepresentation(Rational.ONE),
+                DEFAULT_RESOLUTION,
+                "Optional[0.785...]"
+        );
+        atan2_helper(
+                fuzzyRepresentation(Rational.ONE),
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                DEFAULT_RESOLUTION,
+                "Optional[2.356...]"
+        );
+        atan2_helper(
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                DEFAULT_RESOLUTION,
+                "Optional[-2.356...]"
+        );
+        atan2_helper(
+                fuzzyRepresentation(Rational.NEGATIVE_ONE),
+                fuzzyRepresentation(Rational.ONE),
+                DEFAULT_RESOLUTION,
+                "Optional[-0.785...]"
+        );
+
+        atan2_helper(SQRT_TWO, E, DEFAULT_RESOLUTION, "Optional[0.479...]");
+        atan2_helper(E, SQRT_TWO.negate(), DEFAULT_RESOLUTION, "Optional[2.050...]");
+        atan2_helper(SQRT_TWO.negate(), E.negate(), DEFAULT_RESOLUTION, "Optional[-2.661...]");
+        atan2_helper(E.negate(), SQRT_TWO, DEFAULT_RESOLUTION, "Optional[-1.091...]");
+
+        atan2_helper(ZERO, leftFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        atan2_helper(ZERO, rightFuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        atan2_helper(ZERO, fuzzyRepresentation(Rational.ZERO), DEFAULT_RESOLUTION, "Optional.empty");
+        atan2_helper(leftFuzzyRepresentation(Rational.ZERO), ZERO, DEFAULT_RESOLUTION, "Optional.empty");
+        atan2_helper(rightFuzzyRepresentation(Rational.ZERO), ZERO, DEFAULT_RESOLUTION, "Optional.empty");
+        atan2_helper(fuzzyRepresentation(Rational.ZERO), ZERO, DEFAULT_RESOLUTION, "Optional.empty");
+        atan2_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        atan2_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        atan2_helper(
+                leftFuzzyRepresentation(Rational.ZERO),
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        atan2_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        atan2_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        atan2_helper(
+                rightFuzzyRepresentation(Rational.ZERO),
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        atan2_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                leftFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        atan2_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                rightFuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+        atan2_helper(
+                fuzzyRepresentation(Rational.ZERO),
+                fuzzyRepresentation(Rational.ZERO),
+                DEFAULT_RESOLUTION,
+                "Optional.empty"
+        );
+
+        atan2_fail_helper(ZERO, ZERO, DEFAULT_RESOLUTION);
+        atan2_fail_helper(ONE, ONE, Rational.ZERO);
+        atan2_fail_helper(ONE, ONE, Rational.NEGATIVE_ONE);
+        atan2_fail_helper(SQRT_TWO, SQRT_TWO, Rational.ZERO);
+        atan2_fail_helper(SQRT_TWO, SQRT_TWO, Rational.NEGATIVE_ONE);
+    }
+
     @Test
     public void testIntervalExtensionUnsafe() {
         intervalExtensionUnsafe_helper(PI.negate(), NEGATIVE_FOUR_THIRDS, "[-651864872/204778785, -4/3]");

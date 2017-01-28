@@ -6,6 +6,7 @@ import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
+import mho.wheels.structures.Quadruple;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
@@ -5108,6 +5109,252 @@ public final class Real implements Iterable<Interval> {
                     " Invalid this: " + this);
         }
         return Optional.of(arccscUnsafe());
+    }
+
+    /**
+     * Evaluates the atan2 function, or the counterclockwise angle from the positive x-axis of the point (x, y). In
+     * agreement with the standard definition, the range is (–π, π] and the argument order is (y, x).
+     *
+     * <ul>
+     *  <li>{@code y} cannot be null.</li>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>{@code y} and {@code x} cannot both be zero.</li>
+     *  <li>The result is a number greater than –π and less than or equal to π whose tangent is rational.</li>
+     * </ul>
+     *
+     * @param y the y-coordinate of a point
+     * @param x the x-coordinate of a point
+     * @return atan2({@code y}, {@code x})
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull Real atan2OfRational(@NotNull Rational y, @NotNull Rational x) {
+        switch (x.signum()) {
+            case 0:
+                switch (y.signum()) {
+                    case 0:
+                        throw new ArithmeticException();
+                    case 1:
+                        return ARCTAN_ONE.shiftLeft(1);
+                    case -1:
+                        return ARCTAN_ONE.shiftLeft(1).negate();
+                    default:
+                        throw new IllegalStateException("unreachable");
+                }
+            case 1:
+                return arctanOfRational(y.divide(x));
+            case -1:
+                if (y.signum() >= 0) {
+                    return arctanOfRational(y.divide(x)).add(PI);
+                } else {
+                    return arctanOfRational(y.divide(x)).subtract(PI);
+                }
+            default:
+                throw new IllegalStateException("unreachable");
+        }
+    }
+
+    /**
+     * Evaluates the atan2 function, or the counterclockwise angle from the positive x-axis of the point (x, y). In
+     * agreement with the standard definition, the range is (–π, π] and the argument order is (y, x). If {@code y} and
+     * {@code x} are both equal to zero and at least one is fuzzy, or if {@code x} is less than zero and {@code y} is
+     * a fuzzy zero, this method will loop forever. To avoid this behavior, use
+     * {@link Real#atan2(Real, Real, Rational)} instead.
+     *
+     * <ul>
+     *  <li>{@code y} cannot be null.</li>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>{@code y} and {@code x} cannot both be zero.</li>
+     *  <li>If {@code x} is less than zero and {@code y} is equal to zero, {@code y} must be exact.</li>
+     *  <li>The result is greater than –π and less than or equal to π.</li>
+     * </ul>
+     *
+     * @param y the y-coordinate of a point
+     * @param x the x-coordinate of a point
+     * @return atan2({@code y}, {@code x})
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull Real atan2Unsafe(@NotNull Real y, @NotNull Real x) {
+        if (x.rational.isPresent() && y.rational.isPresent()) {
+            return atan2OfRational(y.rational.get(), x.rational.get());
+        }
+        if (x.rational.isPresent()) {
+            Rational xr = x.rational.get();
+            switch (xr.signum()) {
+                case 0:
+                    return y.signumUnsafe() == 1 ? ARCTAN_ONE.shiftLeft(1) : ARCTAN_ONE.shiftLeft(1).negate();
+                case 1:
+                    return y.divide(xr).arctan();
+                case -1:
+                    Real a = y.divide(xr).arctan();
+                    return y.signumUnsafe() == 1 ? a.add(PI) : a.subtract(PI);
+                default:
+                    throw new IllegalStateException("unreachable");
+            }
+        }
+        if (y.rational.isPresent()) {
+            Rational yr = y.rational.get();
+            switch (yr.signum()) {
+                case 0:
+                    return x.signumUnsafe() == 1 ? ZERO : PI;
+                case 1:
+                    return x.divide(yr).arccot();
+                case -1:
+                    return x.divide(yr).arccot().subtract(PI);
+                default:
+                    throw new IllegalStateException("unreachable");
+            }
+        }
+        return forceContainment(() -> new Iterator<Interval>() {
+            private final @NotNull Iterator<Interval> xas = x.iterator();
+            private final @NotNull Iterator<Interval> yas = y.iterator();
+            private Interval xa;
+            private Interval ya;
+            private Rational xaDiameter;
+            private Rational yaDiameter;
+            private Quadruple<Rational, Rational, Rational, Rational> boxExtremes;
+            private Iterator<Interval> lowerReal;
+            private Iterator<Interval> upperReal;
+            private int i = 0;
+            private Rational previousDiameter = null;
+            {
+                do {
+                    xa = xas.next();
+                } while (!xa.isFinitelyBounded());
+                do {
+                    ya = yas.next();
+                } while (!ya.isFinitelyBounded());
+                xaDiameter = xa.diameter().get();
+                yaDiameter = ya.diameter().get();
+                boxExtremes = getBoxExtremes();
+                while (boxExtremes == null) {
+                    refineIntervals();
+                    boxExtremes = getBoxExtremes();
+                }
+            }
+
+            private void refineIntervals() {
+                if (Ordering.lt(xaDiameter, yaDiameter)) {
+                    ya = yas.next();
+                    yaDiameter = ya.diameter().get();
+                } else {
+                    xa = xas.next();
+                    xaDiameter = xa.diameter().get();
+                }
+            }
+
+            // Consider the box defined by xa and ya. This method returns (x_0, y_0, x_1, y_1), where (x_0, y_0) is the
+            // corner of the box with the smallest θ and (x_1, y_1) is the corner with the largest θ. If the box
+            // contains the positive y axis, null is returned.
+            private Quadruple<Rational, Rational, Rational, Rational> getBoxExtremes() {
+                Rational xl = xa.getLower().get();
+                Rational xu = xa.getUpper().get();
+                Rational yl = ya.getLower().get();
+                Rational yu = ya.getUpper().get();
+                int xls = xl.signum();
+                int xus = xu.signum();
+                int yls = yl.signum();
+                int yus = yu.signum();
+                if (xls <= 0 && xus >= 0) {
+                    if (yls <= 0 && yus >= 0) {
+                        return null;
+                    } else if (yls > 0) {
+                        return new Quadruple<>(xu, yl, xl, yl);
+                    } else {
+                        return new Quadruple<>(xl, yu, xu, yu);
+                    }
+                } else if (xls > 0) {
+                    if (yls <= 0 && yus >= 0) {
+                        return new Quadruple<>(xl, yl, xl, yu);
+                    } else if (yls > 0) {
+                        return new Quadruple<>(xu, yl, xl, yu);
+                    } else {
+                        return new Quadruple<>(xl, yl, xu, yu);
+                    }
+                } else {
+                    if (yls <= 0 && yus >= 0) {
+                        return null;
+                    } else if (yls > 0) {
+                        return new Quadruple<>(xu, yu, xl, yl);
+                    } else {
+                        return new Quadruple<>(xl, yu, xu, yl);
+                    }
+                }
+            }
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public Interval next() {
+                if (lowerReal == null) {
+                    lowerReal = atan2OfRational(boxExtremes.b, boxExtremes.a).iterator();
+                    upperReal = atan2OfRational(boxExtremes.d, boxExtremes.c).iterator();
+                    for (int j = 0; j < i; j++) {
+                        lowerReal.next();
+                        upperReal.next();
+                    }
+                }
+                Interval lowerInterval = lowerReal.next();
+                Interval upperInterval = upperReal.next();
+                Interval nextInterval = lowerInterval.convexHull(upperInterval);
+                Rational diameter = nextInterval.diameter().get();
+                if (previousDiameter != null && Ordering.gt(diameter, previousDiameter.shiftRight(1))) {
+                    refineIntervals();
+                    boxExtremes = getBoxExtremes();
+                    //noinspection ConstantConditions
+                    lowerReal = atan2OfRational(boxExtremes.b, boxExtremes.a).iterator();
+                    upperReal = atan2OfRational(boxExtremes.d, boxExtremes.c).iterator();
+                    for (int j = 0; j < i; j++) {
+                        lowerReal.next();
+                        upperReal.next();
+                    }
+                    lowerInterval = lowerReal.next();
+                    upperInterval = upperReal.next();
+                    nextInterval = lowerInterval.convexHull(upperInterval);
+                    diameter = nextInterval.diameter().get();
+                }
+                previousDiameter = diameter;
+                i++;
+                return nextInterval;
+            }
+        });
+    }
+
+    /**
+     * Evaluates the atan2 function, or the counterclockwise angle from the positive x-axis of the point (x, y). In
+     * agreement with the standard definition, the range is (–π, π] and the argument order is (y, x). If {@code y} and
+     * {@code x} are both equal to zero and at least one is fuzzy, or if {@code x} is less than zero and {@code y} is
+     * a fuzzy zero, this method will give up and return empty once the approximating interval's diameter is less than
+     * the specified resolution.
+     *
+     * <ul>
+     *  <li>{@code y} cannot be null.</li>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>{@code resolution} must be positive.</li>
+     *  <li>{@code y} and {@code x} cannot both be exact zeros.</li>
+     *  <li>The result is greater than –π and less than or equal to π.</li>
+     * </ul>
+     *
+     * @param y the y-coordinate of a point
+     * @param x the x-coordinate of a point
+     * @param resolution once the approximating interval's diameter is lower than this value, the method gives up
+     * @return atan2({@code y}, {@code x})
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull Optional<Real> atan2(@NotNull Real y, @NotNull Real x, @NotNull Rational resolution) {
+        if (resolution.signum() != 1) {
+            throw new IllegalArgumentException("resolution must be positive. Invalid resolution: " + resolution);
+        }
+        if (x.rational.isPresent() && y.rational.isPresent()) {
+            return Optional.of(atan2OfRational(y.rational.get(), x.rational.get()));
+        }
+        if ((!y.isExact() || x.eq(Rational.ZERO, resolution).orElse(true)) &&
+                y.eq(Rational.ZERO, resolution).orElse(true) && x.le(Rational.ZERO, resolution).orElse(true)) {
+            return Optional.empty();
+        }
+        return Optional.of(atan2Unsafe(y, x));
     }
 
     /**

@@ -2348,6 +2348,43 @@ public class RealDemos extends QBarDemos {
         }
     }
 
+    private void demoAtan2OfRational() {
+        Iterable<Pair<Rational, Rational>> ps = filterInfinite(
+                p -> p.a != Rational.ZERO || p.b != Rational.ZERO,
+                P.pairs(P.withScale(4).rationals())
+        );
+        for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
+            System.out.println("atan2(" + p.a + ", " + p.b + ") = " + atan2OfRational(p.a, p.b));
+        }
+    }
+
+    private void demoAtan2Unsafe() {
+        Rational smallResolution = Rational.of(1, 10000);
+        Iterable<Pair<Real, Real>> ps = filterInfinite(
+                p -> (p.a.isExact() && p.b.ne(Rational.ZERO, DEFAULT_RESOLUTION).orElse(false)) ||
+                        p.a.ne(Rational.ZERO, DEFAULT_RESOLUTION).orElse(false) ||
+                        p.a.gt(Rational.ZERO, DEFAULT_RESOLUTION).orElse(false),
+                P.pairs(P.withScale(4).reals())
+        );
+        for (Pair<Real, Real> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("atan2Unsafe(" + p.a + ", " + p.b + ") = " +
+                    atan2Unsafe(p.a, p.b).toStringBase(BigInteger.TEN, 3, smallResolution));
+        }
+    }
+
+    private void demoAtan2() {
+        Rational smallResolution = Rational.of(1, 10000);
+        Iterable<Triple<Real, Real, Rational>> ts = filterInfinite(
+                t -> !t.a.isExact() || !t.b.isExact() || t.a.rationalValueExact().get() != Rational.ZERO ||
+                        t.b.rationalValueExact().get() != Rational.ZERO,
+                P.triples(P.withScale(4).reals(), P.withScale(4).reals(), P.positiveRationals())
+        );
+        for (Triple<Real, Real, Rational> t : take(MEDIUM_LIMIT, ts)) {
+            System.out.println("atan2(" + t.a + ", " + t.b + ", " + t.c + ") = " +
+                    atan2(t.a, t.b, t.c).map(x -> x.toStringBase(BigInteger.TEN, 3, smallResolution)));
+        }
+    }
+
     private void demoIntervalExtensionUnsafe() {
         Iterable<Pair<Real, Real>> ps = filterInfinite(
                 p -> p.a.lt(p.b, DEFAULT_RESOLUTION).orElse(false),
