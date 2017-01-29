@@ -13,7 +13,8 @@ Progress
 | QBarExhaustiveProvider   | ✘       | ✘       | ✘     | ✘     | ✘          |
 | QBarIterableProvider     | ✘       | ✘       | ✘     | ✘     | ✘          |
 | QBarRandomProvider       | ✘       | ✘       | ✘     | ✘     | ✘          |
-| Algebraic                | ✘       | ✘       | ✘     | ✘     | ✘          |
+| Algebraic                | ✔       | ✔       | ✔     | ✔     | ✔          |
+| AlgebraicAngle           | ✘       | ✘       | ✘     | ✘     | ✘          |
 | Interval                 | ✔       | ✔       | ✔     | ✔     | ✔          |
 | Matrix                   | ✘       | ✘       | ✘     | ✘     | ✘          |
 | Monomial                 | ✔       | ✔       | ✔     | ✔     | ✔          |

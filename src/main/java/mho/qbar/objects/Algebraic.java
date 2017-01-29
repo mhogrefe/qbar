@@ -2635,7 +2635,7 @@ public final class Algebraic implements Comparable<Algebraic> {
         return result;
     }
 
-    private static @NotNull Polynomial cosMP(int n) {
+    static @NotNull Polynomial cosMP(int n) {
         if ((n & 1) == 1 && MathUtils.isPrime(n)) {
             return cosMPOddPrimeDenominator(n);
         } else {
