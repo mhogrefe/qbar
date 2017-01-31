@@ -4447,6 +4447,32 @@ public strictfp abstract class QBarIterableProvider {
     public abstract @NotNull Iterable<Algebraic> algebraicsNotIn(@NotNull Interval a);
 
     /**
+     * Generates {@code AlgebraicAngle}s that are rational multiples of π.
+     */
+    public @NotNull Iterable<AlgebraicAngle> rationalMultiplesOfPi() {
+        return map(AlgebraicAngle::fromTurns, nonNegativeRationalsLessThanOne());
+    }
+
+    /**
+     * Generates {@code AlgebraicAngle}s.
+     */
+    public @NotNull Iterable<AlgebraicAngle> algebraicAngles() {
+        return withScale(1).choose(
+                rationalMultiplesOfPi(),
+                map(
+                        p -> p.b ? p.a : p.a.negate(),
+                        pairsLogarithmicOrder(
+                                filterInfinite(
+                                        t -> !t.isRationalMultipleOfPi(),
+                                        map(AlgebraicAngle::arccos, range(Algebraic.NEGATIVE_ONE, Algebraic.ONE))
+                                ),
+                                booleans()
+                        )
+                )
+        );
+    }
+
+    /**
      * Generates all {@code QBarRandomProvider}s with a fixed {@code scale}, {@code secondaryScale}, and
      * {@code tertiaryScale}.
      *

@@ -73,6 +73,8 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesNonzeroAlgebraics();
         propertiesAlgebraics();
         propertiesNonNegativeAlgebraicsLessThanOne();
+        propertiesRationalMultiplesOfPi();
+        propertiesAlgebraicAngles();
         propertiesQBarRandomProvidersDefault();
         propertiesQBarRandomProvidersDefaultSecondaryAndTertiaryScale();
         propertiesQBarRandomProvidersDefaultTertiaryScale();
@@ -1514,6 +1516,16 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
             Iterable<Algebraic> xs = QEP.algebraicsNotIn(a);
             simpleTest(a, xs, x -> !a.contains(x));
         }
+    }
+
+    private void propertiesRationalMultiplesOfPi() {
+        initializeConstant("rationalMultiplesOfPi()");
+        simpleTest(QEP, QEP.rationalMultiplesOfPi(), AlgebraicAngle::isRationalMultipleOfPi);
+    }
+
+    private void propertiesAlgebraicAngles() {
+        initializeConstant("algebraicAngles()");
+        simpleTest(QEP, QEP.algebraicAngles(), t -> true);
     }
 
     private void propertiesQBarRandomProvidersFixedScales() {

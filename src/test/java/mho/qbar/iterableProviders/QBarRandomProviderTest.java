@@ -8927,6 +8927,61 @@ public class QBarRandomProviderTest {
         algebraicsNotIn_Interval_fail_helper(2, 4, "(-Infinity, Infinity)");
     }
 
+    private static void algebraicAngles_helper(@NotNull Iterable<AlgebraicAngle> input, @NotNull String output) {
+        List<AlgebraicAngle> sample = toList(take(DEFAULT_SAMPLE_SIZE / 1000, input));
+        aeqitLimitQBarLog(TINY_LIMIT, sample, output);
+        aeqMapQBarLog(topSampleCount(DEFAULT_TOP_COUNT, sample), output);
+        P.reset();
+    }
+
+    private static void rationalMultiplesOfPi_helper(int scale, @NotNull String output) {
+        algebraicAngles_helper(P.withScale(scale).rationalMultiplesOfPi(), output);
+        P.reset();
+    }
+
+    private static void rationalMultiplesOfPi_fail_helper(int scale) {
+        try {
+            P.withScale(scale).rationalMultiplesOfPi();
+            fail();
+        } catch (IllegalStateException | IllegalArgumentException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testRationalMultiplesOfPi() {
+        rationalMultiplesOfPi_helper(4, "QBarRandomProvider_rationalMultiplesOfPi_i");
+        rationalMultiplesOfPi_helper(32, "QBarRandomProvider_rationalMultiplesOfPi_ii");
+
+        rationalMultiplesOfPi_fail_helper(0);
+        rationalMultiplesOfPi_fail_helper(3);
+    }
+
+    private static void algebraicAngles_helper(int scale, int secondaryScale, @NotNull String output) {
+        algebraicAngles_helper(P.withScale(scale).withSecondaryScale(secondaryScale).algebraicAngles(), output);
+        P.reset();
+    }
+
+    private static void algebraicAngles_fail_helper(int scale, int secondaryScale) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).algebraicAngles();
+            fail();
+        } catch (IllegalStateException | IllegalArgumentException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testAlgebraicAngles() {
+        algebraicAngles_helper(4, 4, "QBarRandomProvider_algebraicAngles_i");
+        algebraicAngles_helper(8, 16, "QBarRandomProvider_algebraicAngles_ii");
+
+        algebraicAngles_fail_helper(3, 4);
+        algebraicAngles_fail_helper(4, 3);
+    }
+
     private static void qbarRandomProvidersFixedScales_helper(
             int scale,
             int secondaryScale,

@@ -23113,6 +23113,112 @@ root 0 of 32*x^5-80*x^4+112*x^3-88*x^2+34*x+27
 (-2-sqrt(5))/2
 ...
 
+QBarExhaustiveProvider_rationalMultiplesOfPi list 51
+0
+pi
+2*pi/3
+4*pi/3
+pi/2
+3*pi/2
+2*pi/5
+4*pi/5
+6*pi/5
+8*pi/5
+pi/3
+5*pi/3
+2*pi/7
+4*pi/7
+6*pi/7
+8*pi/7
+10*pi/7
+12*pi/7
+pi/4
+3*pi/4
+5*pi/4
+7*pi/4
+2*pi/9
+4*pi/9
+8*pi/9
+10*pi/9
+14*pi/9
+16*pi/9
+pi/5
+3*pi/5
+7*pi/5
+9*pi/5
+2*pi/11
+4*pi/11
+6*pi/11
+8*pi/11
+10*pi/11
+12*pi/11
+14*pi/11
+16*pi/11
+18*pi/11
+20*pi/11
+pi/6
+5*pi/6
+7*pi/6
+11*pi/6
+2*pi/13
+4*pi/13
+6*pi/13
+8*pi/13
+...
+
+QBarExhaustiveProvider_algebraicAngles list 51
+0
+pi+arccos(2-sqrt(5))
+pi
+arccos(-2+sqrt(5))
+2*pi/3
+pi+arccos(root 0 of x^3-5*x^2+7*x+5)
+4*pi/3
+pi+arccos(1/3)
+pi/2
+arccos(root 0 of x^3+5*x^2+7*x-5)
+3*pi/2
+pi+arccos(1-sqrt(2))
+2*pi/5
+pi+arccos(root 1 of x^4-2*x^3-4*x^2+18*x+3)
+4*pi/5
+arccos(-1/3)
+6*pi/5
+pi+arccos(-1/3)
+8*pi/5
+pi+arccos(3-2*sqrt(2))
+pi/3
+arccos(-1+sqrt(2))
+5*pi/3
+pi+arccos(root 0 of x^3-3*x^2+7*x+3)
+2*pi/7
+pi+arccos(3/5)
+4*pi/7
+arccos(root 0 of x^4+2*x^3-4*x^2-18*x+3)
+6*pi/7
+pi+arccos(2-sqrt(3))
+8*pi/7
+pi+arccos(2/3)
+10*pi/7
+arccos(1/3)
+12*pi/7
+pi+arccos(root 1 of x^5-3*x^4-2*x^3+22*x^2-31*x-19)
+pi/4
+pi+arccos(5/7)
+3*pi/4
+arccos(-3+2*sqrt(2))
+5*pi/4
+pi+arccos((3-2*sqrt(3))/3)
+7*pi/4
+pi+arccos(3/4)
+2*pi/9
+arccos(root 0 of x^3+3*x^2+7*x-3)
+4*pi/9
+pi+arccos(root 0 of x^3-5*x^2+11*x+1)
+8*pi/9
+pi+arccos(1/5)
+...
+
 QBarExhaustiveProvider_qbarRandomProvidersFixedScales_i list 51
 QBarRandomProvider[@-7948823947390831374, 8, 32, 2]
 QBarRandomProvider[@7302477663894715351, 8, 32, 2]
@@ -46907,6 +47013,146 @@ QBarRandomProvider_algebraicsNotIn_Interval_x map 10
 27: 3/10
 24: -7/2
 21: -9/2
+
+QBarRandomProvider_rationalMultiplesOfPi_i list 21
+16*pi/13
+884*pi/989
+0
+pi
+0
+3*pi/2
+4*pi/3
+pi/3
+0
+0
+0
+0
+4*pi/3
+3*pi/2
+0
+pi
+0
+0
+0
+0
+...
+
+QBarRandomProvider_rationalMultiplesOfPi_i map 10
+527: 0
+120: pi
+68: 2*pi/3
+68: 4*pi/3
+14: pi/2
+12: 3*pi/2
+12: pi/3
+11: 5*pi/3
+8: 6*pi/5
+7: 2*pi/7
+
+QBarRandomProvider_rationalMultiplesOfPi_ii list 21
+737254238953015*pi/4949518132706169
+70216*pi/53699
+1607*pi/3246
+12*pi/13
+4290513195004*pi/2734092316245
+10167173779*pi/14170881832
+83*pi/544
+71842947*pi/50437756
+4672789*pi/123072937
+15352*pi/46647
+87*pi/44
+5*pi/3
+3*pi/2
+pi
+12*pi/13
+19*pi/47
+3133471*pi/1729551
+139*pi/138
+811*pi/4020
+4*pi/3
+...
+
+QBarRandomProvider_rationalMultiplesOfPi_ii map 10
+60: 0
+31: pi
+13: 4*pi/3
+10: 4*pi/5
+8: 3*pi/2
+8: 5*pi/3
+8: 6*pi/5
+7: 2*pi/3
+7: pi/3
+5: 3*pi/4
+
+QBarRandomProvider_algebraicAngles_i list 21
+2*pi/3
+98*pi/85
+pi
+3*pi/2
+pi+arccos(-1/3)
+2*pi/3
+0
+pi+arccos(root 0 of 5*x^4-176*x^3+482*x^2-464*x+73)
+0
+pi+arccos((76-sqrt(407))/91)
+0
+pi+arccos(1/3)
+arccos(root 0 of 7*x^4-8*x^3-54*x^2-56*x-1)
+5*pi/3
+0
+pi/8
+arccos(root 1 of x^3-105*x^2-249*x-119)
+pi+arccos(-1/6)
+pi+arccos((128-sqrt(509))/127)
+pi+arccos(35/37)
+...
+
+QBarRandomProvider_algebraicAngles_i map 10
+233: 0
+74: pi
+41: 2*pi/3
+34: 4*pi/3
+12: pi/3
+9: 5*pi/3
+8: pi+arccos(1/3)
+7: 2*pi/5
+7: arccos(-1/3)
+7: pi/2
+
+QBarRandomProvider_algebraicAngles_ii list 21
+34*pi/21
+2*pi/5
+12*pi/7
+pi/3
+232*pi/343
+pi+arccos(root 0 of 214359*x^3-349121*x^2+55161*x+79629)
+pi+arccos(root 1 of 395*x^13-5135*x^12+30834*x^11-113238*x^10+285745*x^9-530433*x^8+758348*x^7-858324*x^6+5471197*x^5-24035265*x^4+47271714*x^3-47085558*x^2-30776185*x+49581809)
+0
+0
+11*pi/6
+pi+arccos(root 0 of 851044347*x^5-4255221406*x^4+8510442158*x^3-8510441088*x^2+4255219543*x-851043522)
+pi
+arccos(root 3 of 16117*x^17+274043*x^16+2192744*x^15+10962464*x^14+2601724*x^13-365089556*x^12-2589214664*x^11-9911066576*x^10-25168398610*x^9-45615356358*x^8-61028758632*x^7-61171691136*x^6-46078418852*x^5-25936999332*x^4-10541807544*x^3-2548921168*x^2+15152453*x+153087363)
+arccos(root 3 of 9941*x^13+85907750*x^12+1030117606*x^11+5664224304*x^10+18878370903*x^9+40789506726*x^8+54484687044*x^7+32135312784*x^6-26341150413*x^5-75435429038*x^4-75524572554*x^3-41611501504*x^2-12513747071*x-1576655134)
+0
+pi+arccos(root 0 of 1721131*x^3-5100453*x^2+5036049*x-1193191)
+107*pi/251
+arccos(root 4 of 108393*x^11+1192277*x^10+5961211*x^9+17883479*x^8+35767594*x^7+50076866*x^6+50547910*x^5+38113310*x^4+13020157*x^3-17999495*x^2-24719185*x-8588549)
+arccos(-431/433)
+arccos(root 0 of x^5-32*x^4+1682*x^3+5248*x^2+5317*x+1288)
+...
+
+QBarRandomProvider_algebraicAngles_ii map 10
+119: 0
+34: pi
+23: 4*pi/3
+19: 2*pi/3
+16: pi/2
+10: 5*pi/3
+10: pi/3
+8: 3*pi/2
+7: 6*pi/5
+7: 8*pi/5
 
 QBarRandomProvider_qbarRandomProvidersFixedScales_i list 21
 QBarRandomProvider[@6307004437655165633, 8, 32, 2]

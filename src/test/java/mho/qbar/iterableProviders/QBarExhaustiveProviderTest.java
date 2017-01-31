@@ -1996,6 +1996,16 @@ public class QBarExhaustiveProviderTest {
         algebraicsNotIn_Interval_helper("[1/2, Infinity)", "QBarExhaustiveProvider_algebraicsNotIn_Interval_vi");
     }
 
+    @Test
+    public void testRationalMultiplesOfPi() {
+        simpleProviderHelper(QEP.rationalMultiplesOfPi(), "QBarExhaustiveProvider_rationalMultiplesOfPi");
+    }
+
+    @Test
+    public void testAlgebraicAngles() {
+        simpleProviderHelper(QEP.algebraicAngles(), "QBarExhaustiveProvider_algebraicAngles");
+    }
+
     private static void qbarRandomProvidersFixedScales_helper(
             int scale,
             int secondaryScale,

@@ -1542,6 +1542,26 @@ public class QBarRandomProviderDemos extends QBarDemos {
         }
     }
 
+    private void demoRationalMultiplesOfPi() {
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() >= 4,
+                P.withScale(2).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
+            System.out.println("rationalMultiplesOfPi(" + rp + ") = " + its(rp.rationalMultiplesOfPi()));
+        }
+    }
+
+    private void demoAlgebraicAngles() {
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() >= 4 && rp.getSecondaryScale() >= 4,
+                P.withScale(2).qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
+            System.out.println("algebraicAngles(" + rp + ") = " + its(rp.algebraicAngles()));
+        }
+    }
+
     private void demoQBarRandomProvidersFixedScales() {
         Iterable<Quadruple<QBarRandomProvider, Integer, Integer, Integer>> qs = P.quadruples(
                 P.qbarRandomProvidersDefault(),

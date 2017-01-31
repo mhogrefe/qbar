@@ -2576,6 +2576,20 @@ public final class Algebraic implements Comparable<Algebraic> {
                 Interval.of(Rational.NEGATIVE_ONE, Rational.ZERO).contains(realConjugates().get(0));
     }
 
+    /**
+     * A helper method for {@link Algebraic#turnFractionCosineMinimalPolynomialOddPrimeDenominator(int)}.
+     *
+     * <ul>
+     *  <li>{@code s} cannot be negative.</li>
+     *  <li>{@code k} cannot be negative.</li>
+     *  <li>{@code s}–{@code k} cannot be negative.</li>
+     *  <li>The absolute value of the result is a binomial coefficient.</li>
+     * </ul>
+     *
+     * @param s a parameter
+     * @param k another parameter
+     * @return a scaled coefficient of the minimal polynomial of the cosine of a rational multiple of π
+     */
     private static @NotNull BigInteger sigma(int s, int k) {
         if ((k & 1) == 0) {
             k >>= 1;
@@ -2588,7 +2602,18 @@ public final class Algebraic implements Comparable<Algebraic> {
         }
     }
 
-    private static @NotNull Polynomial cosMPOddPrimeDenominator(int p) {
+    /**
+     * Returns the minimal polynomial of cos(2π/p), where p is an odd prime
+     *
+     * <ul>
+     *  <li>{@code p} must be an odd prime.</li>
+     *  <li>The result is the minimal polynomial of cos(2π/p) where p is some odd prime.</li>
+     * </ul>
+     *
+     * @param p an odd prime
+     * @return the minimal polynomial of cos(2π/p)
+     */
+    private static @NotNull Polynomial turnFractionCosineMinimalPolynomialOddPrimeDenominator(int p) {
         int s = (p - 1) / 2;
         List<BigInteger> coefficients = toList(replicate(s + 1, BigInteger.ZERO));
         boolean sign = false;
@@ -2603,7 +2628,25 @@ public final class Algebraic implements Comparable<Algebraic> {
         return Polynomial.of(coefficients);
     }
 
-    private static @NotNull RationalPolynomial cosMP(@NotNull Map<Integer, RationalPolynomial> mpCache, int n) {
+    /**
+     * A helper method for {@link Algebraic#turnFractionCosineMinimalPolynomial(int)} which caches the results of
+     * recursive calls.
+     *
+     * <ul>
+     *  <li>For every entry in {@code mpCache}, the value must be the result of this method when applied to an empty
+     *  map and {@code n}.</li>
+     *  <li>{@code n} must be positive.</li>
+     *  <li>The result is a monic irreducible polynomial whose roots are cosines of rational multiples of π.</li>
+     * </ul>
+     *
+     * @param mpCache a cache of calls to this method
+     * @param n a number
+     * @return the monic form of the minimal polynomial of cos(2π/n)
+     */
+    private static @NotNull RationalPolynomial turnFractionCosineMinimalPolynomial(
+            @NotNull Map<Integer, RationalPolynomial> mpCache,
+            int n
+    ) {
         RationalPolynomial result = mpCache.get(n);
         if (result != null) {
             return result;
@@ -2613,11 +2656,16 @@ public final class Algebraic implements Comparable<Algebraic> {
         } else if (n == 2) {
             result = RationalPolynomial.of(Arrays.asList(Rational.ONE, Rational.ONE));
         } else if (MathUtils.isPrime(n)) {
-            result = cosMPOddPrimeDenominator(n).toRationalPolynomial().makeMonic();
+            result = turnFractionCosineMinimalPolynomialOddPrimeDenominator(n).toRationalPolynomial().makeMonic();
         } else {
             int s = n >> 1;
             RationalPolynomial rhs = RationalPolynomial.product(
-                    toList(map(i -> cosMP(mpCache, i), filter(d -> d != n, MathUtils.factors(n))))
+                    toList(
+                            map(
+                                    i -> turnFractionCosineMinimalPolynomial(mpCache, i),
+                                    filter(d -> d != n, MathUtils.factors(n))
+                            )
+                    )
             ).shiftLeft(s);
             Polynomial lhs;
             if ((n & 1) == 0) {
@@ -2635,15 +2683,38 @@ public final class Algebraic implements Comparable<Algebraic> {
         return result;
     }
 
-    static @NotNull Polynomial cosMP(int n) {
+    /**
+     * Returns the minimal polynomial of cos(2π/n), where n > 0.
+     *
+     * <ul>
+     *  <li>{@code n} must be positive.</li>
+     *  <li>The result is the minimal polynomial of the cosine of a rational multiple of π.</li>
+     * </ul>
+     *
+     * @param n a number
+     * @return the minimal polynomial of cos(2π/n)
+     */
+    static @NotNull Polynomial turnFractionCosineMinimalPolynomial(int n) {
         if ((n & 1) == 1 && MathUtils.isPrime(n)) {
-            return cosMPOddPrimeDenominator(n);
+            return turnFractionCosineMinimalPolynomialOddPrimeDenominator(n);
         } else {
-            return cosMP(new HashMap<>(), n).constantFactor().b;
+            return turnFractionCosineMinimalPolynomial(new HashMap<>(), n).constantFactor().b;
         }
     }
 
-    static @NotNull Algebraic cosHelper(@NotNull Rational turns) {
+    /**
+     * Given an angle represented by a fraction of the unit circle, returns its cosine.
+     *
+     * <ul>
+     *  <li>{@code turns} must be non-negative and less than 1.</li>
+     *  <li>The result is the cosine of a rational multiple of π.</li>
+     * </ul>
+     *
+     * @param turns a fraction of a circle in [0, 1)
+     * @return cos({@code turns}/(2π))
+     */
+    @SuppressWarnings("JavaDoc")
+    static @NotNull Algebraic cosOfTurns(@NotNull Rational turns) {
         if (turns == Rational.ZERO) {
             return ONE;
         }
@@ -2653,7 +2724,7 @@ public final class Algebraic implements Comparable<Algebraic> {
         if (d == 3) return ONE_HALF.negate();
         if (d == 4) return ZERO;
         if (d == 6) return ONE_HALF;
-        Polynomial mp = cosMP(d);
+        Polynomial mp = turnFractionCosineMinimalPolynomial(d);
         int rootIndex = 0;
         if (n << 1 > d) {
             n = d - n;
