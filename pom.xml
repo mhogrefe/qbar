@@ -36,6 +36,8 @@
                         <include>**/QBarRandomProviderProperties.java</include>
                         <include>**/AlgebraicTest.java</include>
                         <include>**/AlgebraicProperties.java</include>
+                        <include>**/AlgebraicAngleTest.java</include>
+                        <include>**/AlgebraicAngleProperties.java</include>
                         <include>**/IntervalTest.java</include>
                         <include>**/IntervalProperties.java</include>
                         <include>**/MatrixTest.java</include>

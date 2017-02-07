@@ -3164,7 +3164,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      *
      * <ul>
      *  <li>{@code s} cannot be null.</li>
-     *  <li>{@code exponentHandler} must terminate on all possible {@code String}s without throwing an exception, and
+     *  <li>{@code polynomialHandler} must terminate on all possible {@code String}s without throwing an exception, and
      *  cannot return nulls.</li>
      *  <li>The result may be any {@code Optional<Algebraic>}.</li>
      * </ul>

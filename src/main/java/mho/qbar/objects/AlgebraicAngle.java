@@ -1,11 +1,15 @@
 package mho.qbar.objects;
 
+import mho.qbar.iterableProviders.QBarExhaustiveProvider;
+import mho.wheels.io.Readers;
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.math.MathUtils;
 import mho.wheels.ordering.Ordering;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
 import java.util.Optional;
+import java.util.function.Function;
 
 import static mho.wheels.testing.Testing.*;
 
@@ -15,52 +19,52 @@ import static mho.wheels.testing.Testing.*;
  * of π, {@code turns} will be present, and equal to a fraction of the unit circle, in [0, 1). {@code cosine}, the
  * angle's cosine, may or may not be present in this case. If the angle is not a rational multiple of π, {@code cosine}
  * must be present (and, of course, {@code turns} will not be). {@code quadrant} is the quadrant of the plane that the
- * angle is in: 1 if it is in [0, π/2), 2 if it is in [π/2, π), 3 if it is in [π, 3π/2], and 4 if it is in [3π/2, 2π).
- * {@code quadrant} is always present, but it essential when the angle is not a rational multiple of π, since in this
- * case {@code cosine} is not sufficient to determine the angle.
+ * angle is in: 1 if it is in [0, π/2), 2 if it is in [π/2, π), 3 if it is in [π, 3π/2), and 4 if it is in [3π/2, 2π).
+ * {@code quadrant} is always present, but it essential when the angle is not a rational multiple of π, {@code cosine}
+ * alone is not sufficient to determine the angle.
  *
  * <p>This class is immutable.</p>
  */
-public class AlgebraicAngle implements Comparable<AlgebraicAngle> {
+public final class AlgebraicAngle implements Comparable<AlgebraicAngle> {
     /**
      * 0
      */
-    private static final @NotNull AlgebraicAngle ZERO = new AlgebraicAngle(Rational.ZERO);
+    public static final @NotNull AlgebraicAngle ZERO = new AlgebraicAngle(Rational.ZERO);
 
     /**
      * π/4
      */
-    private static final @NotNull AlgebraicAngle PI_OVER_FOUR = new AlgebraicAngle(Rational.of(1, 8));
+    public static final @NotNull AlgebraicAngle PI_OVER_FOUR = new AlgebraicAngle(Rational.of(1, 8));
 
     /**
      * π/2
      */
-    private static final @NotNull AlgebraicAngle PI_OVER_TWO = new AlgebraicAngle(Rational.of(1, 4));
+    public static final @NotNull AlgebraicAngle PI_OVER_TWO = new AlgebraicAngle(Rational.of(1, 4));
 
     /**
      * 3π/4
      */
-    private static final @NotNull AlgebraicAngle THREE_PI_OVER_FOUR = new AlgebraicAngle(Rational.of(3, 8));
+    public static final @NotNull AlgebraicAngle THREE_PI_OVER_FOUR = new AlgebraicAngle(Rational.of(3, 8));
 
     /**
      * π
      */
-    private static final @NotNull AlgebraicAngle PI = new AlgebraicAngle(Rational.ONE_HALF);
+    public static final @NotNull AlgebraicAngle PI = new AlgebraicAngle(Rational.ONE_HALF);
 
     /**
      * 5π/4
      */
-    private static final @NotNull AlgebraicAngle FIVE_PI_OVER_FOUR = new AlgebraicAngle(Rational.of(5, 8));
+    public static final @NotNull AlgebraicAngle FIVE_PI_OVER_FOUR = new AlgebraicAngle(Rational.of(5, 8));
 
     /**
      * 3π/2
      */
-    private static final @NotNull AlgebraicAngle THREE_PI_OVER_TWO = new AlgebraicAngle(Rational.of(3, 4));
+    public static final @NotNull AlgebraicAngle THREE_PI_OVER_TWO = new AlgebraicAngle(Rational.of(3, 4));
 
     /**
      * 7π/4
      */
-    private static final @NotNull AlgebraicAngle SEVEN_PI_OVER_FOUR = new AlgebraicAngle(Rational.of(7, 8));
+    public static final @NotNull AlgebraicAngle SEVEN_PI_OVER_FOUR = new AlgebraicAngle(Rational.of(7, 8));
 
     private final @NotNull Optional<Rational> turns;
 
@@ -157,9 +161,10 @@ public class AlgebraicAngle implements Comparable<AlgebraicAngle> {
         if (turns.isPresent()) {
             return Real.of(turns.get().multiply(360));
         } else if (quadrant <= 2) {
-            return cosine.get().realValue().arccosUnsafe().divide(360);
+            return cosine.get().realValue().arccosUnsafe().divideUnsafe(Real.PI).multiply(180);
         } else {
-            return cosine.get().realValue().negate().arccosUnsafe().divide(360).add(Rational.of(180));
+            return cosine.get().realValue().negate().arccosUnsafe().divideUnsafe(Real.PI).multiply(180)
+                    .add(Rational.of(180));
         }
     }
 
@@ -173,7 +178,7 @@ public class AlgebraicAngle implements Comparable<AlgebraicAngle> {
         }
     }
 
-    public @NotNull AlgebraicAngle reflectAcrossOrigin() {
+    public @NotNull AlgebraicAngle addPi() {
         if (turns.isPresent()) {
             AlgebraicAngle reflected = new AlgebraicAngle(turns.get().add(Rational.ONE_HALF).fractionalPart());
             if (cosine.isPresent()) {
@@ -286,6 +291,153 @@ public class AlgebraicAngle implements Comparable<AlgebraicAngle> {
         }
     }
 
+    /**
+     * Creates an {@code AlgebraicAngle} from a {@code String}. Valid input takes the form of a {@code String} that
+     * could have been returned by {@link AlgebraicAngle#toString}. This method also takes {@code algebraicHandler},
+     * which reads an {@code Algebraic} from a {@code String} if the {@code String} is valid.
+     *
+     * <ul>
+     *  <li>{@code s} cannot be null.</li>
+     *  <li>{@code algebraicHandler} must terminate on all possible {@code String}s without throwing an exception, and
+     *  cannot return nulls.</li>
+     *  <li>The result may be any {@code Optional<AlgebraicAngle>}.</li>
+     * </ul>
+     *
+     * @param s a string representation of an {@code AlgebraicAngle}.
+     * @return the wrapped {@code AlgebraicAngle} represented by {@code s}, or {@code empty} if {@code s} is invalid.
+     */
+    private static @NotNull Optional<AlgebraicAngle> genericRead(
+            @NotNull String s,
+            @NotNull Function<String, Optional<Algebraic>> algebraicHandler
+    ) {
+        if (s.equals("0")) {
+            return Optional.of(ZERO);
+        }
+        int piIndex = s.indexOf("pi");
+        if (!s.contains("arccos(")) {
+            if (piIndex == -1) {
+                return Optional.empty();
+            }
+            if (s.length() == 2) {
+                return Optional.of(PI);
+            }
+            int slashIndex = piIndex + 2;
+            if (slashIndex == s.length() || s.charAt(slashIndex) != '/') {
+                return Optional.empty();
+            }
+            Optional<BigInteger> oDenominator = Readers.readBigIntegerStrict(s.substring(slashIndex + 1));
+            if (!oDenominator.isPresent()) {
+                return Optional.empty();
+            }
+            BigInteger denominator = oDenominator.get();
+            if (denominator.signum() != 1) {
+                return Optional.empty();
+            }
+            BigInteger numerator;
+            if (piIndex == 0) {
+                numerator = BigInteger.ONE;
+            } else {
+                if (s.charAt(piIndex - 1) != '*') {
+                    return Optional.empty();
+                }
+                Optional<BigInteger> oNumerator = Readers.readBigIntegerStrict(s.substring(0, piIndex - 1));
+                if (!oNumerator.isPresent()) {
+                    return Optional.empty();
+                }
+                numerator = oNumerator.get();
+                if (numerator.signum() != 1) {
+                    return Optional.empty();
+                }
+            }
+            if (!numerator.gcd(denominator).equals(BigInteger.ONE)) {
+                return Optional.empty();
+            }
+            Rational r = Rational.of(numerator, denominator).shiftRight(1);
+            if (Ordering.ge(r, Rational.ONE)) {
+                return Optional.empty();
+            }
+            return Optional.of(fromTurns(r));
+        } else {
+            if (IterableUtils.last(s) != ')') {
+                return Optional.empty();
+            }
+            boolean greaterThanPi = s.startsWith("pi+");
+            if (greaterThanPi) {
+                s = s.substring(3);
+            }
+            if (!s.startsWith("arccos(")) {
+                return Optional.empty();
+            }
+            Optional<Algebraic> ox = algebraicHandler.apply(s.substring(7, s.length() - 1));
+            if (!ox.isPresent()) {
+                return Optional.empty();
+            }
+            Algebraic x = ox.get();
+            if (Ordering.ge(x.abs(), Algebraic.ONE)) {
+                return Optional.empty();
+            }
+            if (arccosHelper(x).isPresent()) {
+                return Optional.empty();
+            }
+            AlgebraicAngle t = arccos(x);
+            if (greaterThanPi) {
+                t = t.addPi();
+            }
+            return Optional.of(t);
+        }
+    }
+
+    /**
+     * Creates an {@code AlgebraicAngle} from a {@code String}. Valid input takes the form of a {@code String} that
+     * could have been returned by {@link AlgebraicAngle#toString}. Caution: It's easy to run out of time and memory
+     * reading an angle whose cosine has very high degree. If such an input is possible, consider using
+     * {@link AlgebraicAngle#readStrict(int, String)} instead.
+     *
+     * <ul>
+     *  <li>{@code s} cannot be null.</li>
+     *  <li>The result may be any {@code Optional<AlgebraicAngle>}.</li>
+     * </ul>
+     *
+     * @param s a string representation of an {@code AlgebraicAngle}.
+     * @return the wrapped {@code AlgebraicAngle} represented by {@code s}, or {@code empty} if {@code s} is invalid.
+     */
+    public static @NotNull Optional<AlgebraicAngle> readStrict(@NotNull String s) {
+        return genericRead(s, Algebraic::readStrict);
+    }
+
+    /**
+     * Creates an {@code AlgebraicAngle} from a {@code String}. Valid input takes the form of a {@code String} that
+     * could have been returned by {@link AlgebraicAngle#toString}. If the input {@code AlgebraicAngle} is not a
+     * rational multiple of π, its cosine cannot have a degree greater than {@code maxDegree}.
+     *
+     * <ul>
+     *  <li>{@code maxDegree} must be at least 2.</li>
+     *  <li>{@code s} cannot be null.</li>
+     *  <li>The result may be any {@code Optional<AlgbraicAngle>}.</li>
+     * </ul>
+     *
+     * @param maxDegree the largest accepted degree
+     * @param s a string representation of an {@code AlgebraicAngle}.
+     * @return the wrapped {@code Algebraic} (if not a rational multiple of π, with a cosine of degree no greater than
+     * {@code maxDegree}) represented by {@code s}, or {@code empty} if {@code s} is invalid.
+     */
+    public static @NotNull Optional<AlgebraicAngle> readStrict(int maxDegree, @NotNull String s) {
+        if (maxDegree < 2) {
+            throw new IllegalArgumentException("maxDegree must be at least 2. Invalid maxDegree: " + maxDegree);
+        }
+        return genericRead(s, t -> Algebraic.readStrict(maxDegree, t));
+    }
+
+    /**
+     * Creates a {@code String} representation of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code AlgebraicAngle}.</li>
+     *  <li>See tests and demos for example results.</li>
+     * </ul>
+     *
+     * @return a {@code String} representation of {@code this}
+     */
     public @NotNull String toString() {
         if (turns.isPresent()) {
             Rational t = turns.get();
