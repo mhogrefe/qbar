@@ -71,7 +71,7 @@ public class AlgebraicAngleTest {
         cos_helper("10*pi/9", "root 0 of 8*x^3-6*x+1");
         cos_helper("14*pi/9", "root 1 of 8*x^3-6*x+1");
         cos_helper("16*pi/9", "root 2 of 8*x^3-6*x+1");
-        
+
         cos_helper("pi/5", "(1+sqrt(5))/4");
         cos_helper("3*pi/5", "(1-sqrt(5))/4");
         cos_helper("7*pi/5", "(1-sqrt(5))/4");
