@@ -20,8 +20,8 @@ import static mho.wheels.testing.Testing.*;
  * angle's cosine, may or may not be present in this case. If the angle is not a rational multiple of π, {@code cosine}
  * must be present (and, of course, {@code turns} will not be). {@code quadrant} is the quadrant of the plane that the
  * angle is in: 1 if it is in [0, π/2), 2 if it is in [π/2, π), 3 if it is in [π, 3π/2), and 4 if it is in [3π/2, 2π).
- * {@code quadrant} is always present, but it essential when the angle is not a rational multiple of π, {@code cosine}
- * alone is not sufficient to determine the angle.
+ * {@code quadrant} is always present. If the angle is a rational multiple of π, it's redundant, but when the angle is
+ * not a rational multiple of π it is essential since, {@code cosine} alone is not sufficient to determine the angle.
  *
  * <p>This class is immutable.</p>
  */
@@ -273,22 +273,15 @@ public final class AlgebraicAngle implements Comparable<AlgebraicAngle> {
         }
         if (turns.isPresent() && that.turns.isPresent()) {
             return turns.get().compareTo(that.turns.get());
-        } else if (!turns.isPresent() && !that.turns.isPresent()) {
-            int c = cosine.get().compareTo(that.cosine.get());
-            return quadrant <= 2 ? -c : c;
-        } else if (turns.isPresent()) {
-            Real cosThis = cosine.isPresent() ?
+        }
+        Real cosThis = cosine.isPresent() ?
                     cosine.get().realValue() :
                     Real.PI.shiftLeft(1).multiply(turns.get()).cos();
-            int c = cosThis.compareToUnsafe(that.cosine.get().realValue());
-            return quadrant <= 2 ? -c : c;
-        } else {
-            Real cosThat = that.cosine.isPresent() ?
+        Real cosThat = that.cosine.isPresent() ?
                     that.cosine.get().realValue() :
                     Real.PI.shiftLeft(1).multiply(that.turns.get()).cos();
-            int c = cosine.get().realValue().compareToUnsafe(cosThat);
-            return quadrant <= 2 ? -c : c;
-        }
+        int c = cosThis.compareToUnsafe(cosThat);
+        return quadrant <= 2 ? -c : c;
     }
 
     /**

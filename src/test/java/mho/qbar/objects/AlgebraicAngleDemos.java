@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import static mho.qbar.objects.AlgebraicAngle.*;
 import static mho.wheels.iterables.IterableUtils.take;
+import static mho.wheels.ordering.Ordering.compare;
 import static mho.wheels.testing.Testing.MEDIUM_LIMIT;
 import static mho.wheels.testing.Testing.nicePrint;
 
@@ -15,6 +16,31 @@ public class AlgebraicAngleDemos extends QBarDemos {
 
     public AlgebraicAngleDemos(boolean useRandom) {
         super(useRandom);
+    }
+
+    private void demoEquals_AlgebraicAngle() {
+        for (Pair<AlgebraicAngle, AlgebraicAngle> p : take(LIMIT, P.pairs(P.withScale(4).algebraicAngles()))) {
+            System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);
+        }
+    }
+
+    private void demoEquals_null() {
+        for (AlgebraicAngle t : take(MEDIUM_LIMIT, P.withScale(4).algebraicAngles())) {
+            //noinspection ObjectEqualsNull
+            System.out.println(t + (t.equals(null) ? " = " : " ≠ ") + null);
+        }
+    }
+
+    private void demoHashCode() {
+        for (AlgebraicAngle t : take(MEDIUM_LIMIT, P.withScale(4).algebraicAngles())) {
+            System.out.println("hashCode(" + t + ") = " + t.hashCode());
+        }
+    }
+
+    private void demoCompareTo() {
+        for (Pair<AlgebraicAngle, AlgebraicAngle> p : take(LIMIT, P.pairs(P.withScale(4).algebraicAngles()))) {
+            System.out.println(p.a + " " + compare(p.a, p.b) + " " + p.b);
+        }
     }
 
     private void demoReadStrict_String() {

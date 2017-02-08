@@ -1,12 +1,16 @@
 package mho.qbar.objects;
 
+import mho.wheels.io.Readers;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
+import java.util.List;
 import java.util.Optional;
 
 import static mho.qbar.objects.AlgebraicAngle.*;
 import static mho.wheels.testing.Testing.aeq;
+import static mho.wheels.testing.Testing.testCompareToHelper;
+import static mho.wheels.testing.Testing.testEqualsHelper;
 import static org.junit.Assert.fail;
 
 public class AlgebraicAngleTest {
@@ -116,6 +120,47 @@ public class AlgebraicAngleTest {
         cos_helper("pi+arccos(sqrt(5)/3)", "-sqrt(5)/3");
     }
 
+    @Test
+    public void testEquals() {
+        testEqualsHelper(
+                readAlgebraicAngleList("[0, arccos(sqrt(5)/3), arccos(1/3), pi/2, arccos(-1/3), 2*pi/3," +
+                        " arccos(-sqrt(5)/3), pi, pi+arccos(sqrt(5)/3), 4*pi/3, pi+arccos(1/3), 3*pi/2," +
+                        " pi+arccos(-1/3), pi+arccos(-sqrt(5)/3)]"),
+                readAlgebraicAngleList("[0, arccos(sqrt(5)/3), arccos(1/3), pi/2, arccos(-1/3), 2*pi/3," +
+                        " arccos(-sqrt(5)/3), pi, pi+arccos(sqrt(5)/3), 4*pi/3, pi+arccos(1/3), 3*pi/2," +
+                        " pi+arccos(-1/3), pi+arccos(-sqrt(5)/3)]")
+        );
+    }
+
+    private static void hashCode_helper(@NotNull String input, int hashCode) {
+        aeq(readStrict(input).get().hashCode(), hashCode);
+    }
+
+    @Test
+    public void testHashCode() {
+        hashCode_helper("0", 32);
+        hashCode_helper("pi", 64);
+        hashCode_helper("pi/2", 66);
+        hashCode_helper("3*pi/2", 128);
+        hashCode_helper("2*pi/3", 65);
+        hashCode_helper("4*pi/3", 96);
+        hashCode_helper("arccos(1/3)", 96);
+        hashCode_helper("arccos(-1/3)", 65);
+        hashCode_helper("pi+arccos(-1/3)", 189);
+        hashCode_helper("pi+arccos(1/3)", 96);
+        hashCode_helper("arccos(sqrt(5)/3)", 25057);
+        hashCode_helper("arccos(-sqrt(5)/3)", 25057);
+        hashCode_helper("pi+arccos(-sqrt(5)/3)", 25150);
+        hashCode_helper("pi+arccos(sqrt(5)/3)", 25088);
+    }
+
+    @Test
+    public void testCompareTo() {
+        testCompareToHelper(readAlgebraicAngleList(
+                "[0, arccos(sqrt(5)/3), arccos(1/3), pi/2, arccos(-1/3), 2*pi/3, arccos(-sqrt(5)/3), pi," +
+                " pi+arccos(sqrt(5)/3), 4*pi/3, pi+arccos(1/3), 3*pi/2, pi+arccos(-1/3), pi+arccos(-sqrt(5)/3)]"));
+    }
+
     private static void readStrict_String_helper(@NotNull String input, @NotNull String output) {
         Optional<AlgebraicAngle> ot = readStrict(input);
         ot.ifPresent(AlgebraicAngle::validate);
@@ -141,8 +186,8 @@ public class AlgebraicAngleTest {
         readStrict_String_helper("pi+arccos(sqrt(5)/3)", "Optional[pi+arccos(sqrt(5)/3)]");
         readStrict_String_helper("arccos(root 0 of 32*x^5-2*x-1)", "Optional[arccos(root 0 of 32*x^5-2*x-1)]");
         readStrict_String_helper("arccos(root 0 of 32*x^5-2*x+1)", "Optional[arccos(root 0 of 32*x^5-2*x+1)]");
-        readStrict_String_helper("pi+arccos(root 0 of 32*x^5-2*x+1)", "Optional[arccos(root 0 of 32*x^5-2*x+1)]");
-        readStrict_String_helper("pi+arccos(root 0 of 32*x^5-2*x-1)", "Optional[arccos(root 0 of 32*x^5-2*x-1)]");
+        readStrict_String_helper("pi+arccos(root 0 of 32*x^5-2*x+1)", "Optional[pi+arccos(root 0 of 32*x^5-2*x+1)]");
+        readStrict_String_helper("pi+arccos(root 0 of 32*x^5-2*x-1)", "Optional[pi+arccos(root 0 of 32*x^5-2*x-1)]");
 
         readStrict_String_helper("", "Optional.empty");
         readStrict_String_helper(" ", "Optional.empty");
@@ -293,5 +338,9 @@ public class AlgebraicAngleTest {
         readStrict_int_String_fail_helper(1, "pi");
         readStrict_int_String_fail_helper(0, "pi");
         readStrict_int_String_fail_helper(-1, "pi");
+    }
+
+    private static @NotNull List<AlgebraicAngle> readAlgebraicAngleList(@NotNull String s) {
+        return Readers.readListStrict(AlgebraicAngle::readStrict).apply(s).get();
     }
 }
