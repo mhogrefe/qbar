@@ -5,6 +5,7 @@ import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import static mho.qbar.objects.AlgebraicAngle.*;
+import static mho.wheels.iterables.IterableUtils.filterInfinite;
 import static mho.wheels.iterables.IterableUtils.take;
 import static mho.wheels.ordering.Ordering.compare;
 import static mho.wheels.testing.Testing.MEDIUM_LIMIT;
@@ -16,6 +17,31 @@ public class AlgebraicAngleDemos extends QBarDemos {
 
     public AlgebraicAngleDemos(boolean useRandom) {
         super(useRandom);
+    }
+
+    private void demoFromTurns() {
+        for (Rational r : take(LIMIT, filterInfinite(x -> x != Rational.ONE, P.range(Rational.ZERO, Rational.ONE)))) {
+            System.out.println("fromTurns(" + r + ") = " + fromTurns(r));
+        }
+    }
+
+    private void demoFromDegrees() {
+        Rational limit = Rational.of(360);
+        for (Rational r : take(LIMIT, filterInfinite(x -> !x.equals(limit), P.range(Rational.ZERO, limit)))) {
+            System.out.println("fromDegrees(" + r + ") = " + fromDegrees(r));
+        }
+    }
+
+    private void demoIsRationalMultipleOfPi() {
+        for (AlgebraicAngle t : take(MEDIUM_LIMIT, P.withScale(4).algebraicAngles())) {
+            System.out.println(t + " is " + (t.isRationalMultipleOfPi() ? "" : "not ") + "a rational multiple of pi");
+        }
+    }
+
+    private void demoRationalTurns() {
+        for (AlgebraicAngle t : take(MEDIUM_LIMIT, P.withScale(4).algebraicAngles())) {
+            System.out.println("rationalTurns(" + t + ") = " + t.rationalTurns());
+        }
     }
 
     private void demoEquals_AlgebraicAngle() {

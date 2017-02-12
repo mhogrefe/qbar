@@ -31,6 +31,109 @@ public class AlgebraicAngleTest {
         constant_helper(SEVEN_PI_OVER_FOUR, "7*pi/4");
     }
 
+    private static void fromTurns_helper(@NotNull String input, @NotNull String output) {
+        AlgebraicAngle t = fromTurns(Rational.readStrict(input).get());
+        t.validate();
+        aeq(t, output);
+    }
+
+    private static void fromTurns_fail_helper(@NotNull String input) {
+        try {
+            fromTurns(Rational.readStrict(input).get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testFromTurns() {
+        fromTurns_helper("0", "0");
+        fromTurns_helper("1/2", "pi");
+        fromTurns_helper("1/3", "2*pi/3");
+        fromTurns_helper("2/3", "4*pi/3");
+        fromTurns_helper("1/4", "pi/2");
+        fromTurns_helper("3/4", "3*pi/2");
+        fromTurns_helper("1/100", "pi/50");
+        fromTurns_helper("10/33", "20*pi/33");
+
+        fromTurns_fail_helper("1");
+        fromTurns_fail_helper("2");
+        fromTurns_fail_helper("-1");
+    }
+
+    private static void fromDegrees_helper(@NotNull String input, @NotNull String output) {
+        AlgebraicAngle t = fromDegrees(Rational.readStrict(input).get());
+        t.validate();
+        aeq(t, output);
+    }
+
+    private static void fromDegrees_fail_helper(@NotNull String input) {
+        try {
+            fromDegrees(Rational.readStrict(input).get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testFromDegrees() {
+        fromDegrees_helper("0", "0");
+        fromDegrees_helper("180", "pi");
+        fromDegrees_helper("120", "2*pi/3");
+        fromDegrees_helper("240", "4*pi/3");
+        fromDegrees_helper("90", "pi/2");
+        fromDegrees_helper("270", "3*pi/2");
+        fromDegrees_helper("1", "pi/180");
+        fromDegrees_helper("359", "359*pi/180");
+        fromDegrees_helper("1/3", "pi/540");
+
+        fromDegrees_fail_helper("360");
+        fromDegrees_fail_helper("720");
+        fromDegrees_fail_helper("-1");
+    }
+
+    private static void isRationalMultipleOfPi_helper(@NotNull String input, boolean output) {
+        aeq(AlgebraicAngle.readStrict(input).get().isRationalMultipleOfPi(), output);
+    }
+
+    @Test
+    public void testIsRationalMultipleOfPi() {
+        isRationalMultipleOfPi_helper("0", true);
+        isRationalMultipleOfPi_helper("pi", true);
+        isRationalMultipleOfPi_helper("pi/2", true);
+        isRationalMultipleOfPi_helper("3*pi/2", true);
+        isRationalMultipleOfPi_helper("2*pi/3", true);
+        isRationalMultipleOfPi_helper("4*pi/3", true);
+        isRationalMultipleOfPi_helper("arccos(1/3)", false);
+        isRationalMultipleOfPi_helper("arccos(-1/3)", false);
+        isRationalMultipleOfPi_helper("pi+arccos(-1/3)", false);
+        isRationalMultipleOfPi_helper("pi+arccos(1/3)", false);
+        isRationalMultipleOfPi_helper("arccos(sqrt(5)/3)", false);
+        isRationalMultipleOfPi_helper("arccos(-sqrt(5)/3)", false);
+        isRationalMultipleOfPi_helper("pi+arccos(-sqrt(5)/3)", false);
+        isRationalMultipleOfPi_helper("pi+arccos(sqrt(5)/3)", false);
+    }
+
+    private static void rationalTurns_helper(@NotNull String input, @NotNull String output) {
+        aeq(readStrict(input).get().rationalTurns(), output);
+    }
+
+    @Test
+    public void testRationalTurns() {
+        rationalTurns_helper("0", "Optional[0]");
+        rationalTurns_helper("pi", "Optional[1/2]");
+        rationalTurns_helper("pi/2", "Optional[1/4]");
+        rationalTurns_helper("3*pi/2", "Optional[3/4]");
+        rationalTurns_helper("2*pi/3", "Optional[1/3]");
+        rationalTurns_helper("4*pi/3", "Optional[2/3]");
+        rationalTurns_helper("arccos(1/3)", "Optional.empty");
+        rationalTurns_helper("arccos(-1/3)", "Optional.empty");
+        rationalTurns_helper("pi+arccos(-1/3)", "Optional.empty");
+        rationalTurns_helper("pi+arccos(1/3)", "Optional.empty");
+        rationalTurns_helper("arccos(sqrt(5)/3)", "Optional.empty");
+        rationalTurns_helper("arccos(-sqrt(5)/3)", "Optional.empty");
+        rationalTurns_helper("pi+arccos(-sqrt(5)/3)", "Optional.empty");
+        rationalTurns_helper("pi+arccos(sqrt(5)/3)", "Optional.empty");
+    }
+
     private static void cos_helper(@NotNull String input, @NotNull String output) {
         AlgebraicAngle t = readStrict(input).get();
         t.validate();

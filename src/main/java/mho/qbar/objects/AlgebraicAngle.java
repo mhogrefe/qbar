@@ -1,6 +1,5 @@
 package mho.qbar.objects;
 
-import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.wheels.io.Readers;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.math.MathUtils;
@@ -66,25 +65,77 @@ public final class AlgebraicAngle implements Comparable<AlgebraicAngle> {
      */
     public static final @NotNull AlgebraicAngle SEVEN_PI_OVER_FOUR = new AlgebraicAngle(Rational.of(7, 8));
 
+    /**
+     * The fraction of a unit circle that {@code this} is. If {@code this} is not a rational multiple of π,
+     * {@code turns} is empty.
+     */
     private final @NotNull Optional<Rational> turns;
 
+    /**
+     * The cosine of {@code this}. Must be present if {@code turns} is empty; otherwise, it's optional.
+     */
     private @NotNull Optional<Algebraic> cosine;
 
+    /**
+     * The quadrant of the x-y plane that {@code this} lies in:
+     * <ul>
+     *  <li>1 if 0≤{@code this}<π/2</li>
+     *  <li>2 if π/2≤{@code this}<π</li>
+     *  <li>3 if π≤{@code this}<3π/2</li>
+     *  <li>4 if 3π/2≤{@code this}<2π</li>
+     * </ul>
+     */
     private final int quadrant;
 
+    /**
+     * Constructs an {@code AlgebraicAngle} from a fraction of the unit circle.
+     *
+     * <ul>
+     *  <li>{@code turns} cannot be negative and must be less than 1.</li>
+     *  <li>Any rational multiple of π may be constructed with this constructor.</li>
+     * </ul>
+     *
+     * @param turns a fraction of the unit circle
+     */
     private AlgebraicAngle(@NotNull Rational turns) {
         this.turns = Optional.of(turns);
         this.cosine = Optional.empty();
         quadrant = turns.shiftLeft(2).floor().intValueExact() + 1;
     }
 
+    /**
+     * Constructs an angle that is not a rational multiple of π from its cosine and quadrant.
+     *
+     * <ul>
+     *  <li>{@code cosine} must be strictly between –1 and 1, and cannot be the cosine of a rational multiple of
+     *  π.</li>
+     *  <li>{@code quadrant} must be 1, 2, 3, or 4.</li>
+     *  <li>Any angle that is not a rational multiple of π may be constructed with this constructor.</li>
+     * </ul>
+     *
+     * @param cosine the cosine of the constructed angle
+     * @param quadrant the quadrant that the constructed angle lies in
+     */
     private AlgebraicAngle(@NotNull Algebraic cosine, int quadrant) {
         this.turns = Optional.empty();
         this.cosine = Optional.of(cosine);
         this.quadrant = quadrant;
     }
 
-    private static @NotNull Optional<Rational> arccosHelper(@NotNull Algebraic x) {
+    /**
+     * Returns the fraction of the unit circle associated with an angle whose cosine is a given number. If the angle is
+     * not a rational multiple of π, an empty result is returned. As with the standard arccos function, the result is
+     * in the first or second quadrant.
+     *
+     * <ul>
+     *  <li>{@code x} must be between –1 and 1, inclusive.</li>
+     *  <li>The result is empty, or greater than or equal to 0 and less than or equal to 1/2.</li>
+     * </ul>
+     *
+     * @param x the cosine of an angle
+     * @return the fraction of a unit circle corresponding to an angle with cosine {@code x}
+     */
+    private static @NotNull Optional<Rational> rationalArccos(@NotNull Algebraic x) {
         if (x == Algebraic.ZERO) {
             return Optional.of(Rational.of(1, 4));
         }
@@ -114,24 +165,67 @@ public final class AlgebraicAngle implements Comparable<AlgebraicAngle> {
         return Optional.empty();
     }
 
+    /**
+     * Creates an angle from a number of turns (fraction of the unit circle).
+     *
+     * <ul>
+     *  <li>{@code turns} must be greater than or equal to 0 and less than 1.</li>
+     *  <li>The result is a rational multiple of π.</li>
+     * </ul>
+     *
+     * @param turns a fraction of the unit circle
+     * @return the angle corresponding to {@code turns}
+     */
     public static @NotNull AlgebraicAngle fromTurns(@NotNull Rational turns) {
         if (turns.signum() == -1) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("turns cannot be negative. Invalid turns: " + turns);
         }
         if (Ordering.ge(turns, Rational.ONE)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("turns must be less than 1. Invalid turns: " + turns);
         }
         return new AlgebraicAngle(turns);
     }
 
+    /**
+     * Creates an angle from a number of degrees
+     *
+     * <ul>
+     *  <li>{@code turns} must be greater than or equal to 0 and less than 360.</li>
+     *  <li>The result is a rational multiple of π.</li>
+     * </ul>
+     *
+     * @param degrees some number of degrees
+     * @return the angle with the specified number of degrees
+     */
     public static @NotNull AlgebraicAngle fromDegrees(@NotNull Rational degrees) {
         return fromTurns(degrees.divide(360));
     }
 
+    /**
+     * Determines whether {@code this} is a rational multiple of π.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code AlgebraicAngle}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is a rational multiple of π
+     */
     public boolean isRationalMultipleOfPi() {
         return turns.isPresent();
     }
 
+    /**
+     * If {@code this} is a rational multiple of π, returns the fraction of the unit circle represented by
+     * {@code this}. Otherwise, returns empty.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code AlgebraicAngle}.</li>
+     *  <li>The result is empty or non-negative and less than 1.</li>
+     * </ul>
+     *
+     * @return the fraction of the unit circle represented by {@code this} if {@code this} is a rational multiple of π
+     */
     public @NotNull Optional<Rational> rationalTurns() {
         return turns;
     }
@@ -200,7 +294,7 @@ public final class AlgebraicAngle implements Comparable<AlgebraicAngle> {
     }
 
     public static @NotNull AlgebraicAngle arccos(@NotNull Algebraic x) {
-        Optional<Rational> ot = arccosHelper(x);
+        Optional<Rational> ot = rationalArccos(x);
         if (ot.isPresent()) {
             return new AlgebraicAngle(ot.get());
         } else {
@@ -369,7 +463,7 @@ public final class AlgebraicAngle implements Comparable<AlgebraicAngle> {
             if (Ordering.ge(x.abs(), Algebraic.ONE)) {
                 return Optional.empty();
             }
-            if (arccosHelper(x).isPresent()) {
+            if (rationalArccos(x).isPresent()) {
                 return Optional.empty();
             }
             AlgebraicAngle t = arccos(x);
@@ -477,7 +571,7 @@ public final class AlgebraicAngle implements Comparable<AlgebraicAngle> {
                     x.signum() == 1 && (quadrant == 1 || quadrant == 4) ||
                             x.signum() == -1 && (quadrant == 2 || quadrant == 3)
             );
-            assertFalse(this, arccosHelper(x).isPresent());
+            assertFalse(this, rationalArccos(x).isPresent());
         }
     }
 }
