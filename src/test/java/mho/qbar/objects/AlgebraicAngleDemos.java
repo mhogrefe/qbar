@@ -44,6 +44,30 @@ public class AlgebraicAngleDemos extends QBarDemos {
         }
     }
 
+    private void demoGetQuadrant() {
+        for (AlgebraicAngle t : take(MEDIUM_LIMIT, P.withScale(4).algebraicAngles())) {
+            System.out.println("getQuadrant(" + t + ") = " + t.getQuadrant());
+        }
+    }
+
+    private void demoRealTurns() {
+        for (AlgebraicAngle t : take(MEDIUM_LIMIT, P.withScale(4).algebraicAngles())) {
+            System.out.println("realTurns(" + t + ") = " + t.realTurns());
+        }
+    }
+
+    private void demoRadians() {
+        for (AlgebraicAngle t : take(MEDIUM_LIMIT, P.withScale(4).algebraicAngles())) {
+            System.out.println("radians(" + t + ") = " + t.radians());
+        }
+    }
+
+    private void demoDegrees() {
+        for (AlgebraicAngle t : take(MEDIUM_LIMIT, P.withScale(4).algebraicAngles())) {
+            System.out.println("degrees(" + t + ") = " + t.degrees());
+        }
+    }
+
     private void demoEquals_AlgebraicAngle() {
         for (Pair<AlgebraicAngle, AlgebraicAngle> p : take(LIMIT, P.pairs(P.withScale(4).algebraicAngles()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);

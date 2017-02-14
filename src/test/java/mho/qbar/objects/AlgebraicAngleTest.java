@@ -134,6 +134,96 @@ public class AlgebraicAngleTest {
         rationalTurns_helper("pi+arccos(sqrt(5)/3)", "Optional.empty");
     }
 
+    private static void getQuadrant_helper(@NotNull String input, int output) {
+        aeq(readStrict(input).get().getQuadrant(), output);
+    }
+
+    @Test
+    public void testGetQuadrant() {
+        getQuadrant_helper("0", 1);
+        getQuadrant_helper("pi", 3);
+        getQuadrant_helper("pi/2", 2);
+        getQuadrant_helper("3*pi/2", 4);
+        getQuadrant_helper("2*pi/3", 2);
+        getQuadrant_helper("4*pi/3", 3);
+        getQuadrant_helper("arccos(1/3)", 1);
+        getQuadrant_helper("arccos(-1/3)", 2);
+        getQuadrant_helper("pi+arccos(-1/3)", 4);
+        getQuadrant_helper("pi+arccos(1/3)", 3);
+        getQuadrant_helper("arccos(sqrt(5)/3)", 1);
+        getQuadrant_helper("arccos(-sqrt(5)/3)", 2);
+        getQuadrant_helper("pi+arccos(-sqrt(5)/3)", 4);
+        getQuadrant_helper("pi+arccos(sqrt(5)/3)", 3);
+    }
+
+    private static void realTurns_helper(@NotNull String input, @NotNull String output) {
+        aeq(readStrict(input).get().realTurns(), output);
+    }
+
+    @Test
+    public void testRealTurns() {
+        realTurns_helper("0", "0");
+        realTurns_helper("pi", "0.5");
+        realTurns_helper("pi/2", "0.25");
+        realTurns_helper("3*pi/2", "0.75");
+        realTurns_helper("2*pi/3", "0.33333333333333333333...");
+        realTurns_helper("4*pi/3", "0.66666666666666666666...");
+        realTurns_helper("arccos(1/3)", "0.19591327601530363508...");
+        realTurns_helper("arccos(-1/3)", "0.30408672398469636491...");
+        realTurns_helper("pi+arccos(-1/3)", "0.80408672398469636491...");
+        realTurns_helper("pi+arccos(1/3)", "0.69591327601530363508...");
+        realTurns_helper("arccos(sqrt(5)/3)", "0.11613976359938499462...");
+        realTurns_helper("arccos(-sqrt(5)/3)", "0.38386023640061500537...");
+        realTurns_helper("pi+arccos(-sqrt(5)/3)", "0.88386023640061500537...");
+        realTurns_helper("pi+arccos(sqrt(5)/3)", "0.61613976359938499462...");
+    }
+
+    private static void radians_helper(@NotNull String input, @NotNull String output) {
+        aeq(readStrict(input).get().radians(), output);
+    }
+
+    @Test
+    public void testRadians() {
+        radians_helper("0", "0");
+        radians_helper("pi", "3.14159265358979323846...");
+        radians_helper("pi/2", "1.57079632679489661923...");
+        radians_helper("3*pi/2", "4.71238898038468985769...");
+        radians_helper("2*pi/3", "2.09439510239319549230...");
+        radians_helper("4*pi/3", "4.18879020478639098461...");
+        radians_helper("arccos(1/3)", "1.23095941734077468213...");
+        radians_helper("arccos(-1/3)", "1.91063323624901855632...");
+        radians_helper("pi+arccos(-1/3)", "5.05222588983881179479...");
+        radians_helper("pi+arccos(1/3)", "4.37255207093056792059...");
+        radians_helper("arccos(sqrt(5)/3)", "0.72972765622696636345...");
+        radians_helper("arccos(-sqrt(5)/3)", "2.41186499736282687500...");
+        radians_helper("pi+arccos(-sqrt(5)/3)", "5.55345765095262011347...");
+        radians_helper("pi+arccos(sqrt(5)/3)", "3.87132030981675960191...");
+    }
+
+    private static void degrees_helper(@NotNull String input, @NotNull String output) {
+        aeq(readStrict(input).get().degrees(), output);
+    }
+
+    @Test
+    public void testDegrees() {
+        degrees_helper("0", "0");
+        degrees_helper("pi", "180");
+        degrees_helper("pi/2", "90");
+        degrees_helper("3*pi/2", "270");
+        degrees_helper("2*pi/3", "120");
+        degrees_helper("4*pi/3", "240");
+        degrees_helper("pi/180", "1");
+        degrees_helper("359*pi/180", "359");
+        degrees_helper("arccos(1/3)", "70.52877936550930863075...");
+        degrees_helper("arccos(-1/3)", "109.47122063449069136924...");
+        degrees_helper("pi+arccos(-1/3)", "289.47122063449069136924...");
+        degrees_helper("pi+arccos(1/3)", "250.52877936550930863075...");
+        degrees_helper("arccos(sqrt(5)/3)", "41.81031489577859806585...");
+        degrees_helper("arccos(-sqrt(5)/3)", "138.18968510422140193414...");
+        degrees_helper("pi+arccos(-sqrt(5)/3)", "318.18968510422140193414...");
+        degrees_helper("pi+arccos(sqrt(5)/3)", "221.81031489577859806585...");
+    }
+
     private static void cos_helper(@NotNull String input, @NotNull String output) {
         AlgebraicAngle t = readStrict(input).get();
         t.validate();

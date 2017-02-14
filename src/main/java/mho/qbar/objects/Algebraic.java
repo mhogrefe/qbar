@@ -2614,7 +2614,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      * @return the minimal polynomial of cos(2π/p)
      */
     private static @NotNull Polynomial turnFractionCosineMinimalPolynomialOddPrimeDenominator(int p) {
-        int s = (p - 1) / 2;
+        int s = (p - 1) >> 1;
         List<BigInteger> coefficients = toList(replicate(s + 1, BigInteger.ZERO));
         boolean sign = false;
         int exp = s + 1;

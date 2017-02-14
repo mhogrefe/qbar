@@ -230,6 +230,36 @@ public final class AlgebraicAngle implements Comparable<AlgebraicAngle> {
         return turns;
     }
 
+    /**
+     * Returns the quadrant that this lies in:
+     * <ul>
+     *  <li>1 if 0≤{@code this}<π/2</li>
+     *  <li>2 if π/2≤{@code this}<π</li>
+     *  <li>3 if π≤{@code this}<3π/2</li>
+     *  <li>4 if 3π/2≤{@code this}<2π</li>
+     * </ul>
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code AlgebraicAngle}.</li>
+     *  <li>The result is 1, 2, 3, or 4.</li>
+     * </ul>
+     *
+     * @return the quadrant of {@code this}
+     */
+    public int getQuadrant() {
+        return quadrant;
+    }
+
+    /**
+     * Returns the fraction of the unit circle represented by {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code AlgebraicAngle}.</li>
+     *  <li>The result is clean. It is non-negative and less than 1.</li>
+     * </ul>
+     *
+     * @return the number of turns that this angle makes
+     */
     public @NotNull Real realTurns() {
         if (turns.isPresent()) {
             return Real.of(turns.get());
@@ -241,6 +271,16 @@ public final class AlgebraicAngle implements Comparable<AlgebraicAngle> {
         }
     }
 
+    /**
+     * Returns {@code this} expressed in radians.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code AlgebraicAngle}.</li>
+     *  <li>The result is clean. It is non-negative and less than 2π.</li>
+     * </ul>
+     *
+     * @return {@code this} in radians
+     */
     public @NotNull Real radians() {
         if (turns.isPresent()) {
             return Real.PI.shiftLeft(1).multiply(turns.get());
@@ -251,6 +291,16 @@ public final class AlgebraicAngle implements Comparable<AlgebraicAngle> {
         }
     }
 
+    /**
+     * Returns {@code this} expressed in degrees.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code AlgebraicAngle}.</li>
+     *  <li>The result is clean. It is non-negative and less than 360.</li>
+     * </ul>
+     *
+     * @return {@code this} in degrees
+     */
     public @NotNull Real degrees() {
         if (turns.isPresent()) {
             return Real.of(turns.get().multiply(360));

@@ -9,8 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
-import static mho.qbar.objects.AlgebraicAngle.fromDegrees;
-import static mho.qbar.objects.AlgebraicAngle.fromTurns;
+import static mho.qbar.objects.AlgebraicAngle.*;
 import static mho.wheels.iterables.IterableUtils.filterInfinite;
 import static mho.wheels.iterables.IterableUtils.take;
 import static mho.wheels.testing.Testing.*;
@@ -28,6 +27,10 @@ public class AlgebraicAngleProperties  extends QBarTestProperties {
         propertiesFromDegrees();
         propertiesIsRationalMultipleOfPi();
         propertiesRationalTurns();
+        propertiesGetQuadrant();
+        propertiesRealTurns();
+        propertiesRadians();
+        propertiesDegrees();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -97,6 +100,71 @@ public class AlgebraicAngleProperties  extends QBarTestProperties {
                 Rational r = or.get();
                 assertTrue(t, r.signum() != -1 && Ordering.lt(r, Rational.ONE));
             }
+        }
+    }
+
+    private void propertiesGetQuadrant() {
+        initialize("getQuadrant()");
+        for (AlgebraicAngle t : take(MEDIUM_LIMIT, P.withScale(4).algebraicAngles())) {
+            int q = t.getQuadrant();
+            assertTrue(t, q >= 1 && q <= 4);
+            AlgebraicAngle lower;
+            AlgebraicAngle upper;
+            switch (q) {
+                case 1:
+                    lower = ZERO;
+                    upper = PI_OVER_TWO;
+                    break;
+                case 2:
+                    lower = PI_OVER_TWO;
+                    upper = PI;
+                    break;
+                case 3:
+                    lower = PI;
+                    upper = THREE_PI_OVER_TWO;
+                    break;
+                case 4:
+                    lower = THREE_PI_OVER_TWO;
+                    upper = null;
+                    break;
+                default:
+                    throw new IllegalStateException("unreachable");
+            }
+            assertTrue(t, Ordering.ge(t, lower));
+            if (upper != null) {
+                assertTrue(t, Ordering.lt(t, upper));
+            }
+        }
+    }
+
+    private void propertiesRealTurns() {
+        initialize("realTurns()");
+        for (AlgebraicAngle t : take(SMALL_LIMIT, P.withScale(4).algebraicAngles())) {
+            Real r = t.realTurns();
+            assertTrue(t, r.signumUnsafe() != -1);
+            assertTrue(t, r.ltUnsafe(Rational.ONE));
+        }
+    }
+
+    private void propertiesRadians() {
+        initialize("radians()");
+        Real limit = Real.PI.shiftLeft(1);
+        for (AlgebraicAngle t : take(SMALL_LIMIT, P.withScale(4).algebraicAngles())) {
+            Real r = t.radians();
+            assertTrue(t, r.signumUnsafe() != -1);
+            assertTrue(t, r.ltUnsafe(limit));
+            assertTrue(t, r.eq(t.realTurns().multiply(Real.PI.shiftLeft(1)), Real.DEFAULT_RESOLUTION).orElse(true));
+        }
+    }
+
+    private void propertiesDegrees() {
+        initialize("degrees()");
+        Rational limit = Rational.of(360);
+        for (AlgebraicAngle t : take(SMALL_LIMIT, P.withScale(4).algebraicAngles())) {
+            Real r = t.radians();
+            assertTrue(t, r.signumUnsafe() != -1);
+            assertTrue(t, r.ltUnsafe(limit));
+            assertTrue(t, r.eq(t.realTurns().multiply(Real.PI.shiftLeft(1)), Real.DEFAULT_RESOLUTION).orElse(true));
         }
     }
 
