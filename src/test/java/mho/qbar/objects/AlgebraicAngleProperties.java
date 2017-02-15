@@ -31,6 +31,9 @@ public class AlgebraicAngleProperties  extends QBarTestProperties {
         propertiesRealTurns();
         propertiesRadians();
         propertiesDegrees();
+        propertiesNegate();
+        propertiesSupplement();
+        propertiesAddPi();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -168,6 +171,36 @@ public class AlgebraicAngleProperties  extends QBarTestProperties {
         }
     }
 
+    private void propertiesNegate() {
+        initialize("negate()");
+        for (AlgebraicAngle t : take(MEDIUM_LIMIT, P.withScale(4).algebraicAngles())) {
+            AlgebraicAngle u = t.negate();
+            u.validate();
+            involution(AlgebraicAngle::negate, t);
+            assertEquals(u, t.supplement().addPi(), u);
+        }
+    }
+
+    private void propertiesSupplement() {
+        initialize("supplement()");
+        for (AlgebraicAngle t : take(MEDIUM_LIMIT, P.withScale(4).algebraicAngles())) {
+            AlgebraicAngle u = t.supplement();
+            u.validate();
+            involution(AlgebraicAngle::supplement, t);
+            assertEquals(u, t.addPi().negate(), u);
+        }
+    }
+
+    private void propertiesAddPi() {
+        initialize("addPi()");
+        for (AlgebraicAngle t : take(MEDIUM_LIMIT, P.withScale(4).algebraicAngles())) {
+            AlgebraicAngle u = t.addPi();
+            u.validate();
+            involution(AlgebraicAngle::addPi, t);
+            assertEquals(u, t.negate().supplement(), u);
+        }
+    }
+
     private void propertiesEquals() {
         initialize("equals(Object)");
         QBarTesting.propertiesEqualsHelper(MEDIUM_LIMIT, P, QBarIterableProvider::algebraicAngles);
@@ -182,7 +215,7 @@ public class AlgebraicAngleProperties  extends QBarTestProperties {
         initialize("compareTo(AlgebraicAngle)");
         QBarTesting.propertiesCompareToHelper(MEDIUM_LIMIT, P, QBarIterableProvider::algebraicAngles);
         Iterable<Pair<AlgebraicAngle, AlgebraicAngle>> ps = P.subsetPairs(P.withScale(4).algebraicAngles());
-        for (Pair<AlgebraicAngle, AlgebraicAngle> p : take(MEDIUM_LIMIT, ps)) {
+        for (Pair<AlgebraicAngle, AlgebraicAngle> p : take(SMALL_LIMIT, ps)) {
             assertEquals(p, p.a.compareTo(p.b), p.a.radians().compareToUnsafe(p.b.radians()));
         }
     }

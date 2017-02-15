@@ -312,6 +312,16 @@ public final class AlgebraicAngle implements Comparable<AlgebraicAngle> {
         }
     }
 
+    /**
+     * Returns the negation of {@code this} mod 2π, or its reflection in the x-axis.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code AlgebraicAngle}.</li>
+     *  <li>The result may be any {@code AlgebraicAngle}.</li>
+     * </ul>
+     *
+     * @return –{@code this}
+     */
     public @NotNull AlgebraicAngle negate() {
         if (turns.isPresent()) {
             AlgebraicAngle negative = new AlgebraicAngle(turns.get().negate().fractionalPart());
@@ -322,17 +332,51 @@ public final class AlgebraicAngle implements Comparable<AlgebraicAngle> {
         }
     }
 
+    /**
+     * Returns the supplement of {@code this} mod 2π, or its reflection in the y-axis.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code AlgebraicAngle}.</li>
+     *  <li>The result may be any {@code AlgebraicAngle}.</li>
+     * </ul>
+     *
+     * @return π–{@code this}
+     */
+    public @NotNull AlgebraicAngle supplement() {
+        if (turns.isPresent()) {
+            AlgebraicAngle supplement = new AlgebraicAngle(Rational.ONE_HALF.subtract(turns.get()).fractionalPart());
+            if (cosine.isPresent()) {
+                supplement.cosine = cosine.map(Algebraic::negate);
+            }
+            return supplement;
+        } else {
+            int supplementQuadrant = 3 - quadrant;
+            if (supplementQuadrant <= 0) supplementQuadrant += 4;
+            return new AlgebraicAngle(cosine.get().negate(), supplementQuadrant);
+        }
+    }
+
+    /**
+     * Returns ({@code this}+π) mod 2π, or its reflection in the origin.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code AlgebraicAngle}.</li>
+     *  <li>The result may be any {@code AlgebraicAngle}.</li>
+     * </ul>
+     *
+     * @return {@code this}+π
+     */
     public @NotNull AlgebraicAngle addPi() {
         if (turns.isPresent()) {
-            AlgebraicAngle reflected = new AlgebraicAngle(turns.get().add(Rational.ONE_HALF).fractionalPart());
+            AlgebraicAngle sum = new AlgebraicAngle(turns.get().add(Rational.ONE_HALF).fractionalPart());
             if (cosine.isPresent()) {
-                reflected.cosine = cosine.map(Algebraic::negate);
+                sum.cosine = cosine.map(Algebraic::negate);
             }
-            return reflected;
+            return sum;
         } else {
-            int reflectedQuadrant = quadrant + 2;
-            if (reflectedQuadrant > 4) reflectedQuadrant -= 4;
-            return new AlgebraicAngle(cosine.get().negate(), reflectedQuadrant);
+            int sumQuadrant = quadrant + 2;
+            if (sumQuadrant > 4) sumQuadrant -= 4;
+            return new AlgebraicAngle(cosine.get().negate(), sumQuadrant);
         }
     }
 

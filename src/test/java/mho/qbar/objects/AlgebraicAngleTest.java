@@ -224,6 +224,84 @@ public class AlgebraicAngleTest {
         degrees_helper("pi+arccos(sqrt(5)/3)", "221.81031489577859806585...");
     }
 
+    private static void negate_helper(@NotNull String input, @NotNull String output) {
+        AlgebraicAngle t = readStrict(input).get().negate();
+        t.validate();
+        aeq(t, output);
+    }
+
+    @Test
+    public void testNegate() {
+        negate_helper("0", "0");
+        negate_helper("pi", "pi");
+        negate_helper("pi/2", "3*pi/2");
+        negate_helper("3*pi/2", "pi/2");
+        negate_helper("2*pi/3", "4*pi/3");
+        negate_helper("4*pi/3", "2*pi/3");
+        negate_helper("pi/180", "359*pi/180");
+        negate_helper("359*pi/180", "pi/180");
+        negate_helper("arccos(1/3)", "pi+arccos(-1/3)");
+        negate_helper("arccos(-1/3)", "pi+arccos(1/3)");
+        negate_helper("pi+arccos(-1/3)", "arccos(1/3)");
+        negate_helper("pi+arccos(1/3)", "arccos(-1/3)");
+        negate_helper("arccos(sqrt(5)/3)", "pi+arccos(-sqrt(5)/3)");
+        negate_helper("arccos(-sqrt(5)/3)", "pi+arccos(sqrt(5)/3)");
+        negate_helper("pi+arccos(-sqrt(5)/3)", "arccos(sqrt(5)/3)");
+        negate_helper("pi+arccos(sqrt(5)/3)", "arccos(-sqrt(5)/3)");
+    }
+
+    private static void supplement_helper(@NotNull String input, @NotNull String output) {
+        AlgebraicAngle t = readStrict(input).get().supplement();
+        t.validate();
+        aeq(t, output);
+    }
+
+    @Test
+    public void testSupplement() {
+        supplement_helper("0", "pi");
+        supplement_helper("pi", "0");
+        supplement_helper("pi/2", "pi/2");
+        supplement_helper("3*pi/2", "3*pi/2");
+        supplement_helper("2*pi/3", "pi/3");
+        supplement_helper("4*pi/3", "5*pi/3");
+        supplement_helper("pi/180", "179*pi/180");
+        supplement_helper("359*pi/180", "181*pi/180");
+        supplement_helper("arccos(1/3)", "arccos(-1/3)");
+        supplement_helper("arccos(-1/3)", "arccos(1/3)");
+        supplement_helper("pi+arccos(-1/3)", "pi+arccos(1/3)");
+        supplement_helper("pi+arccos(1/3)", "pi+arccos(-1/3)");
+        supplement_helper("arccos(sqrt(5)/3)", "arccos(-sqrt(5)/3)");
+        supplement_helper("arccos(-sqrt(5)/3)", "arccos(sqrt(5)/3)");
+        supplement_helper("pi+arccos(-sqrt(5)/3)", "pi+arccos(sqrt(5)/3)");
+        supplement_helper("pi+arccos(sqrt(5)/3)", "pi+arccos(-sqrt(5)/3)");
+    }
+
+    private static void addPi_helper(@NotNull String input, @NotNull String output) {
+        AlgebraicAngle t = readStrict(input).get().addPi();
+        t.validate();
+        aeq(t, output);
+    }
+
+    @Test
+    public void testAddPi() {
+        addPi_helper("0", "pi");
+        addPi_helper("pi", "0");
+        addPi_helper("pi/2", "3*pi/2");
+        addPi_helper("3*pi/2", "pi/2");
+        addPi_helper("2*pi/3", "5*pi/3");
+        addPi_helper("4*pi/3", "pi/3");
+        addPi_helper("pi/180", "181*pi/180");
+        addPi_helper("359*pi/180", "179*pi/180");
+        addPi_helper("arccos(1/3)", "pi+arccos(1/3)");
+        addPi_helper("arccos(-1/3)", "pi+arccos(-1/3)");
+        addPi_helper("pi+arccos(-1/3)", "arccos(-1/3)");
+        addPi_helper("pi+arccos(1/3)", "arccos(1/3)");
+        addPi_helper("arccos(sqrt(5)/3)", "pi+arccos(sqrt(5)/3)");
+        addPi_helper("arccos(-sqrt(5)/3)", "pi+arccos(-sqrt(5)/3)");
+        addPi_helper("pi+arccos(-sqrt(5)/3)", "arccos(-sqrt(5)/3)");
+        addPi_helper("pi+arccos(sqrt(5)/3)", "arccos(sqrt(5)/3)");
+    }
+
     private static void cos_helper(@NotNull String input, @NotNull String output) {
         AlgebraicAngle t = readStrict(input).get();
         t.validate();

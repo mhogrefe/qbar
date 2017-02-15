@@ -68,6 +68,24 @@ public class AlgebraicAngleDemos extends QBarDemos {
         }
     }
 
+    private void demoNegate() {
+        for (AlgebraicAngle t : take(MEDIUM_LIMIT, P.withScale(4).algebraicAngles())) {
+            System.out.println("-(" + t + ") = " + t.negate());
+        }
+    }
+
+    private void demoSupplement() {
+        for (AlgebraicAngle t : take(MEDIUM_LIMIT, P.withScale(4).algebraicAngles())) {
+            System.out.println("pi-(" + t + ") = " + t.supplement());
+        }
+    }
+
+    private void demoAddPi() {
+        for (AlgebraicAngle t : take(MEDIUM_LIMIT, P.withScale(4).algebraicAngles())) {
+            System.out.println("pi+(" + t + ") = " + t.addPi());
+        }
+    }
+
     private void demoEquals_AlgebraicAngle() {
         for (Pair<AlgebraicAngle, AlgebraicAngle> p : take(LIMIT, P.pairs(P.withScale(4).algebraicAngles()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);
