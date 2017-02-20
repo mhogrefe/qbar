@@ -1576,7 +1576,7 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
     @Override
     public @NotNull Iterable<Algebraic> range(@NotNull Algebraic a, @NotNull Algebraic b) {
         if (gt(a, b)) {
-            throw new IllegalArgumentException("a must be greater than or equal to b. a: " + a + ", b: " + b);
+            throw new IllegalArgumentException("a must be less than or equal to b. a: " + a + ", b: " + b);
         }
         if (a.equals(b)) {
             return Collections.singletonList(a);
@@ -1722,6 +1722,64 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
                         filterInfinite(r -> !r.equals(y), rangeUp(y))
                 );
             default: throw new IllegalStateException("unreachable");
+        }
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code AlgebraicAngle}s that are rational multiples of π between
+     * {@code a} and {@code b}, inclusive. If {@code a}{@literal <}{@code b}, the angles produced will be greater than
+     * or equal to {@code a} and less than or equal to {@code b}. If {@code a}{@literal >}{@code b}, the range wraps
+     * around zero, so the angles produced are greater than or equal to {@code a} <i>or</i> less than or equal to
+     * {@code b}. If {@code a} and {@code b} are equal and a rational multiple of π, the result is a singleton
+     * containing that angle. If they are equal and not a rational multiple of π, an empty list is returned. Does not
+     * support removal.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>{@code b} cannot be null.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code AlgebraicAngle}s that are rational
+     *  multiples of π.</li>
+     * </ul>
+     *
+     * Length is 1 if {@code a}={@code b} and {@code a} is a rational multiple of π, 0 if {@code a}={@code b} and
+     * {@code a} is not a rational multiple of π, and infinite otherwise
+     *
+     * @param a the inclusive lower bound of the generated elements
+     * @param b the inclusive upper bound of the generated elements
+     * @return {@code Algebraic}s between {@code a} and {@code b}, inclusive
+     */
+    public @NotNull Iterable<AlgebraicAngle> rationalMultiplesOfPiInRange(
+            @NotNull AlgebraicAngle a,
+            @NotNull AlgebraicAngle b
+    ) {
+        if (a.equals(b)) {
+            return a.isRationalMultipleOfPi() ? Collections.singletonList(a) : Collections.emptyList();
+        }
+        if (a.isRationalMultipleOfPi() && b.isRationalMultipleOfPi()) {
+            Rational at = a.rationalTurns().get();
+            Rational bt = b.rationalTurns().get();
+            if (gt(at, bt)) {
+                bt = bt.add(Rational.ONE);
+            }
+            return map(x -> AlgebraicAngle.fromTurns(x.fractionalPart()), range(at, bt));
+        }
+        Real ar = a.realTurns();
+        Real br = b.realTurns();
+        boolean throughZero = false;
+        if (ar.gtUnsafe(br)) {
+            br = br.add(Rational.ONE);
+            throughZero = true;
+        }
+        Interval interval = Real.intervalExtensionUnsafe(ar, br)
+                .intersection(Interval.of(Rational.ZERO, Rational.TWO)).get();
+        Iterable<AlgebraicAngle> unfiltered = map(
+                AlgebraicAngle::fromTurns,
+                nub(map(Rational::fractionalPart, range(interval.getLower().get(), interval.getUpper().get())))
+        );
+        if (throughZero) {
+            return filterInfinite(y -> ge(y, a) || le(y, b), unfiltered);
+        } else {
+            return filterInfinite(y -> ge(y, a) && le(y, b), unfiltered);
         }
     }
 

@@ -8982,6 +8982,347 @@ public class QBarRandomProviderTest {
         algebraicAngles_fail_helper(4, 3);
     }
 
+    private static void rationalMultiplesOfPiInRange_helper(
+            int scale,
+            @NotNull String a,
+            @NotNull String b,
+            @NotNull String output
+    ) {
+        algebraicAngles_helper(
+                P.withScale(scale).rationalMultiplesOfPiInRange(
+                        AlgebraicAngle.readStrict(a).get(),
+                        AlgebraicAngle.readStrict(b).get()
+                ),
+                output
+        );
+        P.reset();
+    }
+
+    private static void rationalMultiplesOfPiInRange_fail_helper(int scale, @NotNull String a, @NotNull String b) {
+        try {
+            P.withScale(scale).rationalMultiplesOfPiInRange(
+                    AlgebraicAngle.readStrict(a).get(),
+                    AlgebraicAngle.readStrict(b).get()
+            );
+            fail();
+        } catch (IllegalStateException | IllegalArgumentException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testRationalMultiplesOfPiInRange() {
+        rationalMultiplesOfPiInRange_helper(4, "0", "0", "QBarRandomProvider_rationalMultiplesOfPiInRange_i");
+        rationalMultiplesOfPiInRange_helper(8, "0", "0", "QBarRandomProvider_rationalMultiplesOfPiInRange_ii");
+        rationalMultiplesOfPiInRange_helper(4, "0", "pi", "QBarRandomProvider_rationalMultiplesOfPiInRange_iii");
+        rationalMultiplesOfPiInRange_helper(8, "0", "pi", "QBarRandomProvider_rationalMultiplesOfPiInRange_iv");
+        rationalMultiplesOfPiInRange_helper(4, "0", "pi/2", "QBarRandomProvider_rationalMultiplesOfPiInRange_v");
+        rationalMultiplesOfPiInRange_helper(8, "0", "pi/2", "QBarRandomProvider_rationalMultiplesOfPiInRange_vi");
+        rationalMultiplesOfPiInRange_helper(4, "0", "3*pi/2", "QBarRandomProvider_rationalMultiplesOfPiInRange_vii");
+        rationalMultiplesOfPiInRange_helper(8, "0", "3*pi/2", "QBarRandomProvider_rationalMultiplesOfPiInRange_viii");
+        rationalMultiplesOfPiInRange_helper(4, "0", "2*pi/3", "QBarRandomProvider_rationalMultiplesOfPiInRange_ix");
+        rationalMultiplesOfPiInRange_helper(8, "0", "2*pi/3", "QBarRandomProvider_rationalMultiplesOfPiInRange_x");
+        rationalMultiplesOfPiInRange_helper(
+                4,
+                "0",
+                "arccos(1/3)",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_xi"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                8,
+                "0",
+                "arccos(1/3)",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_xii"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                4,
+                "0",
+                "arccos(-1/3)",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_xiii"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                8,
+                "0",
+                "arccos(-1/3)",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_xiv"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                4,
+                "0",
+                "pi+arccos(-1/3)",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_xv"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                8,
+                "0",
+                "pi+arccos(-1/3)",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_xvi"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                4,
+                "0",
+                "pi+arccos(1/3)",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_xvii"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                8,
+                "0",
+                "pi+arccos(1/3)",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_xviii"
+        );
+
+        rationalMultiplesOfPiInRange_helper(4, "pi", "0", "QBarRandomProvider_rationalMultiplesOfPiInRange_xix");
+        rationalMultiplesOfPiInRange_helper(8, "pi", "0", "QBarRandomProvider_rationalMultiplesOfPiInRange_xx");
+        rationalMultiplesOfPiInRange_helper(4, "pi", "pi", "QBarRandomProvider_rationalMultiplesOfPiInRange_xxi");
+        rationalMultiplesOfPiInRange_helper(8, "pi", "pi", "QBarRandomProvider_rationalMultiplesOfPiInRange_xxii");
+        rationalMultiplesOfPiInRange_helper(4, "pi", "pi/2", "QBarRandomProvider_rationalMultiplesOfPiInRange_xxiii");
+        rationalMultiplesOfPiInRange_helper(8, "pi", "pi/2", "QBarRandomProvider_rationalMultiplesOfPiInRange_xxiv");
+        rationalMultiplesOfPiInRange_helper(4, "pi", "3*pi/2", "QBarRandomProvider_rationalMultiplesOfPiInRange_xxv");
+        rationalMultiplesOfPiInRange_helper(8, "pi", "3*pi/2", "QBarRandomProvider_rationalMultiplesOfPiInRange_xxvi");
+        rationalMultiplesOfPiInRange_helper(
+                4,
+                "pi",
+                "2*pi/3",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_xxvii"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                8,
+                "pi",
+                "2*pi/3",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_xxviii"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                4,
+                "pi",
+                "arccos(1/3)",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_xxix"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                8,
+                "pi",
+                "arccos(1/3)",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_xxx"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                4,
+                "pi",
+                "arccos(-1/3)",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_xxxi"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                8,
+                "pi",
+                "arccos(-1/3)",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_xxxii"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                4,
+                "pi",
+                "pi+arccos(-1/3)",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_xxxiii"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                8,
+                "pi",
+                "pi+arccos(-1/3)",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_xxxiv"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                4,
+                "pi",
+                "pi+arccos(1/3)",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_xxxv"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                8,
+                "pi",
+                "pi+arccos(1/3)",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_xxxvi"
+        );
+
+        rationalMultiplesOfPiInRange_helper(4, "pi/2", "0", "QBarRandomProvider_rationalMultiplesOfPiInRange_xxxvii");
+        rationalMultiplesOfPiInRange_helper(8, "pi/2", "0", "QBarRandomProvider_rationalMultiplesOfPiInRange_xxxviii");
+        rationalMultiplesOfPiInRange_helper(4, "pi/2", "pi", "QBarRandomProvider_rationalMultiplesOfPiInRange_xxxix");
+        rationalMultiplesOfPiInRange_helper(8, "pi/2", "pi", "QBarRandomProvider_rationalMultiplesOfPiInRange_xl");
+        rationalMultiplesOfPiInRange_helper(4, "pi/2", "pi/2", "QBarRandomProvider_rationalMultiplesOfPiInRange_xli");
+        rationalMultiplesOfPiInRange_helper(8, "pi/2", "pi/2", "QBarRandomProvider_rationalMultiplesOfPiInRange_xlii");
+        rationalMultiplesOfPiInRange_helper(
+                4,
+                "pi/2",
+                "3*pi/2",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_xliii"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                8,
+                "pi/2",
+                "3*pi/2",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_xliv"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                4,
+                "pi/2",
+                "2*pi/3",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_xlv"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                8,
+                "pi/2",
+                "2*pi/3",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_xlvi"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                4,
+                "pi/2",
+                "arccos(1/3)",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_xlvii"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                8,
+                "pi/2",
+                "arccos(1/3)",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_xlviii"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                4,
+                "pi/2",
+                "arccos(-1/3)",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_xlix"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                8,
+                "pi/2",
+                "arccos(-1/3)",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_l"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                4,
+                "pi/2",
+                "pi+arccos(-1/3)",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_li"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                8,
+                "pi/2",
+                "pi+arccos(-1/3)",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_lii"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                4,
+                "pi/2",
+                "pi+arccos(1/3)",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_liii"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                8,
+                "pi/2",
+                "pi+arccos(1/3)",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_liv"
+        );
+
+        rationalMultiplesOfPiInRange_helper(
+                4,
+                "arccos(1/3)",
+                "0",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_lv"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                8,
+                "arccos(1/3)",
+                "0",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_lvi"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                4,
+                "arccos(1/3)",
+                "pi",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_lvii"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                8,
+                "arccos(1/3)",
+                "pi",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_lviii"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                4,
+                "arccos(1/3)",
+                "pi/2",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_lix"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                8,
+                "arccos(1/3)",
+                "pi/2",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_lx"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                4,
+                "arccos(1/3)",
+                "3*pi/2",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_lxi"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                8,
+                "arccos(1/3)",
+                "3*pi/2",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_lxii"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                4,
+                "arccos(1/3)",
+                "2*pi/3",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_lxiii"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                8,
+                "arccos(1/3)",
+                "2*pi/3",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_lxiv"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                4,
+                "arccos(1/3)",
+                "arccos(-1/3)",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_lxv"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                8,
+                "arccos(1/3)",
+                "arccos(-1/3)",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_lxvi"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                4,
+                "arccos(1/3)",
+                "pi+arccos(-1/3)",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_lxvii"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                8,
+                "arccos(1/3)",
+                "pi+arccos(-1/3)",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_lxviii"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                4,
+                "arccos(1/3)",
+                "pi+arccos(1/3)",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_lxix"
+        );
+        rationalMultiplesOfPiInRange_helper(
+                8,
+                "arccos(1/3)",
+                "pi+arccos(1/3)",
+                "QBarRandomProvider_rationalMultiplesOfPiInRange_lxx"
+        );
+
+        rationalMultiplesOfPiInRange_fail_helper(3, "0", "0");
+        rationalMultiplesOfPiInRange_fail_helper(3, "0", "pi");
+        rationalMultiplesOfPiInRange_fail_helper(3, "arccos(1/3)", "pi+arccos(1/3)");
+        rationalMultiplesOfPiInRange_fail_helper(4, "arccos(1/3)", "arccos(1/3)");
+    }
+
     private static void qbarRandomProvidersFixedScales_helper(
             int scale,
             int secondaryScale,

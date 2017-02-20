@@ -148,6 +148,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesAlgebraicsIn_Interval();
         propertiesAlgebraicsNotIn_int_Interval();
         propertiesAlgebraicsNotIn_Interval();
+        propertiesRationalMultiplesOfPiInRange();
         propertiesQBarRandomProvidersFixedScales();
     }
 
@@ -1526,6 +1527,30 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
     private void propertiesAlgebraicAngles() {
         initializeConstant("algebraicAngles()");
         simpleTest(QEP, QEP.algebraicAngles(), t -> true);
+    }
+
+    private void propertiesRationalMultiplesOfPiInRange() {
+        initialize("rationalMultiplesOfPiInRange(AlgebraicAngle, AlgebraicAngle)");
+        Iterable<Pair<AlgebraicAngle, AlgebraicAngle>> ps = P.pairs(
+                P.withScale(4).withSecondaryScale(4).algebraicAngles()
+        );
+        for (Pair<AlgebraicAngle, AlgebraicAngle> p : take(SMALL_LIMIT, ps)) {
+            Iterable<AlgebraicAngle> xs = QEP.rationalMultiplesOfPiInRange(p.a, p.b);
+            if (le(p.a, p.b)) {
+                simpleTest(p, xs, t -> t.isRationalMultipleOfPi() && ge(t, p.a) && le(t, p.b));
+            } else {
+                simpleTest(p, xs, t -> t.isRationalMultipleOfPi() && (ge(t, p.a) || le(t, p.b)));
+            }
+        }
+
+        for (AlgebraicAngle t : take(LIMIT, P.rationalMultiplesOfPi())) {
+            aeqit(t, QEP.rationalMultiplesOfPiInRange(t, t), Collections.singletonList(t));
+        }
+
+        Iterable<AlgebraicAngle> ts = filterInfinite(u -> !u.isRationalMultipleOfPi(), P.algebraicAngles());
+        for (AlgebraicAngle t : take(SMALL_LIMIT, ts)) {
+            assertTrue(t, isEmpty(QEP.rationalMultiplesOfPiInRange(t, t)));
+        }
     }
 
     private void propertiesQBarRandomProvidersFixedScales() {

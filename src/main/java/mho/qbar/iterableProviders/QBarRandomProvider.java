@@ -2733,6 +2733,73 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     /**
+     * An {@code Iterable} that generates all {@code AlgebraicAngle}s that are rational multiples of π between
+     * {@code a} and {@code b}, inclusive. If {@code a}{@literal <}{@code b}, the angles produced will be greater than
+     * or equal to {@code a} and less than or equal to {@code b}. If {@code a}{@literal >}{@code b}, the range wraps
+     * around zero, so the angles produced are greater than or equal to {@code a} <i>or</i> less than or equal to
+     * {@code b}. If {@code a} and {@code b} are equal and a rational multiple of π, the result is a singleton
+     * containing that angle. If they are equal and not a rational multiple of π, an exception is thrown. Does not
+     * support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a scale of at least 4.</li>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>{@code b} cannot be null.</li>
+     *  <li>If {@code a} equals {@code b}, it must be a rational multiple of π.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code AlgebraicAngle}s that are rational
+     *  multiples of π.</li>
+     * </ul>
+     *
+     * Length is 1 if {@code a}={@code b} and {@code a} is a rational multiple of π and infinite otherwise
+     *
+     * @param a the inclusive lower bound of the generated elements
+     * @param b the inclusive upper bound of the generated elements
+     * @return {@code Algebraic}s between {@code a} and {@code b}, inclusive
+     */
+    public @NotNull Iterable<AlgebraicAngle> rationalMultiplesOfPiInRange(
+            @NotNull AlgebraicAngle a,
+            @NotNull AlgebraicAngle b
+    ) {
+        int scale = getScale();
+        if (scale < 4) {
+            throw new IllegalStateException("this must have a scale of at least 4. Invalid scale: " + scale);
+        }
+        if (a.equals(b)) {
+            if (a.isRationalMultipleOfPi()) {
+                return repeat(a);
+            } else {
+                throw new IllegalArgumentException();
+            }
+        }
+        if (a.isRationalMultipleOfPi() && b.isRationalMultipleOfPi()) {
+            Rational at = a.rationalTurns().get();
+            Rational bt = b.rationalTurns().get();
+            if (gt(at, bt)) {
+                bt = bt.add(Rational.ONE);
+            }
+            return map(x -> AlgebraicAngle.fromTurns(x.fractionalPart()), range(at, bt));
+        }
+        Real ar = a.realTurns();
+        Real br = b.realTurns();
+        boolean throughZero = false;
+        if (ar.gtUnsafe(br)) {
+            br = br.add(Rational.ONE);
+            throughZero = true;
+        }
+        Interval interval = Real.intervalExtensionUnsafe(ar, br)
+                .intersection(Interval.of(Rational.ZERO, Rational.TWO)).get();
+        Iterable<AlgebraicAngle> unfiltered = map(
+                x -> AlgebraicAngle.fromTurns(x.fractionalPart()),
+                range(interval.getLower().get(), interval.getUpper().get())
+        );
+        if (throughZero) {
+            return filterInfinite(y -> ge(y, a) || le(y, b), unfiltered);
+        } else {
+            return filterInfinite(y -> ge(y, a) && le(y, b), unfiltered);
+        }
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>

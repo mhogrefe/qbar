@@ -1,9 +1,6 @@
 package mho.qbar.iterableProviders;
 
-import mho.qbar.objects.Algebraic;
-import mho.qbar.objects.Interval;
-import mho.qbar.objects.Rational;
-import mho.qbar.objects.Variable;
+import mho.qbar.objects.*;
 import mho.qbar.testing.QBarDemos;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
@@ -444,6 +441,16 @@ public class QBarExhaustiveProviderDemos extends QBarDemos {
     private void demoAlgebraicsNotIn_Interval() {
         for (Interval a : take(MEDIUM_LIMIT, P.intervals())) {
             System.out.println("algebraicsNotIn(" + a + ") = " + its(QEP.algebraicsNotIn(a)));
+        }
+    }
+
+    private void demoRationalMultiplesOfPiInRange() {
+        Iterable<Pair<AlgebraicAngle, AlgebraicAngle>> ps = P.pairs(
+                P.withScale(4).withSecondaryScale(4).algebraicAngles()
+        );
+        for (Pair<AlgebraicAngle, AlgebraicAngle> p : take(SMALL_LIMIT, ps)) {
+            System.out.println("rationalMultiplesOfPiInRange(" + p.a + ", " + p.b + ") = " +
+                    its(QEP.rationalMultiplesOfPiInRange(p.a, p.b)));
         }
     }
 

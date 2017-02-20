@@ -155,6 +155,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         propertiesAlgebraicsNotIn_Interval();
         propertiesRationalMultiplesOfPi();
         propertiesAlgebraicAngles();
+        propertiesRationalMultiplesOfPiInRange();
         propertiesQBarRandomProvidersFixedScales();
         propertiesQBarRandomProvidersDefault();
         propertiesQBarRandomProvidersDefaultSecondaryAndTertiaryScale();
@@ -5521,6 +5522,64 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
                 rp.algebraicAngles();
                 fail(rp);
             } catch (IllegalStateException ignored) {}
+        }
+    }
+
+    private void propertiesRationalMultiplesOfPiInRange() {
+        initialize("rationalMultiplesOfPiInRange(AlgebraicAngle, AlgebraicAngle)");
+        Iterable<Triple<QBarRandomProvider, AlgebraicAngle, AlgebraicAngle>> ts = filterInfinite(
+                t -> !t.b.equals(t.c) || t.b.isRationalMultipleOfPi(),
+                P.triples(
+                        filterInfinite(
+                                rp -> rp.getScale() >= 4,
+                                P.withScale(1).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                        ),
+                        P.withScale(4).withSecondaryScale(4).algebraicAngles(),
+                        P.withScale(4).withSecondaryScale(4).algebraicAngles()
+                )
+        );
+        for (Triple<QBarRandomProvider, AlgebraicAngle, AlgebraicAngle> t : take(SMALL_LIMIT, ts)) {
+            Iterable<AlgebraicAngle> xs = t.a.rationalMultiplesOfPiInRange(t.b, t.c);
+            if (le(t.b, t.c)) {
+                simpleTest(t.a, xs, x -> ge(x, t.b) && le(x, t.c));
+            } else {
+                simpleTest(t.a, xs, x -> ge(x, t.b) || le(x, t.c));
+            }
+        }
+
+        Iterable<Triple<QBarRandomProvider, AlgebraicAngle, AlgebraicAngle>> tsFail = filterInfinite(
+                t -> !t.b.equals(t.c) || t.b.isRationalMultipleOfPi(),
+                P.triples(
+                        filterInfinite(
+                                rp -> rp.getScale() < 4,
+                                P.withScale(1).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                        ),
+                        P.withScale(4).withSecondaryScale(4).algebraicAngles(),
+                        P.withScale(4).withSecondaryScale(4).algebraicAngles()
+                )
+        );
+        for (Triple<QBarRandomProvider, AlgebraicAngle, AlgebraicAngle> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.rationalMultiplesOfPiInRange(t.b, t.c);
+                fail(t);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        Iterable<Pair<QBarRandomProvider, AlgebraicAngle>> psFail = P.pairs(
+                filterInfinite(
+                        rp -> rp.getScale() >= 4,
+                        P.withScale(1).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                ),
+                filterInfinite(
+                        t -> !t.isRationalMultipleOfPi(),
+                        P.withScale(4).withSecondaryScale(4).algebraicAngles()
+                )
+        );
+        for (Pair<QBarRandomProvider, AlgebraicAngle> p : take(LIMIT, psFail)) {
+            try {
+                p.a.rationalMultiplesOfPiInRange(p.b, p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 

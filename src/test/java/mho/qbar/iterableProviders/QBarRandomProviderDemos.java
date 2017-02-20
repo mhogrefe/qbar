@@ -1,9 +1,6 @@
 package mho.qbar.iterableProviders;
 
-import mho.qbar.objects.Algebraic;
-import mho.qbar.objects.Interval;
-import mho.qbar.objects.Rational;
-import mho.qbar.objects.Variable;
+import mho.qbar.objects.*;
 import mho.qbar.testing.QBarDemos;
 import mho.wheels.random.IsaacPRNG;
 import mho.wheels.structures.Pair;
@@ -1559,6 +1556,24 @@ public class QBarRandomProviderDemos extends QBarDemos {
         );
         for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
             System.out.println("algebraicAngles(" + rp + ") = " + its(rp.algebraicAngles()));
+        }
+    }
+
+    private void demoRationalMultiplesOfPiInRange() {
+        Iterable<Triple<QBarRandomProvider, AlgebraicAngle, AlgebraicAngle>> ts = filterInfinite(
+                t -> !t.b.equals(t.c) || t.b.isRationalMultipleOfPi(),
+                P.triples(
+                        filterInfinite(
+                                rp -> rp.getScale() >= 4,
+                                P.withScale(1).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                        ),
+                        P.withScale(4).withSecondaryScale(4).algebraicAngles(),
+                        P.withScale(4).withSecondaryScale(4).algebraicAngles()
+                )
+        );
+        for (Triple<QBarRandomProvider, AlgebraicAngle, AlgebraicAngle> t : take(SMALL_LIMIT, ts)) {
+            System.out.println("rationalMultiplesOfPiInRange(" + t.a + ", " + t.b + ", " + t.c + ") = " +
+                    its(t.a.rationalMultiplesOfPiInRange(t.b, t.c)));
         }
     }
 
