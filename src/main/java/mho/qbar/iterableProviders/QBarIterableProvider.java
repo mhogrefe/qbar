@@ -4494,19 +4494,20 @@ public strictfp abstract class QBarIterableProvider {
     );
 
     /**
-     * Generates {@code AlgebraicAngle}s between {@code a} and {@code b}, inclusive. Zero can always be an upper bound.
-     * If {@code a} and {@code b} are both zero, the returned {@code Iterable} will only produce zero.
+     * Generates {@code AlgebraicAngle}s between {@code a} and {@code b}, inclusive. If {@code a}≤{@code b}, the angles
+     * produced will be greater than or equal to {@code a} and less than or equal to {@code b}. If
+     * {@code a}{@literal >}{@code b}, the range wraps around zero, so the angles produced are greater than or equal to
+     * {@code a} <i>or</i> less than or equal to {@code b}.
      *
      * <ul>
      *  <li>{@code a} cannot be null.</li>
      *  <li>{@code b} cannot be null.</li>
-     *  <li>{@code a} must be less than or equal to {@code b}, unless {@code b} is zero.</li>
      * </ul>
      *
      * @param a the inclusive lower bound of the generated {@code AlgebraicAngle}s
      * @param b the inclusive upper bound of the generated {@code AlgebraicAngle}s
      */
-    //public abstract @NotNull Iterable<AlgebraicAngle> range(@NotNull AlgebraicAngle a, @NotNull AlgebraicAngle b);
+    public abstract @NotNull Iterable<AlgebraicAngle> range(@NotNull AlgebraicAngle a, @NotNull AlgebraicAngle b);
 
     /**
      * Generates all {@code QBarRandomProvider}s with a fixed {@code scale}, {@code secondaryScale}, and

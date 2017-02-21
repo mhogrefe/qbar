@@ -156,6 +156,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         propertiesRationalMultiplesOfPi();
         propertiesAlgebraicAngles();
         propertiesRationalMultiplesOfPiInRange();
+        propertiesRange_AlgebraicAngle_AlgebraicAngle();
         propertiesQBarRandomProvidersFixedScales();
         propertiesQBarRandomProvidersDefault();
         propertiesQBarRandomProvidersDefaultSecondaryAndTertiaryScale();
@@ -5541,9 +5542,9 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         for (Triple<QBarRandomProvider, AlgebraicAngle, AlgebraicAngle> t : take(SMALL_LIMIT, ts)) {
             Iterable<AlgebraicAngle> xs = t.a.rationalMultiplesOfPiInRange(t.b, t.c);
             if (le(t.b, t.c)) {
-                simpleTest(t.a, xs, x -> ge(x, t.b) && le(x, t.c));
+                simpleTest(t.a, xs, x -> x.isRationalMultipleOfPi() && ge(x, t.b) && le(x, t.c));
             } else {
-                simpleTest(t.a, xs, x -> ge(x, t.b) || le(x, t.c));
+                simpleTest(t.a, xs, x -> x.isRationalMultipleOfPi() && (ge(x, t.b) || le(x, t.c)));
             }
         }
 
@@ -5580,6 +5581,60 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
                 p.a.rationalMultiplesOfPiInRange(p.b, p.b);
                 fail(p);
             } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesRange_AlgebraicAngle_AlgebraicAngle() {
+        initialize("range(AlgebraicAngle, AlgebraicAngle)");
+        Iterable<Triple<QBarRandomProvider, AlgebraicAngle, AlgebraicAngle>> ts = filterInfinite(
+                t -> t.b.rationalTurns().map(x -> x.getDenominator().bitLength() < 6).orElse(true) &&
+                        t.c.rationalTurns().map(x -> x.getDenominator().bitLength() < 6).orElse(true),
+                P.triples(
+                        filterInfinite(
+                                rp -> rp.getScale() >= 4 && rp.getSecondaryScale() >= 4,
+                                P.withScale(1).qbarRandomProvidersDefaultTertiaryScale()
+                        ),
+                        P.withScale(4).withSecondaryScale(4).algebraicAngles(),
+                        P.withScale(4).withSecondaryScale(4).algebraicAngles()
+                )
+        );
+        for (Triple<QBarRandomProvider, AlgebraicAngle, AlgebraicAngle> t : take(SMALL_LIMIT, ts)) {
+            Iterable<AlgebraicAngle> xs = t.a.range(t.b, t.c);
+            if (le(t.b, t.c)) {
+                simpleTest(t.a, xs, x -> ge(x, t.b) && le(x, t.c));
+            } else {
+                simpleTest(t.a, xs, x -> ge(x, t.b) || le(x, t.c));
+            }
+        }
+
+        Iterable<Triple<QBarRandomProvider, AlgebraicAngle, AlgebraicAngle>> tsFail = P.triples(
+                filterInfinite(
+                        rp -> rp.getScale() < 4 && rp.getSecondaryScale() >= 4,
+                        P.withScale(1).qbarRandomProvidersDefaultTertiaryScale()
+                ),
+                P.withScale(4).withSecondaryScale(4).algebraicAngles(),
+                P.withScale(4).withSecondaryScale(4).algebraicAngles()
+        );
+        for (Triple<QBarRandomProvider, AlgebraicAngle, AlgebraicAngle> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.range(t.b, t.c);
+                fail(t);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        tsFail = P.triples(
+                filterInfinite(
+                        rp -> rp.getScale() >= 4 && rp.getSecondaryScale() < 4,
+                        P.withScale(1).qbarRandomProvidersDefaultTertiaryScale()
+                ),
+                P.withScale(4).withSecondaryScale(4).algebraicAngles(),
+                P.withScale(4).withSecondaryScale(4).algebraicAngles()
+        );
+        for (Triple<QBarRandomProvider, AlgebraicAngle, AlgebraicAngle> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.range(t.b, t.c);
+                fail(t);
+            } catch (IllegalStateException ignored) {}
         }
     }
 

@@ -1577,6 +1577,24 @@ public class QBarRandomProviderDemos extends QBarDemos {
         }
     }
 
+    private void demoRange_AlgebraicAngle_AlgebraicAngle() {
+        Iterable<Triple<QBarRandomProvider, AlgebraicAngle, AlgebraicAngle>> ts = filterInfinite(
+                t -> t.b.rationalTurns().map(x -> x.getDenominator().bitLength() < 6).orElse(true) &&
+                        t.c.rationalTurns().map(x -> x.getDenominator().bitLength() < 6).orElse(true),
+                P.triples(
+                        filterInfinite(
+                                rp -> rp.getScale() >= 4 && rp.getSecondaryScale() >= 4,
+                                P.withScale(1).qbarRandomProvidersDefaultTertiaryScale()
+                        ),
+                        P.withScale(4).withSecondaryScale(4).algebraicAngles(),
+                        P.withScale(4).withSecondaryScale(4).algebraicAngles()
+                )
+        );
+        for (Triple<QBarRandomProvider, AlgebraicAngle, AlgebraicAngle> t : take(SMALL_LIMIT, ts)) {
+            System.out.println("range(" + t.a + ", " + t.b + ", " + t.c + ") = " + its(t.a.range(t.b, t.c)));
+        }
+    }
+
     private void demoQBarRandomProvidersFixedScales() {
         Iterable<Quadruple<QBarRandomProvider, Integer, Integer, Integer>> qs = P.quadruples(
                 P.qbarRandomProvidersDefault(),

@@ -454,6 +454,18 @@ public class QBarExhaustiveProviderDemos extends QBarDemos {
         }
     }
 
+    private void demoRange_AlgebraicAngle_AlgebraicAngle() {
+        Iterable<Pair<AlgebraicAngle, AlgebraicAngle>> ps = P.pairs(
+                filterInfinite(
+                        t -> t.rationalTurns().map(x -> x.getDenominator().bitLength() < 6).orElse(true),
+                        P.withScale(4).withSecondaryScale(4).algebraicAngles()
+                )
+        );
+        for (Pair<AlgebraicAngle, AlgebraicAngle> p : take(SMALL_LIMIT, ps)) {
+            System.out.println("range(" + p.a + ", " + p.b + ") = " + its(QEP.range(p.a, p.b)));
+        }
+    }
+
     private void demoQBarRandomProvidersFixedScales() {
         for (Triple<Integer, Integer, Integer> t : take(SMALL_LIMIT, P.triples(P.integersGeometric()))) {
             System.out.println("qbarRandomProvidersFixedScales(" + t.a + ", " + t.b + ", " + t.c + ") = " +

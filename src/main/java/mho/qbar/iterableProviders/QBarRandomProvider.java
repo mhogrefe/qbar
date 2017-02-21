@@ -1,15 +1,14 @@
 package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.*;
+import mho.qbar.objects.Vector;
 import mho.wheels.iterables.RandomProvider;
 import mho.wheels.math.MathUtils;
 import mho.wheels.ordering.Ordering;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
@@ -2545,7 +2544,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * {@code secondaryScale} corresponds to {@code Algebraic}s with higher degrees. Does not support removal.
      *
      * <ul>
-     *  <li>{@code this} must have a {@code scale} of at least 2 and a {@code secondaryScale} of at least 4.</li>
+     *  <li>{@code this} must have a {@code scale} of at least 4 and a {@code secondaryScale} of at least 4.</li>
      *  <li>{@code a} cannot be null.</li>
      *  <li>{@code b} cannot be null.</li>
      *  <li>{@code a} must be less than or equal to {@code b}.</li>
@@ -2564,13 +2563,13 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
             throw new IllegalArgumentException("a must be greater than or equal to b. a: " + a + ", b: " + b);
         }
         int scale = getScale();
-        if (scale < 2) {
-            throw new IllegalStateException("this must have a scale of at least 2. Invalid scale: " + scale);
+        if (scale < 4) {
+            throw new IllegalStateException("this must have a scale of at least 4. Invalid scale: " + scale);
         }
         int secondaryScale = getSecondaryScale();
         if (secondaryScale < 4) {
             throw new IllegalStateException("this must have a secondary scale of at least 4. Invalid secondary scale: "
-                    + scale);
+                    + secondaryScale);
         }
         if (a.equals(b)) {
             return repeat(a);
@@ -2754,7 +2753,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      *
      * @param a the inclusive lower bound of the generated elements
      * @param b the inclusive upper bound of the generated elements
-     * @return {@code Algebraic}s between {@code a} and {@code b}, inclusive
+     * @return {@code AlgebraicAngle}s that are rational multiples of π between {@code a} and {@code b}, inclusive
      */
     public @NotNull Iterable<AlgebraicAngle> rationalMultiplesOfPiInRange(
             @NotNull AlgebraicAngle a,
@@ -2796,6 +2795,83 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
             return filterInfinite(y -> ge(y, a) || le(y, b), unfiltered);
         } else {
             return filterInfinite(y -> ge(y, a) && le(y, b), unfiltered);
+        }
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code AlgebraicAngle}s between {@code a} and {@code b}, inclusive. If
+     * {@code a}{@literal <}{@code b}, the angles produced will be greater than or equal to {@code a} and less than or
+     * equal to {@code b}. If {@code a}{@literal >}{@code b}, the range wraps around zero, so the angles produced are
+     * greater than or equal to {@code a} <i>or</i> less than or equal to {@code b}. If {@code a} and {@code b} are
+     * equal, the result is a singleton containing that angle. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a scale of at least 4 and a secondaryScale of at least 4.</li>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>{@code b} cannot be null.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code AlgebraicAngle}s.</li>
+     * </ul>
+     *
+     * Length is 1 if {@code a}={@code b} and infinite otherwise
+     *
+     * @param a the inclusive lower bound of the generated elements
+     * @param b the inclusive upper bound of the generated elements
+     * @return {@code AlgebraicAngle}s between {@code a} and {@code b}, inclusive
+     */
+    public @NotNull Iterable<AlgebraicAngle> range(@NotNull AlgebraicAngle a, @NotNull AlgebraicAngle b) {
+        int scale = getScale();
+        if (scale < 4) {
+            throw new IllegalStateException("this must have a scale of at least 4. Invalid scale: " + scale);
+        }
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 4) {
+            throw new IllegalStateException("this must have a secondaryScale of at least 4. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
+        if (a.equals(b)) {
+            return repeat(a);
+        }
+        boolean containsZero = le(a, b) ?
+                a.equals(AlgebraicAngle.ZERO) && le(AlgebraicAngle.ZERO, b) :
+                a.equals(AlgebraicAngle.ZERO) || le(AlgebraicAngle.ZERO, b);
+        boolean containsPi = le(a, b) ?
+                ge(AlgebraicAngle.PI, a) && le(AlgebraicAngle.PI, b) :
+                ge(AlgebraicAngle.PI, a) || le(AlgebraicAngle.PI, b);
+        Algebraic acos = a.cos();
+        Algebraic bcos = b.cos();
+        if (!containsZero && !containsPi) {
+            Iterable<AlgebraicAngle> ts = a.getQuadrant() < 3 ?
+                    map(AlgebraicAngle::arccos, range(bcos, acos)) :
+                    map(u -> AlgebraicAngle.arccos(u).negate(), range(acos, bcos));
+            return withScale(1).choose(
+                    rationalMultiplesOfPiInRange(a, b),
+                    filterInfinite(t -> !t.isRationalMultipleOfPi(), ts)
+            );
+        } else {
+            SortedSet<Algebraic> limits = new TreeSet<>();
+            if (containsZero) {
+                limits.add(Algebraic.ONE);
+            }
+            if (containsPi) {
+                limits.add(Algebraic.NEGATIVE_ONE);
+            }
+            limits.add(acos);
+            limits.add(bcos);
+            Iterable<AlgebraicAngle> ts = map(
+                    p -> p.b ? AlgebraicAngle.arccos(p.a).negate() : AlgebraicAngle.arccos(p.a),
+                    pairs(range(limits.first(), limits.last()), booleans())
+            );
+            if (le(a, b)) {
+                return withScale(1).choose(
+                        rationalMultiplesOfPiInRange(a, b),
+                        filterInfinite(t -> !t.isRationalMultipleOfPi() && ge(t, a) && le(t, b), ts)
+                );
+            } else {
+                return withScale(1).choose(
+                        rationalMultiplesOfPiInRange(a, b),
+                        filterInfinite(t -> !t.isRationalMultipleOfPi() && (ge(t, a) || le(t, b)), ts)
+                );
+            }
         }
     }
 

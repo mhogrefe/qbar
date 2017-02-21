@@ -24926,6 +24926,1714 @@ QBarExhaustiveProvider_rationalMultiplesOfPiInRange_xxxvi list 51
 189400134097717988537*pi/183414133959930014960
 ...
 
+QBarExhaustiveProvider_range_AlgebraicAngle_AlgebraicAngle_i list 1
+0
+
+QBarExhaustiveProvider_range_AlgebraicAngle_AlgebraicAngle_ii list 51
+0
+arccos(-2+sqrt(5))
+pi
+arccos(root 0 of x^3+5*x^2+7*x-5)
+pi/2
+arccos(-1/3)
+pi/3
+arccos(-1+sqrt(2))
+2*pi/3
+arccos(root 0 of x^4+2*x^3-4*x^2-18*x+3)
+pi/4
+arccos(1/3)
+3*pi/4
+arccos(-3+2*sqrt(2))
+pi/5
+arccos(root 0 of x^3+3*x^2+7*x-3)
+2*pi/5
+arccos(-3/5)
+3*pi/5
+arccos(-2+sqrt(3))
+4*pi/5
+arccos(-2/3)
+pi/6
+arccos(root 1 of x^5+3*x^4-2*x^3-22*x^2-31*x+19)
+5*pi/6
+arccos(-5/7)
+pi/7
+arccos((-3+2*sqrt(3))/3)
+2*pi/7
+arccos(-3/4)
+3*pi/7
+arccos(root 0 of x^3+5*x^2+11*x-1)
+4*pi/7
+arccos(-1/5)
+5*pi/7
+arccos((-4+sqrt(13))/3)
+6*pi/7
+arccos(1/5)
+pi/8
+arccos(root 1 of x^4+6*x^3+12*x^2+10*x-13)
+3*pi/8
+arccos(-3/7)
+5*pi/8
+arccos((-5+sqrt(17))/4)
+7*pi/8
+arccos(-1/7)
+pi/9
+arccos(root 0 of x^3+3*x^2+3*x-3)
+2*pi/9
+arccos(-1/4)
+...
+
+QBarExhaustiveProvider_range_AlgebraicAngle_AlgebraicAngle_iii list 51
+0
+arccos((-1+sqrt(5))/2)
+pi/2
+arccos(root 0 of x^3+x^2-1)
+pi/4
+arccos(1/3)
+pi/6
+arccos(1/4)
+pi/3
+arccos(root 0 of x^4-x^3-x^2-x+1)
+pi/8
+arccos(2/3)
+3*pi/8
+arccos(-1+sqrt(2))
+pi/10
+arccos(3/4)
+pi/5
+arccos(root 0 of x^3+x-1)
+3*pi/10
+arccos(1/5)
+2*pi/5
+arccos((-1+sqrt(3))/2)
+pi/12
+arccos(1/6)
+5*pi/12
+arccos(root 1 of x^5-x^4-x^3-x^2+1)
+pi/14
+arccos(1/7)
+pi/7
+arccos(sqrt(3)/3)
+3*pi/14
+arccos(1/8)
+2*pi/7
+arccos(root 0 of x^3+x^2+x-1)
+5*pi/14
+arccos(2/5)
+3*pi/7
+arccos((-1+sqrt(13))/6)
+pi/16
+arccos(3/5)
+3*pi/16
+arccos(root 1 of x^4+x^3-1)
+5*pi/16
+arccos(2/7)
+7*pi/16
+arccos((-1+sqrt(17))/8)
+pi/18
+arccos(3/7)
+pi/9
+arccos(root 0 of 2*x^3-1)
+...
+
+QBarExhaustiveProvider_range_AlgebraicAngle_AlgebraicAngle_iv list 51
+0
+arccos(-2+sqrt(5))
+3*pi/2
+arccos(root 0 of x^3+5*x^2+7*x-5)
+3*pi/4
+arccos(-1/3)
+pi/2
+pi+arccos(1/3)
+pi
+arccos(-1+sqrt(2))
+3*pi/8
+arccos(root 0 of x^4+2*x^3-4*x^2-18*x+3)
+9*pi/8
+arccos(1/3)
+3*pi/10
+arccos(-3+2*sqrt(2))
+3*pi/5
+pi+arccos(3-2*sqrt(2))
+9*pi/10
+arccos(root 0 of x^3+3*x^2+7*x-3)
+6*pi/5
+arccos(-3/5)
+pi/4
+pi+arccos(3/5)
+5*pi/4
+arccos(-2+sqrt(3))
+3*pi/14
+pi+arccos(2-sqrt(3))
+3*pi/7
+arccos(-2/3)
+9*pi/14
+pi+arccos(2/3)
+6*pi/7
+arccos(root 1 of x^5+3*x^4-2*x^3-22*x^2-31*x+19)
+15*pi/14
+arccos(-5/7)
+9*pi/7
+pi+arccos(5/7)
+3*pi/16
+arccos((-3+2*sqrt(3))/3)
+9*pi/16
+arccos(-3/4)
+15*pi/16
+pi+arccos(3/4)
+21*pi/16
+arccos(root 0 of x^3+5*x^2+11*x-1)
+pi/6
+arccos(-1/5)
+pi/3
+pi+arccos(1/5)
+...
+
+QBarExhaustiveProvider_range_AlgebraicAngle_AlgebraicAngle_v list 51
+0
+arccos((-5+3*sqrt(5))/4)
+2*pi/3
+arccos(1/4)
+pi/3
+arccos(root 0 of 8*x^3+24*x^2+18*x-23)
+2*pi/9
+arccos((-2+3*sqrt(2))/4)
+4*pi/9
+arccos(-1/8)
+pi/6
+arccos(root 0 of 16*x^4+8*x^3-48*x^2-100*x+43)
+pi/2
+arccos((-4+3*sqrt(2))/2)
+2*pi/15
+arccos(5/8)
+4*pi/15
+arccos(root 0 of 8*x^3+12*x^2+24*x-17)
+2*pi/5
+arccos(-1/5)
+8*pi/15
+arccos((-5+3*sqrt(3))/4)
+pi/9
+arccos(-1/4)
+5*pi/9
+arccos(root 1 of 32*x^5+32*x^4-88*x^3-248*x^2-176*x+205)
+2*pi/21
+arccos(-2/7)
+4*pi/21
+arccos((-1+sqrt(3))/2)
+2*pi/7
+arccos(-5/16)
+8*pi/21
+arccos(root 0 of 4*x^3+12*x^2+18*x-7)
+10*pi/21
+arccos(1/10)
+4*pi/7
+arccos((-3+sqrt(13))/4)
+pi/12
+arccos(2/5)
+pi/4
+arccos(root 1 of 16*x^4+56*x^3+60*x^2+26*x-77)
+5*pi/12
+arccos(-1/14)
+7*pi/12
+arccos((-11+3*sqrt(17))/16)
+2*pi/27
+arccos(1/7)
+4*pi/27
+arccos(root 0 of 16*x^3+24*x^2+12*x-25)
+...
+
+QBarExhaustiveProvider_range_AlgebraicAngle_AlgebraicAngle_vi list 51
+0
+arccos(1/3)
+2037077725*pi/8039095298
+arccos(sqrt(5)/3)
+2037077725*pi/12058642947
+arccos(2/3)
+4074155450*pi/12058642947
+arccos(root 0 of 27*x^3-9*x^2-3*x-7)
+2037077725*pi/16078190596
+arccos(5/9)
+6111233175*pi/16078190596
+arccos((1+sqrt(2))/3)
+407415545*pi/4019547649
+arccos(root 0 of 81*x^4-162*x^3+72*x^2-30*x+23)
+814831090*pi/4019547649
+arccos(7/9)
+1222246635*pi/4019547649
+arccos((-1+2*sqrt(2))/3)
+2037077725*pi/24117285894
+arccos(5/6)
+2037077725*pi/28136833543
+arccos(root 0 of 27*x^3-27*x^2+21*x-13)
+4074155450*pi/28136833543
+arccos(7/15)
+6111233175*pi/28136833543
+arccos(sqrt(3)/3)
+8148310900*pi/28136833543
+arccos(4/9)
+10185388625*pi/28136833543
+arccos(root 1 of 243*x^5-567*x^4+378*x^3-162*x^2+51*x+25)
+2037077725*pi/32156381192
+arccos(3/7)
+6111233175*pi/32156381192
+arccos((3+2*sqrt(3))/9)
+10185388625*pi/32156381192
+arccos(5/12)
+2037077725*pi/36175928841
+arccos(root 0 of 27*x^3-9*x^2+9*x-11)
+4074155450*pi/36175928841
+arccos(3/5)
+8148310900*pi/36175928841
+arccos((2+sqrt(13))/9)
+10185388625*pi/36175928841
+arccos(11/15)
+407415545*pi/8039095298
+arccos(root 1 of 81*x^4-54*x^3+6*x-17)
+1222246635*pi/8039095298
+arccos(11/21)
+2851908815*pi/8039095298
+arccos((3+sqrt(17))/12)
+...
+
+QBarExhaustiveProvider_range_AlgebraicAngle_AlgebraicAngle_vii list 51
+0
+arccos(-1/3)
+13267780525*pi/32156381192
+arccos((-3+2*sqrt(5))/3)
+13267780525*pi/48234571788
+arccos(1/3)
+13267780525*pi/24117285894
+arccos(root 0 of 27*x^3+63*x^2+33*x-59)
+13267780525*pi/64312762384
+arccos(1/9)
+2653556105*pi/16078190596
+arccos((-1+2*sqrt(2))/3)
+2653556105*pi/8039095298
+arccos(root 0 of 81*x^4-198*x^2-312*x+173)
+7960668315*pi/16078190596
+arccos(5/9)
+13267780525*pi/96469143576
+arccos((-5+4*sqrt(2))/3)
+13267780525*pi/112547334172
+arccos(2/3)
+13267780525*pi/56273667086
+arccos(root 0 of 27*x^3+27*x^2+57*x-47)
+39803341575*pi/112547334172
+arccos(-1/15)
+13267780525*pi/28136833543
+arccos((-3+2*sqrt(3))/3)
+66338902625*pi/112547334172
+arccos(-1/9)
+13267780525*pi/128625524768
+arccos(root 1 of 243*x^5+81*x^4-594*x^3-1134*x^2-561*x+941)
+39803341575*pi/128625524768
+arccos(-1/7)
+66338902625*pi/128625524768
+arccos((-3+4*sqrt(3))/9)
+13267780525*pi/144703715364
+arccos(-1/6)
+13267780525*pi/72351857682
+arccos(root 0 of 27*x^3+63*x^2+81*x-43)
+13267780525*pi/36175928841
+arccos(1/5)
+66338902625*pi/144703715364
+arccos((-5+2*sqrt(13))/9)
+2653556105*pi/32156381192
+arccos(7/15)
+7960668315*pi/32156381192
+arccos(root 1 of 81*x^4+216*x^3+162*x^2+48*x-251)
+18574892735*pi/32156381192
+arccos(1/21)
+13267780525*pi/176860096556
+arccos((-3+sqrt(17))/6)
+...
+
+QBarExhaustiveProvider_range_AlgebraicAngle_AlgebraicAngle_viii list 51
+0
+arccos(-2+sqrt(5))
+1154529777*pi/8039095298
+pi+arccos(2-sqrt(5))
+17232720373*pi/16078190596
+arccos(root 0 of x^3+5*x^2+7*x-5)
+17232720373*pi/24117285894
+arccos(-1/3)
+17232720373*pi/12058642947
+pi+arccos(1/3)
+17232720373*pi/32156381192
+arccos(-1+sqrt(2))
+51698161119*pi/32156381192
+arccos(root 0 of x^4+2*x^3-4*x^2-18*x+3)
+17232720373*pi/40195476490
+pi+arccos(root 1 of x^4-2*x^3-4*x^2+18*x+3)
+17232720373*pi/20097738245
+arccos(1/3)
+51698161119*pi/40195476490
+pi+arccos(-1/3)
+17232720373*pi/48234571788
+arccos(-3+2*sqrt(2))
+17232720373*pi/56273667086
+pi+arccos(3-2*sqrt(2))
+17232720373*pi/28136833543
+arccos(root 0 of x^3+3*x^2+7*x-3)
+51698161119*pi/56273667086
+arccos(-3/5)
+34465440746*pi/28136833543
+pi+arccos(3/5)
+86163601865*pi/56273667086
+arccos(-2+sqrt(3))
+17232720373*pi/64312762384
+pi+arccos(2-sqrt(3))
+51698161119*pi/64312762384
+arccos(-2/3)
+86163601865*pi/64312762384
+pi+arccos(2/3)
+17232720373*pi/72351857682
+arccos(root 1 of x^5+3*x^4-2*x^3-22*x^2-31*x+19)
+17232720373*pi/36175928841
+arccos(-5/7)
+34465440746*pi/36175928841
+pi+arccos(5/7)
+86163601865*pi/72351857682
+arccos((-3+2*sqrt(3))/3)
+17232720373*pi/80390952980
+pi+arccos((3-2*sqrt(3))/3)
+51698161119*pi/80390952980
+arccos(-3/4)
+...
+
+QBarExhaustiveProvider_range_AlgebraicAngle_AlgebraicAngle_ix list 51
+0
+arccos(-2+sqrt(5))
+3028312687*pi/4019547649
+arccos(root 0 of x^3+5*x^2+7*x-5)
+6056625374*pi/12058642947
+arccos(-1/3)
+12113250748*pi/12058642947
+pi+arccos(1/3)
+3028312687*pi/8039095298
+arccos(-1+sqrt(2))
+9084938061*pi/8039095298
+arccos(root 0 of x^4+2*x^3-4*x^2-18*x+3)
+6056625374*pi/20097738245
+arccos(1/3)
+12113250748*pi/20097738245
+arccos(-3+2*sqrt(2))
+18169876122*pi/20097738245
+arccos(root 0 of x^3+3*x^2+7*x-3)
+24226501496*pi/20097738245
+arccos(-3/5)
+3028312687*pi/12058642947
+pi+arccos(3/5)
+15141563435*pi/12058642947
+arccos(-2+sqrt(3))
+6056625374*pi/28136833543
+arccos(-2/3)
+12113250748*pi/28136833543
+pi+arccos(2/3)
+18169876122*pi/28136833543
+arccos(root 1 of x^5+3*x^4-2*x^3-22*x^2-31*x+19)
+24226501496*pi/28136833543
+arccos(-5/7)
+30283126870*pi/28136833543
+pi+arccos(5/7)
+36339752244*pi/28136833543
+arccos((-3+2*sqrt(3))/3)
+3028312687*pi/16078190596
+arccos(-3/4)
+9084938061*pi/16078190596
+pi+arccos(3/4)
+15141563435*pi/16078190596
+arccos(root 0 of x^3+5*x^2+11*x-1)
+21198188809*pi/16078190596
+arccos(-1/5)
+6056625374*pi/36175928841
+arccos((-4+sqrt(13))/3)
+12113250748*pi/36175928841
+arccos(1/5)
+24226501496*pi/36175928841
+arccos(root 1 of x^4+6*x^3+12*x^2+10*x-13)
+...
+
+QBarExhaustiveProvider_range_AlgebraicAngle_AlgebraicAngle_x list 51
+pi
+pi+arccos(2-sqrt(5))
+0
+pi+arccos(root 0 of x^3-5*x^2+7*x+5)
+3*pi/2
+pi+arccos(1/3)
+4*pi/3
+pi+arccos(1-sqrt(2))
+5*pi/3
+pi+arccos(root 1 of x^4-2*x^3-4*x^2+18*x+3)
+5*pi/4
+pi+arccos(-1/3)
+7*pi/4
+pi+arccos(3-2*sqrt(2))
+6*pi/5
+pi+arccos(root 0 of x^3-3*x^2+7*x+3)
+7*pi/5
+pi+arccos(3/5)
+8*pi/5
+pi+arccos(2-sqrt(3))
+9*pi/5
+pi+arccos(2/3)
+7*pi/6
+pi+arccos(root 1 of x^5-3*x^4-2*x^3+22*x^2-31*x-19)
+11*pi/6
+pi+arccos(5/7)
+8*pi/7
+pi+arccos((3-2*sqrt(3))/3)
+9*pi/7
+pi+arccos(3/4)
+10*pi/7
+pi+arccos(root 0 of x^3-5*x^2+11*x+1)
+11*pi/7
+pi+arccos(1/5)
+12*pi/7
+pi+arccos((4-sqrt(13))/3)
+13*pi/7
+pi+arccos(-1/5)
+9*pi/8
+pi+arccos(root 0 of x^4-6*x^3+12*x^2-10*x-13)
+11*pi/8
+pi+arccos(3/7)
+13*pi/8
+pi+arccos((5-sqrt(17))/4)
+15*pi/8
+pi+arccos(1/7)
+10*pi/9
+pi+arccos(root 0 of x^3-3*x^2+3*x+3)
+11*pi/9
+pi+arccos(1/4)
+...
+
+QBarExhaustiveProvider_range_AlgebraicAngle_AlgebraicAngle_xi list 1
+pi
+
+QBarExhaustiveProvider_range_AlgebraicAngle_AlgebraicAngle_xii list 51
+pi
+arccos(-2+sqrt(5))
+pi/2
+pi+arccos(2-sqrt(5))
+7*pi/4
+arccos(root 0 of x^3+5*x^2+7*x-5)
+3*pi/2
+pi+arccos(root 0 of x^3-5*x^2+7*x+5)
+0
+pi+arccos(1/3)
+11*pi/8
+arccos(-1+sqrt(2))
+pi/8
+pi+arccos(1-sqrt(2))
+13*pi/10
+arccos(root 0 of x^4+2*x^3-4*x^2-18*x+3)
+8*pi/5
+pi+arccos(root 1 of x^4-2*x^3-4*x^2+18*x+3)
+19*pi/10
+arccos(1/3)
+pi/5
+pi+arccos(-1/3)
+5*pi/4
+pi+arccos(3-2*sqrt(2))
+pi/4
+arccos(root 0 of x^3+3*x^2+7*x-3)
+17*pi/14
+pi+arccos(root 0 of x^3-3*x^2+7*x+3)
+10*pi/7
+pi+arccos(3/5)
+23*pi/14
+pi+arccos(2-sqrt(3))
+13*pi/7
+pi+arccos(2/3)
+pi/14
+arccos(root 1 of x^5+3*x^4-2*x^3-22*x^2-31*x+19)
+2*pi/7
+pi+arccos(root 1 of x^5-3*x^4-2*x^3+22*x^2-31*x-19)
+19*pi/16
+pi+arccos(5/7)
+25*pi/16
+arccos((-3+2*sqrt(3))/3)
+31*pi/16
+pi+arccos((3-2*sqrt(3))/3)
+5*pi/16
+pi+arccos(3/4)
+7*pi/6
+arccos(root 0 of x^3+5*x^2+11*x-1)
+4*pi/3
+pi+arccos(root 0 of x^3-5*x^2+11*x+1)
+...
+
+QBarExhaustiveProvider_range_AlgebraicAngle_AlgebraicAngle_xiii list 51
+pi
+pi+arccos((3-sqrt(5))/2)
+3*pi/2
+pi+arccos(root 0 of x^3-4*x^2+5*x-1)
+5*pi/4
+pi+arccos(2/3)
+7*pi/6
+pi+arccos((2-sqrt(2))/2)
+4*pi/3
+pi+arccos(3/4)
+9*pi/8
+pi+arccos(root 1 of x^4-3*x^3+2*x^2+2*x-1)
+11*pi/8
+pi+arccos(1/3)
+11*pi/10
+pi+arccos(2-sqrt(2))
+6*pi/5
+pi+arccos(1/4)
+13*pi/10
+pi+arccos(root 0 of x^3-3*x^2+4*x-1)
+7*pi/5
+pi+arccos(4/5)
+13*pi/12
+pi+arccos((3-sqrt(3))/2)
+17*pi/12
+pi+arccos(5/6)
+15*pi/14
+pi+arccos(root 1 of x^5-4*x^4+5*x^3-4*x+1)
+8*pi/7
+pi+arccos(6/7)
+17*pi/14
+pi+arccos((3-sqrt(3))/3)
+9*pi/7
+pi+arccos(7/8)
+19*pi/14
+pi+arccos(root 0 of x^3-4*x^2+6*x-2)
+10*pi/7
+pi+arccos(3/5)
+17*pi/16
+pi+arccos((7-sqrt(13))/6)
+19*pi/16
+pi+arccos(2/5)
+21*pi/16
+pi+arccos(root 0 of x^4-5*x^3+9*x^2-7*x+1)
+23*pi/16
+pi+arccos(5/7)
+19*pi/18
+pi+arccos((9-sqrt(17))/8)
+10*pi/9
+pi+arccos(4/7)
+...
+
+QBarExhaustiveProvider_range_AlgebraicAngle_AlgebraicAngle_xiv list 51
+pi
+arccos(-2+sqrt(5))
+2*pi/3
+pi+arccos(2-sqrt(5))
+11*pi/6
+arccos(root 0 of x^3+5*x^2+7*x-5)
+14*pi/9
+pi+arccos(root 0 of x^3-5*x^2+7*x+5)
+pi/9
+arccos(-1/3)
+17*pi/12
+pi+arccos(1/3)
+pi/4
+arccos(-1+sqrt(2))
+4*pi/3
+pi+arccos(1-sqrt(2))
+5*pi/3
+arccos(root 0 of x^4+2*x^3-4*x^2-18*x+3)
+0
+pi+arccos(root 1 of x^4-2*x^3-4*x^2+18*x+3)
+pi/3
+arccos(1/3)
+23*pi/18
+pi+arccos(-1/3)
+7*pi/18
+arccos(-3+2*sqrt(2))
+26*pi/21
+pi+arccos(3-2*sqrt(2))
+31*pi/21
+arccos(root 0 of x^3+3*x^2+7*x-3)
+12*pi/7
+pi+arccos(root 0 of x^3-3*x^2+7*x+3)
+41*pi/21
+pi+arccos(3/5)
+4*pi/21
+arccos(-2+sqrt(3))
+3*pi/7
+pi+arccos(2-sqrt(3))
+29*pi/24
+pi+arccos(2/3)
+13*pi/8
+arccos(root 1 of x^5+3*x^4-2*x^3-22*x^2-31*x+19)
+pi/24
+pi+arccos(root 1 of x^5-3*x^4-2*x^3+22*x^2-31*x-19)
+11*pi/24
+pi+arccos(5/7)
+32*pi/27
+arccos((-3+2*sqrt(3))/3)
+37*pi/27
+pi+arccos((3-2*sqrt(3))/3)
+...
+
+QBarExhaustiveProvider_range_AlgebraicAngle_AlgebraicAngle_xv list 51
+pi
+pi+arccos(2-sqrt(5))
+7047860336*pi/4019547649
+arccos(root 0 of x^3+5*x^2+7*x-5)
+18115268321*pi/12058642947
+pi+arccos(root 0 of x^3-5*x^2+7*x+5)
+54607801*pi/12058642947
+pi+arccos(1/3)
+11067407985*pi/8039095298
+arccos(-1+sqrt(2))
+1045842763*pi/8039095298
+pi+arccos(1-sqrt(2))
+26154363619*pi/20097738245
+pi+arccos(root 1 of x^4-2*x^3-4*x^2+18*x+3)
+32210988993*pi/20097738245
+arccos(1/3)
+38267614367*pi/20097738245
+pi+arccos(-1/3)
+4128763251*pi/20097738245
+pi+arccos(3-2*sqrt(2))
+15086955634*pi/12058642947
+arccos(root 0 of x^3+3*x^2+7*x-3)
+3082920488*pi/12058642947
+pi+arccos(root 0 of x^3-3*x^2+7*x+3)
+34193458917*pi/28136833543
+pi+arccos(3/5)
+40250084291*pi/28136833543
+pi+arccos(2-sqrt(3))
+46306709665*pi/28136833543
+pi+arccos(2/3)
+52363335039*pi/28136833543
+arccos(root 1 of x^5+3*x^4-2*x^3-22*x^2-31*x+19)
+2146293327*pi/28136833543
+pi+arccos(root 1 of x^5-3*x^4-2*x^3+22*x^2-31*x-19)
+8202918701*pi/28136833543
+pi+arccos(5/7)
+19106503283*pi/16078190596
+pi+arccos((3-2*sqrt(3))/3)
+25163128657*pi/16078190596
+pi+arccos(3/4)
+31219754031*pi/16078190596
+pi+arccos(root 0 of x^3-5*x^2+11*x+1)
+5119998213*pi/16078190596
+pi+arccos(1/5)
+42232554215*pi/36175928841
+pi+arccos((4-sqrt(13))/3)
+48289179589*pi/36175928841
+pi+arccos(-1/5)
+60402430337*pi/36175928841
+arccos(root 1 of x^4+6*x^3+12*x^2+10*x-13)
+...
+
+QBarExhaustiveProvider_range_AlgebraicAngle_AlgebraicAngle_xvi list 51
+pi
+arccos(-2+sqrt(5))
+9193625075*pi/8039095298
+pi+arccos(2-sqrt(5))
+1154529777*pi/16078190596
+arccos(root 0 of x^3+5*x^2+7*x-5)
+41350006267*pi/24117285894
+pi+arccos(root 0 of x^3-5*x^2+7*x+5)
+5174077426*pi/12058642947
+arccos(-1/3)
+49389101565*pi/32156381192
+pi+arccos(1/3)
+19541779927*pi/32156381192
+arccos(-1+sqrt(2))
+57428196863*pi/40195476490
+pi+arccos(1-sqrt(2))
+37330458618*pi/20097738245
+arccos(root 0 of x^4+2*x^3-4*x^2-18*x+3)
+11502684629*pi/40195476490
+pi+arccos(root 1 of x^4-2*x^3-4*x^2+18*x+3)
+65467292161*pi/48234571788
+arccos(1/3)
+73506387459*pi/56273667086
+pi+arccos(-1/3)
+45369553916*pi/28136833543
+arccos(-3+2*sqrt(2))
+107971828205*pi/56273667086
+pi+arccos(3-2*sqrt(2))
+6328607203*pi/28136833543
+arccos(root 0 of x^3+3*x^2+7*x-3)
+29889934779*pi/56273667086
+pi+arccos(root 0 of x^3-3*x^2+7*x+3)
+81545482757*pi/64312762384
+pi+arccos(3/5)
+116010923503*pi/64312762384
+arccos(-2+sqrt(3))
+21850839481*pi/64312762384
+pi+arccos(2-sqrt(3))
+89584578055*pi/72351857682
+pi+arccos(2/3)
+53408649214*pi/36175928841
+arccos(root 1 of x^5+3*x^4-2*x^3-22*x^2-31*x+19)
+70641369587*pi/36175928841
+pi+arccos(root 1 of x^5-3*x^4-2*x^3+22*x^2-31*x-19)
+13811744183*pi/72351857682
+pi+arccos(5/7)
+97623673353*pi/80390952980
+arccos((-3+2*sqrt(3))/3)
+132089114099*pi/80390952980
+pi+arccos((3-2*sqrt(3))/3)
+...
+
+QBarExhaustiveProvider_range_AlgebraicAngle_AlgebraicAngle_xvii list 51
+pi
+pi+arccos(-1/3)
+45424161717*pi/32156381192
+pi+arccos((5-2*sqrt(5))/3)
+61502352313*pi/48234571788
+pi+arccos(1/3)
+37385066419*pi/24117285894
+pi+arccos(root 0 of 27*x^3-117*x^2+153*x+1)
+77580542909*pi/64312762384
+pi+arccos(5/9)
+18731746701*pi/16078190596
+pi+arccos((3-2*sqrt(2))/3)
+10692651403*pi/8039095298
+pi+arccos(2/3)
+24038858911*pi/16078190596
+pi+arccos(root 1 of 81*x^4-216*x^3+18*x^2+480*x-107)
+109736924101*pi/96469143576
+pi+arccos(1/9)
+125815114697*pi/112547334172
+pi+arccos((7-4*sqrt(2))/3)
+69541447611*pi/56273667086
+pi+arccos(root 0 of 27*x^3-81*x^2+129*x-11)
+152350675747*pi/112547334172
+pi+arccos(11/15)
+41404614068*pi/28136833543
+pi+arccos((5-2*sqrt(3))/3)
+178886236797*pi/112547334172
+pi+arccos(7/9)
+141893305293*pi/128625524768
+pi+arccos(root 1 of 243*x^5-891*x^4+702*x^3+1386*x^2-2529*x+65)
+168428866343*pi/128625524768
+pi+arccos(17/21)
+194964427393*pi/128625524768
+pi+arccos((9-4*sqrt(3))/9)
+157971495889*pi/144703715364
+pi+arccos(5/6)
+85619638207*pi/72351857682
+pi+arccos(root 0 of 27*x^3-117*x^2+201*x-47)
+49443709366*pi/36175928841
+pi+arccos(7/15)
+211042617989*pi/144703715364
+pi+arccos((11-2*sqrt(13))/9)
+34809937297*pi/32156381192
+pi+arccos(1/5)
+40117049507*pi/32156381192
+pi+arccos(root 0 of 81*x^4-432*x^3+810*x^2-648*x-67)
+50731273927*pi/32156381192
+pi+arccos(13/21)
+190127877081*pi/176860096556
+pi+arccos((7-sqrt(17))/6)
+...
+
+QBarExhaustiveProvider_range_AlgebraicAngle_AlgebraicAngle_xviii list 51
+pi
+pi+arccos(1/3)
+10076173023*pi/8039095298
+pi+arccos((4-sqrt(5))/3)
+14095720672*pi/12058642947
+pi+arccos(2/3)
+16132798397*pi/12058642947
+pi+arccos(root 0 of 27*x^3-99*x^2+117*x-37)
+18115268321*pi/16078190596
+pi+arccos(7/9)
+22189423771*pi/16078190596
+pi+arccos((3-sqrt(2))/3)
+4426963194*pi/4019547649
+pi+arccos(5/6)
+4834378739*pi/4019547649
+pi+arccos(root 1 of 81*x^4-270*x^3+288*x^2-66*x-17)
+5241794284*pi/4019547649
+pi+arccos(5/9)
+26154363619*pi/24117285894
+pi+arccos((5-2*sqrt(2))/3)
+30173911268*pi/28136833543
+pi+arccos(root 0 of 27*x^3-81*x^2+93*x-31)
+32210988993*pi/28136833543
+pi+arccos(13/15)
+34248066718*pi/28136833543
+pi+arccos((4-sqrt(3))/3)
+36285144443*pi/28136833543
+pi+arccos(8/9)
+38322222168*pi/28136833543
+pi+arccos(root 1 of 243*x^5-1053*x^4+1674*x^3-1062*x^2+99*x+67)
+34193458917*pi/32156381192
+pi+arccos(19/21)
+38267614367*pi/32156381192
+pi+arccos((9-2*sqrt(3))/9)
+42341769817*pi/32156381192
+pi+arccos(11/12)
+38213006566*pi/36175928841
+pi+arccos(root 0 of 27*x^3-99*x^2+129*x-49)
+40250084291*pi/36175928841
+pi+arccos(11/15)
+44324239741*pi/36175928841
+pi+arccos((10-sqrt(13))/9)
+46361317466*pi/36175928841
+pi+arccos(3/5)
+8446510843*pi/8039095298
+pi+arccos(root 0 of 81*x^4-378*x^3+648*x^2-486*x+119)
+9261341933*pi/8039095298
+pi+arccos(17/21)
+10891004113*pi/8039095298
+pi+arccos((13-sqrt(17))/12)
+...
+
+QBarExhaustiveProvider_range_AlgebraicAngle_AlgebraicAngle_xix list 51
+pi/2
+pi+arccos(2-sqrt(5))
+0
+pi+arccos(root 0 of x^3-5*x^2+7*x+5)
+5*pi/4
+arccos(-1/3)
+pi
+pi+arccos(1/3)
+3*pi/2
+pi+arccos(1-sqrt(2))
+7*pi/8
+pi+arccos(root 1 of x^4-2*x^3-4*x^2+18*x+3)
+13*pi/8
+pi+arccos(-1/3)
+4*pi/5
+arccos(-3+2*sqrt(2))
+11*pi/10
+pi+arccos(3-2*sqrt(2))
+7*pi/5
+pi+arccos(root 0 of x^3-3*x^2+7*x+3)
+17*pi/10
+arccos(-3/5)
+3*pi/4
+pi+arccos(3/5)
+7*pi/4
+arccos(-2+sqrt(3))
+5*pi/7
+pi+arccos(2-sqrt(3))
+13*pi/14
+arccos(-2/3)
+8*pi/7
+pi+arccos(2/3)
+19*pi/14
+pi+arccos(root 1 of x^5-3*x^4-2*x^3+22*x^2-31*x-19)
+11*pi/7
+arccos(-5/7)
+25*pi/14
+pi+arccos(5/7)
+11*pi/16
+pi+arccos((3-2*sqrt(3))/3)
+17*pi/16
+arccos(-3/4)
+23*pi/16
+pi+arccos(3/4)
+29*pi/16
+pi+arccos(root 0 of x^3-5*x^2+11*x+1)
+2*pi/3
+arccos(-1/5)
+5*pi/6
+pi+arccos(1/5)
+...
+
+QBarExhaustiveProvider_range_AlgebraicAngle_AlgebraicAngle_xx list 51
+pi/2
+arccos((-3+sqrt(5))/2)
+pi
+arccos(root 0 of x^3+4*x^2+5*x+1)
+3*pi/4
+arccos(-2/3)
+2*pi/3
+arccos((-2+sqrt(2))/2)
+5*pi/6
+arccos(-3/4)
+5*pi/8
+arccos(root 0 of x^4+3*x^3+2*x^2-2*x-1)
+7*pi/8
+arccos(-1/3)
+3*pi/5
+arccos(-2+sqrt(2))
+7*pi/10
+arccos(-1/4)
+4*pi/5
+arccos(root 0 of x^3+3*x^2+4*x+1)
+9*pi/10
+arccos(-4/5)
+7*pi/12
+arccos((-3+sqrt(3))/2)
+11*pi/12
+arccos(-5/6)
+4*pi/7
+arccos(root 1 of x^5+4*x^4+5*x^3-4*x-1)
+9*pi/14
+arccos(-6/7)
+5*pi/7
+arccos((-3+sqrt(3))/3)
+11*pi/14
+arccos(-7/8)
+6*pi/7
+arccos(root 0 of x^3+4*x^2+6*x+2)
+13*pi/14
+arccos(-3/5)
+9*pi/16
+arccos((-7+sqrt(13))/6)
+11*pi/16
+arccos(-2/5)
+13*pi/16
+arccos(root 1 of x^4+5*x^3+9*x^2+7*x+1)
+15*pi/16
+arccos(-5/7)
+5*pi/9
+arccos((-9+sqrt(17))/8)
+11*pi/18
+arccos(-4/7)
+...
+
+QBarExhaustiveProvider_range_AlgebraicAngle_AlgebraicAngle_xxi list 1
+pi/2
+
+QBarExhaustiveProvider_range_AlgebraicAngle_AlgebraicAngle_xxii list 51
+pi/2
+arccos((-3+sqrt(5))/2)
+3*pi/2
+pi+arccos((3-sqrt(5))/2)
+pi
+arccos(root 0 of x^3+4*x^2+5*x+1)
+5*pi/6
+pi+arccos(root 0 of x^3-4*x^2+5*x-1)
+7*pi/6
+arccos(-2/3)
+3*pi/4
+pi+arccos(2/3)
+5*pi/4
+arccos((-2+sqrt(2))/2)
+7*pi/10
+pi+arccos((2-sqrt(2))/2)
+9*pi/10
+arccos(-3/4)
+11*pi/10
+pi+arccos(3/4)
+13*pi/10
+arccos(root 0 of x^4+3*x^3+2*x^2-2*x-1)
+2*pi/3
+pi+arccos(root 1 of x^4-3*x^3+2*x^2+2*x-1)
+4*pi/3
+arccos(-1/3)
+9*pi/14
+pi+arccos(1/3)
+11*pi/14
+arccos(-2+sqrt(2))
+13*pi/14
+pi+arccos(2-sqrt(2))
+15*pi/14
+arccos(-1/4)
+17*pi/14
+pi+arccos(1/4)
+19*pi/14
+arccos(root 0 of x^3+3*x^2+4*x+1)
+5*pi/8
+pi+arccos(root 0 of x^3-3*x^2+4*x-1)
+7*pi/8
+arccos(-4/5)
+9*pi/8
+pi+arccos(4/5)
+11*pi/8
+arccos((-3+sqrt(3))/2)
+11*pi/18
+pi+arccos((3-sqrt(3))/2)
+13*pi/18
+arccos(-5/6)
+...
+
+QBarExhaustiveProvider_range_AlgebraicAngle_AlgebraicAngle_xxiii list 51
+pi/2
+arccos((-3+sqrt(5))/4)
+2*pi/3
+arccos(-1/4)
+7*pi/12
+arccos(root 0 of 8*x^3+16*x^2+10*x+1)
+5*pi/9
+arccos(-1/3)
+11*pi/18
+arccos((-2+sqrt(2))/4)
+13*pi/24
+arccos(-3/8)
+5*pi/8
+arccos(root 0 of 16*x^4+24*x^3+8*x^2-4*x-1)
+8*pi/15
+arccos(-1/6)
+17*pi/30
+arccos((-2+sqrt(2))/2)
+3*pi/5
+arccos(-1/8)
+19*pi/30
+arccos(root 0 of 8*x^3+12*x^2+8*x+1)
+19*pi/36
+arccos(-2/5)
+23*pi/36
+arccos((-3+sqrt(3))/4)
+11*pi/21
+arccos(-5/12)
+23*pi/42
+arccos(root 1 of 32*x^5+64*x^4+40*x^3-8*x-1)
+4*pi/7
+arccos(-3/7)
+25*pi/42
+arccos((-3+sqrt(3))/6)
+13*pi/21
+arccos(-7/16)
+9*pi/14
+arccos(root 0 of 4*x^3+8*x^2+6*x+1)
+25*pi/48
+arccos(-3/10)
+9*pi/16
+arccos((-7+sqrt(13))/12)
+29*pi/48
+arccos(-1/5)
+31*pi/48
+arccos(root 1 of 16*x^4+40*x^3+36*x^2+14*x+1)
+14*pi/27
+arccos(-5/14)
+29*pi/54
+arccos((-9+sqrt(17))/16)
+...
+
+QBarExhaustiveProvider_range_AlgebraicAngle_AlgebraicAngle_xxiv list 51
+pi/2
+pi+arccos(2-sqrt(5))
+2037077725*pi/4019547649
+arccos(root 0 of x^3+5*x^2+7*x-5)
+24171893695*pi/16078190596
+pi+arccos(root 0 of x^3-5*x^2+7*x+5)
+14095720672*pi/12058642947
+arccos(-1/3)
+44324239741*pi/24117285894
+pi+arccos(1/3)
+32210988993*pi/32156381192
+arccos(-1+sqrt(2))
+163823403*pi/32156381192
+pi+arccos(1-sqrt(2))
+18115268321*pi/20097738245
+pi+arccos(root 1 of x^4-2*x^3-4*x^2+18*x+3)
+52363335039*pi/40195476490
+arccos(1/3)
+34248066718*pi/20097738245
+pi+arccos(-1/3)
+4237978853*pi/40195476490
+arccos(-3+2*sqrt(2))
+40250084291*pi/48234571788
+pi+arccos(3-2*sqrt(2))
+8312134303*pi/48234571788
+arccos(root 0 of x^3+3*x^2+7*x-3)
+22134815970*pi/28136833543
+pi+arccos(root 0 of x^3-3*x^2+7*x+3)
+60402430337*pi/56273667086
+arccos(-3/5)
+38267614367*pi/28136833543
+pi+arccos(3/5)
+92668027131*pi/56273667086
+arccos(-2+sqrt(3))
+54400412764*pi/28136833543
+pi+arccos(2-sqrt(3))
+12386289753*pi/56273667086
+arccos(-2/3)
+48289179589*pi/64312762384
+pi+arccos(2/3)
+80554776383*pi/64312762384
+arccos(root 1 of x^5+3*x^4-2*x^3-22*x^2-31*x+19)
+112820373177*pi/64312762384
+pi+arccos(root 1 of x^5-3*x^4-2*x^3+22*x^2-31*x-19)
+16460445203*pi/64312762384
+arccos(-5/7)
+26154363619*pi/36175928841
+pi+arccos(5/7)
+68441525635*pi/72351857682
+pi+arccos((3-2*sqrt(3))/3)
+...
+
+QBarExhaustiveProvider_range_AlgebraicAngle_AlgebraicAngle_xxv list 51
+pi/2
+arccos(-1/3)
+144857658459*pi/257251049536
+arccos((-3+sqrt(5))/6)
+209170420843*pi/385876574304
+arccos(-1/6)
+112701277267*pi/192938287152
+arccos(root 0 of 27*x^3+36*x^2+15*x+1)
+273483183227*pi/514502099072
+arccos(-2/9)
+305947450609*pi/514502099072
+arccos((-2+sqrt(2))/6)
+337795945611*pi/643127623840
+arccos(-1/4)
+177014039651*pi/321563811920
+arccos(root 0 of 81*x^4+81*x^3+18*x^2-6*x-1)
+370260212993*pi/643127623840
+arccos(-1/9)
+96623086671*pi/160781905960
+arccos((-2+sqrt(2))/3)
+402108707995*pi/771753148608
+arccos(-1/12)
+467037242759*pi/771753148608
+arccos(root 0 of 27*x^3+27*x^2+12*x+1)
+466421470379*pi/900378673376
+arccos(-4/15)
+241326802035*pi/450189336688
+arccos((-3+sqrt(3))/6)
+498885737761*pi/900378673376
+arccos(-5/18)
+128779467863*pi/225094668344
+arccos(root 1 of 243*x^5+324*x^4+135*x^3-12*x-1)
+531350005143*pi/900378673376
+arccos(-2/7)
+273791069417*pi/450189336688
+arccos((-3+sqrt(3))/9)
+530734232763*pi/1029004198144
+arccos(-7/24)
+563198500145*pi/1029004198144
+arccos(root 0 of 27*x^3+36*x^2+18*x+2)
+595662767527*pi/1029004198144
+arccos(-1/5)
+595046995147*pi/1157629722912
+arccos((-7+sqrt(13))/18)
+305639564419*pi/578814861456
+arccos(-2/15)
+160935849055*pi/289407430728
+arccos(root 1 of 81*x^4+135*x^3+81*x^2+21*x+1)
+659975529911*pi/1157629722912
+arccos(-5/21)
+...
+
+QBarExhaustiveProvider_range_AlgebraicAngle_AlgebraicAngle_xxvi list 51
+pi/2
+pi+arccos(-1/3)
+10626134011*pi/8039095298
+arccos((-5+2*sqrt(5))/3)
+8423938557*pi/8039095298
+pi+arccos((5-2*sqrt(5))/3)
+12828329465*pi/8039095298
+arccos(-1/3)
+3661420415*pi/4019547649
+pi+arccos(1/3)
+33310910969*pi/40195476490
+pi+arccos(root 0 of 27*x^3-117*x^2+153*x+1)
+46524083693*pi/40195476490
+arccos(-5/9)
+59737256417*pi/40195476490
+pi+arccos(5/9)
+6221743103*pi/8039095298
+arccos((-3+2*sqrt(2))/3)
+41350006267*pi/56273667086
+pi+arccos((3-2*sqrt(2))/3)
+54563178991*pi/56273667086
+arccos(-2/3)
+67776351715*pi/56273667086
+pi+arccos(2/3)
+80989524439*pi/56273667086
+arccos(root 0 of 81*x^4+216*x^3+18*x^2-480*x-107)
+11342388479*pi/16078190596
+pi+arccos(root 1 of 81*x^4-216*x^3+18*x^2+480*x-107)
+17948974841*pi/16078190596
+arccos(-1/9)
+24555561203*pi/16078190596
+pi+arccos(1/9)
+16463033855*pi/24117285894
+arccos((-7+4*sqrt(2))/3)
+20867424763*pi/24117285894
+pi+arccos((7-4*sqrt(2))/3)
+29676206579*pi/24117285894
+arccos(root 0 of 27*x^3+81*x^2+129*x+11)
+34080597487*pi/24117285894
+pi+arccos(root 0 of 27*x^3-81*x^2+129*x-11)
+26704324607*pi/40195476490
+arccos(-11/15)
+39917497331*pi/40195476490
+pi+arccos(11/15)
+57428196863*pi/88430048278
+arccos((-5+2*sqrt(3))/3)
+70641369587*pi/88430048278
+pi+arccos((5-2*sqrt(3))/3)
+83854542311*pi/88430048278
+arccos(-7/9)
+...
+
+QBarExhaustiveProvider_range_AlgebraicAngle_AlgebraicAngle_xxvii list 51
+pi/2
+arccos((-3+sqrt(5))/2)
+16132798397*pi/16078190596
+pi+arccos((3-sqrt(5))/2)
+3358724341*pi/4019547649
+arccos(root 0 of x^3+4*x^2+5*x+1)
+9415349715*pi/8039095298
+arccos(-2/3)
+24171893695*pi/32156381192
+pi+arccos(2/3)
+40359299893*pi/32156381192
+arccos((-2+sqrt(2))/2)
+14095720672*pi/20097738245
+arccos(-3/4)
+36285144443*pi/40195476490
+pi+arccos(3/4)
+22189423771*pi/20097738245
+arccos(root 0 of x^4+3*x^3+2*x^2-2*x-1)
+52472550641*pi/40195476490
+pi+arccos(root 1 of x^4-3*x^3+2*x^2+2*x-1)
+10736996331*pi/16078190596
+arccos(-1/3)
+21528600463*pi/16078190596
+pi+arccos(1/3)
+18115268321*pi/28136833543
+arccos(-2+sqrt(2))
+44324239741*pi/56273667086
+pi+arccos(2-sqrt(2))
+26208971420*pi/28136833543
+arccos(-1/4)
+60511645939*pi/56273667086
+arccos(root 0 of x^3+3*x^2+4*x+1)
+34302674519*pi/28136833543
+arccos(-4/5)
+76699052137*pi/56273667086
+pi+arccos(4/5)
+40250084291*pi/64312762384
+arccos((-3+sqrt(3))/2)
+56437490489*pi/64312762384
+pi+arccos((3-sqrt(3))/2)
+72624896687*pi/64312762384
+arccos(-5/6)
+88812302885*pi/64312762384
+pi+arccos(5/6)
+7378271990*pi/12058642947
+arccos(root 1 of x^5+4*x^4+5*x^3-4*x-1)
+17454445013*pi/24117285894
+arccos(-6/7)
+22850247079*pi/24117285894
+pi+arccos(6/7)
+...
+
+QBarExhaustiveProvider_range_AlgebraicAngle_AlgebraicAngle_xxviii list 51
+0
+arccos(-2+sqrt(5))
+pi
+pi+arccos(2-sqrt(5))
+2*pi/3
+pi+arccos(root 0 of x^3-5*x^2+7*x+5)
+4*pi/3
+arccos(-1/3)
+pi/2
+pi+arccos(1/3)
+3*pi/2
+pi+arccos(1-sqrt(2))
+2*pi/5
+arccos(root 0 of x^4+2*x^3-4*x^2-18*x+3)
+4*pi/5
+pi+arccos(root 1 of x^4-2*x^3-4*x^2+18*x+3)
+6*pi/5
+arccos(1/3)
+8*pi/5
+pi+arccos(-1/3)
+5*pi/3
+arccos(-3+2*sqrt(2))
+4*pi/7
+pi+arccos(3-2*sqrt(2))
+6*pi/7
+pi+arccos(root 0 of x^3-3*x^2+7*x+3)
+8*pi/7
+arccos(-3/5)
+10*pi/7
+pi+arccos(3/5)
+12*pi/7
+arccos(-2+sqrt(3))
+3*pi/4
+pi+arccos(2-sqrt(3))
+5*pi/4
+arccos(-2/3)
+7*pi/4
+pi+arccos(2/3)
+4*pi/9
+pi+arccos(root 1 of x^5-3*x^4-2*x^3+22*x^2-31*x-19)
+8*pi/9
+arccos(-5/7)
+10*pi/9
+pi+arccos(5/7)
+14*pi/9
+arccos((-3+2*sqrt(3))/3)
+16*pi/9
+pi+arccos((3-2*sqrt(3))/3)
+3*pi/5
+arccos(-3/4)
+...
+
+QBarExhaustiveProvider_range_AlgebraicAngle_AlgebraicAngle_xxix list 51
+pi
+arccos(1/3)
+19216247473*pi/32593243600
+arccos((-5+2*sqrt(5))/3)
+3689312191*pi/8148310900
+arccos(-1/3)
+11837623091*pi/16296621800
+arccos(root 0 of 27*x^3+117*x^2+153*x-1)
+51809491073*pi/65186487200
+arccos(-5/9)
+41352120619*pi/81483109000
+arccos((-3+2*sqrt(2))/3)
+27364558373*pi/40741554500
+arccos(-2/3)
+68106112873*pi/81483109000
+arccos(root 0 of 81*x^4+216*x^3+18*x^2-480*x-107)
+28134244891*pi/32593243600
+arccos(-1/9)
+9438274393*pi/22815270520
+arccos((-7+4*sqrt(2))/3)
+15142092023*pi/28519088150
+arccos(root 0 of 27*x^3+81*x^2+129*x+11)
+73945364219*pi/114076352600
+arccos(-11/15)
+43661180173*pi/57038176300
+arccos((-5+2*sqrt(3))/3)
+100699356473*pi/114076352600
+arccos(-7/9)
+12697598753*pi/26074594880
+arccos(root 1 of 243*x^5+891*x^4+702*x^3-1386*x^2-2529*x-65)
+90241986019*pi/130372974400
+arccos(-17/21)
+116995978273*pi/130372974400
+arccos((-9+4*sqrt(3))/9)
+1772991457*pi/3259324360
+arccos(-5/6)
+2587822547*pi/4074155450
+arccos(root 0 of 27*x^3+117*x^2+201*x+47)
+6661977997*pi/8148310900
+arccos(-7/15)
+14810288897*pi/16296621800
+arccos((-11+2*sqrt(13))/9)
+69327245111*pi/162966218000
+arccos(-1/5)
+122835229619*pi/162966218000
+arccos(root 1 of 81*x^4+432*x^3+810*x^2+648*x-67)
+149589221873*pi/162966218000
+arccos(-13/21)
+820987168*pi/2037077725
+arccos((-7+sqrt(17))/6)
+...
+
+QBarExhaustiveProvider_range_AlgebraicAngle_AlgebraicAngle_xxx list 51
+pi/2
+arccos(1/3)
+114140840709*pi/260745948800
+arccos((-1+sqrt(5))/6)
+81547597109*pi/195559461600
+arccos(1/6)
+179327327909*pi/391118923200
+arccos(root 0 of 27*x^3+9*x^2-1)
+212049547727*pi/521491897600
+arccos(1/9)
+244513815109*pi/521491897600
+arccos(sqrt(2)/6)
+65250975309*pi/162966218000
+arccos(1/12)
+277236034927*pi/651864872000
+arccos(root 0 of 81*x^4-27*x^3-9*x^2-3*x+1)
+146734084309*pi/325932436000
+arccos(2/9)
+309700302309*pi/651864872000
+arccos((-1+sqrt(2))/3)
+61991650949*pi/156447569280
+arccos(1/4)
+374886789509*pi/782237846400
+arccos(root 0 of 27*x^3+3*x-1)
+179456304127*pi/456305410400
+arccos(1/15)
+75028948389*pi/182522164160
+arccos((-1+sqrt(3))/6)
+97844218909*pi/228152705200
+arccos(1/18)
+407609009327*pi/912610820800
+arccos(root 1 of 243*x^5-81*x^4-27*x^3-9*x^2+1)
+211920571509*pi/456305410400
+arccos(1/21)
+440073276709*pi/912610820800
+arccos(sqrt(3)/9)
+88066245829*pi/208596759040
+arccos(1/24)
+472795496527*pi/1042983795200
+arccos(root 0 of 27*x^3+9*x^2+3*x-1)
+505259763909*pi/1042983795200
+arccos(2/15)
+473053448963*pi/1173356769600
+arccos((-1+sqrt(13))/18)
+101103543269*pi/234671353920
+arccos(1/5)
+130437462509*pi/293339192400
+arccos(root 1 of 81*x^4+27*x^3-1)
+277107058709*pi/586678384800
+arccos(2/21)
+...
+
+QBarExhaustiveProvider_range_AlgebraicAngle_AlgebraicAngle_xxxi list 51
+3*pi/2
+arccos(1/3)
+3*pi/4
+arccos((-5+2*sqrt(5))/3)
+pi/2
+pi+arccos((5-2*sqrt(5))/3)
+pi
+arccos(-1/3)
+9*pi/8
+pi+arccos(1/3)
+3*pi/5
+arccos(root 0 of 27*x^3+117*x^2+153*x-1)
+9*pi/10
+arccos(-5/9)
+6*pi/5
+pi+arccos(5/9)
+5*pi/4
+arccos((-3+2*sqrt(2))/3)
+3*pi/7
+pi+arccos((3-2*sqrt(2))/3)
+9*pi/14
+arccos(-2/3)
+6*pi/7
+pi+arccos(2/3)
+15*pi/14
+arccos(root 0 of 81*x^4+216*x^3+18*x^2-480*x-107)
+9*pi/7
+pi+arccos(root 1 of 81*x^4-216*x^3+18*x^2+480*x-107)
+9*pi/16
+arccos(-1/9)
+15*pi/16
+pi+arccos(1/9)
+21*pi/16
+arccos((-7+4*sqrt(2))/3)
+2*pi/3
+pi+arccos((7-4*sqrt(2))/3)
+5*pi/6
+arccos(root 0 of 27*x^3+81*x^2+129*x+11)
+7*pi/6
+pi+arccos(root 0 of 27*x^3-81*x^2+129*x-11)
+4*pi/3
+arccos(-11/15)
+9*pi/20
+pi+arccos(11/15)
+21*pi/20
+arccos((-5+2*sqrt(3))/3)
+27*pi/20
+pi+arccos((5-2*sqrt(3))/3)
+9*pi/22
+arccos(-7/9)
+...
+
+QBarExhaustiveProvider_range_AlgebraicAngle_AlgebraicAngle_xxxii list 51
+2*pi/3
+arccos(1/3)
+98062650113*pi/195559461600
+arccos((-11+5*sqrt(5))/12)
+65469406513*pi/146669596200
+arccos(-1/12)
+163249137313*pi/293339192400
+arccos(root 0 of 216*x^3+504*x^2+342*x-53)
+163814975939*pi/391118923200
+arccos(-2/9)
+76145208171*pi/130372974400
+arccos((-6+5*sqrt(2))/12)
+49172784713*pi/122224663500
+arccos(-7/24)
+229001463139*pi/488898654000
+arccos(root 0 of 1296*x^4+1512*x^3-576*x^2-1812*x-29)
+43551964571*pi/81483109000
+arccos(1/18)
+293622111713*pi/488898654000
+arccos((-8+5*sqrt(2))/6)
+358808598913*pi/586678384800
+arccos(1/8)
+58950757793*pi/136891623120
+arccos(root 0 of 216*x^3+324*x^2+312*x-23)
+27255342771*pi/57038176300
+arccos(-1/3)
+359374437539*pi/684458115600
+arccos((-11+5*sqrt(3))/12)
+195842380913*pi/342229057800
+arccos(-13/36)
+141331695371*pi/228152705200
+arccos(root 1 of 7776*x^5+12960*x^4+1080*x^3-12600*x^2-9360*x+1163)
+23996018411*pi/52149189760
+arccos(-8/21)
+424560924739*pi/782237846400
+arccos((-9+5*sqrt(3))/18)
+489181573313*pi/782237846400
+arccos(-19/48)
+360506114791*pi/880017577200
+arccos(root 0 of 108*x^3+252*x^2+246*x+11)
+85025352673*pi/176003515440
+arccos(-1/6)
+114359271913*pi/220004394300
+arccos((-23+5*sqrt(13))/36)
+261028868113*pi/440008788600
+arccos(root 1 of 1296*x^4+3672*x^3+3564*x^2+1458*x-409)
+554368060513*pi/880017577200
+arccos(-11/42)
+141897533997*pi/325932436000
+arccos((-29+5*sqrt(17))/48)
+...
+
+QBarExhaustiveProvider_range_AlgebraicAngle_AlgebraicAngle_xxxiii list 1
+arccos(1/3)
+
+QBarExhaustiveProvider_range_AlgebraicAngle_AlgebraicAngle_xxxiv list 51
+524926783869060709091*pi/1048080765485314371200
+arccos(1/3)
+30070880851019856643*pi/65505047842832148200
+arccos(-1/3)
+284359737060901855947*pi/524040382742657185600
+arccos((-2+sqrt(5))/3)
+918475496979892409773*pi/2096161530970628742400
+arccos(root 0 of 27*x^3+45*x^2+21*x-5)
+1181231638496350426591*pi/2096161530970628742400
+arccos(-1/9)
+557624926767654130057*pi/1310100956856642964000
+arccos((-1+sqrt(2))/3)
+1246627924293537268523*pi/2620201913713285928000
+arccos(-1/6)
+344501498762941569233*pi/655050478428321482000
+arccos(root 0 of 27*x^4+18*x^3-12*x^2-18*x+1)
+1509384065809995285341*pi/2620201913713285928000
+arccos(1/9)
+87468280672714940697*pi/209616153097062874240
+arccos((-3+2*sqrt(2))/3)
+612512164374546714697*pi/1048080765485314371200
+arccos(1/6)
+377199641661534990199*pi/917070669799650074800
+arccos(root 0 of 9*x^3+9*x^2+7*x-1)
+328035327480873793841*pi/733656535839720059840
+arccos(-1/5)
+885777354081298988807*pi/1834141339599300149600
+arccos((-2+sqrt(3))/3)
+1902932778920826986023*pi/3668282679198600299200
+arccos(-2/9)
+31786107026235249913*pi/57316916862478129675
+arccos(root 1 of 243*x^5+243*x^4-54*x^3-198*x^2-93*x+19)
+2165688920437285002841*pi/3668282679198600299200
+arccos(-5/21)
+1705572923201555811137*pi/4192323061941257484800
+arccos((-3+2*sqrt(3))/9)
+393665812943602765591*pi/838464612388251496960
+arccos(-1/4)
+2231085206234471844773*pi/4192323061941257484800
+arccos(root 0 of 27*x^3+45*x^2+33*x-1)
+2493841347750929861591*pi/4192323061941257484800
+arccos(-1/15)
+317057879959495276913*pi/786060574113985778400
+arccos((-4+sqrt(13))/9)
+677908450171733556629*pi/1572121148227971556800
+arccos(1/15)
+153098766135443912447*pi/314424229645594311360
+arccos(root 1 of 81*x^4+162*x^3+108*x^2+30*x-13)
+404643260464981282519*pi/786060574113985778400
+arccos(-1/7)
+...
+
+QBarExhaustiveProvider_range_AlgebraicAngle_AlgebraicAngle_xxxv list 51
+29345971121*pi/32156381192
+arccos(1/3)
+29345971121*pi/48234571788
+pi+arccos(-1/3)
+29345971121*pi/24117285894
+arccos((-5+2*sqrt(5))/3)
+29345971121*pi/64312762384
+pi+arccos((5-2*sqrt(5))/3)
+88037913363*pi/64312762384
+arccos(-1/3)
+29345971121*pi/40195476490
+pi+arccos(1/3)
+88037913363*pi/80390952980
+arccos(root 0 of 27*x^3+117*x^2+153*x-1)
+29345971121*pi/20097738245
+pi+arccos(root 0 of 27*x^3-117*x^2+153*x+1)
+146729855605*pi/96469143576
+arccos(-5/9)
+29345971121*pi/56273667086
+pi+arccos(5/9)
+88037913363*pi/112547334172
+arccos((-3+2*sqrt(2))/3)
+29345971121*pi/28136833543
+pi+arccos((3-2*sqrt(2))/3)
+146729855605*pi/112547334172
+arccos(-2/3)
+88037913363*pi/56273667086
+pi+arccos(2/3)
+88037913363*pi/128625524768
+arccos(root 0 of 81*x^4+216*x^3+18*x^2-480*x-107)
+146729855605*pi/128625524768
+pi+arccos(root 1 of 81*x^4-216*x^3+18*x^2+480*x-107)
+205421797847*pi/128625524768
+arccos(-1/9)
+29345971121*pi/72351857682
+pi+arccos(1/9)
+29345971121*pi/36175928841
+arccos((-7+4*sqrt(2))/3)
+146729855605*pi/144703715364
+pi+arccos((7-4*sqrt(2))/3)
+205421797847*pi/144703715364
+arccos(root 0 of 27*x^3+81*x^2+129*x+11)
+88037913363*pi/160781905960
+pi+arccos(root 0 of 27*x^3-81*x^2+129*x-11)
+205421797847*pi/160781905960
+arccos(-11/15)
+88037913363*pi/176860096556
+pi+arccos(11/15)
+29345971121*pi/44215024139
+arccos((-5+2*sqrt(3))/3)
+...
+
+QBarExhaustiveProvider_range_AlgebraicAngle_AlgebraicAngle_xxxvi list 51
+110438107614228745977*pi/131010095685664296400
+arccos(1/3)
+61086841062047969377*pi/98257571764248222300
+arccos((-5+2*sqrt(5))/3)
+209140640718590299177*pi/196515143528496444600
+arccos(-1/3)
+133909256633963131531*pi/262020191371328592800
+pi+arccos(1/3)
+307843173822951852377*pi/262020191371328592800
+arccos(root 0 of 27*x^3+117*x^2+153*x-1)
+36411207785957581077*pi/81881309803540185250
+arccos(-5/9)
+232611789738324684731*pi/327525239214160741000
+pi+arccos(5/9)
+159789374166409522577*pi/163762619607080370500
+arccos((-3+2*sqrt(2))/3)
+406545706927313405577*pi/327525239214160741000
+arccos(-2/3)
+31476081130739503417*pi/78606057411398577840
+pi+arccos(2/3)
+505248240031674958777*pi/393030287056992889200
+arccos(root 0 of 81*x^4+216*x^3+18*x^2-480*x-107)
+51216587751611814057*pi/91707066979965007480
+arccos(-1/9)
+85762474338138357677*pi/114633833724956259350
+arccos((-7+4*sqrt(2))/3)
+430016855947047791131*pi/458535334899825037400
+pi+arccos((7-4*sqrt(2))/3)
+258491907270771075777*pi/229267667449912518700
+arccos(root 0 of 27*x^3+81*x^2+129*x+11)
+603950773136036511977*pi/458535334899825037400
+arccos(-11/15)
+70957094372484124697*pi/104808076548531437120
+pi+arccos(11/15)
+528719389051409344331*pi/524040382742657185600
+arccos((-5+2*sqrt(3))/3)
+702653306240398065177*pi/524040382742657185600
+pi+arccos((5-2*sqrt(3))/3)
+279554087777793455839*pi/589545430585489333800
+arccos(-7/9)
+90697600993356435337*pi/117909086117097866760
+pi+arccos(7/9)
+135113740890319134277*pi/147386357646372333450
+arccos(root 1 of 243*x^5+891*x^4+702*x^3-1386*x^2-2529*x-65)
+357194440375132628977*pi/294772715292744666900
+arccos(-17/21)
+801355839344759618377*pi/589545430585489333800
+pi+arccos(17/21)
+378256620882155009039*pi/655050478428321482000
+arccos((-9+4*sqrt(3))/9)
+...
+
 QBarExhaustiveProvider_qbarRandomProvidersFixedScales_i list 51
 QBarRandomProvider[@-7948823947390831374, 8, 32, 2]
 QBarRandomProvider[@7302477663894715351, 8, 32, 2]
@@ -51256,6 +52964,2454 @@ QBarRandomProvider_rationalMultiplesOfPiInRange_lxx map 10
 20: 406545706927313405577*pi/327525239214160741000
 19: 36411207785957581077*pi/81881309803540185250
 16: 232611789738324684731*pi/327525239214160741000
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_i list 21
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_i map 1
+1000: 0
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_ii list 21
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_ii map 1
+1000: 0
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_iii list 21
+3*pi/5
+pi/5
+0
+0
+pi
+pi/2
+arccos(-1/3)
+arccos(-108/109)
+arccos(root 0 of x^3+x^2+155*x+147)
+0
+arccos((-146+sqrt(52339))/383)
+arccos(-2/5)
+pi/2
+pi
+0
+pi/4
+arccos(root 0 of 5*x^5+17*x^4+18*x^3-30*x^2+1561*x+1181)
+arccos(-12/13)
+pi/6
+arccos(-32459/32461)
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_iii map 10
+212: 0
+145: pi
+31: pi/2
+25: pi/3
+21: 2*pi/3
+12: arccos(-1/3)
+10: pi/4
+7: pi/6
+6: arccos(-2/3)
+6: arccos(-5/7)
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_iv list 21
+3*pi/5
+pi/5
+0
+pi/2
+arccos(41/109)
+arccos(root 0 of 259123*x^5+1296123*x^4+2593266*x^3+2594322*x^2+1297739*x+258019)
+5*pi/6
+pi
+41*pi/42
+7*pi/33
+pi
+arccos(root 0 of x^11-564*x^10+22683*x^9+229696*x^8+952946*x^7+2263248*x^6+3422302*x^5+3413304*x^4+2257021*x^3+987428*x^2+283159*x+43976)
+arccos(root 0 of x^20+237*x^19+4270*x^18-7953949*x^17-135645635*x^16-1086011892*x^15-5431736640*x^14-19013990508*x^13-49440686294*x^12-98886798146*x^11-155399985972*x^10-194260615614*x^9-194497021654*x^8-157171186452*x^7-104935716624*x^6-61417929356*x^5-33759398475*x^4-16712714659*x^3-6114743594*x^2-1228366893*x+8247454649)
+pi/2
+5*pi/7
+785*pi/1699
+arccos((-40796+sqrt(163181))/40795)
+arccos(-6723/6740)
+arccos(root 3 of 5*x^20+46061600*x^19+875169390*x^18+7876519208*x^17+44633576137*x^16+178534144160*x^15+535601845064*x^14+1249736005056*x^13+2320934762714*x^12+3481396087264*x^11+4254871305460*x^10+4253421892048*x^9+3474178369130*x^8+2301753391584*x^7+1216275658376*x^6+495599027328*x^5+145353897057*x^4+25785917312*x^3+865205454*x^2-49184392504*x-48628281459)
+0
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_iv map 10
+116: 0
+53: pi
+40: pi/2
+21: pi/3
+18: 2*pi/3
+11: 5*pi/6
+8: pi/4
+6: 4*pi/7
+5: 3*pi/4
+5: 3*pi/5
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_v list 21
+3*pi/10
+pi/10
+0
+0
+pi/2
+pi/4
+arccos(1/3)
+arccos(1/218)
+arccos(root 0 of x^3-x^2+39*x-1)
+0
+arccos((237+sqrt(52339))/766)
+arccos(3/10)
+pi/4
+pi/2
+0
+pi/8
+arccos(root 0 of 5*x^5-4*x^4-4*x^2+102*x-13)
+arccos(1/26)
+pi/12
+arccos(1/32461)
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_v map 10
+213: 0
+149: pi/2
+37: pi/4
+24: pi/6
+21: pi/3
+11: arccos(1/3)
+9: pi/12
+9: pi/8
+6: 5*pi/12
+6: arccos(1/6)
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_vi list 21
+3*pi/10
+pi/10
+0
+pi/4
+arccos(75/109)
+arccos(root 0 of 259123*x^5+254*x^4+x^3+4*x^2+x-52)
+5*pi/12
+pi/2
+41*pi/84
+7*pi/66
+pi/2
+arccos(root 0 of 2*x^11-575*x^10+14189*x^9+x^8-3*x^7-10*x^6-239*x^5-11*x^4+197*x^3-2*x^2+2*x-1)
+arccos(root 0 of 4*x^20+434*x^19-43*x^18-3995711*x^17-x^15-x^14-57*x^13-x^12-4*x^11-2299*x^10+66*x^9-206499*x^8+415*x^7+13*x^6+107*x^5+8988*x^4+78*x^3-6*x^2-14*x+31731)
+pi/4
+5*pi/14
+785*pi/3398
+arccos((-1+sqrt(163181))/81590)
+arccos(17/13480)
+arccos(root 3 of 5*x^20+23030750*x^19-15*x^18-239*x^17+6*x^16+3*x^15+x^14-5*x^13+x^12-156260*x^10+1383*x^8+13*x^7+112*x^6+2*x^5-27*x^4+28*x^3-92546*x-3)
+0
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_vi map 10
+116: 0
+53: pi/2
+40: pi/4
+21: pi/6
+18: pi/3
+11: 5*pi/12
+8: pi/8
+6: 2*pi/7
+5: 3*pi/10
+5: 3*pi/8
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_vii list 21
+9*pi/10
+3*pi/10
+0
+0
+3*pi/2
+3*pi/4
+pi+arccos((-8+sqrt(197))/7)
+arccos(-7835/7873)
+3*pi/2
+pi+arccos(3/5)
+3*pi/2
+arccos(-1982647/1982651)
+15*pi/14
+3*pi/2
+arccos((-146-sqrt(52339))/383)
+arccos(1/6)
+pi+arccos(35/37)
+arccos(-7/9)
+pi+arccos(root 0 of 3789*x^3-11371*x^2+11403*x-3645)
+pi+arccos(4/5)
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_vii map 10
+200: 0
+144: 3*pi/2
+31: 3*pi/4
+24: pi/2
+21: pi
+8: 3*pi/8
+7: 9*pi/8
+6: 5*pi/4
+5: 3*pi/10
+5: arccos(-3/5)
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_viii list 21
+9*pi/10
+3*pi/10
+0
+3*pi/4
+pi+arccos(root 1 of 771*x^8-6162*x^7+21546*x^6-38618*x^5+120673728*x^4-482566838*x^3+723853846*x^2-473113566*x+112068221)
+84*pi/67
+arccos(root 0 of 51699*x^7+404539*x^6+1340819*x^5+2444635*x^4+2651153*x^3+1711433*x^2+4164265*x+3647201)
+5*pi/6
+arccos(root 0 of x^5+5*x^4+14*x^3-162*x^2+613585*x+613053)
+3*pi/10
+0
+pi+arccos(root 0 of 7*x^5-37*x^4+78*x^3-106*x^2+179*x-105)
+pi+arccos(7865/9297)
+0
+34*pi/55
+0
+15*pi/22
+arccos(root 0 of 73203*x^3+219609*x^2+219661*x+72951)
+pi/14
+arccos(-67/85)
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_viii map 10
+116: 0
+70: 3*pi/2
+54: 3*pi/4
+20: pi
+19: pi/2
+10: 3*pi/8
+7: 9*pi/10
+6: 5*pi/4
+5: 9*pi/8
+5: pi/4
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_ix list 21
+2*pi/5
+2*pi/15
+0
+0
+2*pi/3
+pi/3
+arccos(2/5)
+arccos(root 0 of 8*x^3+24*x^2+18*x-23)
+0
+0
+0
+2*pi/9
+4*pi/7
+2*pi/3
+arccos((-55+3*sqrt(52339))/1532)
+0
+pi/3
+2*pi/3
+arccos((-43+3*sqrt(111))/68)
+5*pi/9
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_ix map 10
+215: 0
+139: 2*pi/3
+34: pi/3
+26: 4*pi/9
+23: 2*pi/9
+9: arccos(1/4)
+7: arccos(-1/4)
+6: arccos(-2/7)
+6: pi/6
+5: 4*pi/7
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_x list 21
+2*pi/5
+2*pi/15
+0
+pi/3
+arccos(58/109)
+arccos(root 0 of 8291936*x^5+20742032*x^4+20754296*x^3+10383748*x^2+2597974*x+247447)
+5*pi/9
+2*pi/3
+41*pi/63
+14*pi/99
+2*pi/3
+arccos(root 0 of 2048*x^11-871936*x^10+28303616*x^9+137221248*x^8+281015616*x^7+331589856*x^6+247426368*x^5+118323672*x^4+39674400*x^3+12860914*x^2+4065550*x+559573)
+arccos(root 0 of 2097152*x^20+362283008*x^19+3291348992*x^18-7055865348096*x^17-60057503072256*x^16-240311636115456*x^15-600859835252736*x^14-1051575210442752*x^13-1367102034493440*x^12-1367140901143552*x^11-1074279396906496*x^10-671745567324160*x^9-350529152423424*x^8-191454182112768*x^7-141792503702784*x^6-109284280325184*x^5-60377493450216*x^4-18547319897976*x^3-1427306560264*x^2+688569865907*x+55454910735101)
+pi/3
+10*pi/21
+1570*pi/5097
+arccos((-81593+3*sqrt(163181))/163180)
+arccos(-13429/26960)
+arccos(root 3 of 5242880*x^20+36224289996800*x^19+344130470543360*x^18+1548585738829824*x^17+4387653851873280*x^16+8775292002533376*x^15+13162907986231296*x^14+15356683450417152*x^13+14259730974744576*x^12+10694757846677504*x^11+6526208520894464*x^10+3220569906999296*x^9+1230717626538240*x^8+304633734627072*x^7-2680527247296*x^6-47264174899680*x^5-25771114035408*x^4-7907538871200*x^3-1480759408600*x^2-215276051534980*x-107578494229147)
+0
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_x map 10
+92: 0
+56: 2*pi/3
+42: pi/3
+25: 2*pi/9
+15: 4*pi/9
+9: pi/2
+8: pi/9
+7: 5*pi/9
+6: 2*pi/15
+6: pi/6
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xi list 21
+1222246635*pi/4019547649
+407415545*pi/4019547649
+0
+0
+0
+arccos(5/9)
+arccos(1/3)
+arccos(110/327)
+arccos(root 0 of 27*x^3-45*x^2+489*x-167)
+0
+arccos((620+sqrt(52339))/1149)
+arccos(8/15)
+2037077725*pi/8039095298
+0
+arccos((34+sqrt(1001))/93)
+arccos((-7+sqrt(101))/6)
+0
+2037077725*pi/8039095298
+6111233175*pi/16078190596
+arccos(14/39)
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xi map 10
+283: 0
+63: 2037077725*pi/8039095298
+51: arccos(1/3)
+34: 4074155450*pi/12058642947
+24: 2037077725*pi/12058642947
+13: arccos(2/3)
+10: 2037077725*pi/24117285894
+10: arccos(5/9)
+8: 2037077725*pi/16078190596
+8: arccos(3/7)
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xii list 21
+1222246635*pi/4019547649
+407415545*pi/4019547649
+0
+2037077725*pi/8039095298
+arccos(259/327)
+arccos(root 0 of 62966889*x^5-104903667*x^4+69908454*x^3-23293458*x^2+3880641*x-260267)
+2037077725*pi/12058642947
+arccos(root 1 of 712662381*x^14-3309814548*x^13+7137429777*x^12-9524839896*x^11+8835993945*x^10+6927812388*x^9-40083075747*x^8+62130290544*x^7-53397011241*x^6+29044732788*x^5-10443659805*x^4+2501574120*x^3-419207901*x^2+55628028*x-4756753)
+10185388625*pi/56273667086
+156854984825*pi/638180488272
+19637429269*pi/156762358311
+18333699525*pi/112547334172
+156854984825*pi/454208884337
+4191980025614*pi/17866889299805
+2037077725*pi/16078190596
+arccos(root 1 of 81*x^3-135*x^2-6174165*x+2058419)
+arccos(37/84)
+arccos((-44+sqrt(2441))/15)
+0
+38704476775*pi/176860096556
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xii map 10
+134: 0
+48: 2037077725*pi/8039095298
+29: 4074155450*pi/12058642947
+27: 2037077725*pi/12058642947
+15: 6111233175*pi/16078190596
+13: 2037077725*pi/16078190596
+10: arccos(1/3)
+9: 2037077725*pi/24117285894
+8: 6111233175*pi/28136833543
+7: 407415545*pi/8039095298
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xiii list 21
+7960668315*pi/16078190596
+2653556105*pi/16078190596
+0
+0
+0
+arccos(1/9)
+arccos(-1/3)
+arccos(-107/327)
+arccos(root 0 of 27*x^3-9*x^2+1857*x+557)
+0
+arccos((91+2*sqrt(52339))/1149)
+arccos(1/15)
+13267780525*pi/32156381192
+0
+arccos((-25+2*sqrt(1001))/93)
+arccos((-10+sqrt(101))/3)
+0
+13267780525*pi/32156381192
+0
+0
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xiii map 10
+285: 0
+62: 13267780525*pi/32156381192
+52: arccos(-1/3)
+33: 13267780525*pi/24117285894
+22: 13267780525*pi/48234571788
+12: arccos(1/3)
+10: 13267780525*pi/96469143576
+9: arccos(1/9)
+8: 13267780525*pi/64312762384
+7: arccos(-1/9)
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xiv list 21
+7960668315*pi/16078190596
+2653556105*pi/16078190596
+0
+13267780525*pi/32156381192
+arccos(191/327)
+arccos(root 0 of 62966889*x^5+105027111*x^4+70073370*x^3+23378670*x^2+3901485*x+207419)
+13267780525*pi/48234571788
+arccos(root 1 of 712662381*x^14+3357644238*x^13+7346817531*x^12+9475947324*x^11+7632575325*x^10+419172960258*x^9+971793539667*x^8+928464623496*x^7+438106866831*x^6+76095279090*x^5-24039501543*x^4+9698516604*x^3-86763432921*x^2-65791459074*x-12250656487)
+66338902625*pi/225094668344
+1021619100425*pi/2552721953088
+127901404261*pi/627049433244
+119410024725*pi/450189336688
+1021619100425*pi/1816835537348
+13651484737783*pi/35733778599610
+13267780525*pi/64312762384
+arccos(root 1 of 81*x^3-27*x^2-24696957*x-8229497)
+arccos(-5/42)
+arccos((-103+2*sqrt(2441))/15)
+0
+252087829975*pi/707440386224
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xiv map 10
+152: 0
+50: 13267780525*pi/32156381192
+23: 13267780525*pi/24117285894
+23: 13267780525*pi/48234571788
+18: 13267780525*pi/96469143576
+12: 13267780525*pi/64312762384
+8: 2653556105*pi/32156381192
+6: 13267780525*pi/112547334172
+6: 39803341575*pi/112547334172
+6: 7960668315*pi/16078190596
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xv list 21
+51698161119*pi/40195476490
+17232720373*pi/40195476490
+0
+0
+1154529777*pi/8039095298
+17232720373*pi/16078190596
+pi+arccos((-8+sqrt(197))/7)
+arccos(-7835/7873)
+1154529777*pi/8039095298
+pi+arccos(3/5)
+1154529777*pi/8039095298
+arccos(-1982647/1982651)
+86163601865*pi/56273667086
+1154529777*pi/8039095298
+arccos((-146-sqrt(52339))/383)
+arccos(1/6)
+pi+arccos(35/37)
+arccos(-7/9)
+pi+arccos(root 0 of 3789*x^3-11371*x^2+11403*x-3645)
+pi+arccos(4/5)
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xv map 10
+202: 0
+153: 1154529777*pi/8039095298
+42: 17232720373*pi/16078190596
+27: 17232720373*pi/12058642947
+22: 17232720373*pi/24117285894
+6: 17232720373*pi/32156381192
+6: arccos(-3/5)
+5: 17232720373*pi/48234571788
+5: pi+arccos(1/3)
+4: 51698161119*pi/40195476490
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xvi list 21
+51698161119*pi/40195476490
+17232720373*pi/40195476490
+0
+17232720373*pi/16078190596
+pi+arccos(root 1 of 771*x^8-6162*x^7+21546*x^6-38618*x^5+120673728*x^4-482566838*x^3+723853846*x^2-473113566*x+112068221)
+1154529777*pi/8039095298
+arccos(root 1 of 7*x^5-64*x^4-326*x^3-166454684744*x^2-332909368937*x+384643276640)
+arccos(-108347/108393)
+86163601865*pi/72351857682
+arccos(root 0 of x^5+5*x^4+14*x^3-162*x^2+613585*x+613053)
+17232720373*pi/40195476490
+0
+pi+arccos(root 0 of 7*x^5-37*x^4+78*x^3-106*x^2+179*x-105)
+pi+arccos(7865/9297)
+0
+53264772062*pi/60293214735
+0
+7833054715*pi/8039095298
+pi+arccos(root 0 of 107*x^4-401*x^3+519*x^2-263*x-18)
+arccos(-6/31)
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xvi map 10
+141: 0
+59: 1154529777*pi/8039095298
+38: 17232720373*pi/16078190596
+25: 17232720373*pi/24117285894
+18: 17232720373*pi/12058642947
+10: 51698161119*pi/32156381192
+9: 17232720373*pi/48234571788
+7: 17232720373*pi/32156381192
+7: 51698161119*pi/40195476490
+6: 17232720373*pi/56273667086
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xvii list 21
+18169876122*pi/20097738245
+6056625374*pi/20097738245
+0
+0
+0
+pi+arccos((-8+sqrt(197))/7)
+arccos(-7835/7873)
+0
+arccos((-146-sqrt(52339))/383)
+6056625374*pi/12058642947
+arccos(-3/5)
+pi+arccos(1/3)
+pi+arccos(-12+sqrt(165))
+6056625374*pi/20097738245
+arccos(-3/5)
+0
+arccos((-20+sqrt(111))/17)
+15141563435*pi/12058642947
+arccos(1/6)
+pi+arccos(35/37)
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xvii map 10
+244: 0
+60: 3028312687*pi/4019547649
+35: 6056625374*pi/12058642947
+31: 12113250748*pi/12058642947
+10: 15141563435*pi/12058642947
+10: 3028312687*pi/8039095298
+7: 9084938061*pi/8039095298
+6: 3028312687*pi/12058642947
+6: pi+arccos(1/3)
+5: 6056625374*pi/20097738245
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xviii list 21
+18169876122*pi/20097738245
+6056625374*pi/20097738245
+0
+3028312687*pi/4019547649
+pi+arccos(root 1 of 771*x^8-6162*x^7+21546*x^6-38618*x^5+120673728*x^4-482566838*x^3+723853846*x^2-473113566*x+112068221)
+339171020944*pi/269309692483
+arccos(root 0 of 51699*x^7+404539*x^6+1340819*x^5+2444635*x^4+2651153*x^3+1711433*x^2+4164265*x+3647201)
+30283126870*pi/36175928841
+arccos(root 0 of x^5+5*x^4+14*x^3-162*x^2+613585*x+613053)
+6056625374*pi/20097738245
+0
+pi+arccos(root 0 of 7*x^5-37*x^4+78*x^3-106*x^2+179*x-105)
+pi+arccos(7865/9297)
+0
+411850525432*pi/663225362085
+0
+30283126870*pi/44215024139
+arccos(root 0 of 73203*x^3+219609*x^2+219661*x+72951)
+6056625374*pi/84410500629
+arccos(-67/85)
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xviii map 10
+121: 0
+56: 3028312687*pi/4019547649
+24: 12113250748*pi/12058642947
+22: 6056625374*pi/12058642947
+11: 3028312687*pi/8039095298
+11: 9084938061*pi/8039095298
+9: 15141563435*pi/12058642947
+7: 24226501496*pi/28136833543
+6: 3028312687*pi/12058642947
+6: 6056625374*pi/20097738245
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xix list 21
+8*pi/5
+6*pi/5
+pi
+pi
+0
+3*pi/2
+pi+arccos((-8+sqrt(197))/7)
+pi+arccos((146-sqrt(52339))/383)
+pi
+4*pi/3
+pi+arccos((-16+sqrt(181))/5)
+6*pi/5
+pi+arccos(3/5)
+pi
+pi+arccos(root 0 of 7*x^4-28*x^3+55*x^2-112*x+18)
+pi+arccos(34266613/34266620)
+pi+arccos(51643/51677)
+pi+arccos(-8/11)
+0
+pi+arccos(root 0 of x^3-x^2+103*x-95)
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xix map 10
+183: pi
+128: 0
+36: 3*pi/2
+28: 4*pi/3
+25: 5*pi/3
+17: pi+arccos(1/3)
+9: 7*pi/4
+8: 11*pi/6
+7: 7*pi/6
+5: 9*pi/5
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xx list 21
+8*pi/5
+6*pi/5
+pi
+3*pi/2
+pi+arccos(root 1 of 771*x^8-6162*x^7+21546*x^6-38618*x^5+120673728*x^4-482566838*x^3+723853846*x^2-473113566*x+112068221)
+123*pi/67
+pi+arccos(26419/26422)
+pi+arccos(root 0 of 41*x^4-174*x^3+214*x^2-32021702872*x+32021575679)
+pi+arccos(root 0 of 167*x^9-2179*x^8+11264*x^7-14784816*x^6+88573286*x^5-221476334*x^4+295582744*x^3-222032264*x^2+89044699*x+33951785)
+pi+arccos(root 1 of 47*x^3-143*x^2-649512489*x+649512529)
+14*pi/13
+pi+arccos(root 1 of 13*x^11-143*x^10+1347*x^9+22715706631*x^8-181725688686*x^7+636040081018*x^6-1272080735882*x^5+1590101959998*x^4-1272082673903*x^3+636042039237*x^2-181726575209*x+22715310091)
+30*pi/29
+pi
+pi+arccos(root 0 of 6931*x^5-979060*x^4+3846932*x^3-5735746*x^2+3828817*x-936002)
+3*pi/2
+7*pi/5
+5*pi/3
+5*pi/3
+pi+arccos(root 0 of 107*x^6-646*x^5+1629*x^4-2196*x^3+1413*x^2-6*x-429)
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xx map 10
+96: pi
+47: 0
+47: 3*pi/2
+17: 5*pi/3
+14: 11*pi/6
+14: 4*pi/3
+12: 5*pi/4
+12: 7*pi/6
+7: 8*pi/5
+6: 7*pi/5
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxi list 21
+pi
+pi
+pi
+pi
+pi
+pi
+pi
+pi
+pi
+pi
+pi
+pi
+pi
+pi
+pi
+pi
+pi
+pi
+pi
+pi
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxi map 1
+1000: pi
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxii list 21
+pi
+pi
+pi
+pi
+pi
+pi
+pi
+pi
+pi
+pi
+pi
+pi
+pi
+pi
+pi
+pi
+pi
+pi
+pi
+pi
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxii map 1
+1000: pi
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxiii list 21
+19*pi/10
+13*pi/10
+pi
+pi
+pi/2
+7*pi/4
+pi+arccos((-8+sqrt(197))/7)
+pi+arccos((146-sqrt(52339))/383)
+pi
+3*pi/2
+pi+arccos((-16+sqrt(181))/5)
+13*pi/10
+pi+arccos(3/5)
+pi
+pi+arccos(root 0 of 7*x^4-28*x^3+55*x^2-112*x+18)
+pi+arccos(34266613/34266620)
+pi+arccos(51643/51677)
+pi+arccos(-8/11)
+pi/2
+pi+arccos(root 0 of x^3-x^2+103*x-95)
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxiii map 10
+178: pi
+124: pi/2
+31: 7*pi/4
+28: 3*pi/2
+25: 0
+12: pi+arccos(1/3)
+5: 13*pi/10
+5: 19*pi/10
+5: pi+arccos(3/5)
+5: pi/4
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxiv list 21
+19*pi/10
+13*pi/10
+pi
+7*pi/4
+pi+arccos(root 1 of 771*x^8-6162*x^7+21546*x^6-38618*x^5+120673728*x^4-482566838*x^3+723853846*x^2-473113566*x+112068221)
+17*pi/67
+pi+arccos(26419/26422)
+pi+arccos(root 0 of 41*x^4-174*x^3+214*x^2-32021702872*x+32021575679)
+pi+arccos(root 0 of 167*x^9-2179*x^8+11264*x^7-14784816*x^6+88573286*x^5-221476334*x^4+295582744*x^3-222032264*x^2+89044699*x+33951785)
+pi+arccos(root 1 of 47*x^3-143*x^2-649512489*x+649512529)
+29*pi/26
+pi+arccos(root 1 of 13*x^11-143*x^10+1347*x^9+22715706631*x^8-181725688686*x^7+636040081018*x^6-1272080735882*x^5+1590101959998*x^4-1272082673903*x^3+636042039237*x^2-181726575209*x+22715310091)
+61*pi/58
+pi
+pi+arccos(root 0 of 6931*x^5-979060*x^4+3846932*x^3-5735746*x^2+3828817*x-936002)
+7*pi/4
+8*pi/5
+0
+0
+arccos(root 0 of 4073*x^3+12283*x^2+12307*x-5599)
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxiv map 10
+112: pi
+69: pi/2
+41: 7*pi/4
+23: 0
+13: 3*pi/2
+10: 5*pi/4
+10: pi/8
+9: pi/4
+7: 11*pi/8
+7: 13*pi/10
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxv list 21
+13*pi/10
+11*pi/10
+pi
+pi
+3*pi/2
+5*pi/4
+pi+arccos((-1+sqrt(197))/14)
+pi+arccos((529-sqrt(52339))/766)
+pi
+7*pi/6
+pi+arccos((-11+sqrt(181))/10)
+11*pi/10
+pi+arccos(4/5)
+pi
+pi+arccos(root 0 of 28*x^4-112*x^3+181*x^2-167*x+55)
+pi+arccos(68533233/68533240)
+pi+arccos(51660/51677)
+pi+arccos(3/22)
+3*pi/2
+pi+arccos(root 0 of x^3-2*x^2+27*x-25)
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxv map 10
+172: pi
+134: 3*pi/2
+36: 5*pi/4
+24: 4*pi/3
+22: 7*pi/6
+18: pi+arccos(2/3)
+8: 11*pi/8
+7: 13*pi/12
+7: 17*pi/12
+5: pi+arccos(4/5)
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxvi list 21
+13*pi/10
+11*pi/10
+pi
+5*pi/4
+pi+arccos(root 1 of 771*x^8-6165*x^7+21567*x^6-42559*x^5+7591228*x^4-30198053*x^3+45257142*x^2-30090534*x+7470091)
+95*pi/67
+pi+arccos(52841/52844)
+pi+arccos(root 0 of 164*x^4-676*x^3+982*x^2-16010851993*x+16010819745)
+pi+arccos(root 0 of 167*x^9-1841*x^8+8677*x^7-1867338*x^6+11103862*x^5-27708838*x^4+36928868*x^3-27698806*x^2+11083734*x-1753039)
+pi+arccos(root 1 of 94*x^3-284*x^2-324756031*x+324756207)
+27*pi/26
+pi+arccos(root 1 of 13*x^11-143*x^10+873*x^9+2839460741*x^8-22715704487*x^7+79504985572*x^6-159010000687*x^5+198762540772*x^4-159010070453*x^3+79505057788*x^2-22715738419*x+2839468149)
+59*pi/58
+pi
+pi+arccos(root 0 of 13862*x^5-1013715*x^4+3916241*x^3-5805053*x^2+3849000*x-958343)
+5*pi/4
+6*pi/5
+4*pi/3
+4*pi/3
+pi+arccos(root 0 of 107*x^6-644*x^5+1616*x^4-2164*x^3+1615*x^2-619*x+87)
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxvi map 10
+95: pi
+51: 5*pi/4
+47: 3*pi/2
+18: 4*pi/3
+14: 7*pi/6
+13: 17*pi/12
+12: 13*pi/12
+10: 9*pi/8
+6: 13*pi/10
+6: 6*pi/5
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxvii list 21
+0
+4*pi/3
+pi
+pi
+2*pi/3
+11*pi/6
+pi+arccos((-8+sqrt(197))/7)
+pi+arccos((146-sqrt(52339))/383)
+pi
+14*pi/9
+arccos(-1/3)
+pi+arccos(root 0 of 147*x^3-459*x^2+477*x-157)
+2*pi/3
+pi
+pi
+pi
+arccos(1/6)
+pi+arccos(35/37)
+pi+arccos(root 0 of 7*x^4-28*x^3+55*x^2-112*x+18)
+pi+arccos(34266613/34266620)
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxvii map 10
+188: pi
+129: 2*pi/3
+37: 11*pi/6
+30: pi/9
+16: 14*pi/9
+8: pi+arccos(1/3)
+7: arccos(-1/3)
+7: pi/4
+6: 7*pi/18
+6: arccos(-3/7)
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxviii list 21
+0
+4*pi/3
+pi
+11*pi/6
+pi+arccos(root 1 of 771*x^8-6162*x^7+21546*x^6-38618*x^5+120673728*x^4-482566838*x^3+723853846*x^2-473113566*x+112068221)
+79*pi/201
+pi+arccos(26419/26422)
+pi+arccos(root 0 of 41*x^4-174*x^3+214*x^2-32021702872*x+32021575679)
+pi+arccos(root 0 of 167*x^9-2179*x^8+11264*x^7-14784816*x^6+88573286*x^5-221476334*x^4+295582744*x^3-222032264*x^2+89044699*x+33951785)
+pi+arccos(root 1 of 47*x^3-143*x^2-649512489*x+649512529)
+44*pi/39
+pi+arccos(root 1 of 13*x^11-143*x^10+1347*x^9+22715706631*x^8-181725688686*x^7+636040081018*x^6-1272080735882*x^5+1590101959998*x^4-1272082673903*x^3+636042039237*x^2-181726575209*x+22715310091)
+92*pi/87
+pi
+pi+arccos(root 0 of 6931*x^5-979060*x^4+3846932*x^3-5735746*x^2+3828817*x-936002)
+11*pi/6
+5*pi/3
+pi/9
+pi/9
+arccos(root 0 of 4073*x^3+12283*x^2+12307*x-5599)
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxviii map 10
+104: pi
+60: 11*pi/6
+47: 2*pi/3
+22: pi/9
+14: 14*pi/9
+12: 17*pi/12
+7: 0
+7: 7*pi/18
+7: pi/4
+6: 5*pi/3
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxix list 21
+38267614367*pi/20097738245
+26154363619*pi/20097738245
+pi
+pi
+pi
+pi+arccos((-8+sqrt(197))/7)
+pi+arccos((146-sqrt(52339))/383)
+pi
+18115268321*pi/12058642947
+pi+arccos((-16+sqrt(181))/5)
+26154363619*pi/20097738245
+pi+arccos(3/5)
+pi
+pi+arccos(root 0 of 7*x^4-28*x^3+55*x^2-112*x+18)
+pi+arccos(34266613/34266620)
+pi+arccos(51643/51677)
+pi+arccos(-8/11)
+3082920488*pi/12058642947
+pi+arccos(3/5)
+pi
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxix map 10
+253: pi
+56: 7047860336*pi/4019547649
+29: 54607801*pi/12058642947
+26: 18115268321*pi/12058642947
+12: 1045842763*pi/8039095298
+11: 11067407985*pi/8039095298
+9: pi+arccos(1/3)
+7: 32210988993*pi/20097738245
+6: 38267614367*pi/20097738245
+6: pi+arccos(3/5)
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxx list 21
+38267614367*pi/20097738245
+26154363619*pi/20097738245
+pi
+7047860336*pi/4019547649
+pi+arccos(root 1 of 771*x^8-6162*x^7+21546*x^6-38618*x^5+120673728*x^4-482566838*x^3+723853846*x^2-473113566*x+112068221)
+69861328461*pi/269309692483
+pi+arccos(26419/26422)
+pi+arccos(root 0 of 41*x^4-174*x^3+214*x^2-32021702872*x+32021575679)
+pi+arccos(root 0 of 167*x^9-2179*x^8+11264*x^7-14784816*x^6+88573286*x^5-221476334*x^4+295582744*x^3-222032264*x^2+89044699*x+33951785)
+pi+arccos(root 1 of 47*x^3-143*x^2-649512489*x+649512529)
+58310744811*pi/52254119437
+pi+arccos(root 1 of 13*x^11-143*x^10+1347*x^9+22715706631*x^8-181725688686*x^7+636040081018*x^6-1272080735882*x^5+1590101959998*x^4-1272082673903*x^3+636042039237*x^2-181726575209*x+22715310091)
+122623507195*pi/116566881821
+pi
+pi+arccos(root 0 of 6931*x^5-979060*x^4+3846932*x^3-5735746*x^2+3828817*x-936002)
+7047860336*pi/4019547649
+32210988993*pi/20097738245
+54607801*pi/12058642947
+54607801*pi/12058642947
+pi+arccos(root 0 of 107*x^6-646*x^5+1629*x^4-2196*x^3+1413*x^2-6*x-429)
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxx map 10
+121: pi
+47: 7047860336*pi/4019547649
+29: 54607801*pi/12058642947
+27: 18115268321*pi/12058642947
+13: 1045842763*pi/8039095298
+12: 3082920488*pi/12058642947
+9: 32210988993*pi/20097738245
+8: 15086955634*pi/12058642947
+7: 26154363619*pi/20097738245
+6: 11067407985*pi/8039095298
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxxi list 21
+11502684629*pi/40195476490
+57428196863*pi/40195476490
+pi
+pi
+9193625075*pi/8039095298
+1154529777*pi/16078190596
+pi+arccos((-8+sqrt(197))/7)
+pi+arccos((146-sqrt(52339))/383)
+pi
+41350006267*pi/24117285894
+arccos(-1/3)
+pi+arccos(root 0 of 147*x^3-459*x^2+477*x-157)
+9193625075*pi/8039095298
+pi
+pi
+pi
+arccos(1/6)
+pi+arccos(35/37)
+pi+arccos(root 0 of 7*x^4-28*x^3+55*x^2-112*x+18)
+pi+arccos(34266613/34266620)
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxxi map 10
+201: pi
+139: 9193625075*pi/8039095298
+39: 1154529777*pi/16078190596
+29: 41350006267*pi/24117285894
+25: 5174077426*pi/12058642947
+9: pi+arccos(1/3)
+7: 19541779927*pi/32156381192
+7: 65467292161*pi/48234571788
+6: arccos(-1/3)
+5: arccos(1/3)
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxxii list 21
+11502684629*pi/40195476490
+57428196863*pi/40195476490
+pi
+1154529777*pi/16078190596
+pi+arccos(root 1 of 771*x^8-6162*x^7+21546*x^6-38618*x^5+120673728*x^4-482566838*x^3+723853846*x^2-473113566*x+112068221)
+9193625075*pi/8039095298
+arccos(root 1 of 7*x^5-64*x^4-326*x^3-166454684744*x^2-332909368937*x+384643276640)
+pi+arccos(26419/26422)
+pi+arccos(root 0 of 41*x^4-174*x^3+214*x^2-32021702872*x+32021575679)
+pi+arccos(root 0 of 167*x^9-2179*x^8+11264*x^7-14784816*x^6+88573286*x^5-221476334*x^4+295582744*x^3-222032264*x^2+89044699*x+33951785)
+pi+arccos(root 1 of 47*x^3-143*x^2-649512489*x+649512529)
+121740959247*pi/104508238874
+pi+arccos(root 1 of 13*x^11-143*x^10+1347*x^9+22715706631*x^8-181725688686*x^7+636040081018*x^6-1272080735882*x^5+1590101959998*x^4-1272082673903*x^3+636042039237*x^2-181726575209*x+22715310091)
+8633327035*pi/8039095298
+pi
+pi+arccos(root 0 of 6931*x^5-979060*x^4+3846932*x^3-5735746*x^2+3828817*x-952386)
+1154529777*pi/16078190596
+37330458618*pi/20097738245
+5174077426*pi/12058642947
+5174077426*pi/12058642947
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxxii map 10
+116: pi
+76: 9193625075*pi/8039095298
+41: 1154529777*pi/16078190596
+17: 5174077426*pi/12058642947
+15: 49389101565*pi/32156381192
+13: 41350006267*pi/24117285894
+10: 65467292161*pi/48234571788
+8: 37330458618*pi/20097738245
+7: 57428196863*pi/40195476490
+5: 11502684629*pi/40195476490
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxxiii list 21
+24038858911*pi/16078190596
+18731746701*pi/16078190596
+pi
+pi
+pi
+pi+arccos((-9+2*sqrt(197))/21)
+pi+arccos((675-2*sqrt(52339))/1149)
+pi
+61502352313*pi/48234571788
+pi+arccos(-1/3)
+pi+arccos(-1/3)
+45424161717*pi/32156381192
+pi
+pi
+pi+arccos(root 0 of 1701*x^6-70470*x^5+326835*x^4-583668*x^3+468411*x^2-151014*x+4109)
+45424161717*pi/32156381192
+pi+arccos(root 0 of 494451*x^4-1977192*x^3+2964726*x^2-1670624*x+186719)
+pi
+pi+arccos((188663-2*sqrt(1760837))/188661)
+45424161717*pi/32156381192
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxxiii map 10
+279: pi
+137: pi+arccos(-1/3)
+66: 45424161717*pi/32156381192
+27: 61502352313*pi/48234571788
+26: 37385066419*pi/24117285894
+8: 109736924101*pi/96469143576
+8: 77580542909*pi/64312762384
+7: 24038858911*pi/16078190596
+7: pi+arccos(1/3)
+5: 18731746701*pi/16078190596
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxxiv list 21
+24038858911*pi/16078190596
+18731746701*pi/16078190596
+pi
+45424161717*pi/32156381192
+pi+arccos(root 1 of 5058531*x^8-40442004*x^7+141455160*x^6-274110804*x^5+156662297478*x^4-625604716188*x^3+938181627648*x^2-621790554108*x+152947973855)
+2031146165989*pi/1752522774964
+61502352313*pi/48234571788
+pi+arccos(-1/3)
+17365755157*pi/12058642947
+pi
+pi+arccos(root 1 of 645700815*x^17-12182222043*x^16+107329824360*x^15-587157274440*x^14+2237071128804*x^13-6312628384884*x^12+13700420016984*x^11+1592149607016606216*x^10-15921698070880438758*x^9+71647749048327844446*x^8-191060723759938195752*x^7+334356292782052014600*x^6-401227727896584795420*x^5+334357151405164935948*x^4-191062317905848372248*x^3+71681794674818948280*x^2-15987595234461514545*x+1624916173884504677)
+2315847977737*pi/1559584487812
+pi
+4863522383039*pi/3762296599464
+49443709366*pi/36175928841
+pi
+45424161717*pi/32156381192
+pi+arccos(83/99)
+pi+arccos(root 0 of 144792*x^3-434469*x^2+434902*x-145177)
+45424161717*pi/32156381192
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxxiv map 10
+160: pi
+66: 45424161717*pi/32156381192
+63: pi+arccos(-1/3)
+24: 37385066419*pi/24117285894
+20: 61502352313*pi/48234571788
+13: 109736924101*pi/96469143576
+9: 77580542909*pi/64312762384
+7: 24038858911*pi/16078190596
+6: 10692651403*pi/8039095298
+6: 41404614068*pi/28136833543
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxxv list 21
+5241794284*pi/4019547649
+4426963194*pi/4019547649
+pi
+pi
+pi
+pi+arccos((6+sqrt(197))/21)
+pi+arccos((912-sqrt(52339))/1149)
+pi
+14095720672*pi/12058642947
+pi+arccos(1/3)
+pi+arccos(1/3)
+22189423771*pi/16078190596
+26154363619*pi/24117285894
+pi+arccos(root 0 of 27*x^3-153*x^2+381*x-247)
+pi+arccos(2/3)
+14095720672*pi/12058642947
+pi+arccos(38/39)
+pi+arccos((9-sqrt(6))/9)
+pi+arccos(14/15)
+16132798397*pi/12058642947
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxxv map 10
+273: pi
+140: pi+arccos(1/3)
+68: 10076173023*pi/8039095298
+29: 14095720672*pi/12058642947
+27: 16132798397*pi/12058642947
+11: 22189423771*pi/16078190596
+10: 26154363619*pi/24117285894
+9: 18115268321*pi/16078190596
+8: pi+arccos(2/3)
+7: 5241794284*pi/4019547649
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxxvi list 21
+5241794284*pi/4019547649
+4426963194*pi/4019547649
+pi
+10076173023*pi/8039095298
+pi+arccos(root 1 of 5058531*x^8-40455126*x^7+141547014*x^6-281925198*x^5+10120265388*x^4-39360089538*x^3+58762865898*x^2-39094999962*x+9748625921)
+480909325966*pi/438130693741
+14095720672*pi/12058642947
+pi+arccos(1/3)
+15317967307*pi/12058642947
+pi
+pi+arccos(root 1 of 645700815*x^17-11579567949*x^16+97515171972*x^15-512255979900*x^14+1880357300784*x^13-5119630496208*x^12+10709017281252*x^11+12421267952049540*x^10-124365564834384618*x^9+559724361695710110*x^8-1492642170187998804*x^7+2612145498359383404*x^6-3134583624228256440*x^5+2612156166827454888*x^4-1492661704605847956*x^3+559749510247819788*x^2-124390666380885213*x+12439881085216855)
+506009552278*pi/389896121953
+pi
+1109651601041*pi/940574149866
+44324239741*pi/36175928841
+pi
+10076173023*pi/8039095298
+pi+arccos(91/99)
+pi+arccos(root 0 of 289584*x^3-868845*x^2+869108*x-289835)
+10076173023*pi/8039095298
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxxvi map 10
+157: pi
+69: pi+arccos(1/3)
+53: 10076173023*pi/8039095298
+21: 16132798397*pi/12058642947
+18: 14095720672*pi/12058642947
+15: 18115268321*pi/16078190596
+13: 26154363619*pi/24117285894
+9: 22189423771*pi/16078190596
+7: 4834378739*pi/4019547649
+7: 5241794284*pi/4019547649
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxxvii list 21
+7*pi/5
+4*pi/5
+pi/2
+pi/2
+0
+5*pi/4
+pi+arccos((-8+sqrt(197))/7)
+arccos(-7835/7873)
+0
+pi+arccos(3/5)
+0
+pi+arccos(root 0 of 57*x^4-228*x^3+342*x^2-56*x-227)
+0
+19*pi/14
+5*pi/4
+pi+arccos(root 0 of 3*x^4-84*x^3+1370*x^2-15863708*x+15862387)
+pi+arccos(12/13)
+arccos(-3/4)
+pi
+pi/2
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxxvii map 10
+172: pi/2
+133: 0
+39: 5*pi/4
+24: 3*pi/2
+23: pi
+10: 7*pi/4
+9: 13*pi/8
+8: pi+arccos(3/5)
+6: pi+arccos(2/3)
+5: 7*pi/5
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxxviii list 21
+7*pi/5
+4*pi/5
+pi/2
+5*pi/4
+pi+arccos(root 1 of 771*x^8-6162*x^7+21546*x^6-38618*x^5+120673728*x^4-482566838*x^3+723853846*x^2-473113566*x+112068221)
+235*pi/134
+arccos(root 0 of 51699*x^7+404539*x^6+1340819*x^5+2444635*x^4+2651153*x^3+1711433*x^2+4164265*x+3647201)
+4*pi/3
+arccos(root 0 of x^5+5*x^4+14*x^3-162*x^2+613585*x+613053)
+4*pi/5
+pi/2
+pi+arccos(root 0 of 7*x^5-37*x^4+78*x^3-106*x^2+179*x-105)
+pi+arccos(7865/9297)
+pi/2
+123*pi/110
+pi/2
+13*pi/11
+pi+arccos(root 0 of 107*x^4-401*x^3+519*x^2-263*x-18)
+arccos(-6/31)
+109*pi/56
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxxviii map 10
+111: pi/2
+66: 0
+46: 5*pi/4
+26: pi
+21: 3*pi/2
+8: 7*pi/8
+7: 13*pi/8
+7: 3*pi/4
+7: 7*pi/5
+4: 4*pi/5
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxxix list 21
+4*pi/5
+3*pi/5
+pi/2
+pi/2
+pi
+3*pi/4
+arccos(-2/3)
+arccos(-217/218)
+arccos(root 0 of x^3+2*x^2+40*x+38)
+pi/2
+arccos((-529+sqrt(52339))/766)
+arccos(-7/10)
+3*pi/4
+pi
+pi/2
+5*pi/8
+arccos(root 0 of 5*x^5+21*x^4+34*x^3+22*x^2+103*x+86)
+arccos(-25/26)
+7*pi/12
+arccos(-32460/32461)
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xxxix map 10
+206: pi/2
+148: pi
+37: 3*pi/4
+28: 2*pi/3
+25: 5*pi/6
+11: arccos(-2/3)
+8: 5*pi/8
+7: 11*pi/12
+7: 7*pi/12
+6: arccos(-6/7)
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xl list 21
+4*pi/5
+3*pi/5
+pi/2
+3*pi/4
+arccos(-34/109)
+arccos(root 0 of 259123*x^5+1295869*x^4+2592247*x^3+2592761*x^2+1296643*x+259331)
+11*pi/12
+pi
+83*pi/84
+20*pi/33
+pi
+arccos(root 0 of 2*x^11-553*x^10+8549*x^9+102157*x^8+442469*x^7+1072047*x^6+1643532*x^5+1666333*x^4+1120720*x^3+482987*x^2+121250*x+13550)
+arccos(root 0 of 4*x^20+514*x^19+8963*x^18-3917711*x^17-67493740*x^16-541707585*x^15-2712013484*x^14-9498075412*x^13-24703886936*x^12-49418819531*x^11-77669660761*x^10-97097132304*x^9-97104702848*x^8-77689812360*x^7-49446152152*x^6-24732926604*x^5-9523172293*x^4-2728493858*x^3-549172144*x^2-69555071*x-4162800)
+3*pi/4
+6*pi/7
+1242*pi/1699
+arccos((-81591+sqrt(163181))/81590)
+arccos(-13463/13480)
+arccos(root 3 of 5*x^20+23030850*x^19+437585185*x^18+3938263441*x^17+22316814623*x^16+89267219875*x^15+267801547146*x^14+624870002944*x^13+1160472315770*x^12+1740707581365*x^11+2127530143272*x^10+2127527443612*x^9+1740697373161*x^8+1160450036634*x^7+624834549213*x^6+267760763519*x^5+89233893769*x^4+22297960452*x^3+3931234122*x^2+435936786*x+22783209)
+pi/2
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xl map 10
+116: pi/2
+53: pi
+40: 3*pi/4
+21: 2*pi/3
+18: 5*pi/6
+11: 11*pi/12
+8: 5*pi/8
+6: 11*pi/14
+5: 4*pi/5
+5: 7*pi/8
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xli list 21
+pi/2
+pi/2
+pi/2
+pi/2
+pi/2
+pi/2
+pi/2
+pi/2
+pi/2
+pi/2
+pi/2
+pi/2
+pi/2
+pi/2
+pi/2
+pi/2
+pi/2
+pi/2
+pi/2
+pi/2
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xli map 1
+1000: pi/2
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xlii list 21
+pi/2
+pi/2
+pi/2
+pi/2
+pi/2
+pi/2
+pi/2
+pi/2
+pi/2
+pi/2
+pi/2
+pi/2
+pi/2
+pi/2
+pi/2
+pi/2
+pi/2
+pi/2
+pi/2
+pi/2
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xlii map 1
+1000: pi/2
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xliii list 21
+11*pi/10
+7*pi/10
+pi/2
+pi/2
+3*pi/2
+pi
+pi+arccos((-1+sqrt(197))/14)
+arccos(-7854/7873)
+3*pi/2
+pi+arccos(4/5)
+3*pi/2
+pi+arccos(root 0 of 114*x^4-456*x^3+684*x^2-413*x+57)
+3*pi/2
+15*pi/14
+pi
+pi+arccos(root 0 of 3*x^4-48*x^3+410*x^2-1983339*x+1982972)
+arccos(-5/12)
+pi+arccos(36/37)
+arccos(-8/9)
+pi+arccos(root 0 of 3789*x^3-11369*x^2+11378*x-3776)
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xliii map 10
+194: pi/2
+131: 3*pi/2
+40: pi
+29: 7*pi/6
+24: 5*pi/6
+7: pi+arccos(2/3)
+6: 2*pi/3
+6: 4*pi/3
+5: 11*pi/10
+5: 5*pi/4
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xliv list 21
+11*pi/10
+7*pi/10
+pi/2
+pi
+pi+arccos(root 1 of 771*x^8-6165*x^7+21567*x^6-42559*x^5+7591228*x^4-30198053*x^3+45257142*x^2-30090534*x+7470091)
+179*pi/134
+arccos(root 0 of 51699*x^7+383216*x^6+1213433*x^5+2128285*x^4+2233633*x^3+1402958*x^2+543943*x+128248)
+19*pi/18
+arccos(root 0 of x^5+5*x^4+11*x^3-10*x^2+38333*x+38328)
+7*pi/10
+pi/2
+pi+arccos(root 0 of 14*x^5-72*x^4+148*x^3-158*x^2+101*x-32)
+pi+arccos(8581/9297)
+pi/2
+301*pi/330
+pi/2
+21*pi/22
+pi+arccos(root 0 of 214*x^4-829*x^3+1182*x^2-733*x+159)
+arccos(-37/62)
+41*pi/28
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xliv map 10
+100: pi/2
+62: 3*pi/2
+47: pi
+20: 5*pi/6
+11: 3*pi/4
+10: 7*pi/6
+9: 7*pi/10
+8: 2*pi/3
+8: 4*pi/3
+7: 11*pi/10
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xlv list 21
+3*pi/5
+8*pi/15
+pi/2
+pi/2
+2*pi/3
+7*pi/12
+arccos((1-sqrt(197))/28)
+2*pi/3
+arccos(-3927/7873)
+pi/2
+2*pi/3
+pi/2
+arccos(-2/5)
+2*pi/3
+arccos(-1/3)
+arccos((-529+sqrt(52339))/1532)
+17*pi/30
+3*pi/5
+arccos((11-sqrt(165))/4)
+pi/2
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xlv map 10
+190: pi/2
+126: 2*pi/3
+59: 7*pi/12
+15: 5*pi/9
+12: 11*pi/18
+11: arccos(-1/3)
+10: 5*pi/8
+9: arccos(-1/4)
+7: 19*pi/36
+6: arccos(-2/5)
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xlvi list 21
+3*pi/5
+8*pi/15
+pi/2
+7*pi/12
+arccos(root 0 of 197376*x^8+789120*x^7+1380288*x^6+1361888*x^5+121459648*x^4+241584424*x^3+181028568*x^2+60181068*x+7470091)
+2*pi/3
+17*pi/33
+265*pi/446
+5*pi/9
+arccos((-21231+sqrt(2247379))/42646)
+arccos(-54185/108393)
+arccos(root 0 of 8291936*x^5+20733904*x^4+20737976*x^3+10371044*x^2+2593286*x+259331)
+pi/2
+arccos(root 0 of 2059264*x^5+5148656*x^4+5149832*x^3+2575808*x^2+644242*x+64415)
+707*pi/1332
+arccos(root 1 of 4*x^4+123710*x^3+154813*x^2+62084*x+7798)
+11*pi/18
+pi/2
+107*pi/177
+arccos((-14347+sqrt(1003465))/28664)
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xlvi map 10
+109: pi/2
+69: 2*pi/3
+43: 7*pi/12
+28: 11*pi/18
+24: 5*pi/9
+12: 23*pi/36
+12: 5*pi/8
+7: 3*pi/5
+5: 11*pi/21
+5: 13*pi/24
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xlvii list 21
+34248066718*pi/20097738245
+18115268321*pi/20097738245
+pi/2
+pi/2
+2037077725*pi/4019547649
+24171893695*pi/16078190596
+pi+arccos((-8+sqrt(197))/7)
+arccos(-7835/7873)
+2037077725*pi/4019547649
+pi+arccos(3/5)
+2037077725*pi/4019547649
+pi+arccos(root 0 of 57*x^4-228*x^3+342*x^2-56*x-227)
+2037077725*pi/4019547649
+92668027131*pi/56273667086
+24171893695*pi/16078190596
+pi+arccos(root 0 of 3*x^4-84*x^3+1370*x^2-15863708*x+15862387)
+pi+arccos(12/13)
+arccos(-3/4)
+14095720672*pi/12058642947
+pi/2
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xlvii map 10
+203: pi/2
+133: 2037077725*pi/4019547649
+42: 24171893695*pi/16078190596
+25: 14095720672*pi/12058642947
+25: 44324239741*pi/24117285894
+7: 8312134303*pi/48234571788
+5: 32210988993*pi/32156381192
+5: 34248066718*pi/20097738245
+4: 163823403*pi/32156381192
+4: pi+arccos(1/3)
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xlviii list 21
+34248066718*pi/20097738245
+18115268321*pi/20097738245
+pi/2
+24171893695*pi/16078190596
+pi+arccos(root 1 of 771*x^8-6162*x^7+21546*x^6-38618*x^5+120673728*x^4-482566838*x^3+723853846*x^2-473113566*x+112068221)
+95507632783*pi/538619384966
+arccos(root 0 of 51699*x^7+404539*x^6+1340819*x^5+2444635*x^4+2651153*x^3+1711433*x^2+4164265*x+3647201)
+58419960413*pi/36175928841
+arccos(root 0 of x^5+5*x^4+14*x^3-162*x^2+613585*x+613053)
+18115268321*pi/20097738245
+pi/2
+pi+arccos(root 0 of 7*x^5-37*x^4+78*x^3-106*x^2+179*x-105)
+pi+arccos(7865/9297)
+pi/2
+1760255653081*pi/1326450724170
+pi/2
+62439508062*pi/44215024139
+pi+arccos(root 0 of 107*x^4-401*x^3+519*x^2-263*x-18)
+arccos(-6/31)
+pi/2
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xlviii map 10
+115: pi/2
+63: 2037077725*pi/4019547649
+45: 24171893695*pi/16078190596
+23: 14095720672*pi/12058642947
+21: 44324239741*pi/24117285894
+12: 32210988993*pi/32156381192
+9: 8312134303*pi/48234571788
+8: 40250084291*pi/48234571788
+7: 18115268321*pi/20097738245
+7: 34248066718*pi/20097738245
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xlix list 21
+370260212993*pi/643127623840
+337795945611*pi/643127623840
+pi/2
+pi/2
+pi/2
+arccos((1-sqrt(197))/42)
+pi/2
+112701277267*pi/192938287152
+pi/2
+arccos(-2/9)
+arccos((-529+sqrt(52339))/2298)
+177014039651*pi/321563811920
+370260212993*pi/643127623840
+arccos((11-sqrt(165))/6)
+pi/2
+arccos(-1/3)
+305947450609*pi/514502099072
+arccos(-217/654)
+pi/2
+pi/2
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_xlix map 10
+249: pi/2
+57: 144857658459*pi/257251049536
+55: arccos(-1/3)
+29: 209170420843*pi/385876574304
+24: 112701277267*pi/192938287152
+22: 305947450609*pi/514502099072
+13: arccos(-2/9)
+11: 337795945611*pi/643127623840
+9: 370260212993*pi/643127623840
+9: arccos(-1/6)
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_l list 21
+370260212993*pi/643127623840
+337795945611*pi/643127623840
+pi/2
+144857658459*pi/257251049536
+arccos(root 0 of 5058531*x^8+13482855*x^7+15722343*x^6+10341837*x^5+614889468*x^4+815347431*x^3+407314278*x^2+90271602*x+7470091)
+2526892956187*pi/4501893366880
+8193497428349*pi/14341746011632
+209170420843*pi/385876574304
+arccos((-21231+sqrt(2247379))/63969)
+arccos(-108370/325179)
+arccos(root 0 of 62966889*x^5+104965389*x^4+69990669*x^3+23334849*x^2+3889929*x+259331)
+pi/2
+arccos(root 0 of 15637536*x^5+26065071*x^4+17380683*x^3+5795568*x^2+966363*x+64415)
+14942950730579*pi/28554866498496
+arccos(root 1 of 81*x^4+1670085*x^3+1393317*x^2+372504*x+31192)
+112701277267*pi/192938287152
+pi/2
+4395041927223*pi/7588905961312
+arccos((-14347+sqrt(1003465))/42996)
+arccos(root 1 of 1704659202*x^4+2272878936*x^3+1136439408*x^2+252543137*x+21045521)
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_l map 10
+145: pi/2
+47: 144857658459*pi/257251049536
+22: 209170420843*pi/385876574304
+18: 112701277267*pi/192938287152
+11: 467037242759*pi/771753148608
+10: 273483183227*pi/514502099072
+10: 337795945611*pi/643127623840
+10: 370260212993*pi/643127623840
+9: 402108707995*pi/771753148608
+7: arccos(-1/3)
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_li list 21
+59737256417*pi/40195476490
+33310910969*pi/40195476490
+pi/2
+pi/2
+pi/2
+pi+arccos((-9+2*sqrt(197))/21)
+arccos(-23543/23619)
+pi/2
+arccos((-675-2*sqrt(52339))/1149)
+8423938557*pi/8039095298
+arccos(-11/15)
+pi+arccos(5/9)
+arccos(-2/3)
+pi+arccos(-1/3)
+pi+arccos((19-sqrt(185))/6)
+pi+arccos(-7/69)
+pi/2
+pi+arccos((9-2*sqrt(6))/9)
+pi+arccos(13/15)
+12828329465*pi/8039095298
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_li map 10
+279: pi/2
+74: pi+arccos(-1/3)
+66: 10626134011*pi/8039095298
+42: 8423938557*pi/8039095298
+28: 12828329465*pi/8039095298
+9: 33310910969*pi/40195476490
+9: 6221743103*pi/8039095298
+8: 3661420415*pi/4019547649
+6: arccos(-1/3)
+5: 59737256417*pi/40195476490
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lii list 21
+59737256417*pi/40195476490
+33310910969*pi/40195476490
+pi/2
+10626134011*pi/8039095298
+pi+arccos(root 1 of 5058531*x^8-40442004*x^7+141455160*x^6-274110804*x^5+156662297478*x^4-625604716188*x^3+938181627648*x^2-621790554108*x+152947973855)
+715607320945*pi/876261387482
+8423938557*pi/8039095298
+pi+arccos(-1/3)
+55332865509*pi/40195476490
+pi/2
+pi+arccos(root 1 of 645700815*x^17-12182222043*x^16+107329824360*x^15-587157274440*x^14+2237071128804*x^13-6312628384884*x^12+13700420016984*x^11+1592149607016606216*x^10-15921698070880438758*x^9+71647749048327844446*x^8-191060723759938195752*x^7+334356292782052014600*x^6-401227727896584795420*x^5+334357151405164935948*x^4-191062317905848372248*x^3+71681794674818948280*x^2-15987595234461514545*x+1624916173884504677)
+1143046967221*pi/779792243906
+pi/2
+339544580993*pi/313524716622
+29676206579*pi/24117285894
+pi/2
+10626134011*pi/8039095298
+pi+arccos(83/99)
+arccos(root 0 of 12285*x^3+36855*x^2+36855*x+11293)
+arccos(-13/21)
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lii map 10
+138: pi/2
+61: 10626134011*pi/8039095298
+32: pi+arccos(-1/3)
+29: 12828329465*pi/8039095298
+23: 8423938557*pi/8039095298
+12: 6221743103*pi/8039095298
+9: 3661420415*pi/4019547649
+6: 33310910969*pi/40195476490
+6: 59737256417*pi/40195476490
+5: 46524083693*pi/40195476490
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_liii list 21
+22189423771*pi/20097738245
+14095720672*pi/20097738245
+pi/2
+pi/2
+pi/2
+pi+arccos((-1+sqrt(197))/14)
+arccos(-7854/7873)
+pi/2
+arccos((-529-sqrt(52339))/766)
+3358724341*pi/4019547649
+arccos(-4/5)
+pi+arccos(2/3)
+arccos(-3/4)
+arccos(root 0 of x^3+2*x^2+40*x+38)
+pi/2
+arccos((-59+sqrt(1001))/62)
+pi/2
+24171893695*pi/32156381192
+arccos(root 0 of 5*x^5+21*x^4+34*x^3+22*x^2+103*x+86)
+arccos(-7/10)
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_liii map 10
+257: pi/2
+61: 16132798397*pi/16078190596
+38: 3358724341*pi/4019547649
+30: 9415349715*pi/8039095298
+12: 24171893695*pi/32156381192
+10: 21528600463*pi/16078190596
+7: 22189423771*pi/20097738245
+7: 76699052137*pi/56273667086
+6: 10736996331*pi/16078190596
+6: 40359299893*pi/32156381192
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_liv list 21
+22189423771*pi/20097738245
+14095720672*pi/20097738245
+pi/2
+16132798397*pi/16078190596
+pi+arccos(root 1 of 771*x^8-6165*x^7+21567*x^6-42559*x^5+7591228*x^4-30198053*x^3+45257142*x^2-30090534*x+7470091)
+722557066027*pi/538619384966
+arccos(root 0 of 51699*x^7+383216*x^6+1213433*x^5+2128285*x^4+2233633*x^3+1402958*x^2+543943*x+128248)
+12774074056*pi/12058642947
+arccos(root 0 of x^5+5*x^4+11*x^3-10*x^2+38333*x+38328)
+14095720672*pi/20097738245
+pi/2
+pi+arccos(root 0 of 14*x^5-72*x^4+148*x^3-158*x^2+101*x-32)
+pi+arccos(8581/9297)
+pi/2
+404532390939*pi/442150241390
+pi/2
+42341769817*pi/44215024139
+pi+arccos(root 0 of 214*x^4-829*x^3+1182*x^2-733*x+159)
+arccos(-37/62)
+pi/2
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_liv map 10
+130: pi/2
+43: 16132798397*pi/16078190596
+20: 3358724341*pi/4019547649
+15: 9415349715*pi/8039095298
+11: 40359299893*pi/32156381192
+10: 21528600463*pi/16078190596
+10: 22189423771*pi/20097738245
+8: 10736996331*pi/16078190596
+8: 24171893695*pi/32156381192
+8: 29567695761*pi/32156381192
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lv list 21
+6*pi/5
+2*pi/5
+0
+0
+0
+pi
+pi+arccos((-8+sqrt(197))/7)
+arccos(-7835/7873)
+0
+pi+arccos(3/5)
+0
+pi+arccos(root 0 of 57*x^4-228*x^3+342*x^2-56*x-227)
+0
+8*pi/7
+pi
+pi+arccos(root 0 of 3*x^4-84*x^3+1370*x^2-15863708*x+15862387)
+arccos(1/6)
+pi+arccos(35/37)
+arccos(-7/9)
+pi+arccos(root 0 of 3789*x^3-11371*x^2+11403*x-3645)
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lv map 10
+314: 0
+45: pi
+32: 4*pi/3
+27: 2*pi/3
+8: 5*pi/3
+8: arccos(-1/3)
+6: 3*pi/2
+6: 6*pi/5
+6: pi+arccos(3/5)
+5: pi/2
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lvi list 21
+6*pi/5
+2*pi/5
+0
+pi
+pi+arccos(root 1 of 771*x^8-6162*x^7+21546*x^6-38618*x^5+120673728*x^4-482566838*x^3+723853846*x^2-473113566*x+112068221)
+112*pi/67
+arccos(root 0 of 51699*x^7+404539*x^6+1340819*x^5+2444635*x^4+2651153*x^3+1711433*x^2+4164265*x+3647201)
+10*pi/9
+arccos(root 0 of x^5+5*x^4+14*x^3-162*x^2+613585*x+613053)
+2*pi/5
+0
+pi+arccos(root 0 of 7*x^5-37*x^4+78*x^3-106*x^2+179*x-105)
+pi+arccos(7865/9297)
+0
+136*pi/165
+0
+10*pi/11
+pi+arccos(root 0 of 107*x^4-401*x^3+519*x^2-263*x-18)
+arccos(-6/31)
+27*pi/14
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lvi map 10
+205: 0
+54: pi
+21: 2*pi/3
+16: 4*pi/3
+9: 3*pi/2
+9: pi/2
+6: 4*pi/5
+6: 5*pi/3
+4: 2*pi/5
+4: 6*pi/5
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lvii list 21
+27364558373*pi/40741554500
+19216247473*pi/32593243600
+11837623091*pi/16296621800
+51809491073*pi/65186487200
+pi
+arccos(1/3)
+pi
+pi
+arccos(root 1 of 405*x^4+2160*x^3+3906*x^2+1514568*x+1507553)
+3689312191*pi/8148310900
+arccos(-5/9)
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+19216247473*pi/32593243600
+pi
+arccos(root 0 of 27*x^3+45*x^2+1881*x+1799)
+pi
+arccos(1/3)
+arccos(1/3)
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lvii map 10
+215: pi
+133: arccos(1/3)
+93: 19216247473*pi/32593243600
+45: 11837623091*pi/16296621800
+44: 3689312191*pi/8148310900
+12: 51809491073*pi/65186487200
+9: 27364558373*pi/40741554500
+9: 28134244891*pi/32593243600
+7: 68106112873*pi/81483109000
+6: 73945364219*pi/114076352600
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lviii list 21
+27364558373*pi/40741554500
+100699356473*pi/114076352600
+1188221307809*pi/1629662180000
+11837623091*pi/16296621800
+pi
+arccos(1/3)
+arccos(1/3)
+99159983437*pi/130372974400
+arccos(root 2 of 6782892669*x^3+20348678052*x^2+17563779153*x+3997993850)
+arccos(root 0 of 26191917*x^3+78575751*x^2+78498951*x+16375981)
+arccos(root 1 of 452709*x^10+4540212*x^9+20455011*x^8-692328384*x^7-5133041118*x^6-15571854072*x^5-26044138602*x^4-21324370464*x^3-1396716951*x^2+9048891812*x+4016295191)
+arccos(root 0 of 260739*x^5+1298511*x^4+2583198*x^3+2568222*x^2+1276431*x+233155)
+202142483987*pi/456305410400
+339986600707*pi/460379565850
+149589221873*pi/162966218000
+arccos(root 2 of 33480783*x^15+400175073*x^14+62241838479*x^13+788755343409*x^12+4743827720811*x^11+17620618861989*x^10+45280768341051*x^9+86015839854501*x^8+96397484320681965*x^7+617173330279951971*x^6+1680598357456692429*x^5+2516506899265242675*x^4+2232099577036656153*x^3+1168630043294188887*x^2+332668041464555689*x+39398852454445239)
+arccos(1/3)
+arccos(root 0 of 9*x^2-1948537884*x-1948537877)
+19216247473*pi/32593243600
+378963059311*pi/472602032200
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lviii map 10
+90: pi
+78: arccos(1/3)
+68: 19216247473*pi/32593243600
+36: 11837623091*pi/16296621800
+29: 3689312191*pi/8148310900
+11: 51809491073*pi/65186487200
+10: 28134244891*pi/32593243600
+6: 41352120619*pi/81483109000
+6: 9438274393*pi/22815270520
+5: 27364558373*pi/40741554500
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lix list 21
+146734084309*pi/325932436000
+65250975309*pi/162966218000
+244513815109*pi/521491897600
+arccos(2/9)
+pi/2
+179327327909*pi/391118923200
+pi/2
+arccos(1/5373)
+arccos(1/3)
+arccos(root 1 of 243*x^5+27*x^3-2178*x^2+3*x+11)
+127178138149*pi/286820543680
+114140840709*pi/260745948800
+arccos(1/30)
+pi/2
+65250975309*pi/162966218000
+arccos((-2+sqrt(17))/39)
+179327327909*pi/391118923200
+arccos(1/39)
+81547597109*pi/195559461600
+arccos(1/3)
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lix map 10
+217: pi/2
+124: arccos(1/3)
+75: 114140840709*pi/260745948800
+39: 179327327909*pi/391118923200
+33: 81547597109*pi/195559461600
+13: 244513815109*pi/521491897600
+13: 61991650949*pi/156447569280
+11: arccos(1/6)
+10: 212049547727*pi/521491897600
+8: 407609009327*pi/912610820800
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lx list 21
+146734084309*pi/325932436000
+65250975309*pi/162966218000
+635632738309*pi/1303729744000
+5982988308197*pi/13037297440000
+179327327909*pi/391118923200
+12088113982619*pi/30376903035200
+arccos(1/3)
+arccos(17/2958246)
+2039076856379*pi/5084546001600
+arccos(2584/7873)
+203901236827*pi/505195275800
+81547597109*pi/195559461600
+pi/2
+407609009327*pi/912610820800
+arccos(root 1 of 2755620*x^10-977589*x^9+6561*x^8+292869189*x^7+1215*x^6-134622*x^5-162*x^4-25578*x^3-36*x^2-86*x-170)
+arccos(7/54)
+arccos(1/3)
+arccos(1/66)
+84806921469*pi/202078110320
+179327327909*pi/391118923200
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lx map 10
+88: pi/2
+69: 114140840709*pi/260745948800
+68: arccos(1/3)
+32: 81547597109*pi/195559461600
+22: 179327327909*pi/391118923200
+10: 244513815109*pi/521491897600
+9: 212049547727*pi/521491897600
+9: 61991650949*pi/156447569280
+7: 146734084309*pi/325932436000
+6: 440073276709*pi/912610820800
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lxi list 21
+9*pi/10
+3*pi/4
+pi
+9*pi/8
+3*pi/2
+arccos(1/3)
+3*pi/2
+3*pi/2
+pi+arccos(43/45)
+3*pi/4
+arccos(-13/15)
+arccos(-49/69)
+3*pi/4
+arccos(1/3)
+pi+arccos((675+2*sqrt(52339))/1149)
+3*pi/2
+3*pi/2
+arccos(1/3)
+arccos(-5/9)
+pi+arccos(root 0 of 27*x^3-225*x^2+993*x-731)
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lxi map 10
+225: 3*pi/2
+94: arccos(1/3)
+70: 3*pi/4
+38: pi
+36: pi/2
+13: 5*pi/4
+12: 9*pi/8
+8: 6*pi/5
+7: 9*pi/10
+6: 9*pi/14
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lxii list 21
+9*pi/10
+9*pi/7
+201*pi/200
+pi
+3*pi/2
+arccos(1/3)
+pi+arccos(root 0 of 207*x^3-609*x^2+13769645*x-13433563)
+pi+arccos(root 0 of 6782892669*x^3-20348678052*x^2+17563779153*x-3997993850)
+pi+arccos(root 1 of 9*x^3-30*x^2-1999*x+1924)
+arccos(root 0 of 69984*x^5+351297*x^4+705726*x^3+700092*x^2+337986*x+43363)
+pi+arccos(root 0 of 112499955*x^4-449999838*x^3+675000120*x^2-450008354*x+112507989)
+4*pi/3
+43*pi/64
+3*pi/2
+pi/2
+arccos((2479-sqrt(6214465))/18)
+3*pi/2
+3*pi/4
+9*pi/14
+123*pi/88
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lxii map 10
+90: 3*pi/2
+67: 3*pi/4
+35: pi/2
+33: arccos(1/3)
+29: pi
+15: 9*pi/8
+9: 9*pi/14
+8: 5*pi/4
+8: 9*pi/10
+7: 21*pi/20
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lxiii list 21
+43551964571*pi/81483109000
+49172784713*pi/122224663500
+76145208171*pi/130372974400
+arccos(1/18)
+2*pi/3
+163249137313*pi/293339192400
+2*pi/3
+arccos(-2684/5373)
+arccos(1/3)
+arccos(root 1 of 3888*x^5+9720*x^4+12420*x^3-535590*x^2-539385*x-117541)
+37033315851*pi/71705135920
+98062650113*pi/195559461600
+arccos(-5/12)
+2*pi/3
+49172784713*pi/122224663500
+arccos((-49+5*sqrt(17))/78)
+163249137313*pi/293339192400
+arccos(-17/39)
+65469406513*pi/146669596200
+arccos(1/3)
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lxiii map 10
+214: 2*pi/3
+121: arccos(1/3)
+72: 98062650113*pi/195559461600
+44: 163249137313*pi/293339192400
+42: 65469406513*pi/146669596200
+11: 163814975939*pi/391118923200
+10: arccos(-2/9)
+8: 43551964571*pi/81483109000
+8: 76145208171*pi/130372974400
+7: 229001463139*pi/488898654000
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lxiv list 21
+43551964571*pi/81483109000
+49172784713*pi/122224663500
+206518182571*pi/325932436000
+5452408018529*pi/9777973080000
+163249137313*pi/293339192400
+3005726526261*pi/7594225758800
+arccos(1/3)
+arccos(-2958161/5916492)
+1540652947903*pi/3813409501200
+arccos(5047/15746)
+155666665039*pi/378896456850
+65469406513*pi/146669596200
+2*pi/3
+359374437539*pi/684458115600
+arccos(root 1 of 282175488*x^10+1160614656*x^9+2052490752*x^8+470587765824*x^7+1641177505728*x^6+2459050253424*x^5+2046691797408*x^4+1020025454436*x^3+303405844032*x^2+49589088454*x+3234374595)
+arccos(-19/108)
+arccos(1/3)
+arccos(-61/132)
+68728730873*pi/151558582740
+163249137313*pi/293339192400
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lxiv map 10
+83: 2*pi/3
+70: arccos(1/3)
+69: 98062650113*pi/195559461600
+29: 65469406513*pi/146669596200
+27: 163249137313*pi/293339192400
+14: 76145208171*pi/130372974400
+11: 163814975939*pi/391118923200
+8: 358808598913*pi/586678384800
+8: 43551964571*pi/81483109000
+7: 229001463139*pi/488898654000
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lxv list 21
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lxv map 1
+1000: arccos(1/3)
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lxvi list 21
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+arccos(1/3)
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lxvi map 1
+1000: arccos(1/3)
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lxvii list 21
+344501498762941569233*pi/655050478428321482000
+557624926767654130057*pi/1310100956856642964000
+1181231638496350426591*pi/2096161530970628742400
+arccos(1/9)
+2820822776736864071251*pi/6812524975654543412800
+524926783869060709091*pi/1048080765485314371200
+1060948115092271000019*pi/1834141339599300149600
+arccos(-1/3)
+87468280672714940697*pi/209616153097062874240
+3346335059769780104887*pi/6812524975654543412800
+6954840761892162902047*pi/14673130716794401196800
+3083578918253322088069*pi/6812524975654543412800
+arccos(-13/69)
+940664591688191573447*pi/1572121148227971556800
+arccos((-347+2*sqrt(346))/1035)
+arccos(5/23)
+30070880851019856643*pi/65505047842832148200
+arccos(-1/3)
+721584040591705494523*pi/1781737301325034431040
+arccos((-128+sqrt(509))/381)
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lxvii map 10
+136: 524926783869060709091*pi/1048080765485314371200
+121: arccos(1/3)
+62: 30070880851019856643*pi/65505047842832148200
+56: 284359737060901855947*pi/524040382742657185600
+39: arccos(-1/3)
+23: 918475496979892409773*pi/2096161530970628742400
+22: 1181231638496350426591*pi/2096161530970628742400
+18: 87468280672714940697*pi/209616153097062874240
+10: 328035327480873793841*pi/733656535839720059840
+10: 557624926767654130057*pi/1310100956856642964000
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lxviii list 21
+344501498762941569233*pi/655050478428321482000
+557624926767654130057*pi/1310100956856642964000
+3150146202378219579091*pi/5240403827426571856000
+28479766396342928597503*pi/52404038274265718560000
+284359737060901855947*pi/524040382742657185600
+51366304049257511482631*pi/122101409179039124244800
+arccos(1/3)
+arccos(-493024/1479123)
+2908408157242350076857*pi/6812524975654543412800
+arccos(7631/23619)
+3509825774262747209717*pi/8122625932511186376800
+30070880851019856643*pi/65505047842832148200
+1946139970009714664281*pi/4716363444683914670400
+arccos(root 1 of 4133430*x^10+10845333*x^9+11908215*x^8+3521174976*x^7+8202081060*x^6+8193739842*x^5+4544710254*x^4+1506388968*x^3+296374734*x^2+31631745*x+1113587)
+arccos(-2/27)
+arccos(1/3)
+arccos(-10/33)
+754516383155841045307*pi/1624525186502237275360
+284359737060901855947*pi/524040382742657185600
+4199999770116340997273*pi/7336565358397200598400
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lxviii map 10
+71: 524926783869060709091*pi/1048080765485314371200
+55: arccos(1/3)
+34: 30070880851019856643*pi/65505047842832148200
+27: 284359737060901855947*pi/524040382742657185600
+16: 1181231638496350426591*pi/2096161530970628742400
+12: 918475496979892409773*pi/2096161530970628742400
+10: 557624926767654130057*pi/1310100956856642964000
+10: 87468280672714940697*pi/209616153097062874240
+8: arccos(-1/3)
+6: 612512164374546714697*pi/1048080765485314371200
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lxix list 21
+88037913363*pi/80390952980
+29345971121*pi/32156381192
+29345971121*pi/24117285894
+88037913363*pi/64312762384
+29345971121*pi/48234571788
+29345971121*pi/32156381192
+arccos(-1/9)
+29345971121*pi/24117285894
+arccos(root 0 of 31023*x^5+129519*x^4+208206*x^3+157734*x^2+53939*x+4891)
+29345971121*pi/72351857682
+pi+arccos(root 0 of 27*x^3-225*x^2+993*x-731)
+arccos(1/3)
+arccos(1/3)
+29345971121*pi/32156381192
+88037913363*pi/80390952980
+pi+arccos(root 0 of 243*x^4-4860*x^3+54018*x^2-380763420*x+380713507)
+arccos(-2/9)
+pi+arccos(107/111)
+arccos(-23/27)
+pi+arccos(root 0 of 102303*x^3-306981*x^2+307389*x-101303)
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lxix map 10
+152: 29345971121*pi/32156381192
+80: 29345971121*pi/24117285894
+70: pi+arccos(-1/3)
+64: arccos(1/3)
+63: 29345971121*pi/48234571788
+20: 146729855605*pi/96469143576
+15: 88037913363*pi/64312762384
+14: 88037913363*pi/80390952980
+13: 29345971121*pi/64312762384
+12: 29345971121*pi/20097738245
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lxx list 21
+88037913363*pi/80390952980
+88037913363*pi/56273667086
+1966180065107*pi/1607819059600
+29345971121*pi/24117285894
+205421797847*pi/164801453609
+pi+arccos(root 0 of 405*x^5-6993*x^4+23634*x^3-330490146*x^2+652879017*x-322280989)
+arccos(root 1 of 27*x^3-85725*x^2-171459*x-85675)
+pi+arccos(root 1 of 1701*x^4+1199286*x^3-4336728*x^2+5079034*x-1943165)
+pi+arccos(-1/3)
+pi+arccos(root 0 of 27*x^3+135*x^2+2145*x-1987)
+264113740089*pi/249211954238
+arccos(1/3)
+pi+arccos(-1/3)
+arccos((2479-sqrt(6214465))/18)
+29345971121*pi/56273667086
+29345971121*pi/24117285894
+322805682331*pi/450189336688
+pi+arccos(-1/3)
+146729855605*pi/96469143576
+146729855605*pi/96469143576
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lxx map 10
+75: 29345971121*pi/32156381192
+48: 29345971121*pi/48234571788
+41: 29345971121*pi/24117285894
+39: pi+arccos(-1/3)
+28: arccos(1/3)
+20: 88037913363*pi/64312762384
+19: 29345971121*pi/64312762384
+17: 146729855605*pi/96469143576
+12: 29345971121*pi/56273667086
+11: 88037913363*pi/80390952980
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lxxi list 21
+159789374166409522577*pi/163762619607080370500
+36411207785957581077*pi/81881309803540185250
+307843173822951852377*pi/262020191371328592800
+arccos(-1/9)
+209140640718590299177*pi/196515143528496444600
+arccos(root 0 of 31023*x^5+129519*x^4+208206*x^3+157734*x^2+53939*x+4891)
+279554087777793455839*pi/589545430585489333800
+pi+arccos(root 0 of 27*x^3-225*x^2+993*x-731)
+arccos(1/3)
+arccos(1/3)
+110438107614228745977*pi/131010095685664296400
+159789374166409522577*pi/163762619607080370500
+pi+arccos(root 0 of 243*x^4-4860*x^3+54018*x^2-380763420*x+380713507)
+arccos(-2/9)
+pi+arccos(107/111)
+arccos(-23/27)
+pi+arccos(root 0 of 102303*x^3-306981*x^2+307389*x-101303)
+pi+arccos(13/15)
+209140640718590299177*pi/196515143528496444600
+603950773136036511977*pi/458535334899825037400
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lxxi map 10
+141: 110438107614228745977*pi/131010095685664296400
+94: arccos(1/3)
+67: 61086841062047969377*pi/98257571764248222300
+48: 209140640718590299177*pi/196515143528496444600
+23: 505248240031674958777*pi/393030287056992889200
+16: 133909256633963131531*pi/262020191371328592800
+13: 159789374166409522577*pi/163762619607080370500
+13: 307843173822951852377*pi/262020191371328592800
+12: 31476081130739503417*pi/78606057411398577840
+10: 406545706927313405577*pi/327525239214160741000
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lxxii list 21
+159789374166409522577*pi/163762619607080370500
+36411207785957581077*pi/81881309803540185250
+900058372449121171577*pi/655050478428321482000
+7000343676817841426041*pi/6550504784283214820000
+209140640718590299177*pi/196515143528496444600
+6387001121767819054807*pi/15262676147379890530600
+arccos(1/3)
+arccos(-1479089/1479123)
+pi+arccos(root 0 of 17523*x^5-87579*x^4+364038*x^3-624878*x^2+420343*x-87911)
+pi+arccos(775/789)
+232611789738324684731*pi/327525239214160741000
+110438107614228745977*pi/131010095685664296400
+arccos(root 1 of 1205223*x^2+2410466*x+1196379)
+arccos(root 2 of 19683*x^7+104247*x^6+243243*x^5+95454855*x^4+380817585*x^3+570996477*x^2+380588097*x-122007739)
+898853888192765168831*pi/769684312153277741350
+61086841062047969377*pi/98257571764248222300
+pi+arccos(root 1 of 27*x^3-9513*x^2+6273*x+2701)
+5002203329603490307121*pi/7533080501925697043000
+10477784948382844504229*pi/11397878324652793786800
+pi+arccos(root 1 of 14230809*x^8+270558144*x^7-2292381324*x^6-56268726192*x^5+305192638350*x^4+11819689016544*x^3-36699230229084*x^2+37011694736016*x-12379069777727)
+...
+
+QBarRandomProvider_range_AlgebraicAngle_AlgebraicAngle_lxxii map 10
+72: 110438107614228745977*pi/131010095685664296400
+47: arccos(1/3)
+44: 61086841062047969377*pi/98257571764248222300
+31: 209140640718590299177*pi/196515143528496444600
+14: 505248240031674958777*pi/393030287056992889200
+13: 133909256633963131531*pi/262020191371328592800
+13: 31476081130739503417*pi/78606057411398577840
+11: 36411207785957581077*pi/81881309803540185250
+10: 159789374166409522577*pi/163762619607080370500
+7: 406545706927313405577*pi/327525239214160741000
 
 QBarRandomProvider_qbarRandomProvidersFixedScales_i list 21
 QBarRandomProvider[@6307004437655165633, 8, 32, 2]

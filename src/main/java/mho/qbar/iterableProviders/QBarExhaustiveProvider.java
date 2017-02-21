@@ -1,6 +1,7 @@
 package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.*;
+import mho.qbar.objects.Vector;
 import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.NoRemoveIterable;
 import mho.wheels.numberUtils.IntegerUtils;
@@ -8,10 +9,7 @@ import mho.wheels.ordering.Ordering;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
@@ -1746,7 +1744,7 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
      *
      * @param a the inclusive lower bound of the generated elements
      * @param b the inclusive upper bound of the generated elements
-     * @return {@code Algebraic}s between {@code a} and {@code b}, inclusive
+     * @return {@code AlgebraicAngle}s that are rational multiples of π between {@code a} and {@code b}, inclusive
      */
     public @NotNull Iterable<AlgebraicAngle> rationalMultiplesOfPiInRange(
             @NotNull AlgebraicAngle a,
@@ -1780,6 +1778,70 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
             return filterInfinite(y -> ge(y, a) || le(y, b), unfiltered);
         } else {
             return filterInfinite(y -> ge(y, a) && le(y, b), unfiltered);
+        }
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code AlgebraicAngle}s between {@code a} and {@code b}, inclusive. If
+     * {@code a}≤{@code b}, the angles produced will be greater than or equal to {@code a} and less than or equal to
+     * {@code b}. If {@code a}{@literal >}{@code b}, the range wraps around zero, so the angles produced are greater
+     * than or equal to {@code a} <i>or</i> less than or equal to {@code b}. If {@code a} and {@code b} are equal, the
+     * result is a singleton containing that angle.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>{@code b} cannot be null.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code AlgebraicAngle}s.</li>
+     * </ul>
+     *
+     * Length is 1 if {@code a}={@code b} and infinite otherwise
+     *
+     * @param a the inclusive lower bound of the generated elements
+     * @param b the inclusive upper bound of the generated elements
+     * @return {@code AlgebraicAngle}s between {@code a} and {@code b}, inclusive
+     */
+    public @NotNull Iterable<AlgebraicAngle> range(@NotNull AlgebraicAngle a, @NotNull AlgebraicAngle b) {
+        if (a.equals(b)) {
+            return Collections.singletonList(a);
+        }
+        boolean containsZero = le(a, b) ?
+                a.equals(AlgebraicAngle.ZERO) && le(AlgebraicAngle.ZERO, b) :
+                a.equals(AlgebraicAngle.ZERO) || le(AlgebraicAngle.ZERO, b);
+        boolean containsPi = le(a, b) ?
+                ge(AlgebraicAngle.PI, a) && le(AlgebraicAngle.PI, b) :
+                ge(AlgebraicAngle.PI, a) || le(AlgebraicAngle.PI, b);
+        Algebraic acos = a.cos();
+        Algebraic bcos = b.cos();
+        if (!containsZero && !containsPi) {
+            Iterable<AlgebraicAngle> ts = a.getQuadrant() < 3 ?
+                    map(AlgebraicAngle::arccos, range(bcos, acos)) :
+                    map(u -> AlgebraicAngle.arccos(u).negate(), range(acos, bcos));
+            return choose(rationalMultiplesOfPiInRange(a, b), filterInfinite(t -> !t.isRationalMultipleOfPi(), ts));
+        } else {
+            SortedSet<Algebraic> limits = new TreeSet<>();
+            if (containsZero) {
+                limits.add(Algebraic.ONE);
+            }
+            if (containsPi) {
+                limits.add(Algebraic.NEGATIVE_ONE);
+            }
+            limits.add(acos);
+            limits.add(bcos);
+            Iterable<AlgebraicAngle> ts = map(
+                    p -> p.b ? AlgebraicAngle.arccos(p.a).negate() : AlgebraicAngle.arccos(p.a),
+                    pairsLex(range(limits.first(), limits.last()), Arrays.asList(false, true))
+            );
+            if (le(a, b)) {
+                return choose(
+                        rationalMultiplesOfPiInRange(a, b),
+                        filterInfinite(t -> !t.isRationalMultipleOfPi() && ge(t, a) && le(t, b), ts)
+                );
+            } else {
+                return choose(
+                        rationalMultiplesOfPiInRange(a, b),
+                        filterInfinite(t -> !t.isRationalMultipleOfPi() && (ge(t, a) || le(t, b)), ts)
+                );
+            }
         }
     }
 
