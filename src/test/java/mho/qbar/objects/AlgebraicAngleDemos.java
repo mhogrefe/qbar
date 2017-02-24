@@ -4,10 +4,13 @@ import mho.qbar.testing.QBarDemos;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigInteger;
+
 import static mho.qbar.objects.AlgebraicAngle.*;
 import static mho.wheels.iterables.IterableUtils.filterInfinite;
 import static mho.wheels.iterables.IterableUtils.take;
 import static mho.wheels.ordering.Ordering.compare;
+import static mho.wheels.ordering.Ordering.le;
 import static mho.wheels.testing.Testing.MEDIUM_LIMIT;
 import static mho.wheels.testing.Testing.nicePrint;
 
@@ -83,6 +86,89 @@ public class AlgebraicAngleDemos extends QBarDemos {
     private void demoAddPi() {
         for (AlgebraicAngle t : take(MEDIUM_LIMIT, P.withScale(4).algebraicAngles())) {
             System.out.println("pi+(" + t + ") = " + t.addPi());
+        }
+    }
+
+    private void demoSin() {
+        BigInteger maxDenominator = BigInteger.valueOf(25);
+        Iterable<AlgebraicAngle> ts = filterInfinite(
+                t -> t.rationalTurns().map(x -> le(x.getDenominator(), maxDenominator)).orElse(true),
+                P.withScale(4).withSecondaryScale(4).algebraicAngles()
+        );
+        for (AlgebraicAngle t : take(MEDIUM_LIMIT, ts)) {
+            System.out.println("sin(" + t + ") = " + t.sin());
+        }
+    }
+
+    private void demoCos() {
+        BigInteger maxDenominator = BigInteger.valueOf(1000);
+        Iterable<AlgebraicAngle> ts = filterInfinite(
+                t -> t.rationalTurns().map(x -> le(x.getDenominator(), maxDenominator)).orElse(true),
+                P.withScale(4).withSecondaryScale(4).algebraicAngles()
+        );
+        for (AlgebraicAngle t : take(MEDIUM_LIMIT, ts)) {
+            System.out.println("cos(" + t + ") = " + t.cos());
+        }
+    }
+
+    private void demoTan() {
+        BigInteger maxDenominator = BigInteger.valueOf(15);
+        Iterable<AlgebraicAngle> ts = filterInfinite(
+                t -> !t.equals(PI_OVER_TWO) && !t.equals(THREE_PI_OVER_TWO) &&
+                        (t.isRationalMultipleOfPi() || t.cos().degree() < 6) &&
+                        t.rationalTurns().map(x -> le(x.getDenominator(), maxDenominator)).orElse(true),
+                P.withScale(4).withSecondaryScale(4).algebraicAngles()
+        );
+        for (AlgebraicAngle t : take(MEDIUM_LIMIT, ts)) {
+            System.out.println("tan(" + t + ") = " + t.tan());
+        }
+    }
+
+    private void demoCot() {
+        BigInteger maxDenominator = BigInteger.valueOf(15);
+        Iterable<AlgebraicAngle> ts = filterInfinite(
+                t -> !t.equals(ZERO) && !t.equals(PI) &&
+                        (t.isRationalMultipleOfPi() || t.cos().degree() < 6) &&
+                        t.rationalTurns().map(x -> le(x.getDenominator(), maxDenominator)).orElse(true),
+                P.withScale(4).withSecondaryScale(4).algebraicAngles()
+        );
+        for (AlgebraicAngle t : take(MEDIUM_LIMIT, ts)) {
+            System.out.println("cot(" + t + ") = " + t.cot());
+        }
+    }
+
+    private void demoSec() {
+        BigInteger maxDenominator = BigInteger.valueOf(100);
+        Iterable<AlgebraicAngle> ts = filterInfinite(
+                t -> !t.equals(PI_OVER_TWO) && !t.equals(THREE_PI_OVER_TWO) &&
+                        t.rationalTurns().map(x -> le(x.getDenominator(), maxDenominator)).orElse(true),
+                P.withScale(4).withSecondaryScale(4).algebraicAngles()
+        );
+        for (AlgebraicAngle t : take(MEDIUM_LIMIT, ts)) {
+            System.out.println("sec(" + t + ") = " + t.sec());
+        }
+    }
+
+    private void demoCsc() {
+        BigInteger maxDenominator = BigInteger.valueOf(25);
+        Iterable<AlgebraicAngle> ts = filterInfinite(
+                t -> !t.equals(ZERO) && !t.equals(PI) &&
+                        t.rationalTurns().map(x -> le(x.getDenominator(), maxDenominator)).orElse(true),
+                P.withScale(4).withSecondaryScale(4).algebraicAngles()
+        );
+        for (AlgebraicAngle t : take(MEDIUM_LIMIT, ts)) {
+            System.out.println("csc(" + t + ") = " + t.csc());
+        }
+    }
+
+    private void demoComplement() {
+        BigInteger maxDenominator = BigInteger.valueOf(25);
+        Iterable<AlgebraicAngle> ts = filterInfinite(
+                t -> t.rationalTurns().map(x -> le(x.getDenominator(), maxDenominator)).orElse(true),
+                P.withScale(4).withSecondaryScale(4).algebraicAngles()
+        );
+        for (AlgebraicAngle t : take(MEDIUM_LIMIT, ts)) {
+            System.out.println("pi/2-(" + t + ") = " + t.complement());
         }
     }
 

@@ -1660,7 +1660,8 @@ public final class Polynomial implements
             throw new NullPointerException();
         }
         if (!unique(map(p -> p.a, points))) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("The first elements of points must be unique. Invalid points: " +
+                    points);
         }
         int degree = points.size() - 1;
         List<Vector> rows = new ArrayList<>();

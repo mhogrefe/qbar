@@ -2695,7 +2695,7 @@ public final class Algebraic implements Comparable<Algebraic> {
      * @return the minimal polynomial of cos(2π/n)
      */
     static @NotNull Polynomial turnFractionCosineMinimalPolynomial(int n) {
-        if ((n & 1) == 1 && MathUtils.isPrime(n)) {
+        if (n > 2 && MathUtils.isPrime(n)) {
             return turnFractionCosineMinimalPolynomialOddPrimeDenominator(n);
         } else {
             return turnFractionCosineMinimalPolynomial(new HashMap<>(), n).constantFactor().b;

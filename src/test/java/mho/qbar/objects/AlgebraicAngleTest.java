@@ -302,6 +302,94 @@ public class AlgebraicAngleTest {
         addPi_helper("pi+arccos(sqrt(5)/3)", "arccos(sqrt(5)/3)");
     }
 
+    private static void sin_helper(@NotNull String input, @NotNull String output) {
+        aeq(readStrict(input).get().sin(), output);
+    }
+
+    @Test
+    public void testSin() {
+        sin_helper("0", "0");
+
+        sin_helper("pi", "0");
+
+        sin_helper("2*pi/3", "sqrt(3)/2");
+        sin_helper("4*pi/3", "-sqrt(3)/2");
+
+        sin_helper("pi/2", "1");
+        sin_helper("3*pi/2", "-1");
+
+        sin_helper("2*pi/5", "root 3 of 16*x^4-20*x^2+5");
+        sin_helper("4*pi/5", "root 2 of 16*x^4-20*x^2+5");
+        sin_helper("6*pi/5", "root 1 of 16*x^4-20*x^2+5");
+        sin_helper("8*pi/5", "root 0 of 16*x^4-20*x^2+5");
+
+        sin_helper("pi/3", "sqrt(3)/2");
+        sin_helper("5*pi/3", "-sqrt(3)/2");
+
+        sin_helper("2*pi/7", "root 4 of 64*x^6-112*x^4+56*x^2-7");
+        sin_helper("4*pi/7", "root 5 of 64*x^6-112*x^4+56*x^2-7");
+        sin_helper("6*pi/7", "root 3 of 64*x^6-112*x^4+56*x^2-7");
+        sin_helper("8*pi/7", "root 2 of 64*x^6-112*x^4+56*x^2-7");
+        sin_helper("10*pi/7", "root 0 of 64*x^6-112*x^4+56*x^2-7");
+        sin_helper("12*pi/7", "root 1 of 64*x^6-112*x^4+56*x^2-7");
+
+        sin_helper("pi/4", "sqrt(2)/2");
+        sin_helper("3*pi/4", "sqrt(2)/2");
+        sin_helper("5*pi/4", "-sqrt(2)/2");
+        sin_helper("7*pi/4", "-sqrt(2)/2");
+
+        sin_helper("2*pi/9", "root 4 of 64*x^6-96*x^4+36*x^2-3");
+        sin_helper("4*pi/9", "root 5 of 64*x^6-96*x^4+36*x^2-3");
+        sin_helper("8*pi/9", "root 3 of 64*x^6-96*x^4+36*x^2-3");
+        sin_helper("10*pi/9", "root 2 of 64*x^6-96*x^4+36*x^2-3");
+        sin_helper("14*pi/9", "root 0 of 64*x^6-96*x^4+36*x^2-3");
+        sin_helper("16*pi/9", "root 1 of 64*x^6-96*x^4+36*x^2-3");
+
+        sin_helper("pi/5", "root 2 of 16*x^4-20*x^2+5");
+        sin_helper("3*pi/5", "root 3 of 16*x^4-20*x^2+5");
+        sin_helper("7*pi/5", "root 0 of 16*x^4-20*x^2+5");
+        sin_helper("9*pi/5", "root 1 of 16*x^4-20*x^2+5");
+
+        sin_helper("2*pi/11", "root 6 of 1024*x^10-2816*x^8+2816*x^6-1232*x^4+220*x^2-11");
+        sin_helper("4*pi/11", "root 8 of 1024*x^10-2816*x^8+2816*x^6-1232*x^4+220*x^2-11");
+        sin_helper("6*pi/11", "root 9 of 1024*x^10-2816*x^8+2816*x^6-1232*x^4+220*x^2-11");
+        sin_helper("8*pi/11", "root 7 of 1024*x^10-2816*x^8+2816*x^6-1232*x^4+220*x^2-11");
+        sin_helper("10*pi/11", "root 5 of 1024*x^10-2816*x^8+2816*x^6-1232*x^4+220*x^2-11");
+        sin_helper("12*pi/11", "root 4 of 1024*x^10-2816*x^8+2816*x^6-1232*x^4+220*x^2-11");
+        sin_helper("14*pi/11", "root 2 of 1024*x^10-2816*x^8+2816*x^6-1232*x^4+220*x^2-11");
+        sin_helper("16*pi/11", "root 0 of 1024*x^10-2816*x^8+2816*x^6-1232*x^4+220*x^2-11");
+        sin_helper("18*pi/11", "root 1 of 1024*x^10-2816*x^8+2816*x^6-1232*x^4+220*x^2-11");
+        sin_helper("20*pi/11", "root 3 of 1024*x^10-2816*x^8+2816*x^6-1232*x^4+220*x^2-11");
+
+        sin_helper("pi/6", "1/2");
+        sin_helper("5*pi/6", "1/2");
+        sin_helper("7*pi/6", "-1/2");
+        sin_helper("11*pi/6", "-1/2");
+
+        sin_helper("2*pi/13", "root 7 of 4096*x^12-13312*x^10+16640*x^8-9984*x^6+2912*x^4-364*x^2+13");
+        sin_helper("2*pi/17",
+                "root 9 of 65536*x^16-278528*x^14+487424*x^12-452608*x^10+239360*x^8-71808*x^6+11424*x^4-816*x^2+17");
+        sin_helper("2*pi/23",
+                "root 12 of 4194304*x^22-24117248*x^20+60293120*x^18-85917696*x^16+76873728*x^14-44843008*x^12+" +
+                "17145856*x^10-4209920*x^8+631488*x^6-52624*x^4+2024*x^2-23");
+        sin_helper("pi/180",
+                "root 24 of 281474976710656*x^48-3377699720527872*x^46+18999560927969280*x^44-" +
+                "66568831992070144*x^42+162828875980603392*x^40-295364007592722432*x^38+411985976135516160*x^36-" +
+                "452180272956309504*x^34+396366279591591936*x^32-280058255978266624*x^30+160303703377575936*x^28-" +
+                "74448984852135936*x^26+28011510450094080*x^24-8500299631165440*x^22+2064791072931840*x^20-" +
+                "397107008634880*x^18+59570604933120*x^16-6832518856704*x^14+583456329728*x^12-35782471680*x^10+" +
+                "1497954816*x^8-39625728*x^6+579456*x^4-3456*x^2+1");
+
+        sin_helper("arccos(1/3)", "2*sqrt(2)/3");
+        sin_helper("arccos(-1/3)", "2*sqrt(2)/3");
+        sin_helper("pi+arccos(-1/3)", "-2*sqrt(2)/3");
+        sin_helper("pi+arccos(1/3)", "-2*sqrt(2)/3");
+        sin_helper("arccos(sqrt(5)/3)", "2/3");
+        sin_helper("arccos(-sqrt(5)/3)", "2/3");
+        sin_helper("pi+arccos(-sqrt(5)/3)", "-2/3");
+        sin_helper("pi+arccos(sqrt(5)/3)", "-2/3");
+    }
+
     private static void cos_helper(@NotNull String input, @NotNull String output) {
         AlgebraicAngle t = readStrict(input).get();
         t.validate();
@@ -389,6 +477,388 @@ public class AlgebraicAngleTest {
         cos_helper("arccos(-sqrt(5)/3)", "-sqrt(5)/3");
         cos_helper("pi+arccos(-sqrt(5)/3)", "sqrt(5)/3");
         cos_helper("pi+arccos(sqrt(5)/3)", "-sqrt(5)/3");
+    }
+
+    private static void tan_helper(@NotNull String input, @NotNull String output) {
+        aeq(readStrict(input).get().tan(), output);
+    }
+
+    private static void tan_fail_helper(@NotNull String input) {
+        try {
+            readStrict(input).get().tan();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testTan() {
+        tan_helper("0", "0");
+
+        tan_helper("pi", "0");
+
+        tan_helper("2*pi/3", "-sqrt(3)");
+        tan_helper("4*pi/3", "sqrt(3)");
+
+        tan_helper("2*pi/5", "root 3 of x^4-10*x^2+5");
+        tan_helper("4*pi/5", "root 1 of x^4-10*x^2+5");
+        tan_helper("6*pi/5", "root 2 of x^4-10*x^2+5");
+        tan_helper("8*pi/5", "root 0 of x^4-10*x^2+5");
+
+        tan_helper("pi/3", "sqrt(3)");
+        tan_helper("5*pi/3", "-sqrt(3)");
+
+        tan_helper("2*pi/7", "root 4 of x^6-21*x^4+35*x^2-7");
+        tan_helper("4*pi/7", "root 0 of x^6-21*x^4+35*x^2-7");
+        tan_helper("6*pi/7", "root 2 of x^6-21*x^4+35*x^2-7");
+        tan_helper("8*pi/7", "root 3 of x^6-21*x^4+35*x^2-7");
+        tan_helper("10*pi/7", "root 5 of x^6-21*x^4+35*x^2-7");
+        tan_helper("12*pi/7", "root 1 of x^6-21*x^4+35*x^2-7");
+
+        tan_helper("pi/4", "1");
+        tan_helper("3*pi/4", "-1");
+        tan_helper("5*pi/4", "1");
+        tan_helper("7*pi/4", "-1");
+
+        tan_helper("2*pi/9", "root 4 of x^6-33*x^4+27*x^2-3");
+        tan_helper("4*pi/9", "root 5 of x^6-33*x^4+27*x^2-3");
+        tan_helper("8*pi/9", "root 2 of x^6-33*x^4+27*x^2-3");
+        tan_helper("10*pi/9", "root 3 of x^6-33*x^4+27*x^2-3");
+        tan_helper("14*pi/9", "root 0 of x^6-33*x^4+27*x^2-3");
+        tan_helper("16*pi/9", "root 1 of x^6-33*x^4+27*x^2-3");
+
+        tan_helper("pi/5", "root 2 of x^4-10*x^2+5");
+        tan_helper("3*pi/5", "root 0 of x^4-10*x^2+5");
+        tan_helper("7*pi/5", "root 3 of x^4-10*x^2+5");
+        tan_helper("9*pi/5", "root 1 of x^4-10*x^2+5");
+
+        tan_helper("2*pi/11", "root 6 of x^10-55*x^8+330*x^6-462*x^4+165*x^2-11");
+        tan_helper("4*pi/11", "root 8 of x^10-55*x^8+330*x^6-462*x^4+165*x^2-11");
+        tan_helper("6*pi/11", "root 0 of x^10-55*x^8+330*x^6-462*x^4+165*x^2-11");
+        tan_helper("8*pi/11", "root 2 of x^10-55*x^8+330*x^6-462*x^4+165*x^2-11");
+        tan_helper("10*pi/11", "root 4 of x^10-55*x^8+330*x^6-462*x^4+165*x^2-11");
+        tan_helper("12*pi/11", "root 5 of x^10-55*x^8+330*x^6-462*x^4+165*x^2-11");
+        tan_helper("14*pi/11", "root 7 of x^10-55*x^8+330*x^6-462*x^4+165*x^2-11");
+        tan_helper("16*pi/11", "root 9 of x^10-55*x^8+330*x^6-462*x^4+165*x^2-11");
+        tan_helper("18*pi/11", "root 1 of x^10-55*x^8+330*x^6-462*x^4+165*x^2-11");
+        tan_helper("20*pi/11", "root 3 of x^10-55*x^8+330*x^6-462*x^4+165*x^2-11");
+
+        tan_helper("pi/6", "sqrt(3)/3");
+        tan_helper("5*pi/6", "-sqrt(3)/3");
+        tan_helper("7*pi/6", "sqrt(3)/3");
+        tan_helper("11*pi/6", "-sqrt(3)/3");
+
+        tan_helper("2*pi/13", "root 7 of x^12-78*x^10+715*x^8-1716*x^6+1287*x^4-286*x^2+13");
+        tan_helper("2*pi/17", "root 9 of x^16-136*x^14+2380*x^12-12376*x^10+24310*x^8-19448*x^6+6188*x^4-680*x^2+17");
+
+        tan_helper("arccos(1/3)", "2*sqrt(2)");
+        tan_helper("arccos(-1/3)", "-2*sqrt(2)");
+        tan_helper("pi+arccos(-1/3)", "-2*sqrt(2)");
+        tan_helper("pi+arccos(1/3)", "2*sqrt(2)");
+        tan_helper("arccos(sqrt(5)/3)", "2*sqrt(5)/5");
+        tan_helper("arccos(-sqrt(5)/3)", "-2*sqrt(5)/5");
+        tan_helper("pi+arccos(-sqrt(5)/3)", "-2*sqrt(5)/5");
+        tan_helper("pi+arccos(sqrt(5)/3)", "2*sqrt(5)/5");
+
+        tan_fail_helper("pi/2");
+        tan_fail_helper("3*pi/2");
+    }
+
+    private static void cot_helper(@NotNull String input, @NotNull String output) {
+        aeq(readStrict(input).get().cot(), output);
+    }
+
+    private static void cot_fail_helper(@NotNull String input) {
+        try {
+            readStrict(input).get().cot();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testCot() {
+        cot_helper("2*pi/3", "-sqrt(3)/3");
+        cot_helper("4*pi/3", "sqrt(3)/3");
+
+        cot_helper("pi/2", "0");
+        cot_helper("3*pi/2", "0");
+
+        cot_helper("2*pi/5", "root 2 of 5*x^4-10*x^2+1");
+        cot_helper("4*pi/5", "root 0 of 5*x^4-10*x^2+1");
+        cot_helper("6*pi/5", "root 3 of 5*x^4-10*x^2+1");
+        cot_helper("8*pi/5", "root 1 of 5*x^4-10*x^2+1");
+
+        cot_helper("pi/3", "sqrt(3)/3");
+        cot_helper("5*pi/3", "-sqrt(3)/3");
+
+        cot_helper("2*pi/7", "root 4 of 7*x^6-35*x^4+21*x^2-1");
+        cot_helper("4*pi/7", "root 2 of 7*x^6-35*x^4+21*x^2-1");
+        cot_helper("6*pi/7", "root 0 of 7*x^6-35*x^4+21*x^2-1");
+        cot_helper("8*pi/7", "root 5 of 7*x^6-35*x^4+21*x^2-1");
+        cot_helper("10*pi/7", "root 3 of 7*x^6-35*x^4+21*x^2-1");
+        cot_helper("12*pi/7", "root 1 of 7*x^6-35*x^4+21*x^2-1");
+
+        cot_helper("pi/4", "1");
+        cot_helper("3*pi/4", "-1");
+        cot_helper("5*pi/4", "1");
+        cot_helper("7*pi/4", "-1");
+
+        cot_helper("2*pi/9", "root 4 of 3*x^6-27*x^4+33*x^2-1");
+        cot_helper("4*pi/9", "root 3 of 3*x^6-27*x^4+33*x^2-1");
+        cot_helper("8*pi/9", "root 0 of 3*x^6-27*x^4+33*x^2-1");
+        cot_helper("10*pi/9", "root 5 of 3*x^6-27*x^4+33*x^2-1");
+        cot_helper("14*pi/9", "root 2 of 3*x^6-27*x^4+33*x^2-1");
+        cot_helper("16*pi/9", "root 1 of 3*x^6-27*x^4+33*x^2-1");
+
+        cot_helper("pi/5", "root 3 of 5*x^4-10*x^2+1");
+        cot_helper("3*pi/5", "root 1 of 5*x^4-10*x^2+1");
+        cot_helper("7*pi/5", "root 2 of 5*x^4-10*x^2+1");
+        cot_helper("9*pi/5", "root 0 of 5*x^4-10*x^2+1");
+
+        cot_helper("2*pi/11", "root 8 of 11*x^10-165*x^8+462*x^6-330*x^4+55*x^2-1");
+        cot_helper("4*pi/11", "root 6 of 11*x^10-165*x^8+462*x^6-330*x^4+55*x^2-1");
+        cot_helper("6*pi/11", "root 4 of 11*x^10-165*x^8+462*x^6-330*x^4+55*x^2-1");
+        cot_helper("8*pi/11", "root 2 of 11*x^10-165*x^8+462*x^6-330*x^4+55*x^2-1");
+        cot_helper("10*pi/11", "root 0 of 11*x^10-165*x^8+462*x^6-330*x^4+55*x^2-1");
+        cot_helper("12*pi/11", "root 9 of 11*x^10-165*x^8+462*x^6-330*x^4+55*x^2-1");
+        cot_helper("14*pi/11", "root 7 of 11*x^10-165*x^8+462*x^6-330*x^4+55*x^2-1");
+        cot_helper("16*pi/11", "root 5 of 11*x^10-165*x^8+462*x^6-330*x^4+55*x^2-1");
+        cot_helper("18*pi/11", "root 3 of 11*x^10-165*x^8+462*x^6-330*x^4+55*x^2-1");
+        cot_helper("20*pi/11", "root 1 of 11*x^10-165*x^8+462*x^6-330*x^4+55*x^2-1");
+
+        cot_helper("pi/6", "sqrt(3)");
+        cot_helper("5*pi/6", "-sqrt(3)");
+        cot_helper("7*pi/6", "sqrt(3)");
+        cot_helper("11*pi/6", "-sqrt(3)");
+
+        cot_helper("2*pi/13", "root 10 of 13*x^12-286*x^10+1287*x^8-1716*x^6+715*x^4-78*x^2+1");
+        cot_helper("2*pi/17",
+                "root 14 of 17*x^16-680*x^14+6188*x^12-19448*x^10+24310*x^8-12376*x^6+2380*x^4-136*x^2+1");
+
+        cot_helper("arccos(1/3)", "sqrt(2)/4");
+        cot_helper("arccos(-1/3)", "-sqrt(2)/4");
+        cot_helper("pi+arccos(-1/3)", "-sqrt(2)/4");
+        cot_helper("pi+arccos(1/3)", "sqrt(2)/4");
+        cot_helper("arccos(sqrt(5)/3)", "sqrt(5)/2");
+        cot_helper("arccos(-sqrt(5)/3)", "-sqrt(5)/2");
+        cot_helper("pi+arccos(-sqrt(5)/3)", "-sqrt(5)/2");
+        cot_helper("pi+arccos(sqrt(5)/3)", "sqrt(5)/2");
+
+        cot_fail_helper("0");
+        cot_fail_helper("pi");
+    }
+
+    private static void sec_helper(@NotNull String input, @NotNull String output) {
+        aeq(readStrict(input).get().sec(), output);
+    }
+
+    private static void sec_fail_helper(@NotNull String input) {
+        try {
+            readStrict(input).get().sec();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testSec() {
+        sec_helper("0", "1");
+
+        sec_helper("pi", "-1");
+
+        sec_helper("2*pi/3", "-2");
+        sec_helper("4*pi/3", "-2");
+
+        sec_helper("2*pi/5", "1+sqrt(5)");
+        sec_helper("4*pi/5", "1-sqrt(5)");
+        sec_helper("6*pi/5", "1-sqrt(5)");
+        sec_helper("8*pi/5", "1+sqrt(5)");
+
+        sec_helper("pi/3", "2");
+        sec_helper("5*pi/3", "2");
+
+        sec_helper("2*pi/7", "root 2 of x^3+4*x^2-4*x-8");
+        sec_helper("4*pi/7", "root 0 of x^3+4*x^2-4*x-8");
+        sec_helper("6*pi/7", "root 1 of x^3+4*x^2-4*x-8");
+        sec_helper("8*pi/7", "root 1 of x^3+4*x^2-4*x-8");
+        sec_helper("10*pi/7", "root 0 of x^3+4*x^2-4*x-8");
+        sec_helper("12*pi/7", "root 2 of x^3+4*x^2-4*x-8");
+
+        sec_helper("pi/4", "sqrt(2)");
+        sec_helper("3*pi/4", "-sqrt(2)");
+        sec_helper("5*pi/4", "-sqrt(2)");
+        sec_helper("7*pi/4", "sqrt(2)");
+
+        sec_helper("2*pi/9", "root 1 of x^3-6*x^2+8");
+        sec_helper("4*pi/9", "root 2 of x^3-6*x^2+8");
+        sec_helper("8*pi/9", "root 0 of x^3-6*x^2+8");
+        sec_helper("10*pi/9", "root 0 of x^3-6*x^2+8");
+        sec_helper("14*pi/9", "root 2 of x^3-6*x^2+8");
+        sec_helper("16*pi/9", "root 1 of x^3-6*x^2+8");
+
+        sec_helper("pi/5", "-1+sqrt(5)");
+        sec_helper("3*pi/5", "-1-sqrt(5)");
+        sec_helper("7*pi/5", "-1-sqrt(5)");
+        sec_helper("9*pi/5", "-1+sqrt(5)");
+
+        sec_helper("2*pi/11", "root 3 of x^5+6*x^4-12*x^3-32*x^2+16*x+32");
+        sec_helper("4*pi/11", "root 4 of x^5+6*x^4-12*x^3-32*x^2+16*x+32");
+        sec_helper("6*pi/11", "root 0 of x^5+6*x^4-12*x^3-32*x^2+16*x+32");
+        sec_helper("8*pi/11", "root 1 of x^5+6*x^4-12*x^3-32*x^2+16*x+32");
+        sec_helper("10*pi/11", "root 2 of x^5+6*x^4-12*x^3-32*x^2+16*x+32");
+        sec_helper("12*pi/11", "root 2 of x^5+6*x^4-12*x^3-32*x^2+16*x+32");
+        sec_helper("14*pi/11", "root 1 of x^5+6*x^4-12*x^3-32*x^2+16*x+32");
+        sec_helper("16*pi/11", "root 0 of x^5+6*x^4-12*x^3-32*x^2+16*x+32");
+        sec_helper("18*pi/11", "root 4 of x^5+6*x^4-12*x^3-32*x^2+16*x+32");
+        sec_helper("20*pi/11", "root 3 of x^5+6*x^4-12*x^3-32*x^2+16*x+32");
+
+        sec_helper("pi/6", "2*sqrt(3)/3");
+        sec_helper("5*pi/6", "-2*sqrt(3)/3");
+        sec_helper("7*pi/6", "-2*sqrt(3)/3");
+        sec_helper("11*pi/6", "2*sqrt(3)/3");
+
+        sec_helper("2*pi/13", "root 3 of x^6-6*x^5-24*x^4+32*x^3+80*x^2-32*x-64");
+        sec_helper("2*pi/17", "root 4 of x^8-8*x^7-40*x^6+80*x^5+240*x^4-192*x^3-448*x^2+128*x+256");
+        sec_helper("2*pi/23",
+                "root 6 of x^11+12*x^10-60*x^9-280*x^8+560*x^7+1792*x^6-1792*x^5-4608*x^4+2304*x^3+5120*x^2-1024*x-" +
+                "2048");
+        sec_helper("pi/180",
+                "root 24 of x^48-3456*x^46+579456*x^44-39625728*x^42+1497954816*x^40-35782471680*x^38+" +
+                "583456329728*x^36-6832518856704*x^34+59570604933120*x^32-397107008634880*x^30+" +
+                "2064791072931840*x^28-8500299631165440*x^26+28011510450094080*x^24-74448984852135936*x^22+" +
+                "160303703377575936*x^20-280058255978266624*x^18+396366279591591936*x^16-452180272956309504*x^14+" +
+                "411985976135516160*x^12-295364007592722432*x^10+162828875980603392*x^8-66568831992070144*x^6+" +
+                "18999560927969280*x^4-3377699720527872*x^2+281474976710656");
+
+        sec_helper("arccos(1/3)", "3");
+        sec_helper("arccos(-1/3)", "-3");
+        sec_helper("pi+arccos(-1/3)", "3");
+        sec_helper("pi+arccos(1/3)", "-3");
+        sec_helper("arccos(sqrt(5)/3)", "3*sqrt(5)/5");
+        sec_helper("arccos(-sqrt(5)/3)", "-3*sqrt(5)/5");
+        sec_helper("pi+arccos(-sqrt(5)/3)", "3*sqrt(5)/5");
+        sec_helper("pi+arccos(sqrt(5)/3)", "-3*sqrt(5)/5");
+
+        sec_fail_helper("pi/2");
+        sec_fail_helper("3*pi/2");
+    }
+
+    private static void csc_helper(@NotNull String input, @NotNull String output) {
+        aeq(readStrict(input).get().csc(), output);
+    }
+
+    private static void csc_fail_helper(@NotNull String input) {
+        try {
+            readStrict(input).get().csc();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testCsc() {
+        csc_helper("2*pi/3", "2*sqrt(3)/3");
+        csc_helper("4*pi/3", "-2*sqrt(3)/3");
+
+        csc_helper("pi/2", "1");
+        csc_helper("3*pi/2", "-1");
+
+        csc_helper("2*pi/5", "root 2 of 5*x^4-20*x^2+16");
+        csc_helper("4*pi/5", "root 3 of 5*x^4-20*x^2+16");
+        csc_helper("6*pi/5", "root 0 of 5*x^4-20*x^2+16");
+        csc_helper("8*pi/5", "root 1 of 5*x^4-20*x^2+16");
+
+        csc_helper("pi/3", "2*sqrt(3)/3");
+        csc_helper("5*pi/3", "-2*sqrt(3)/3");
+
+        csc_helper("2*pi/7", "root 4 of 7*x^6-56*x^4+112*x^2-64");
+        csc_helper("4*pi/7", "root 3 of 7*x^6-56*x^4+112*x^2-64");
+        csc_helper("6*pi/7", "root 5 of 7*x^6-56*x^4+112*x^2-64");
+        csc_helper("8*pi/7", "root 0 of 7*x^6-56*x^4+112*x^2-64");
+        csc_helper("10*pi/7", "root 2 of 7*x^6-56*x^4+112*x^2-64");
+        csc_helper("12*pi/7", "root 1 of 7*x^6-56*x^4+112*x^2-64");
+
+        csc_helper("pi/4", "sqrt(2)");
+        csc_helper("3*pi/4", "sqrt(2)");
+        csc_helper("5*pi/4", "-sqrt(2)");
+        csc_helper("7*pi/4", "-sqrt(2)");
+
+        csc_helper("2*pi/9", "root 4 of 3*x^6-36*x^4+96*x^2-64");
+        csc_helper("4*pi/9", "root 3 of 3*x^6-36*x^4+96*x^2-64");
+        csc_helper("8*pi/9", "root 5 of 3*x^6-36*x^4+96*x^2-64");
+        csc_helper("10*pi/9", "root 0 of 3*x^6-36*x^4+96*x^2-64");
+        csc_helper("14*pi/9", "root 2 of 3*x^6-36*x^4+96*x^2-64");
+        csc_helper("16*pi/9", "root 1 of 3*x^6-36*x^4+96*x^2-64");
+
+        csc_helper("pi/5", "root 3 of 5*x^4-20*x^2+16");
+        csc_helper("3*pi/5", "root 2 of 5*x^4-20*x^2+16");
+        csc_helper("7*pi/5", "root 1 of 5*x^4-20*x^2+16");
+        csc_helper("9*pi/5", "root 0 of 5*x^4-20*x^2+16");
+
+        csc_helper("2*pi/11", "root 8 of 11*x^10-220*x^8+1232*x^6-2816*x^4+2816*x^2-1024");
+        csc_helper("4*pi/11", "root 6 of 11*x^10-220*x^8+1232*x^6-2816*x^4+2816*x^2-1024");
+        csc_helper("6*pi/11", "root 5 of 11*x^10-220*x^8+1232*x^6-2816*x^4+2816*x^2-1024");
+        csc_helper("8*pi/11", "root 7 of 11*x^10-220*x^8+1232*x^6-2816*x^4+2816*x^2-1024");
+        csc_helper("10*pi/11", "root 9 of 11*x^10-220*x^8+1232*x^6-2816*x^4+2816*x^2-1024");
+        csc_helper("12*pi/11", "root 0 of 11*x^10-220*x^8+1232*x^6-2816*x^4+2816*x^2-1024");
+        csc_helper("14*pi/11", "root 2 of 11*x^10-220*x^8+1232*x^6-2816*x^4+2816*x^2-1024");
+        csc_helper("16*pi/11", "root 4 of 11*x^10-220*x^8+1232*x^6-2816*x^4+2816*x^2-1024");
+        csc_helper("18*pi/11", "root 3 of 11*x^10-220*x^8+1232*x^6-2816*x^4+2816*x^2-1024");
+        csc_helper("20*pi/11", "root 1 of 11*x^10-220*x^8+1232*x^6-2816*x^4+2816*x^2-1024");
+
+        csc_helper("pi/6", "2");
+        csc_helper("5*pi/6", "2");
+        csc_helper("7*pi/6", "-2");
+        csc_helper("11*pi/6", "-2");
+
+        csc_helper("2*pi/13", "root 10 of 13*x^12-364*x^10+2912*x^8-9984*x^6+16640*x^4-13312*x^2+4096");
+        csc_helper("2*pi/17",
+                "root 14 of 17*x^16-816*x^14+11424*x^12-71808*x^10+239360*x^8-452608*x^6+487424*x^4-278528*x^2+65536");
+        csc_helper("2*pi/23",
+                "root 20 of 23*x^22-2024*x^20+52624*x^18-631488*x^16+4209920*x^14-17145856*x^12+44843008*x^10-" +
+                "76873728*x^8+85917696*x^6-60293120*x^4+24117248*x^2-4194304");
+        csc_helper("pi/180",
+                "root 47 of x^48-3456*x^46+579456*x^44-39625728*x^42+1497954816*x^40-35782471680*x^38+" +
+                "583456329728*x^36-6832518856704*x^34+59570604933120*x^32-397107008634880*x^30+" +
+                "2064791072931840*x^28-8500299631165440*x^26+28011510450094080*x^24-74448984852135936*x^22+" +
+                "160303703377575936*x^20-280058255978266624*x^18+396366279591591936*x^16-452180272956309504*x^14+" +
+                "411985976135516160*x^12-295364007592722432*x^10+162828875980603392*x^8-66568831992070144*x^6+" +
+                "18999560927969280*x^4-3377699720527872*x^2+281474976710656");
+
+        csc_helper("arccos(1/3)", "3*sqrt(2)/4");
+        csc_helper("arccos(-1/3)", "3*sqrt(2)/4");
+        csc_helper("pi+arccos(-1/3)", "-3*sqrt(2)/4");
+        csc_helper("pi+arccos(1/3)", "-3*sqrt(2)/4");
+        csc_helper("arccos(sqrt(5)/3)", "3/2");
+        csc_helper("arccos(-sqrt(5)/3)", "3/2");
+        csc_helper("pi+arccos(-sqrt(5)/3)", "-3/2");
+        csc_helper("pi+arccos(sqrt(5)/3)", "-3/2");
+
+        csc_fail_helper("0");
+        csc_fail_helper("pi");
+    }
+
+    private static void complement_helper(@NotNull String input, @NotNull String output) {
+        AlgebraicAngle t = readStrict(input).get().complement();
+        t.validate();
+        aeq(t, output);
+    }
+
+    @Test
+    public void testComplement() {
+        complement_helper("0", "pi/2");
+        complement_helper("pi", "3*pi/2");
+        complement_helper("pi/2", "0");
+        complement_helper("3*pi/2", "pi");
+        complement_helper("2*pi/3", "11*pi/6");
+        complement_helper("4*pi/3", "7*pi/6");
+        complement_helper("pi/180", "89*pi/180");
+        complement_helper("359*pi/180", "91*pi/180");
+        complement_helper("arccos(1/3)", "arccos(2*sqrt(2)/3)");
+        complement_helper("arccos(-1/3)", "pi+arccos(-2*sqrt(2)/3)");
+        complement_helper("pi+arccos(-1/3)", "arccos(-2*sqrt(2)/3)");
+        complement_helper("pi+arccos(1/3)", "pi+arccos(2*sqrt(2)/3)");
+        complement_helper("arccos(sqrt(5)/3)", "arccos(2/3)");
+        complement_helper("arccos(-sqrt(5)/3)", "pi+arccos(-2/3)");
+        complement_helper("pi+arccos(-sqrt(5)/3)", "arccos(-2/3)");
+        complement_helper("pi+arccos(sqrt(5)/3)", "pi+arccos(2/3)");
     }
 
     @Test

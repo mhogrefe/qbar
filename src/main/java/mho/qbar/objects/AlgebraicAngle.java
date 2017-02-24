@@ -110,6 +110,7 @@ public final class AlgebraicAngle implements Comparable<AlgebraicAngle> {
      *  <li>{@code cosine} must be strictly between –1 and 1, and cannot be the cosine of a rational multiple of
      *  π.</li>
      *  <li>{@code quadrant} must be 1, 2, 3, or 4.</li>
+     *  <li>If {@code cosine} is positive, {@code quadrant} must be 1 or 4; if negative, 2 or 3.</li>
      *  <li>Any angle that is not a rational multiple of π may be constructed with this constructor.</li>
      * </ul>
      *
@@ -380,11 +381,118 @@ public final class AlgebraicAngle implements Comparable<AlgebraicAngle> {
         }
     }
 
+    /**
+     * Returns the sine of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code AlgebraicAngle}.</li>
+     *  <li>The result is between –1 and 1, inclusive.</li>
+     * </ul>
+     *
+     * @return sin({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Algebraic sin() {
+        Algebraic sin = Algebraic.ONE.subtract(cos().pow(2)).sqrt();
+        return quadrant <= 2 ? sin : sin.negate();
+    }
+
+    /**
+     * Returns the cosine of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code AlgebraicAngle}.</li>
+     *  <li>The result is between –1 and 1, inclusive.</li>
+     * </ul>
+     *
+     * @return cos({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
     public @NotNull Algebraic cos() {
         if (!cosine.isPresent()) {
             cosine = Optional.of(Algebraic.cosOfTurns(turns.get()));
         }
         return cosine.get();
+    }
+
+    /**
+     * Returns the tangent of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be π/2 or 3*pi/2.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return tan({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Algebraic tan() {
+        return sin().divide(cos());
+    }
+
+    /**
+     * Returns the cotangent of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be 0 or π.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return cot({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Algebraic cot() {
+        return cos().divide(sin());
+    }
+
+    /**
+     * Returns the secant of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be π/2 or 3*pi/2.</li>
+     *  <li>The result is less than or equal to –1 or greater than or equal to 1.</li>
+     * </ul>
+     *
+     * @return sec({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Algebraic sec() {
+        return cos().invert();
+    }
+
+    /**
+     * Returns the cosecant of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be 0 or π.</li>
+     *  <li>The result is less than or equal to –1 or greater than or equal to 1.</li>
+     * </ul>
+     *
+     * @return csc({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Algebraic csc() {
+        return sin().invert();
+    }
+
+    /**
+     * Returns the complement of {@code this} mod 2π, or its reflection in the line x=y.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code AlgebraicAngle}.</li>
+     *  <li>The result may be any {@code AlgebraicAngle}.</li>
+     * </ul>
+     *
+     * @return π/2–{@code this}
+     */
+    public @NotNull AlgebraicAngle complement() {
+        if (turns.isPresent()) {
+            return new AlgebraicAngle(Rational.ONE.shiftRight(2).subtract(turns.get()).fractionalPart());
+        } else {
+            int supplementQuadrant = 6 - quadrant;
+            if (supplementQuadrant == 5) supplementQuadrant = 1;
+            return new AlgebraicAngle(sin(), supplementQuadrant);
+        }
     }
 
     public static @NotNull AlgebraicAngle arccos(@NotNull Algebraic x) {
