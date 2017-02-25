@@ -495,6 +495,48 @@ public final class AlgebraicAngle implements Comparable<AlgebraicAngle> {
         }
     }
 
+    /**
+     * Returns the area of a regular polygon with {@code n} sides and side length 1. If {@code n}=2 this corresponds to
+     * a degenerate 2-gon with an area of 0.
+     *
+     * <ul>
+     *  <li>{@code n} must be at least 2.</li>
+     *  <li>The result is 0 or the area of a regular polygon with unit side lengths.</li>
+     * </ul>
+     *
+     * @param n the number of sides of the polygon
+     * @return the area of a regular {@code n}-gon with side length 1
+     */
+    public static @NotNull Algebraic regularPolygonArea(int n) {
+        if (n < 2) {
+            throw new IllegalArgumentException("n must be at least 2. Invalid n: " + n);
+        }
+        return fromTurns(Rational.of(1, n << 1)).cot().shiftRight(2).multiply(n);
+    }
+
+    /**
+     * Returns the volume of a regular antiprism whose base has {@code n} sides and side length 1. If {@code n}=2 this
+     * corresponds to a degenerate 2-gon antiprism (a regular tetrahedron).
+     *
+     * <ul>
+     *  <li>{@code n} must be at least 2.</li>
+     *  <li>The result is the volume of a regular tetrahedron or a regular antiprism with unit side lengths.</li>
+     * </ul>
+     *
+     * @param n the number of sides of the antiprism's base
+     * @return the area of a regular {@code n}-gonal antiprism with side length 1
+     */
+    public static @NotNull Algebraic antiprismVolume(int n) {
+        if (n < 2) {
+            throw new IllegalArgumentException("n must be at least 2. Invalid n: " + n);
+        }
+        AlgebraicAngle a = fromTurns(Rational.of(1, n << 1));
+        AlgebraicAngle b = fromTurns(Rational.of(1, n << 2));
+        Algebraic sum = a.cot().add(b.cot());
+        Algebraic root = Algebraic.ONE.subtract(b.sec().pow(2).shiftRight(2)).sqrt();
+        return sum.multiply(root).multiply(n).divide(12);
+    }
+
     public static @NotNull AlgebraicAngle arccos(@NotNull Algebraic x) {
         Optional<Rational> ot = rationalArccos(x);
         if (ot.isPresent()) {

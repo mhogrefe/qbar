@@ -6678,7 +6678,7 @@ public final class Real implements Iterable<Interval> {
         Optional<Rational> aDiameter = a.diameter();
         Optional<Rational> bDiameter = b.diameter();
         while (true) {
-            Optional<Ordering> o = thisIntervals.next().elementCompare(thatIntervals.next());
+            Optional<Ordering> o = a.elementCompare(b);
             if (o.isPresent()) {
                 return o.get().toInt();
             }
@@ -7019,12 +7019,10 @@ public final class Real implements Iterable<Interval> {
         Optional<Rational> aDiameter = a.diameter();
         Optional<Rational> bDiameter = b.diameter();
         while (true) {
-            Interval thisInterval = thisIntervals.next();
-            Interval thatInterval = thatIntervals.next();
-            Optional<Rational> aLower = thisInterval.getLower();
-            Optional<Rational> aUpper = thisInterval.getUpper();
-            Optional<Rational> bLower = thatInterval.getLower();
-            Optional<Rational> bUpper = thatInterval.getUpper();
+            Optional<Rational> aLower = a.getLower();
+            Optional<Rational> aUpper = a.getUpper();
+            Optional<Rational> bLower = b.getLower();
+            Optional<Rational> bUpper = b.getUpper();
             if (aLower.isPresent() && bUpper.isPresent() && Ordering.ge(aLower.get(), bUpper.get())) {
                 return Optional.of(false);
             } else if (aUpper.isPresent() && bLower.isPresent() && Ordering.lt(aUpper.get(), bLower.get())) {
@@ -7176,12 +7174,10 @@ public final class Real implements Iterable<Interval> {
         Optional<Rational> aDiameter = a.diameter();
         Optional<Rational> bDiameter = b.diameter();
         while (true) {
-            Interval thisInterval = thisIntervals.next();
-            Interval thatInterval = thatIntervals.next();
-            Optional<Rational> aLower = thisInterval.getLower();
-            Optional<Rational> aUpper = thisInterval.getUpper();
-            Optional<Rational> bLower = thatInterval.getLower();
-            Optional<Rational> bUpper = thatInterval.getUpper();
+            Optional<Rational> aLower = a.getLower();
+            Optional<Rational> aUpper = a.getUpper();
+            Optional<Rational> bLower = b.getLower();
+            Optional<Rational> bUpper = b.getUpper();
             if (aLower.isPresent() && bUpper.isPresent() && Ordering.ge(aLower.get(), bUpper.get())) {
                 return Optional.of(true);
             } else if (aUpper.isPresent() && bLower.isPresent() && Ordering.lt(aUpper.get(), bLower.get())) {

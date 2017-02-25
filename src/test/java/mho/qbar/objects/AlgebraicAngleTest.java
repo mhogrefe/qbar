@@ -861,6 +861,80 @@ public class AlgebraicAngleTest {
         complement_helper("pi+arccos(sqrt(5)/3)", "pi+arccos(2/3)");
     }
 
+    private static void regularPolygonArea_helper(int input, @NotNull String output) {
+        aeq(regularPolygonArea(input), output);
+    }
+
+    private static void regularPolygonArea_fail_helper(int input) {
+        try {
+            regularPolygonArea(input);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testRegularPolygonArea() {
+        regularPolygonArea_helper(2, "0");
+        regularPolygonArea_helper(3, "sqrt(3)/4");
+        regularPolygonArea_helper(4, "1");
+        regularPolygonArea_helper(5, "root 3 of 256*x^4-800*x^2+125");
+        regularPolygonArea_helper(6, "3*sqrt(3)/2");
+        regularPolygonArea_helper(7, "root 5 of 4096*x^6-62720*x^4+115248*x^2-16807");
+        regularPolygonArea_helper(8, "2+2*sqrt(2)");
+        regularPolygonArea_helper(9, "root 5 of 4096*x^6-186624*x^4+1154736*x^2-177147");
+        regularPolygonArea_helper(10, "root 3 of 16*x^4-1000*x^2+3125");
+        regularPolygonArea_helper(11,
+                "root 9 of 1048576*x^10-118947840*x^8+2518720512*x^6-13605588480*x^4+17148710480*x^2-2357947691");
+        regularPolygonArea_helper(12, "6+3*sqrt(3)");
+        regularPolygonArea_helper(13,
+                "root 11 of 16777216*x^12-3898605568*x^10+185305595904*x^8-2609720475648*x^6+11485488551680*x^4-" +
+                "13234415217504*x^2+1792160394037");
+        regularPolygonArea_helper(14, "root 5 of 64*x^6-16464*x^4+336140*x^2-823543");
+        regularPolygonArea_helper(15, "root 7 of 65536*x^8-25804800*x^6+1736640000*x^4-16767000000*x^2+2562890625");
+
+        regularPolygonArea_fail_helper(1);
+        regularPolygonArea_fail_helper(0);
+        regularPolygonArea_fail_helper(-1);
+    }
+
+    private static void antiprismVolume_helper(int input, @NotNull String output) {
+        aeq(antiprismVolume(input), output);
+    }
+
+    private static void antiprismVolume_fail_helper(int input) {
+        try {
+            antiprismVolume(input);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testAntiprismVolume() {
+        antiprismVolume_helper(2, "sqrt(2)/12");
+        antiprismVolume_helper(3, "sqrt(2)/3");
+        antiprismVolume_helper(4, "root 1 of 81*x^4-72*x^2-2");
+        antiprismVolume_helper(5, "(5+2*sqrt(5))/6");
+        antiprismVolume_helper(6, "root 1 of x^4-4*x^2-8");
+        antiprismVolume_helper(7, "root 3 of 46656*x^6-508032*x^4+209916*x^2+2401");
+        antiprismVolume_helper(8, "root 5 of 6561*x^8-46656*x^6-1410048*x^4+1511424*x^2-8192");
+        antiprismVolume_helper(9, "root 3 of 64*x^6-1872*x^4-648*x^2+81");
+        antiprismVolume_helper(10, "root 3 of 6561*x^8+36450*x^6-16503750*x^4+55968750*x^2+390625");
+        antiprismVolume_helper(11,
+                "root 7 of 60466176*x^10-4267904256*x^8+12978719424*x^6+56354965920*x^4-51212285388*x^2+214358881");
+        antiprismVolume_helper(12, "root 5 of x^8+80*x^6-17088*x^4+26624*x^2-2048");
+        antiprismVolume_helper(13,
+                "root 7 of 2176782336*x^12-296344728576*x^10+815515713792*x^8+36967380607872*x^6-" +
+                "102872428710480*x^4+26723338419960*x^2+137858491849");
+        antiprismVolume_helper(14,
+                "root 7 of 531441*x^12+144670050*x^10-47510930376*x^8+849599194626*x^6-1496571163605*x^4-" +
+                "4037136258708*x^2+13841287201");
+        antiprismVolume_helper(15, "root 3 of 256*x^8-52800*x^6-1810000*x^4+2062500*x^2+390625");
+
+        antiprismVolume_fail_helper(1);
+        antiprismVolume_fail_helper(0);
+        antiprismVolume_fail_helper(-1);
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

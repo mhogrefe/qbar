@@ -44,6 +44,8 @@ public class AlgebraicAngleProperties  extends QBarTestProperties {
         propertiesSec();
         propertiesCsc();
         propertiesComplement();
+        propertiesRegularPolygonArea();
+        propertiesAntiprismVolume();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -391,6 +393,36 @@ public class AlgebraicAngleProperties  extends QBarTestProperties {
                 realU = realU.add(Rational.ONE);
             }
             assertTrue(t, u.realTurns().eq(realU, Real.DEFAULT_RESOLUTION).orElse(true));
+        }
+    }
+
+    private void propertiesRegularPolygonArea() {
+        initialize("regularPolygonArea(int)");
+        for (int i : take(TINY_LIMIT, P.withScale(4).rangeUpGeometric(2))) {
+            Algebraic x = regularPolygonArea(i);
+            assertNotEquals(i, x.signum(), -1);
+        }
+
+        for (int i : take(LIMIT, P.rangeDown(1))) {
+            try {
+                regularPolygonArea(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesAntiprismVolume() {
+        initialize("antiprismVolume(int)");
+        for (int i : take(15, P.withScale(4).rangeUpGeometric(2))) {
+            Algebraic x = antiprismVolume(i);
+            assertEquals(i, x.signum(), 1);
+        }
+
+        for (int i : take(LIMIT, P.rangeDown(1))) {
+            try {
+                antiprismVolume(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 

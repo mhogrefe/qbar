@@ -12,6 +12,7 @@ import static mho.wheels.iterables.IterableUtils.take;
 import static mho.wheels.ordering.Ordering.compare;
 import static mho.wheels.ordering.Ordering.le;
 import static mho.wheels.testing.Testing.MEDIUM_LIMIT;
+import static mho.wheels.testing.Testing.TINY_LIMIT;
 import static mho.wheels.testing.Testing.nicePrint;
 
 @SuppressWarnings("UnusedDeclaration")
@@ -169,6 +170,18 @@ public class AlgebraicAngleDemos extends QBarDemos {
         );
         for (AlgebraicAngle t : take(MEDIUM_LIMIT, ts)) {
             System.out.println("pi/2-(" + t + ") = " + t.complement());
+        }
+    }
+
+    private void demoRegularPolygonArea() {
+        for (int i : take(TINY_LIMIT, P.withScale(4).rangeUpGeometric(2))) {
+            System.out.println("regularPolygonArea(" + i + ") = " + regularPolygonArea(i));
+        }
+    }
+
+    private void demoAntiprismVolume() {
+        for (int i : take(15, P.withScale(4).rangeUpGeometric(2))) {
+            System.out.println("antiprismVolume(" + i + ") = " + antiprismVolume(i));
         }
     }
 
