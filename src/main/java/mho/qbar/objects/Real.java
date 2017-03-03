@@ -5132,7 +5132,7 @@ public final class Real implements Iterable<Interval> {
             case 0:
                 switch (y.signum()) {
                     case 0:
-                        throw new ArithmeticException();
+                        throw new ArithmeticException("x and y cannot both be zero.");
                     case 1:
                         return ARCTAN_ONE.shiftLeft(1);
                     case -1:

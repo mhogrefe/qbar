@@ -935,6 +935,508 @@ public class AlgebraicAngleTest {
         antiprismVolume_fail_helper(-1);
     }
 
+    private static void arcsin_helper(@NotNull String input, @NotNull String output) {
+        AlgebraicAngle t = arcsin(Algebraic.readStrict(input).get());
+        t.validate();
+        aeq(t, output);
+    }
+
+    private static void arcsin_fail_helper(@NotNull String input) {
+        try {
+            arcsin(Algebraic.readStrict(input).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testArcsin() {
+        arcsin_helper("0", "0");
+
+        arcsin_helper("1", "pi/2");
+        arcsin_helper("-1", "3*pi/2");
+
+        arcsin_helper("root 3 of 16*x^4-20*x^2+5", "2*pi/5");
+        arcsin_helper("root 0 of 16*x^4-20*x^2+5", "8*pi/5");
+
+        arcsin_helper("sqrt(3)/2", "pi/3");
+        arcsin_helper("-sqrt(3)/2", "5*pi/3");
+
+        arcsin_helper("root 4 of 64*x^6-112*x^4+56*x^2-7", "2*pi/7");
+        arcsin_helper("root 5 of 64*x^6-112*x^4+56*x^2-7", "3*pi/7");
+        arcsin_helper("root 3 of 64*x^6-112*x^4+56*x^2-7", "pi/7");
+        arcsin_helper("root 2 of 64*x^6-112*x^4+56*x^2-7", "13*pi/7");
+        arcsin_helper("root 0 of 64*x^6-112*x^4+56*x^2-7", "11*pi/7");
+        arcsin_helper("root 1 of 64*x^6-112*x^4+56*x^2-7", "12*pi/7");
+
+        arcsin_helper("sqrt(2)/2", "pi/4");
+        arcsin_helper("-sqrt(2)/2", "7*pi/4");
+
+        arcsin_helper("root 4 of 64*x^6-96*x^4+36*x^2-3", "2*pi/9");
+        arcsin_helper("root 5 of 64*x^6-96*x^4+36*x^2-3", "4*pi/9");
+        arcsin_helper("root 3 of 64*x^6-96*x^4+36*x^2-3", "pi/9");
+        arcsin_helper("root 2 of 64*x^6-96*x^4+36*x^2-3", "17*pi/9");
+        arcsin_helper("root 0 of 64*x^6-96*x^4+36*x^2-3", "14*pi/9");
+        arcsin_helper("root 1 of 64*x^6-96*x^4+36*x^2-3", "16*pi/9");
+
+        arcsin_helper("root 2 of 16*x^4-20*x^2+5", "pi/5");
+        arcsin_helper("root 3 of 16*x^4-20*x^2+5", "2*pi/5");
+        arcsin_helper("root 0 of 16*x^4-20*x^2+5", "8*pi/5");
+        arcsin_helper("root 1 of 16*x^4-20*x^2+5", "9*pi/5");
+
+        arcsin_helper("root 6 of 1024*x^10-2816*x^8+2816*x^6-1232*x^4+220*x^2-11", "2*pi/11");
+        arcsin_helper("root 8 of 1024*x^10-2816*x^8+2816*x^6-1232*x^4+220*x^2-11", "4*pi/11");
+        arcsin_helper("root 9 of 1024*x^10-2816*x^8+2816*x^6-1232*x^4+220*x^2-11", "5*pi/11");
+        arcsin_helper("root 7 of 1024*x^10-2816*x^8+2816*x^6-1232*x^4+220*x^2-11", "3*pi/11");
+        arcsin_helper("root 5 of 1024*x^10-2816*x^8+2816*x^6-1232*x^4+220*x^2-11", "pi/11");
+        arcsin_helper("root 4 of 1024*x^10-2816*x^8+2816*x^6-1232*x^4+220*x^2-11", "21*pi/11");
+        arcsin_helper("root 2 of 1024*x^10-2816*x^8+2816*x^6-1232*x^4+220*x^2-11", "19*pi/11");
+        arcsin_helper("root 0 of 1024*x^10-2816*x^8+2816*x^6-1232*x^4+220*x^2-11", "17*pi/11");
+        arcsin_helper("root 1 of 1024*x^10-2816*x^8+2816*x^6-1232*x^4+220*x^2-11", "18*pi/11");
+        arcsin_helper("root 3 of 1024*x^10-2816*x^8+2816*x^6-1232*x^4+220*x^2-11", "20*pi/11");
+
+        arcsin_helper("1/2", "pi/6");
+        arcsin_helper("-1/2", "11*pi/6");
+
+        arcsin_helper("root 7 of 4096*x^12-13312*x^10+16640*x^8-9984*x^6+2912*x^4-364*x^2+13", "2*pi/13");
+        arcsin_helper(
+                "root 9 of 65536*x^16-278528*x^14+487424*x^12-452608*x^10+239360*x^8-71808*x^6+11424*x^4-816*x^2+17",
+                "2*pi/17"
+        );
+        arcsin_helper(
+                "root 12 of 4194304*x^22-24117248*x^20+60293120*x^18-85917696*x^16+76873728*x^14-44843008*x^12+" +
+                "17145856*x^10-4209920*x^8+631488*x^6-52624*x^4+2024*x^2-23",
+                "2*pi/23");
+        arcsin_helper(
+                "root 24 of 281474976710656*x^48-3377699720527872*x^46+18999560927969280*x^44-" +
+                "66568831992070144*x^42+162828875980603392*x^40-295364007592722432*x^38+411985976135516160*x^36-" +
+                "452180272956309504*x^34+396366279591591936*x^32-280058255978266624*x^30+160303703377575936*x^28-" +
+                "74448984852135936*x^26+28011510450094080*x^24-8500299631165440*x^22+2064791072931840*x^20-" +
+                "397107008634880*x^18+59570604933120*x^16-6832518856704*x^14+583456329728*x^12-35782471680*x^10+" +
+                "1497954816*x^8-39625728*x^6+579456*x^4-3456*x^2+1",
+                "pi/180"
+        );
+
+        arcsin_helper("2*sqrt(2)/3", "arccos(1/3)");
+        arcsin_helper("-2*sqrt(2)/3", "pi+arccos(-1/3)");
+        arcsin_helper("2/3", "arccos(sqrt(5)/3)");
+        arcsin_helper("-2/3", "pi+arccos(-sqrt(5)/3)");
+
+        arcsin_fail_helper("2");
+        arcsin_fail_helper("-2");
+    }
+
+    private static void arccos_helper(@NotNull String input, @NotNull String output) {
+        AlgebraicAngle t = arccos(Algebraic.readStrict(input).get());
+        t.validate();
+        aeq(t, output);
+    }
+
+    private static void arccos_fail_helper(@NotNull String input) {
+        try {
+            arccos(Algebraic.readStrict(input).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testArccos() {
+        arccos_helper("1", "0");
+
+        arccos_helper("-1", "pi");
+
+        arccos_helper("-1/2", "2*pi/3");
+
+        arccos_helper("0", "pi/2");
+
+        arccos_helper("(-1+sqrt(5))/4", "2*pi/5");
+        arccos_helper("(-1-sqrt(5))/4", "4*pi/5");
+
+        arccos_helper("1/2", "pi/3");
+
+        arccos_helper("root 2 of 8*x^3+4*x^2-4*x-1", "2*pi/7");
+        arccos_helper("root 1 of 8*x^3+4*x^2-4*x-1", "4*pi/7");
+        arccos_helper("root 0 of 8*x^3+4*x^2-4*x-1", "6*pi/7");
+
+        arccos_helper("sqrt(2)/2", "pi/4");
+        arccos_helper("-sqrt(2)/2", "3*pi/4");
+
+        arccos_helper("root 2 of 8*x^3-6*x+1", "2*pi/9");
+        arccos_helper("root 1 of 8*x^3-6*x+1", "4*pi/9");
+        arccos_helper("root 0 of 8*x^3-6*x+1", "8*pi/9");
+
+        arccos_helper("(1+sqrt(5))/4", "pi/5");
+        arccos_helper("(1-sqrt(5))/4", "3*pi/5");
+
+        arccos_helper("root 4 of 32*x^5+16*x^4-32*x^3-12*x^2+6*x+1", "2*pi/11");
+        arccos_helper("root 3 of 32*x^5+16*x^4-32*x^3-12*x^2+6*x+1", "4*pi/11");
+        arccos_helper("root 2 of 32*x^5+16*x^4-32*x^3-12*x^2+6*x+1", "6*pi/11");
+        arccos_helper("root 1 of 32*x^5+16*x^4-32*x^3-12*x^2+6*x+1", "8*pi/11");
+        arccos_helper("root 0 of 32*x^5+16*x^4-32*x^3-12*x^2+6*x+1", "10*pi/11");
+
+        arccos_helper("sqrt(3)/2", "pi/6");
+        arccos_helper("-sqrt(3)/2", "5*pi/6");
+
+        arccos_helper("root 5 of 64*x^6+32*x^5-80*x^4-32*x^3+24*x^2+6*x-1", "2*pi/13");
+        arccos_helper("root 7 of 256*x^8+128*x^7-448*x^6-192*x^5+240*x^4+80*x^3-40*x^2-8*x+1", "2*pi/17");
+        arccos_helper(
+                "root 10 of 2048*x^11+1024*x^10-5120*x^9-2304*x^8+4608*x^7+1792*x^6-1792*x^5-560*x^4+280*x^3+60*x^2-" +
+                "12*x-1",
+                "2*pi/23"
+        );
+        arccos_helper(
+                "root 47 of 281474976710656*x^48-3377699720527872*x^46+18999560927969280*x^44-" +
+                "66568831992070144*x^42+162828875980603392*x^40-295364007592722432*x^38+411985976135516160*x^36-" +
+                "452180272956309504*x^34+396366279591591936*x^32-280058255978266624*x^30+160303703377575936*x^28-" +
+                "74448984852135936*x^26+28011510450094080*x^24-8500299631165440*x^22+2064791072931840*x^20-" +
+                "397107008634880*x^18+59570604933120*x^16-6832518856704*x^14+583456329728*x^12-35782471680*x^10+" +
+                "1497954816*x^8-39625728*x^6+579456*x^4-3456*x^2+1",
+                "pi/180"
+        );
+
+        arccos_helper("1/3", "arccos(1/3)");
+        arccos_helper("-1/3", "arccos(-1/3)");
+        arccos_helper("sqrt(5)/3", "arccos(sqrt(5)/3)");
+        arccos_helper("-sqrt(5)/3", "arccos(-sqrt(5)/3)");
+
+        arccos_fail_helper("2");
+        arccos_fail_helper("-2");
+    }
+
+    private static void arctan_helper(@NotNull String input, @NotNull String output) {
+        AlgebraicAngle t = arctan(Algebraic.readStrict(input).get());
+        t.validate();
+        aeq(t, output);
+    }
+
+    @Test
+    public void testArctan() {
+        arctan_helper("0", "0");
+
+        arctan_helper("root 3 of x^4-10*x^2+5", "2*pi/5");
+        arctan_helper("root 0 of x^4-10*x^2+5", "8*pi/5");
+
+        arctan_helper("sqrt(3)", "pi/3");
+        arctan_helper("-sqrt(3)", "5*pi/3");
+
+        arctan_helper("root 4 of x^6-21*x^4+35*x^2-7", "2*pi/7");
+        arctan_helper("root 0 of x^6-21*x^4+35*x^2-7", "11*pi/7");
+        arctan_helper("root 2 of x^6-21*x^4+35*x^2-7", "13*pi/7");
+        arctan_helper("root 3 of x^6-21*x^4+35*x^2-7", "pi/7");
+        arctan_helper("root 5 of x^6-21*x^4+35*x^2-7", "3*pi/7");
+        arctan_helper("root 1 of x^6-21*x^4+35*x^2-7", "12*pi/7");
+
+        arctan_helper("1", "pi/4");
+        arctan_helper("-1", "7*pi/4");
+
+        arctan_helper("root 4 of x^6-33*x^4+27*x^2-3", "2*pi/9");
+        arctan_helper("root 5 of x^6-33*x^4+27*x^2-3", "4*pi/9");
+        arctan_helper("root 2 of x^6-33*x^4+27*x^2-3", "17*pi/9");
+        arctan_helper("root 3 of x^6-33*x^4+27*x^2-3", "pi/9");
+        arctan_helper("root 0 of x^6-33*x^4+27*x^2-3", "14*pi/9");
+        arctan_helper("root 1 of x^6-33*x^4+27*x^2-3", "16*pi/9");
+
+        arctan_helper("root 2 of x^4-10*x^2+5", "pi/5");
+        arctan_helper("root 0 of x^4-10*x^2+5", "8*pi/5");
+        arctan_helper("root 3 of x^4-10*x^2+5", "2*pi/5");
+        arctan_helper("root 1 of x^4-10*x^2+5", "9*pi/5");
+
+        arctan_helper("root 6 of x^10-55*x^8+330*x^6-462*x^4+165*x^2-11", "2*pi/11");
+        arctan_helper("root 8 of x^10-55*x^8+330*x^6-462*x^4+165*x^2-11", "4*pi/11");
+        arctan_helper("root 0 of x^10-55*x^8+330*x^6-462*x^4+165*x^2-11", "17*pi/11");
+        arctan_helper("root 2 of x^10-55*x^8+330*x^6-462*x^4+165*x^2-11", "19*pi/11");
+        arctan_helper("root 4 of x^10-55*x^8+330*x^6-462*x^4+165*x^2-11", "21*pi/11");
+        arctan_helper("root 5 of x^10-55*x^8+330*x^6-462*x^4+165*x^2-11", "pi/11");
+        arctan_helper("root 7 of x^10-55*x^8+330*x^6-462*x^4+165*x^2-11", "3*pi/11");
+        arctan_helper("root 9 of x^10-55*x^8+330*x^6-462*x^4+165*x^2-11", "5*pi/11");
+        arctan_helper("root 1 of x^10-55*x^8+330*x^6-462*x^4+165*x^2-11", "18*pi/11");
+        arctan_helper("root 3 of x^10-55*x^8+330*x^6-462*x^4+165*x^2-11", "20*pi/11");
+
+        arctan_helper("sqrt(3)/3", "pi/6");
+        arctan_helper("-sqrt(3)/3", "11*pi/6");
+
+        arctan_helper("root 7 of x^12-78*x^10+715*x^8-1716*x^6+1287*x^4-286*x^2+13", "2*pi/13");
+        arctan_helper(
+                "root 9 of x^16-136*x^14+2380*x^12-12376*x^10+24310*x^8-19448*x^6+6188*x^4-680*x^2+17",
+                "2*pi/17"
+        );
+
+        arctan_helper("2*sqrt(2)", "arccos(1/3)");
+        arctan_helper("-2*sqrt(2)", "pi+arccos(-1/3)");
+        arctan_helper("2*sqrt(5)/5", "arccos(sqrt(5)/3)");
+        arctan_helper("-2*sqrt(5)/5", "pi+arccos(-sqrt(5)/3)");
+        arctan_helper("100", "arccos(sqrt(10001)/10001)");
+        arctan_helper("-100", "pi+arccos(-sqrt(10001)/10001)");
+    }
+
+    private static void arccot_helper(@NotNull String input, @NotNull String output) {
+        AlgebraicAngle t = arccot(Algebraic.readStrict(input).get());
+        t.validate();
+        aeq(t, output);
+    }
+
+    @Test
+    public void testArccot() {
+        arccot_helper("-sqrt(3)/3", "2*pi/3");
+
+        arccot_helper("0", "pi/2");
+
+        arccot_helper("root 2 of 5*x^4-10*x^2+1", "2*pi/5");
+        arccot_helper("root 0 of 5*x^4-10*x^2+1", "4*pi/5");
+
+        arccot_helper("sqrt(3)/3", "pi/3");
+
+        arccot_helper("root 4 of 7*x^6-35*x^4+21*x^2-1", "2*pi/7");
+        arccot_helper("root 2 of 7*x^6-35*x^4+21*x^2-1", "4*pi/7");
+        arccot_helper("root 0 of 7*x^6-35*x^4+21*x^2-1", "6*pi/7");
+        arccot_helper("root 5 of 7*x^6-35*x^4+21*x^2-1", "pi/7");
+        arccot_helper("root 3 of 7*x^6-35*x^4+21*x^2-1", "3*pi/7");
+        arccot_helper("root 1 of 7*x^6-35*x^4+21*x^2-1", "5*pi/7");
+
+        arccot_helper("1", "pi/4");
+        arccot_helper("-1", "3*pi/4");
+
+        arccot_helper("root 4 of 3*x^6-27*x^4+33*x^2-1", "2*pi/9");
+        arccot_helper("root 3 of 3*x^6-27*x^4+33*x^2-1", "4*pi/9");
+        arccot_helper("root 0 of 3*x^6-27*x^4+33*x^2-1", "8*pi/9");
+        arccot_helper("root 5 of 3*x^6-27*x^4+33*x^2-1", "pi/9");
+        arccot_helper("root 2 of 3*x^6-27*x^4+33*x^2-1", "5*pi/9");
+        arccot_helper("root 1 of 3*x^6-27*x^4+33*x^2-1", "7*pi/9");
+
+        arccot_helper("root 3 of 5*x^4-10*x^2+1", "pi/5");
+        arccot_helper("root 1 of 5*x^4-10*x^2+1", "3*pi/5");
+
+        arccot_helper("root 8 of 11*x^10-165*x^8+462*x^6-330*x^4+55*x^2-1", "2*pi/11");
+        arccot_helper("root 6 of 11*x^10-165*x^8+462*x^6-330*x^4+55*x^2-1", "4*pi/11");
+        arccot_helper("root 4 of 11*x^10-165*x^8+462*x^6-330*x^4+55*x^2-1", "6*pi/11");
+        arccot_helper("root 2 of 11*x^10-165*x^8+462*x^6-330*x^4+55*x^2-1", "8*pi/11");
+        arccot_helper("root 0 of 11*x^10-165*x^8+462*x^6-330*x^4+55*x^2-1", "10*pi/11");
+        arccot_helper("root 9 of 11*x^10-165*x^8+462*x^6-330*x^4+55*x^2-1", "pi/11");
+        arccot_helper("root 7 of 11*x^10-165*x^8+462*x^6-330*x^4+55*x^2-1", "3*pi/11");
+        arccot_helper("root 5 of 11*x^10-165*x^8+462*x^6-330*x^4+55*x^2-1", "5*pi/11");
+        arccot_helper("root 3 of 11*x^10-165*x^8+462*x^6-330*x^4+55*x^2-1", "7*pi/11");
+        arccot_helper("root 1 of 11*x^10-165*x^8+462*x^6-330*x^4+55*x^2-1", "9*pi/11");
+
+        arccot_helper("sqrt(3)", "pi/6");
+        arccot_helper("-sqrt(3)", "5*pi/6");
+
+        arccot_helper("root 10 of 13*x^12-286*x^10+1287*x^8-1716*x^6+715*x^4-78*x^2+1", "2*pi/13");
+        arccot_helper(
+                "root 14 of 17*x^16-680*x^14+6188*x^12-19448*x^10+24310*x^8-12376*x^6+2380*x^4-136*x^2+1",
+                "2*pi/17"
+        );
+
+        arccot_helper("sqrt(2)/4", "arccos(1/3)");
+        arccot_helper("-sqrt(2)/4", "arccos(-1/3)");
+        arccot_helper("sqrt(5)/2", "arccos(sqrt(5)/3)");
+        arccot_helper("-sqrt(5)/2", "arccos(-sqrt(5)/3)");
+        arccot_helper("100", "arccos(100*sqrt(10001)/10001)");
+        arccot_helper("-100", "arccos(-100*sqrt(10001)/10001)");
+    }
+
+    private static void arcsec_helper(@NotNull String input, @NotNull String output) {
+        AlgebraicAngle t = arcsec(Algebraic.readStrict(input).get());
+        t.validate();
+        aeq(t, output);
+    }
+
+    private static void arcsec_fail_helper(@NotNull String input) {
+        try {
+            arcsec(Algebraic.readStrict(input).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testArcsec() {
+        arcsec_helper("1", "0");
+
+        arcsec_helper("-1", "pi");
+
+        arcsec_helper("-2", "2*pi/3");
+
+        arcsec_helper("1+sqrt(5)", "2*pi/5");
+        arcsec_helper("1-sqrt(5)", "4*pi/5");
+
+        arcsec_helper("2", "pi/3");
+
+        arcsec_helper("root 2 of x^3+4*x^2-4*x-8", "2*pi/7");
+        arcsec_helper("root 0 of x^3+4*x^2-4*x-8", "4*pi/7");
+        arcsec_helper("root 1 of x^3+4*x^2-4*x-8", "6*pi/7");
+
+        arcsec_helper("sqrt(2)", "pi/4");
+        arcsec_helper("-sqrt(2)", "3*pi/4");
+
+        arcsec_helper("root 1 of x^3-6*x^2+8", "2*pi/9");
+        arcsec_helper("root 2 of x^3-6*x^2+8", "4*pi/9");
+        arcsec_helper("root 0 of x^3-6*x^2+8", "8*pi/9");
+
+        arcsec_helper("-1+sqrt(5)", "pi/5");
+        arcsec_helper("-1-sqrt(5)", "3*pi/5");
+
+        arcsec_helper("root 3 of x^5+6*x^4-12*x^3-32*x^2+16*x+32", "2*pi/11");
+        arcsec_helper("root 4 of x^5+6*x^4-12*x^3-32*x^2+16*x+32", "4*pi/11");
+        arcsec_helper("root 0 of x^5+6*x^4-12*x^3-32*x^2+16*x+32", "6*pi/11");
+        arcsec_helper("root 1 of x^5+6*x^4-12*x^3-32*x^2+16*x+32", "8*pi/11");
+        arcsec_helper("root 2 of x^5+6*x^4-12*x^3-32*x^2+16*x+32", "10*pi/11");
+
+        arcsec_helper("2*sqrt(3)/3", "pi/6");
+        arcsec_helper("-2*sqrt(3)/3", "5*pi/6");
+
+        arcsec_helper("root 3 of x^6-6*x^5-24*x^4+32*x^3+80*x^2-32*x-64", "2*pi/13");
+        arcsec_helper("root 4 of x^8-8*x^7-40*x^6+80*x^5+240*x^4-192*x^3-448*x^2+128*x+256", "2*pi/17");
+        arcsec_helper(
+                "root 6 of x^11+12*x^10-60*x^9-280*x^8+560*x^7+1792*x^6-1792*x^5-4608*x^4+2304*x^3+5120*x^2-1024*x-" +
+                "2048",
+                "2*pi/23"
+        );
+        arcsec_helper(
+                "root 24 of x^48-3456*x^46+579456*x^44-39625728*x^42+1497954816*x^40-35782471680*x^38+" +
+                "583456329728*x^36-6832518856704*x^34+59570604933120*x^32-397107008634880*x^30+" +
+                "2064791072931840*x^28-8500299631165440*x^26+28011510450094080*x^24-74448984852135936*x^22+" +
+                "160303703377575936*x^20-280058255978266624*x^18+396366279591591936*x^16-452180272956309504*x^14+" +
+                "411985976135516160*x^12-295364007592722432*x^10+162828875980603392*x^8-66568831992070144*x^6+" +
+                "18999560927969280*x^4-3377699720527872*x^2+281474976710656",
+                "pi/180"
+        );
+
+        arcsec_helper("3", "arccos(1/3)");
+        arcsec_helper("-3", "arccos(-1/3)");
+        arcsec_helper("3*sqrt(5)/5", "arccos(sqrt(5)/3)");
+        arcsec_helper("-3*sqrt(5)/5", "arccos(-sqrt(5)/3)");
+        arcsec_helper("100", "arccos(1/100)");
+        arcsec_helper("-100", "arccos(-1/100)");
+
+        arcsec_fail_helper("0");
+        arcsec_fail_helper("1/2");
+        arcsec_fail_helper("-1/2");
+    }
+
+    private static void arccsc_helper(@NotNull String input, @NotNull String output) {
+        AlgebraicAngle t = arccsc(Algebraic.readStrict(input).get());
+        t.validate();
+        aeq(t, output);
+    }
+
+    private static void arccsc_fail_helper(@NotNull String input) {
+        try {
+            arccsc(Algebraic.readStrict(input).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testArccsc() {
+        arccsc_helper("1", "pi/2");
+        arccsc_helper("-1", "3*pi/2");
+
+        arccsc_helper("root 2 of 5*x^4-20*x^2+16", "2*pi/5");
+        arccsc_helper("root 1 of 5*x^4-20*x^2+16", "8*pi/5");
+
+        arccsc_helper("2*sqrt(3)/3", "pi/3");
+        arccsc_helper("-2*sqrt(3)/3", "5*pi/3");
+
+        arccsc_helper("root 4 of 7*x^6-56*x^4+112*x^2-64", "2*pi/7");
+        arccsc_helper("root 3 of 7*x^6-56*x^4+112*x^2-64", "3*pi/7");
+        arccsc_helper("root 5 of 7*x^6-56*x^4+112*x^2-64", "pi/7");
+        arccsc_helper("root 0 of 7*x^6-56*x^4+112*x^2-64", "13*pi/7");
+        arccsc_helper("root 2 of 7*x^6-56*x^4+112*x^2-64", "11*pi/7");
+        arccsc_helper("root 1 of 7*x^6-56*x^4+112*x^2-64", "12*pi/7");
+
+        arccsc_helper("sqrt(2)", "pi/4");
+        arccsc_helper("-sqrt(2)", "7*pi/4");
+
+        arccsc_helper("root 4 of 3*x^6-36*x^4+96*x^2-64", "2*pi/9");
+        arccsc_helper("root 3 of 3*x^6-36*x^4+96*x^2-64", "4*pi/9");
+        arccsc_helper("root 5 of 3*x^6-36*x^4+96*x^2-64", "pi/9");
+        arccsc_helper("root 0 of 3*x^6-36*x^4+96*x^2-64", "17*pi/9");
+        arccsc_helper("root 2 of 3*x^6-36*x^4+96*x^2-64", "14*pi/9");
+        arccsc_helper("root 1 of 3*x^6-36*x^4+96*x^2-64", "16*pi/9");
+
+        arccsc_helper("root 3 of 5*x^4-20*x^2+16", "pi/5");
+        arccsc_helper("root 2 of 5*x^4-20*x^2+16", "2*pi/5");
+        arccsc_helper("root 1 of 5*x^4-20*x^2+16", "8*pi/5");
+        arccsc_helper("root 0 of 5*x^4-20*x^2+16", "9*pi/5");
+
+        arccsc_helper("root 8 of 11*x^10-220*x^8+1232*x^6-2816*x^4+2816*x^2-1024", "2*pi/11");
+        arccsc_helper("root 6 of 11*x^10-220*x^8+1232*x^6-2816*x^4+2816*x^2-1024", "4*pi/11");
+        arccsc_helper("root 5 of 11*x^10-220*x^8+1232*x^6-2816*x^4+2816*x^2-1024", "5*pi/11");
+        arccsc_helper("root 7 of 11*x^10-220*x^8+1232*x^6-2816*x^4+2816*x^2-1024", "3*pi/11");
+        arccsc_helper("root 9 of 11*x^10-220*x^8+1232*x^6-2816*x^4+2816*x^2-1024", "pi/11");
+        arccsc_helper("root 0 of 11*x^10-220*x^8+1232*x^6-2816*x^4+2816*x^2-1024", "21*pi/11");
+        arccsc_helper("root 2 of 11*x^10-220*x^8+1232*x^6-2816*x^4+2816*x^2-1024", "19*pi/11");
+        arccsc_helper("root 4 of 11*x^10-220*x^8+1232*x^6-2816*x^4+2816*x^2-1024", "17*pi/11");
+        arccsc_helper("root 3 of 11*x^10-220*x^8+1232*x^6-2816*x^4+2816*x^2-1024", "18*pi/11");
+        arccsc_helper("root 1 of 11*x^10-220*x^8+1232*x^6-2816*x^4+2816*x^2-1024", "20*pi/11");
+
+        arccsc_helper("2", "pi/6");
+        arccsc_helper("-2", "11*pi/6");
+
+        arccsc_helper("root 10 of 13*x^12-364*x^10+2912*x^8-9984*x^6+16640*x^4-13312*x^2+4096", "2*pi/13");
+        arccsc_helper(
+                "root 14 of 17*x^16-816*x^14+11424*x^12-71808*x^10+239360*x^8-452608*x^6+487424*x^4-278528*x^2+65536",
+                "2*pi/17"
+        );
+        arccsc_helper(
+                "root 20 of 23*x^22-2024*x^20+52624*x^18-631488*x^16+4209920*x^14-17145856*x^12+44843008*x^10-" +
+                "76873728*x^8+85917696*x^6-60293120*x^4+24117248*x^2-4194304",
+                "2*pi/23"
+        );
+        arccsc_helper(
+                "root 47 of x^48-3456*x^46+579456*x^44-39625728*x^42+1497954816*x^40-35782471680*x^38+" +
+                "583456329728*x^36-6832518856704*x^34+59570604933120*x^32-397107008634880*x^30+" +
+                "2064791072931840*x^28-8500299631165440*x^26+28011510450094080*x^24-74448984852135936*x^22+" +
+                "160303703377575936*x^20-280058255978266624*x^18+396366279591591936*x^16-452180272956309504*x^14+" +
+                "411985976135516160*x^12-295364007592722432*x^10+162828875980603392*x^8-66568831992070144*x^6+" +
+                "18999560927969280*x^4-3377699720527872*x^2+281474976710656",
+                "pi/180"
+        );
+
+        arccsc_helper("3*sqrt(2)/4", "arccos(1/3)");
+        arccsc_helper("-3*sqrt(2)/4", "pi+arccos(-1/3)");
+        arccsc_helper("3/2", "arccos(sqrt(5)/3)");
+        arccsc_helper("-3/2", "pi+arccos(-sqrt(5)/3)");
+        arccsc_helper("100", "arccos(3*sqrt(1111)/100)");
+        arccsc_helper("-100", "pi+arccos(-3*sqrt(1111)/100)");
+
+        arccsc_fail_helper("0");
+        arccsc_fail_helper("1/2");
+        arccsc_fail_helper("-1/2");
+    }
+
+    private static void polarAngle_helper(@NotNull String x, @NotNull String y, @NotNull String output) {
+        AlgebraicAngle t = polarAngle(Algebraic.readStrict(x).get(), Algebraic.readStrict(y).get());
+        t.validate();
+        aeq(t, output);
+    }
+
+    private static void polarAngle_fail_helper(@NotNull String x, @NotNull String y) {
+        try {
+            polarAngle(Algebraic.readStrict(x).get(), Algebraic.readStrict(y).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testPolarAngle() {
+        polarAngle_helper("1", "0", "0");
+        polarAngle_helper("0", "1", "pi/2");
+        polarAngle_helper("-1", "0", "pi");
+        polarAngle_helper("0", "-1", "3*pi/2");
+        polarAngle_helper("1", "1", "pi/4");
+        polarAngle_helper("-1", "1", "3*pi/4");
+        polarAngle_helper("-1", "-1", "5*pi/4");
+        polarAngle_helper("1", "-1", "7*pi/4");
+        polarAngle_helper("sqrt(2)", "sqrt(3)", "arccos(sqrt(10)/5)");
+        polarAngle_helper("-sqrt(2)", "sqrt(3)", "arccos(-sqrt(10)/5)");
+        polarAngle_helper("-sqrt(2)", "-sqrt(3)", "pi+arccos(sqrt(10)/5)");
+        polarAngle_helper("sqrt(2)", "-sqrt(3)", "pi+arccos(-sqrt(10)/5)");
+        polarAngle_helper("(1+sqrt(5))/2", "root 0 of x^5-x-1",
+                "arccos(root 3 of 116*x^20-660*x^18+1457*x^16-1494*x^14+596*x^12+103*x^10-131*x^8-8*x^6+31*x^4-" +
+                "10*x^2+1)");
+
+        polarAngle_fail_helper("0", "0");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

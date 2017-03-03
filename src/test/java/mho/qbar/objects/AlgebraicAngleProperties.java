@@ -13,7 +13,7 @@ import java.util.Optional;
 import static mho.qbar.objects.AlgebraicAngle.*;
 import static mho.wheels.iterables.IterableUtils.filterInfinite;
 import static mho.wheels.iterables.IterableUtils.take;
-import static mho.wheels.ordering.Ordering.le;
+import static mho.wheels.ordering.Ordering.*;
 import static mho.wheels.testing.Testing.*;
 
 public class AlgebraicAngleProperties  extends QBarTestProperties {
@@ -46,6 +46,13 @@ public class AlgebraicAngleProperties  extends QBarTestProperties {
         propertiesComplement();
         propertiesRegularPolygonArea();
         propertiesAntiprismVolume();
+        propertiesArcsin();
+        propertiesArccos();
+        propertiesArctan();
+        propertiesArccot();
+        propertiesArcsec();
+        propertiesArccsc();
+        propertiesPolarAngle();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -245,6 +252,14 @@ public class AlgebraicAngleProperties  extends QBarTestProperties {
             assertEquals(t, t.addPi().sin(), x.negate());
         }
 
+        ts =  filterInfinite(
+                t -> t.rationalTurns().map(x -> le(x.getDenominator(), maxDenominator)).orElse(true),
+                P.withScale(4).withSecondaryScale(4).range(THREE_PI_OVER_TWO, PI_OVER_TWO)
+        );
+        for (AlgebraicAngle t : take(SMALL_LIMIT, ts)) {
+            assertEquals(t, arcsin(t.sin()), t);
+        }
+
         Iterable<AlgebraicAngle> ts2 = filterInfinite(
                 t -> !t.equals(ZERO) && !t.equals(PI) &&
                         t.rationalTurns().map(x -> le(x.getDenominator(), maxDenominator)).orElse(true),
@@ -269,6 +284,14 @@ public class AlgebraicAngleProperties  extends QBarTestProperties {
             assertEquals(t, t.negate().cos(), x);
             assertEquals(t, t.supplement().cos(), x.negate());
             assertEquals(t, t.addPi().cos(), x.negate());
+        }
+
+        ts = filterInfinite(
+                t -> t.rationalTurns().map(x -> le(x.getDenominator(), maxDenominator)).orElse(true),
+                P.withScale(4).withSecondaryScale(4).range(ZERO, PI)
+        );
+        for (AlgebraicAngle t : take(SMALL_LIMIT, ts)) {
+            assertEquals(t, arccos(t.cos()), t);
         }
 
         Iterable<AlgebraicAngle> ts2 = filterInfinite(
@@ -297,6 +320,16 @@ public class AlgebraicAngleProperties  extends QBarTestProperties {
             assertEquals(t, t.negate().tan(), x.negate());
             assertEquals(t, t.supplement().tan(), x.negate());
             assertEquals(t, t.addPi().tan(), x);
+        }
+
+        ts = filterInfinite(
+                t -> !t.equals(PI_OVER_TWO) && !t.equals(THREE_PI_OVER_TWO) &&
+                        (t.isRationalMultipleOfPi() || t.cos().degree() < 6) &&
+                        t.rationalTurns().map(x -> le(x.getDenominator(), maxDenominator)).orElse(true),
+                P.withScale(4).withSecondaryScale(4).range(THREE_PI_OVER_TWO, PI_OVER_TWO)
+        );
+        for (AlgebraicAngle t : take(SMALL_LIMIT, ts)) {
+            assertEquals(t, arctan(t.tan()), t);
         }
 
         Iterable<AlgebraicAngle> ts2 = filterInfinite(
@@ -328,6 +361,16 @@ public class AlgebraicAngleProperties  extends QBarTestProperties {
             assertEquals(t, t.addPi().cot(), x);
         }
 
+        ts = filterInfinite(
+                t -> !t.equals(ZERO) && !t.equals(PI) &&
+                        (t.isRationalMultipleOfPi() || t.cos().degree() < 6) &&
+                        t.rationalTurns().map(x -> le(x.getDenominator(), maxDenominator)).orElse(true),
+                P.withScale(4).withSecondaryScale(4).range(ZERO, PI)
+        );
+        for (AlgebraicAngle t : take(SMALL_LIMIT, ts)) {
+            assertEquals(t, arccot(t.cot()), t);
+        }
+
         Iterable<AlgebraicAngle> ts2 = filterInfinite(
                 t -> !t.equals(ZERO) && !t.equals(PI) && !t.equals(PI_OVER_TWO) && !t.equals(THREE_PI_OVER_TWO) &&
                         (t.isRationalMultipleOfPi() || t.cos().degree() < 6) &&
@@ -356,6 +399,15 @@ public class AlgebraicAngleProperties  extends QBarTestProperties {
             assertEquals(t, t.supplement().sec(), x.negate());
             assertEquals(t, t.addPi().sec(), x.negate());
         }
+
+        ts = filterInfinite(
+                t -> !t.equals(PI_OVER_TWO) && !t.equals(THREE_PI_OVER_TWO) &&
+                        t.rationalTurns().map(x -> le(x.getDenominator(), maxDenominator)).orElse(true),
+                P.withScale(4).withSecondaryScale(4).range(ZERO, PI)
+        );
+        for (AlgebraicAngle t : take(SMALL_LIMIT, ts)) {
+            assertEquals(t, arcsec(t.sec()), t);
+        }
     }
 
     private void propertiesCsc() {
@@ -374,6 +426,15 @@ public class AlgebraicAngleProperties  extends QBarTestProperties {
             assertEquals(t, t.negate().csc(), x.negate());
             assertEquals(t, t.supplement().csc(), x);
             assertEquals(t, t.addPi().csc(), x.negate());
+        }
+
+        ts = filterInfinite(
+                t -> !t.equals(ZERO) && !t.equals(PI) &&
+                        t.rationalTurns().map(x -> le(x.getDenominator(), maxDenominator)).orElse(true),
+                P.withScale(4).withSecondaryScale(4).range(THREE_PI_OVER_TWO, PI_OVER_TWO)
+        );
+        for (AlgebraicAngle t : take(SMALL_LIMIT, ts)) {
+            assertEquals(t, arccsc(t.csc()), t);
         }
     }
 
@@ -423,6 +484,197 @@ public class AlgebraicAngleProperties  extends QBarTestProperties {
                 antiprismVolume(i);
                 fail(i);
             } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesArcsin() {
+        initialize("arcsin(Algebraic)");
+        Iterable<Algebraic> xs = P.withScale(4).withSecondaryScale(4).range(Algebraic.NEGATIVE_ONE, Algebraic.ONE);
+        for (Algebraic x : take(MEDIUM_LIMIT, xs)) {
+            AlgebraicAngle t = arcsin(x);
+            t.validate();
+            assertEquals(x, t.sin(), x);
+            assertEquals(x, t, arccos(x).complement());
+            if (!t.equals(PI_OVER_TWO)) {
+                assertEquals(x, t.getQuadrant(), x.signum() == -1 ? 4 : 1);
+            }
+            Real xr = x.realValue();
+            Real rt = x.signum() == -1 ? xr.arcsinUnsafe().add(Real.PI.shiftLeft(1)) : xr.arcsinUnsafe();
+            assertTrue(x, t.radians().eq(rt, SMALL_RESOLUTION).orElse(true));
+        }
+
+        Iterable<Algebraic> xsFail = filterInfinite(
+                y -> gt(y.abs(), Algebraic.ONE),
+                P.withScale(4).withSecondaryScale(4).algebraics()
+        );
+        for (Algebraic x : take(MEDIUM_LIMIT, xsFail)) {
+            try {
+                arcsin(x);
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesArccos() {
+        initialize("arccos(Algebraic)");
+        Iterable<Algebraic> xs = P.withScale(4).withSecondaryScale(4).range(Algebraic.NEGATIVE_ONE, Algebraic.ONE);
+        for (Algebraic x : take(MEDIUM_LIMIT, xs)) {
+            AlgebraicAngle t = arccos(x);
+            t.validate();
+            assertEquals(x, t.cos(), x);
+            assertEquals(x, t, arcsin(x).complement());
+            if (!t.equals(PI)) {
+                assertEquals(x, t.getQuadrant(), x.signum() == 1 ? 1 : 2);
+            }
+            assertTrue(x, t.radians().eq(x.realValue().arccosUnsafe(), SMALL_RESOLUTION).orElse(true));
+        }
+
+        Iterable<Algebraic> xsFail = filterInfinite(
+                y -> gt(y.abs(), Algebraic.ONE),
+                P.withScale(4).withSecondaryScale(4).algebraics()
+        );
+        for (Algebraic x : take(MEDIUM_LIMIT, xsFail)) {
+            try {
+                arccos(x);
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesArctan() {
+        initialize("arctan(Algebraic)");
+        Iterable<Algebraic> xs = filterInfinite(
+                y -> y.degree() < 6,
+                P.withScale(4).withSecondaryScale(4).algebraics()
+        );
+        for (Algebraic x : take(MEDIUM_LIMIT, xs)) {
+            AlgebraicAngle t = arctan(x);
+            t.validate();
+            assertEquals(x, t.tan(), x);
+            assertEquals(x, t, arccot(x).complement());
+            assertEquals(x, t.getQuadrant(), x.signum() == -1 ? 4 : 1);
+            Real xr = x.realValue();
+            Real rt = x.signum() == -1 ? xr.arctan().add(Real.PI.shiftLeft(1)) : xr.arctan();
+            assertTrue(x, t.radians().eq(rt, SMALL_RESOLUTION).orElse(true));
+        }
+    }
+
+    private void propertiesArccot() {
+        initialize("arccot(Algebraic)");
+        Iterable<Algebraic> xs = filterInfinite(
+                y -> y.degree() < 6,
+                P.withScale(4).withSecondaryScale(4).algebraics()
+        );
+        for (Algebraic x : take(MEDIUM_LIMIT, xs)) {
+            AlgebraicAngle t = arccot(x);
+            t.validate();
+            assertEquals(x, t.cot(), x);
+            assertEquals(x, t, arctan(x).complement());
+            assertEquals(x, t.getQuadrant(), x.signum() == 1 ? 1 : 2);
+            assertTrue(x, t.radians().eq(x.realValue().arccot(), SMALL_RESOLUTION).orElse(true));
+        }
+    }
+
+    private void propertiesArcsec() {
+        initialize("arcsec(Algebraic)");
+        Iterable<Algebraic> xs = filterInfinite(
+                y -> ge(y.abs(), Algebraic.ONE),
+                P.withScale(4).withSecondaryScale(4).algebraics()
+        );
+        for (Algebraic x : take(MEDIUM_LIMIT, xs)) {
+            AlgebraicAngle t = arcsec(x);
+            t.validate();
+            assertEquals(x, t.sec(), x);
+            assertEquals(x, t, arccsc(x).complement());
+            assertTrue(x, t.radians().eq(x.realValue().arcsecUnsafe(), SMALL_RESOLUTION).orElse(true));
+        }
+
+        Iterable<Algebraic> xsFail = filterInfinite(
+                x -> x != Algebraic.ONE && !x.equals(Algebraic.NEGATIVE_ONE),
+                P.withScale(4).withSecondaryScale(4).range(Algebraic.NEGATIVE_ONE, Algebraic.ONE)
+        );
+        for (Algebraic x : take(MEDIUM_LIMIT, xsFail)) {
+            try {
+                arcsec(x);
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesArccsc() {
+        initialize("arccsc(Algebraic)");
+        Iterable<Algebraic> xs = filterInfinite(
+                y -> ge(y.abs(), Algebraic.ONE),
+                P.withScale(4).withSecondaryScale(4).algebraics()
+        );
+        for (Algebraic x : take(MEDIUM_LIMIT, xs)) {
+            AlgebraicAngle t = arccsc(x);
+            t.validate();
+            assertEquals(x, t.csc(), x);
+            assertEquals(x, t, arcsec(x).complement());
+            Real xr = x.realValue();
+            Real rt = x.signum() == -1 ? xr.arccscUnsafe().add(Real.PI.shiftLeft(1)) : xr.arccscUnsafe();
+            assertTrue(x, t.radians().eq(rt, SMALL_RESOLUTION).orElse(true));
+        }
+
+        Iterable<Algebraic> xsFail = filterInfinite(
+                x -> x != Algebraic.ONE && !x.equals(Algebraic.NEGATIVE_ONE),
+                P.withScale(4).withSecondaryScale(4).range(Algebraic.NEGATIVE_ONE, Algebraic.ONE)
+        );
+        for (Algebraic x : take(MEDIUM_LIMIT, xsFail)) {
+            try {
+                arccsc(x);
+                fail(x);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesPolarAngle() {
+        initialize("polarAngle(Algebraic, Algebraic)");
+        Iterable<Pair<Algebraic, Algebraic>> ps = filterInfinite(
+                p -> p.a != Algebraic.ZERO || p.b != Algebraic.ZERO,
+                P.pairs(filterInfinite(x -> x.degree() < 4, P.withScale(4).withSecondaryScale(4).algebraics()))
+        );
+        for (Pair<Algebraic, Algebraic> p : take(MEDIUM_LIMIT, ps)) {
+            AlgebraicAngle t = polarAngle(p.a, p.b);
+            t.validate();
+            Real rt = Real.atan2Unsafe(p.b.realValue(), p.a.realValue());
+            assertTrue(
+                    p,
+                    t.radians().eq(gt(t, PI) ? rt.add(Real.PI.shiftLeft(1)) : rt, SMALL_RESOLUTION).orElse(true)
+            );
+            switch (t.getQuadrant()) {
+                case 1:
+                    assertEquals(p, p.a.signum(), 1);
+                    assertNotEquals(p, p.b.signum(), -1);
+                    break;
+                case 2:
+                    assertNotEquals(p, p.a.signum(), 1);
+                    assertEquals(p, p.b.signum(), 1);
+                    break;
+                case 3:
+                    assertEquals(p, p.a.signum(), -1);
+                    assertNotEquals(p, p.b.signum(), 1);
+                    break;
+                case 4:
+                    assertNotEquals(p, p.a.signum(), -1);
+                    assertEquals(p, p.b.signum(), -1);
+                    break;
+                default:
+                    throw new IllegalStateException("unreachable");
+            }
+        }
+
+        ps = filterInfinite(
+                p -> p.a != Algebraic.ZERO || p.b != Algebraic.ZERO,
+                P.pairs(filterInfinite(x -> x.degree() < 3, P.withScale(4).withSecondaryScale(4).algebraics()))
+        );
+        for (Pair<Algebraic, Algebraic> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println(p);
+            AlgebraicAngle t = polarAngle(p.a, p.b);
+            Algebraic r = p.a.pow(2).add(p.b.pow(2)).sqrt();
+            assertEquals(p, r.multiply(t.cos()), p.a);
+            assertEquals(p, r.multiply(t.sin()), p.b);
         }
     }
 

@@ -516,7 +516,7 @@ public final class AlgebraicAngle implements Comparable<AlgebraicAngle> {
 
     /**
      * Returns the volume of a regular antiprism whose base has {@code n} sides and side length 1. If {@code n}=2 this
-     * corresponds to a degenerate 2-gon antiprism (a regular tetrahedron).
+     * corresponds to a degenerate 2-gonal antiprism (a regular tetrahedron).
      *
      * <ul>
      *  <li>{@code n} must be at least 2.</li>
@@ -537,12 +537,157 @@ public final class AlgebraicAngle implements Comparable<AlgebraicAngle> {
         return sum.multiply(root).multiply(n).divide(12);
     }
 
+    /**
+     * Returns an angle whose sine is {@code x}. If {@code x} is in [0, 1], the result is in the 1st quadrant; if it is
+     * in [–1, 0), the 4th.
+     *
+     * <ul>
+     *  <li>{@code x} must be between –1 and 1, inclusive.</li>
+     *  <li>The result is in the 1st or 4th quadrants.</li>
+     * </ul>
+     *
+     * @param x the sine of an angle
+     * @return arcsin({@code x})
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull AlgebraicAngle arcsin(@NotNull Algebraic x) {
+        Algebraic cos = Algebraic.ONE.subtract(x.pow(2)).sqrt();
+        return x.signum() == -1 ? arccos(cos.negate()).addPi() : arccos(cos);
+    }
+
+    /**
+     * Returns an angle whose cosine is {@code x}. If {@code x} is in [0, 1], the result is in the 1st quadrant; if it
+     * is in [–1, 0), the 2nd.
+     *
+     * <ul>
+     *  <li>{@code x} must be between –1 and 1, inclusive.</li>
+     *  <li>The result is in the 1st or 2nd quadrants.</li>
+     * </ul>
+     *
+     * @param x the cosine of an angle
+     * @return arccos({@code x})
+     */
+    @SuppressWarnings("JavaDoc")
     public static @NotNull AlgebraicAngle arccos(@NotNull Algebraic x) {
+        if (Ordering.lt(x, Algebraic.NEGATIVE_ONE) || Ordering.gt(x, Algebraic.ONE)) {
+            throw new ArithmeticException("x must be between -1 and 1, inclusive. Invalid x: " + x);
+        }
         Optional<Rational> ot = rationalArccos(x);
         if (ot.isPresent()) {
             return new AlgebraicAngle(ot.get());
         } else {
             return new AlgebraicAngle(x, x.signum() == 1 ? 1 : 2);
+        }
+    }
+
+    /**
+     * Returns an angle whose tangent is {@code x}. If {@code x} is in [0, ∞), the result is in the 1st quadrant; if it
+     * is in (–∞, 0), the 4th.
+     *
+     * <ul>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>The result is in the 1st or 4th quadrants.</li>
+     * </ul>
+     *
+     * @param x the tangent of an angle
+     * @return arctan({@code x})
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull AlgebraicAngle arctan(@NotNull Algebraic x) {
+        Algebraic cos = x.pow(2).add(Rational.ONE).sqrt().invert();
+        return x.signum() == -1 ? arccos(cos.negate()).addPi() : arccos(cos);
+    }
+
+    /**
+     * Returns an angle whose cotangent is {@code x}. If {@code x} is in [0, ∞), the result is in the 1st quadrant; if
+     * it is in (–∞, 0), the 2nd.
+     *
+     * <ul>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>The result is in the 1st or 2nd quadrants.</li>
+     * </ul>
+     *
+     * @param x the cotangent of an angle
+     * @return arccot({@code x})
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull AlgebraicAngle arccot(@NotNull Algebraic x) {
+        if (x == Algebraic.ZERO) {
+            return PI_OVER_TWO;
+        }
+        Algebraic cos = x.pow(-2).add(Rational.ONE).sqrt().invert();
+        return x.signum() == -1 ? arccos(cos.negate()) : arccos(cos);
+    }
+
+    /**
+     * Returns an angle whose secant is {@code x}. If {@code x} is in [1, ∞), the result is in the 1st quadrant; if it
+     * is in (–∞, –1], the 2nd.
+     *
+     * <ul>
+     *  <li>{@code x} must be less than or equal to –1 or greater than or equal to 1.</li>
+     *  <li>The result is in the 1st or 2nd quadrants.</li>
+     * </ul>
+     *
+     * @param x the secant of an angle
+     * @return arcsec({@code x})
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull AlgebraicAngle arcsec(@NotNull Algebraic x) {
+        return arccos(x.invert());
+    }
+
+    /**
+     * Returns an angle whose cosecant is {@code x}. If {@code x} is in [1, ∞), the result is in the 1st quadrant; if
+     * it is in (–∞, –1], the 4th.
+     *
+     * <ul>
+     *  <li>{@code x} must be less than or equal to –1 or greater than or equal to 1.</li>
+     *  <li>The result is in the 1st or 4th quadrants.</li>
+     * </ul>
+     *
+     * @param x the cosecant of an angle
+     * @return arccsc({@code x})
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull AlgebraicAngle arccsc(@NotNull Algebraic x) {
+        return arcsin(x.invert());
+    }
+
+    /**
+     * Given a point (x, y), returns the counterclockwise angle of this point from the positive x-axis. This is similar
+     * to the atan2 function, except that the result is in [0, 2π) rather than (–π, π] (due to the definition of an
+     * {@code AlgebraicAngle}) and the order of the arguments is x, y rather than y, x.
+     *
+     * <ul>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>{@code y} cannot be null.</li>
+     *  <li>{@code x} and {@code y} cannot both be zero.</li>
+     *  <li>The result may be any {@code AlgebraicAngle}.</li>
+     * </ul>
+     *
+     * @param x the x-coordinate of a point
+     * @param y the y-coordinate of a point
+     * @return θ of the polar coordinates of (x, y)
+     */
+    public static @NotNull AlgebraicAngle polarAngle(@NotNull Algebraic x, @NotNull Algebraic y) {
+        switch (x.signum()) {
+            case 0:
+                switch (y.signum()) {
+                    case 0:
+                        throw new ArithmeticException("x and y cannot both be zero.");
+                    case 1:
+                        return PI_OVER_TWO;
+                    case -1:
+                        return THREE_PI_OVER_TWO;
+                    default:
+                        throw new IllegalStateException("unreachable");
+                }
+            case 1:
+                return arctan(y.divide(x));
+            case -1:
+                return arctan(y.divide(x)).addPi();
+            default:
+                throw new IllegalStateException("unreachable");
         }
     }
 

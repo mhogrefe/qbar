@@ -10,6 +10,7 @@ import static mho.qbar.objects.AlgebraicAngle.*;
 import static mho.wheels.iterables.IterableUtils.filterInfinite;
 import static mho.wheels.iterables.IterableUtils.take;
 import static mho.wheels.ordering.Ordering.compare;
+import static mho.wheels.ordering.Ordering.ge;
 import static mho.wheels.ordering.Ordering.le;
 import static mho.wheels.testing.Testing.MEDIUM_LIMIT;
 import static mho.wheels.testing.Testing.TINY_LIMIT;
@@ -182,6 +183,62 @@ public class AlgebraicAngleDemos extends QBarDemos {
     private void demoAntiprismVolume() {
         for (int i : take(15, P.withScale(4).rangeUpGeometric(2))) {
             System.out.println("antiprismVolume(" + i + ") = " + antiprismVolume(i));
+        }
+    }
+
+    private void demoArcsin() {
+        Iterable<Algebraic> xs = P.withScale(4).withSecondaryScale(4).range(Algebraic.NEGATIVE_ONE, Algebraic.ONE);
+        for (Algebraic x : take(MEDIUM_LIMIT, xs)) {
+            System.out.println("arcsin(" + x + ") = " + arcsin(x));
+        }
+    }
+
+    private void demoArccos() {
+        Iterable<Algebraic> xs = P.withScale(4).withSecondaryScale(4).range(Algebraic.NEGATIVE_ONE, Algebraic.ONE);
+        for (Algebraic x : take(MEDIUM_LIMIT, xs)) {
+            System.out.println("arccos(" + x + ") = " + arccos(x));
+        }
+    }
+
+    private void demoArctan() {
+        for (Algebraic x : take(MEDIUM_LIMIT, P.withScale(4).withSecondaryScale(4).algebraics())) {
+            System.out.println("arctan(" + x + ") = " + arctan(x));
+        }
+    }
+
+    private void demoArccot() {
+        for (Algebraic x : take(MEDIUM_LIMIT, P.withScale(4).withSecondaryScale(4).algebraics())) {
+            System.out.println("arccot(" + x + ") = " + arccot(x));
+        }
+    }
+
+    private void demoArcsec() {
+        Iterable<Algebraic> xs = filterInfinite(
+                y -> ge(y.abs(), Algebraic.ONE),
+                P.withScale(4).withSecondaryScale(4).algebraics()
+        );
+        for (Algebraic x : take(MEDIUM_LIMIT, xs)) {
+            System.out.println("arcsec(" + x + ") = " + arcsec(x));
+        }
+    }
+
+    private void demoArccsc() {
+        Iterable<Algebraic> xs = filterInfinite(
+                y -> ge(y.abs(), Algebraic.ONE),
+                P.withScale(4).withSecondaryScale(4).algebraics()
+        );
+        for (Algebraic x : take(MEDIUM_LIMIT, xs)) {
+            System.out.println("arccsc(" + x + ") = " + arccsc(x));
+        }
+    }
+
+    private void demoPolarAngle() {
+        Iterable<Pair<Algebraic, Algebraic>> ps = filterInfinite(
+                p -> p.a != Algebraic.ZERO || p.b != Algebraic.ZERO,
+                P.pairs(filterInfinite(x -> x.degree() < 4, P.withScale(4).withSecondaryScale(4).algebraics()))
+        );
+        for (Pair<Algebraic, Algebraic> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("polarAngle(" + p.a + ", " + p.b + ") = " + polarAngle(p.a, p.b));
         }
     }
 
