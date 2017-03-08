@@ -489,9 +489,9 @@ public final class AlgebraicAngle implements Comparable<AlgebraicAngle> {
         if (turns.isPresent()) {
             return new AlgebraicAngle(Rational.ONE.shiftRight(2).subtract(turns.get()).fractionalPart());
         } else {
-            int supplementQuadrant = 6 - quadrant;
-            if (supplementQuadrant == 5) supplementQuadrant = 1;
-            return new AlgebraicAngle(sin(), supplementQuadrant);
+            int complementQuadrant = 6 - quadrant;
+            if (complementQuadrant == 5) complementQuadrant = 1;
+            return new AlgebraicAngle(sin(), complementQuadrant);
         }
     }
 
@@ -689,6 +689,138 @@ public final class AlgebraicAngle implements Comparable<AlgebraicAngle> {
             default:
                 throw new IllegalStateException("unreachable");
         }
+    }
+
+    /**
+     * Returns the sum of {@code this} and {@code that} (mod 2π).
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code AlgebraicAngle}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the angle to be added to {@code this}
+     * @return {@code this}+{@code that}
+     */
+    public @NotNull AlgebraicAngle add(@NotNull AlgebraicAngle that) {
+        if (turns.isPresent()) {
+            if (that.turns.isPresent()) {
+                return new AlgebraicAngle(turns.get().add(that.turns.get()).fractionalPart());
+            } else if (equals(ZERO)) {
+                return that;
+            } else if (equals(PI)) {
+                return that.addPi();
+            } else if (equals(PI_OVER_TWO)) {
+                return that.complement().supplement();
+            } else if (equals(THREE_PI_OVER_TWO)) {
+                return that.supplement().complement();
+            }
+        } else if (that.turns.isPresent()) {
+            if (that.equals(ZERO)) {
+                return this;
+            } else if (that.equals(PI)) {
+                return addPi();
+            } else if (that.equals(PI_OVER_TWO)) {
+                return complement().supplement();
+            } else if (that.equals(THREE_PI_OVER_TWO)) {
+                return supplement().complement();
+            }
+        } else if (equals(that.negate())) {
+            return ZERO;
+        } else if (equals(that.supplement())) {
+            return PI;
+        }
+        boolean thisMoreComplex;
+        Polynomial thisCosMP = cos().minimalPolynomial();
+        Polynomial thatCosMP = that.cos().minimalPolynomial();
+        int c = Integer.compare(thisCosMP.degree(), thatCosMP.degree());
+        if (c != 0) {
+            thisMoreComplex = c > 0;
+        } else {
+            thisMoreComplex = thisCosMP.maxCoefficientBitLength() > thatCosMP.maxCoefficientBitLength();
+        }
+        Algebraic thisSin = null;
+        Algebraic thatSin = null;
+        if (thisMoreComplex) {
+            AlgebraicAngle thatComplement;
+            if (that.turns.isPresent()) {
+                thatComplement =
+                        new AlgebraicAngle(Rational.ONE.shiftRight(2).subtract(that.turns.get()).fractionalPart());
+            } else {
+                thatSin = that.sin();
+                int complementQuadrant = 6 - that.quadrant;
+                if (complementQuadrant == 5) complementQuadrant = 1;
+                thatComplement = new AlgebraicAngle(thatSin, complementQuadrant);
+            }
+            if (equals(thatComplement)) {
+                return PI_OVER_TWO;
+            } else if (equals(thatComplement.addPi())) {
+                return THREE_PI_OVER_TWO;
+            }
+            thisSin = sin();
+            if (thatSin == null) {
+                thatSin = that.sin();
+            }
+        } else {
+            AlgebraicAngle thisComplement;
+            if (turns.isPresent()) {
+                thisComplement = new AlgebraicAngle(Rational.ONE.shiftRight(2).subtract(turns.get()).fractionalPart());
+            } else {
+                thisSin = sin();
+                int complementQuadrant = 6 - quadrant;
+                if (complementQuadrant == 5) complementQuadrant = 1;
+                thisComplement = new AlgebraicAngle(thisSin, complementQuadrant);
+            }
+            if (that.equals(thisComplement)) {
+                return PI_OVER_TWO;
+            } else if (that.equals(thisComplement.addPi())) {
+                return THREE_PI_OVER_TWO;
+            }
+            thatSin = that.sin();
+            if (thisSin == null) {
+                thisSin = sin();
+            }
+        }
+        Algebraic sumCos = cos().multiply(that.cos()).subtract(thisSin.multiply(thatSin));
+        AlgebraicAngle a;
+        AlgebraicAngle b;
+        if (quadrant > 2 && that.quadrant > 2) {
+            a = addPi();
+            b = that.addPi();
+        } else {
+            a = this;
+            b = that;
+        }
+        if (a.quadrant == 1 && b.quadrant == 1 || a.quadrant == 2 && b.quadrant == 4 ||
+                a.quadrant == 4 && b.quadrant == 2) {
+            return arccos(sumCos);
+        } else if (a.quadrant == 1 && b.quadrant == 3 || a.quadrant == 2 && b.quadrant == 2 ||
+                a.quadrant == 3 && b.quadrant == 1) {
+            return arccos(sumCos).negate();
+        } else if (a.quadrant == 1 && b.quadrant == 2 || a.quadrant == 2 && b.quadrant == 1) {
+            AlgebraicAngle t = arccos(sumCos);
+            return a.radians().add(b.radians()).ltUnsafe(Real.PI) ? t : t.negate();
+        } else {
+            AlgebraicAngle t = arccos(sumCos);
+            return a.radians().add(b.radians()).gtUnsafe(Real.PI.shiftLeft(1)) ? t : t.negate();
+        }
+    }
+
+    /**
+     * Returns the difference of {@code this} and {@code that} (mod 2π).
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code AlgebraicAngle}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the angle to be subtracted from {@code this}
+     * @return {@code this}–{@code that}
+     */
+    public @NotNull AlgebraicAngle subtract(@NotNull AlgebraicAngle that) {
+        return add(that.negate());
     }
 
     /**

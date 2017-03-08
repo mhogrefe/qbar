@@ -5,6 +5,7 @@ import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
+import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
@@ -53,6 +54,8 @@ public class AlgebraicAngleProperties  extends QBarTestProperties {
         propertiesArcsec();
         propertiesArccsc();
         propertiesPolarAngle();
+        propertiesAdd();
+        propertiesSubtract();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -670,11 +673,111 @@ public class AlgebraicAngleProperties  extends QBarTestProperties {
                 P.pairs(filterInfinite(x -> x.degree() < 3, P.withScale(4).withSecondaryScale(4).algebraics()))
         );
         for (Pair<Algebraic, Algebraic> p : take(MEDIUM_LIMIT, ps)) {
-            System.out.println(p);
             AlgebraicAngle t = polarAngle(p.a, p.b);
             Algebraic r = p.a.pow(2).add(p.b.pow(2)).sqrt();
             assertEquals(p, r.multiply(t.cos()), p.a);
             assertEquals(p, r.multiply(t.sin()), p.b);
+        }
+    }
+
+    private void propertiesAdd() {
+        initialize("add(AlgebraicAngle)");
+        Iterable<Pair<AlgebraicAngle, AlgebraicAngle>> ps = P.pairs(
+                filterInfinite(
+                        t -> t.isRationalMultipleOfPi() ?
+                                le(t.rationalTurns().get().getDenominator(), BigInteger.TEN) :
+                                t.cos().minimalPolynomial().degree() < 4,
+                        P.withScale(4).withSecondaryScale(4).algebraicAngles()
+                )
+        );
+        for (Pair<AlgebraicAngle, AlgebraicAngle> p : take(SMALL_LIMIT, ps)) {
+            AlgebraicAngle t = p.a.add(p.b);
+            t.validate();
+            Real rt1 = p.a.radians().add(p.b.radians());
+            Real rt2 = rt1.subtract(Real.PI.shiftLeft(1));
+            Real rt = t.radians();
+            Optional<Boolean> e1 = rt.eq(rt1, SMALL_RESOLUTION);
+            Optional<Boolean> e2 = rt.eq(rt2, SMALL_RESOLUTION);
+            assertTrue(p, !e1.isPresent() || e1.get() || !e2.isPresent() || e2.get());
+            assertEquals(p, p.b.add(p.a), t);
+        }
+
+        ps = P.pairs(
+                filterInfinite(
+                        t -> t.isRationalMultipleOfPi() ?
+                                le(t.rationalTurns().get().getDenominator(), BigInteger.TEN) :
+                                t.cos().minimalPolynomial().degree() < 3 &&
+                                        t.cos().minimalPolynomial().maxCoefficientBitLength() <= 8,
+                        P.withScale(4).withSecondaryScale(4).algebraicAngles()
+                )
+        );
+        for (Pair<AlgebraicAngle, AlgebraicAngle> p : take(SMALL_LIMIT, ps)) {
+            AlgebraicAngle t = p.a.add(p.b);
+            assertEquals(p, t.subtract(p.b), p.a);
+        }
+
+        for (AlgebraicAngle t : take(MEDIUM_LIMIT, P.algebraicAngles())) {
+            assertEquals(t, t.add(ZERO), t);
+            assertEquals(t, t.add(PI), t.addPi());
+            assertEquals(t, t.add(t.negate()), ZERO);
+        }
+
+        Iterable<Triple<AlgebraicAngle, AlgebraicAngle, AlgebraicAngle>> ts = P.triples(
+                filterInfinite(
+                        t -> t.isRationalMultipleOfPi() ?
+                                le(t.rationalTurns().get().getDenominator(), BigInteger.TEN) :
+                                t.cos().minimalPolynomial().degree() < 3 &&
+                                        t.cos().minimalPolynomial().maxCoefficientBitLength() <= 6,
+                        P.withScale(4).withSecondaryScale(4).algebraicAngles()
+                )
+        );
+        for (Triple<AlgebraicAngle, AlgebraicAngle, AlgebraicAngle> t : take(SMALL_LIMIT, ts)) {
+            assertEquals(t, t.a.add(t.b).add(t.c), t.a.add(t.b.add(t.c)));
+        }
+    }
+
+    private void propertiesSubtract() {
+        initialize("subtract(AlgebraicAngle)");
+        Iterable<Pair<AlgebraicAngle, AlgebraicAngle>> ps = P.pairs(
+                filterInfinite(
+                        t -> t.isRationalMultipleOfPi() ?
+                                le(t.rationalTurns().get().getDenominator(), BigInteger.TEN) :
+                                t.cos().minimalPolynomial().degree() < 4,
+                        P.withScale(4).withSecondaryScale(4).algebraicAngles()
+                )
+        );
+        for (Pair<AlgebraicAngle, AlgebraicAngle> p : take(SMALL_LIMIT, ps)) {
+            AlgebraicAngle t = p.a.subtract(p.b);
+            t.validate();
+            Real rt1 = p.a.radians().subtract(p.b.radians());
+            Real rt2 = rt1.add(Real.PI.shiftLeft(1));
+            Real rt = t.radians();
+            Optional<Boolean> e1 = rt.eq(rt1, SMALL_RESOLUTION);
+            Optional<Boolean> e2 = rt.eq(rt2, SMALL_RESOLUTION);
+            assertTrue(p, !e1.isPresent() || e1.get() || !e2.isPresent() || e2.get());
+            assertEquals(p, p.b.subtract(p.a), t.negate());
+        }
+
+        ps = P.pairs(
+                filterInfinite(
+                        t -> t.isRationalMultipleOfPi() ?
+                                le(t.rationalTurns().get().getDenominator(), BigInteger.TEN) :
+                                t.cos().minimalPolynomial().degree() < 3 &&
+                                        t.cos().minimalPolynomial().maxCoefficientBitLength() <= 8,
+                        P.withScale(4).withSecondaryScale(4).algebraicAngles()
+                )
+        );
+        for (Pair<AlgebraicAngle, AlgebraicAngle> p : take(SMALL_LIMIT, ps)) {
+            AlgebraicAngle t = p.a.subtract(p.b);
+            assertEquals(p, t.add(p.b), p.a);
+        }
+
+        for (AlgebraicAngle t : take(SMALL_LIMIT, P.withScale(4).withSecondaryScale(4).algebraicAngles())) {
+            assertEquals(t, t.subtract(ZERO), t);
+            assertEquals(t, t.subtract(PI), t.addPi());
+            assertEquals(t, PI.subtract(t), t.supplement());
+            assertEquals(t, PI_OVER_TWO.subtract(t), t.complement());
+            assertEquals(t, t.subtract(t), ZERO);
         }
     }
 

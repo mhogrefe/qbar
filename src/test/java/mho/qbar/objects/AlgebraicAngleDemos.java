@@ -12,6 +12,7 @@ import static mho.wheels.iterables.IterableUtils.take;
 import static mho.wheels.ordering.Ordering.compare;
 import static mho.wheels.ordering.Ordering.ge;
 import static mho.wheels.ordering.Ordering.le;
+import static mho.wheels.testing.Testing.*;
 import static mho.wheels.testing.Testing.MEDIUM_LIMIT;
 import static mho.wheels.testing.Testing.TINY_LIMIT;
 import static mho.wheels.testing.Testing.nicePrint;
@@ -239,6 +240,34 @@ public class AlgebraicAngleDemos extends QBarDemos {
         );
         for (Pair<Algebraic, Algebraic> p : take(MEDIUM_LIMIT, ps)) {
             System.out.println("polarAngle(" + p.a + ", " + p.b + ") = " + polarAngle(p.a, p.b));
+        }
+    }
+
+    private void demoAdd() {
+        Iterable<Pair<AlgebraicAngle, AlgebraicAngle>> ps = P.pairs(
+                filterInfinite(
+                        t -> t.isRationalMultipleOfPi() ?
+                                le(t.rationalTurns().get().getDenominator(), BigInteger.TEN) :
+                                t.cos().minimalPolynomial().degree() < 4,
+                        P.withScale(4).withSecondaryScale(4).algebraicAngles()
+                )
+        );
+        for (Pair<AlgebraicAngle, AlgebraicAngle> p : take(SMALL_LIMIT, ps)) {
+            System.out.println(p.a + " + " + p.b + " = " + p.a.add(p.b));
+        }
+    }
+
+    private void demoSubtract() {
+        Iterable<Pair<AlgebraicAngle, AlgebraicAngle>> ps = P.pairs(
+                filterInfinite(
+                        t -> t.isRationalMultipleOfPi() ?
+                                le(t.rationalTurns().get().getDenominator(), BigInteger.TEN) :
+                                t.cos().minimalPolynomial().degree() < 4,
+                        P.withScale(4).withSecondaryScale(4).algebraicAngles()
+                )
+        );
+        for (Pair<AlgebraicAngle, AlgebraicAngle> p : take(SMALL_LIMIT, ps)) {
+            System.out.println(p.a + " - (" + p.b + ") = " + p.a.subtract(p.b));
         }
     }
 

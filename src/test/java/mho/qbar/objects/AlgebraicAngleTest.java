@@ -1437,6 +1437,244 @@ public class AlgebraicAngleTest {
         polarAngle_fail_helper("0", "0");
     }
 
+    private static void add_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        AlgebraicAngle t = readStrict(a).get().add(readStrict(b).get());
+        t.validate();
+        aeq(t, output);
+    }
+
+    @Test
+    public void testAdd() {
+        add_helper("0", "0", "0");
+        add_helper("pi", "0", "pi");
+        add_helper("pi/2", "0", "pi/2");
+        add_helper("3*pi/2", "0", "3*pi/2");
+        add_helper("2*pi/3", "0", "2*pi/3");
+        add_helper("4*pi/3", "0", "4*pi/3");
+        add_helper("arccos(1/3)", "0", "arccos(1/3)");
+        add_helper("arccos(-1/3)", "0", "arccos(-1/3)");
+        add_helper("pi+arccos(-1/3)", "0", "pi+arccos(-1/3)");
+        add_helper("pi+arccos(1/3)", "0", "pi+arccos(1/3)");
+
+        add_helper("0", "pi", "pi");
+        add_helper("pi", "pi", "0");
+        add_helper("pi/2", "pi", "3*pi/2");
+        add_helper("3*pi/2", "pi", "pi/2");
+        add_helper("2*pi/3", "pi", "5*pi/3");
+        add_helper("4*pi/3", "pi", "pi/3");
+        add_helper("arccos(1/3)", "pi", "pi+arccos(1/3)");
+        add_helper("arccos(-1/3)", "pi", "pi+arccos(-1/3)");
+        add_helper("pi+arccos(-1/3)", "pi", "arccos(-1/3)");
+        add_helper("pi+arccos(1/3)", "pi", "arccos(1/3)");
+
+        add_helper("0", "pi/2", "pi/2");
+        add_helper("pi", "pi/2", "3*pi/2");
+        add_helper("pi/2", "pi/2", "pi");
+        add_helper("3*pi/2", "pi/2", "0");
+        add_helper("2*pi/3", "pi/2", "7*pi/6");
+        add_helper("4*pi/3", "pi/2", "11*pi/6");
+        add_helper("arccos(1/3)", "pi/2", "arccos(-2*sqrt(2)/3)");
+        add_helper("arccos(-1/3)", "pi/2", "pi+arccos(2*sqrt(2)/3)");
+        add_helper("pi+arccos(-1/3)", "pi/2", "arccos(2*sqrt(2)/3)");
+        add_helper("pi+arccos(1/3)", "pi/2", "pi+arccos(-2*sqrt(2)/3)");
+
+        add_helper("0", "3*pi/2", "3*pi/2");
+        add_helper("pi", "3*pi/2", "pi/2");
+        add_helper("pi/2", "3*pi/2", "0");
+        add_helper("3*pi/2", "3*pi/2", "pi");
+        add_helper("2*pi/3", "3*pi/2", "pi/6");
+        add_helper("4*pi/3", "3*pi/2", "5*pi/6");
+        add_helper("arccos(1/3)", "3*pi/2", "pi+arccos(-2*sqrt(2)/3)");
+        add_helper("arccos(-1/3)", "3*pi/2", "arccos(2*sqrt(2)/3)");
+        add_helper("pi+arccos(-1/3)", "3*pi/2", "pi+arccos(2*sqrt(2)/3)");
+        add_helper("pi+arccos(1/3)", "3*pi/2", "arccos(-2*sqrt(2)/3)");
+
+        add_helper("0", "2*pi/3", "2*pi/3");
+        add_helper("pi", "2*pi/3", "5*pi/3");
+        add_helper("pi/2", "2*pi/3", "7*pi/6");
+        add_helper("3*pi/2", "2*pi/3", "pi/6");
+        add_helper("2*pi/3", "2*pi/3", "4*pi/3");
+        add_helper("4*pi/3", "2*pi/3", "0");
+        add_helper("arccos(1/3)", "2*pi/3", "pi+arccos((1+2*sqrt(6))/6)");
+        add_helper("arccos(-1/3)", "2*pi/3", "pi+arccos((-1+2*sqrt(6))/6)");
+        add_helper("pi+arccos(-1/3)", "2*pi/3", "arccos((-1+2*sqrt(6))/6)");
+        add_helper("pi+arccos(1/3)", "2*pi/3", "arccos((1+2*sqrt(6))/6)");
+
+        add_helper("0", "4*pi/3", "4*pi/3");
+        add_helper("pi", "4*pi/3", "pi/3");
+        add_helper("pi/2", "4*pi/3", "11*pi/6");
+        add_helper("3*pi/2", "4*pi/3", "5*pi/6");
+        add_helper("2*pi/3", "4*pi/3", "0");
+        add_helper("4*pi/3", "4*pi/3", "2*pi/3");
+        add_helper("arccos(1/3)", "4*pi/3", "pi+arccos((1-2*sqrt(6))/6)");
+        add_helper("arccos(-1/3)", "4*pi/3", "pi+arccos((-1-2*sqrt(6))/6)");
+        add_helper("pi+arccos(-1/3)", "4*pi/3", "arccos((-1-2*sqrt(6))/6)");
+        add_helper("pi+arccos(1/3)", "4*pi/3", "arccos((1-2*sqrt(6))/6)");
+
+        add_helper("0", "arccos(1/3)", "arccos(1/3)");
+        add_helper("pi", "arccos(1/3)", "pi+arccos(1/3)");
+        add_helper("pi/2", "arccos(1/3)", "arccos(-2*sqrt(2)/3)");
+        add_helper("3*pi/2", "arccos(1/3)", "pi+arccos(-2*sqrt(2)/3)");
+        add_helper("2*pi/3", "arccos(1/3)", "pi+arccos((1+2*sqrt(6))/6)");
+        add_helper("4*pi/3", "arccos(1/3)", "pi+arccos((1-2*sqrt(6))/6)");
+        add_helper("arccos(1/3)", "arccos(1/3)", "arccos(-7/9)");
+        add_helper("arccos(-1/3)", "arccos(1/3)", "pi");
+        add_helper("pi+arccos(-1/3)", "arccos(1/3)", "0");
+        add_helper("pi+arccos(1/3)", "arccos(1/3)", "pi+arccos(-7/9)");
+
+        add_helper("0", "arccos(-1/3)", "arccos(-1/3)");
+        add_helper("pi", "arccos(-1/3)", "pi+arccos(-1/3)");
+        add_helper("pi/2", "arccos(-1/3)", "pi+arccos(2*sqrt(2)/3)");
+        add_helper("3*pi/2", "arccos(-1/3)", "arccos(2*sqrt(2)/3)");
+        add_helper("2*pi/3", "arccos(-1/3)", "pi+arccos((-1+2*sqrt(6))/6)");
+        add_helper("4*pi/3", "arccos(-1/3)", "pi+arccos((-1-2*sqrt(6))/6)");
+        add_helper("arccos(1/3)", "arccos(-1/3)", "pi");
+        add_helper("arccos(-1/3)", "arccos(-1/3)", "pi+arccos(7/9)");
+        add_helper("pi+arccos(-1/3)", "arccos(-1/3)", "arccos(7/9)");
+        add_helper("pi+arccos(1/3)", "arccos(-1/3)", "0");
+
+        add_helper("0", "pi+arccos(-1/3)", "pi+arccos(-1/3)");
+        add_helper("pi", "pi+arccos(-1/3)", "arccos(-1/3)");
+        add_helper("pi/2", "pi+arccos(-1/3)", "arccos(2*sqrt(2)/3)");
+        add_helper("3*pi/2", "pi+arccos(-1/3)", "pi+arccos(2*sqrt(2)/3)");
+        add_helper("2*pi/3", "pi+arccos(-1/3)", "arccos((-1+2*sqrt(6))/6)");
+        add_helper("4*pi/3", "pi+arccos(-1/3)", "arccos((-1-2*sqrt(6))/6)");
+        add_helper("arccos(1/3)", "pi+arccos(-1/3)", "0");
+        add_helper("arccos(-1/3)", "pi+arccos(-1/3)", "arccos(7/9)");
+        add_helper("pi+arccos(-1/3)", "pi+arccos(-1/3)", "pi+arccos(7/9)");
+        add_helper("pi+arccos(1/3)", "pi+arccos(-1/3)", "pi");
+
+        add_helper("0", "pi+arccos(1/3)", "pi+arccos(1/3)");
+        add_helper("pi", "pi+arccos(1/3)", "arccos(1/3)");
+        add_helper("pi/2", "pi+arccos(1/3)", "pi+arccos(-2*sqrt(2)/3)");
+        add_helper("3*pi/2", "pi+arccos(1/3)", "arccos(-2*sqrt(2)/3)");
+        add_helper("2*pi/3", "pi+arccos(1/3)", "arccos((1+2*sqrt(6))/6)");
+        add_helper("4*pi/3", "pi+arccos(1/3)", "arccos((1-2*sqrt(6))/6)");
+        add_helper("arccos(1/3)", "pi+arccos(1/3)", "pi+arccos(-7/9)");
+        add_helper("arccos(-1/3)", "pi+arccos(1/3)", "0");
+        add_helper("pi+arccos(-1/3)", "pi+arccos(1/3)", "pi");
+        add_helper("pi+arccos(1/3)", "pi+arccos(1/3)", "arccos(-7/9)");
+    }
+
+    private static void subtract_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        AlgebraicAngle t = readStrict(a).get().subtract(readStrict(b).get());
+        t.validate();
+        aeq(t, output);
+    }
+
+    @Test
+    public void testSubtract() {
+        subtract_helper("0", "0", "0");
+        subtract_helper("pi", "0", "pi");
+        subtract_helper("pi/2", "0", "pi/2");
+        subtract_helper("3*pi/2", "0", "3*pi/2");
+        subtract_helper("2*pi/3", "0", "2*pi/3");
+        subtract_helper("4*pi/3", "0", "4*pi/3");
+        subtract_helper("arccos(1/3)", "0", "arccos(1/3)");
+        subtract_helper("arccos(-1/3)", "0", "arccos(-1/3)");
+        subtract_helper("pi+arccos(-1/3)", "0", "pi+arccos(-1/3)");
+        subtract_helper("pi+arccos(1/3)", "0", "pi+arccos(1/3)");
+
+        subtract_helper("0", "pi", "pi");
+        subtract_helper("pi", "pi", "0");
+        subtract_helper("pi/2", "pi", "3*pi/2");
+        subtract_helper("3*pi/2", "pi", "pi/2");
+        subtract_helper("2*pi/3", "pi", "5*pi/3");
+        subtract_helper("4*pi/3", "pi", "pi/3");
+        subtract_helper("arccos(1/3)", "pi", "pi+arccos(1/3)");
+        subtract_helper("arccos(-1/3)", "pi", "pi+arccos(-1/3)");
+        subtract_helper("pi+arccos(-1/3)", "pi", "arccos(-1/3)");
+        subtract_helper("pi+arccos(1/3)", "pi", "arccos(1/3)");
+
+        subtract_helper("0", "pi/2", "3*pi/2");
+        subtract_helper("pi", "pi/2", "pi/2");
+        subtract_helper("pi/2", "pi/2", "0");
+        subtract_helper("3*pi/2", "pi/2", "pi");
+        subtract_helper("2*pi/3", "pi/2", "pi/6");
+        subtract_helper("4*pi/3", "pi/2", "5*pi/6");
+        subtract_helper("arccos(1/3)", "pi/2", "pi+arccos(-2*sqrt(2)/3)");
+        subtract_helper("arccos(-1/3)", "pi/2", "arccos(2*sqrt(2)/3)");
+        subtract_helper("pi+arccos(-1/3)", "pi/2", "pi+arccos(2*sqrt(2)/3)");
+        subtract_helper("pi+arccos(1/3)", "pi/2", "arccos(-2*sqrt(2)/3)");
+
+        subtract_helper("0", "3*pi/2", "pi/2");
+        subtract_helper("pi", "3*pi/2", "3*pi/2");
+        subtract_helper("pi/2", "3*pi/2", "pi");
+        subtract_helper("3*pi/2", "3*pi/2", "0");
+        subtract_helper("2*pi/3", "3*pi/2", "7*pi/6");
+        subtract_helper("4*pi/3", "3*pi/2", "11*pi/6");
+        subtract_helper("arccos(1/3)", "3*pi/2", "arccos(-2*sqrt(2)/3)");
+        subtract_helper("arccos(-1/3)", "3*pi/2", "pi+arccos(2*sqrt(2)/3)");
+        subtract_helper("pi+arccos(-1/3)", "3*pi/2", "arccos(2*sqrt(2)/3)");
+        subtract_helper("pi+arccos(1/3)", "3*pi/2", "pi+arccos(-2*sqrt(2)/3)");
+
+        subtract_helper("0", "2*pi/3", "4*pi/3");
+        subtract_helper("pi", "2*pi/3", "pi/3");
+        subtract_helper("pi/2", "2*pi/3", "11*pi/6");
+        subtract_helper("3*pi/2", "2*pi/3", "5*pi/6");
+        subtract_helper("2*pi/3", "2*pi/3", "0");
+        subtract_helper("4*pi/3", "2*pi/3", "2*pi/3");
+        subtract_helper("arccos(1/3)", "2*pi/3", "pi+arccos((1-2*sqrt(6))/6)");
+        subtract_helper("arccos(-1/3)", "2*pi/3", "pi+arccos((-1-2*sqrt(6))/6)");
+        subtract_helper("pi+arccos(-1/3)", "2*pi/3", "arccos((-1-2*sqrt(6))/6)");
+        subtract_helper("pi+arccos(1/3)", "2*pi/3", "arccos((1-2*sqrt(6))/6)");
+
+        subtract_helper("0", "4*pi/3", "2*pi/3");
+        subtract_helper("pi", "4*pi/3", "5*pi/3");
+        subtract_helper("pi/2", "4*pi/3", "7*pi/6");
+        subtract_helper("3*pi/2", "4*pi/3", "pi/6");
+        subtract_helper("2*pi/3", "4*pi/3", "4*pi/3");
+        subtract_helper("4*pi/3", "4*pi/3", "0");
+        subtract_helper("arccos(1/3)", "4*pi/3", "pi+arccos((1+2*sqrt(6))/6)");
+        subtract_helper("arccos(-1/3)", "4*pi/3", "pi+arccos((-1+2*sqrt(6))/6)");
+        subtract_helper("pi+arccos(-1/3)", "4*pi/3", "arccos((-1+2*sqrt(6))/6)");
+        subtract_helper("pi+arccos(1/3)", "4*pi/3", "arccos((1+2*sqrt(6))/6)");
+
+        subtract_helper("0", "arccos(1/3)", "pi+arccos(-1/3)");
+        subtract_helper("pi", "arccos(1/3)", "arccos(-1/3)");
+        subtract_helper("pi/2", "arccos(1/3)", "arccos(2*sqrt(2)/3)");
+        subtract_helper("3*pi/2", "arccos(1/3)", "pi+arccos(2*sqrt(2)/3)");
+        subtract_helper("2*pi/3", "arccos(1/3)", "arccos((-1+2*sqrt(6))/6)");
+        subtract_helper("4*pi/3", "arccos(1/3)", "arccos((-1-2*sqrt(6))/6)");
+        subtract_helper("arccos(1/3)", "arccos(1/3)", "0");
+        subtract_helper("arccos(-1/3)", "arccos(1/3)", "arccos(7/9)");
+        subtract_helper("pi+arccos(-1/3)", "arccos(1/3)", "pi+arccos(7/9)");
+        subtract_helper("pi+arccos(1/3)", "arccos(1/3)", "pi");
+
+        subtract_helper("0", "arccos(-1/3)", "pi+arccos(1/3)");
+        subtract_helper("pi", "arccos(-1/3)", "arccos(1/3)");
+        subtract_helper("pi/2", "arccos(-1/3)", "pi+arccos(-2*sqrt(2)/3)");
+        subtract_helper("3*pi/2", "arccos(-1/3)", "arccos(-2*sqrt(2)/3)");
+        subtract_helper("2*pi/3", "arccos(-1/3)", "arccos((1+2*sqrt(6))/6)");
+        subtract_helper("4*pi/3", "arccos(-1/3)", "arccos((1-2*sqrt(6))/6)");
+        subtract_helper("arccos(1/3)", "arccos(-1/3)", "pi+arccos(-7/9)");
+        subtract_helper("arccos(-1/3)", "arccos(-1/3)", "0");
+        subtract_helper("pi+arccos(-1/3)", "arccos(-1/3)", "pi");
+        subtract_helper("pi+arccos(1/3)", "arccos(-1/3)", "arccos(-7/9)");
+
+        subtract_helper("0", "pi+arccos(-1/3)", "arccos(1/3)");
+        subtract_helper("pi", "pi+arccos(-1/3)", "pi+arccos(1/3)");
+        subtract_helper("pi/2", "pi+arccos(-1/3)", "arccos(-2*sqrt(2)/3)");
+        subtract_helper("3*pi/2", "pi+arccos(-1/3)", "pi+arccos(-2*sqrt(2)/3)");
+        subtract_helper("2*pi/3", "pi+arccos(-1/3)", "pi+arccos((1+2*sqrt(6))/6)");
+        subtract_helper("4*pi/3", "pi+arccos(-1/3)", "pi+arccos((1-2*sqrt(6))/6)");
+        subtract_helper("arccos(1/3)", "pi+arccos(-1/3)", "arccos(-7/9)");
+        subtract_helper("arccos(-1/3)", "pi+arccos(-1/3)", "pi");
+        subtract_helper("pi+arccos(-1/3)", "pi+arccos(-1/3)", "0");
+        subtract_helper("pi+arccos(1/3)", "pi+arccos(-1/3)", "pi+arccos(-7/9)");
+
+        subtract_helper("0", "pi+arccos(1/3)", "arccos(-1/3)");
+        subtract_helper("pi", "pi+arccos(1/3)", "pi+arccos(-1/3)");
+        subtract_helper("pi/2", "pi+arccos(1/3)", "pi+arccos(2*sqrt(2)/3)");
+        subtract_helper("3*pi/2", "pi+arccos(1/3)", "arccos(2*sqrt(2)/3)");
+        subtract_helper("2*pi/3", "pi+arccos(1/3)", "pi+arccos((-1+2*sqrt(6))/6)");
+        subtract_helper("4*pi/3", "pi+arccos(1/3)", "pi+arccos((-1-2*sqrt(6))/6)");
+        subtract_helper("arccos(1/3)", "pi+arccos(1/3)", "pi");
+        subtract_helper("arccos(-1/3)", "pi+arccos(1/3)", "pi+arccos(7/9)");
+        subtract_helper("pi+arccos(-1/3)", "pi+arccos(1/3)", "arccos(7/9)");
+        subtract_helper("pi+arccos(1/3)", "pi+arccos(1/3)", "0");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(
