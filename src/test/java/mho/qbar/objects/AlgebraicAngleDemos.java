@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.qbar.testing.QBarDemos;
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
@@ -268,6 +269,26 @@ public class AlgebraicAngleDemos extends QBarDemos {
         );
         for (Pair<AlgebraicAngle, AlgebraicAngle> p : take(SMALL_LIMIT, ps)) {
             System.out.println(p.a + " - (" + p.b + ") = " + p.a.subtract(p.b));
+        }
+    }
+
+    private void demoMultiply() {
+        Iterable<Pair<AlgebraicAngle, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).withSecondaryScale(4).algebraicAngles(),
+                IterableUtils.filter(i -> i != Integer.MIN_VALUE, P.withScale(1).integersGeometric())
+        );
+        for (Pair<AlgebraicAngle, Integer> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("(" + p.a + ") * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoDivide() {
+        Iterable<Pair<AlgebraicAngle, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).withSecondaryScale(4).algebraicAngles(),
+                P.withScale(2).positiveIntegersGeometric()
+        );
+        for (Pair<AlgebraicAngle, Integer> p : take(SMALL_LIMIT, ps)) {
+            System.out.println("(" + p.a + ") / " + p.b + " = " + p.a.divide(p.b));
         }
     }
 

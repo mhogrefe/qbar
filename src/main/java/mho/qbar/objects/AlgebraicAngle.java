@@ -7,6 +7,7 @@ import mho.wheels.ordering.Ordering;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -821,6 +822,71 @@ public final class AlgebraicAngle implements Comparable<AlgebraicAngle> {
      */
     public @NotNull AlgebraicAngle subtract(@NotNull AlgebraicAngle that) {
         return add(that.negate());
+    }
+
+    /**
+     * Multiplies {@code this} by an integer (positive, negative, or zero, mod 2π).
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code AlgebraicAngle}.</li>
+     *  <li>{@code n} cannot be –2^31.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param n the number to multiply {@code this} by.
+     * @return n*{@code this}
+     */
+    public @NotNull AlgebraicAngle multiply(int n) {
+        if (n == Integer.MIN_VALUE) {
+            throw new ArithmeticException("n cannot be –2^31.");
+        }
+        if (n == 0 || equals(ZERO)) return ZERO;
+        if (n < 0) {
+            return multiply(-n).negate();
+        }
+        if (n == 1) return this;
+        if (turns.isPresent()) {
+            return new AlgebraicAngle(turns.get().multiply(n).fractionalPart());
+        }
+        Algebraic productCos = Polynomial.chebyshev1(n).apply(cosine.get());
+        int productQuadrant =
+                radians().multiply(n).divideUnsafe(Real.PI.shiftRight(1)).floorUnsafe().intValueExact() % 4 + 1;
+        return new AlgebraicAngle(productCos, productQuadrant);
+    }
+
+    /**
+     * Divides {@code this} by an integer. The result is the unique angle that, when multiplied by {@code n}, equals
+     * {@code this} without wrapping around at zero. Dividing by negative integers is disallowed because angle negation
+     * does not commute with angle division.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code AlgebraicAngle}.</li>
+     *  <li>{@code n} must be positive.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param n the number to divide {@code this} by
+     * @return {@code this}/n
+     */
+    public @NotNull AlgebraicAngle divide(int n) {
+        if (n <= 0) {
+            throw new ArithmeticException("n must be positive. Invalid n: " + n);
+        }
+        if (n == 1) return this;
+        if (equals(ZERO)) return ZERO;
+        if (turns.isPresent()) {
+            return new AlgebraicAngle(turns.get().divide(n));
+        }
+        Polynomial quotientCosMP = cosine.get().minimalPolynomial().substitute(Polynomial.chebyshev1(n));
+        Real realQuotient = radians().divide(n);
+        Real realQuotientCos = realQuotient.cos();
+        List<Algebraic> candidateQuotientCos = quotientCosMP.realRoots();
+        int quotientCosRoot = realQuotientCos.match(
+                IterableUtils.toList(IterableUtils.map(Algebraic::realValue, candidateQuotientCos))
+        );
+        Algebraic quotientCos = candidateQuotientCos.get(quotientCosRoot);
+        int quotientQuadrant = realQuotient.divideUnsafe(Real.PI.shiftRight(1)).floorUnsafe().intValueExact() + 1;
+        return new AlgebraicAngle(quotientCos, quotientQuadrant);
     }
 
     /**

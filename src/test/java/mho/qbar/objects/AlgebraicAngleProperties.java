@@ -3,6 +3,7 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
@@ -12,6 +13,7 @@ import java.math.BigInteger;
 import java.util.Optional;
 
 import static mho.qbar.objects.AlgebraicAngle.*;
+import static mho.wheels.iterables.IterableUtils.filter;
 import static mho.wheels.iterables.IterableUtils.filterInfinite;
 import static mho.wheels.iterables.IterableUtils.take;
 import static mho.wheels.ordering.Ordering.*;
@@ -56,6 +58,8 @@ public class AlgebraicAngleProperties  extends QBarTestProperties {
         propertiesPolarAngle();
         propertiesAdd();
         propertiesSubtract();
+        propertiesMultiply();
+        propertiesDivide();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -778,6 +782,78 @@ public class AlgebraicAngleProperties  extends QBarTestProperties {
             assertEquals(t, PI.subtract(t), t.supplement());
             assertEquals(t, PI_OVER_TWO.subtract(t), t.complement());
             assertEquals(t, t.subtract(t), ZERO);
+        }
+    }
+
+    private void propertiesMultiply() {
+        initialize("multiply(int)");
+        Iterable<Pair<AlgebraicAngle, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).withSecondaryScale(4).algebraicAngles(),
+                IterableUtils.filter(i -> i != Integer.MIN_VALUE, P.withScale(1).integersGeometric())
+        );
+        for (Pair<AlgebraicAngle, Integer> p : take(SMALL_LIMIT, ps)) {
+            AlgebraicAngle t = p.a.multiply(p.b);
+            t.validate();
+            if (p.b != 0) {
+                assertEquals(p, t.isRationalMultipleOfPi(), p.a.isRationalMultipleOfPi());
+            }
+        }
+
+        ps = filterInfinite(
+                p -> p.b == 1 || lt(p.a, fromTurns(Rational.of(1, p.b))),
+                P.pairsLogarithmicOrder(
+                        P.withScale(4).withSecondaryScale(4).algebraicAngles(),
+                        IterableUtils.filter(i -> i != Integer.MIN_VALUE, P.withScale(2).positiveIntegersGeometric())
+                )
+        );
+        for (Pair<AlgebraicAngle, Integer> p : take(SMALL_LIMIT, ps)) {
+            assertEquals(p, p.a.multiply(p.b).divide(p.b), p.a);
+        }
+
+        for (AlgebraicAngle t : take(SMALL_LIMIT, P.withScale(4).withSecondaryScale(4).algebraicAngles())) {
+            assertEquals(t, t.multiply(0), ZERO);
+            assertEquals(t, t.multiply(1), t);
+            assertEquals(t, t.multiply(-1), t.negate());
+            assertEquals(t, t.multiply(2), t.add(t));
+        }
+
+        for (AlgebraicAngle t : take(MEDIUM_LIMIT, P.algebraicAngles())) {
+            try {
+                t.multiply(Integer.MIN_VALUE);
+                fail(t);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesDivide() {
+        initialize("divide(int)");
+        Iterable<Pair<AlgebraicAngle, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).withSecondaryScale(4).algebraicAngles(),
+                P.withScale(2).positiveIntegersGeometric()
+        );
+        for (Pair<AlgebraicAngle, Integer> p : take(SMALL_LIMIT, ps)) {
+            AlgebraicAngle t = p.a.divide(p.b);
+            t.validate();
+            assertEquals(p, t.isRationalMultipleOfPi(), p.a.isRationalMultipleOfPi());
+        }
+
+        for (Pair<AlgebraicAngle, Integer> p : take(TINY_LIMIT, filterInfinite(p -> p.b < 6, ps))) {
+            assertEquals(p, p.a.divide(p.b).multiply(p.b), p.a);
+        }
+
+        for (AlgebraicAngle t : take(SMALL_LIMIT, P.withScale(4).withSecondaryScale(4).algebraicAngles())) {
+            assertEquals(t, t.divide(1), t);
+        }
+
+        Iterable<Pair<AlgebraicAngle, Integer>> psFail = P.pairs(
+                P.withScale(4).withSecondaryScale(4).algebraicAngles(),
+                P.rangeDown(0)
+        );
+        for (Pair<AlgebraicAngle, Integer> p : take(SMALL_LIMIT, psFail)) {
+            try {
+                p.a.divide(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
         }
     }
 

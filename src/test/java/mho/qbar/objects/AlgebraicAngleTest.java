@@ -1675,6 +1675,192 @@ public class AlgebraicAngleTest {
         subtract_helper("pi+arccos(1/3)", "pi+arccos(1/3)", "0");
     }
 
+    private static void multiply_helper(@NotNull String t, int n, @NotNull String output) {
+        AlgebraicAngle u = readStrict(t).get().multiply(n);
+        u.validate();
+        aeq(u, output);
+    }
+
+    private static void multiply_fail_helper(@NotNull String t, int n) {
+        try {
+            readStrict(t).get().multiply(n);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testMultiply() {
+        multiply_helper("0", 0, "0");
+        multiply_helper("pi", 0, "0");
+        multiply_helper("pi/2", 0, "0");
+        multiply_helper("3*pi/2", 0, "0");
+        multiply_helper("2*pi/3", 0, "0");
+        multiply_helper("4*pi/3", 0, "0");
+        multiply_helper("arccos(1/3)", 0, "0");
+        multiply_helper("arccos(-1/3)", 0, "0");
+        multiply_helper("pi+arccos(-1/3)", 0, "0");
+        multiply_helper("pi+arccos(1/3)", 0, "0");
+
+        multiply_helper("0", 1, "0");
+        multiply_helper("pi", 1, "pi");
+        multiply_helper("pi/2", 1, "pi/2");
+        multiply_helper("3*pi/2", 1, "3*pi/2");
+        multiply_helper("2*pi/3", 1, "2*pi/3");
+        multiply_helper("4*pi/3", 1, "4*pi/3");
+        multiply_helper("arccos(1/3)", 1, "arccos(1/3)");
+        multiply_helper("arccos(-1/3)", 1, "arccos(-1/3)");
+        multiply_helper("pi+arccos(-1/3)", 1, "pi+arccos(-1/3)");
+        multiply_helper("pi+arccos(1/3)", 1, "pi+arccos(1/3)");
+
+        multiply_helper("0", 2, "0");
+        multiply_helper("pi", 2, "0");
+        multiply_helper("pi/2", 2, "pi");
+        multiply_helper("3*pi/2", 2, "pi");
+        multiply_helper("2*pi/3", 2, "4*pi/3");
+        multiply_helper("4*pi/3", 2, "2*pi/3");
+        multiply_helper("arccos(1/3)", 2, "arccos(-7/9)");
+        multiply_helper("arccos(-1/3)", 2, "pi+arccos(7/9)");
+        multiply_helper("pi+arccos(-1/3)", 2, "pi+arccos(7/9)");
+        multiply_helper("pi+arccos(1/3)", 2, "arccos(-7/9)");
+
+        multiply_helper("0", 3, "0");
+        multiply_helper("pi", 3, "pi");
+        multiply_helper("pi/2", 3, "3*pi/2");
+        multiply_helper("3*pi/2", 3, "pi/2");
+        multiply_helper("2*pi/3", 3, "0");
+        multiply_helper("4*pi/3", 3, "0");
+        multiply_helper("arccos(1/3)", 3, "pi+arccos(23/27)");
+        multiply_helper("arccos(-1/3)", 3, "pi+arccos(-23/27)");
+        multiply_helper("pi+arccos(-1/3)", 3, "arccos(-23/27)");
+        multiply_helper("pi+arccos(1/3)", 3, "arccos(23/27)");
+
+        multiply_helper("0", 10, "0");
+        multiply_helper("pi", 10, "0");
+        multiply_helper("pi/2", 10, "pi");
+        multiply_helper("3*pi/2", 10, "pi");
+        multiply_helper("2*pi/3", 10, "2*pi/3");
+        multiply_helper("4*pi/3", 10, "4*pi/3");
+        multiply_helper("arccos(1/3)", 10, "pi+arccos(-57113/59049)");
+        multiply_helper("arccos(-1/3)", 10, "arccos(57113/59049)");
+        multiply_helper("pi+arccos(-1/3)", 10, "arccos(57113/59049)");
+        multiply_helper("pi+arccos(1/3)", 10, "pi+arccos(-57113/59049)");
+
+        multiply_helper("0", -1, "0");
+        multiply_helper("pi", -1, "pi");
+        multiply_helper("pi/2", -1, "3*pi/2");
+        multiply_helper("3*pi/2", -1, "pi/2");
+        multiply_helper("2*pi/3", -1, "4*pi/3");
+        multiply_helper("4*pi/3", -1, "2*pi/3");
+        multiply_helper("arccos(1/3)", -1, "pi+arccos(-1/3)");
+        multiply_helper("arccos(-1/3)", -1, "pi+arccos(1/3)");
+        multiply_helper("pi+arccos(-1/3)", -1, "arccos(1/3)");
+        multiply_helper("pi+arccos(1/3)", -1, "arccos(-1/3)");
+
+        multiply_helper("0", -2, "0");
+        multiply_helper("pi", -2, "0");
+        multiply_helper("pi/2", -2, "pi");
+        multiply_helper("3*pi/2", -2, "pi");
+        multiply_helper("2*pi/3", -2, "2*pi/3");
+        multiply_helper("4*pi/3", -2, "4*pi/3");
+        multiply_helper("arccos(1/3)", -2, "pi+arccos(7/9)");
+        multiply_helper("arccos(-1/3)", -2, "arccos(-7/9)");
+        multiply_helper("pi+arccos(-1/3)", -2, "arccos(-7/9)");
+        multiply_helper("pi+arccos(1/3)", -2, "pi+arccos(7/9)");
+
+        multiply_helper("0", -3, "0");
+        multiply_helper("pi", -3, "pi");
+        multiply_helper("pi/2", -3, "pi/2");
+        multiply_helper("3*pi/2", -3, "3*pi/2");
+        multiply_helper("2*pi/3", -3, "0");
+        multiply_helper("4*pi/3", -3, "0");
+        multiply_helper("arccos(1/3)", -3, "arccos(-23/27)");
+        multiply_helper("arccos(-1/3)", -3, "arccos(23/27)");
+        multiply_helper("pi+arccos(-1/3)", -3, "pi+arccos(23/27)");
+        multiply_helper("pi+arccos(1/3)", -3, "pi+arccos(-23/27)");
+
+        multiply_helper("0", -10, "0");
+        multiply_helper("pi", -10, "0");
+        multiply_helper("pi/2", -10, "pi");
+        multiply_helper("3*pi/2", -10, "pi");
+        multiply_helper("2*pi/3", -10, "4*pi/3");
+        multiply_helper("4*pi/3", -10, "2*pi/3");
+        multiply_helper("arccos(1/3)", -10, "arccos(57113/59049)");
+        multiply_helper("arccos(-1/3)", -10, "pi+arccos(-57113/59049)");
+        multiply_helper("pi+arccos(-1/3)", -10, "pi+arccos(-57113/59049)");
+        multiply_helper("pi+arccos(1/3)", -10, "arccos(57113/59049)");
+
+        multiply_fail_helper("0", Integer.MIN_VALUE);
+        multiply_fail_helper("pi", Integer.MIN_VALUE);
+        multiply_fail_helper("arccos(1/3)", Integer.MIN_VALUE);
+    }
+
+    private static void divide_helper(@NotNull String t, int n, @NotNull String output) {
+        AlgebraicAngle u = readStrict(t).get().divide(n);
+        u.validate();
+        aeq(u, output);
+    }
+
+    private static void divide_fail_helper(@NotNull String t, int n) {
+        try {
+            readStrict(t).get().divide(n);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDivide() {
+        divide_helper("0", 1, "0");
+        divide_helper("pi", 1, "pi");
+        divide_helper("pi/2", 1, "pi/2");
+        divide_helper("3*pi/2", 1, "3*pi/2");
+        divide_helper("2*pi/3", 1, "2*pi/3");
+        divide_helper("4*pi/3", 1, "4*pi/3");
+        divide_helper("arccos(1/3)", 1, "arccos(1/3)");
+        divide_helper("arccos(-1/3)", 1, "arccos(-1/3)");
+        divide_helper("pi+arccos(-1/3)", 1, "pi+arccos(-1/3)");
+        divide_helper("pi+arccos(1/3)", 1, "pi+arccos(1/3)");
+
+        divide_helper("0", 2, "0");
+        divide_helper("pi", 2, "pi/2");
+        divide_helper("pi/2", 2, "pi/4");
+        divide_helper("3*pi/2", 2, "3*pi/4");
+        divide_helper("2*pi/3", 2, "pi/3");
+        divide_helper("4*pi/3", 2, "2*pi/3");
+        divide_helper("arccos(1/3)", 2, "arccos(sqrt(6)/3)");
+        divide_helper("arccos(-1/3)", 2, "arccos(sqrt(3)/3)");
+        divide_helper("pi+arccos(-1/3)", 2, "arccos(-sqrt(6)/3)");
+        divide_helper("pi+arccos(1/3)", 2, "arccos(-sqrt(3)/3)");
+
+        divide_helper("0", 3, "0");
+        divide_helper("pi", 3, "pi/3");
+        divide_helper("pi/2", 3, "pi/6");
+        divide_helper("3*pi/2", 3, "pi/2");
+        divide_helper("2*pi/3", 3, "2*pi/9");
+        divide_helper("4*pi/3", 3, "4*pi/9");
+        divide_helper("arccos(1/3)", 3, "arccos(root 2 of 12*x^3-9*x-1)");
+        divide_helper("arccos(-1/3)", 3, "arccos(root 2 of 12*x^3-9*x+1)");
+        divide_helper("pi+arccos(-1/3)", 3, "arccos(root 1 of 12*x^3-9*x-1)");
+        divide_helper("pi+arccos(1/3)", 3, "arccos(root 1 of 12*x^3-9*x+1)");
+
+        divide_helper("0", 10, "0");
+        divide_helper("pi", 10, "pi/10");
+        divide_helper("pi/2", 10, "pi/20");
+        divide_helper("3*pi/2", 10, "3*pi/20");
+        divide_helper("2*pi/3", 10, "pi/15");
+        divide_helper("4*pi/3", 10, "2*pi/15");
+        divide_helper("arccos(1/3)", 10, "arccos(root 9 of 768*x^10-1920*x^8+1680*x^6-600*x^4+75*x^2-2)");
+        divide_helper("arccos(-1/3)", 10, "arccos(root 9 of 768*x^10-1920*x^8+1680*x^6-600*x^4+75*x^2-1)");
+        divide_helper("pi+arccos(-1/3)", 10, "arccos(root 8 of 768*x^10-1920*x^8+1680*x^6-600*x^4+75*x^2-2)");
+        divide_helper("pi+arccos(1/3)", 10, "arccos(root 8 of 768*x^10-1920*x^8+1680*x^6-600*x^4+75*x^2-1)");
+
+        divide_fail_helper("0", 0);
+        divide_fail_helper("0", -1);
+        divide_fail_helper("pi", 0);
+        divide_fail_helper("pi", -1);
+        divide_fail_helper("arccos(1/3)", 0);
+        divide_fail_helper("arccos(1/3)", -1);
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(
