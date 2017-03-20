@@ -2563,8 +2563,8 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
             throw new IllegalArgumentException("a must be greater than or equal to b. a: " + a + ", b: " + b);
         }
         int scale = getScale();
-        if (scale < 4) {
-            throw new IllegalStateException("this must have a scale of at least 4. Invalid scale: " + scale);
+        if (scale < 2) {
+            throw new IllegalStateException("this must have a scale of at least 2. Invalid scale: " + scale);
         }
         int secondaryScale = getSecondaryScale();
         if (secondaryScale < 4) {
